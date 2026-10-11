@@ -78,7 +78,7 @@
 /* Shared textarea/mirror padding keeps native caret and presentation aligned.
    The current-line menu retains insert/date/move actions in one 44px lane. */
 @media (max-width: 600px) {
-  .directWriting :global(.tle-root[data-mode]:not([data-move-phase]):not(.tle-has-move-selection)) { --tle-pad-right: 60px; }
+  .directWriting :global(.tle-root[data-mode]:not([data-move-phase]):not(.tle-has-move-selection)) { --tle-pad-right: 54px; }
   .directWriting :global(.tle-plus) { display: none; }
 }
 
@@ -105,7 +105,7 @@
 .editor { height: auto; min-height: 0; }
 .host { flex: 0 0 auto; height: max(352px, calc(100dvh - 280px)); height: calc(20px + round(down, max(352px, calc(100dvh - 300px)), 44px)); min-height: 352px; }
 .host :global(.tle-root) { min-height: 352px; }
-.host :global(.tle-root[data-mode]:not([data-move-phase]):not(.tle-has-move-selection)) { --tle-pad-right: 60px; }
+.host :global(.tle-root[data-mode]:not([data-move-phase]):not(.tle-has-move-selection)) { --tle-pad-right: 54px; }
 .host :global(.tle-controls) { background: linear-gradient(to left, #f4f5ef 52px, transparent 52px); }
 /* Reading row controls scroll below the overlay. Paint the rail behind them. */
 .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-viewport) { background: linear-gradient(to left, #f4f5ef 52px, transparent 52px); }
@@ -125,7 +125,9 @@
 .host :global(.tle-root.tle-has-move-selection),
 .host :global(.tle-root[data-move-phase="selected"]),
 .host :global(.tle-root[data-move-phase="dragging"]) { --tle-line: 44px; }
-.host :global(.tle-root:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"])) { --tle-pad-right: 60px; }
+/* right8px +44px date/origin targets need52px; keep2px clear of text.
+   The textarea, RAW mirror and reading presentation all use this metric. */
+.host :global(.tle-root:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"])) { --tle-pad-right: 54px; }
 .toolbar > button[aria-label="입력 되돌리기"], .editorTools > summary { border-color: transparent; background: transparent; }
 .status { font-size: 12px; font-weight: 400; color: #6d756f; }
 .host :global(.tle-row-date-kind) { color: #59645d; }
@@ -135,10 +137,9 @@
 .saveFeedback > summary::-webkit-details-marker { display: none; }
 .saveFeedback > summary:focus-visible { outline: 2px solid #187952; outline-offset: 2px; }
 .saveFeedback > .error { position: absolute; z-index: 60; top: calc(100% + 4px); left: 0; right: 0; box-sizing: border-box; max-height: min(52dvh, 420px); overflow: auto; overscroll-behavior: contain; border: 1px solid #efd8c2; border-radius: 8px; box-shadow: 0 8px 24px #15342620; }
-/* Reading can wrap independently; native textarea and its RAW mirror keep
-   their shared 60px gutter and 26px ruler. No source or input metric changes. */
+/* Reading prose shares the native gutter. Preserve RAW/caret metrics. */
 @media (max-width: 600px) {
-  .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-presentation) { padding-right: 14px; }
+  .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-presentation) { padding-right: var(--tle-pad-right); }
   .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view) :is(.tle-viewport, .tle-controls)) { background: transparent; }
   /* A reading tap enters the native editor and restores its current-line menu.
      The toolbar's contextual add action stays available without a body rail. */
@@ -152,3 +153,39 @@
   .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-scheduled-date-open .tle-row-date) { max-width: none; font-size: 13px; }
   .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-row-date-kind) { font-size: 12px; }
 }
+
+/* Reading layout only: native RAW, composition and movement keep their ruler.
+   The text nodes remain unchanged, so tap/copy offsets are still source offsets. */
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-check-anchor) { left: clamp(0px, calc(var(--tle-reading-depth, 0) * .5em), calc(100% - 32px)); }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-hidden-syntax) { visibility: hidden; pointer-events: none; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-check-glyph) { left: 13px; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) :is(.tle-line-prose, .tle-line-property:not(.tle-line-date-property))) {
+  padding-left: var(--tle-indent, 0px);
+  text-indent: calc(-1 * var(--tle-indent, 0px));
+  color: #455b51;
+}
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-scope-label) { padding-left: 75px; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line-scope[data-scope-kind="folder"] .tle-scope-subtitle) {
+  position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line[data-source-blank="true"]) {
+  min-height: 8px; line-height: 8px; font-size: 0;
+}
+
+/* A work note: subtract the frame, retain the native buffer and 44px controls. */
+.editor { border: 0; border-radius: 0; background: #fff; }
+.toolbar { gap: 0; padding: 0; border: 0; flex-wrap: wrap; }
+.toolbar > button { border-color: transparent; background: transparent; padding-inline: 8px; }
+.toolbar > .editorTools { order: 4; margin-left: auto; }
+.toolbar > .status, .toolbar > .saveFeedback { order: 3; margin-left: 0; padding-inline: 4px; font-size: 13px; line-height: 20px; }
+.noteStatus { order: 2; margin-left: auto; min-width: 0; }
+.noteStatus:empty { display: none; }
+.editorToolActions { width: min(280px, calc(100vw - 40px)); }
+.editorToolActions > div { display: grid; }
+.editorToolActions :where(button, summary) { white-space: normal; }
+.host :global(.tle-root) { background: #fff; }
+.host :global(.tle-viewport) { border-radius: 0; }
+.host :global(.tle-controls), .host :global(.tle-root:is(.tle-reading-view,.tle-folded-view) .tle-viewport) { background: transparent; }
+.editor .toolbar > button { border-color: transparent; background: transparent; }
+/* Wrapped prose keeps the RAW ruler rather than a second hanging-indent ruler. */
+.host :global(.tle-root:is(.tle-reading-view,.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) :is(.tle-line-prose,.tle-line-property:not(.tle-line-date-property))) { padding-left: 0; text-indent: 0; }

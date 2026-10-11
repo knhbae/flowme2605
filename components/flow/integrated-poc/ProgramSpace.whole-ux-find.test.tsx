@@ -31,7 +31,8 @@ function harness() {
       events.push('selection'); this.selectionStart = start; this.selectionEnd = end; this.selectionDirection = direction;
     }
   }
-  const area = new Area(), other = new Element(), toggle = new Element(), search = new Element();
+  const area = new Area(), other = new Element(), toggle = new Element(), search = new Element(), noteSummary = new Element();
+  const noteFindMenu = { current: { open: false } }, noteFindMenuSummary = { current: noteSummary };
   const body = new Element(), document = { activeElement: area as Element, body };
   const panel = { open: false,
     contains: (element: Element) => element === search,
@@ -47,7 +48,7 @@ function harness() {
   const context: Record<string, unknown> = {
     HTMLElement: Element, HTMLTextAreaElement: Area, document, actorId: 'fixture-owner', root: { current: { contains: (element: Element) => element === area } },
     libraryReturn, libraryComposing, inputLockCount, selectedRef, presentation, dataRef, pendingSourceFocus,
-    libraryDialog: { current: panel }, libraryToggle: { current: toggle },
+    libraryDialog: { current: panel }, libraryToggle: { current: toggle }, noteFindMenu, noteFindMenuSummary,
     setLibraryOpen: (value: boolean) => { libraryOpen = value; }, setMessage: (value: string) => messages.push(value),
     cancelLibraryReveal: () => events.push('cancel-reveal'),
     requestAnimationFrame: () => { events.push('source-frame'); return 1; },
@@ -57,7 +58,7 @@ function harness() {
   const open = execute('openFindPanel', context);
   const renderEffect = () => new Function(...Object.keys(context), 'libraryOpen',
     `${compile(`const callback = ${effect.arguments[0].getText(ast)};`)} return callback();`)(...Object.values(context), libraryOpen);
-  return { area, other, search, document, panel, events, libraryReturn, libraryComposing, inputLockCount,
+  return { area, other, search, toggle, noteSummary, noteFindMenu, document, panel, events, libraryReturn, libraryComposing, inputLockCount,
     selectedRef, presentation, dataRef, pendingSourceFocus, messages, remember, open, renderEffect,
     close: () => { libraryOpen = false; renderEffect(); }, isOpen: () => libraryOpen };
 }
@@ -83,6 +84,35 @@ test('composition or active save lock refuses find before autofocus and preserve
 test('composition starting before the modal effect cancels opening', () => {
   const h = harness(); h.open(); h.libraryComposing.current = true; h.renderEffect();
   assert.equal(h.isOpen(), false); assert.equal(h.panel.open, false); assert(!h.events.includes('show'));
+});
+
+test('the same hidden note Find opener returns to its closed menu summary without changing raw or caret', () => {
+  const h = harness(), original = h.area.value;
+  h.document.activeElement = h.toggle; h.noteFindMenu.current.open = true;
+  h.open(); h.renderEffect(); assert.equal(h.noteFindMenu.current.open, false);
+  h.toggle.visible = false; h.close();
+  assert.equal(h.document.activeElement, h.noteSummary); assert.equal(h.area.value, original);
+  assert.deepEqual([h.area.selectionStart, h.area.selectionEnd, h.area.selectionDirection, h.area.scrollTop, h.area.scrollLeft], [3, 8, 'backward', 76, 2]);
+  assert.deepEqual(h.events, ['cancel-reveal', 'show', 'close', 'focus']);
+});
+
+test('note summary fallback retains actor, document, view, folder, composition and exact opener ownership gates', () => {
+  for (const changed of ['actor', 'document', 'period', 'folder', 'composition', 'unrelated', 'disconnected', 'hidden-summary', 'detached-summary', 'focus']) {
+    const h = harness(); h.document.activeElement = changed === 'unrelated' ? h.other : h.toggle;
+    h.open(); h.renderEffect(); h.toggle.visible = false;
+    if (changed === 'actor') h.dataRef.current.activeActorId = 'other-owner';
+    if (changed === 'document') h.selectedRef.current = 'other-doc';
+    if (changed === 'period') h.presentation.current.period = 'today';
+    if (changed === 'folder') h.presentation.current.folderId = 'other-folder';
+    if (changed === 'composition') h.libraryComposing.current = true;
+    if (changed === 'unrelated') h.other.visible = false;
+    if (changed === 'disconnected') h.toggle.isConnected = false;
+    if (changed === 'hidden-summary') h.noteSummary.visible = false;
+    if (changed === 'detached-summary') h.noteSummary.isConnected = false;
+    if (changed === 'focus') h.document.activeElement = h.other;
+    h.close(); assert(!h.events.includes('focus'), changed); assert(!h.events.includes('selection'), changed);
+    assert.equal(h.libraryReturn.current, null, changed);
+  }
 });
 
 test('close never steals focus after document, actor, view, folder, raw, readonly or focus ownership changes', () => {

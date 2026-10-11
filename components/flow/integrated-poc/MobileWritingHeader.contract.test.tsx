@@ -45,7 +45,7 @@ test('all writing states share one title/action heading and one finder; other vi
     { selected: 'synthetic-doc', selectedDoc: { id: 'synthetic-doc', title: '긴 가상 문서 제목' }, title: '긴 가상 문서 제목' },
   ];
   for (const period of ['documents', 'today', 'all']) for (const state of writingStates) {
-    const context = { styles, period, ...state, findActions: finder, selectedDocumentTools: null,
+    const context = { styles, props: {}, period, ...state, findActions: finder, selectedDocumentTools: null,
       viewMenu: { current: null }, mainPeriods: [['documents', '쓰기'], ['today', '오늘'], ['all', '분류']], collectionMode: undefined, changePeriod() {} };
     const outer = nodes(evaluate(classElement(spaceTree, 'contextActions'), context)).filter(node => node.props['data-test-finder']);
     const headingNodes = nodes(evaluate(classElement(spaceTree, 'docHeading'), context));
@@ -64,6 +64,33 @@ test('all writing states share one title/action heading and one finder; other vi
   }
   collect(spaceTree);
   assert.equal(writingButtons.length, 1, 'new writing is not duplicated in the empty state');
+});
+
+test('note writing moves only the selected editor actions to its toolbar; empty and period views retain one finder', () => {
+  const finder = React.createElement('button', { 'data-test-finder': true }, '글 찾기');
+  const tools = React.createElement('details', { 'data-test-tools': true }, '문서 관리');
+  const noteActions = find(spaceTree, node => ts.isJsxAttribute(node) && node.name.getText(spaceTree) === 'noteActions') as ts.JsxAttribute;
+  const actionsExpression = (noteActions.initializer as ts.JsxExpression).expression!.getText(spaceTree);
+  for (const period of ['documents', 'today', 'all']) for (const selected of ['', 'missing-doc', 'synthetic-doc']) {
+    const selectedDoc = selected === 'synthetic-doc' ? { id: selected, title: '긴 가상 문서 제목' } : null;
+    const context = { styles, props: { noteHeader: React.createElement('details'), noteStatus: React.createElement('p', { role: 'status' }, '서버와 연결됨') },
+      period, selected, selectedDoc, id: selected, compactNoteToday: period === 'today', findActions: finder, selectedDocumentTools: tools,
+      viewMenu: { current: null }, mainPeriods: [['documents', '쓰기'], ['today', '오늘'], ['all', '분류']], collectionMode: undefined, changePeriod() {},
+      noteFindMenu: { current: null }, noteFindMenuSummary: { current: null } };
+    const outer = nodes(evaluate(classElement(spaceTree, 'contextActions'), context));
+    const heading = nodes(evaluate(classElement(spaceTree, 'docHeading'), context));
+    const toolbar = selectedDoc ? nodes(evaluate(actionsExpression, context)) : [];
+    const periodFinder = period === 'today' ? nodes(evaluate(classElement(spaceTree, 'notePeriodTools'), context))
+      : period === 'all' ? nodes(evaluate(classElement(spaceTree, 'periodStatus'), context)) : [];
+    const visible = [...outer, ...(period === 'documents' ? [...heading, ...toolbar] : periodFinder)];
+    assert.equal(visible.filter(node => node.props['data-test-finder']).length, 1, `${period}:${selected}`);
+    assert.equal(heading.filter(node => node.props['data-test-finder']).length, period === 'documents' && !selectedDoc ? 1 : 0);
+    assert.equal(text(heading.find(node => node.type === 'h1')), selectedDoc?.title ?? (selected ? '문서를 찾을 수 없습니다' : '필요한 내용을 먼저 적으세요'));
+    if (selectedDoc) {
+      assert.equal(toolbar.filter(node => node.props['data-test-tools']).length, 1);
+      assert.deepEqual(nodes(evaluate(actionsExpression, { ...context, id: 'retained-hidden-doc' })), []);
+    }
+  }
 });
 
 test('finder preserves its one ref, composition gate and caret capture without nested disclosure', () => {
@@ -89,24 +116,38 @@ test('finder preserves its one ref, composition gate and caret capture without n
 });
 
 
-test('mobile writing gives titles full width and a separate 48px action row without collapsing errors or other views', () => {
+test('mobile note and non-note titles use the approved layout while all action targets remain 48px and errors stay exposed', () => {
   const spaceCss = postcss.parse(read('./ProgramSpace.module.css'));
-  const mobile = spaceCss.nodes.filter(node => node.type === 'atrule' && node.name === 'media' && node.params === '(max-width: 760px)').at(-1) as postcss.AtRule;
   const declarations = new Map<string, string>();
-  mobile.walkRules(rule => { rule.walkDecls(decl => { declarations.set(`${rule.selector}:${decl.prop}`, decl.value); }); });
+  // Apply all base/mobile source declarations in order, not just the last media block.
+  spaceCss.walkRules(rule => {
+    let parent = rule.parent;
+    while (parent) {
+      if (parent.type === 'atrule' && parent.name === 'media' && !/^\(max-width:\s*760px\)$/.test(parent.params)) return;
+      parent = parent.parent;
+    }
+    for (const selector of rule.selectors) rule.walkDecls(decl => { declarations.set(`${selector}:${decl.prop}`, decl.value); });
+  });
   assert.equal(declarations.get('.docHeading:display'), 'grid');
-  assert.equal(declarations.get('.docHeading:grid-template-columns'), 'minmax(0, 1fr)');
-  assert.equal(declarations.get('.docHeading h1:width'), '100%');
-  assert.equal(declarations.get('.docHeading h1:font-size'), '24px');
-  assert.equal(declarations.get('.docHeading h1:line-height'), '32px');
+  assert.equal(declarations.get('.docHeading:grid-template-columns'), 'minmax(0, 1fr) auto');
+  assert.equal(declarations.get('.docHeading h1:width'), 'auto');
+  assert.equal(declarations.get('.docHeading h1:font-size'), '16px');
+  assert.equal(declarations.get('.docHeading h1:line-height'), '24px');
   assert.equal(declarations.get('.docHeading h1:overflow-wrap'), 'anywhere');
   assert.equal(declarations.get('.writingActions :is(button, summary):min-height'), '48px');
   assert.equal(declarations.get('.writingActions :is(button, summary):min-width'), '48px');
-  assert.equal(declarations.get('.writingActions:width'), '100%');
-  assert.equal(declarations.get('.writingActions > details:margin-left'), 'auto');
+  assert.equal(declarations.get('.writingActions:width'), 'auto');
+  assert.equal(declarations.get('.writingActions > details:margin-left'), '0');
   assert.equal(declarations.get('.writingActions .documentToolsMarker:display'), 'none');
   assert.equal(declarations.get('.writingActions .documentToolsLabel:display'), undefined);
   assert.equal(declarations.get('.space:has([data-program-period="documents"][aria-current="page"]):has(.docHeading) > .contextActions:display'), 'contents');
+  assert.equal(declarations.get('.space[data-note-layout="true"] .docHeading:display'), 'block');
+  const noteTitle = '.space[data-note-layout="true"] .docHeading h1';
+  for (const [property, value] of [['width', 'auto'], ['font-size', '26px'], ['line-height', '36px'], ['overflow', 'visible'], ['clip-path', 'none'], ['white-space', 'normal']]) {
+    assert.equal(declarations.get(`${noteTitle}:${property}`), value);
+  }
+  assert.equal(declarations.get('.space[data-note-layout="true"] .notePeriodTools > summary:min-width'), '48px');
+  assert.equal(declarations.get('.space[data-note-layout="true"] .notePeriodTools > summary:min-height'), '48px');
   const shellCss = postcss.parse(read('./AlphaWorkspace.module.css'));
   const compact = shellCss.nodes.filter(node => node.type === 'atrule' && node.name === 'media' && node.params === '(max-width: 760px)').at(-1) as postcss.AtRule;
   const compactText = compact.toString();

@@ -219,3 +219,78 @@
   .writingActions > details > summary::-webkit-details-marker { display: none; }
   .space:has([data-program-period="documents"][aria-current="page"]):has(.docHeading) > .contextActions { display: contents; }
 }
+
+/* Global destinations stay in the shell; these are local views and tools.
+   Keep retained editors, guarded navigation and all existing actions intact. */
+.executionView { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; }
+.executionView[hidden] { display: none; }
+.executionView > * { grid-column: 1 / -1; }
+.executionView > .periodPicker { grid-column: 1; grid-row: 1; margin: 0; max-width: 112px; font-size: 0; line-height: 0; }
+.executionView > .periodPicker select { font-size: 14px; line-height: 24px; }
+.executionView:has(> .periodPicker) > .periodHeading { grid-column: 2; grid-row: 1; margin: 0; }
+.executionView:has(> .periodPicker) > .periodHeading h1 { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.executionView .dateNav { gap: 4px; align-items: center; }
+.executionView .dateNav label { font-size: 0; line-height: 0; max-width: 144px; }
+.executionView .dateNav input { font-size: 14px; line-height: 24px; }
+.executionView .dateNav button { min-width: 44px; padding-inline: 8px; }
+.executionView > .quickDisclosure { margin-bottom: 4px; }
+.executionView > .periodHeading { margin-bottom: 8px; }
+@media (max-width: 760px) {
+  .docHeading { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .docHeading h1 { width: auto; font-size: 16px; line-height: 24px; }
+  .writingActions { width: auto; gap: 0; }
+  .writingActions .findActions { gap: 0; }
+  .writingActions > details { margin-left: 0; }
+  .executionView > .periodPicker { max-width: 96px; }
+  .executionView .dateNav input { font-size: 16px; padding-inline: 4px; }
+  .executionView .dateNav label { max-width: 132px; }
+  .executionView .dateNav button { min-width: 44px; }
+}
+@media (max-width: 359px) {
+  .executionView { grid-template-columns: minmax(0, 1fr); }
+  .executionView:has(> .periodPicker) > .periodHeading { grid-column: 1; grid-row: 2; }
+}
+
+/* A work note. Titles are fully readable; presentation does not rewrite data. */
+.space[data-note-layout="true"] .docHeading { display: block; margin: 12px 0 8px; }
+.space[data-note-layout="true"] .docHeading h1,
+.space[data-note-layout="true"] .periodHeading h1 { position: static; width: auto; height: auto; margin: 0; padding: 0; overflow: visible; clip-path: none; white-space: normal; font-size: 26px; line-height: 36px; }
+.space[data-note-layout="true"] .content { max-width: 860px; }
+.space[data-note-layout="true"] .executionView { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.space[data-note-layout="true"] .executionView > .periodHeading { display: contents; }
+.space[data-note-layout="true"] .periodHeading h1 { grid-column: 1 / -1; grid-row: 1; margin: 12px 0 0; }
+.periodNotice { grid-column: 1 / -1; grid-row: 2; }
+.space[data-note-layout="true"] .executionView > .periodPicker { grid-column: 2; grid-row: 3; max-width: 88px; }
+.space[data-note-layout="true"] .executionView .dateNav { grid-column: 1; grid-row: 3; justify-content: flex-start; }
+.space[data-note-layout="true"] .executionView .dateNav label { max-width: 140px; }
+.periodStatus { grid-column: 1 / -1; grid-row: 4; }
+.space[data-note-layout="true"] .taskTitleText { display: block; -webkit-line-clamp: unset; -webkit-box-orient: initial; overflow: visible; white-space: normal; font-size: 16px; line-height: 26px; }
+.space[data-note-layout="true"] .task { border-radius: 0; border-inline: 0; background: transparent; padding: 12px 0; column-gap: 4px; }
+.space[data-note-layout="true"] .taskTitle small { font-size: 13px; line-height: 20px; }
+.space[data-note-layout="true"] .taskTitle small > span { display: block; }
+.space[data-note-layout="true"] .check { border-color: transparent; background: transparent; color: #326449; }
+.space[data-note-layout="true"] .partialProgress { font-size: 13px; font-weight: 600; color: #785627; }
+.space[data-note-layout="true"] .partialProgress > span { display: inline-block; border: 1px solid #dfd2b8; border-radius: 4px; padding: 2px; background: #fcf8ed; }
+.space[data-note-layout="true"] .periods button[aria-current="page"] { box-shadow: none; background: #edf5f0; }
+.space[data-note-layout="true"] .contextActions { display: contents; }
+.space[data-note-layout="true"] .contextActions .periods { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; max-width: 1040px; margin: 0 auto; padding: 8px max(20px,env(safe-area-inset-left)) max(8px,env(safe-area-inset-bottom)); box-sizing: border-box; background: #fff; border-top: 1px solid var(--pw-line); }
+.periodStatus { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+/* Today reuses the existing quick form and guarded finder, without extra rows. */
+.space[data-note-layout="true"] .notePeriodTitle { grid-column: 1 / -1; grid-row: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; margin-top: 12px; }
+.space[data-note-layout="true"] .notePeriodTitle h1 { flex: 1; min-width: 0; margin: 0; }
+.space[data-note-layout="true"] .notePeriodActions { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; }
+.space[data-note-layout="true"] .notePeriodActions > button { min-height: 48px; padding: 8px; border-color: transparent; background: var(--pw-soft); color: var(--pw-brand); font-size: 14px; white-space: nowrap; }
+.space[data-note-layout="true"] .notePeriodTools { position: relative; }
+.space[data-note-layout="true"] .notePeriodTools > summary { box-sizing: border-box; display: flex; align-items: center; justify-content: center; min-width: 48px; min-height: 48px; padding: 8px; border: 0; border-radius: 8px; background: transparent; color: var(--pw-brand); list-style: none; cursor: pointer; }
+.space[data-note-layout="true"] .notePeriodTools > summary::-webkit-details-marker { display: none; }
+.space[data-note-layout="true"] .notePeriodTools[open] > summary { background: #edf5f0; }
+.space[data-note-layout="true"] .notePeriodToolsBody { position: absolute; z-index: 10; right: 0; top: calc(100% + 4px); display: grid; gap: 6px; box-sizing: border-box; width: min(280px, calc(100vw - 40px)); padding: 8px; border: 1px solid #cbd8d1; border-radius: 8px; background: #fff; box-shadow: 0 8px 24px #15342620; }
+.space[data-note-layout="true"] .notePeriodToolsBody .findActions { display: grid; gap: 6px; margin: 0; }
+.space[data-note-layout="true"] .notePeriodToolsBody .libraryToggle { width: 100%; min-height: 48px; padding: 8px; text-align: left; font-size: 14px; }
+.space[data-note-layout="true"] .executionView[data-note-today="true"] > .periodStatus { justify-content: flex-start; min-height: 20px; }
+.space[data-note-layout="true"] .executionView[data-note-today="true"] > .quickDisclosure { grid-column: 1 / -1; grid-row: 5; margin: 0; border: 0; }
+.space[data-note-layout="true"] .executionView[data-note-today="true"] > .quickDisclosure > summary { display: none; }
+@media (max-width: 600px) {
+  .space[data-note-layout="true"] .contextActions .periods { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+}

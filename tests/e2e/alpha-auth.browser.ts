@@ -2,7 +2,10 @@ import { test, expect, type Page } from '@playwright/test';
 import { login, openWorkspaceManagement, mockAlpha, session, sessionKey, users, emptyAccount, accountWithDocument, invalidAccountMarker, pairedSocialAccount, isSocialReadOrInit } from './alpha-auth.fixture';
 
 const workspaceHeading = (page: Page) => page.getByRole('heading', { name: '내 작업', exact: true });
-const workspaceStatus = (page: Page) => page.getByRole('region', { name: '서버 저장 상태', exact: true }).getByRole('status');
+const workspaceStatus = (page: Page) => page.locator(
+  'main[data-note-layout="true"] section[aria-label="내 공간"] [role="status"][data-save-state]:visible, '
+  + 'main:not([data-note-layout="true"]) section[aria-label="서버 저장 상태"] [role="status"][data-save-state]:visible',
+);
 async function expectWorkspaceReady(page: Page) {
   await expect(workspaceHeading(page)).toBeVisible();
   await expect(workspaceStatus(page)).toContainText('서버와 연결됨');

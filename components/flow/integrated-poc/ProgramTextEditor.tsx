@@ -46,6 +46,8 @@ export function programTextSelectionAfterChange(before: TextWorkspaceState, next
     direction: start > end ? selection.direction === 'backward' ? 'forward' : 'backward' : selection.direction };
 }
 export type ProgramSourceFocus = (target: { documentId: string; lineId: string; raw: string }) => boolean;
+/** Read-only UI state for explaining a refused view change, not save authority. */
+export type ProgramTextSaveStatus = { composing: boolean; saving: boolean; failed: boolean };
 export type ProgramTextCommitOptions = {
   groupId?: string;
   expectedWorkspace?: TextWorkspaceState;
@@ -64,7 +66,7 @@ export interface ProgramTextEditorProps {
   onOpenTaskOrigin?: (documentId: string, lineId: string) => void;
   onConnectFlow?: (docId: string, lineId: string) => void;
   onDirtyChange?: (dirty: boolean) => void;
-  onRegisterSave?: (save: (() => Promise<boolean>) | null) => void;
+  onRegisterSave?: (save: (() => Promise<boolean>) | null, status?: (() => ProgramTextSaveStatus) | null) => void;
   onRegisterSourceFocus?: (focus: ProgramSourceFocus | null) => void;
   onRegisterInputLock?: (lock: ((locked: boolean) => void) | null) => void;
   onRegisterDraft?: (read: (() => string) | null) => void;
@@ -74,6 +76,9 @@ export interface ProgramTextEditorProps {
   readOnly?: boolean;
   /** Local document-collection UI: direct writing first, current-line tools secondary. */
   directWriting?: boolean;
+  /** Host-owned status/actions share the existing toolbar, not the input owner. */
+  noteStatus?: React.ReactNode;
+  noteActions?: React.ReactNode;
   disabledReason?: string;
   validateWorkspace?: (next: TextWorkspaceState) => boolean;
   folderId?: string;
@@ -472,7 +477,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   async function saveNow() {
     if (composingRef.current) { setMessage('한글 입력을 마친 뒤 보기 범위를 바꿔 주세요.'); return false; }
-    return regionPortRef.current ? regionPortRef.current.flush() : saveFullDraft();
+    const saved = await (regionPortRef.current ? regionPortRef.current.flush() : saveFullDraft());
+    if (saved && !composingRef.current && !regionPendingRef.current && !draftRef.current?.getState().dirty) {
+      setMessage(previous => previous === '한글 입력을 마친 뒤 보기 범위를 바꿔 주세요.' ? '' : previous);
+    }
+    return saved;
   }
   function captureDraftRaw() {
     return regionPortRef.current?.hasPending() ? regionPortRef.current.captureRaw() || draftRef.current?.getState().raw || ''
@@ -521,7 +530,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     return editorRef.current?.focus(index) === true && textarea.ownerDocument.activeElement === textarea;
   };
   useEffect(() => {
-    propsRef.current.onRegisterSave?.(saveNow);
+    propsRef.current.onRegisterSave?.(saveNow, () => ({ composing: composingRef.current, saving: !!draftRef.current?.getState().saving, failed: !!draftRef.current?.getState().error }));
     propsRef.current.onRegisterSourceFocus?.(focusSourceRow);
     propsRef.current.onRegisterDraft?.(captureDraftRaw);
     propsRef.current.onRegisterInputLock?.(locked => {
@@ -533,7 +542,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (locked) { orderEpochRef.current++; cancelMove(); dialogRef.current?.close(); setPanel(null); setOrderPreview(null); }
       editorRef.current?.refresh();
     });
-    return () => { propsRef.current.onRegisterSave?.(null); propsRef.current.onRegisterSourceFocus?.(null); propsRef.current.onRegisterInputLock?.(null); propsRef.current.onRegisterDraft?.(null); };
+    return () => { propsRef.current.onRegisterSave?.(null, null); propsRef.current.onRegisterSourceFocus?.(null); propsRef.current.onRegisterInputLock?.(null); propsRef.current.onRegisterDraft?.(null); };
   }, [props.docId]);
   function scheduleSave() {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -968,7 +977,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }}>
     <div className={styles.toolbar}>
       {mode === 'text' && <button type="button" onClick={event => returnToDocumentMode(event.currentTarget)}>문서로 돌아가기</button>}
-      <button type="button" hidden={!!props.folderId || props.directWriting} disabled={disabled} onClick={() => { const index = editorRef.current?.getSelection().lineIndex ?? 0; setPanel({ kind: 'insert', lineId: currentDoc()?.lines[index]?.id ?? null }); }}>＋ 추가</button>
+      <button type="button" hidden={!!props.folderId || props.directWriting && !props.noteStatus} disabled={disabled} onClick={() => { const index = editorRef.current?.getSelection().lineIndex ?? 0; setPanel({ kind: 'insert', lineId: currentDoc()?.lines[index]?.id ?? null }); }}>＋ 추가</button>
       <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기'} aria-label="입력 되돌리기" onClick={() => { if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
       <details className={styles.editorTools} onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
@@ -976,12 +985,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       }}>
         <summary aria-label="편집 도구" title="편집 도구"><span aria-hidden="true">…</span></summary>
         <div className={styles.editorToolActions}>
+          {props.noteActions}
           <button type="button" aria-pressed={mode === 'text'} disabled={inputLocked || composing} onClick={event => { if (composingRef.current || inputLockedRef.current) return; closeEditorTools(event.currentTarget); setMode(mode === 'text' ? 'live' : 'text'); }}>원문 {mode === 'text' ? '닫기' : '보기'}</button>
           {props.directWriting && <button type="button" disabled={disabled} onClick={event => { closeEditorTools(event.currentTarget); const index = editorRef.current?.getSelection().lineIndex ?? 0; setPanel({ kind: 'insert', lineId: currentDoc()?.lines[index]?.id ?? null }); }}>현재 줄에 추가</button>}
           <button type="button" hidden={!!props.folderId} disabled={disabled || draft.dirty} onClick={event => { closeEditorTools(event.currentTarget); previewOrder(); }}>날짜순 정렬</button>
           {(props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" hidden={!!props.folderId} disabled={disabled || draft.dirty} aria-label="다시 실행" onClick={event => { closeEditorTools(event.currentTarget); if (orderHistoryRef.current.hasEntries()) nativeHistory('historyRedo'); else void props.onRedo?.(); }}>다시 실행</button>}
         </div>
       </details>
+      {props.noteStatus && <div className={styles.noteStatus}>{props.noteStatus}</div>}
       {draft.error ? <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || composingRef.current || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;

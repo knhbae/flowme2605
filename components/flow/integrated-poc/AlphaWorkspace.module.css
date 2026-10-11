@@ -195,3 +195,25 @@
 .feedbackMessage > summary > span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .inputRecoveryBody > .feedbackMessageText { margin: 0; color: var(--flowme-text-secondary); font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
 @media (min-width: 1200px) { .sync > .statusRow { grid-column: 2 / -1; } }
+
+/* A work note uses the same guarded destinations, in a quieter top frame. */
+.page[data-note-layout="true"] { max-width: 1040px; grid-template-columns: minmax(0, 1fr) auto; column-gap: 4px; padding: 8px max(20px, env(safe-area-inset-left)) 80px; background: #fff; }
+.page[data-note-layout="true"] > .header { grid-column: 1; grid-row: 1; position: static; flex-direction: row; align-items: center; gap: 4px; margin: 0; }
+.page[data-note-layout="true"] .globalNavigation { flex-direction: row; gap: 0; }
+.page[data-note-layout="true"] .globalNavigation button { width: auto; padding: 8px 6px; font-size: 13px; text-align: center; }
+.page[data-note-layout="true"] .globalNavigation button[aria-current="page"] { box-shadow: none; background: transparent; color: #326449; }
+.page[data-note-layout="true"] .brand { font-size: 18px; }
+.page[data-note-layout="true"] .development, .page[data-note-layout="true"] .auxiliaryLabel { display: none; }
+.page[data-note-layout="true"] > .sync { grid-column: 2; grid-row: 1; display: contents; }
+.page[data-note-layout="true"] .sync > .management { grid-column: 2; grid-row: 1; }
+.page[data-note-layout="true"] > :not(.header):not(.sync) { grid-column: 1 / -1; }
+.page[data-note-layout="true"] .notice { padding: 8px 10px; margin: 8px 0; border: 0; border-radius: 0; background: #f4f6ef; font-size: 13px; line-height: 20px; }
+.page[data-note-layout="true"] .notice summary { font-size: 13px; line-height: 20px; min-height: 40px; list-style: none; }
+.page[data-note-layout="true"] .notice summary::-webkit-details-marker { display: none; }
+.page[data-note-layout="true"] .statusRow { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-width: 0; }
+.page[data-note-layout="true"] .statusRow > p[data-save-state] { font-size: 13px; line-height: 20px; min-height: 20px; }
+.page[data-note-layout="true"] .statusRow:has(> .inputRecovery, > .feedbackMessage) { max-width: 100%; }
+/* Mobile outer spacing is shell space, not part of the native44px ruler. */
+@media (max-width: 600px) {
+  .page[data-note-layout="true"] { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+}

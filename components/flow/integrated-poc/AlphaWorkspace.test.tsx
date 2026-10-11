@@ -110,9 +110,12 @@ test('pending recovery replaces stale failure notice only after confirmed succes
 });
 type Element = { type: unknown; props: Record<string, any> };
 const nodes = (value: any): Element[] => !value ? [] : Array.isArray(value) ? value.flatMap(nodes)
-  : typeof value === 'object' && 'props' in value ? [value, ...nodes(value.props.children)] : [];
+  : typeof value === 'object' && 'props' in value ? [value, ...nodes(value.props.children),
+    // The shell double must expose the exact slots forwarded to ProgramSpace.
+    ...(value.type === 'program-space' ? [...nodes(value.props.noteHeader), ...nodes(value.props.noteStatus)] : [])] : [];
 const text = (value: any): string => typeof value === 'string' ? value : Array.isArray(value) ? value.map(text).join('')
-  : value && typeof value === 'object' ? text(value.props?.children) : '';
+  : value && typeof value === 'object' ? text(value.props?.children)
+    + (value.type === 'program-space' ? text([value.props.noteHeader, value.props.noteStatus]) : '') : '';
 function snapshot(ownerId = 'owner-a', revision = 1) {
   const account = { schema: ALPHA_SCHEMA, ownerId, revision, source: { schema: PROGRAM_SCHEMA, actorId: ownerId, revision: 0 }, space: createProgramPrivateSpace(), legacyUndo: [], legacyReceipts: [] };
   const envelope = materializeAccount(account, { actorIds: [ownerId], public: { flows: [], versions: [], posts: [], replies: [], reactions: [], proposals: [] } });
@@ -203,6 +206,7 @@ function harness() {
     context.needsInputProtection = evaluate(initializer('needsInputProtection'), context);
     context.inputProtection = evaluate(initializer('inputProtection'), context);
     context.personalRecovery = evaluate(initializer('personalRecovery'), context);
+    for (const name of ['usesNoteChrome', 'publicNotice', 'serverUndo', 'serverStatus']) context[name] = evaluate(initializer(name), context);
     return evaluate(renderExpression, context);
   };
   const button = (name: string) => { const found = nodes(render()).filter(node => node.type === 'button' && text(node.props.children) === name); assert.equal(found.length, 1); return found[0]; };
@@ -1141,12 +1145,12 @@ test('CJ-C confirmed retained action revalidates receipt and remaining input bef
 });
 
 
-test('normal shell keeps save state and undo visible while account and routine actions start collapsed', () => {
-  const h = harness(), tree = h.render();
+for (const view of ['space', 'legacy']) test(`${view} shell keeps save state outside collapsed management and Undo in its approved location`, () => {
+  const h = harness(); h.context.destination = { view }; const tree = h.render();
   const management = nodes(tree).find(node => node.type === 'details' && node.props['aria-label'] === '계정 및 자료 관리')!;
   assert(management); assert.equal(management.props.open, undefined);
   const managed = new Set(nodes(management));
-  assert.equal(text(nodes(management).find(node => node.type === 'summary')), '더보기');
+  assert.equal(text(nodes(management).find(node => node.type === 'summary')), view === 'space' ? '더보기' : '개인 Flow 상세');
   for (const label of ['로그아웃 · 계정 바꾸기', '서버에서 다시 확인', '다시 실행', '백업 · 복원 · 가져오기']) {
     assert(nodes(tree).some(node => node.type === 'button' && text(node) === label && managed.has(node)), label);
   }
@@ -1154,7 +1158,11 @@ test('normal shell keeps save state and undo visible while account and routine a
   assert(text(management).includes('마지막 확인 판본'));
   const undo = nodes(tree).find(node => node.type === 'button' && text(node) === '되돌리기')!;
   const status = nodes(tree).find(node => node.props.role === 'status' && text(node) === '서버와 연결됨')!;
-  assert(undo && !managed.has(undo)); assert(status && !managed.has(status));
+  assert(undo); assert.equal(managed.has(undo), view === 'space'); assert(status && !managed.has(status));
+  assert.equal(tree.props['data-note-layout'], view === 'space');
+  const program = nodes(tree).find(node => node.type === 'program-space');
+  if (view === 'space') { assert(program); assert.equal(program.props.noteStatus, h.context.serverStatus); assert.equal(program.props.noteHeader, h.context.publicNotice); }
+  else { assert(program); assert.equal(program.props.noteStatus, undefined); assert.equal(program.props.noteHeader, undefined); }
   const header = nodes(tree).find(node => node.type === 'header')!;
   assert(!text(header).includes(h.context.email)); assert(text(header).includes('개발계'));
   const notice = nodes(tree).find(node => node.type === 'details' && node.props['aria-label'] === '개발계 안내')!;

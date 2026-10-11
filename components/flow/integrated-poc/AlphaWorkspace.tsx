@@ -673,19 +673,11 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       <button type="button" onClick={clearDrafts}>보관 입력 버리기</button>
     </div>
   </details>;
-  return <main className={styles.page} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
-    <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}>FlowMe</a>
-      {!unavailable && <nav className={styles.globalNavigation} aria-label="주요 메뉴">
-        <button type="button" aria-current={['space', 'legacy'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'space' })}>내 작업</button>
-        <button type="button" aria-current={['discover', 'flow', 'creator'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>Flow</button>
-        <button type="button" aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}>이야기</button>
-      </nav>}
-      <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1>
-      <span className={styles.development}>개발계</span></header>
-    <details className={styles.notice} aria-label="개발계 안내"><summary>공개한 내용은 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 넣지 마세요.</summary>
-      <p>개발용 통합 검증판 · 공개한 내용은 개발계의 다른 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 아직 넣지 마세요.</p></details>
-    <section className={styles.sync} aria-label="서버 저장 상태">
-      <div className={styles.statusRow}>
+  const usesNoteChrome = destination.view === 'space' && !unavailable;
+  const publicNotice = <details className={styles.notice} aria-label="개발계 안내"><summary>공개한 내용은 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 넣지 마세요.</summary>
+      <p>개발용 통합 검증판 · 공개한 내용은 개발계의 다른 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 아직 넣지 마세요.</p></details>;
+  const serverUndo = <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>;
+  const serverStatus = <div className={styles.statusRow}>
         {!localParticipationRecovery && <p role="status" aria-live="polite" data-save-state={snapshot?.status}>{pending && snapshot?.status !== 'saving' ? '저장 결과 확인이 필요합니다' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
         {destination.view === 'space' && needsInputProtection && <details name="program-input-feedback" className={styles.inputRecovery} onKeyDown={event => {
           if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
@@ -700,8 +692,20 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
           <summary title={message}><span role="status">안내 · {message}</span></summary>
           <div className={styles.inputRecoveryBody}><p className={styles.feedbackMessageText}>{message}</p></div>
         </details>}
-        <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>
-      </div>
+        {!usesNoteChrome && serverUndo}
+      </div>;
+  return <main className={styles.page} data-note-layout={usesNoteChrome} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
+    <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}>FlowMe</a>
+      {!unavailable && <nav className={styles.globalNavigation} aria-label="주요 메뉴">
+        <button type="button" aria-current={['space', 'legacy'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'space' })}>내 작업</button>
+        <button type="button" aria-current={['discover', 'flow', 'creator'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>Flow</button>
+        <button type="button" aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}>이야기</button>
+      </nav>}
+      <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1>
+      <span className={styles.development}>개발계</span></header>
+    {!usesNoteChrome && publicNotice}
+    <section className={styles.sync} aria-label="서버 저장 상태">
+      {!usesNoteChrome && serverStatus}
       <details className={styles.management} aria-label="계정 및 자료 관리" onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
@@ -711,7 +715,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       }}><summary aria-current={['activity', 'legacy'].includes(destination.view) ? 'page' : undefined} aria-label={destination.view === 'activity' ? '보조 메뉴 · 현재 위치: 내 활동' : destination.view === 'legacy' ? '보조 메뉴 · 현재 위치: 개인 Flow 상세' : '보조 메뉴 · 내 활동, 계정·자료 관리'}><span className={styles.auxiliaryLabel}>{destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : '더보기'}</span></summary><div className={styles.managementBody}>
         <h2>계정 · 자료 관리</h2>
         <div className={styles.account}><p>{email}</p>{snapshot?.account && <small>마지막 확인 판본 {snapshot.account.revision}</small>}</div>
-        <div className={styles.managementActions}><button type="button" onClick={() => { captureInput(); if (hasInput() || pending) setLeave(true); else void onSignOut(); }}>로그아웃 · 계정 바꾸기</button>
+        <div className={styles.managementActions}>{usesNoteChrome && serverUndo}<button type="button" onClick={() => { captureInput(); if (hasInput() || pending) setLeave(true); else void onSignOut(); }}>로그아웃 · 계정 바꾸기</button>
         <button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button>
         <button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external}>다시 실행</button>
         <button type="button" disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} onClick={event => {
@@ -754,6 +758,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
         {collectionsMode && <p className={styles.notice}>모음 연결은 이 브라우저에만 저장됩니다. 문서·할 일은 기존 서버에 저장되며, 기존 폴더는 바뀌지 않습니다.</p>}
         {collectionsMessage && <p className={styles.message} role="status">{collectionsMessage}</p>}
         <ProgramSpace key={`space:${session.userId}:${presentation}:${collectionsMode ? 'collections' : 'folders'}`} data={data} today={programLocalDate()} mutate={mutate}
+        noteHeader={usesNoteChrome ? publicNotice : undefined} noteStatus={usesNoteChrome ? serverStatus : undefined}
         documentCollections={collectionsMode && collectionsState ? { state: collectionsState, onChange: changeCollections } : undefined}
         navigate={next => { void navigate(next); }} capabilities={capability}
         canContinueWholeDocument={() => {

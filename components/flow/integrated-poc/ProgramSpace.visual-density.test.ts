@@ -19,7 +19,8 @@ test('compact header retains save status, permanent warning and all auxiliary ro
 
 test('native surface shares its compact ruler while retaining one44px action rail', () => {
   postcss.parse(editor);
-  assert.match(editor, /--tle-pad-right: 60px/);
+  // right8px +44px target +2px clearance, shared by native and mirror.
+  assert.match(editor, /--tle-pad-right: 54px/);
   assert.match(editor, /\.tle-scheduled-date-open\) \{ width: 44px;/);
   assert.match(editor, /round\(down,[^\n]+44px\)/);
   assert.match(editor, /--tle-line: 26px/);
@@ -31,12 +32,22 @@ test('native surface shares its compact ruler while retaining one44px action rai
   assert.match(host, /현재 줄에 추가/);
 });
 
-test('a unified task row truncates only paint; accessible label and full detail remain', () => {
-  postcss.parse(space);
+test('A note rows reveal full titles without losing accessible labels or the existing detail', () => {
+  const css = postcss.parse(space), title: Record<string, string> = {};
+  css.walkRules(rule => {
+    if (rule.selectors.some(selector => ['.taskTitleText', '.space[data-note-layout="true"] .taskTitleText'].includes(selector))) {
+      rule.walkDecls(declaration => { title[declaration.prop] = declaration.value; });
+    }
+  });
   const source = read('./ProgramSpace.tsx');
   assert.match(space, /\.task > button \{ background: transparent;/);
   assert.match(space, /:has\(\.content > \[role\], \.content > section, .+\.taskNotice\) \.contextActions \{ position: static;/);
-  assert.match(space, /\.taskTitleText \{[^}]*-webkit-line-clamp: 2;/);
+  assert.equal(title.display, 'block');
+  assert.equal(title['-webkit-line-clamp'], 'unset');
+  assert.equal(title.overflow, 'visible');
+  assert.equal(title['white-space'], 'normal');
+  assert.equal(title['font-size'], '16px');
+  assert.equal(title['line-height'], '26px');
   assert.match(source, /aria-label=\{`\$\{task.title\}/);
   assert.match(source, /<span className=\{styles.taskTitleText\}>\{task.title\}<\/span>/);
   assert(source.includes("detailTask?.title ?? '할 일을 찾을 수 없습니다'"));

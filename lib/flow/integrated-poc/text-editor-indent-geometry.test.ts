@@ -41,11 +41,11 @@ test('reading titles clear the full 44px hit without shrinking its target or cha
  function inset(prefixWidth:number,glyphRight:number,controls=true,width=200){
   const properties=new Map(),prefix={getBoundingClientRect:()=>({width:prefixWidth})},glyph={getBoundingClientRect:()=>({right:glyphRight})};
   const row={clientWidth:width,getBoundingClientRect:()=>({left:10}),querySelector:(selector:string)=>selector==='.tle-hidden-syntax'?prefix:glyph,style:{setProperty:(key:string,value:string)=>properties.set(key,value)}};
-  vm.runInContext(reading+'\nsyncReadingTaskInset(row)',vm.createContext({row,config:{controls}}));return properties.get('--tle-task-prefix');
+  vm.runInContext(reading+'\nsyncReadingTaskInset(row)',vm.createContext({row,config:{controls},moveState:null,gesture:null}));return properties.get('--tle-task-prefix');
  }
- assert.equal(inset(38.796875,36.96875),'40.96875px');
- assert.equal(inset(47.75,45.921875),'49.921875px');
- assert.equal(inset(60,36.96875),'60px');
+ assert.equal(inset(38.796875,36.96875),'52.96875px');
+ assert.equal(inset(47.75,45.921875),'61.921875px');
+ assert.equal(inset(60,36.96875),'52.96875px');
  assert.equal(inset(38.796875,36.96875,false),'38.796875px');
  assert.equal(inset(180,170,true,200),'156px');
  assert(source.includes('if (readingView || foldedIds.size) rows.forEach(syncReadingTaskInset);'));

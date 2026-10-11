@@ -15,11 +15,18 @@ mobile.walkRules(rule => {
 });
 const matching = (part: string) => [...declarations].filter(([selector]) => selector.includes(part));
 
-test('mobile reading width changes only the passive presentation, not the native RAW ruler', () => {
+test('mobile reading prose shares54px native gutter with2px clearance for right8px/44px targets', () => {
   const [[selector, values]] = matching('.tle-presentation');
   assert(selector.includes(':is(.tle-reading-view, .tle-folded-view)'));
   assert(selector.includes(':not(.tle-has-move-selection):not([data-move-phase])'));
-  assert.equal(values.get('padding-right'), '14px');
+  let nativeGutter: string | undefined;
+  host.walkRules(rule => {
+    if (rule.selector === '.host :global(.tle-root:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]))') {
+      rule.walkDecls('--tle-pad-right', declaration => { nativeGutter = declaration.value; });
+    }
+  });
+  assert.equal(nativeGutter, '54px');
+  assert.equal(values.get('padding-right'), 'var(--tle-pad-right)');
   for (const [selector, values] of declarations) {
     assert(!selector.includes('.tle-textarea'));
     assert(!values.has('--tle-line'));

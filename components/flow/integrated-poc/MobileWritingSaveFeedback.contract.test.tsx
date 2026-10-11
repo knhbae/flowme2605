@@ -42,6 +42,13 @@ function shellContext() {
     setMessage(_value: string) {}, openLatest() {}, restoreDraft(_index: number) {}, clearDrafts() {}, history(_direction: string) {},
     navigator: { clipboard: { writeText: async (_raw: string) => {} } }, AlphaConflictReview: 'conflict-review' };
 }
+function shellStatusContext(context: Record<string, any>) {
+  return { ...context, usesNoteChrome: evaluate(initializer(shell, 'usesNoteChrome'), context),
+    serverUndo: evaluate(initializer(shell, 'serverUndo'), context) };
+}
+function statusEvaluator(context: Record<string, any>) {
+  return (value = context) => evaluate(classElement(shell, 'statusRow').getText(shell), shellStatusContext(value));
+}
 function editorContext() {
   return { styles, draft: { error: 'Synthetic save result requires confirmation', invalid: false, saving: false, dirty: true },
     props: { readOnly: false, disabledReason: '', folderId: '' }, inputLocked: false, regionPending: false,
@@ -63,6 +70,9 @@ test('44px reserved Alpha row and bounded recovery overlays do not introduce an 
   const status = declarations('./AlphaWorkspace.module.css', '.statusRow > p[data-save-state]');
   assert.equal(status.get('white-space'), 'nowrap'); assert.equal(status.get('margin'), '0');
   assert.equal(status.get('text-overflow'), 'ellipsis');
+  const noteStatus = declarations('./AlphaWorkspace.module.css', '.page[data-note-layout="true"] .statusRow > p[data-save-state]');
+  assert.equal(noteStatus.get('min-height'), '20px'); assert.equal(noteStatus.get('line-height'), '20px');
+  assert.equal(declarations('./AlphaWorkspace.module.css', '.page[data-note-layout="true"] .statusRow').get('flex-wrap'), 'wrap');
   assert.equal(declarations('./AlphaWorkspace.module.css', '.page .inputRecovery > summary').get('min-height'), '44px');
   for (const [path, selector] of [['./AlphaWorkspace.module.css', '.inputRecoveryBody'], ['./ProgramTextEditor.module.css', '.saveFeedback > .error']]) {
     const body = declarations(path, selector);
@@ -105,17 +115,29 @@ test('narrow editor feedback yields to fixed toolbar controls and fits two reada
   assert.equal(declarations('./ProgramTextEditor.module.css', '.saveFeedback > .error').get('position'), 'absolute');
 });
 
-test('visible saved Undo shares the fixed status row without entering the management disclosure', () => {
-  const context = shellContext(), calls: string[] = [];
-  context.history = direction => { calls.push(direction); };
-  context.snapshot.canUndo = true;
-  const row = evaluator(classElement(shell, 'statusRow').getText(shell), context);
-  const undo = button(row(), '되돌리기');
-  assert.equal(undo.props.disabled, false); undo.props.onClick(); assert.deepEqual(calls, ['undo']);
-  context.external = true; assert.equal(button(row(), '되돌리기').props.disabled, true);
-  context.external = false; context.snapshot.canUndo = false;
-  assert.equal(button(row(), '되돌리기').props.disabled, true);
-  assert.doesNotMatch(classElement(shell, 'management').getText(shell), />되돌리기<\/button>/);
+test('saved Undo retains its handler, guards and 48px target in note management or the non-note status row', () => {
+  for (const view of ['space', 'legacy']) {
+    const context = shellContext(), calls: string[] = [];
+    context.destination.view = view; context.history = direction => { calls.push(direction); };
+    const render = () => {
+      const scoped = shellStatusContext(context);
+      return [evaluate(classElement(shell, 'statusRow').getText(shell), scoped),
+        evaluate(classElement(shell, 'managementActions').getText(shell), scoped)];
+    };
+    for (const canUndo of [false, true]) for (const external of [false, true]) {
+      context.snapshot.canUndo = canUndo; context.external = external;
+      const [row, management] = render(), list = nodes([row, management]);
+      const undos = list.filter(node => node.type === 'button' && text(node) === '되돌리기');
+      assert.equal(undos.length, 1, `${view}:${canUndo}:${external}`);
+      assert.equal(nodes(row).includes(undos[0]), view !== 'space');
+      assert.equal(nodes(management).includes(undos[0]), view === 'space');
+      assert.equal(undos[0].props.disabled, !canUndo || external);
+      if (canUndo && !external) undos[0].props.onClick();
+    }
+    assert.deepEqual(calls, ['undo']);
+  }
+  assert.equal(declarations('./AlphaWorkspace.module.css', '.page button').get('min-height'), '48px');
+  assert.equal(declarations('./AlphaWorkspace.module.css', '.page button').get('min-width'), '48px');
   assert.equal(declarations('./AlphaWorkspace.module.css', '.sync > .statusRow').get('grid-column'), '2 / -1');
   const style = declarations('./AlphaWorkspace.module.css', '.statusRow > button');
   assert.equal(style.get('flex'), '0 0 auto'); assert.equal(style.get('min-height'), '48px');
@@ -143,7 +165,7 @@ test('protection trigger exactly matches existing visible protection, including 
 });
 
 test('Alpha status retains unknown versus confirmed-rejected meaning and exposes recovery without hiding the alert', () => {
-  const context = shellContext(), row = evaluator(classElement(shell, 'statusRow').getText(shell), context);
+  const context = shellContext(), row = statusEvaluator(context);
   const needs = evaluator(initializer(shell, 'needsInputProtection'), context);
   for (const state of [
     { status: 'ready', pending: false, rejected: false, warning: null },
@@ -188,6 +210,32 @@ test('Alpha status retains unknown versus confirmed-rejected meaning and exposes
   context.destination.view = 'discover'; assert.equal(nodes(row(context)).filter(node => node.type === 'details').length, 0);
 });
 
+test('non-note status keeps exact save meaning while recovery remains in the existing separate protection section', () => {
+  for (const view of ['legacy', 'discover']) for (const state of [
+    { status: 'ready', pending: false, rejected: false, label: '서버와 연결됨', protection: null },
+    { status: 'saving', pending: true, rejected: false, label: '서버에 저장 중…', protection: null },
+    { status: 'checking-result', pending: true, rejected: false, label: '저장 결과 확인이 필요합니다', protection: '저장 결과 복구' },
+    { status: 'ready', pending: false, rejected: true, label: '저장 거절 · 입력 보존됨', protection: '거절된 저장과 입력 보호' },
+    { status: 'conflict', pending: false, rejected: false, label: '다른 변경이 먼저 저장되었습니다', protection: '다른 기기 변경과 입력 보호' },
+  ]) {
+    const context = shellContext(); context.destination.view = view; context.pending = state.pending;
+    context.snapshot = { status: state.status, busy: false, retryableRejectedDraft: state.rejected };
+    const row = statusEvaluator(context)(), status = nodes(row).find(node => node.props['data-save-state'])!;
+    assert.equal(text(status), state.label, `${view}:${state.status}:${state.rejected}`);
+    assert.equal(status.props.role, 'status'); assert.equal(status.props['aria-live'], 'polite');
+    assert.equal(nodes(row).filter(node => node.type === 'details').length, 0);
+    const protection = nodes(evaluate(initializer(shell, 'inputProtection'), context));
+    const section = protection.find(node => node.props.className === 'problem');
+    assert.equal(section?.props['aria-label'] ?? null, state.protection);
+    if (state.protection === '저장 결과 복구') {
+      assert(text(section).includes('서버에 저장됐을 수 있습니다'));
+      assert.equal(button(section, '저장 결과 확인 · 같은 요청 재시도').props.disabled, false);
+    }
+    if (state.protection === '거절된 저장과 입력 보호') assert(text(section).includes('저장되지 않았습니다'));
+    if (state.pending && state.status !== 'saving') assert.doesNotMatch(text(status), /저장되지 않|저장 거절/);
+  }
+});
+
 test('editor error summary stays visible and does not falsely claim that an unknown commit was not saved', () => {
   const feedback = classElement(editor, 'saveFeedback');
   assert(ts.isConditionalExpression(feedback.parent));
@@ -216,8 +264,8 @@ test('recovery Escape ignores composing, other keys and closed menus; closing fo
   const shellCtx = shellContext(); shellCtx.needsInputProtection = true;
   shellCtx.message = 'Synthetic message-only input guard with a full readable reason';
   shellCtx.recoveries = { drafts: [{ title: 'Synthetic', raw: 'exact\nraw  ' }] };
-  const alpha = nodes(evaluate(classElement(shell, 'statusRow').getText(shell), shellCtx)).find(node => node.type === 'details')!;
-  const message = nodes(evaluate(classElement(shell, 'statusRow').getText(shell), shellCtx)).find(node => node.props.className === 'feedbackMessage')!;
+  const alpha = nodes(statusEvaluator(shellCtx)()).find(node => node.type === 'details')!;
+  const message = nodes(statusEvaluator(shellCtx)()).find(node => node.props.className === 'feedbackMessage')!;
   const personal = evaluate(initializer(shell, 'personalRecovery'), shellCtx);
   const editorCtx = editorContext(), feedback = evaluate(classElement(editor, 'saveFeedback').getText(editor), editorCtx);
   for (const disclosure of [alpha, personal, feedback, message]) {
