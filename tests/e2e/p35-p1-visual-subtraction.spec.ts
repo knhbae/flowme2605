@@ -15,7 +15,7 @@ const viewports = [
   { name: '1440', width: 1440, height: 1000 },
 ] as const;
 
-const NEW_DATED_PUBLIC_ROUTE = '/f/computer-skills-d30-study';
+const NEW_DATED_PUBLIC_ROUTE = '/f/curated-wedding-naver-timeline';
 // Existing moving demo/saved identities below remain historical, not NEW public starts.
 
 const phase = process.env.FLOWME_P1_VISUAL_PHASE === 'before' ? 'before' : 'after';

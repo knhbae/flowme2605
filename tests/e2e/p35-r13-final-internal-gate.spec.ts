@@ -56,7 +56,7 @@ async function expectPageQuality(page: Page) {
 
 async function saveStudyFlow(page: Page) {
   await installLegacySavedPlanLibraryNavigation(page);
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -159,9 +159,9 @@ test.describe('P35-R13 final internal gate', () => {
     const firstEntry = workspace.getByTestId('my-flow-shape-aware-execution');
     await expect(firstEntry).toHaveAttribute('data-execution-kind', 'nearest_date_group');
     const nextGroup = firstEntry.getByTestId('my-flow-temporal-next-group');
-    await expect(nextGroup).toHaveAttribute('data-temporal-date', '2030-08-02');
-    await expect(nextGroup.getByTestId('my-flow-execution-row-shell')).toHaveCount(2);
-    await expect(nextGroup).toContainText('2개 먼저');
+    await expect(nextGroup).toHaveAttribute('data-temporal-date', '2029-09-01');
+    await expect(nextGroup.getByTestId('my-flow-execution-row-shell')).toHaveCount(1);
+    await expect(nextGroup).toContainText('1개 먼저');
     await capture(page, 'p35-r13-first-entry-plan-collapsed-390.png', workspace);
 
     await page.reload();

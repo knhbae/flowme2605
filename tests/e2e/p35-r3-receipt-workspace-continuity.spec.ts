@@ -48,7 +48,7 @@ async function saveStudyFlow(page: Page, legacy = false) {
   await installLegacySavedPlanLibraryNavigation(page);
   await gotoLegacySavedPlanLibraryRoute(
     page,
-    `/f/computer-skills-d30-study${legacy ? '?saveLifecycle=off' : ''}`,
+    `/f/curated-wedding-naver-timeline${legacy ? '?saveLifecycle=off' : ''}`,
   );
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
@@ -72,10 +72,10 @@ test.describe('P35-R3 receipt to focused workspace continuity', () => {
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     const banner = page.getByTestId('my-flow-save-banner');
     await expect(banner).toBeVisible();
-    await expect(banner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 9개');
+    await expect(banner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 6개');
     await expect(banner.getByTestId('my-flow-save-undo')).toHaveText('방금 저장 취소');
     const workspace = await openMyFlowLibraryFlow(page, copySlug, 'execute');
-    await expect(workspace).toContainText('컴퓨터활용능력 1급 D-30 학습');
+    await expect(workspace).toContainText('결혼 준비 1년 참고 타임라인');
     await expect(workspace.getByTestId('my-flow-workspace-plan')).toBeVisible();
     await expect(workspace.getByTestId('my-flow-workspace-plan')).toHaveAttribute(
       'data-plan-open',
@@ -87,7 +87,7 @@ test.describe('P35-R3 receipt to focused workspace continuity', () => {
     expect(await firstEntryRows.count()).toBeGreaterThan(0);
     expect(await firstEntryRows.count()).toBeLessThanOrEqual(3);
     await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
-      '전체 0/9 완료',
+      '전체 0/6 완료',
     );
     await expect(workspace.locator('[data-testid^="my-flow-workspace-tab-"]')).toHaveCount(0);
     await capture(page, 'p35-r3-direct-focused-workspace-390.png');
@@ -134,7 +134,7 @@ test.describe('P35-R3 receipt to focused workspace continuity', () => {
     await expect(receipt).toHaveAttribute('data-p35-marker', 'P35-R3-SINGLE-SAVED-RECEIPT');
     await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveAttribute(
       'href',
-      '/my?view=flows&flow=computer-skills-d30-study',
+      '/my?view=flows&flow=curated-wedding-naver-timeline',
     );
     const legacyBytes = await page.evaluate(() => Object.fromEntries(
       Array.from({ length: window.localStorage.length }, (_, index) => window.localStorage.key(index))
@@ -142,20 +142,20 @@ test.describe('P35-R3 receipt to focused workspace continuity', () => {
         .sort()
         .map((key) => [key, window.localStorage.getItem(key) ?? '']),
     ));
-    const savedRaw = legacyBytes['flow:saved:computer-skills-d30-study'];
+    const savedRaw = legacyBytes['flow:saved:curated-wedding-naver-timeline'];
     expect(savedRaw).toBeTruthy();
     const savedRecord = JSON.parse(savedRaw) as Record<string, unknown>;
     expect(savedRaw).toBe(JSON.stringify({
-      slug: 'computer-skills-d30-study',
+      slug: 'curated-wedding-naver-timeline',
       savedAt: savedRecord.savedAt,
-      personalTitle: '컴퓨터활용능력 1급 D-30 학습',
+      personalTitle: '결혼 준비 1년 참고 타임라인',
       selectedArtifactMode: 'calendar',
       dateIntent: 'custom',
       anchor: '2030-09-01',
     }));
     expect(savedRecord).not.toHaveProperty('schemaVersion');
     expect(savedRecord).not.toHaveProperty('personalCopyKey');
-    expect(legacyBytes['flow:computer-skills-d30-study:anchorDate']).toBe(
+    expect(legacyBytes['flow:curated-wedding-naver-timeline:anchorDate']).toBe(
       '{"mode":"custom","anchor":"2030-09-01"}',
     );
     expect(legacyBytes['flow:meta:last-visit']).toBe(savedRecord.savedAt);

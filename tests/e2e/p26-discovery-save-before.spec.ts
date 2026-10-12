@@ -83,10 +83,8 @@ test('entry router removes the duplicate Home surface and opens the catalog', as
   const vehicleCard = page
     .getByTestId('single-flow-catalog-card')
     .filter({ hasText: '자동차검사 D-14 준비' });
-  await expect(vehicleCard).toHaveCount(1);
-  await expect(vehicleCard.getByTestId('flow-card-support-meta')).toContainText(
-    '할 일 10개',
-  );
+  await expect(vehicleCard).toHaveCount(0);
+  await expect(page.locator('a[href="/f/vehicle-inspection-prep"]')).toHaveCount(0);
   await expect(page.getByText('인기순', { exact: true })).toHaveCount(0);
 
   for (const href of [
@@ -108,7 +106,7 @@ test('entry router removes the duplicate Home surface and opens the catalog', as
 
 test('public save-before shows the whole Flow before one start decision', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/first-passport-issue');
 
   const hero = page.getByTestId('public-flow-hero');
   const preview = hero.getByTestId('public-flow-capability-result');
@@ -116,7 +114,7 @@ test('public save-before shows the whole Flow before one start decision', async 
   await expect(hero).toHaveAttribute('data-experience-architecture', 'p35-result-first');
   await expect(hero.getByText('원문', { exact: true })).toBeVisible();
   await preview.getByTestId('flow-capability-artifact-preview-expand').click();
-  await expect(preview.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(10);
+  await expect(preview.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(4);
   await expect(hero.getByTestId('public-flow-primary-setup')).toHaveCount(0);
 
   const primaryResult = page.getByTestId('flow-save-before-primary-result');
@@ -170,7 +168,7 @@ test('an eligible public timeline and source-backed choices keep the artifact-fi
 
 test('wide save-before keeps the result and decision parallel without a duplicate outline', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/first-passport-issue');
 
   const preview = page.getByTestId('flow-save-before-primary-result');
   const decision = page.getByTestId('flow-save-before-decision');

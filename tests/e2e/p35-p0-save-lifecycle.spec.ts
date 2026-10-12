@@ -5,9 +5,11 @@ import {
   installLegacySavedPlanLibraryNavigation,
 } from './helpers/my-flow-library';
 
-const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+import { eligibleTimeline } from './helpers/eligible-public-source';
+
+const NEW_PUBLIC_FLOW_SLUG = eligibleTimeline.slug;
 const NEW_PUBLIC_ROUTE = `/f/${NEW_PUBLIC_FLOW_SLUG}`;
-const NEW_PUBLIC_ITEM_COUNT = 9;
+const NEW_PUBLIC_ITEM_COUNT = eligibleTimeline.itemCount;
 const SAVED_RECORD_PREFIX = 'flow:saved:';
 const ITEM_DRAFTS_STORAGE_KEY = 'flow:my-flow:item-drafts';
 const DATE_OVERRIDES_STORAGE_KEY = 'flow:my-flow:date-overrides';

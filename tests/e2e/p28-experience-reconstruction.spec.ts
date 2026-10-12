@@ -294,7 +294,7 @@ test.describe('P28 shared save-before experience', () => {
     const cases = [
       { slug: 'curated-allblanc-morning-workout', shape: 'checklist', renderer: 'flow-artifact-checklist-preview' },
       { slug: 'curated-wedding-naver-timeline', shape: 'checklist', renderer: 'flow-artifact-checklist-preview' },
-      { slug: 'vehicle-inspection-prep', shape: 'checklist', renderer: 'flow-artifact-checklist-preview' },
+      { slug: 'curated-new-car-basic', shape: 'checklist', renderer: 'flow-artifact-checklist-preview' },
       { slug: 'source-backed-middle-school-math-1', shape: 'sheet', renderer: 'flow-artifact-sheet-preview' },
     ];
 

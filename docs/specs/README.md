@@ -1,5 +1,9 @@
 # FLOW Spec Layer
 
+## 전체 저장 없는 개별 Flow 가져오기 — 2026-10-11
+
+[범위·순서](./2026-10-11-single-flow-intake/spec.md)·[로컬 결과와 한계](./2026-10-11-single-flow-intake/results.md). 기존 단일 creator 저장 경로를 재사용하며 전체 자료실 보관을 선택 동작으로 분리한다. 게시·Alpha·실계정 재접속은 각각 새 근거로 판정한다.
+
 ## 작성·정리·실행·재사용 — 2026-10-09
 
 [목표](./2026-10-09-everyday-workflow/spec.md)·[계획](./2026-10-09-everyday-workflow/plan.md)·[작업](./2026-10-09-everyday-workflow/tasks.md)·[검증](./2026-10-09-everyday-workflow/qa.md). 개발3 단일 owner가 A 입력 연속성 → B 다시 찾기 → C 제작 사본/개인 계획 재사용을 작은 단위로 진행한다. 기존 로컬 행 메뉴를 보존하며 현재 Alpha와 새 후보·실제 사용 근거를 구분한다.

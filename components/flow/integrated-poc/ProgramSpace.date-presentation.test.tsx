@@ -60,7 +60,7 @@ function listHarness(rows: ProgramOrderedExecutionRow[], text: ReturnType<typeof
 const taskRows = (tasks: ReturnType<typeof M.tasks>): ProgramOrderedExecutionRow[] => tasks.map(task => ({ kind: 'text-task', key: programTextExecutionKey(task), date: task.date, task }));
 function children(element: any): any[] { return React.Children.toArray(element.props.children) as any[]; }
 
-test('actual mixed list adds headings inside existing rows, preserves order/IDs and original displayed dates', () => {
+test('actual mixed list keeps original dates and order while omitting only the repeated Today date', () => {
   const f = fixture(), ordinary = taskRows(f.tasks);
   const occurrence = { kind: 'occurrence', key: 'stable-occurrence-key', date: '2026-10-01',
     row: { key: 'stable-row-key', executionDate: '2026-10-01', completion: 'unrecorded' } as ProgramExecutionOccurrenceRow } satisfies ProgramOrderedExecutionRow;
@@ -71,7 +71,9 @@ test('actual mixed list adds headings inside existing rows, preserves order/IDs 
   const html = renderToStaticMarkup(h.element);
   assert.equal((html.match(/<h2/g) ?? []).length, 2);
   assert.match(html, />지난 미완료<\/h2>/); assert.match(html, />오늘<\/h2>/);
-  assert.match(html, /2026-10-01/); assert.match(html, /2026-10-02/);
+  assert.match(renderToStaticMarkup(rendered[0]), /예정일 2026-10-01/);
+  assert.doesNotMatch(renderToStaticMarkup(rendered[2]), /예정일|2026-10-02/);
+  assert.deepEqual(rows.map(row => row.date), ['2026-10-01', '2026-10-01', '2026-10-02']);
   assert.doesNotMatch(html, /계속할 일/);
   assert.equal(JSON.stringify(f.text), before);
   const recurrence = children(rendered[1]).find(child => child.type !== 'div' && child.props?.row);

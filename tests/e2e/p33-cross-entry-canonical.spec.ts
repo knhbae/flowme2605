@@ -111,12 +111,12 @@ test.describe('P33 cross-entry canonical alignment', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('eligible wedding and vehicle persist their one natural public result', async ({ page }) => {
+  test('eligible wedding and new-car sources persist their one natural public result', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
 
     for (const candidate of [
       { slug: 'curated-wedding-naver-timeline', expectedCount: 6, initialShape: 'checklist', savedShape: 'calendar' },
-      { slug: 'vehicle-inspection-prep', expectedCount: 10, initialShape: 'checklist', savedShape: 'checklist' },
+      { slug: 'curated-new-car-basic', expectedCount: 7, initialShape: 'checklist', savedShape: 'checklist' },
     ]) {
       await gotoLegacySavedPlanLibraryRoute(page, `/f/${candidate.slug}`);
       await clearLocalState(page);

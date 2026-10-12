@@ -6,7 +6,6 @@ import {
   gotoLegacySavedPlanLibraryRoute,
   installLegacySavedPlanLibraryNavigation,
 } from './helpers/my-flow-library';
-import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceDir = process.env.FLOWME_P34_EVIDENCE_DIR;
 
@@ -58,47 +57,24 @@ async function inspectPageQuality(page: Page) {
   });
 }
 
-async function saveUndatedVehicleFlow(page: Page): Promise<string> {
+async function seedExistingUndatedVehicleFlow(page: Page): Promise<string> {
   await installLegacySavedPlanLibraryNavigation(page);
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
-  await page.evaluate(() => window.localStorage.clear());
-  await page.reload();
-  const capability = page.getByTestId('public-flow-capability-result');
-  await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
-  await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
-  await expect(capability.locator(
-    '[data-testid="flow-capability-result-choice"]'
-      + '[data-capability-candidate-role="primary"]',
-  )).toHaveAttribute('data-capability-output-count', '10');
-  const mobileSave = page.getByTestId('public-flow-save-primary-mobile');
-  const saveButton = await mobileSave.isVisible().catch(() => false)
-    ? mobileSave
-    : page.getByTestId('public-flow-save-primary');
-  const receipt = await savePublicFlow(
-    page,
-    saveButton,
-  );
-  await openSavedPublicFlow(page, receipt);
-  const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
-  expect(personalCopyKey).toMatch(/^personal-copy:/u);
-  const postSaveView = page.getByTestId('my-flow-post-save-view-flow');
-  if (await postSaveView.isVisible().catch(() => false)) await postSaveView.click();
+  // CRUD covers a historical ten-item plan, not a NEW public save.
+  expect((await page.request.get('/f/vehicle-inspection-prep')).status()).toBe(404);
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   const legacyFlowSlug = 'vehicle-inspection-prep';
-  await page.evaluate(({ copyKey, sourceSlug }) => {
-    const raw = window.localStorage.getItem(`flow:saved:${copyKey}`);
-    if (!raw) throw new Error(`missing saved copy: ${copyKey}`);
-    const record = JSON.parse(raw) as { savedAt?: string };
+  await page.evaluate((sourceSlug) => {
+    window.localStorage.clear();
     window.localStorage.setItem(
       `flow:saved:${sourceSlug}`,
       JSON.stringify({
         slug: sourceSlug,
-        savedAt: record.savedAt ?? new Date().toISOString(),
+        savedAt: '2026-07-22T00:00:00.000Z',
         selectedArtifactMode: 'checklist',
         dateIntent: 'undated',
       }),
     );
-    window.localStorage.removeItem(`flow:saved:${copyKey}`);
-  }, { copyKey: personalCopyKey, sourceSlug: legacyFlowSlug });
+  }, legacyFlowSlug);
   await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
   return legacyFlowSlug;
 }
@@ -148,7 +124,7 @@ test.describe('P34 execution CRUD', () => {
   test('Flow lifecycle uses one command surface and keeps archive recovery safe', async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 390, height: 844 });
-    const personalCopyKey = await saveUndatedVehicleFlow(page);
+    const personalCopyKey = await seedExistingUndatedVehicleFlow(page);
 
     let workspace = await openVehicleWorkspace(page, personalCopyKey);
     const management = workspace.getByTestId('my-flow-workspace-management-menu');
@@ -293,7 +269,7 @@ test.describe('P34 execution CRUD', () => {
     await expect(routineSummary.getByRole('button', { name: '반복 일정 조정' })).toBeVisible();
     await capture(page, 'p34-06-routine-summary-390.png');
 
-    await saveUndatedVehicleFlow(page);
+    await seedExistingUndatedVehicleFlow(page);
     const workspace = await openVehicleWorkspace(page);
     const exportEntry = workspace.getByTestId('my-flow-export-entry');
     await expect(exportEntry).toContainText(/내 도구로 옮기기 · \d+개/);
@@ -318,7 +294,7 @@ test.describe('P34 execution CRUD', () => {
       { width: 1440, height: 900, suffix: '1440' },
     ]) {
       await page.setViewportSize(viewport);
-      await saveUndatedVehicleFlow(page);
+      await seedExistingUndatedVehicleFlow(page);
       const workspace = await openVehicleWorkspace(page);
       const mobileManagement = workspace.getByTestId('my-flow-workspace-management-menu');
       const management = await mobileManagement.count()

@@ -120,7 +120,7 @@ test('broad Funmom category URL stops at source-row review without save, export,
   assert.equal(result.aiGeneration.enabled, false);
 });
 
-test('creator infant-feeding URL stops at medical source-fit review without save, export, or draft bypass', () => {
+test('creator infant-feeding URL retains medical preview under the approved source hold without save or export', () => {
   const result = lookupUrlFirstP0Input(
     'https://blog.naver.com/01695258757/222768860919?utm_source=user',
   );
@@ -129,9 +129,9 @@ test('creator infant-feeding URL stops at medical source-fit review without save
   assert.equal(result.canonicalUrl, 'https://blog.naver.com/01695258757/222768860919');
   assert.equal(result.flowMapId, 'baby-food-map');
   assert.equal(result.routeHref, '/flow-maps/baby-food-map');
-  assert.equal(result.title, '아이 상태에 맞는 확인이 필요해요');
-  assert.match(result.summary, /시작 시기와 메뉴를 아이 상태에 맞게/);
-  assert.equal(result.gate?.kind, 'medical_source_fit');
+  assert.equal(result.title, '출처 재검토 중');
+  assert.match(result.summary, /새 계획으로 시작할 수 없습니다/);
+  assert.equal(result.gate?.kind, 'content_review');
   assert.equal(result.canSaveToMyFlow, false);
   assert.equal(result.canExport, false);
   assert.equal(result.saveMode, 'blocked');
@@ -194,7 +194,7 @@ test('baby food source URL resolves to the held source-traced map without openin
   assert.equal(result.flowSlug, 'baby-150-start');
   assert.equal(result.canSaveToMyFlow, false);
   assert.equal(result.canExport, false);
-  assert.equal(result.gate?.kind, 'medical_source_fit');
+  assert.equal(result.gate?.kind, 'content_review');
   assert.equal(result.aiGeneration.enabled, false);
 });
 
@@ -293,7 +293,7 @@ test('rejected source-backed registration URLs do not resolve as lookup hits', (
   assert.equal(result.aiGeneration.enabled, false);
 });
 
-test('needs_review content is preview-only and blocks export/save', () => {
+test('the approved vehicle source hold keeps its preview but blocks export/save', () => {
   const result = lookupUrlFirstP0Input('https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share');
 
   assert.equal(result.status, 'needs_review');
@@ -301,7 +301,10 @@ test('needs_review content is preview-only and blocks export/save', () => {
   assert.equal(result.sourceStatus, 'needs_review');
   assert.deepEqual(result.exportModes, []);
   assert.equal(result.canSaveToMyFlow, false);
-  assert.equal(result.gate?.reason, '원문 확인 전에는 캘린더 파일을 만들지 않습니다.');
+  assert.equal(result.gate?.kind, 'content_review');
+  assert.equal(result.gate?.reason, '이 자료의 신규 시작을 보류했습니다.');
+  assert.equal(result.canExport, false);
+  assert.equal(result.saveMode, 'blocked');
   assert.equal(result.aiGeneration.enabled, false);
 });
 
@@ -335,11 +338,13 @@ test('Q3 URL lookup copy defaults to plans and exact rollback restores prior Flo
   const reviewUrl = 'https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share';
   const review = lookupUrlFirstP0Input(reviewUrl);
   const legacyReview = lookupUrlFirstP0Input(reviewUrl, false);
-  assert.equal(review.title, '원문 확인이 필요한 계획입니다');
-  assert.match(review.summary, /준비 계획은 구조 미리보기만 제공합니다/u);
+  assert.equal(review.title, '출처 재검토 중');
+  assert.match(review.summary, /새 계획으로 시작할 수 없습니다/u);
   assert.equal(review.preview.myFlow[0], '원문 확인 전에는 내 계획 저장이 열리지 않습니다.');
-  assert.equal(legacyReview.title, '원문 확인이 필요한 Flow입니다');
-  assert.match(legacyReview.summary, /준비 Flow는 구조 미리보기만 제공합니다/u);
+  assert.equal(legacyReview.title, review.title);
+  assert.equal(legacyReview.summary, review.summary);
+  assert.equal(review.canSaveToMyFlow, false);
+  assert.equal(legacyReview.canSaveToMyFlow, false);
   assert.equal(legacyReview.preview.myFlow[0], '원문 확인 전에는 내 Flow 저장이 열리지 않습니다.');
 
   const missUrl = 'https://example.com/q3-copy-miss';

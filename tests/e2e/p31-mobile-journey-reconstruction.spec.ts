@@ -270,7 +270,7 @@ test.describe('P31 mobile journey reconstruction', () => {
   test('mobile My Flow workspace keeps archive, persistent restore, and permanent delete distinct', async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/first-passport-issue');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
@@ -285,7 +285,7 @@ test.describe('P31 mobile journey reconstruction', () => {
     const libraryRow = page.locator(
       `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${personalCopyKey}"]`,
     );
-    let workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
+    let workspace = await openMyFlowLibraryFlow(page, 'first-passport-issue');
     await expect(workspace).toHaveAttribute(
       'data-p31-marker',
       'P31-03-DEDICATED-MOBILE-WORKSPACE',
@@ -302,7 +302,7 @@ test.describe('P31 mobile journey reconstruction', () => {
     await page.getByTestId('my-flow-lifecycle-undo').click();
     await expect(libraryRow).toBeVisible();
 
-    workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
+    workspace = await openMyFlowLibraryFlow(page, 'first-passport-issue');
     await workspace.getByTestId('my-flow-workspace-management-menu').locator('summary').click();
     await workspace
       .getByTestId('my-flow-workspace-management-menu')
@@ -374,7 +374,7 @@ test.describe('P31 mobile journey reconstruction', () => {
     expect(deletionState.saved).toBeNull();
     expect(deletionState.archived).not.toContain(personalCopyKey);
 
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/first-passport-issue');
     await expect(page.getByTestId('public-flow-mobile-save-cta')).toBeVisible();
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),

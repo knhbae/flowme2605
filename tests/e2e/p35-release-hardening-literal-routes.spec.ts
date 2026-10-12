@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { gotoLegacySavedPlanLibraryRoute } from './helpers/my-flow-library';
 
 async function saveRealStudyFlow(page: Page): Promise<string> {
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -18,8 +18,8 @@ async function saveRealStudyFlow(page: Page): Promise<string> {
   ), personalCopyKey);
   expect(savedRecord).toMatchObject({
     slug: personalCopyKey,
-    sourceFlowSlug: 'computer-skills-d30-study',
-    savedItemCount: 9,
+    sourceFlowSlug: 'curated-wedding-naver-timeline',
+    savedItemCount: 6,
     selectedArtifactMode: 'calendar',
     anchor: '2030-09-01',
   });

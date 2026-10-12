@@ -94,3 +94,20 @@ test('M4 snapshot exposes in-flight read busy state and clears it after settleme
   const read=f.controller.refresh();assert.equal(f.controller.snapshot().busy,true);assert.equal(await f.controller.discardConflict(),false);
   finish();assert(await read);assert.equal(f.controller.snapshot().busy,false);assert.equal(f.calls.length,0);
 });
+
+test('single catalog import uses the server canonical source without storing the bulk library or replacing working input', async () => {
+  const f = setup(); await f.controller.refresh(); assert((await run(f, working, false)).ok);
+  const before = f.account();
+  const source = buildCatalogContent('morning-routine-30day'); assert(source.ok);
+  const intent: AlphaCreatorIntent = { type: 'catalog-content-import', draftId: 'single-reviewed-draft', sourceSlug: source.content.sourceSlug, sourceVersionId: source.content.versionId, now };
+  const result = await f.controller.mutate('single source', () => { throw Error('client-source-builder-called'); }, { alphaCreator: intent });
+  assert(result.ok, JSON.stringify(result));
+  const after = f.account();
+  assert.equal(after.space.catalogLibrary, undefined);
+  assert.deepEqual(after.space.creatorWorkspace!.working, before.space.creatorWorkspace!.working);
+  assert.deepEqual(after.space.creatorWorkspace!.handoffs, before.space.creatorWorkspace!.handoffs);
+  const records = Object.values(after.space.creatorWorkspace!.library.records);
+  assert.equal(records.length, 1); assert.equal(records[0].draftId, 'single-reviewed-draft');
+  assert.deepEqual(privateChanges(before.space, after.space).map(row => row.field), ['creatorWorkspace']);
+  assert.equal(f.calls.at(-1)?.kind, 'creator');
+});

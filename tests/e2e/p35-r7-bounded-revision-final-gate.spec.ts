@@ -22,6 +22,9 @@ function formatLocalDate(date: Date): string {
 type ShapeScenario = {
   id: 'calendar' | 'checklist' | 'routine' | 'sheet' | 'memo';
   slug: string;
+  publicSlug?: string;
+  publicItemCount?: number;
+  publicPreflightCount?: number;
   publicDestination?: 'memo';
   publicShape: 'calendar' | 'checklist' | 'flow_execution' | 'sheet' | 'memo';
   savedMode: 'calendar' | 'checklist' | 'sheet' | 'memo';
@@ -36,6 +39,9 @@ const scenarios: ShapeScenario[] = [
   {
     id: 'calendar',
     slug: 'computer-skills-d30-study',
+    publicSlug: 'curated-wedding-naver-timeline',
+    publicItemCount: 6,
+    publicPreflightCount: 6,
     publicShape: 'checklist',
     savedMode: 'calendar',
     itemCount: 9,
@@ -47,6 +53,9 @@ const scenarios: ShapeScenario[] = [
   {
     id: 'checklist',
     slug: 'vehicle-inspection-prep',
+    publicSlug: 'curated-new-car-basic',
+    publicItemCount: 7,
+    publicPreflightCount: 7,
     publicShape: 'checklist',
     savedMode: 'checklist',
     itemCount: 10,
@@ -239,10 +248,12 @@ test.describe('P35-R7 bounded revision final gate', () => {
   for (const scenario of scenarios) {
     test(`${scenario.id} preserves preview, preflight, and personal execution parity`, async ({ page }) => {
       const errors = collectBrowserErrors(page);
+      const publicItemCount = scenario.publicItemCount ?? scenario.itemCount;
+      const publicPreflightCount = scenario.publicPreflightCount ?? scenario.preflightCount;
 
       // Session 1: inspect the actual result before personalizing or saving.
       await page.setViewportSize({ width: 390, height: 844 });
-      await gotoLegacySavedPlanLibraryRoute(page, `/f/${scenario.slug}`);
+      await gotoLegacySavedPlanLibraryRoute(page, `/f/${scenario.publicSlug ?? scenario.slug}`);
       await page.evaluate(() => window.localStorage.clear());
       await page.reload();
       const capability = page.getByTestId('public-flow-capability-result');
@@ -263,7 +274,7 @@ test.describe('P35-R7 bounded revision final gate', () => {
           '[data-testid="flow-capability-result-choice"][data-capability-destination="memo"]',
         );
         await expect(memo).toHaveAttribute('data-capability-candidate-role', 'available');
-        await expect(memo).toHaveAttribute('data-capability-output-count', String(scenario.itemCount));
+        await expect(memo).toHaveAttribute('data-capability-output-count', String(publicItemCount));
         await memo.click();
       }
       const selectedPreview = capability.getByTestId('flow-capability-selected-preview');
@@ -272,15 +283,15 @@ test.describe('P35-R7 bounded revision final gate', () => {
       const manifestIds = (
         (await selectedPreview.getAttribute('data-capability-manifest-item-ids')) ?? ''
       ).split(',').filter(Boolean);
-      expect(manifestIds).toHaveLength(scenario.itemCount);
+      expect(manifestIds).toHaveLength(publicItemCount);
       await expect(selectedPreview).toHaveAttribute(
         'data-capability-output-count',
-        String(scenario.itemCount),
+        String(publicItemCount),
       );
       const expandPreview = preview.getByTestId('flow-capability-artifact-preview-expand');
       if (await expandPreview.isVisible().catch(() => false)) await expandPreview.click();
       await expect(preview.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(
-        scenario.itemCount,
+        publicItemCount,
       );
       await expect(preview.getByTestId('flow-artifact-shape-choice')).toHaveCount(0);
       await capture(page, `p35-r7-${scenario.id}-session1-preview-390.png`);
@@ -297,7 +308,7 @@ test.describe('P35-R7 bounded revision final gate', () => {
         );
         await expect(conditionalCalendar).toHaveAttribute(
           'data-capability-expected-output-count',
-          String(scenario.itemCount),
+          String(publicItemCount),
         );
         const edit = conditionalCalendar.getByTestId('flow-capability-conditional-edit');
         await edit.focus();
@@ -328,7 +339,7 @@ test.describe('P35-R7 bounded revision final gate', () => {
       await expect(publicCandidate).toHaveCount(1);
       await expect(publicCandidate).toHaveAttribute(
         'data-capability-output-count',
-        String(scenario.preflightCount),
+        String(publicPreflightCount),
       );
       await publicCandidate.click();
       const publicTransferPreview = sessionTwoCapability.getByTestId(
@@ -340,7 +351,7 @@ test.describe('P35-R7 bounded revision final gate', () => {
       );
       await expect(publicTransferPreview).toHaveAttribute(
         'data-capability-output-count',
-        String(scenario.preflightCount),
+        String(publicPreflightCount),
       );
       await capture(
         page,
@@ -349,7 +360,8 @@ test.describe('P35-R7 bounded revision final gate', () => {
       );
       await expectPageQuality(page);
 
-      // Session 3: consume the same source shape inside one personal workspace.
+      // Session 3: preserve historical personal records of this execution shape.
+      // Held computer/vehicle identities and counts intentionally stay unchanged.
       await seedSavedFlow(page, scenario);
       await page.setViewportSize({ width: 390, height: 844 });
       await gotoLegacySavedPlanLibraryRoute(page, `/my?view=flows&flow=${scenario.slug}`);

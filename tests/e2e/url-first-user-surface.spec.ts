@@ -2,8 +2,10 @@ import fs from 'node:fs';
 import { expect, type Download, type Locator, type Page, test } from '@playwright/test';
 import { parseEffectiveFlowTsv } from '../../lib/flow/effective-flow-artifact-codec';
 import { PERSONAL_STRUCTURAL_SHEET_HEADERS } from '../../lib/flow/personal-structural-list-export';
-import { RUNTIME_ARCHIVED_FLOW_SLUGS } from '../../lib/flow/runtime-content-policy';
+import { getPublicFlowIndexingPolicy } from '../../lib/flow/route-indexing-policy';
+import { isRuntimeExcludedBundle, RUNTIME_ARCHIVED_FLOW_SLUGS } from '../../lib/flow/runtime-content-policy';
 import { seedBundles } from '../../lib/flow/seed-flows';
+import { sourceBackedMyFlowBundles } from '../../lib/flow/source-backed-my-flow';
 import {
   scanPrototypeRouteGuardrails,
   scanUserFacingOutputGuardrails,
@@ -530,17 +532,22 @@ test('creator infant-feeding URL stops before an outdated start-age schedule or 
   await lookupUrl(page, 'https://blog.naver.com/01695258757/222768860919?utm_source=review');
 
   const result = page.getByTestId('flow-url-lookup-result');
-  await expect(result).toContainText('아이 상태에 맞는 확인이 필요해요');
-  await expect(result).toContainText('시작 시기와 메뉴를 아이 상태에 맞게 다시 확인');
+  await expect(result.getByRole('heading', { name: '출처 재검토 중', exact: true })).toBeVisible();
+  await expect(result).toContainText('이 자료는 새 계획으로 시작할 수 없습니다.');
+  await expect(result).toContainText('기존 개인 계획은 내 공간에서 이어 쓸 수 있습니다.');
+  await expect(result).toContainText('민간 식단표와 현재 공식 안내를 대조하기 전에는 저장하지 않아요.');
+  await expect(result).toContainText('이 자료의 신규 시작을 보류했습니다.');
   await expect(result).toContainText('참고 원문');
   await expect(result).not.toContainText('공식 원문');
   await expect(result).toContainText('새 저장 중지');
-  await expect(result.getByRole('link', { name: '시작 전 확인' })).toHaveAttribute(
+  await expect(result.getByRole('link', { name: '출처 확인', exact: true })).toHaveAttribute(
     'href',
     '/flow-maps/baby-food-map',
   );
   await expect(result.getByTestId('flow-url-start-panel')).toHaveCount(0);
   await expect(result.getByTestId('flow-url-supply-request')).toHaveCount(0);
+  await expect(result.getByTestId('flow-url-miss-draft-gate')).toHaveCount(0);
+  await expect(result.getByTestId('flow-url-supply-candidate-form')).toHaveCount(0);
   await expect(result).not.toContainText('Markdown');
   await expectCleanUrlFirstUserSurface(result);
   if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/03-baby-food-url-first-blocked-mobile.png`, fullPage: true });
@@ -3162,7 +3169,7 @@ test('old review and stateful workspace routes stay out of indexing and public n
   const normalRoutes = [
     '/',
     '/flows',
-    '/f/vehicle-inspection-prep',
+    '/f/first-passport-issue',
     '/flow-maps/middle-school-math-1',
     '/my',
     '/calendar',
@@ -3195,6 +3202,7 @@ test('old review and stateful workspace routes stay out of indexing and public n
   }
 
   const noindexRoutes = [
+    '/f/vehicle-inspection-prep',
     '/my',
     '/calendar',
     '/flows/new',
@@ -3226,7 +3234,7 @@ test('old review and stateful workspace routes stay out of indexing and public n
   for (const route of [
     '/',
     '/flows',
-    '/f/vehicle-inspection-prep',
+    '/f/first-passport-issue',
     '/flow-maps/middle-school-math-1',
     '/u/flow-curation-team',
   ]) {
@@ -3234,6 +3242,48 @@ test('old review and stateful workspace routes stay out of indexing and public n
     const robotsMeta = page.locator('meta[name="robots"]');
     const robots = (await robotsMeta.count()) > 0 ? await robotsMeta.getAttribute('content') : '';
     expect(robots ?? '').not.toMatch(/noindex/i);
+  }
+});
+
+test('normal creator pagination and source-filter reset retain the 12-card boundary', async ({ page }) => {
+  // Test-only grouping, not a claim about an actual creator or new publication.
+  // Reuse 13 distinct eligible sources without changing their slugs or source policy.
+  const sources = [...new Map([...seedBundles, ...sourceBackedMyFlowBundles]
+    .filter((bundle) => !isRuntimeExcludedBundle(bundle)
+      && getPublicFlowIndexingPolicy(bundle).indexable
+      && bundle.flow.source_status === 'real')
+    .map((bundle) => [bundle.flow.slug, bundle])).values()].slice(0, 13);
+  expect(sources).toHaveLength(13);
+  expect(new Set(sources.map((bundle) => bundle.flow.slug)).size).toBe(13);
+  await page.goto('/flows');
+  await page.evaluate((eligibleSources) => {
+    const fixtures = eligibleSources.map((source, index) => {
+      const fixture = JSON.parse(JSON.stringify(source));
+      const id = `fixture-public-pagination-${index}`;
+      fixture.flow.id = id;
+      fixture.flow.owner_user_id = 'user-study-routine';
+      fixture.sections = fixture.sections.map((section: { flow_id: string }) => ({ ...section, flow_id: id }));
+      fixture.items = fixture.items.map((item: { flow_id: string }) => ({ ...item, flow_id: id }));
+      return fixture;
+    });
+    localStorage.setItem('flow_builder_mvp_bundles_v11', JSON.stringify(fixtures));
+  }, sources);
+
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1024, height: 768 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/u/study-routine-room');
+    const cards = page.getByTestId('creator-profile-content-card');
+    const more = page.getByTestId('creator-profile-content-more');
+    await expect(cards).toHaveCount(12);
+    await expect(more).toBeVisible();
+    await more.click();
+    await expect(cards).toHaveCount(13);
+    await expect(more).toHaveCount(0);
+    await page.getByRole('button', { name: '원문 확인됨', exact: true }).click();
+    await expect(cards).toHaveCount(12);
+    await expect(more).toBeVisible();
+    await expect(page.locator('[data-testid="creator-profile-content-card"][data-public-indexable="false"]')).toHaveCount(0);
+    await expectNoHorizontalOverflow(page);
   }
 });
 
@@ -3245,7 +3295,7 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
     '/flows',
     '/my',
     '/calendar',
-    '/f/vehicle-inspection-prep',
+    '/f/first-passport-issue',
     '/flow-maps/middle-school-math-1',
   ];
   const userRouteViewports = [
@@ -3284,7 +3334,7 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
   ))).toEqual(savedBeforeAlias);
 
   // Keep the original legacy lane and post-save card contract; only NEW source changes.
-  await page.goto('/f/computer-skills-d30-study?savedPlanLibrary=off');
+  await page.goto('/f/curated-wedding-naver-timeline?savedPlanLibrary=off');
   await page.getByTestId('public-flow-anchor-input').fill('2026-07-22');
   await page.getByTestId('public-flow-save-primary').click();
   await expect.poll(() => {
@@ -3307,7 +3357,7 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
     'data-personal-copy-key',
     personalCopyKey,
   );
-  await expect(page.getByTestId('my-flow-save-banner')).toHaveAttribute('data-item-count', '9');
+  await expect(page.getByTestId('my-flow-save-banner')).toHaveAttribute('data-item-count', '6');
   await expect(page.locator(
     `[data-testid="my-flow-overview-card"][data-flow-slug="${personalCopyKey}"]`,
   )).toBeVisible();
@@ -3366,7 +3416,7 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
     await expect(allFilter).toHaveClass(/border-blue-600/);
     const publicCards = page.getByTestId('creator-profile-content-card');
     const publicCardCount = await publicCards.count();
-    expect(publicCardCount).toBeGreaterThanOrEqual(3);
+    expect(publicCardCount).toBe(7);
     await expect(page.getByRole('heading', { name: '실제 콘텐츠로 바로 시작' })).toHaveCount(0);
     await expect(publicCards.first()).not.toContainText('미리보기');
     await expect(publicCards.first()).not.toContainText('베타 운영 중');
@@ -3378,9 +3428,9 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
     await expect(page.getByTestId('creator-profile-library-action')).toHaveText('Flow 찾기');
     await expect(page.getByTestId('creator-profile-library-action')).toHaveAttribute('href', '/flows');
     const moreContent = page.getByTestId('creator-profile-content-more');
-    await expect(moreContent).toBeVisible();
-    await moreContent.click();
-    expect(await page.getByTestId('creator-profile-content-card').count()).toBeGreaterThan(publicCardCount);
+    // The reviewed live seed inventory is below the 12-card page size.
+    // Pagination and filter reset are exercised by the isolated case below.
+    await expect(moreContent).toHaveCount(0);
     await expectNoHorizontalOverflow(page);
     await page.getByRole('button', { name: '원문 확인됨', exact: true }).click();
     expect(await page.getByTestId('creator-profile-content-card').count()).toBeLessThanOrEqual(publicCardCount);

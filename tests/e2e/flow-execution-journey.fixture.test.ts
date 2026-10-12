@@ -14,6 +14,8 @@ import { isAlphaCreatorCommand, type AlphaCreatorCommand } from '../../lib/flow/
 import { textWorkspaceModel as M } from '../../lib/flow/integrated-poc/text-workspace';
 import { selectJourneyScenarios, assertJourneyMatrixComplete, journeyCopySourceIdentity } from '../../scripts/alpha/flow-execution-journey-contract';
 import { updateProgramTask } from '../../lib/flow/integrated-poc/private-space';
+import { buildCatalogLibrarySnapshot } from '../../lib/flow/integrated-poc/catalog-library-source';
+import { buildCatalogContent } from '../../lib/flow/integrated-poc/catalog-content-source';
 
 /** Exercise the real registered fixture handlers without a browser, server,
  * Auth configuration, storage or network. This is not an app UI test. */
@@ -68,6 +70,26 @@ test('JF12 plain browser storage probes execute without transpiler helpers and c
   assert.equal(harness.fetches, 0);
 });
 type Mock = Awaited<ReturnType<typeof mockFolderContentEntry>>;
+test('single source fixture serves an unstored catalog and only opts into canonical single imports, not bulk storage', async () => {
+  const source = buildCatalogLibrarySnapshot('2026-10-11T00:00:00.000Z');
+  const built = buildCatalogContent('morning-routine-30day', source); assert(built.ok);
+  const h = routeHarness(), mock = await mockFolderContentEntry(h.page, { singleCatalogSource: source });
+  const before = await mock.current();
+  assert.deepEqual((await h.request('/api/alpha/catalog', null, 'GET')).response, source);
+  assert.deepEqual(await mock.current(), before);
+  const base = { schema: 'flowme-alpha-creator-command/1', kind: 'creator', expectedRevision: before.revision };
+  const request = (requestId: string, intent: unknown) => h.request('/api/alpha/creator', { kind: 'execute', command: { ...base, requestId, intent } });
+  assert.deepEqual((await request('bulk-denied', { type: 'catalog-library-import', catalogVersion: source.catalogVersion, now: source.importedAt })).response, { ok: false, reason: 'invalid' });
+  const result = await request('single-allowed', { type: 'catalog-content-import', draftId: 'single-reviewed', sourceSlug: built.content.sourceSlug, sourceVersionId: built.content.versionId, now: source.importedAt });
+  assert.equal((result.response as any).ok, true);
+  const after = await mock.current(); assert.equal(after.space.catalogLibrary, undefined);
+  assert.deepEqual(after.space.text, before.space.text);
+  assert.equal(Object.keys(after.space.creatorWorkspace!.library.records).length, 1);
+  assert.equal(h.fetches, 0);
+  const plain = routeHarness(), plainMock = await mockFolderContentEntry(plain.page);
+  assert.deepEqual((await plain.request('/api/alpha/catalog', null, 'GET')).response, { ok: false, reason: 'unavailable' });
+  assert.equal(plainMock.commands.length, 0);
+});
 async function nativeCommand(mock: Mock, requestId: string): Promise<AlphaCreatorCommand> {
   const account = await mock.current();
   const data = materializeAccount(account, alphaSocialReferences(mock.context, account.ownerId)).data;

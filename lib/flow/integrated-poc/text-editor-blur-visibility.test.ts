@@ -85,17 +85,17 @@ test('host height notification reuses guarded viewport reveal after an earlier f
   const end=source.indexOf('    function captureBlurReveal(event) {',start);
   assert(start>=0&&end>start);assert.match(source,/refreshViewport: scheduleViewportRender/);
   for(const patch of [{},{viewportCaretOwned:false},{composing:true},{gesture:{}},{moveState:{}}]){
-    let frame:(()=>void)|undefined,renders=0,reveals=0;
+    let frame:(()=>void)|undefined,renders=0,reveals=0,remembers=0;
     const context=vm.createContext({viewportCaretOwned:true,viewportRevealPending:false,renderFrame:0,
       destroyed:false,composing:false,gesture:null,moveState:null,
       global:{requestAnimationFrame:(callback:()=>void)=>{frame=callback;return 1;}},
-      render:()=>renders++,revealBlurredProgress:()=>{},revealEndCaret:()=>{},revealFocusedCaret:()=>reveals++,...patch});
+      remember:()=>remembers++,render:()=>renders++,revealBlurredProgress:()=>{},revealEndCaret:()=>{},revealFocusedCaret:()=>reveals++,...patch});
     vm.runInContext(source.slice(start,end),context);
     vm.runInContext('scheduleRender()',context);frame!();
-    assert.equal(reveals,0);assert.equal(renders,1);
+    assert.equal(reveals,0);assert.equal(renders,1);assert.equal(remembers,1);
     // Same function exposed to the host after it commits the smaller CSS height.
     vm.runInContext('scheduleViewportRender()',context);frame!();
-    assert.equal(renders,2);assert.equal(reveals,Object.keys(patch).length?0:1);
+    assert.equal(renders,2);assert.equal(reveals,Object.keys(patch).length?0:1);assert.equal(remembers,2);
     assert.equal(context.viewportRevealPending,false);
   }
 });

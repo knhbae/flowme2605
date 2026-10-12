@@ -97,7 +97,7 @@ test('an example public timeline stays provisional until the person chooses a re
 
 test('a natural undated checklist saves without a competing date mode', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-new-car-basic');
 
   await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
   await expect(page.getByTestId('public-flow-primary-setup')).toHaveCount(0);
@@ -119,14 +119,14 @@ test('a natural undated checklist saves without a competing date mode', async ({
   await expect(mobileSave).toHaveText('내 계획에 저장');
   await capture(page, '01-natural-undated-mobile.png');
   const saveBanner = await savePublicFlow(page, mobileSave);
-  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('10');
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 7개');
   const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
   expect(personalCopyKey).toMatch(/^personal-copy:/u);
 
   const state = await page.evaluate((copyKey) => ({
     saved: JSON.parse(window.localStorage.getItem(`flow:saved:${copyKey}`) || 'null'),
     anchor: JSON.parse(window.localStorage.getItem(`flow:${copyKey}:anchorDate`) || 'null'),
-    legacySourceRecord: window.localStorage.getItem('flow:saved:vehicle-inspection-prep'),
+    legacySourceRecord: window.localStorage.getItem('flow:saved:curated-new-car-basic'),
   }), personalCopyKey);
   expect(state.saved.dateIntent).toBe('undated');
   expect(state.saved.anchor).toBeUndefined();
@@ -135,7 +135,7 @@ test('a natural undated checklist saves without a competing date mode', async ({
   await openSavedPublicFlow(page, saveBanner);
   const focusedWorkspace = page.getByTestId('my-flow-mobile-workspace');
   await expect(focusedWorkspace).toBeVisible();
-  await expect(focusedWorkspace).toContainText('자동차검사 D-14 준비');
+  await expect(focusedWorkspace).toContainText('신차 구매 기본형');
   await page.goto('/calendar');
   await expect(page.locator('.fc-event')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toHaveCount(0);
@@ -193,7 +193,7 @@ test('a date-anchored public Flow persists its one required date and enables ICS
 
 test('a natural undated result survives reload without exposing date-mode controls', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-new-car-basic');
 
   await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
   await page.reload();
@@ -208,7 +208,7 @@ test('a natural undated result survives reload without exposing date-mode contro
   await capture(page, '03-explicit-undated-mobile.png');
 });
 
-test('public preview preserves a legacy example save byte-for-byte until the user changes it', async ({ page }) => {
+test('held public route stays closed while the legacy example plan reopens byte-for-byte', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem(
       'flow:vehicle-inspection-prep:anchorDate',
@@ -224,9 +224,11 @@ test('public preview preserves a legacy example save byte-for-byte until the use
       }),
     );
   });
-  await page.goto('/f/vehicle-inspection-prep');
+  const heldPublicResponse = await page.request.get('/f/vehicle-inspection-prep');
+  expect(heldPublicResponse.status()).toBe(404);
+  await page.goto('/my?view=flows&flow=vehicle-inspection-prep');
   await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
-  await expect(page.getByTestId('public-flow-capability-result')).toBeVisible();
+  await expect(page.getByTestId('approved-my-plan-workspace')).toBeVisible();
 
   const state = await page.evaluate(() => ({
     savedRaw: window.localStorage.getItem('flow:saved:vehicle-inspection-prep'),

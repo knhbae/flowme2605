@@ -68,14 +68,15 @@ test('v3 retains its exact two sources and nineteen rows alongside separately qu
   assert.equal(historicalSlugs.size, 13);
   const frozenHistorical = pack.bundles.filter(row => historicalSlugs.has(row.flow.slug));
   assert.equal(frozenHistorical.reduce((sum, row) => sum + row.items.length, 0), 103);
-  assert.equal(historical.length, 11);
-  assert.equal(historical.reduce((sum, row) => sum + row.items.length, 0), 75);
+  // Three held wave2 sources stay in the frozen 13/103 but cannot start NEW copies.
+  assert.equal(historical.length, 8);
+  assert.equal(historical.reduce((sum, row) => sum + row.items.length, 0), 51);
   const additional = publishedSourceEditions.map(edition => edition.sourceSlug).filter(slug => !historicalSlugs.has(slug)).sort();
   assert.equal(additional.length, 9);
   assert.deepEqual(ready.filter(row => !historicalSlugs.has(row.flow.slug)).map(row => row.flow.slug).sort(), additional);
-  assert.equal(ready.length, 20);
+  assert.equal(ready.length, 17);
   const unavailable = pack.bundles.filter(row => !inspectCatalogContentCapability(row.flow.slug).ready);
-  assert.equal(unavailable.length, 157);
+  assert.equal(unavailable.length, 160);
   for (const slug of [...unavailable.map(row => row.flow.slug), 'unknown']) {
     if (isPublicFlowSourceOnHold(slug)) assert.equal(inspectCatalogContentCapability(slug).ready, false);
     else assert.equal(buildCatalogContent(slug).ok, false);

@@ -50,13 +50,17 @@ function text(value: any): string {
   return typeof value === 'object' ? text(value.props?.children) : String(value);
 }
 function context(view: ProgramDestination['view'] = 'space', bindings = false): Record<string, any> {
-  return {
+  const ctx: Record<string, any> = {
     styles: new Proxy({}, { get: (_, key) => String(key) }), destination: { view }, unavailable: false,
     data: { spaces: { 'synthetic-owner': { savedBindings: bindings ? [{}] : [] } } }, session: { userId: 'synthetic-owner' },
     collectionsMode: false, collectionsSwitching: false, collectionsSaving: false, pending: false,
     external: false, snapshot: { busy: false, draft: null, canRedo: false }, storageError: false,
     browse: ['discover', 'flow', 'community'].includes(view), navigate: () => {}, switchCollectionsMode: () => {},
+    history: () => {},
   };
+  ctx.usesNoteChrome = evaluate(initializer('usesNoteChrome'), ctx);
+  ctx.serverUndo = evaluate(initializer('serverUndo'), ctx);
+  return ctx;
 }
 function primary(ctx: Record<string, any>) {
   return nodes(evaluate(jsx('header', 'header'), ctx)).find(node => node.type === 'nav' && node.props['aria-label'] === '주요 메뉴');
@@ -112,8 +116,11 @@ test('auxiliary activity and existing Flow detail retain their names and existin
   }
   const actions = nodes(evaluate(jsx('div', 'managementActions'), context())).filter(node => node.type === 'button');
   assert.deepEqual(actions.map(node => text(node.props.children)), [
-    '로그아웃 · 계정 바꾸기', '서버에서 다시 확인', '다시 실행', '백업 · 복원 · 가져오기',
+    '되돌리기', '로그아웃 · 계정 바꾸기', '서버에서 다시 확인', '다시 실행', '백업 · 복원 · 가져오기',
   ]);
+  assert.equal(actions[0].props.disabled, true);
+  const legacyActions = nodes(evaluate(jsx('div', 'managementActions'), context('legacy'))).filter(node => node.type === 'button');
+  assert.deepEqual(legacyActions.map(node => text(node.props.children)), ['로그아웃 · 계정 바꾸기', '서버에서 다시 확인', '다시 실행', '백업 · 복원 · 가져오기']);
   assert.equal(primary({ ...context(), unavailable: true }), undefined);
   assert.deepEqual(auxiliary({ ...context(), unavailable: true }), []);
 });

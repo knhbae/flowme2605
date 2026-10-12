@@ -118,9 +118,18 @@ export const textWorkspaceModel: TextWorkspaceModel = model;
 
 /** Display current dated progress, never a stale numeric token from the source text. */
 export function textEditorRows(state: TextWorkspaceState, docId: string): TextEditorRowMeta[] {
-  return model.rowMeta(state, docId).map(row => {
+  const rows = model.rowMeta(state, docId);
+  if (!rows.length) return [];
+  // rowMeta has validated this snapshot. Reuse its current progress within
+  // this projection only; a later call must observe new records on the same state.
+  const latest = new Map<string, TextProgress>();
+  if (rows.some(row => !!row.progressTargetId)) for (const record of state.progressRecords) {
+    const previous = latest.get(record.taskId);
+    if (!previous || record.date > previous.date) latest.set(record.taskId, { date: record.date, percent: record.percent });
+  }
+  return rows.map(row => {
     const targetId = row.progressTargetId;
-    const progress = targetId ? model.latestProgress(state, targetId) : null;
+    const progress = targetId ? latest.get(targetId) ?? null : null;
     const kind = row.isReference ? 'reference' : row.kind;
     const meta: TextEditorRowMeta = {
       id: row.id, kind, isCanonical: !!row.isCanonical, depth: row.depth,

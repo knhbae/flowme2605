@@ -41,18 +41,40 @@ test('actual openDocument handler normalizes moved cache without mutation and ha
   navigated=null;live=programClone(live);live.activeActorId='creator-minji';await open(to,task.id);assert.equal(navigated,null);
 });
 
-function restorationHarness(owner: 'app' | 'alpha', timing: 'during-navigation' | 'after-navigation' = 'after-navigation') {
+type RestorationGeometry = {
+  targetTop?: number;
+  targetHeight?: number;
+  viewportHeight?: number;
+  scrollHeight?: number;
+  targetAtEnd?: boolean;
+};
+
+function restorationHarness(owner: 'app' | 'alpha', timing: 'during-navigation' | 'after-navigation' = 'after-navigation', geometry: RestorationGeometry = {}) {
   const f = fixture(), { data, actorId, from, to, task } = f;
+  if (geometry.targetAtEnd) {
+    const space = data.spaces[actorId], doc = M.getDocument(space.text, to)!;
+    const taskLine = doc.lines.find(line => line.id === task.id)!;
+    space.text = M.editText(space.text, to, `앞선 문맥\n${taskLine.text}`);
+  }
   const before = JSON.stringify(data), frames: (() => void)[] = [], calls: string[] = [];
   const positions = { current: {} as Record<string, ProgramWritingPosition> };
   const selectedRef = { current: from }, presentation = { current: { period: 'week', folderId: '' } };
   const focusOwner = {};
   const documentsRef = { current: [...data.spaces[actorId].text.documents, ...data.spaces[actorId].text.flows] };
   const doc = M.getDocument(data.spaces[actorId].text, to)!;
-  const renderedLine = { offsetTop: 800, offsetHeight: 44 };
-  const textarea = { value: M.raw(doc), readOnly: false, selectionStart: 17, selectionEnd: 17, scrollTop: 123, clientHeight: 240,
+  const targetIndex = doc.lines.findIndex(line => line.id === task.id); assert(targetIndex >= 0);
+  const renderedLine = { offsetTop: geometry.targetTop ?? 800, offsetHeight: geometry.targetHeight ?? 26 };
+  const renderedRows = doc.lines.map((_line, index) => index === targetIndex ? renderedLine : {
+    offsetTop: index < targetIndex ? renderedLine.offsetTop - (targetIndex - index) * 26
+      : renderedLine.offsetTop + renderedLine.offsetHeight + (index - targetIndex - 1) * 26,
+    offsetHeight: 26,
+  });
+  let scrollTop = 123;
+  const textarea = { value: M.raw(doc), readOnly: false, selectionStart: 17, selectionEnd: 17, clientHeight: geometry.viewportHeight ?? 240,
+    get scrollTop() { return scrollTop; },
+    set scrollTop(value: number) { scrollTop = Math.max(0, Math.min(value, geometry.scrollHeight === undefined ? Infinity : Math.max(0, geometry.scrollHeight - this.clientHeight))); },
     getClientRects: () => [{}], setSelectionRange(start: number, end: number) { this.selectionStart = start; this.selectionEnd = end; },
-    closest: () => ({ querySelectorAll: () => doc.lines.map(() => renderedLine) }), scrollIntoView: () => calls.push('reveal') };
+    closest: () => ({ querySelectorAll: () => renderedRows }), scrollIntoView: () => calls.push('reveal') };
   let appRestore: (() => void) | undefined;
   const context = { actorId, selected: from, positions, programFailure, programResult, programSame, normalizeProgramWritingPosition, programFolderAfterDocumentOpen, M,
     pendingSourceFocus: { current: null }, dataRef: { current: data },
@@ -84,7 +106,7 @@ function restorationHarness(owner: 'app' | 'alpha', timing: 'during-navigation' 
       } }, requestAnimationFrame: (callback: () => void) => { frames.push(callback); return frames.length; },
   };
   const open = actualOpenDocument(context);
-  return { ...f, before, frames, calls, textarea, open,
+  return { ...f, before, frames, calls, textarea, open, doc, targetIndex, renderedLine, renderedRows,
     finishApp: () => { if (timing === 'after-navigation') appRestore?.(); },
     flush: () => { frames.splice(0).forEach(callback => callback()); } };
 }
@@ -116,9 +138,72 @@ test('Alpha explicit origin schedules exactly one native restore without adding 
   const h = restorationHarness('alpha'); await h.open(h.to, h.task.id);
   assert.equal(h.frames.length, 1); h.flush();
   assert.deepEqual(h.calls, ['navigate', 'native-focus', 'reveal']);
-  // Retain context above the target while placing its row above the viewport's
-  // 44px bottom inset, using the same explicit geometry as a real textarea.
-  assert.equal(h.textarea.scrollTop, 648);
-  assert.equal(800 + 44 - h.textarea.scrollTop, h.textarea.clientHeight - 44);
+  // The explicit Item start sits near the top, leaving room for the following
+  // source properties and notes rather than aligning the Item to the bottom.
+  assert.equal(h.textarea.scrollTop, 770);
+  assert.equal(h.renderedLine.offsetTop - h.textarea.scrollTop, 30);
+  assert(h.renderedRows[h.targetIndex + 1].offsetTop + 26 - h.textarea.scrollTop <= h.textarea.clientHeight);
+  const sourceStart = h.doc.lines.slice(0, h.targetIndex).reduce((sum, line) => sum + line.text.length + 1, 0);
+  assert.equal(h.textarea.selectionStart, sourceStart); assert.equal(h.textarea.selectionEnd, sourceStart);
   assert.equal(JSON.stringify(h.data), h.before);
+});
+
+test('Alpha explicit origin bounds its top inset and retains nearby context in small and tall viewports', async () => {
+  for (const [height, inset] of [[64, 20], [96, 20], [240, 30], [320, 40], [600, 40]] as const) {
+    const h = restorationHarness('alpha', 'after-navigation', { viewportHeight: height });
+    await h.open(h.to, h.task.id); h.flush();
+    const targetTop = h.renderedLine.offsetTop - h.textarea.scrollTop;
+    const next = h.renderedRows[h.targetIndex + 1], nextTop = next.offsetTop - h.textarea.scrollTop;
+    assert.equal(targetTop, inset, `viewport ${height}`);
+    assert(targetTop >= 0 && targetTop + 26 <= height, 'the Item first visual line is visible');
+    assert(nextTop < height, 'the nearest following context begins inside the viewport');
+    if (height >= 96) assert(nextTop + next.offsetHeight <= height, 'nearby context fits fully when there is room');
+    else assert(nextTop + next.offsetHeight > height, '64px cannot promise the whole adjacent row');
+    assert.equal(h.textarea.selectionStart, 0); assert.equal(h.textarea.selectionEnd, 0);
+    assert.equal(JSON.stringify(h.data), h.before);
+  }
+});
+
+test('Alpha first Item clamps to document top without replacing its source start or nearby context', async () => {
+  const h = restorationHarness('alpha', 'after-navigation', { targetTop: 20 });
+  await h.open(h.to, h.task.id); h.flush();
+  assert.equal(h.targetIndex, 0); assert.equal(h.textarea.scrollTop, 0);
+  assert.equal(h.renderedLine.offsetTop - h.textarea.scrollTop, 20);
+  assert.equal(h.textarea.selectionStart, 0); assert.equal(h.textarea.selectionEnd, 0);
+  const next = h.renderedRows[1]; assert(next.offsetTop + next.offsetHeight <= h.textarea.clientHeight);
+  assert.deepEqual(h.calls, ['navigate', 'native-focus', 'reveal']); assert.equal(JSON.stringify(h.data), h.before);
+});
+
+test('Alpha last Item respects native bottom-scroll clamping and keeps its preceding context', async () => {
+  const h = restorationHarness('alpha', 'after-navigation', { targetAtEnd: true, targetTop: 800, scrollHeight: 890 });
+  await h.open(h.to, h.task.id); h.flush();
+  assert.equal(h.targetIndex, h.doc.lines.length - 1);
+  assert.equal(h.textarea.scrollTop, 650);
+  const targetTop = h.renderedLine.offsetTop - h.textarea.scrollTop;
+  assert(targetTop >= 0 && targetTop + h.renderedLine.offsetHeight <= h.textarea.clientHeight);
+  const previous = h.renderedRows[h.targetIndex - 1];
+  assert(previous.offsetTop - h.textarea.scrollTop >= 0);
+  assert(previous.offsetTop + previous.offsetHeight - h.textarea.scrollTop <= h.textarea.clientHeight);
+  const sourceStart = h.doc.lines.slice(0, h.targetIndex).reduce((sum, line) => sum + line.text.length + 1, 0);
+  assert.equal(h.textarea.selectionStart, sourceStart); assert.equal(h.textarea.selectionEnd, sourceStart);
+  assert(sourceStart < h.textarea.value.length, 'the Item starts before its title ends');
+  assert.equal(JSON.stringify(h.data), h.before);
+});
+
+test('Alpha wrapped Item keeps its start rather than jumping to a note or an oversized row end', async () => {
+  for (const targetHeight of [78, 312]) {
+    const h = restorationHarness('alpha', 'after-navigation', { targetHeight });
+    await h.open(h.to, h.task.id); h.flush();
+    assert.equal(h.textarea.scrollTop, 770, 'wrapped height must not move the Item start toward the bottom');
+    assert.equal(h.textarea.selectionStart, 0); assert.equal(h.textarea.selectionEnd, 0);
+    const targetTop = h.renderedLine.offsetTop - h.textarea.scrollTop;
+    assert(targetTop >= 0 && targetTop + 26 <= h.textarea.clientHeight);
+    const next = h.renderedRows[h.targetIndex + 1], nextBottom = next.offsetTop + next.offsetHeight - h.textarea.scrollTop;
+    if (targetHeight === 78) assert(nextBottom <= h.textarea.clientHeight, 'a fitting wrapped Item leaves its following context visible');
+    else {
+      assert(targetTop + targetHeight > h.textarea.clientHeight);
+      assert(next.offsetTop - h.textarea.scrollTop >= h.textarea.clientHeight, 'an oversized Item cannot guarantee following context without scrolling');
+    }
+    assert.equal(JSON.stringify(h.data), h.before);
+  }
 });

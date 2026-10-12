@@ -10,8 +10,8 @@ type ViewportCase = Readonly<{
 }>;
 
 type RouteCase = Readonly<{
-  label: 'flows' | 'public vehicle inspection plan' | 'my plans' | 'calendar';
-  route: '/flows' | '/f/vehicle-inspection-prep' | '/my' | '/calendar';
+  label: 'flows' | 'public passport preparation plan' | 'my plans' | 'calendar';
+  route: '/flows' | '/f/first-passport-issue' | '/my' | '/calendar';
   readyTestId: string;
   selectedDestination?: '계획 찾기' | '내 계획' | '캘린더';
   forwardMinimumHeight: 44 | 48;
@@ -32,8 +32,8 @@ const ROUTES: readonly RouteCase[] = [
     forwardMinimumHeight: 48,
   },
   {
-    label: 'public vehicle inspection plan',
-    route: '/f/vehicle-inspection-prep',
+    label: 'public passport preparation plan',
+    route: '/f/first-passport-issue',
     readyTestId: 'flow-public-shell',
     forwardMinimumHeight: 48,
   },
@@ -80,7 +80,7 @@ async function getForwardAction(
       .getByTestId('flow-url-lookup-entry')
       .getByRole('button', { name: '계획 찾기', exact: true });
   }
-  if (route === '/f/vehicle-inspection-prep') {
+  if (route === '/f/first-passport-issue') {
     return page.locator('[data-action-priority="primary"]:visible:not([disabled])').first();
   }
   if (route === '/my') return page.getByTestId('my-flow-empty-discovery');

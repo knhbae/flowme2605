@@ -47,7 +47,7 @@ test.describe('P35-R2 contextual public item personalization', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await installLegacySavedPlanLibraryNavigation(page);
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     const preview = page.getByTestId('public-flow-capability-result');
@@ -116,7 +116,7 @@ test.describe('P35-R2 contextual public item personalization', () => {
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeFocused();
 
     const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
-    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 9개');
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 6개');
     const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
     expect(personalCopyKey).toMatch(/^personal-copy:/u);
     await page.reload();
@@ -150,8 +150,8 @@ test.describe('P35-R2 contextual public item personalization', () => {
       window.localStorage.getItem(`flow:saved:${copyKey}`) || 'null',
     ) as { anchor?: string; dateIntent?: string } | null, personalCopyKey);
     expect(savedRecord).toMatchObject({
-      sourceFlowSlug: 'computer-skills-d30-study',
-      savedItemCount: 9,
+      sourceFlowSlug: 'curated-wedding-naver-timeline',
+      savedItemCount: 6,
       anchor: '2030-09-01',
       dateIntent: 'custom',
     });
@@ -172,7 +172,7 @@ test.describe('P35-R2 contextual public item personalization', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
     await installLegacySavedPlanLibraryNavigation(page);
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await page.getByTestId('public-flow-anchor-input').fill('2030-09-01');

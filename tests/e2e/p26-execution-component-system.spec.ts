@@ -54,7 +54,7 @@ test('mobile save journey uses one summary, direct selected plan, outline, and e
   const browserErrors = collectBrowserErrors(page);
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-new-car-basic');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
@@ -68,14 +68,14 @@ test('mobile save journey uses one summary, direct selected plan, outline, and e
     '[data-testid="flow-capability-result-choice"]'
       + '[data-capability-candidate-role="primary"]'
       + '[data-capability-destination="checklist"]',
-  )).toHaveAttribute('data-capability-output-count', '10');
+  )).toHaveAttribute('data-capability-output-count', '7');
   await expect(page.locator('[data-action-priority="primary"]:visible')).toHaveCount(1);
   await capture(page, '01-public-save-before-mobile.png');
 
   const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
-  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('10');
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 7개');
 
-  const workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
+  const workspace = await openMyFlowLibraryFlow(page, 'curated-new-car-basic');
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
   expect(
     await workspace.getByTestId('my-flow-whole-flow-outline').locator('[data-flow-ui="outline-row"]').count(),

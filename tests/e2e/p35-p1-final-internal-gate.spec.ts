@@ -7,7 +7,9 @@ import type { FlowBundle } from '../../lib/flow/types';
 
 // Historical saved/50-Item fixtures keep the original moving identity and bytes.
 const SOURCE_FLOW_SLUG = 'moving-d30-basic';
-const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+import { eligibleTimeline } from './helpers/eligible-public-source';
+
+const NEW_PUBLIC_FLOW_SLUG = eligibleTimeline.slug;
 const NEW_PUBLIC_ROUTE = `/f/${NEW_PUBLIC_FLOW_SLUG}`;
 const NEW_PUBLIC_ITEM_STORAGE_KEY = `flow_builder_mvp_item_state_${NEW_PUBLIC_FLOW_SLUG}`;
 const NEW_PUBLIC_ANCHOR_STORAGE_KEY = `flow:${NEW_PUBLIC_FLOW_SLUG}:anchorDate`;
@@ -37,7 +39,9 @@ const PRESERVED_LOCAL_STORAGE_KEYS = [
 const PRESERVED_SESSION_STORAGE_KEYS = ['flow:p1-04:session-sentinel'] as const;
 const MOBILE_VIEWPORT = { width: 390, height: 844 } as const;
 const REFLOW_200_VIEWPORT = { width: 720, height: 500 } as const;
-const EVIDENCE_DIR = path.join(
+const EVIDENCE_DIR = process.env.FLOWME_FIXTURE_EVIDENCE_DIR
+  ? path.join(process.env.FLOWME_FIXTURE_EVIDENCE_DIR, 'p1-04')
+  : path.join(
   process.cwd(),
   'docs',
   'specs',

@@ -69,13 +69,18 @@ test('membership summary uses all links and keeps excluded-document status outsi
 test('successful collection period change closes the library only after input flush; refusal preserves it', async () => {
   for (const mode of ['collection', 'ordinary', 'failed-save', 'locked'] as const) {
     const calls: string[] = []; const inputLockCount = { current: mode === 'locked' ? 1 : 0 };
+    let blockedNotices = 0, clearedNotices = 0;
     const change = callback('changePeriod', { inputLockCount, collectionMode: mode === 'ordinary' ? undefined : {},
       today: '2026-10-06', lockInput: () => { calls.push('lock'); return () => calls.push('release'); },
       flushAllEditors: async () => { calls.push('flush'); return mode !== 'failed-save'; },
       setPeriod: (period: string) => calls.push(period), setLibraryOpen: (open: boolean) => calls.push(`library:${open}`),
-      setDate: (date: string) => calls.push(date), setMessage: () => calls.push('message'), setTaskNotice: () => calls.push('notice') });
+      setDate: (date: string) => calls.push(date), setMessage: () => calls.push('message'), setTaskNotice: () => calls.push('notice'),
+      showViewChangeBlocked: () => { blockedNotices++; },
+      setViewChangeNotice: (value: unknown) => { assert.equal(value, null); clearedNotices++; } });
     const ok = await change('today');
     assert.equal(ok, mode === 'collection' || mode === 'ordinary');
+    assert.equal(blockedNotices, mode === 'failed-save' ? 1 : 0);
+    assert.equal(clearedNotices, ok ? 1 : 0);
     assert.equal(calls.includes('library:false'), mode === 'collection');
     if (mode === 'collection') assert(calls.indexOf('flush') < calls.indexOf('library:false'));
     if (mode === 'failed-save') assert(!calls.includes('today'));

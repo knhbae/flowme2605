@@ -296,7 +296,7 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => window.localStorage.clear());
-    await page.goto('/f/vehicle-inspection-prep');
+    await page.goto('/f/first-passport-issue');
 
     const { panel } = await openAdjustment(page, true);
     await expect(panel.getByTestId('public-flow-adjustment-kind-picker').getByRole('button')).toHaveCount(2);

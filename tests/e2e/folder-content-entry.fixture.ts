@@ -14,6 +14,7 @@ import { isAlphaCreatorCommand } from '../../lib/flow/integrated-poc/alpha-creat
 import { dispatchAlphaCreatorCommand } from '../../lib/flow/integrated-poc/alpha-creator/dispatch';
 import { textWorkspaceModel as M, type TextWorkspaceState } from '../../lib/flow/integrated-poc/text-workspace';
 import { journeyCopySourceIdentity } from '../../scripts/alpha/flow-execution-journey-contract';
+import type { CatalogLibrarySnapshot } from '../../lib/flow/integrated-poc/catalog-library';
 
 export const folderIds = { company: 'entry-company', work: 'entry-work', personal: 'entry-personal', homonym: 'entry-homonym' };
 export const publicIds = { flow: 'entry-public-flow', version: 'entry-public-v1', item: 'entry-public-item', post: 'entry-public-post' };
@@ -36,7 +37,8 @@ export function prepareEntryText(initial: TextWorkspaceState): TextWorkspaceStat
  * An explicitly prepared account may hold the existing read-only catalog pack.
  * No signed BFF or real Supabase call is used here. */
 export async function mockFolderContentEntry(page: Page, options: { catalog?: boolean; community?: boolean; holdFirstCreatorSaveReceipt?: boolean;
-  holdFirstPrivateScheduleReceipt?: boolean; prepareAccount?: (account: AlphaAccount) => AlphaAccount; creatorExecution?: boolean } = {}) {
+  holdFirstPrivateScheduleReceipt?: boolean; prepareAccount?: (account: AlphaAccount) => AlphaAccount; creatorExecution?: boolean;
+  singleCatalogSource?: CatalogLibrarySnapshot } = {}) {
   const base = await mockCloudflareRelease(page, { document: { title: '합성 연결 문서', raw: '' }, prepareText: prepareEntryText });
   const initialAccount = await base.current();
   const seed = options.prepareAccount ? options.prepareAccount(initialAccount) : initialAccount;
@@ -102,6 +104,7 @@ export async function mockFolderContentEntry(page: Page, options: { catalog?: bo
     if (url.origin === 'https://wkmzcxpnojobxrgebapw.supabase.co' && method === 'GET'
       && url.pathname === '/rest/v1/flowme_alpha_accounts') return json(route, [{ account: await current() }]);
     if (url.origin === RELEASE_ORIGIN && method === 'GET' && !url.search && url.pathname === '/api/alpha/catalog') {
+      if (options.singleCatalogSource) { intercepted++; return json(route, structuredClone(options.singleCatalogSource)); }
       // Deliberately no frozen private source pack in this regression. Creator
       // remains usable beside its explicit catalog-unavailable presentation.
       intercepted++; return json(route, { ok: false, reason: 'unavailable' });
@@ -118,8 +121,9 @@ export async function mockFolderContentEntry(page: Page, options: { catalog?: bo
         ? command.changes.every(change => ['text', 'position'].includes(change.field))
         : command.kind === 'undo-private' && journeyPrivateUndoTargets.has(command.operationId)));
     const creatorCommand = url.pathname === '/api/alpha/creator' && isAlphaCreatorCommand(command)
-      && (options.creatorExecution ? ['working', 'library-action', 'raw-handoff', 'native-handoff']
+      && ((options.creatorExecution ? ['working', 'library-action', 'raw-handoff', 'native-handoff']
         : ['working', 'library-action']).includes(command.intent.type)
+        || !!options.singleCatalogSource && command.intent.type === 'catalog-content-import')
       && (!options.creatorExecution || command.intent.type !== 'library-action' || command.intent.action.type === 'save');
     const socialCommand = url.pathname === '/api/alpha/social' && isAlphaSocialCommand(command)
       && (command.intent.type === 'copy-import' || options.creatorExecution && command.intent.type === 'private-task-schedule');
@@ -152,7 +156,8 @@ export async function mockFolderContentEntry(page: Page, options: { catalog?: bo
       compiled = { schema: 'flowme-alpha-command/1', kind: 'change-private', requestId: command.requestId,
         expectedRevision: command.expectedRevision, changes: structuredClone(inverse.changes) };
     } else if (creatorCommand) {
-      const result = dispatchAlphaCreatorCommand(account, command, references);
+      const result = dispatchAlphaCreatorCommand(account, command, references,
+        options.singleCatalogSource ? { library: () => structuredClone(options.singleCatalogSource!) } : undefined);
       if (!result.ok || !result.changed) return json(route, { ok: false, reason: result.ok ? 'no-change' : 'invalid' });
       compiled = { schema: 'flowme-alpha-command/1', kind: 'change-private', requestId: command.requestId,
         expectedRevision: command.expectedRevision, changes: result.changes }; resultId = result.result;
@@ -207,7 +212,8 @@ export async function mockFolderContentEntry(page: Page, options: { catalog?: bo
       await base.assertBoundary(info);
       await info.attach('folder-content-synthetic-overlay', { contentType: 'application/json', body: JSON.stringify({
         evidence: 'Synthetic semantic dispatch + in-memory CAS; not real BFF, Auth/RLS, DB, OS IME or observed-user validation.',
-        forwardedAuth: 0, forwardedApi: 0, catalogFixture: seed.space.catalogLibrary ? 'explicit-readonly-stored-source-pack' : 'explicit-unavailable-no-private-source-pack', publicHash, publicUnchanged: true, intercepted,
+        forwardedAuth: 0, forwardedApi: 0, catalogFixture: seed.space.catalogLibrary ? 'explicit-readonly-stored-source-pack'
+          : options.singleCatalogSource ? 'explicit-readonly-unstored-source-pack' : 'explicit-unavailable-no-private-source-pack', publicHash, publicUnchanged: true, intercepted,
         ...server.diagnostics(), commands: commands.map(command => ({ kind: command.kind, requestId: command.requestId,
           expectedRevision: command.expectedRevision, ...(command.kind === 'creator' || command.kind === 'social' ? { intent: command.intent.type } : {}) })) }) });
     } };

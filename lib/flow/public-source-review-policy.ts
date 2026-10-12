@@ -1,4 +1,4 @@
-/** 2026-10-10 actual source review, approved for NEW discovery/start only.
+/** 2026-10-10 and 2026-10-11 actual source reviews, approved for NEW discovery/start only.
  * This is not an archive, deletion, migration, or a new source-check date.
  * Existing personal documents and immutable source snapshots stay readable. */
 export const PUBLIC_SOURCE_REVIEW_HOLD_SLUGS = [
@@ -26,6 +26,32 @@ export const PUBLIC_SOURCE_REVIEW_HOLD_SLUGS = [
   'home-cafe-daily',
   'dog-walk-routine',
   'pet-health-observation',
+  // Exact additional 25 reviewed on 2026-10-11; no source-date refresh.
+  'samsung-aircon-seasonal-check',
+  'samsung-washer-filter-cleaning',
+  'vehicle-inspection-prep',
+  'computer-skills-d30-study',
+  'real-samsung-aircon-seasonal-care',
+  'real-samsung-washer-filter-care',
+  'real-pet-registration-check',
+  'national-scholarship-apply',
+  'housing-subscription-account',
+  'jeonse-guarantee-apply',
+  'small-business-fund-check',
+  'unemployment-benefit-apply',
+  'job-seeker-allowance-apply',
+  'infant-health-checkup-schedule',
+  'adult-vaccine-schedule-check',
+  'used-car-ownership-transfer',
+  'property-local-tax-pay',
+  'safe-inheritance-onestop',
+  'monthly-household-budget',
+  'payday-finance-routine',
+  'baby-150-start',
+  'baby-160-start',
+  'baby-170-start',
+  'baby-180-start',
+  'baby-cube',
 ] as const;
 
 const heldSlugs: ReadonlySet<string> = new Set(PUBLIC_SOURCE_REVIEW_HOLD_SLUGS);

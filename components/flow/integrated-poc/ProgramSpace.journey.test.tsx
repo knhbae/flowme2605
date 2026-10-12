@@ -28,6 +28,17 @@ const compiled = ts.transpileModule(`const action = (${declaration.getText(ast)}
   compilerOptions: { target: ts.ScriptTarget.ES2022 },
 }).outputText;
 
+type ViewNotice = { actorId: string; reason: string } | null;
+function noticeFunctions() {
+  const declarations: ts.FunctionDeclaration[] = [];
+  const visit = (node: ts.Node) => {
+    if (ts.isFunctionDeclaration(node) && ['currentViewChangeReason', 'showViewChangeBlocked'].includes(node.name?.text ?? '')) declarations.push(node);
+    ts.forEachChild(node, visit);
+  };
+  visit(ast); assert.equal(declarations.length, 2);
+  return declarations.map(node => node.getText(ast)).join('\n');
+}
+
 function periodHarness(composing: boolean) {
   const data = createProgramData(), space = data.spaces[data.activeActorId];
   let state = M.addDocument(space.text, { title: '부분 작성' });
@@ -42,18 +53,22 @@ function periodHarness(composing: boolean) {
     accept: () => { writes++; return true; }, persist: async () => { writes++; return true; } });
   draft.update(view, region.key, input); draft.compose(composing);
   const presentation = { period: 'documents', documentId, date: '2026-10-01' }, messages: string[] = [], calls: string[] = [];
+  let notice: ViewNotice = null;
   let fn: ts.FunctionDeclaration | undefined;
   const scan = (node: ts.Node) => { if (ts.isFunctionDeclaration(node) && node.name?.text === 'changePeriod') fn = node; ts.forEachChild(node, scan); };
   scan(ast); assert(fn);
-  const code = ts.transpileModule(`const change = (${fn.getText(ast)});`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
+  const code = ts.transpileModule(`${noticeFunctions()}\nconst change = (${fn.getText(ast)});`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
   const context = { inputLockCount: { current: 0 }, today: '2026-10-02', collectionMode: undefined,
+    dataRef: { current: data }, recurrencePorts: { current: {} },
+    saveStatusReaders: { current: { [documentId]: () => ({ composing: draft.isComposing(), saving: false, failed: false }) } },
+    setViewChangeNotice: (value: ViewNotice) => { notice = value; },
     setTaskNotice: (value: unknown) => assert.equal(value, null),
     setQuery: () => calls.push('query'), setFolderId: () => calls.push('folder'),
     lockInput: () => { lockCount++; calls.push('lock'); return () => { lockCount--; calls.push('release'); }; },
     flushAllEditors: async () => { flushCount++; calls.push('flush'); return draft.flush(); },
     setMessage: (value: string) => messages.push(value), setPeriod: (value: string) => { presentation.period = value; }, setDate: (value: string) => { presentation.date = value; } };
   const change = new Function(...Object.keys(context), `${code}; return change;`)(...Object.values(context)) as (period: string, main?: boolean) => Promise<boolean>;
-  return { presentation, messages, calls, draft, input, documentId, change, writes: () => writes, locks: () => lockCount, flushes: () => flushCount };
+  return { presentation, messages, calls, draft, input, documentId, change, notice: () => notice, actorId: data.activeActorId, writes: () => writes, locks: () => lockCount, flushes: () => flushCount };
 }
 
 test('period navigation cannot hide a composing folder region or change its document and date', async () => {
@@ -62,7 +77,7 @@ test('period navigation cannot hide a composing folder region or change its docu
   assert.deepEqual(h.presentation, { period: 'documents', documentId: h.documentId, date: '2026-10-01' });
   assert.equal(h.draft.getState().pending?.raw, h.input); assert(h.draft.isComposing()); assert.equal(h.writes(), 0);
   assert.deepEqual(h.calls, ['lock', 'flush', 'release']); assert.equal(h.locks(), 0); assert.equal(h.flushes(), 1);
-  assert.match(h.messages.at(-1)!, /한글 입력을 마친 뒤/);
+  assert.deepEqual(h.notice(), { actorId: h.actorId, reason: 'composition' });
   assert.match(source, /onClick=\{\(\) => void changePeriod\(key, true\)\}/);
   assert.match(source, /aria-label="기간 보기"[^>]+onChange=\{event => \{ void changePeriod\(event.target.value as ProgramPeriod\); \}\}/);
 });
@@ -72,9 +87,11 @@ test('period navigation cannot hide rejected folder input and shares the folder-
   assert.equal(await h.change('week'), false);
   assert.deepEqual(h.presentation, { period: 'documents', documentId: h.documentId, date: '2026-10-01' });
   assert.equal(h.draft.getState().pending?.raw, h.input); assert(h.draft.hasPending()); assert.equal(h.writes(), 0);
-  assert.deepEqual(h.calls, ['lock', 'flush', 'release']); assert.equal(h.locks(), 0); assert.match(h.messages.at(-1)!, /저장되지 않은 입력/);
+  assert.deepEqual(h.calls, ['lock', 'flush', 'release']); assert.equal(h.locks(), 0);
+  assert.deepEqual(h.notice(), { actorId: h.actorId, reason: 'pending' });
   assert.match(source, /async function showFolderTasks\(\) \{\s*return changePeriod\('all'\);/);
   h.draft.discard(); assert.equal(await h.change('today', true), true); assert.equal(h.presentation.period, 'today'); assert.equal(h.presentation.date, '2026-10-02');
+  assert.equal(h.notice(), null);
 });
 
 function libraryHarness(options: { mobile?: boolean; period?: string; pending?: 'composition' | 'rejected'; locked?: boolean; authority?: boolean; missing?: boolean; readonlyRegion?: boolean; lockedDocument?: boolean } = {}) {
@@ -102,6 +119,7 @@ function libraryHarness(options: { mobile?: boolean; period?: string; pending?: 
   let opened = true, mobile = options.mobile !== false, authority = options.authority !== false, duringFlush: (() => void) | undefined;
   const frames = new Map<number, () => void>(), libraryReveal = { current: { epoch: 0, frame: null as number | null, request: null as unknown, committedRequest: null as unknown } };
   let libraryHandoff: unknown = null;
+  let notice: ViewNotice = null;
   let frameId = 0;
   const area = { value: region.raw, selectionStart: 4, selectionEnd: 9, scrollTop: 113, readOnly: false,
     getClientRects: () => [{}], getBoundingClientRect: () => ({ top: 1200, bottom: 1500 }), focus: () => calls.push('textarea-focus') };
@@ -110,6 +128,9 @@ function libraryHarness(options: { mobile?: boolean; period?: string; pending?: 
   const documentHost = { dataset: { programDocument: id }, querySelector: () => editor };
   const focus = { body: {}, activeElement: {} as object | null };
   const context = { document: focus, readProgramFolderRegions, programDocumentContentLock, space, libraryReveal, selectedRef, presentation, dirty, recurrencePorts, inputLockCount,
+    dataRef: { current: data },
+    saveStatusReaders: { current: { [id]: () => ({ composing: draft.isComposing(), saving: false, failed: false }) } },
+    setViewChangeNotice: (value: ViewNotice) => { notice = value; },
     libraryReturn: { current: null },
     setTaskNotice: (value: unknown) => assert.equal(value, null),
     workspaceRef: { current: space.text }, documentsRef: { current: options.missing ? [] : space.text.documents },
@@ -129,7 +150,7 @@ function libraryHarness(options: { mobile?: boolean; period?: string; pending?: 
     ts.forEachChild(node, scan);
   };
   scan(ast); assert(declarations.changeFolder && declarations.cancelLibraryReveal && revealEffect);
-  const code = ts.transpileModule(Object.values(declarations).map(node => node.getText(ast)).join('\n'), { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
+  const code = ts.transpileModule(`${noticeFunctions()}\n${Object.values(declarations).map(node => node.getText(ast)).join('\n')}`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
   const actual = new Function(...Object.keys(context), `${code}; return { changeFolder, cancelLibraryReveal };`)(...Object.values(context)) as {
     changeFolder: (folder: string, options?: { fromLibrary?: boolean }) => Promise<void>; cancelLibraryReveal: () => void;
   };
@@ -143,6 +164,7 @@ function libraryHarness(options: { mobile?: boolean; period?: string; pending?: 
       view.folderId ?? presentation.current.folderId, view.selected ?? selectedRef.current, view.period ?? presentation.current.period);
   };
   return { ...actual, data, before, draft, id, calls, messages, frames, area, focus, inputLockCount, dirty, recurrencePorts, selectedRef, presentation, editor, libraryReveal, commit, cleanupEffect,
+    notice: () => notice,
     open: () => opened, setMobile: (value: boolean) => { mobile = value; }, setAuthority: (value: boolean) => { authority = value; },
     duringFlush: (callback: () => void) => { duringFlush = callback; }, reopen: () => { actual.cancelLibraryReveal(); context.setLibraryOpen(true); },
     flushFrame: () => { if (!frames.size) commit(); const pending = [...frames.values()]; frames.clear(); pending.forEach(frame => frame()); } };
@@ -179,7 +201,7 @@ test('composition, rejected draft and input lock preserve mobile folder scope, l
     assert.equal(h.presentation.current.folderId, 'library-work'); assert.equal(h.open(), true); assert.equal(h.frames.size, 0);
     assert.equal(h.draft.getState().pending, pending); assert(!h.calls.includes('write')); assert(!h.calls.includes('disclosure-focus'));
     assert.equal(JSON.stringify(h.data), h.before);
-    if (condition !== 'locked') assert.match(h.messages.at(-1)!, /한글 입력을 마친 뒤/);
+    assert.deepEqual(h.notice(), condition === 'locked' ? null : { actorId: h.data.activeActorId, reason: condition === 'composition' ? 'composition' : 'pending' });
   }
 });
 
@@ -566,15 +588,20 @@ test('ordinary document opening keeps its existing path without forcing a row se
   assert.equal(JSON.stringify(h.data), h.before);
 });
 
-test('source return uses spare viewport height for preceding context without losing the exact target', async () => {
-  const h = harness(); h.renderedLine.offsetTop = 1200;
-  await h.open(h.id, h.taskId); h.flush();
-  assert.equal(h.textarea.scrollTop, 898); assert.equal(JSON.stringify(h.data), h.before);
+test('explicit Item return leaves bounded context before the exact target without losing data or caret', async () => {
+  for (const [height, expectedTop] of [[390, 1160], [200, 1175], [80, 1180]]) {
+    const h = harness(); h.renderedLine.offsetTop = 1200; h.textarea.clientHeight = height;
+    await h.open(h.id, h.taskId); h.flush();
+    assert.equal(h.textarea.scrollTop, expectedTop); assert.equal(JSON.stringify(h.data), h.before);
+    assert.equal(h.textarea.selectionStart, '원래 메모\n'.length); assert.equal(h.textarea.selectionEnd, h.textarea.selectionStart);
+    assert.deepEqual(h.calls.slice(-2), ['focus', 'reveal']);
+  }
 });
 
-test('a target taller than the viewport starts at the exact row and keeps its original caret', async () => {
+test('a target taller than the viewport reveals its first line with bounded context and keeps its original caret', async () => {
   const h = harness(); h.renderedLine.offsetTop = 1200; h.renderedLine.offsetHeight = 500;
   await h.open(h.id, h.taskId); h.flush();
-  assert.equal(h.textarea.scrollTop, 1200); assert.equal(h.textarea.selectionStart, '원래 메모\n'.length);
+  assert.equal(h.textarea.scrollTop, 1160); assert.equal(h.textarea.selectionStart, '원래 메모\n'.length);
+  assert.equal(h.textarea.selectionEnd, h.textarea.selectionStart); assert.deepEqual(h.calls.slice(-2), ['focus', 'reveal']);
   assert.equal(JSON.stringify(h.data), h.before);
 });

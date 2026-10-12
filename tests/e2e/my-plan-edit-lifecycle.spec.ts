@@ -70,9 +70,9 @@ async function resetBrowserStorage(page: Page): Promise<void> {
   });
 }
 
-async function createCanonicalPersonalCopy(page: Page): Promise<CreatedOrigin> {
+async function createCanonicalPersonalCopy(page: Page, relativeDates = false): Promise<CreatedOrigin> {
   await resetBrowserStorage(page);
-  await page.goto('/f/vehicle-inspection-prep');
+  await page.goto(relativeDates ? '/f/curated-wedding-naver-timeline' : '/f/first-passport-issue');
   await expect(page.getByTestId('public-flow-capability-result')).toBeVisible();
   const mobileSave = page.getByTestId('public-flow-save-primary-mobile');
   const saveButton = await mobileSave.isVisible().catch(() => false)
@@ -202,8 +202,10 @@ async function createPersonalMemoDraft(page: Page): Promise<CreatedOrigin> {
 
 async function createLegacySavedPlan(page: Page): Promise<CreatedOrigin> {
   await resetBrowserStorage(page);
-  await page.goto('/f/vehicle-inspection-prep');
-  await expect(page.getByTestId('public-flow-capability-result')).toBeVisible();
+  // Bootstrap the origin without reopening a newly held public source. The
+  // original personal record and its unknown-field sentinels stay unchanged.
+  await page.goto('/flows');
+  await expect(page.getByTestId('flow-map-catalog-section')).toBeVisible();
   await page.evaluate((sentinels) => {
     window.localStorage.setItem('flow:saved:vehicle-inspection-prep', JSON.stringify({
       slug: 'vehicle-inspection-prep',
@@ -221,7 +223,7 @@ const ORIGINS: readonly OriginFixture[] = [
   {
     kind: 'canonical-personal-copy',
     label: 'canonical copy',
-    titleToken: '자동차검사 준비',
+    titleToken: '여권 준비',
     create: createCanonicalPersonalCopy,
   },
   {
@@ -1355,7 +1357,7 @@ test.describe('approved My Plan final persistence boundaries', () => {
   test('canonical memo-only Item edit follows a later Plan anchor without materializing its old date', async ({ page }) => {
     test.setTimeout(120_000);
     const itemMemo = '기준일을 바꿔도 새 일정으로 따라가야 하는 개인 메모';
-    const origin = await createCanonicalPersonalCopy(page);
+    const origin = await createCanonicalPersonalCopy(page, true);
     let flow = await openApprovedPlan(page, origin.slug);
     await flow.getByTestId('my-plan-edit').click();
     let planEditor = page.getByTestId('saved-flow-editor-plan');
@@ -1417,7 +1419,7 @@ test.describe('approved My Plan final persistence boundaries', () => {
 
   test('canonical Saved editor replaces a stale date-scoped alias and can reset to the source date', async ({ page }) => {
     test.setTimeout(180_000);
-    const origin = await createCanonicalPersonalCopy(page);
+    const origin = await createCanonicalPersonalCopy(page, true);
     let flow = await openApprovedPlan(page, origin.slug);
     await flow.getByTestId('my-plan-edit').click();
     const initialPlanEditor = page.getByTestId('saved-flow-editor-plan');

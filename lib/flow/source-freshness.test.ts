@@ -71,11 +71,11 @@ test('current canonical seed has no missing or overdue normal user source checks
   const canonical = summarizeFlowSourceFreshness(seedBundles, asOf);
   const archived = summarizeFlowSourceFreshness(archivedBundles, asOf);
   const inventory = (value: typeof summary) => [value.publishedCount, value.normalUserRouteCount, value.previewOrHiddenCount];
-  // The approved twenty-four holds move only NEW intake to preview; no date or
-  // freshness threshold changes. Non-held routes still require current checks.
-  assert.deepEqual(inventory(canonical), [153, 97, 56]);
+  // The approved prior 24 plus exact additional 25 move only NEW intake to
+  // preview. No date or freshness threshold changes; the archived set is unchanged.
+  assert.deepEqual(inventory(canonical), [153, 72, 81]);
   assert.deepEqual(inventory(archived), [21, 10, 11]);
-  assert.deepEqual(inventory(summary), [132, 87, 45]);
+  assert.deepEqual(inventory(summary), [132, 62, 70]);
   const slugs = (bundles: FlowBundle[]) => bundles.map((bundle) => bundle.flow.slug).sort();
   // Source-backed additions also use this policy; only canonical members belong in this inventory.
   const canonicalSlugs = new Set(slugs(seedBundles));

@@ -7,18 +7,46 @@ import { getRepresentativeFlowSlugs, normalizeExecutionModel } from './execution
 import { classifyFlowSourceFreshness } from './source-freshness';
 import { inspectCatalogContentCapability } from './integrated-poc/catalog-content';
 import { createProgramData, validateProgramData } from './integrated-poc/program-data';
-import { importProgramPublicVersion } from './integrated-poc/private-space';
+import { importProgramPublicVersion, updateProgramTask, recordProgramTaskProgress } from './integrated-poc/private-space';
+import { publishedSourceEditions } from './public-source-edition-data';
 import { buildUrlFirstStartPackage, lookupUrlFirstP0Input, AJD_MOVING_SOURCE_URL } from './url-first-lookup';
 
-test('the approved hold is exactly twenty-four source slugs, not all forty reviewed sources', () => {
-  assert.equal(PUBLIC_SOURCE_REVIEW_HOLD_SLUGS.length, 24);
-  assert.equal(new Set(PUBLIC_SOURCE_REVIEW_HOLD_SLUGS).size, 24);
+test('the approved hold is exactly the prior twenty-four plus the newly reviewed twenty-five', () => {
+  const prior = [
+    'childcare-fee-support-apply', 'health-insurance-dependent', 'home-workout-20min', 'military-exam-prep',
+    'overseas-safety-register', 'overseas-travel-d14', 'passport-renewal-docs', 'pension-estimate-check',
+    'running-5k-4week', 'tax-refund-find', 'wedding-d180-basic', 'welfare-benefit-finder',
+    'moving-d30-basic', 'fridge-cleanout-weekly-plan', 'english-study-30day-routine', 'washer-tub-clean-monthly',
+    'used-car-buying-check', 'new-car-delivery-check', 'car-care-monthly-routine', 'weekly-meal-plan',
+    'reading-habit-30day', 'home-cafe-daily', 'dog-walk-routine', 'pet-health-observation',
+  ];
+  const additional = [
+    'samsung-aircon-seasonal-check', 'samsung-washer-filter-cleaning', 'vehicle-inspection-prep',
+    'computer-skills-d30-study', 'real-samsung-aircon-seasonal-care', 'real-samsung-washer-filter-care',
+    'real-pet-registration-check', 'national-scholarship-apply', 'housing-subscription-account',
+    'jeonse-guarantee-apply', 'small-business-fund-check', 'unemployment-benefit-apply',
+    'job-seeker-allowance-apply', 'infant-health-checkup-schedule', 'adult-vaccine-schedule-check',
+    'used-car-ownership-transfer', 'property-local-tax-pay', 'safe-inheritance-onestop',
+    'monthly-household-budget', 'payday-finance-routine', 'baby-150-start', 'baby-160-start',
+    'baby-170-start', 'baby-180-start', 'baby-cube',
+  ];
+  assert.equal(additional.length, 25);
+  assert.equal(new Set([...prior, ...additional]).size, 49);
+  assert.deepEqual([...PUBLIC_SOURCE_REVIEW_HOLD_SLUGS].sort(), [...prior, ...additional].sort());
   for (const slug of ['blog-youtube-start', 'first-passport-issue', 'domestic-trip-d7']) {
     assert.equal(isPublicFlowSourceOnHold(slug), false, slug);
   }
   assert.equal(isPublicFlowSourceOnHold('private-childcare-fee-support-apply'), false);
   assert.equal(isPublicCatalogFlowOnHold('catalog-childcare-fee-support-apply'), true);
   assert.equal(isPublicCatalogFlowOnHold('personal-childcare-fee-support-apply'), false);
+});
+
+test('all fourteen qualified editions remain available and are outside the new holds', () => {
+  assert.equal(publishedSourceEditions.length, 14);
+  for (const edition of publishedSourceEditions) {
+    assert.equal(isPublicFlowSourceOnHold(edition.sourceSlug), false, edition.sourceSlug);
+    assert.equal(inspectCatalogContentCapability(edition.sourceSlug).ready, true, edition.sourceSlug);
+  }
 });
 
 function catalogFixture(flowId: string) {
@@ -67,7 +95,16 @@ test('an already saved held-source plan reopens without an additional copy or a 
   const imported = importProgramPublicVersion(initial, { actorId: initial.activeActorId, requestId: 'before-hold', expectedSpace: structuredClone(initial.spaces[initial.activeActorId]),
     versionId: 'review-policy-v1', itemIds: ['review-policy-item'], anchor: null });
   assert.ok(imported.ok);
-  const saved = structuredClone(imported.data);
+  let saved = structuredClone(imported.data);
+  const taskId = saved.spaces[saved.activeActorId].copies.find(copy => copy.id === imported.result)!.itemLines['review-policy-item'];
+  const edited = updateProgramTask(saved, { actorId: saved.activeActorId, requestId: 'personal-note-and-date',
+    expectedSpace: structuredClone(saved.spaces[saved.activeActorId]), taskId, patch: { date: '2026-10-13', note: '가상 보존 메모' } });
+  assert.ok(edited.ok);
+  saved = edited.data;
+  const progressed = recordProgramTaskProgress(saved, { actorId: saved.activeActorId, requestId: 'personal-progress',
+    expectedSpace: structuredClone(saved.spaces[saved.activeActorId]), taskId, date: '2026-10-13', percent: 100 });
+  assert.ok(progressed.ok);
+  saved = JSON.parse(JSON.stringify(progressed.data));
   const heldId = `catalog-${slug}`;
   saved.public.flows.find(flow => flow.id === 'catalog-test-before-source-hold')!.id = heldId;
   saved.public.versions.find(version => version.id === 'review-policy-v1')!.flowId = heldId;
@@ -80,6 +117,7 @@ test('an already saved held-source plan reopens without an additional copy or a 
   assert.ok(reused.ok);
   assert.equal(reused.result, imported.result);
   assert.equal(reused.data.spaces[saved.activeActorId].copies.length, saved.spaces[saved.activeActorId].copies.length);
+  assert.deepEqual(reused.data.spaces[saved.activeActorId].copies, saved.spaces[saved.activeActorId].copies);
   assert.equal(JSON.stringify(reused.data.spaces[saved.activeActorId].text), JSON.stringify(saved.spaces[saved.activeActorId].text));
   assert.equal(JSON.stringify(reused.data.public), publicBefore);
   assert.equal(JSON.stringify(saved.spaces[saved.activeActorId]), privateBefore);
