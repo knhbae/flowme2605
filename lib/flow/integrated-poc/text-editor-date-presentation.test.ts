@@ -114,7 +114,7 @@ function fixture(raw: string, metadata: TextEditorRowMeta[], options: { mode?: s
   });
   vm.runInContext(section('  function progressPercent(meta) {', '  function protectedFenceLines(lines) {') +
     section('    function remember() {', '    let inputEpoch =') +
-    section('    function publish(inputType, inputSplice) {', '    function scheduleRender() {') +
+    section('    function publish(', '    function scheduleRender() {') +
     section('    function makeSpan(className, content) {', '    function scrollSurface() {') +
     section('    function syncRowIndent(row) {', '    function syncReadingTaskInset(row) {') +
     section('    function icon(kind) {', '    function addFoldButton(') +

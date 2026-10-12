@@ -103,7 +103,7 @@ function fixture(raw: string, metadata: Record<number, any>, options: { mode?: s
   });
   vm.runInContext(section('  function progressPercent(meta) {', '  function dateLabel(line) {') +
     section('    function remember() {', '    let inputEpoch =') +
-    section('    function publish(inputType, inputSplice) {', '    function scheduleRender() {') +
+    section('    function publish(', '    function scheduleRender() {') +
     section('    function makeSpan(className, content) {', '    function scrollSurface() {') +
     section('    function syncRowIndent(row) {', '    function syncGeometry() {') +
     section('    function icon(kind) {', '    function addRowButton(') +
