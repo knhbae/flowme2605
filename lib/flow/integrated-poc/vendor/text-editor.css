@@ -225,3 +225,21 @@
 .tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-check-glyph { top: calc((var(--tle-line) - 18px) / 2); }
 .tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-active-progress { top: 0; }
 .tle-root:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-check-hit, .tle-row-open, .tle-fold-toggle) { display: none; }
+/* Inert meaning survives hidden native-edit actions; no RAW ruler or hit owner. */
+.tle-passive-meaning { display: none; position: absolute; pointer-events: none; user-select: none; -webkit-user-select: none; }
+.tle-passive-scope { top: calc((var(--tle-line) - 18px) / 2); left: 0; width: 18px; height: 18px; color: #468373; }
+.tle-passive-scope svg { width: 18px; height: 18px; }
+/* Fit the unchanged RAW prefix and paint above later indent guides. */
+.tle-passive-progress { top: calc((var(--tle-line) - 24px) / 2); left: -7px; width: 32px; z-index: 1; color: #236b58; font: 600 11px/1 ui-monospace, monospace; }
+.tle-root[data-mode="live"]:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-passive-meaning { display: inline-flex; }
+/* Native scope names use the same source advances when active or inactive. */
+.tle-line-native-scope > .tle-active-paint { display: none; }
+.tle-root[data-mode="live"]:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line-native-scope > .tle-active-paint { display: block; }
+.tle-root[data-mode="live"]:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line-native-scope :is(.tle-scope-label, .tle-passive-scope) { display: none; }
+/* Borrow existing blank gutter, never the first title character's RAW space. */
+.tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-active-scope-icon { left: calc(var(--tle-indent, 0px) - 10px); }
+.tle-line[data-scope-kind="folder"] :is(.tle-active-scope-icon, .tle-passive-scope, .tle-scope-open) svg { color: #235f4b; }
+.tle-line[data-scope-kind="folder"] :is(.tle-active-scope-icon, .tle-passive-scope, .tle-scope-open) svg path { fill: #d7ebe2; stroke-width: 2.4; }
+/* A wrapped Item and its owned properties share an inert rail outside RAW. */
+.tle-item-membership { display: none; position: absolute; left: -6px; top: 0; bottom: 0; width: 2px; background: #89ad9e; pointer-events: none; user-select: none; -webkit-user-select: none; }
+.tle-root[data-mode="live"]:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line[data-membership-wrapped="true"] > .tle-item-membership { display: block; }

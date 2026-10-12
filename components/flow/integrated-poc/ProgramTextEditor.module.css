@@ -189,3 +189,9 @@
 .editor .toolbar > button { border-color: transparent; background: transparent; }
 /* Wrapped prose keeps the RAW ruler rather than a second hanging-indent ruler. */
 .host :global(.tle-root:is(.tle-reading-view,.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) :is(.tle-line-prose,.tle-line-property:not(.tle-line-date-property))) { padding-left: 0; text-indent: 0; }
+/* Reading has its own ruler. Owned memo continuations retain their RAW depth. */
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line-owned-memo) { padding-left: var(--tle-indent, 0px); text-indent: calc(-1 * var(--tle-indent, 0px)); }
+/* Reserve the existing scope control lane, but let a long name wrap fully. */
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line-scope > .tle-date-source) { position: absolute; top: 0; left: 0; max-width: 100%; overflow: hidden; white-space: pre; }
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line-scope > .tle-scope-label) { position: relative; inset: auto; margin-left: clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)); height: auto; min-height: var(--tle-line); white-space: normal; align-items: flex-start; }
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-scope-name) { overflow: visible; text-overflow: clip; white-space: normal; }
