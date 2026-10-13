@@ -546,7 +546,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }, [props.docId]);
   function scheduleSave() {
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => { void saveNow(); }, 450);
+    // A pending commit may fail after newer input armed this timer.
+    timerRef.current = setTimeout(() => { if (!draftRef.current?.getState().error) void saveNow(); }, 450);
   }
   async function apply(next: TextWorkspaceState, label: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule']) {
     const before = currentState(), selected = writingSelection();
@@ -679,7 +680,18 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     editorRef.current = instance;
     const textarea = host.querySelector<HTMLTextAreaElement>('textarea');
     const compositionStart = () => { composingRef.current = true; setComposing(true); orderEpochRef.current++; setOrderPreview(null); propsRef.current.onDirtyChange?.(true); };
-    const compositionEnd = () => { composingRef.current = false; setComposing(false); };
+    const compositionEnd = () => {
+      composingRef.current = false; setComposing(false);
+      // The native target listener publishes the final raw after this capture listener.
+      // Even unchanged raw must release protection and rearm a timer spent composing.
+      queueMicrotask(() => {
+        if (!alive || composingRef.current) return;
+        const state = controller.getState();
+        propsRef.current.onDirtyChange?.(state.dirty || regionPendingRef.current);
+        setMessage(previous => previous === '한글 입력을 마친 뒤 보기 범위를 바꿔 주세요.' ? '' : previous);
+        if (state.dirty && !state.saving && !state.invalid && !state.error) scheduleSave();
+      });
+    };
     host.addEventListener('compositionstart', compositionStart, true);
     host.addEventListener('compositionend', compositionEnd, true);
     const preventLockedInput = (event: Event) => {
