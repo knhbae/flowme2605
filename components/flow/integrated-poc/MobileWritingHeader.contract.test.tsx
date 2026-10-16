@@ -163,5 +163,19 @@ test('mobile note and non-note titles use the approved layout while all action t
   for (const healthy of ['ready', 'saved', 'same-location']) assert(compactText.includes(`data-save-state="${healthy}"`));
   assert.doesNotMatch(compactText, /\.problem|\.recovery|display:\s*none/);
   assert.match(spaceSource, /aria-label="기본 이동"/);
-  assert.match(shellSource, />Flow<\/button>/); assert.match(shellSource, />이야기<\/button>/);
+  const navigation = classElement(shellTree, 'globalNavigation');
+  const targets = ['space', 'community', 'activity'];
+  for (const [view, active] of [['space', 0], ['legacy', 0], ['community', 1], ['discover', 1], ['flow', 1], ['activity', 2], ['creator', 2]] as const) {
+    const calls: string[] = [];
+    const tree = evaluate(navigation, { styles, destination: { view }, navigate: (next: { view: string }) => calls.push(next.view) });
+    assert.equal(tree.props['aria-label'], '주요 메뉴');
+    const buttons = nodes(tree).filter(node => node.type === 'button');
+    assert.deepEqual(buttons.map(text), ['내 공간', '둘러보기', '내 활동']);
+    buttons.forEach((button, index) => {
+      assert.equal(button.props.type, 'button');
+      assert.equal(button.props['aria-current'], index === active ? 'page' : undefined);
+      button.props.onClick();
+    });
+    assert.deepEqual(calls, targets);
+  }
 });
