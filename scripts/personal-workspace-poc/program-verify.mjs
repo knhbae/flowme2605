@@ -2,10 +2,11 @@ import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, mkdirSync, createWriteStream, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { listProgramSourcePaths } from './program-source-files.mjs';
 import { verificationExitCode } from './program-verification-result.mjs';
 import { publicVerificationResult, usesPublicVerificationOutput } from './program-verification-output.mjs';
+import { MAX_DIAGNOSTIC_BYTES, readFailureDiagnostics } from './program-verification-reporter.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const kind = process.argv[2];
@@ -39,11 +40,22 @@ const requestedTestHeap = process.argv[4];
 if (requestedTestHeap !== undefined && (kind !== 'new-tests' || !['256', '512'].includes(requestedTestHeap))) throw Error('new-tests heap must be 256 or 512');
 const testMaxOldSpaceMb = kind === 'new-tests' ? Number(requestedTestHeap ?? 512) : null;
 const testMaxSemiSpaceMb = testMaxOldSpaceMb === 256 ? 4 : null;
-const args = kind === 'new-tests' ? [`--max-old-space-size=${testMaxOldSpaceMb}`, ...(testMaxSemiSpaceMb ? [`--max-semi-space-size=${testMaxSemiSpaceMb}`] : []), '--import', 'tsx', '--test', `--test-concurrency=${testConcurrency}`, '--test-reporter=tap', ...testPaths] : windows ? ['/d', '/s', '/c', ['npm.cmd', ...commands[kind]].join(' ')] : commands[kind];
+const collectDiagnostics = publicOutput && kind === 'new-tests';
+const reporterArgs = collectDiagnostics ? ['--test-reporter=tap',
+  `--test-reporter=${pathToFileURL(resolve(root, 'scripts/personal-workspace-poc/program-verification-reporter.mjs')).href}`,
+  '--test-reporter-destination=stdout', '--test-reporter-destination=stderr'] : ['--test-reporter=tap'];
+const args = kind === 'new-tests' ? [`--max-old-space-size=${testMaxOldSpaceMb}`, ...(testMaxSemiSpaceMb ? [`--max-semi-space-size=${testMaxSemiSpaceMb}`] : []), '--import', 'tsx', '--test', `--test-concurrency=${testConcurrency}`, ...reporterArgs, ...testPaths] : windows ? ['/d', '/s', '/c', ['npm.cmd', ...commands[kind]].join(' ')] : commands[kind];
 let output = '';
+let diagnosticOutput = '', diagnosticBytes = 0, diagnosticTruncated = false;
 let launchError = null;
 const child = spawn(command, args, { cwd: root, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
-for (const stream of [child.stdout, child.stderr]) stream.on('data', bytes => { const text = bytes.toString(); output += text; log?.write(bytes); });
+child.stdout.on('data', bytes => { output += bytes.toString(); log?.write(bytes); });
+child.stderr.on('data', bytes => {
+  if (!collectDiagnostics) { output += bytes.toString(); log?.write(bytes); return; }
+  diagnosticBytes += bytes.length;
+  if (diagnosticBytes <= MAX_DIAGNOSTIC_BYTES) diagnosticOutput += bytes.toString();
+  else diagnosticTruncated = true;
+});
 child.on('error', error => { launchError = String(error); output += launchError; log?.write(launchError); });
 child.on('close', (code, signal) => {
   log?.end();
@@ -51,11 +63,12 @@ child.on('close', (code, signal) => {
   const after = hashes(listPaths()), prior = new Map(before.map(file => [file.path, file.sha256])), final = new Map(after.map(file => [file.path, file.sha256]));
   const changed = [...new Set([...prior.keys(), ...final.keys()])].filter(path => prior.get(path) !== final.get(path));
   const result = { kind, started, ended: new Date().toISOString(), exitCode: code, signal, launchError, nodeOptions: process.env.NODE_OPTIONS ?? null, testConcurrency, testMaxOldSpaceMb, testMaxSemiSpaceMb, testFileCount: kind === 'new-tests' ? testPaths.length : null, testExecutions: total('tests'), passed: total('pass'), failed: total('fail'), skipped: total('skipped'), cancelled: total('cancelled'), sourceChangedDuringRun: changed, log: `${name}.log`, sourceHashes: after };
+  if (collectDiagnostics) result.failureDiagnostics = readFailureDiagnostics(diagnosticOutput, testPaths.length, result, diagnosticTruncated);
   const verifiedExitCode = verificationExitCode(result);
   const report = publicOutput ? publicVerificationResult(result) : { ...result, verifiedExitCode };
   const suffix = publicOutput ? '.public.json' : '.json';
   writeFileSync(resolve(directory, `${name}${suffix}`), JSON.stringify(report, null, 2));
   writeFileSync(resolve(directory, `${kind}-latest${suffix}`), JSON.stringify(report, null, 2));
   console.log(JSON.stringify(publicOutput ? report : { ...report, sourceHashes: `${name}.json` }, null, 2));
-  process.exitCode = verifiedExitCode;
+  process.exitCode = report.verifiedExitCode;
 });
