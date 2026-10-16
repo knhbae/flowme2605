@@ -224,7 +224,7 @@
 .page[data-alpha-frame="b"] [hidden]{display:none!important}
 .page[data-alpha-frame="b"] :is(button,a,input,select,textarea,summary):focus-visible{outline:2px solid var(--b-primary);outline-offset:3px}
 .page[data-alpha-frame="b"] > .header{position:fixed;inset:0 auto 0 0;z-index:40;width:92px;height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:24px;margin:0;padding:20px 8px;background:var(--b-chrome);color:#c8d1e1;align-items:stretch}
-.page[data-alpha-frame="b"] .brand{min-height:44px;justify-content:center;color:#fff;font-size:18px;font-weight:800;letter-spacing:-.6px}
+.page[data-alpha-frame="b"] .brand{min-height:48px;justify-content:center;color:#fff;font-size:18px;font-weight:800;letter-spacing:-.6px}
 .page[data-alpha-frame="b"] .destinationTitle{display:none}
 .page[data-alpha-frame="b"] .header .development{display:block;align-self:end;margin:0;text-align:center;font-size:11px;color:#c8d1e1;border-color:#53627a}
 .page[data-alpha-frame="b"] .globalNavigation{position:static;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:8px;min-height:0;overflow-y:auto;padding:4px}
