@@ -8,7 +8,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import ts from 'typescript';
 import { createProgramData, validateProgramData } from '../../../lib/flow/integrated-poc/program-data';
 import { type ProgramData, type ProgramTransition } from '../../../lib/flow/integrated-poc/contract';
-import { createProgramController } from '../../../lib/flow/integrated-poc/controller';
+import { createProgramController, programSame } from '../../../lib/flow/integrated-poc/controller';
 import { createProgramPost, createProgramReply, deleteProgramPost, editProgramPost, programPostEditToken } from '../../../lib/flow/integrated-poc/community';
 import { publishProgramFlow, createProgramProposal } from '../../../lib/flow/integrated-poc/publication';
 import type * as ComponentModule from './ProgramCommunity';
@@ -183,6 +183,8 @@ function draftSaveNoticeHarness(outcome: { ok: boolean; reason?: string }, rejec
   const draft = { ...newProgramParticipationDraft(), title: '합성 질문', body: '보존할 입력' };
   const calls: string[] = [], context: Record<string, any> = {
     draft, actorId: 'actor-synthetic', storageScope: 'account', errorNotice: { message: '' },
+    composing: { current: false }, mediaPending: { current: false }, draftRef: { current: draft },
+    currentDraft: () => context.draft, programSame,
     saveFlights: { current: 0 }, queue: { current: Promise.resolve(true) }, mounted: { current: true }, savedDraftRef: { current: null },
     setSaveState: (value: string) => calls.push(`status:${value}`), setDraftConflict: (value: boolean) => calls.push(`conflict:${value}`),
     setErrorNotice: (value: any) => { context.errorNotice = typeof value === 'function' ? value(context.errorNotice) : value; }, programErrorMessage, programClone: structuredClone,
@@ -202,6 +204,7 @@ function draftSaveNoticeHarness(outcome: { ok: boolean; reason?: string }, rejec
     return new Function(...Object.keys(context), `${code}; return value;`)(...Object.values(context));
   }
   context.setError = (message: string) => evaluate(`(${declaration('setError')})`)(message);
+  context.draftPending = () => evaluate(expression('draftPending'))();
   return { context, calls, draft, save: () => evaluate(`(${declaration('save')})`)(draft), notice: () => evaluate(expression('error')) };
 }
 

@@ -8,6 +8,8 @@ import type { VerifiedAlphaSession } from '@/lib/flow/integrated-poc/alpha-auth/
 import { createAlphaSyncController, type AlphaSyncSnapshot } from '@/lib/flow/integrated-poc/alpha-sync/controller';
 import type { AlphaCommand } from '@/lib/flow/integrated-poc/alpha-persistence/contract';
 import { createAlphaHttpRepository } from '@/lib/flow/integrated-poc/alpha-sync/http-repository';
+import { isSyntheticAlphaWorkspaceInput, type SyntheticAlphaWorkspaceRuntime } from '@/lib/flow/integrated-poc/alpha-sync/workspace-runtime';
+import { newProgramReviewDraft, programReviewOriginReason, type ProgramReviewEntry, type ProgramReviewOrigin, type ProgramReviewSpacePort } from '@/lib/flow/integrated-poc/review-return';
 import { createAlphaTabRecovery } from '@/lib/flow/integrated-poc/alpha-sync/recovery';
 import { createAlphaUiRecovery, type AlphaUiDraft, type AlphaUiRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-ui-recovery';
 import { type ProgramData, type ProgramParticipationDraft, type ProgramPublicationDraft, programId } from '@/lib/flow/integrated-poc/contract';
@@ -46,6 +48,11 @@ const AlphaPreservationPanel = dynamic(() => import('./AlphaPreservationPanel').
 const capability = { discovery: true, publication: true, copyInspection: true, revisionHistory: false, creatorNavigation: true, taskClassification: true };
 type Controller = ReturnType<typeof createAlphaSyncController>;
 type UiRecovery = ReturnType<typeof createAlphaUiRecovery>;
+// Presentation identity only. Never copy private draft text into announcement state.
+function reviewAnnouncementState(snapshot: AlphaSyncSnapshot | null | undefined) {
+  return JSON.stringify([snapshot?.ownerId, snapshot?.status, snapshot?.busy, snapshot?.pending?.requestId,
+    snapshot?.draft?.requestId, snapshot?.lastReceipt?.requestId, snapshot?.account?.revision, snapshot?.publicRevision]);
+}
 const labels: Record<AlphaSyncSnapshot['status'], string> = {
   'signed-out': '로그인이 필요합니다', ready: '서버와 연결됨', saving: '서버에 저장 중…', saved: '서버 저장 확인',
   'same-location': '변경 없음', cancelled: '취소했습니다', conflict: '다른 변경이 먼저 저장되었습니다',
@@ -60,12 +67,32 @@ function mergeRecoveryDrafts(parked: readonly AlphaUiDraft[], active: readonly A
   }).map(draft => ({ ...draft }));
 }
 
-export function AlphaWorkspace({ config, session, email, onSignOut }: {
+type AlphaWorkspaceProps = {
   config: AlphaAuthConfig; session: VerifiedAlphaSession; email: string; onSignOut: () => Promise<void>;
-}) {
+};
+export function AlphaWorkspace({ config, session, email, onSignOut }: AlphaWorkspaceProps) {
+  // Do not forward unknown JS props into the test-only injection seam.
+  return <AlphaWorkspaceBody key={session.userId} config={config} session={session} email={email} onSignOut={onSignOut} />;
+}
+/** Isolated fixture entry only. Existing production entry never accepts injection. */
+export function AlphaWorkspaceSyntheticFixture(props: AlphaWorkspaceProps & { runtime: SyntheticAlphaWorkspaceRuntime }) {
+  if (!isSyntheticAlphaWorkspaceInput(props.runtime, props.config, props.session)) return <p role="alert">합성 Alpha 실행 설정을 확인해 주세요.</p>;
+  return <AlphaWorkspaceBody key={props.session.userId} {...props} syntheticRuntime={props.runtime} />;
+}
+function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntime }: AlphaWorkspaceProps & { syntheticRuntime?: SyntheticAlphaWorkspaceRuntime }) {
+  const request = syntheticRuntime?.request ?? fetch;
+  const sessionEpoch = useMemo(() => ({}), [session.userId, session.accessToken]);
+  const sessionEpochRef = useRef(sessionEpoch); sessionEpochRef.current = sessionEpoch;
   const [snapshot, setSnapshot] = useState<AlphaSyncSnapshot | null>(null), [data, setData] = useState<ProgramData | null>(null);
   const [destination, setDestination] = useState<ProgramDestination>({ view: 'space' });
   const destinationRef = useRef(destination); destinationRef.current = destination;
+  const reviewSpace = useRef<ProgramReviewSpacePort | null>(null);
+  const reviewContext = useRef<{ origin: ProgramReviewOrigin; port: ProgramReviewSpacePort; editor: ProgramEditorFlush | null; draftId: string; postId?: string; epoch: object } | null>(null);
+  const [reviewEntry, setReviewEntry] = useState<ProgramReviewEntry | null>(null);
+  const reviewResultReceiver = useRef<((submitted: ProgramParticipationDraft, postId: string) => boolean) | null>(null);
+  const [, refreshReviewContext] = useState(0);
+  const reviewBusy = useRef(false), reviewInteraction = useRef(0);
+  const reviewRestore = useRef<{ destination: ProgramDestination; run: () => Promise<void> } | null>(null);
   const [creatorSeen, setCreatorSeen] = useState(false), [creatorSelection, setCreatorSelection] = useState<string | undefined>();
   const [creatorEntryChoices, setCreatorEntryChoices] = useState(false);
   const creatorEntryReturn = useRef<ProgramDestination | null>(null);
@@ -87,8 +114,10 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
   const inspectorDialog = useRef<HTMLDialogElement | null>(null);
   const socialRecovery = useRef<ReturnType<typeof createAlphaSocialRecovery> | null>(null), parkedSocial = useRef<AlphaSocialRecoveryEntry[]>([]), activeSocial = useRef<AlphaSocialRecoveryEntry[]>([]);
   const publisherEditors = useRef<ProgramEditorFlush | null>(null), communityEditors = useRef<ProgramEditorFlush | null>(null), inspectorEditors = useRef<ProgramEditorFlush | null>(null);
-  const mediaPort = useMemo(() => createAlphaCommunityMediaPort({ accessToken: () => session.accessToken }), [session.userId, session.accessToken]);
+  const mediaPort = useMemo(() => createAlphaCommunityMediaPort({ accessToken: () => session.accessToken, fetch: request }), [session.userId, session.accessToken, request]);
   const [output, setOutput] = useState<string | null>(null), [message, setMessage] = useState('');
+  const [reviewAnnouncement, setReviewAnnouncement] = useState<{ isCurrent: () => boolean } | null>(null);
+  const reviewAnnouncementGeneration = useRef(0);
   const [recoveries, setRecoveries] = useState<AlphaUiRecoveryRecord | null>(null), [storageError, setStorageError] = useState(false);
   const [external, setExternal] = useState(false), [presentation, setPresentation] = useState(0), [leave, setLeave] = useState(false);
   const controller = useRef<Controller | null>(null), uiRecovery = useRef<UiRecovery | null>(null);
@@ -144,11 +173,31 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     if (!saved.ok) { setStorageError(true); return false; }
     setRecoveries(saved.value); return true;
   }
+  function connectConfirmedReview(prior: AlphaSyncSnapshot | null, next: AlphaSyncSnapshot) {
+    const pending = prior?.pending, receipt = next.lastReceipt, context = reviewContext.current;
+    const submitted = pending?.kind === 'social' && pending.intent.type === 'participation-submit' ? pending.intent.draft : null;
+    // The controller already owns lookup/commit. This only reconnects its exact public-submit receipt.
+    if (disposed.current || externalRef.current || ownMutation.current !== 0 || next.busy
+      || currentOwnerRef.current !== session.userId || prior?.ownerId !== session.userId || next.ownerId !== session.userId
+      || next.account?.ownerId !== session.userId || next.envelope?.data.activeActorId !== session.userId
+      || !context || context.epoch !== sessionEpochRef.current || context.origin.actorId !== session.userId
+      || !submitted || submitted.editTargetId || !pending
+      || submitted.id !== context.draftId || !['saved', 'same-location'].includes(next.status) || next.pending || next.draft
+      || receipt?.kind !== 'social' || receipt.requestId !== pending.requestId || !receipt.resultId
+      || receipt.revision !== pending.expectedRevision + (receipt.changed ? 1 : 0) || next.account.revision < receipt.revision
+      || receipt.publicRevision !== undefined && (next.publicRevision ?? -1) < receipt.publicRevision
+      || next.account.space.participationDrafts.some(draft => draft.id === submitted.id)
+      || !next.envelope.data.public.posts.some(post => post.id === receipt.resultId && post.authorId === session.userId && !post.deleted)) return false;
+    if (!reviewResultReceiver.current?.(submitted, receipt.resultId)) return false;
+    context.postId = receipt.resultId; refreshReviewContext(value => value + 1);
+    return true;
+  }
   function present(next: AlphaSyncSnapshot) {
     if (disposed.current || currentOwnerRef.current !== session.userId) return;
     if (next.account && next.account.ownerId !== session.userId) return;
     if (!next.busy) setMessage(value => value === PROGRAM_BUSY_NOTICE ? '' : value);
     const prior = previousSnapshot.current;
+    if (reviewAnnouncementState(prior) !== reviewAnnouncementState(next)) reviewAnnouncementGeneration.current++;
     previousSnapshot.current = next;
     setSnapshot(next);
     if (!next.account || !next.envelope) {
@@ -161,6 +210,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     // Keep the displayed preimage until its receipt proves ownership; do not
     // turn a poll into either an acknowledgment or a permanent false conflict.
     if (next.pending && currentData.current) return;
+    connectConfirmedReview(prior, next);
     // A response lookup may confirm exactly the input still mounted in the
     // creator. Advance only its matching baseline before classifying it as
     // another device's change. The port rejects newer/auxiliary/composing input.
@@ -218,15 +268,16 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     preservationRef.current = false; setPreservation(false);
     preservationOpener.current = null; preservationReturn.current = null;
     try {
-      let slot = sessionStorage.getItem(SLOT_KEY);
-      if (!slot) { slot = crypto.randomUUID(); sessionStorage.setItem(SLOT_KEY, slot); }
+      const tabStorage = syntheticRuntime?.tabStorage ?? sessionStorage;
+      let slot = tabStorage.getItem(SLOT_KEY);
+      if (!slot) { slot = crypto.randomUUID(); tabStorage.setItem(SLOT_KEY, slot); }
       // sessionStorage is isolated even when a browser duplicates a tab's slot ID.
-      const recovery = createAlphaTabRecovery(sessionStorage, slot);
-      const ui = createAlphaUiRecovery(sessionStorage, { ownerId: session.userId, slotId: slot });
+      const recovery = createAlphaTabRecovery(tabStorage, slot);
+      const ui = createAlphaUiRecovery(tabStorage, { ownerId: session.userId, slotId: slot });
       uiRecovery.current = ui;
-      const creatorPort = createAlphaCreatorRecovery(sessionStorage, session.userId, slot);
+      const creatorPort = createAlphaCreatorRecovery(tabStorage, session.userId, slot);
       creatorRecovery.current = creatorPort; activeCreator.current = null;
-      const socialPort = createAlphaSocialRecovery(sessionStorage, session.userId, slot); socialRecovery.current = socialPort;
+      const socialPort = createAlphaSocialRecovery(tabStorage, session.userId, slot); socialRecovery.current = socialPort;
       const socialLoaded = socialPort.read(); activeSocial.current = [];
       if (socialLoaded.ok) { parkedSocial.current = socialLoaded.value?.entries ?? []; setSocialRecoveries(socialLoaded.value); } else setStorageError(true);
       const creatorLoaded = creatorPort.read();
@@ -244,12 +295,12 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
   useEffect(() => {
     const store = controller.current; if (!store) return;
     captureInput();
-    store.bindSession(session.userId, createAlphaHttpRepository(config, session, fetch, { social: true }));
+    store.bindSession(session.userId, createAlphaHttpRepository(config, session, request, { social: true }));
     if (store.snapshot().pending) void store.resolvePending(false); else void store.refresh();
-  }, [config, session.userId, session.accessToken]);
+  }, [config, session.userId, session.accessToken, request]);
   useEffect(() => {
     let storage: Storage | null = null;
-    try { storage = window.localStorage; } catch { /* Keep server documents usable. */ }
+    try { storage = syntheticRuntime?.documentStorage ?? window.localStorage; } catch { /* Keep server documents usable. */ }
     const locks = navigator.locks;
     const port = createAlphaDocumentCollections(session.userId, storage,
       locks ? (name, work) => locks.request(name, { mode: 'exclusive' }, work) : null,
@@ -380,23 +431,27 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     if (!controller.current || storageError) return { ok: false, reason: 'recovery-required' };
     if (externalRef.current) return { ok: false, reason: 'conflict' };
     if (!captureInput()) return { ok: false, reason: 'recovery-required' };
+    const intent = typeof options?.alphaSocial === 'object' ? options.alphaSocial : undefined;
+    // The matching composer owns this attempt's message; account recovery controls remain here.
+    const reviewOwnsMessage = intent?.type === 'participation-submit' && intent.draft.id === reviewContext.current?.draftId;
+    if (reviewOwnsMessage && captureReviewVisit()()) setMessage('');
     ownMutation.current++;
     try {
       const outcome = await controller.current.mutate(label, build, options);
       if (!outcome.ok) {
         // A blocked click may resume after the original request settles.
         // Do not reintroduce its temporary wait notice after the final snapshot.
-        if (outcome.reason !== 'busy') {
+        if (outcome.reason !== 'busy' && !reviewOwnsMessage) {
           const failed = controller.current?.snapshot();
           setMessage(failed?.pending ? programErrorMessage('checking-result') : failed?.retryableNativeHandoff
             ? '저장되지 않았습니다. 비교와 선택은 유지했습니다. 같은 선택으로 다시 적용해 주세요.'
             : failed?.retryableRejectedSocialDraft ? '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'
             : failed?.retryableRejectedDraft ? '저장되지 않았습니다. 입력을 수정한 뒤 다시 저장해 주세요.' : programErrorMessage(outcome.reason));
         }
-        else if (controller.current?.snapshot().busy) setMessage(PROGRAM_BUSY_NOTICE);
+        else if (outcome.reason === 'busy' && !reviewOwnsMessage && controller.current?.snapshot().busy) setMessage(PROGRAM_BUSY_NOTICE);
       }
       else {
-        setMessage('');
+        if (!reviewOwnsMessage) setMessage('');
         // Drop only input that exactly matches confirmed server text. A newer keystroke stays protected.
         const saved = uiRecovery.current?.read(), confirmed = controller.current.snapshot().account;
         const creatorSaved = creatorRecovery.current?.read();
@@ -424,6 +479,106 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       return outcome;
     } finally { ownMutation.current--; }
   };
+  function reviewReady(epoch: object): boolean {
+    const live = controller.current?.snapshot();
+    return epoch === sessionEpochRef.current && !disposed.current && currentOwnerRef.current === session.userId
+      && !externalRef.current && !storageErrorRef.current && !preservationRef.current && !modalRef.current
+      && !!live && live.ownerId === session.userId && live.account?.ownerId === session.userId
+      && live.envelope?.data.activeActorId === session.userId && currentData.current?.activeActorId === session.userId
+      && !live.busy && !live.pending && !live.draft && ['ready','saved','same-location','cancelled'].includes(live.status);
+  }
+  function clearReviewContext() {
+    reviewContext.current = null; reviewRestore.current = null; setReviewEntry(null); refreshReviewContext(value => value + 1);
+  }
+  async function resolvePendingResult() {
+    const pending = controller.current?.snapshot().pending, context = reviewContext.current;
+    const review = pending?.kind === 'social' && pending.intent.type === 'participation-submit'
+      && pending.intent.draft.id === context?.draftId;
+    const currentVisit = review ? captureReviewVisit() : null;
+    if (!await controller.current?.resolvePending(true)) return;
+    if (review && (!currentVisit?.() || reviewContext.current !== context || context?.postId)) return;
+    setMessage('저장 결과를 확인했습니다.');
+  }
+  useEffect(() => { clearReviewContext(); }, [sessionEpoch]);
+  useEffect(() => {
+    const interacted = () => { reviewInteraction.current++; };
+    window.addEventListener('pointerdown', interacted, true); window.addEventListener('keydown', interacted, true);
+    return () => { window.removeEventListener('pointerdown', interacted, true); window.removeEventListener('keydown', interacted, true); };
+  }, []);
+  useEffect(() => {
+    const restoring = reviewRestore.current;
+    if (!restoring || restoring.destination !== destination) return;
+    let cancelled = false;
+    const frame = requestAnimationFrame(() => {
+      if (!cancelled) void restoring.run().finally(() => { if (reviewRestore.current === restoring) reviewRestore.current = null; });
+    });
+    return () => { cancelled = true; cancelAnimationFrame(frame); };
+  }, [destination, sessionEpoch]);
+  function captureReviewVisit() {
+    const visit = destinationRef.current, epoch = sessionEpochRef.current;
+    return () => !disposed.current && epoch === sessionEpochRef.current && visit.view === 'community'
+      && destinationRef.current === visit && !externalRef.current && currentData.current?.activeActorId === session.userId;
+  }
+  async function startReview(documentId: string) {
+    const epoch = sessionEpochRef.current, visit = destinationRef.current;
+    const port = reviewSpace.current, editor = editors.current;
+    if (reviewBusy.current || !reviewReady(epoch) || visit.view !== 'space' || !port) return;
+    reviewBusy.current = true;
+    const valid = () => reviewReady(epoch) && destinationRef.current === visit && reviewSpace.current === port && editors.current === editor;
+    try {
+      const sourceSaved = !editor || await editor.flushAll();
+      if (!valid()) return;
+      if (!sourceSaved) { setMessage('저장되지 않은 문서 입력을 먼저 확인해 주세요. 입력은 그대로 남아 있습니다.'); return; }
+      const community = communityEditors.current;
+      const communitySaved = !community || await community.flushAll();
+      if (!valid() || community !== communityEditors.current) return;
+      if (!communitySaved) { setMessage('작성 중인 글을 저장한 뒤 후기를 열어 주세요. 입력은 그대로 남아 있습니다.'); return; }
+      const origin = port.capture(documentId);
+      if (!origin || programReviewOriginReason(currentData.current!, origin)) { setMessage('현재 문서와 입력 상태를 확인한 뒤 후기를 다시 열어 주세요.'); return; }
+      const existing = reviewContext.current;
+      const stored = existing?.epoch === epoch && !existing.postId
+        ? currentData.current!.spaces[session.userId]?.participationDrafts.find(draft => draft.id === existing.draftId) : undefined;
+      if (stored && (existing!.origin.documentId !== documentId || programReviewOriginReason(currentData.current!, existing!.origin))) {
+        setMessage('앞서 연결한 후기 초안이 남아 있습니다. 해당 초안을 먼저 이어 써 주세요.'); return;
+      }
+      const draft = stored ?? newProgramReviewDraft();
+      const context = stored ? existing! : { origin, port, editor, draftId:draft.id, epoch };
+      reviewContext.current = context;
+      const next: ProgramDestination = { view:'community' };
+      const isCurrent = () => reviewReady(epoch) && destinationRef.current === next && reviewContext.current === context
+        && reviewSpace.current === port && editors.current === editor;
+      setReviewEntry({ draft, isCurrent, onOpened: opened => {
+        if (!opened && epoch === sessionEpochRef.current && reviewContext.current === context) setMessage('후기를 열지 못했습니다. 입력과 저장 결과를 확인해 주세요.');
+      } });
+      await navigate(next);
+      if (destinationRef.current !== next && reviewContext.current === context) setReviewEntry(null);
+    } finally { reviewBusy.current = false; }
+  }
+  async function returnFromReview() {
+    const context = reviewContext.current, visit = destinationRef.current, interaction = reviewInteraction.current;
+    const focusOwner = document.activeElement;
+    if (!context?.postId || reviewBusy.current) return;
+    const valid = () => reviewReady(context.epoch) && reviewContext.current === context && reviewSpace.current === context.port
+      && editors.current === context.editor && reviewInteraction.current === interaction
+      && !programReviewOriginReason(currentData.current!, context.origin);
+    if (!valid()) { setMessage('원래 문서나 입력 상태가 달라 정확히 돌아갈 수 없습니다. 현재 글과 문서는 유지됩니다.'); return; }
+    reviewBusy.current = true;
+    try {
+      const community = communityEditors.current;
+      const saved = !community || await community.flushAll();
+      if (destinationRef.current !== visit || !valid() || community !== communityEditors.current) return;
+      if (!saved) { setMessage('작성 중인 글을 먼저 저장해 주세요. 입력은 그대로 남아 있습니다.'); return; }
+      const next: ProgramDestination = { view:'space', id:context.origin.documentId };
+      const restoring = { destination:next, run: async () => {
+        const restored = await context.port.restore(context.origin, () => valid() && destinationRef.current === next, focusOwner);
+        if (!restored && destinationRef.current === next && context.epoch === sessionEpochRef.current) setMessage('문서 상태가 달라 이전 입력 위치를 적용하지 않았습니다. 현재 위치를 확인해 주세요.');
+      } };
+      reviewRestore.current = restoring;
+      await navigate(next);
+      if (destinationRef.current !== next && reviewRestore.current === restoring) reviewRestore.current = null;
+    } finally { reviewBusy.current = false; }
+  }
+  async function signOut() { clearReviewContext(); await onSignOut(); }
   async function history(kind: 'undo' | 'redo') {
     if (storageError) { setMessage('입력 보관 상태를 확인하기 전에는 변경할 수 없습니다.'); return; }
     if (hasInput()) { setMessage('작성 중인 내용을 먼저 저장하거나 보관해 주세요.'); return; }
@@ -477,12 +632,13 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
   }
   async function navigate(next: ProgramDestination, chooseCreatorEntry = false) {
     if (externalRef.current || controller.current?.snapshot().pending) { setMessage('먼저 저장 결과와 보관 입력을 확인해 주세요.'); return; }
-    const visit = destinationRef.current;
+    const visit = destinationRef.current, epoch = sessionEpochRef.current, store = controller.current;
     if (!captureInput()) return;
     const releases = allEditors().map(port => port?.lockInput());
     try { for (const port of allEditors()) if (port && !await port.flushAll()) return; }
     finally { releases.forEach(release => release?.()); }
-    if (disposed.current || visit !== destinationRef.current) return;
+    if (disposed.current || visit !== destinationRef.current || epoch !== sessionEpochRef.current || store !== controller.current
+      || currentOwnerRef.current !== session.userId) return;
     if (chooseCreatorEntry) { creatorEntryReturn.current = visit; setCatalogDetailOpen(false); }
     setCreatorEntryChoices(next.view === 'creator' && chooseCreatorEntry);
     if (next.view === 'creator') { setCreatorSeen(true); setCreatorSelection(next.id); }
@@ -620,10 +776,11 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     return recovery ? { ...recovery, draftId: intent.draft.id } : undefined;
   }
   const localParticipationRecovery = activeParticipationRecovery();
+  const reviewOwnsAnnouncement = !!reviewAnnouncement?.isCurrent();
   const participationMessage = !!localParticipationRecovery && [programErrorMessage('checking-result'), '저장 결과를 확인했습니다.',
     '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'].includes(message);
   const pending = !!snapshot?.pending;
-  const unavailable = snapshot?.status === 'session-expired' || !data;
+  const unavailable = snapshot?.status === 'session-expired' || !data || data.activeActorId !== session.userId || snapshot?.ownerId !== session.userId;
   const browse = ['discover', 'flow', 'community'].includes(destination.view);
   const workspaceTools = !unavailable && data && <div className={styles.workspaceUtilities}>
     <nav className={styles.tabs} aria-label="Flow · 다른 도구">
@@ -636,7 +793,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     </div></details>
   </div>;
   const modalRecovery = pending && snapshot?.status !== 'saving'
-    ? <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 입력은 유지하고 같은 요청으로 확인합니다.</p><button type="button" disabled={snapshot?.busy} onClick={async () => { if (await controller.current?.resolvePending(true)) setMessage('저장 결과를 확인했습니다.'); }}>저장 결과 확인 · 같은 요청 재시도</button></section>
+    ? <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 입력은 유지하고 같은 요청으로 확인합니다.</p><button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>저장 결과 확인 · 같은 요청 재시도</button></section>
     : external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft ? <section className={styles.problem} aria-label="편집 중 변경 확인"><p>다른 변경이 먼저 저장되었습니다. 입력을 보관한 뒤 최신 내용을 확인해 주세요.</p><button disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button></section> : null;
   // Presentation only: storage, pending authority and recovery actions stay
   // unchanged. In personal space their disclosure does not resize the document.
@@ -647,7 +804,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
   const inputProtection = <>
     {storageError && <p className={styles.problem} role="alert">브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
     {pending && snapshot?.status !== 'saving' && !localParticipationRecovery && <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 같은 요청으로 확인합니다.</p>
-      <button type="button" disabled={snapshot?.busy} onClick={async () => { if (await controller.current?.resolvePending(true)) setMessage('저장 결과를 확인했습니다.'); }}>저장 결과 확인 · 같은 요청 재시도</button></section>}
+      <button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>저장 결과 확인 · 같은 요청 재시도</button></section>}
     {(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending && !localParticipationRecovery && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>{snapshot?.retryableNativeHandoff
       ? '저장되지 않았습니다. 비교와 선택은 유지했습니다. 같은 선택으로 다시 적용해 주세요.'
       : snapshot?.retryableRejectedSocialDraft ? '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'
@@ -678,7 +835,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       <p>개발용 통합 검증판 · 공개한 내용은 개발계의 다른 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 아직 넣지 마세요.</p></details>;
   const serverUndo = <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>;
   const serverStatus = <div className={styles.statusRow}>
-        {!localParticipationRecovery && <p role="status" aria-live="polite" data-save-state={snapshot?.status}>{pending && snapshot?.status !== 'saving' ? '저장 결과 확인이 필요합니다' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
+        {!localParticipationRecovery && <p role={reviewOwnsAnnouncement ? undefined : 'status'} aria-live={reviewOwnsAnnouncement ? 'off' : 'polite'} data-save-state={snapshot?.status}>{pending && snapshot?.status !== 'saving' ? '저장 결과 확인이 필요합니다' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
         {destination.view === 'space' && needsInputProtection && <details name="program-input-feedback" className={styles.inputRecovery} onKeyDown={event => {
           if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
           event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
@@ -694,15 +851,17 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
         </details>}
         {!usesNoteChrome && serverUndo}
       </div>;
-  return <main className={styles.page} data-note-layout={usesNoteChrome} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
+  return <main className={styles.page} data-alpha-frame="b" data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
     <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}>FlowMe</a>
       {!unavailable && <nav className={styles.globalNavigation} aria-label="주요 메뉴">
-        <button type="button" aria-current={['space', 'legacy'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'space' })}>내 작업</button>
-        <button type="button" aria-current={['discover', 'flow', 'creator'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>Flow</button>
-        <button type="button" aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}>이야기</button>
+        <button type="button" aria-current={['space', 'legacy'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'space' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="m3 10 9-7 9 7v11H3z"/></svg><span>내 공간</span></button>
+        <button type="button" aria-current={['discover', 'flow', 'community'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 3h16v18H4zm3 4h10v2H7zm0 5h10v2H7zm0 5h6v2H7z"/></svg><span>둘러보기</span></button>
+        <button type="button" aria-current={['activity','creator'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" opacity=".25" d="M2 7h20v15H2Z"/><path fill="currentColor" d="M2 3h8l3 4h9v4H2Z"/></svg><span>내 활동</span></button>
       </nav>}
       <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1>
-      <span className={styles.development}>개발계</span></header>
+      <span className={styles.development}>{syntheticRuntime ? '합성 검증' : '개발계'}</span></header>
+    {browse && <nav className={styles.browseNavigation} aria-label="둘러보기 종류"><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({view:'community'})}>경험·질문·지식</button><button aria-current={['discover','flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({view:'discover'})}>Flow 찾기</button></nav>}
+    <div className={styles.workPane} data-testid="alpha-work-pane">
     {!usesNoteChrome && publicNotice}
     <section className={styles.sync} aria-label="서버 저장 상태">
       {!usesNoteChrome && serverStatus}
@@ -715,7 +874,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       }}><summary aria-current={['activity', 'legacy'].includes(destination.view) ? 'page' : undefined} aria-label={destination.view === 'activity' ? '보조 메뉴 · 현재 위치: 내 활동' : destination.view === 'legacy' ? '보조 메뉴 · 현재 위치: 개인 Flow 상세' : '보조 메뉴 · 내 활동, 계정·자료 관리'}><span className={styles.auxiliaryLabel}>{destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : '더보기'}</span></summary><div className={styles.managementBody}>
         <h2>계정 · 자료 관리</h2>
         <div className={styles.account}><p>{email}</p>{snapshot?.account && <small>마지막 확인 판본 {snapshot.account.revision}</small>}</div>
-        <div className={styles.managementActions}>{usesNoteChrome && serverUndo}<button type="button" onClick={() => { captureInput(); if (hasInput() || pending) setLeave(true); else void onSignOut(); }}>로그아웃 · 계정 바꾸기</button>
+        <div className={styles.managementActions}>{usesNoteChrome && serverUndo}<button type="button" onClick={() => { captureInput(); if (hasInput() || pending) setLeave(true); else void signOut(); }}>로그아웃 · 계정 바꾸기</button>
         <button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button>
         <button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external}>다시 실행</button>
         <button type="button" disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} onClick={event => {
@@ -750,7 +909,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       <button onClick={() => { if (socialRecovery.current?.clear().ok) { parkedSocial.current = []; activeSocial.current = []; setSocialRecoveries(null); } else setStorageError(true); }}>보관 공개·참여 입력 버리기</button>
     </details>}
     {leave && <section className={styles.problem} aria-label="로그아웃 전 입력 확인"><p>저장하지 않은 입력을 이 탭에 보관한 뒤 로그아웃할 수 있습니다. 같은 계정으로 돌아와 복구하세요.</p>
-      <button type="button" onClick={() => { if (captureInput()) void onSignOut(); }}>입력 보관 후 로그아웃</button><button type="button" onClick={() => setLeave(false)}>계속 작성</button></section>}
+      <button type="button" onClick={() => { if (captureInput()) void signOut(); }}>입력 보관 후 로그아웃</button><button type="button" onClick={() => setLeave(false)}>계속 작성</button></section>}
     {destination.view !== 'space' && message && !participationMessage && <p className={styles.message} role="status">{message}</p>}
     {unavailable ? <section className={styles.empty}><p>{snapshot?.status === 'session-expired' ? '계정을 다시 확인한 뒤 개인공간을 열 수 있습니다.' : '서버에서 개인공간을 확인하고 있습니다.'}</p></section> : <>
       {['activity', 'creator'].includes(destination.view) && <nav className={styles.tabs} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={openCreatorEntry}>Flow 만들기</button></nav>}
@@ -766,13 +925,30 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
           return !disposed.current && !externalRef.current && !!authority && !authority.pending && !authority.busy && authority.status !== 'conflict';
         }}
         selectedDocumentId={destination.view === 'space' ? destination.id : undefined} onUndo={() => history('undo')} onRedo={() => history('redo')}
-        onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} /></div>
+        onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }}
+        onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} storageScope="account"
         selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined}
         selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} onUseVersion={useVersion} onStartText={startText} onCreateFlow={openCreatorEntry} navigationState={discoveryState} onNavigationStateChange={setDiscoveryState} /></div>}
       {seen.community && <div hidden={!['community', 'activity'].includes(destination.view)}><ProgramCommunity key={`community:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()}
         view={communityView} selectedPostId={communitySelection} selectedReplyId={destination.view === 'community' ? destination.replyId : undefined} presentation={communityState} onPresentationChange={setCommunityState}
         storageScope="account" mediaPort={mediaPort} draftSaveRecovery={localParticipationRecovery}
+        reviewEntry={reviewEntry} captureReviewVisit={captureReviewVisit}
+        onRegisterReviewResult={receive => { reviewResultReceiver.current = receive; }}
+        reviewAnnouncement={{
+          captureState: () => {
+            const generation = reviewAnnouncementGeneration.current;
+            return () => generation === reviewAnnouncementGeneration.current;
+          },
+          onChange: isCurrent => setReviewAnnouncement({ isCurrent }),
+        }}
+        onReviewPublished={(draftId,postId) => {
+          const context=reviewContext.current;
+          if (context?.draftId===draftId && reviewReady(context.epoch) && currentData.current?.public.posts.some(post=>post.id===postId&&!post.deleted)) {
+            context.postId=postId; refreshReviewContext(value=>value+1);
+          }
+        }}
+        reviewReturnPostId={reviewContext.current?.epoch===sessionEpoch ? reviewContext.current?.postId : undefined} onReturnReview={returnFromReview}
         resolveDraftSaveRecovery={(failedDraft, expected) => readParticipationRecovery(failedDraft, expected)}
         resolveDraftSaveError={(next, expected, reason) => {
           const authority = controller.current?.snapshot();
@@ -808,5 +984,6 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
         {modalRecovery}<ProgramCopyInspector key={`copy:${session.userId}:${inspector}`} data={data} mutate={mutate} navigate={next => { setInspector(null); void navigate(next); }} today={programLocalDate()} copyId={inspector}
           onClose={() => setInspector(null)} onRegisterEditors={port => { inspectorEditors.current = port; }} /></dialog>}
     </>}
+    </div>
   </main>;
 }

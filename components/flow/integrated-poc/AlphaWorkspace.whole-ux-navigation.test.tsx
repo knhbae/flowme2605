@@ -51,6 +51,7 @@ function text(value: any): string {
 }
 function context(view: ProgramDestination['view'] = 'space', bindings = false): Record<string, any> {
   const ctx: Record<string, any> = {
+    syntheticRuntime: undefined,
     styles: new Proxy({}, { get: (_, key) => String(key) }), destination: { view }, unavailable: false,
     data: { spaces: { 'synthetic-owner': { savedBindings: bindings ? [{}] : [] } } }, session: { userId: 'synthetic-owner' },
     collectionsMode: false, collectionsSwitching: false, collectionsSaving: false, pending: false,
@@ -68,9 +69,9 @@ function primary(ctx: Record<string, any>) {
 function auxiliary(ctx: Record<string, any>) {
   return nodes(evaluate(initializer('workspaceTools'), ctx)).filter(node => node.type === 'button');
 }
-const destinations = [['내 작업', 'space'], ['Flow', 'discover'], ['이야기', 'community']] as const;
+const destinations = [['내 공간', 'space'], ['둘러보기', 'community'], ['내 활동', 'activity']] as const;
 
-test('global personal work, Flow and stories are direct named entries outside account management', () => {
+test('approved B personal space, browse and activity remain outside account management', () => {
   const ctx = context(), calls: ProgramDestination[] = [];
   ctx.navigate = (next: ProgramDestination) => calls.push(next);
   const navigation = primary(ctx)!;
@@ -89,9 +90,9 @@ test('global personal work, Flow and stories are direct named entries outside ac
 
 test('selected public detail, creator, activity and legacy destinations remain identifiable', () => {
   const cases: [ProgramDestination['view'], string | undefined, string | undefined][] = [
-    ['space', '내 작업', undefined], ['discover', 'Flow', undefined], ['flow', 'Flow', undefined],
-    ['creator', 'Flow', undefined], ['community', '이야기', undefined],
-    ['activity', undefined, '내 활동'], ['legacy', '내 작업', '개인 Flow 상세'],
+    ['space', '내 공간', undefined], ['discover', '둘러보기', undefined], ['flow', '둘러보기', undefined],
+    ['creator', '내 활동', undefined], ['community', '둘러보기', undefined],
+    ['activity', '내 활동', '내 활동'], ['legacy', '내 공간', '개인 Flow 상세'],
   ];
   for (const [view, activePrimary, activeAuxiliary] of cases) {
     const ctx = context(view, true);
@@ -131,6 +132,8 @@ function guardedContext() {
   ctx.controller = { current: { snapshot: () => ({ pending: false }) } };
   ctx.destinationRef = { current: ctx.destination };
   ctx.disposed = { current: false };
+  ctx.sessionEpochRef = { current: {} };
+  ctx.currentOwnerRef = { current: ctx.session.userId };
   ctx.captureInput = () => { events.push('capture'); return true; };
   ctx.allEditors = () => [{
     lockInput: () => { events.push('lock'); return () => events.push('release'); },
@@ -180,7 +183,7 @@ test('settling an old flush cannot navigate after disposal or a newer route visi
     ctx.allEditors = () => [{ lockInput: () => () => {}, flushAll: () => new Promise<boolean>(resolve => { settle = resolve; }) }];
     const navigate = evaluate(`(${declaration('navigate')})`, ctx);
     ctx.navigate = (next: ProgramDestination) => { ctx.flight = navigate(next); };
-    nodes(primary(ctx)).find(node => node.type === 'button' && text(node.props.children) === 'Flow')!.props.onClick();
+    nodes(primary(ctx)).find(node => node.type === 'button' && text(node.props.children) === '둘러보기')!.props.onClick();
     if (newer === 'disposed') ctx.disposed.current = true;
     else ctx.destinationRef.current = { view: 'community' };
     settle(true);
@@ -192,31 +195,36 @@ test('settling an old flush cannot navigate after disposal or a newer route visi
 
 test('successful global navigation captures, locks and flushes before the existing route transition', async () => {
   const { ctx, visits, routes, events } = guardedContext();
-  nodes(primary(ctx)).find(node => node.type === 'button' && text(node.props.children) === '이야기')!.props.onClick();
+  nodes(primary(ctx)).find(node => node.type === 'button' && text(node.props.children) === '둘러보기')!.props.onClick();
   await ctx.flight;
   assert.deepEqual(events, ['capture', 'lock', 'flush', 'release']);
   assert.deepEqual(visits, [{ view: 'community' }]);
   assert.deepEqual(routes, [programLocation({ view: 'community' })]);
 });
 
-test('shell defines one compact top navigation and a 216px rail only from 1200px', () => {
+test('approved B frame overrides the historical rail and preserves mobile, hidden and focus boundaries', () => {
   const css = postcss.parse(readFileSync(new URL('./AlphaWorkspace.module.css', import.meta.url), 'utf8'));
-  const desktop = css.nodes.find(node => node.type === 'atrule' && node.name === 'media' && node.params === '(min-width: 1200px)') as postcss.AtRule;
-  assert(desktop);
-  const declarations = new Map<string, string>();
-  desktop.walkRules(rule => { rule.walkDecls(declaration => { declarations.set(`${rule.selector}:${declaration.prop}`, declaration.value); }); });
-  assert.equal(declarations.get('.page:grid-template-columns'), '216px minmax(0, 1fr) auto');
-  assert.equal(declarations.get('.globalNavigation:flex-direction'), 'column');
-  assert.equal(declarations.get('.page > .header:grid-column'), '1');
-  assert.equal(declarations.get('.sync > .management:grid-column'), '3');
   const defaults = new Map<string, string>();
   css.walkRules(rule => {
     if (rule.parent?.type !== 'root') return;
     rule.walkDecls(declaration => { defaults.set(`${rule.selector}:${declaration.prop}`, declaration.value); });
   });
-  assert.equal(defaults.get('.page > .header:flex-wrap'), 'nowrap');
-  assert.equal(defaults.get('.globalNavigation:display'), 'flex');
-  assert.equal(defaults.get('.globalNavigation:position'), undefined);
+  const b='.page[data-alpha-frame="b"]';
+  assert.equal(defaults.get(`${b}:display`), 'block');
+  assert.equal(defaults.get(`${b} > .header:width`), '92px');
+  assert.equal(defaults.get(`${b} .globalNavigation:flex-direction`), 'column');
+  assert.equal(defaults.get(`${b} .globalNavigation button:min-height`), '72px');
+  assert.equal(defaults.get(`${b} .workPane:min-width`), '0');
+  assert.equal(defaults.get(`${b} [hidden]:display`), 'none');
+  assert.equal(defaults.get(`${b} :is(button,a,input,select,textarea,summary):focus-visible:outline`), '2px solid var(--b-primary)');
+  const mobile=css.nodes.find(node=>node.type==='atrule'&&node.name==='media'&&node.params==='(max-width:700px)') as postcss.AtRule;
+  assert(mobile);
+  const mobileValues=new Map<string,string>();
+  mobile.walkRules(rule=>rule.walkDecls(decl=>{mobileValues.set(`${rule.selector}:${decl.prop}`,decl.value);}));
+  assert.equal(mobileValues.get(`${b} .globalNavigation:grid-template-columns`),'repeat(3,minmax(0,1fr))');
+  assert.equal(mobileValues.get(`${b} .globalNavigation:position`),'fixed');
+  assert.equal(mobileValues.get(`${b} .globalNavigation button:min-height`),'64px');
+  assert.equal(mobileValues.get(`${b} .workPane:width`),'calc(100% - 24px)');
   assert.equal(defaults.get('.page button:min-height'), '48px');
   assert.equal(defaults.get('.management > summary:min-width'), '48px');
   assert.equal(defaults.get('.managementBody:position'), 'absolute');

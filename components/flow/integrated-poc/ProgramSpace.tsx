@@ -23,6 +23,8 @@ import { ProgramDocumentTrash, ProgramDocumentTrashAction } from './ProgramDocum
 import { moveProgramTaskDocument } from '@/lib/flow/integrated-poc/task-document-move';
 import { setProgramDocumentTrashed } from '@/lib/flow/integrated-poc/document-lifecycle';
 import { programSame } from '@/lib/flow/integrated-poc/controller';
+import { programReviewOriginReason, type ProgramReviewSpacePort } from '@/lib/flow/integrated-poc/review-return';
+import { programLocation } from '@/lib/flow/integrated-poc/navigation';
 import { normalizeProgramWritingPosition } from '@/lib/flow/integrated-poc/writing-position';
 import { programLegacyTaskQualityHold, programPreservesLegacyQualityHold } from '@/lib/flow/integrated-poc/legacy-map-review';
 import { programPreservesLegacyPlanExcluded } from '@/lib/flow/integrated-poc/program-legacy-plan-target';
@@ -60,6 +62,8 @@ export type ProgramSpaceProps = {
   onInspectCopy?: (copyId: string) => void;
   onRevisionHistory?: (documentId: string) => void;
   onOutputDocument?: (documentId: string) => void;
+  onStartReview?: (documentId: string) => Promise<void>;
+  onRegisterReviewSpace?: (port: ProgramReviewSpacePort | null) => void;
   onRegisterEditors?: (editors: ProgramEditorFlush | null) => void;
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
   /** Local view changes do not call mutate; the host must expose held authority. */
@@ -566,6 +570,49 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       else if (result === 'save-failed') setMessage('현재 입력을 저장하지 못했습니다. 본문의 저장 오류를 해결한 뒤 다시 열어 주세요.');
     } finally { releaseInput(); preparing.current = false; setPreparingDocumentAction(false); }
   }
+  useEffect(() => {
+    const port: ProgramReviewSpacePort = {
+      capture: documentId => {
+        const editor = document.getElementById(`program-text-${encodeURIComponent(documentId)}`) as HTMLTextAreaElement | null;
+        const doc = dataRef.current.spaces[actorId]?.text.documents.find(entry => entry.id === documentId);
+        if (!doc || !editor || !editor.isConnected || (editor.readOnly && !preparing.current) || !editor.getClientRects().length
+          || selectedRef.current !== documentId || presentation.current.period !== 'documents' || dirty.current[documentId]) return null;
+        const raw = M.raw(doc);
+        const origin = { actorId, documentId, raw, editor, checkpoint: {
+          schema: 'flowme-navigation/1' as const, actorId, location: programLocation({ view: 'space', id: documentId }),
+          space: { ...presentation.current }, scroll: window.scrollY, focus: editor.id,
+          writing: { [documentId]: { start: editor.selectionStart, end: editor.selectionEnd, scrollTop: editor.scrollTop } },
+        } };
+        return editor.value === raw && !programReviewOriginReason(dataRef.current, origin) ? origin : null;
+      },
+      restore: (origin, currentVisit, previousFocus) => new Promise(resolve => {
+        const valid = () => currentVisit() && !programReviewOriginReason(dataRef.current, origin)
+          && selectedRef.current === origin.documentId && !dirty.current[origin.documentId]
+          && !Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())
+          && origin.editor.isConnected && document.getElementById(origin.editor.id) === origin.editor
+          && !origin.editor.readOnly && origin.editor.value === origin.raw;
+        if (!valid()) { resolve(false); return; }
+        const view = origin.checkpoint.space!;
+        setPeriod(view.period as ProgramPeriod); setDate(view.date); setFolderId(view.folderId); setQuery(view.query);
+        setShowArchived(view.showArchived); setRecurrencePresentation(view.recurrence ?? emptyProgramRecurrencePresentation());
+        requestAnimationFrame(() => {
+          // Recheck at the actual DOM write, after React reveals the retained editor.
+          if (!valid() || !origin.editor.getClientRects().length
+            || (document.activeElement !== previousFocus && document.activeElement !== document.body)) { resolve(false); return; }
+          const position = origin.checkpoint.writing?.[origin.documentId];
+          if (position) {
+            origin.editor.setSelectionRange(position.start, position.end);
+            origin.editor.scrollTop = position.scrollTop;
+          }
+          origin.editor.focus({ preventScroll: true });
+          window.scrollTo({ top: origin.checkpoint.scroll, behavior: 'instant' });
+          resolve(true);
+        });
+      }),
+    };
+    props.onRegisterReviewSpace?.(port);
+    return () => props.onRegisterReviewSpace?.(null);
+  }, [actorId]);
   async function changeDocumentTrash(trashed: boolean): Promise<ProgramMutationResult> {
     let outcome: ProgramMutationResult = { ok: false, reason: 'conflict' };
     await openDocumentAction(async id => { outcome = await run(trashed ? '문서 휴지통 이동' : '문서 휴지통 복원', current => setProgramDocumentTrashed(current, {
@@ -966,6 +1013,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {props.capabilities?.publication !== false && props.onPublishDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onPublishDocument!, { modalReturnFocus: true })}>선택해서 공개</button>}
             {props.capabilities?.revisionHistory !== false && props.onRevisionHistory && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onRevisionHistory!)}>저장판본·복구</button>}
             {props.onOutputDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onOutputDocument!)}>내 도구로 가져가기</button>}
+            {props.onStartReview && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onStartReview!)}>후기 쓰기</button>}
             {props.capabilities?.copyInspection !== false && props.onInspectCopy && space.copies.filter(copy => copy.documentId === selectedDoc.id).map(copy => <button key={copy.id} disabled={preparingDocumentAction} onClick={() => void openDocumentAction(() => props.onInspectCopy!(copy.id), { modalReturnFocus: true })}>내 계획·원본 변경 확인</button>)}
             {space.savedBindings.filter(binding => binding.documentId === selectedDoc.id).map(binding => <button key={binding.flowRef} disabled={preparingDocumentAction} onClick={() => void openDocumentAction(() => props.navigate({ view: 'legacy', id: binding.flowRef }))}>원본·개인 계획 확인</button>)}
             {space.retentionDocuments?.[selectedDoc.id] && <button onClick={() => void openDocument(space.retentionDocuments![selectedDoc.id])}>복구 중 보관된 내용</button>}

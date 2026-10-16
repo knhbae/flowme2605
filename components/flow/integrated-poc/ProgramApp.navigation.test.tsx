@@ -44,6 +44,7 @@ function harness(checkpoint:unknown){
   const context:Record<string,any>={...navigation,...helpers,window,document:{activeElement:null,getElementById:()=>null},HTMLElement:class{},current:{current:{envelope:{data:{activeActorId:actorId}}}},snapshot:{envelope:{data:{activeActorId:actorId}}},destination:{view:'space'},destinationRef:{current:{view:'space'}},restoringNavigation:restoring,discoveryStatesRef:states,discoveryNavigation:{current:null},spaceNavigation:{current:{actorId,capture:()=>({}),restore:()=>{spaceRestores++;}}},positions:{current:new Map()},main:{current:null},setDiscoveryStates(value:any){states.current=value;},requestAnimationFrame(fn:()=>void){frames.set(++frame,fn);return frame;},cancelAnimationFrame(id:number){frames.delete(id);}};
   context.communityStatesRef={current:{}};context.setCommunityStates=(value:any)=>{context.communityStatesRef.current=value;};
   context.communityInputRevision={current:0};
+  context.reviewRestore={current:null};context.leavingReviewOrigin={current:false};
   context.discoveryInputRevision={current:0};
   context.pendingNavigation={current:null};
   context.rememberNavigation=evaluate(callback('rememberNavigation').arguments[0].getText(ast),context);

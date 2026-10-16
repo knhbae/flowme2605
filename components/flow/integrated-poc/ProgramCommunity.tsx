@@ -12,6 +12,7 @@ import { ProgramCommunityImage } from './ProgramCommunityImage';
 import type { ProgramCommunityMediaPort } from '../../../lib/flow/integrated-poc/community-media';
 import styles from './ProgramCommunity.module.css';
 import { emptyProgramCommunityPresentation, type ProgramCommunityPresentation } from '../../../lib/flow/integrated-poc/navigation';
+import { programReviewPublicRelationValid, type ProgramReviewEntry } from '../../../lib/flow/integrated-poc/review-return';
 
 export type ProgramCommunityProps = {
   data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate;
@@ -24,13 +25,23 @@ export type ProgramCommunityProps = {
   resolveDraftSaveError?: (draft: ProgramParticipationDraft, expected: ProgramParticipationDraft | null, reason: string) => string | undefined;
   resolveDraftSaveRecovery?: (draft: ProgramParticipationDraft, expected: ProgramParticipationDraft | null, reason: string) => ProgramCommunityDraftSaveRecovery | undefined;
   draftSaveRecovery?: ProgramCommunityDraftSaveRecovery & { draftId: string };
+  reviewEntry?: ProgramReviewEntry | null;
+  captureReviewVisit?: () => () => boolean;
+  reviewAnnouncement?: {
+    captureState: () => () => boolean;
+    onChange: (isCurrent: () => boolean) => void;
+  };
+  onReviewPublished?: (draftId: string, postId: string) => void;
+  onRegisterReviewResult?: (receive: ((submitted: ProgramParticipationDraft, postId: string) => boolean) | null) => void;
+  reviewReturnPostId?: string;
+  onReturnReview?: () => Promise<void>;
 };
 export type ProgramCommunityDraftSaveRecovery = {
   state: 'rejected' | 'unknown' | 'confirmed-unsaved';
   message: string;
   action?: { label: string; onClick: () => void; disabled?: boolean };
 };
-type CommunityErrorNotice = { message: string; retryDraft?: boolean; draftSave?: {
+type CommunityErrorNotice = { message: string; retryDraft?: boolean; reviewAttempt?: number; isCurrent?: () => boolean; draftSave?: {
   draft: ProgramParticipationDraft; expected: ProgramParticipationDraft | null; reason: string;
 } };
 const kinds = { question: '질문', experience: '경험', knowledge: '지식', reply: '답글' };
@@ -49,7 +60,7 @@ function postTitle(data: ProgramData, id: string) { return data.public.posts.fin
 export function ProgramCommunity(props: ProgramCommunityProps) {
   return <CommunityBody key={props.data.activeActorId} {...props} />;
 }
-function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedReplyId, onRegisterEditors, presentation, onPresentationChange, storageScope = 'local', mediaPort, resolveDraftSaveError, resolveDraftSaveRecovery, draftSaveRecovery }: ProgramCommunityProps) {
+function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedReplyId, onRegisterEditors, presentation, onPresentationChange, storageScope = 'local', mediaPort, resolveDraftSaveError, resolveDraftSaveRecovery, draftSaveRecovery, reviewEntry, captureReviewVisit, reviewAnnouncement, onReviewPublished, onRegisterReviewResult, reviewReturnPostId, onReturnReview }: ProgramCommunityProps) {
   const actorId = data.activeActorId;
   const [localPresentation, setLocalPresentation] = useState(emptyProgramCommunityPresentation);
   const currentPresentation = presentation ?? localPresentation, { query, kind } = currentPresentation;
@@ -59,7 +70,7 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
   const [draft, setDraft] = useState<ProgramParticipationDraft | null>(null), [preview, setPreview] = useState(false);
   const [busy, setBusy] = useState(false), [errorNotice, setErrorNotice] = useState<CommunityErrorNotice>({ message: '' }), [saveState, setSaveState] = useState('');
   function setError(message: string) { setErrorNotice({ message }); }
-  const error = errorNotice.draftSave && draft?.id === errorNotice.draftSave.draft.id
+  const error = errorNotice.isCurrent && !errorNotice.isCurrent() ? '' : errorNotice.draftSave && draft?.id === errorNotice.draftSave.draft.id
     ? resolveDraftSaveError?.(errorNotice.draftSave.draft, errorNotice.draftSave.expected, errorNotice.draftSave.reason) ?? errorNotice.message
     : errorNotice.message;
   const [readingMedia, setReadingMedia] = useState(false);
@@ -67,6 +78,14 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
   const draftEntryDisabled = busy || readingMedia || locked;
   const [confirmDelete, setConfirmDelete] = useState<{ kind: 'post' | 'reply'; id: string } | null>(null);
   const [discarding, setDiscarding] = useState(false), [conflict, setConflict] = useState(false);
+  const consumedReviewEntry = useRef<ProgramReviewEntry | null>(null);
+  const activeReviewEntry = useRef(reviewEntry); activeReviewEntry.current = reviewEntry;
+  const confirmedReviewDrafts = useRef(new Set<string>());
+  const [confirmedReview, setConfirmedReview] = useState<{ postId: string; attempt: number; isCurrent: () => boolean; canAnnounce: () => boolean } | null>(null);
+  const reviewAttempt = useRef(0);
+  const reviewSubmission = useRef<{ snapshot: ProgramParticipationDraft; entry: ProgramReviewEntry | null | undefined; attempt: number; confirm: (postId: string) => void } | null>(null);
+  const [reviewPending, setReviewPending] = useState<{ attempt: number; isCurrent: () => boolean } | null>(null);
+  const isReviewDraft = !!draft && draft.id === reviewEntry?.draft.id && !draft.editTargetId;
   const draftRef = useRef(draft), bodyRef = useRef<HTMLTextAreaElement>(null), composeRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLInputElement>(null), savedDraftRef = useRef<ProgramParticipationDraft | null>(null);
   const composing = useRef(false), lockCount = useRef(0), mediaPending = useRef(false);
@@ -124,6 +143,15 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
   }, []);
   const mounted = useRef(true);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; mediaUpload.current?.abort(); }; }, []);
+  useEffect(() => {
+    onRegisterReviewResult?.((submitted, postId) => {
+      const submission = reviewSubmission.current;
+      if (!mounted.current || !submission || submission.entry !== activeReviewEntry.current
+        || submission.attempt !== reviewAttempt.current || !programSame(submission.snapshot, submitted)) return false;
+      submission.confirm(postId); return true;
+    });
+    return () => onRegisterReviewResult?.(null);
+  }, [onRegisterReviewResult]);
   useEffect(() => {
     if (!draft) return;
     bodyRef.current?.focus(); bodyRef.current?.setSelectionRange(draft.cursor.start, draft.cursor.end);
@@ -185,7 +213,8 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
         const outcome = await mutate('작성 중인 글 저장', current => saveProgramParticipationDraft(current, actorId, next, { expected }), { groupId: next.id, history: false, alphaSocial: { type: 'participation-save', draft: next, expected } });
         if (outcome.ok) savedDraftRef.current = programClone(next);
         if (mounted.current) {
-          setSaveState(outcome.ok ? storageScope === 'account' ? '계정에 초안 저장됨' : '이 기기에 저장됨' : '저장하지 못했어요');
+          setSaveState(outcome.ok ? draftPending() ? '앞선 초안은 저장됐습니다. 현재 입력은 아직 저장되지 않았습니다.'
+            : storageScope === 'account' ? '계정에 초안 저장됨' : '이 기기에 저장됨' : '저장하지 못했어요');
           if (!outcome.ok) {
             setErrorNotice({ message: programErrorMessage(outcome.reason), draftSave: {
               draft: programClone(next), expected: programClone(expected), reason: outcome.reason,
@@ -202,18 +231,28 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
   function change(patch: Partial<ProgramParticipationDraft>, contentChanged = true) {
     const current = draftRef.current; if (!current || lockCount.current > 0 && !composing.current) return;
     const next = { ...current, ...patch, requestId: contentChanged ? programId('request') : current.requestId };
-    draftRef.current = next; setDraft(next); setPreview(false); if (!composing.current) void save(next);
+    draftRef.current = next; setDraft(next); setPreview(false);
+    if (!composing.current) void save(next);
+    else setSaveState('현재 입력은 아직 저장되지 않았습니다.');
   }
-  async function openDraft(next: ProgramParticipationDraft) {
-    if (busy || readingMedia || lockCount.current > 0 || composing.current) return;
+  async function openDraft(next: ProgramParticipationDraft, isCurrent: () => boolean = () => true) {
+    if (busy || readingMedia || lockCount.current > 0 || composing.current || !isCurrent() || confirmedReviewDrafts.current.has(next.id)) return false;
     lockCount.current++; setLocked(true);
     try {
-      if (!await flushCurrentDraft()) return;
+      if (!await flushCurrentDraft() || !isCurrent()) return false;
       savedDraftRef.current = programClone(data.spaces[actorId].participationDrafts.find(entry => entry.id === next.id) ?? null);
       draftRef.current = programClone(next); setDraft(draftRef.current); setPreview(false); setError(''); setConflict(false); setDraftConflict(false); setDiscarding(false);
       void save(draftRef.current);
+      return true;
     } finally { lockCount.current--; setLocked(lockCount.current > 0); }
   }
+  useEffect(() => {
+    // Explicit host entry uses the same guarded private save in local and Alpha.
+    // Alpha retains isCurrent/session checks and its existing alphaSocial writer.
+    if (!reviewEntry || consumedReviewEntry.current === reviewEntry) return;
+    consumedReviewEntry.current = reviewEntry;
+    void openDraft(reviewEntry.draft, reviewEntry.isCurrent).then(reviewEntry.onOpened);
+  }, [reviewEntry]);
   async function go(destination: Parameters<ProgramNavigate>[0]) {
     if (await queue.current) navigate(destination);
   }
@@ -238,14 +277,63 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
   }
   async function submit() {
     const snapshot = draftRef.current; if (!snapshot || busy || lockCount.current > 0 || composing.current) return;
+    const review = snapshot.id === reviewEntry?.draft.id && !snapshot.editTargetId;
+    const currentVisit = review ? captureReviewVisit?.() : undefined;
+    if (review && (confirmedReviewDrafts.current.has(snapshot.id) || !currentVisit?.() || !programReviewPublicRelationValid(data, snapshot))) {
+      setError('공개할 Flow·판본·항목과 현재 화면을 다시 확인해 주세요.'); return;
+    }
+    const attempt = review ? ++reviewAttempt.current : 0;
+    const canDeliver = () => mounted.current && !!currentVisit?.() && reviewAttempt.current === attempt
+      && activeReviewEntry.current === reviewEntry && (!composing.current && !mediaPending.current && programSame(currentDraft(), snapshot)
+        || !draftRef.current && confirmedReviewDrafts.current.has(snapshot.id));
+    const captureNotice = () => {
+      const currentState = reviewAnnouncement?.captureState();
+      const isCurrent = () => canDeliver() && (!currentState || currentState());
+      reviewAnnouncement?.onChange(isCurrent);
+      return isCurrent;
+    };
+    const confirm = (postId: string) => {
+      if (confirmedReviewDrafts.current.has(snapshot.id)) return;
+      // A verified receipt completes this submitted snapshot, never newer input.
+      confirmedReviewDrafts.current.add(snapshot.id);
+      if (!composing.current && !mediaPending.current && programSame(currentDraft(), snapshot)) {
+        draftRef.current = null; savedDraftRef.current = null; setDraft(null); setPreview(false); setSaveState('');
+      }
+      onReviewPublished?.(snapshot.id, postId);
+      if (canDeliver()) setConfirmedReview({ postId, attempt, isCurrent: canDeliver, canAnnounce: captureNotice() });
+      if (reviewSubmission.current?.snapshot === snapshot) reviewSubmission.current = null;
+    };
     lockCount.current++; setLocked(true); setBusy(true); setError('');
     try {
-      if (!await queue.current) { setErrorNotice({ message: '초안을 먼저 저장해 주세요. 입력은 그대로 남아 있습니다.', retryDraft: true }); return; }
+      if (!await queue.current) {
+        if (!review || canDeliver()) setErrorNotice({ message: '초안을 먼저 저장해 주세요. 입력은 그대로 남아 있습니다.', retryDraft: true });
+        return;
+      }
+      if (review && !currentVisit?.()) return;
+      if (review) {
+        reviewSubmission.current = { snapshot, entry: reviewEntry, attempt, confirm };
+        setReviewPending({ attempt, isCurrent: canDeliver });
+        reviewAnnouncement?.onChange(canDeliver);
+      }
       const outcome = await guardedMutation(mutate, snapshot.editTargetId ? '글 수정' : '글 공개', current => submitProgramParticipation(current, actorId, snapshot, utcNow(), { expected: snapshot }), { alphaSocial: { type: 'participation-submit', draft: snapshot, expected: snapshot } });
+      if (review && outcome.ok) {
+        // The transition already removed the private draft. Never resubmit it to look up the result.
+        confirm(outcome.result);
+        if (!outcome.presentationPending && canDeliver()) navigate({ view: 'community', id: outcome.result });
+        return;
+      }
+      if (review && !canDeliver()) return;
       if (outcome.ok && outcome.presentationPending) { setError(programErrorMessage('presentation-pending')); return; }
       if (outcome.ok) { draftRef.current = null; savedDraftRef.current = null; setDraft(null); setPreview(false); setSaveState(''); navigate({ view: 'community', id: snapshot.kind === 'reply' ? snapshot.postId! : outcome.result, ...(snapshot.kind === 'reply' ? { replyId: outcome.result } : {}) }); }
-      else { setError(programErrorMessage(outcome.reason)); setConflict(outcome.reason === 'conflict'); }
-    } finally { lockCount.current--; setLocked(lockCount.current > 0); setBusy(false); }
+      else {
+        if (review) setErrorNotice({ message: `후기 게시: ${programErrorMessage(outcome.reason)}`, reviewAttempt: attempt, isCurrent: captureNotice() });
+        else setError(programErrorMessage(outcome.reason));
+        setConflict(outcome.reason === 'conflict');
+      }
+    } finally {
+      if (review) setReviewPending(current => current?.attempt === attempt ? null : current);
+      lockCount.current--; setLocked(lockCount.current > 0); setBusy(false);
+    }
   }
   async function perform(label: string, build: Parameters<ProgramMutate>[1], options: Parameters<ProgramMutate>[2]) {
     if (busy || lockCount.current > 0 || composing.current) return; setBusy(true); setError('');
@@ -319,17 +407,25 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
 
   return <section className={styles.community} aria-label={view === 'activity' ? '내 활동' : '이야기'}>
     <header className={styles.header}><h1>{view === 'activity' ? '내 활동' : '이야기'}</h1><button className={styles.primary} type="button" disabled={draftEntryDisabled} onClick={() => void openDraft(newProgramParticipationDraft())}>글 쓰기</button></header>
+    {reviewPending?.isCurrent() && <p key={`review-pending:${reviewPending.attempt}`} role="status" aria-live="polite" aria-atomic="true" className={styles.notice} data-review-submit-state="pending">후기 게시 결과를 확인하고 있습니다. 확인이 끝날 때까지 다시 제출할 수 없습니다.</p>}
+    {confirmedReview?.isCurrent() && selectedPostId !== confirmedReview.postId && <div key={`review-confirmed:${confirmedReview.attempt}`} role={confirmedReview.canAnnounce() ? 'status' : undefined} aria-live={confirmedReview.canAnnounce() ? 'polite' : 'off'} aria-atomic="true" className={styles.notice}>
+      <p>{data.public.posts.some(post => post.id === confirmedReview.postId && post.authorId === actorId)
+        ? '후기 게시는 확정됐습니다. ‘확정된 후기 보기’로 저장된 결과를 확인할 수 있습니다.'
+        : '후기 게시는 확정됐지만 화면 결과를 아직 확인하지 못했습니다. 결과가 확인되면 ‘확정된 후기 보기’를 사용할 수 있습니다.'}</p>
+      <button type="button" disabled={!data.public.posts.some(post => post.id === confirmedReview.postId && post.authorId === actorId)}
+        onClick={() => navigate({ view: 'community', id: confirmedReview.postId })}>확정된 후기 보기</button>
+    </div>}
     {error && !draft && <div role="alert" className={styles.error}>{error}</div>}
     {drafts.length > 0 && <details className={styles.drafts}><summary>작성 중인 글 {drafts.length}</summary>{drafts.map(entry => <button key={entry.id} type="button" disabled={draftEntryDisabled} onClick={() => void openDraft(entry)}>{entry.title || entry.body.slice(0, 40) || `새 ${kinds[entry.kind]}`} · 이어 쓰기</button>)}</details>}
     {draft && <section className={styles.composer} ref={composeRef} aria-label="글 작성"
       onCompositionStart={() => { composing.current = true; }} onCompositionEnd={() => { composing.current = false; const value = currentDraft(); if (value) { draftRef.current = value; setDraft(value); void save(value); } }}
       onBeforeInput={event => { if (lockCount.current > 0 && !composing.current) event.preventDefault(); }}>
-      <header><h2>{draft.editTargetId ? `${kinds[draft.kind]} 수정` : `${kinds[draft.kind]} 쓰기`}</h2>{saveState && saveState !== '저장하지 못했어요' && !draftRecovery && !draftConflict && <span role="status" className={styles.meta} data-draft-save-state={saveState === '저장 중…' ? 'saving' : 'saved'}>{saveState}</span>}</header>
+      <header><h2>{draft.editTargetId ? `${kinds[draft.kind]} 수정` : `${kinds[draft.kind]} 쓰기`}</h2>{saveState && saveState !== '저장하지 못했어요' && !draftRecovery && !draftConflict && <span role={reviewPending?.isCurrent() ? undefined : 'status'} aria-live={reviewPending?.isCurrent() ? 'off' : undefined} className={styles.meta} data-draft-save-state={saveState === '저장 중…' ? 'saving' : saveState === '앞선 초안은 저장됐습니다. 현재 입력은 아직 저장되지 않았습니다.' || saveState === '현재 입력은 아직 저장되지 않았습니다.' ? 'unsaved' : 'saved'}>{saveState}</span>}</header>
       {draftRecovery && <div role={draftRecovery.state === 'confirmed-unsaved' ? 'status' : 'alert'} aria-label="초안 저장 복구" className={styles.draftRecovery} data-draft-save-state={draftRecovery.state}>
         <span>{draftRecovery.message}</span>{draftRecovery.action && <button type="button" disabled={draftRecovery.action.disabled || busy || readingMedia || locked} onClick={draftRecovery.action.onClick}>{draftRecovery.action.label}</button>}
       </div>}
       {error && (!(activeDraftSave || errorNotice.retryDraft) || !draftRecovery && !draftConflict && !conflict)
-        && <div role="alert" className={styles.error}>{error}</div>}
+        && <div key={errorNotice.reviewAttempt === undefined ? 'composer-error' : `review-error:${errorNotice.reviewAttempt}`} role="alert" aria-atomic="true" className={styles.error}>{error}</div>}
       {draftConflict && !draftRecovery && <div className={styles.notice} role="alert" data-draft-save-state="conflict"><h3>다른 탭의 초안과 비교</h3>
         <p>내 입력은 아래에 남아 있습니다. 최신 초안을 확인한 뒤 저장해 주세요.</p>
         {latestDraft ? <details className={styles.draftComparison}><summary>최신 초안 내용 보기</summary><p><strong>{latestDraft.title || kinds[latestDraft.kind]}</strong> · {kinds[latestDraft.kind]}</p><p className={styles.body}>{latestDraft.body}</p>
@@ -344,7 +440,7 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
       </div>}
       {draft.kind === 'reply' && <p className={styles.context}>{postTitle(data, draft.postId!)}{draft.parentReplyId && ` · ${author(data, data.public.replies.find(entry => entry.id === draft.parentReplyId)?.authorId ?? '')}에게 답글`}</p>}
       {!preview ? <>
-        {draft.kind !== 'reply' && <><div className={styles.actions}>{!draft.editTargetId && <label>글 종류<select value={draft.kind} onChange={event => change({ kind: event.target.value as ProgramPost['kind'] })}><option value="question">질문</option><option value="experience">경험</option><option value="knowledge">지식</option></select></label>}</div>
+        {draft.kind !== 'reply' && <><div className={styles.actions}>{!draft.editTargetId && !isReviewDraft && <label>글 종류<select value={draft.kind} onChange={event => change({ kind: event.target.value as ProgramPost['kind'] })}><option value="question">질문</option><option value="experience">경험</option><option value="knowledge">지식</option></select></label>}</div>
           <label>제목<input ref={titleRef} readOnly={locked && !composing.current} maxLength={240} value={draft.title} onChange={event => change({ title: event.target.value })} /></label></>}
         <label>내용<textarea ref={bodyRef} readOnly={locked && !composing.current} rows={7} maxLength={30000} value={draft.body} onChange={event => change({ body: event.target.value, cursor: { start: event.target.selectionStart, end: event.target.selectionEnd } })}
           onSelect={event => { const target = event.currentTarget; if (draftRef.current && (draftRef.current.cursor.start !== target.selectionStart || draftRef.current.cursor.end !== target.selectionEnd)) change({ cursor: { start: target.selectionStart, end: target.selectionEnd } }, false); }} /></label>
@@ -358,25 +454,28 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
             <div className={styles.actions}><button type="button" disabled={index === 0} onClick={() => { const mediaOrder = [...draft.media]; [mediaOrder[index - 1], mediaOrder[index]] = [mediaOrder[index], mediaOrder[index - 1]]; change({ media: mediaOrder }); }}>앞으로</button>
               <button type="button" onClick={() => change({ media: draft.media.filter(entry => entry.id !== media.id) })}>사진 제외</button></div>
           </div>)}
-          <details><summary>주제와 연결 (선택)</summary><label>주제<input value={draft.topic} maxLength={120} onChange={event => change({ topic: event.target.value })} /></label>
-            {!draft.editTargetId && <><label>관련 Flow<select value={draft.flowId ?? ''} onChange={event => { const flow = data.public.flows.find(entry => entry.id === event.target.value); change({ flowId: flow?.id ?? null, versionId: flow?.currentVersionId ?? null, itemId: null }); }}><option value="">연결하지 않음</option>{data.public.flows.filter(entry => !entry.archived).map(flow => <option key={flow.id} value={flow.id}>{data.public.versions.find(version => version.id === flow.currentVersionId)?.title}</option>)}</select></label>
-              {draft.flowId && <><label>판본<select value={draft.versionId ?? ''} onChange={event => change({ versionId: event.target.value, itemId: null })}>{data.public.versions.filter(version => version.flowId === draft.flowId).map(version => <option key={version.id} value={version.id}>{version.number}판 · {stamp(version.createdAt)}</option>)}</select></label>
+          {isReviewDraft && <p className={styles.notice}>공개할 연결을 직접 선택해 주세요. 개인 원문·메모·진행 기록은 포함하지 않습니다.</p>}
+          <details open={isReviewDraft || undefined}><summary>주제와 연결 (선택)</summary><label>주제<input value={draft.topic} maxLength={120} onChange={event => change({ topic: event.target.value })} /></label>
+            {!draft.editTargetId && <><label>관련 Flow<select value={draft.flowId ?? ''} onChange={event => { const flow = data.public.flows.find(entry => entry.id === event.target.value); change({ flowId: flow?.id ?? null, versionId: isReviewDraft ? null : flow?.currentVersionId ?? null, itemId: null }); }}><option value="">연결하지 않음</option>{data.public.flows.filter(entry => !entry.archived).map(flow => <option key={flow.id} value={flow.id}>{data.public.versions.find(version => version.id === flow.currentVersionId)?.title}</option>)}</select></label>
+              {draft.flowId && <><label>판본<select value={draft.versionId ?? ''} onChange={event => change({ versionId: event.target.value || null, itemId: null })}>{isReviewDraft && <option value="">판본 선택</option>}{data.public.versions.filter(version => version.flowId === draft.flowId).map(version => <option key={version.id} value={version.id}>{version.number}판 · {stamp(version.createdAt)}</option>)}</select></label>
                 <label>항목<select value={draft.itemId ?? ''} onChange={event => change({ itemId: event.target.value || null })}><option value="">Flow 전체</option>{data.public.versions.find(version => version.id === draft.versionId)?.items.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label></>}
             </>}
             {(draft.kind === 'knowledge' || draft.evidencePostIds.length > 0) && <fieldset><legend>근거 글</legend>{data.public.posts.filter(entry => entry.id !== draft.editTargetId && (!entry.deleted || draft.evidencePostIds.includes(entry.id))).map(entry => <label className={styles.check} key={entry.id}><input type="checkbox" checked={draft.evidencePostIds.includes(entry.id)} onChange={event => change({ evidencePostIds: event.target.checked ? [...draft.evidencePostIds, entry.id] : draft.evidencePostIds.filter(id => id !== entry.id) })} />{entry.deleted ? '삭제된 근거 글 · 연결 제거 가능' : entry.title}</label>)}</fieldset>}
           </details>
         </>}
         <div className={styles.actions}><button type="button" disabled={readingMedia || busy || locked} onClick={() => void parkDraft()}>나중에 이어 쓰기</button><button type="button" disabled={readingMedia || busy || locked} onClick={() => setDiscarding(true)}>초안 버리기</button>
-          <button className={styles.primary} type="button" disabled={!draft.body.trim() || draft.kind !== 'reply' && !draft.title.trim() || busy || readingMedia || draft.media.some(media => !media.alt.trim())} onClick={() => setPreview(true)}>공개 내용 확인</button></div>
+          <button className={styles.primary} type="button" disabled={!draft.body.trim() || draft.kind !== 'reply' && !draft.title.trim() || busy || readingMedia || draft.media.some(media => !media.alt.trim()) || isReviewDraft && !programReviewPublicRelationValid(data, draft)} onClick={() => setPreview(true)}>공개 내용 확인</button></div>
       </> : <div className={styles.preview}>
         {draft.kind !== 'reply' && <h3>{draft.title}</h3>}<p className={styles.body}>{draft.body}</p>
         {draft.media.map(media => <figure key={media.id}><ProgramCommunityImage media={media} mediaPort={mediaPort} /><figcaption>{media.alt}</figcaption></figure>)}
         {draft.flowId && <p className={styles.meta}>연결: {data.public.versions.find(version => version.id === draft.versionId)?.title} · {data.public.versions.find(version => version.id === draft.versionId)?.number}판</p>}
+        {draft.kind !== 'reply' && <><p className={styles.meta}>주제: {draft.topic || '없음'}</p>
+          <p className={styles.meta}>공개 항목: {draft.flowId ? draft.itemId ? data.public.versions.find(version => version.id === draft.versionId)?.items.find(item => item.id === draft.itemId)?.title ?? '항목 확인 필요' : 'Flow 전체' : '연결하지 않음'}</p></>}
         {draft.evidencePostIds.length > 0 && <ul>{draft.evidencePostIds.map(id => <li key={id}>{postTitle(data, id)}</li>)}</ul>}
         <p className={styles.notice}>{storageScope === 'account' ? '확인한 내용만 개발계의 다른 사용자에게 공개합니다. 작성 중인 다른 초안은 공개하지 않습니다.' : '이 내용만 이 기기의 공개 목록에 반영됩니다. 실제 서비스에는 게시되지 않습니다.'}</p>
         <div className={styles.actions}><button type="button" disabled={busy} onClick={() => setPreview(false)}>다시 수정</button><button className={styles.primary} type="button" disabled={busy} onClick={() => void submit()}>{busy ? '저장 중…' : draft.editTargetId ? '수정 내용 반영' : '공개하기'}</button></div>
       </div>}
-      {conflict && <div className={styles.notice}><h3>최신 내용과 비교</h3>
+      {conflict && (!errorNotice.isCurrent || errorNotice.isCurrent()) && <div className={styles.notice}><h3>최신 내용과 비교</h3>
         {draft.kind !== 'reply' && <><strong>{data.public.posts.find(entry => entry.id === draft.editTargetId)?.title}</strong><p className={styles.meta}>주제: {data.public.posts.find(entry => entry.id === draft.editTargetId)?.topic || '없음'}</p></>}
         <p className={styles.body}>{draft.kind === 'reply' ? data.public.replies.find(entry => entry.id === draft.editTargetId)?.body : data.public.posts.find(entry => entry.id === draft.editTargetId)?.body}</p>
         {draft.kind !== 'reply' && <details><summary>최신 사진과 근거 확인</summary>{data.public.posts.find(entry => entry.id === draft.editTargetId)?.media.map(media => <figure key={media.id}><ProgramCommunityImage media={media} mediaPort={mediaPort} /><figcaption>{media.alt}</figcaption></figure>)}
@@ -390,6 +489,7 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
     {selectedPostId ? post ? <article className={styles.detail}>
       <button type="button" onClick={() => void go({ view: 'community' })}>글 목록</button><p className={styles.meta}>{kinds[post.kind]}{post.topic ? ` · ${post.topic}` : ''} · {author(data, post.authorId)} · {stamp(post.updatedAt)}</p>
       <h2>{post.title}</h2>{post.deleted ? <p>작성자가 삭제한 글입니다. 기존 답글은 아래에서 볼 수 있어요.</p> : <><p className={styles.body}>{post.body}</p>
+        {post.id === reviewReturnPostId && onReturnReview && <button type="button" disabled={busy || readingMedia || locked} onClick={() => void onReturnReview()}>원래 문서로 돌아가기</button>}
         {post.media.map(media => <figure key={media.id}><ProgramCommunityImage media={media} mediaPort={mediaPort} /><figcaption>{media.alt}{media.synthetic ? ' · 합성 이미지' : ''}</figcaption></figure>)}
         <div className={styles.actions}>{reactions('post', post.id)}<button type="button" disabled={draftEntryDisabled} onClick={() => startReply(post)}>답글 쓰기</button>
           {post.authorId === actorId && <details className={styles.menu}><summary>글 관리</summary><button type="button" disabled={draftEntryDisabled} onClick={() => startPostEdit(post)}>수정</button><button type="button" onClick={() => setConfirmDelete({ kind: 'post', id: post.id })}>삭제</button></details>}</div></>}
