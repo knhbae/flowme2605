@@ -123,6 +123,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [selected, setSelected] = useState(() => initialProgramDocumentId(props, space));
   const [opened, setOpened] = useState<string[]>(selected ? [selected] : []);
   const [detail, setDetail] = useState<Detail>(null), [message, setMessage] = useState('');
+  const [writingNotice, setWritingNotice] = useState<{ actorId: string; documentId: string; text: string } | null>(null);
   const [viewChangeNotice, setViewChangeNotice] = useState<{ actorId: string; reason: 'composition' | 'recurrence' | 'saving' | 'save-failed' | 'pending' } | null>(null);
   const [taskNotice, setTaskNotice] = useState<{ taskId: string; title: string; text: string } | null>(null);
   const [moving, setMoving] = useState<string | null>(null), [showArchived, setShowArchived] = useState(false);
@@ -163,6 +164,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const viewMenu = useRef<HTMLElement | null>(null);
   const writingRequest = useRef<string | null>(null);
   const [writingFocus, setWritingFocus] = useState<{ id: string; actorId: string; focusOwner: Element | null } | null>(null);
+  useEffect(() => {
+    setWritingNotice(current => current?.actorId === actorId && current.documentId === selected && period === 'documents' ? current : null);
+  }, [actorId, selected, period]);
   useEffect(() => {
     if (!writingFocus || writingFocus.id !== selected || writingFocus.actorId !== actorId || period !== 'documents') return;
     const frame = requestAnimationFrame(() => {
@@ -838,6 +842,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   async function beginWriting() {
     if (preparing.current || inputLockCount.current > 0) return;
+    setWritingNotice(null);
     const focusOwner = document.activeElement;
     const authority = { actorId, expected: space, conflict: false };
     const release = lockInput(); preparing.current = true; setPreparingDocumentAction(true); moveFlush.current = authority;
@@ -849,6 +854,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       const result = await run('바로 쓰기', current => createProgramWritingEntry(current, { actorId, requestId,
         expectedSpace: authority.expected, reuseDocumentId: selectedRef.current || undefined }));
       if (!result.ok) return;
+      const reused = result.result === selectedRef.current;
+      root.current?.querySelectorAll<HTMLDetailsElement>('[data-editor-tools][open]').forEach(menu => { menu.open = false; });
+      setWritingNotice({ actorId, documentId: result.result, text: reused ? '현재 빈 글에서 계속 씁니다.' : '새 글을 열었습니다.' });
       writingRequest.current = null; setWritingFocus({ id: result.result, actorId, focusOwner });
       setSelected(result.result); setOpened(previous => previous.includes(result.result) ? previous : [...previous, result.result]);
       setFolderId(''); setPeriod('documents'); setLibraryOpen(false);
@@ -938,6 +946,27 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     }
     return result.ok;
   }
+  async function applyWritingExample() {
+    const id = selectedRef.current, current = dataRef.current, owner = current.spaces[actorId];
+    const doc = owner && M.getDocument(owner.text, id), raw = draftReaders.current[id]?.();
+    const status = saveStatusReaders.current[id]?.();
+    if (current.activeActorId !== actorId || !doc || programDocumentContentLock(owner, id) !== 'active'
+      || preparing.current || inputLockCount.current > 0 || dirty.current[id] || status?.composing || status?.saving
+      || typeof raw !== 'string' || raw.trim() || M.raw(doc).trim()) {
+      setMessage('입력·저장을 마친 빈 글에만 예시를 넣을 수 있습니다.'); return false;
+    }
+    const focusOwner = document.activeElement, release = lockInput();
+    preparing.current = true; setPreparingDocumentAction(true);
+    try {
+      const saved = await editorCommit(id, M.editText(owner.text, id, PROGRAM_EMPTY_EXAMPLE), '작성 예시 넣기', { expectedWorkspace: owner.text });
+      if (!saved) { setMessage('예시를 저장하지 못했습니다. 현재 글을 확인하고 다시 시도해 주세요.'); return false; }
+      if (dataRef.current.activeActorId === actorId && selectedRef.current === id) {
+        root.current?.querySelectorAll<HTMLDetailsElement>('[data-editor-tools][open]').forEach(menu => { menu.open = false; });
+        setWritingFocus({ id, actorId, focusOwner });
+      }
+      return true;
+    } finally { preparing.current = false; setPreparingDocumentAction(false); release(); }
+  }
   async function moveBefore(targetKey: string, beforeKey: string | null) {
     if (Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())) { setMessage('회차 날짜를 적용하거나 취소한 뒤 순서를 바꿔 주세요.'); return; }
     const target = executionRows.find(row => row.key === targetKey); if (!target) return;
@@ -1004,6 +1033,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     return folderOptions.find(item => item.id === actualFolderId)?.title ?? task.folder;
   };
 
+  const selectedDocumentExample = selectedDoc && programDocumentContentLock(space, selectedDoc.id) === 'active' && !M.raw(selectedDoc).trim()
+    && <details className={styles.example}><summary>빈 문서에서 시작할 작성 예시</summary><pre>{PROGRAM_EMPTY_EXAMPLE}</pre><button disabled={preparingDocumentAction} onClick={() => { void applyWritingExample(); }}>이 예시를 문서에 넣기</button></details>;
   const selectedDocumentTools = selectedDoc && !retentionSource && !selectedTrashed && <details key={selectedDoc.id} ref={documentMenu} onToggle={event => {
             const title = event.currentTarget.querySelector<HTMLInputElement>('input[name="title"]');
             if (!event.currentTarget.open && (!title || title.value === title.defaultValue)) formExpected.current = null;
@@ -1090,13 +1121,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         <div className={styles.docHeading}><h1>{selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : '필요한 내용을 먼저 적으세요'}</h1>{(!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</div>
         {props.noteHeader}
+        <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
         {!selectedDoc && props.noteStatus}
         {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>{props.capabilities?.discovery !== false && <button onClick={() => props.navigate({ view: 'discover' })}>다른 사람의 Flow 둘러보기</button>}</div> : <>
           {selectedTrashed && <ProgramDocumentTrashAction key={selectedDoc.id} space={space} documentId={selectedDoc.id} disabled={preparingDocumentAction} onChange={changeDocumentTrash} />}
           <ProgramDocumentProvenance data={data} documentId={selectedDoc.id} disabled={preparingDocumentAction || selectedTrashed} onOpenRevisions={props.capabilities?.revisionHistory !== false && props.onRevisionHistory ? () => void openDocumentAction(props.onRevisionHistory!) : undefined} onOpenCreatorDraft={props.capabilities?.creatorNavigation !== false ? draftId => void openDocumentAction(() => props.navigate({ view: 'creator', id: draftId })) : undefined} />
           {selectedQualityHold && <p role="status" className={styles.muted}>{selectedQualityHold} 해당 원본 항목과 실행 기록은 읽기 전용으로 남깁니다. 다른 자유 메모는 계속 쓸 수 있습니다.</p>}
           {retentionSource && <p className={styles.muted}>판본 복구 중 빠진 내용을 보관한 곳입니다. <button onClick={() => void openDocument(retentionSource)}>원래 문서로 돌아가기</button></p>}
-          {!selectedArchived && !M.raw(selectedDoc).trim() && <details className={styles.example}><summary>빈 문서에서 시작할 작성 예시</summary><pre>{PROGRAM_EMPTY_EXAMPLE}</pre><button onClick={() => void editorCommit(selectedDoc.id, M.editText(space.text, selectedDoc.id, PROGRAM_EMPTY_EXAMPLE), '작성 예시 넣기', { expectedWorkspace: space.text })}>이 예시를 문서에 넣기</button></details>}
           {collectionMode && !retentionSource && !selectedTrashed && <><details className={styles.collectionDisclosure}>
             <summary>모음에 정리 · {collectionMode.state.collections.filter(row => row.documentIds.includes(selectedDoc.id)).map(row => row.title).join(', ') || '연결된 모음 없음'}</summary>
             <fieldset className={styles.collectionMembership}><legend>문서 전체 연결</legend>
@@ -1107,9 +1138,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           </>}
         </>}
         {opened.filter(id => docs.some(doc => doc.id === id)).map(id => <div key={id} hidden={selected !== id} data-program-document={id}><ProgramTextEditor
-          docId={id} workspace={space.text} initialPosition={positions.current[id] ?? (space.position.documentId === id ? space.position : undefined)}
+          docId={id} workspace={space.text} active={selected === id && period === 'documents'} initialPosition={positions.current[id] ?? (space.position.documentId === id ? space.position : undefined)}
           noteStatus={selected === id ? props.noteStatus : undefined}
-          noteActions={props.noteHeader && selected === id ? <>{period === 'documents' && findActions}{selectedDocumentTools}</> : undefined}
+          noteActions={selected === id ? <>{props.noteHeader && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}{selectedDocumentExample}</> : undefined}
           folderId={collectionMode ? '' : folderId} directWriting={!!collectionMode} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
           onContinueWholeDocument={stage => {
             // folderId controls every retained editor. Never unmount another pending region.

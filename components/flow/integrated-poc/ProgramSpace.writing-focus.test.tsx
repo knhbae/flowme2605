@@ -17,7 +17,7 @@ test('explicit writing captures the invoker before awaiting storage, not a later
   let releaseFlush!: (value: boolean) => void, focusRequest: any;
   const context = { document, actorId, space, preparing: { current: false }, inputLockCount: { current: 0 },
     lockInput: () => () => {}, setPreparingDocumentAction() {}, moveFlush: { current: null },
-    flushAllEditors: () => new Promise<boolean>(done => { releaseFlush = done; }), setMessage() {},
+    flushAllEditors: () => new Promise<boolean>(done => { releaseFlush = done; }), setMessage() {}, setWritingNotice() {}, root: { current: null },
     writingRequest: { current: null }, programId: () => 'focus-writing-request', selectedRef: { current: '' }, createProgramWritingEntry,
     run: async (_label: string, make: any) => make(initial), setWritingFocus: (value: any) => { focusRequest = value; },
     setSelected() {}, setOpened() {}, setFolderId() {}, setPeriod() {}, setLibraryOpen() {}, props: { navigate() {} } };

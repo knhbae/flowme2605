@@ -296,6 +296,8 @@
 }
 
 /* B frame: visual values only; existing document and review behavior is unchanged. */
+.writingEntryNotice { margin: 0; color: var(--pw-muted, #64685f); font-size: 14px; line-height: 1.6; }
+.writingEntryNotice:not(:empty) { margin-bottom: 12px; }
 .space{line-height:1.8}.space :is(button,input,select,textarea,summary):focus-visible{outline:2px solid #3548ce;outline-offset:3px}.space h1{font-weight:800}.space input,.space select{font-size:16px}
 .space,.space[data-note-layout="true"]{padding-bottom:0}
 .space .contextActions .periods,.space[data-note-layout="true"] .contextActions .periods{position:static;inset:auto;z-index:auto;display:flex;flex-wrap:wrap;gap:8px;width:auto;max-width:100%;margin:0;padding:0 0 12px;border-top:0;border-bottom:1px solid var(--pw-line);background:transparent;box-shadow:none}
