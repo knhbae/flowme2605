@@ -74,6 +74,8 @@ export interface ProgramTextEditorProps {
   onUndo?: () => void | Promise<void>;
   onRedo?: () => void | Promise<void>;
   readOnly?: boolean;
+  /** Retained editors keep their input/history, but not an open navigation menu. */
+  active?: boolean;
   /** Local document-collection UI: direct writing first, current-line tools secondary. */
   directWriting?: boolean;
   /** Host-owned status/actions share the existing toolbar, not the input owner. */
@@ -527,7 +529,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (index < 0) return false;
     // Native focus unfolds its presentation and removes inert before focusing.
     // Merely focusing the retained textarea cannot enter a folded document.
-    return editorRef.current?.focus(index) === true && textarea.ownerDocument.activeElement === textarea;
+    const focused = editorRef.current?.focus(index) === true && textarea.ownerDocument.activeElement === textarea;
+    if (focused) {
+      const tools = hostRef.current?.closest('section')?.querySelector<HTMLDetailsElement>('[data-editor-tools]');
+      if (tools) tools.open = false;
+    }
+    return focused;
   };
   useEffect(() => {
     propsRef.current.onRegisterSave?.(saveNow, () => ({ composing: composingRef.current, saving: !!draftRef.current?.getState().saving, failed: !!draftRef.current?.getState().error }));
@@ -765,6 +772,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }, [props.readOnly, props.directWriting, props.docId]);
   useEffect(() => { editorRef.current?.setMode(mode); }, [mode, props.docId]);
   useEffect(() => {
+    if (props.active !== false) return;
+    const tools = hostRef.current?.closest('section')?.querySelector<HTMLDetailsElement>('[data-editor-tools]');
+    if (tools) tools.open = false;
+  }, [props.active]);
+  useEffect(() => {
     const previous = previousFolderRef.current; previousFolderRef.current = props.folderId;
     // Only an explicit, successful fragment handoff restores its caret. Ordinary
     // period/source navigation already owns an exact Item focus request.
@@ -944,7 +956,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  const title = protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'progress' ? '누적 진행률' : panel?.kind === 'date' ? '항목 날짜' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : '이 위치에 추가';
+  const title = protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'progress' ? '누적 진행률' : panel?.kind === 'date' ? '항목 날짜' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : panel?.kind === 'insert' && row?.progressTargetId ? '항목 작업' : '이 위치에 추가';
   const folderView = props.folderId ? readProgramFolderRegions(draft.working, props.docId, props.folderId) : null;
   const suggestionKey = `${suggestionLineId}:${currentRow(suggestionLineId)?.text ?? ''}`;
   const suggestion = props.folderId || props.readOnly || inputLocked || draft.invalid || composing || panel || dismissedSuggestion === suggestionKey
@@ -991,7 +1003,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       {mode === 'text' && <button type="button" onClick={event => returnToDocumentMode(event.currentTarget)}>문서로 돌아가기</button>}
       <button type="button" hidden={!!props.folderId || props.directWriting && !props.noteStatus} disabled={disabled} onClick={() => { const index = editorRef.current?.getSelection().lineIndex ?? 0; setPanel({ kind: 'insert', lineId: currentDoc()?.lines[index]?.id ?? null }); }}>＋ 추가</button>
       <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기'} aria-label="입력 되돌리기" onClick={() => { if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
-      <details className={styles.editorTools} onKeyDown={event => {
+      <details className={styles.editorTools} data-editor-tools onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; event.currentTarget.querySelector('summary')?.focus();
       }}>

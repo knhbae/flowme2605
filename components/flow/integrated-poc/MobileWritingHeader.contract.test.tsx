@@ -75,6 +75,7 @@ test('note writing moves only the selected editor actions to its toolbar; empty 
     const selectedDoc = selected === 'synthetic-doc' ? { id: selected, title: '긴 가상 문서 제목' } : null;
     const context = { styles, props: { noteHeader: React.createElement('details'), noteStatus: React.createElement('p', { role: 'status' }, '서버와 연결됨') },
       period, selected, selectedDoc, id: selected, compactNoteToday: period === 'today', findActions: finder, selectedDocumentTools: tools,
+      selectedDocumentExample: null,
       viewMenu: { current: null }, mainPeriods: [['documents', '쓰기'], ['today', '오늘'], ['all', '분류']], collectionMode: undefined, changePeriod() {},
       noteFindMenu: { current: null }, noteFindMenuSummary: { current: null } };
     const outer = nodes(evaluate(classElement(spaceTree, 'contextActions'), context));
