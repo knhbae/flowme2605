@@ -250,6 +250,7 @@ test('only the selected retained editor receives note status and actions', () =>
   const noteStatus = <span>서버와 연결됨</span>, actions = <button>합성 찾기</button>;
   for (const selected of ['selected-editor', 'other-editor']) {
     const context = { selected, id: 'selected-editor', props: { noteHeader, noteStatus }, period: 'documents',
+      selectedDocumentExample: null,
       findActions: actions, selectedDocumentTools: <button>합성 글 작업</button> };
     assert.equal(evaluate(expression('noteStatus'), context), selected === context.id ? noteStatus : undefined);
     const noteActions = evaluate(expression('noteActions'), context);
