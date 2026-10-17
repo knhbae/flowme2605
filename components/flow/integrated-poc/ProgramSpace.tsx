@@ -23,6 +23,8 @@ import { ProgramDocumentTrash, ProgramDocumentTrashAction } from './ProgramDocum
 import { moveProgramTaskDocument } from '@/lib/flow/integrated-poc/task-document-move';
 import { setProgramDocumentTrashed } from '@/lib/flow/integrated-poc/document-lifecycle';
 import { programSame } from '@/lib/flow/integrated-poc/controller';
+import { programReviewOriginReason, type ProgramReviewSpacePort } from '@/lib/flow/integrated-poc/review-return';
+import { programLocation } from '@/lib/flow/integrated-poc/navigation';
 import { normalizeProgramWritingPosition } from '@/lib/flow/integrated-poc/writing-position';
 import { programLegacyTaskQualityHold, programPreservesLegacyQualityHold } from '@/lib/flow/integrated-poc/legacy-map-review';
 import { programPreservesLegacyPlanExcluded } from '@/lib/flow/integrated-poc/program-legacy-plan-target';
@@ -60,6 +62,8 @@ export type ProgramSpaceProps = {
   onInspectCopy?: (copyId: string) => void;
   onRevisionHistory?: (documentId: string) => void;
   onOutputDocument?: (documentId: string) => void;
+  onStartReview?: (documentId: string) => Promise<void>;
+  onRegisterReviewSpace?: (port: ProgramReviewSpacePort | null) => void;
   onRegisterEditors?: (editors: ProgramEditorFlush | null) => void;
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
   /** Local view changes do not call mutate; the host must expose held authority. */
@@ -119,6 +123,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [selected, setSelected] = useState(() => initialProgramDocumentId(props, space));
   const [opened, setOpened] = useState<string[]>(selected ? [selected] : []);
   const [detail, setDetail] = useState<Detail>(null), [message, setMessage] = useState('');
+  const [writingNotice, setWritingNotice] = useState<{ actorId: string; documentId: string; text: string } | null>(null);
   const [viewChangeNotice, setViewChangeNotice] = useState<{ actorId: string; reason: 'composition' | 'recurrence' | 'saving' | 'save-failed' | 'pending' } | null>(null);
   const [taskNotice, setTaskNotice] = useState<{ taskId: string; title: string; text: string } | null>(null);
   const [moving, setMoving] = useState<string | null>(null), [showArchived, setShowArchived] = useState(false);
@@ -159,6 +164,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const viewMenu = useRef<HTMLElement | null>(null);
   const writingRequest = useRef<string | null>(null);
   const [writingFocus, setWritingFocus] = useState<{ id: string; actorId: string; focusOwner: Element | null } | null>(null);
+  useEffect(() => {
+    setWritingNotice(current => current?.actorId === actorId && current.documentId === selected && period === 'documents' ? current : null);
+  }, [actorId, selected, period]);
   useEffect(() => {
     if (!writingFocus || writingFocus.id !== selected || writingFocus.actorId !== actorId || period !== 'documents') return;
     const frame = requestAnimationFrame(() => {
@@ -566,6 +574,49 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       else if (result === 'save-failed') setMessage('현재 입력을 저장하지 못했습니다. 본문의 저장 오류를 해결한 뒤 다시 열어 주세요.');
     } finally { releaseInput(); preparing.current = false; setPreparingDocumentAction(false); }
   }
+  useEffect(() => {
+    const port: ProgramReviewSpacePort = {
+      capture: documentId => {
+        const editor = document.getElementById(`program-text-${encodeURIComponent(documentId)}`) as HTMLTextAreaElement | null;
+        const doc = dataRef.current.spaces[actorId]?.text.documents.find(entry => entry.id === documentId);
+        if (!doc || !editor || !editor.isConnected || (editor.readOnly && !preparing.current) || !editor.getClientRects().length
+          || selectedRef.current !== documentId || presentation.current.period !== 'documents' || dirty.current[documentId]) return null;
+        const raw = M.raw(doc);
+        const origin = { actorId, documentId, raw, editor, checkpoint: {
+          schema: 'flowme-navigation/1' as const, actorId, location: programLocation({ view: 'space', id: documentId }),
+          space: { ...presentation.current }, scroll: window.scrollY, focus: editor.id,
+          writing: { [documentId]: { start: editor.selectionStart, end: editor.selectionEnd, scrollTop: editor.scrollTop } },
+        } };
+        return editor.value === raw && !programReviewOriginReason(dataRef.current, origin) ? origin : null;
+      },
+      restore: (origin, currentVisit, previousFocus) => new Promise(resolve => {
+        const valid = () => currentVisit() && !programReviewOriginReason(dataRef.current, origin)
+          && selectedRef.current === origin.documentId && !dirty.current[origin.documentId]
+          && !Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())
+          && origin.editor.isConnected && document.getElementById(origin.editor.id) === origin.editor
+          && !origin.editor.readOnly && origin.editor.value === origin.raw;
+        if (!valid()) { resolve(false); return; }
+        const view = origin.checkpoint.space!;
+        setPeriod(view.period as ProgramPeriod); setDate(view.date); setFolderId(view.folderId); setQuery(view.query);
+        setShowArchived(view.showArchived); setRecurrencePresentation(view.recurrence ?? emptyProgramRecurrencePresentation());
+        requestAnimationFrame(() => {
+          // Recheck at the actual DOM write, after React reveals the retained editor.
+          if (!valid() || !origin.editor.getClientRects().length
+            || (document.activeElement !== previousFocus && document.activeElement !== document.body)) { resolve(false); return; }
+          const position = origin.checkpoint.writing?.[origin.documentId];
+          if (position) {
+            origin.editor.setSelectionRange(position.start, position.end);
+            origin.editor.scrollTop = position.scrollTop;
+          }
+          origin.editor.focus({ preventScroll: true });
+          window.scrollTo({ top: origin.checkpoint.scroll, behavior: 'instant' });
+          resolve(true);
+        });
+      }),
+    };
+    props.onRegisterReviewSpace?.(port);
+    return () => props.onRegisterReviewSpace?.(null);
+  }, [actorId]);
   async function changeDocumentTrash(trashed: boolean): Promise<ProgramMutationResult> {
     let outcome: ProgramMutationResult = { ok: false, reason: 'conflict' };
     await openDocumentAction(async id => { outcome = await run(trashed ? '문서 휴지통 이동' : '문서 휴지통 복원', current => setProgramDocumentTrashed(current, {
@@ -791,6 +842,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   async function beginWriting() {
     if (preparing.current || inputLockCount.current > 0) return;
+    setWritingNotice(null);
     const focusOwner = document.activeElement;
     const authority = { actorId, expected: space, conflict: false };
     const release = lockInput(); preparing.current = true; setPreparingDocumentAction(true); moveFlush.current = authority;
@@ -802,6 +854,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       const result = await run('바로 쓰기', current => createProgramWritingEntry(current, { actorId, requestId,
         expectedSpace: authority.expected, reuseDocumentId: selectedRef.current || undefined }));
       if (!result.ok) return;
+      const reused = result.result === selectedRef.current;
+      root.current?.querySelectorAll<HTMLDetailsElement>('[data-editor-tools][open]').forEach(menu => { menu.open = false; });
+      setWritingNotice({ actorId, documentId: result.result, text: reused ? '현재 빈 글에서 계속 씁니다.' : '새 글을 열었습니다.' });
       writingRequest.current = null; setWritingFocus({ id: result.result, actorId, focusOwner });
       setSelected(result.result); setOpened(previous => previous.includes(result.result) ? previous : [...previous, result.result]);
       setFolderId(''); setPeriod('documents'); setLibraryOpen(false);
@@ -891,6 +946,27 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     }
     return result.ok;
   }
+  async function applyWritingExample() {
+    const id = selectedRef.current, current = dataRef.current, owner = current.spaces[actorId];
+    const doc = owner && M.getDocument(owner.text, id), raw = draftReaders.current[id]?.();
+    const status = saveStatusReaders.current[id]?.();
+    if (current.activeActorId !== actorId || !doc || programDocumentContentLock(owner, id) !== 'active'
+      || preparing.current || inputLockCount.current > 0 || dirty.current[id] || status?.composing || status?.saving
+      || typeof raw !== 'string' || raw.trim() || M.raw(doc).trim()) {
+      setMessage('입력·저장을 마친 빈 글에만 예시를 넣을 수 있습니다.'); return false;
+    }
+    const focusOwner = document.activeElement, release = lockInput();
+    preparing.current = true; setPreparingDocumentAction(true);
+    try {
+      const saved = await editorCommit(id, M.editText(owner.text, id, PROGRAM_EMPTY_EXAMPLE), '작성 예시 넣기', { expectedWorkspace: owner.text });
+      if (!saved) { setMessage('예시를 저장하지 못했습니다. 현재 글을 확인하고 다시 시도해 주세요.'); return false; }
+      if (dataRef.current.activeActorId === actorId && selectedRef.current === id) {
+        root.current?.querySelectorAll<HTMLDetailsElement>('[data-editor-tools][open]').forEach(menu => { menu.open = false; });
+        setWritingFocus({ id, actorId, focusOwner });
+      }
+      return true;
+    } finally { preparing.current = false; setPreparingDocumentAction(false); release(); }
+  }
   async function moveBefore(targetKey: string, beforeKey: string | null) {
     if (Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())) { setMessage('회차 날짜를 적용하거나 취소한 뒤 순서를 바꿔 주세요.'); return; }
     const target = executionRows.find(row => row.key === targetKey); if (!target) return;
@@ -957,6 +1033,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     return folderOptions.find(item => item.id === actualFolderId)?.title ?? task.folder;
   };
 
+  const selectedDocumentExample = selectedDoc && programDocumentContentLock(space, selectedDoc.id) === 'active' && !M.raw(selectedDoc).trim()
+    && <details className={styles.example}><summary>빈 문서에서 시작할 작성 예시</summary><pre>{PROGRAM_EMPTY_EXAMPLE}</pre><button disabled={preparingDocumentAction} onClick={() => { void applyWritingExample(); }}>이 예시를 문서에 넣기</button></details>;
   const selectedDocumentTools = selectedDoc && !retentionSource && !selectedTrashed && <details key={selectedDoc.id} ref={documentMenu} onToggle={event => {
             const title = event.currentTarget.querySelector<HTMLInputElement>('input[name="title"]');
             if (!event.currentTarget.open && (!title || title.value === title.defaultValue)) formExpected.current = null;
@@ -966,6 +1044,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {props.capabilities?.publication !== false && props.onPublishDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onPublishDocument!, { modalReturnFocus: true })}>선택해서 공개</button>}
             {props.capabilities?.revisionHistory !== false && props.onRevisionHistory && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onRevisionHistory!)}>저장판본·복구</button>}
             {props.onOutputDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onOutputDocument!)}>내 도구로 가져가기</button>}
+            {props.onStartReview && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onStartReview!)}>후기 쓰기</button>}
             {props.capabilities?.copyInspection !== false && props.onInspectCopy && space.copies.filter(copy => copy.documentId === selectedDoc.id).map(copy => <button key={copy.id} disabled={preparingDocumentAction} onClick={() => void openDocumentAction(() => props.onInspectCopy!(copy.id), { modalReturnFocus: true })}>내 계획·원본 변경 확인</button>)}
             {space.savedBindings.filter(binding => binding.documentId === selectedDoc.id).map(binding => <button key={binding.flowRef} disabled={preparingDocumentAction} onClick={() => void openDocumentAction(() => props.navigate({ view: 'legacy', id: binding.flowRef }))}>원본·개인 계획 확인</button>)}
             {space.retentionDocuments?.[selectedDoc.id] && <button onClick={() => void openDocument(space.retentionDocuments![selectedDoc.id])}>복구 중 보관된 내용</button>}
@@ -1042,13 +1121,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         <div className={styles.docHeading}><h1>{selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : '필요한 내용을 먼저 적으세요'}</h1>{(!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</div>
         {props.noteHeader}
+        <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
         {!selectedDoc && props.noteStatus}
         {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>{props.capabilities?.discovery !== false && <button onClick={() => props.navigate({ view: 'discover' })}>다른 사람의 Flow 둘러보기</button>}</div> : <>
           {selectedTrashed && <ProgramDocumentTrashAction key={selectedDoc.id} space={space} documentId={selectedDoc.id} disabled={preparingDocumentAction} onChange={changeDocumentTrash} />}
           <ProgramDocumentProvenance data={data} documentId={selectedDoc.id} disabled={preparingDocumentAction || selectedTrashed} onOpenRevisions={props.capabilities?.revisionHistory !== false && props.onRevisionHistory ? () => void openDocumentAction(props.onRevisionHistory!) : undefined} onOpenCreatorDraft={props.capabilities?.creatorNavigation !== false ? draftId => void openDocumentAction(() => props.navigate({ view: 'creator', id: draftId })) : undefined} />
           {selectedQualityHold && <p role="status" className={styles.muted}>{selectedQualityHold} 해당 원본 항목과 실행 기록은 읽기 전용으로 남깁니다. 다른 자유 메모는 계속 쓸 수 있습니다.</p>}
           {retentionSource && <p className={styles.muted}>판본 복구 중 빠진 내용을 보관한 곳입니다. <button onClick={() => void openDocument(retentionSource)}>원래 문서로 돌아가기</button></p>}
-          {!selectedArchived && !M.raw(selectedDoc).trim() && <details className={styles.example}><summary>빈 문서에서 시작할 작성 예시</summary><pre>{PROGRAM_EMPTY_EXAMPLE}</pre><button onClick={() => void editorCommit(selectedDoc.id, M.editText(space.text, selectedDoc.id, PROGRAM_EMPTY_EXAMPLE), '작성 예시 넣기', { expectedWorkspace: space.text })}>이 예시를 문서에 넣기</button></details>}
           {collectionMode && !retentionSource && !selectedTrashed && <><details className={styles.collectionDisclosure}>
             <summary>모음에 정리 · {collectionMode.state.collections.filter(row => row.documentIds.includes(selectedDoc.id)).map(row => row.title).join(', ') || '연결된 모음 없음'}</summary>
             <fieldset className={styles.collectionMembership}><legend>문서 전체 연결</legend>
@@ -1059,9 +1138,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           </>}
         </>}
         {opened.filter(id => docs.some(doc => doc.id === id)).map(id => <div key={id} hidden={selected !== id} data-program-document={id}><ProgramTextEditor
-          docId={id} workspace={space.text} initialPosition={positions.current[id] ?? (space.position.documentId === id ? space.position : undefined)}
+          docId={id} workspace={space.text} active={selected === id && period === 'documents'} initialPosition={positions.current[id] ?? (space.position.documentId === id ? space.position : undefined)}
           noteStatus={selected === id ? props.noteStatus : undefined}
-          noteActions={props.noteHeader && selected === id ? <>{period === 'documents' && findActions}{selectedDocumentTools}</> : undefined}
+          noteActions={selected === id ? <>{props.noteHeader && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}{selectedDocumentExample}</> : undefined}
           folderId={collectionMode ? '' : folderId} directWriting={!!collectionMode} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
           onContinueWholeDocument={stage => {
             // folderId controls every retained editor. Never unmount another pending region.

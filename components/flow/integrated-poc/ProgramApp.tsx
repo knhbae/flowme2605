@@ -28,6 +28,7 @@ import { ProgramLegacyWorkspace } from './ProgramLegacyWorkspace';
 import { ProgramCreatorWorkspace } from './ProgramCreatorWorkspace';
 import styles from './ProgramApp.module.css';
 import { programCheckpointForWritingTarget } from '@/lib/flow/integrated-poc/writing-navigation';
+import { newProgramReviewDraft, programReviewOriginReason, type ProgramReviewEntry, type ProgramReviewOrigin, type ProgramReviewSpacePort } from '@/lib/flow/integrated-poc/review-return';
 
 export { parseProgramLocation, programLocation } from '@/lib/flow/integrated-poc/navigation';
 export function initialProgramData(): ProgramData {
@@ -56,6 +57,7 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
   const editors = useRef<ProgramEditorFlush | null>(null), changingContext = useRef(false);
   const legacyEditors = useRef<ProgramEditorFlush | null>(null);
   const communityEditors = useRef<ProgramEditorFlush | null>(null), creatorEditors = useRef<ProgramEditorFlush | null>(null);
+  const registerCommunityEditors = useCallback((registered: ProgramEditorFlush | null) => { communityEditors.current = registered; }, []);
   const publisherEditors = useRef<ProgramEditorFlush | null>(null);
   const inspectorEditors = useRef<ProgramEditorFlush | null>(null);
   const deferredSnapshot = useRef<ProgramControllerSnapshot | null>(null), acceptingExternal = useRef(false);
@@ -77,6 +79,18 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
   const pendingNavigation = useRef<{ actorId: string; location: string; checkpoint: ProgramNavigationCheckpoint | null } | null>(null);
   const discoveryNavigation = useRef<ProgramDiscoveryNavigation | null>(null);
   const main = useRef<HTMLElement>(null);
+  const reviewSpace = useRef<ProgramReviewSpacePort | null>(null);
+  const reviewContext = useRef<{ origin: ProgramReviewOrigin; port: ProgramReviewSpacePort; editor: ProgramEditorFlush | null; draftId: string; postId?: string } | null>(null);
+  const [reviewEntry, setReviewEntry] = useState<ProgramReviewEntry | null>(null);
+  const [, refreshReviewContext] = useState(0);
+  const reviewBusy = useRef(false), leavingReviewOrigin = useRef(false);
+  const reviewInteraction = useRef(0);
+  const reviewRestore = useRef<{ destination: ProgramDestination; run: () => Promise<void> } | null>(null);
+  useEffect(() => {
+    const interacted = () => { reviewInteraction.current++; };
+    window.addEventListener('pointerdown', interacted, true); window.addEventListener('keydown', interacted, true);
+    return () => { window.removeEventListener('pointerdown', interacted, true); window.removeEventListener('keydown', interacted, true); };
+  }, []);
   const today = programLocalDate();
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
@@ -278,6 +292,20 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
   }, [rememberNavigation]);
   useEffect(() => {
     const actorId = snapshot?.envelope.data.activeActorId; if (!actorId) return;
+    const review = reviewRestore.current;
+    if (review?.destination === destination) {
+      restoringNavigation.current = true;
+      let cancelled = false;
+      const frame = requestAnimationFrame(() => {
+        if (cancelled) return;
+        void review.run().finally(() => {
+          if (reviewRestore.current !== review) return;
+          reviewRestore.current = null; pendingNavigation.current = null; restoringNavigation.current = false;
+          if (!cancelled && destinationRef.current === destination) rememberNavigation();
+        });
+      });
+      return () => { cancelled = true; cancelAnimationFrame(frame); restoringNavigation.current = false; };
+    }
     const location = programLocation(destination);
     const pendingAtStart = pendingNavigation.current;
     const checkpoint = readProgramNavigationCheckpoint(pendingAtStart?.actorId === actorId && pendingAtStart.location === location
@@ -330,9 +358,19 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
     if (!allowOutputReturnNavigation(next)) return;
     if (settings.current) settings.current.open = false;
     rememberNavigation();
+    if (leavingReviewOrigin.current) {
+      // Back may restore presentation, but must never replay an unchecked raw offset.
+      const saved = window.history.state?.flowmeProgram as ProgramNavigationCheckpoint | undefined;
+      if (saved) {
+        const safe = { ...saved, writing: {}, focus: 'program-main' };
+        positions.current.set(`${saved.actorId}:${saved.location}`, safe);
+        window.history.replaceState({ flowmeProgram: safe }, '', saved.location);
+      }
+    }
     const actorId = current.current?.envelope.data.activeActorId;
     let checkpoint = actorId ? programCheckpointForNavigation(positions.current.get(`${actorId}:${programLocation(next)}`),
       positions.current.get(`${actorId}:${programLocation(destinationRef.current)}`), actorId, next) : null;
+    if (leavingReviewOrigin.current && checkpoint) checkpoint = { ...checkpoint, writing: {}, focus: 'program-main' };
     if (options?.writingLineId) {
       const data = current.current?.envelope.data;
       checkpoint = data ? programCheckpointForWritingTarget(data, next, options.writingLineId, checkpoint) : null;
@@ -355,6 +393,78 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
       navigate({ view: 'creator', ...(id ? { id } : {}) }, { replace });
       return true;
     };
+  }
+  function captureReviewVisit() {
+    const visit = destinationRef.current, actorId = current.current?.envelope.data.activeActorId;
+    return () => visit.view === 'community' && destinationRef.current === visit
+      && current.current?.envelope.data.activeActorId === actorId && !deferredSnapshot.current;
+  }
+  async function startReview(documentId: string) {
+    if (reviewBusy.current || changingContext.current || deferredSnapshot.current || presentationPending) return;
+    const visit = destinationRef.current, actorId = current.current?.envelope.data.activeActorId;
+    const port = reviewSpace.current, editor = editors.current;
+    if (!port || !actorId || visit.view !== 'space') return;
+    reviewBusy.current = true;
+    try {
+      const sourceSaved = !editor || await editor.flushAll();
+      if (destinationRef.current !== visit || current.current?.envelope.data.activeActorId !== actorId
+        || port !== reviewSpace.current || editor !== editors.current || deferredSnapshot.current) return;
+      if (!sourceSaved) { setFailed(true); setStatus('저장되지 않은 문서 입력을 먼저 확인해 주세요. 입력은 그대로 남아 있습니다.'); return; }
+      const community = communityEditors.current;
+      const communitySaved = !community || await community.flushAll();
+      if (destinationRef.current !== visit || current.current?.envelope.data.activeActorId !== actorId
+        || port !== reviewSpace.current || editor !== editors.current || community !== communityEditors.current || deferredSnapshot.current) return;
+      if (!communitySaved) { setFailed(true); setStatus('작성 중인 글을 저장한 뒤 후기를 열어 주세요. 입력은 그대로 남아 있습니다.'); return; }
+      const origin = port.capture(documentId); if (!origin) { setFailed(true); setStatus('현재 문서와 입력을 확인한 뒤 후기를 다시 열어 주세요.'); return; }
+      const existing = reviewContext.current;
+      const stored = existing && !existing.postId ? current.current.envelope.data.spaces[actorId]?.participationDrafts.find(draft => draft.id === existing.draftId) : undefined;
+      if (stored && (existing!.origin.documentId !== documentId || programReviewOriginReason(current.current.envelope.data, existing!.origin))) {
+        setFailed(true); setStatus('앞서 연결한 후기 초안이 남아 있습니다. 해당 초안을 먼저 이어 써 주세요.'); return;
+      }
+      const draft = stored ?? newProgramReviewDraft();
+      const context = stored ? existing! : { origin, port, editor, draftId: draft.id };
+      reviewContext.current = context;
+      const next: ProgramDestination = { view: 'community' };
+      const isCurrent = () => destinationRef.current === next && current.current?.envelope.data.activeActorId === actorId
+        && reviewContext.current === context && reviewSpace.current === port && editors.current === editor && !deferredSnapshot.current;
+      setReviewEntry({ draft, isCurrent, onOpened: opened => {
+        if (!opened && isCurrent()) { setFailed(true); setStatus('후기를 열지 못했습니다. 작성 중인 입력을 확인한 뒤 원래 문서에서 다시 열어 주세요.'); }
+      } });
+      leavingReviewOrigin.current = true;
+      try { navigate(next); } finally { leavingReviewOrigin.current = false; }
+    } finally { reviewBusy.current = false; }
+  }
+  async function returnFromReview() {
+    const context = reviewContext.current, visit = destinationRef.current;
+    const focusOwner = document.activeElement, interaction = reviewInteraction.current;
+    if (!context?.postId || reviewBusy.current || changingContext.current) return;
+    const live = () => current.current?.envelope.data;
+    const valid = () => !!live() && !deferredSnapshot.current && reviewContext.current === context
+      && reviewInteraction.current === interaction
+      && reviewSpace.current === context.port && editors.current === context.editor
+      && !programReviewOriginReason(live()!, context.origin);
+    if (!valid()) { setFailed(true); setStatus('원래 문서나 입력 상태가 달라 정확히 돌아갈 수 없습니다. 현재 글과 문서는 그대로 유지됩니다.'); return; }
+    reviewBusy.current = true;
+    try {
+      const community = communityEditors.current;
+      const communitySaved = !community || await community.flushAll();
+      if (destinationRef.current !== visit || current.current?.envelope.data.activeActorId !== context.origin.actorId) return;
+      if (community !== communityEditors.current || !valid()) {
+        setFailed(true); setStatus('원래 문서나 입력 상태가 달라 정확히 돌아갈 수 없습니다. 현재 글과 문서는 그대로 유지됩니다.'); return;
+      }
+      if (!communitySaved) { setFailed(true); setStatus('작성 중인 글을 먼저 저장해 주세요. 입력은 그대로 남아 있습니다.'); return; }
+      const next: ProgramDestination = { view: 'space', id: context.origin.documentId };
+      reviewRestore.current = { destination: next, run: async () => {
+        const restored = await context.port.restore(context.origin, () => valid() && destinationRef.current === next, focusOwner);
+        if (!restored && destinationRef.current === next) { setFailed(true); setStatus('문서 상태가 달라 이전 입력 위치를 적용하지 않았습니다. 현재 위치를 확인해 주세요.'); }
+      } };
+      navigate(next);
+      // This entry is presentation-only; exact offsets remain solely in the guarded tab context.
+      if (pendingNavigation.current?.checkpoint) {
+        pendingNavigation.current.checkpoint = { ...pendingNavigation.current.checkpoint, writing: {}, focus: 'program-main' };
+        window.history.replaceState({ flowmeProgram: pendingNavigation.current.checkpoint }, '', programLocation(next));
+      }
+    } finally { reviewBusy.current = false; }
   }
   const mutate: ProgramMutate = useCallback(async (label, build, options) => {
     const store = controller.current, actorId = current.current?.envelope.data.activeActorId;
@@ -452,7 +562,7 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
   return <div className={styles.app} data-testid="integrated-program-app">
     <a className={styles.skip} href="#program-main" onClick={event => { event.preventDefault(); main.current?.focus(); }}>본문으로</a>
     <header className={styles.header}><a className={styles.brand} href="#flowme/space" onClick={event => { event.preventDefault(); navigate({ view: 'space' }); }}>FlowMe</a>
-      <nav aria-label="주요 메뉴"><button aria-current={destination.view === 'space' ? 'page' : undefined} onClick={() => navigate({ view: 'space' })}>내 공간</button><button aria-current={browse ? 'page' : undefined} onClick={() => navigate({ view: data.public.posts.length ? 'community' : 'discover' })}>둘러보기</button><button aria-current={['activity', 'creator'].includes(destination.view) ? 'page' : undefined} onClick={() => navigate({ view: 'activity' })}>내 활동</button></nav>
+      <nav aria-label="주요 메뉴"><button aria-current={destination.view === 'space' ? 'page' : undefined} onClick={() => navigate({ view: 'space' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="m2 10 10-8 10 8v11h-8v-7h-4v7H2Z"/></svg><span>내 공간</span></button><button aria-current={browse ? 'page' : undefined} onClick={() => navigate({ view: data.public.posts.length ? 'community' : 'discover' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" opacity=".22" d="M3 2h18v20H3Z"/><path fill="currentColor" d="M7 6h10v2H7zm0 5h10v2H7zm0 5h6v2H7z"/></svg><span>둘러보기</span></button><button aria-current={['activity', 'creator'].includes(destination.view) ? 'page' : undefined} onClick={() => navigate({ view: 'activity' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" opacity=".25" d="M2 7h20v15H2Z"/><path fill="currentColor" d="M2 3h8l3 4h9v4H2Z"/></svg><span>내 활동</span></button></nav>
       <div className={styles.headerTools}><button onClick={() => void history('undo')} disabled={pending > 0 || !snapshot.envelope.undo[data.activeActorId]?.length}>되돌리기</button><details ref={settings}><summary>PoC 설정</summary><div className={styles.settings}><p>이 기기에만 저장하는 PoC입니다. 인물 전환은 로컬 시뮬레이션이며 실제 계정 인증이 아닙니다.</p><label>예시 인물<select disabled={pending > 0} value={data.activeActorId} onChange={event => void switchActor(event.target.value)}>{data.actors.map(actor => <option value={actor.id} key={actor.id}>{actor.name}</option>)}</select></label>{data.activeActorId === 'local-user' && <button onClick={() => { if (settings.current) settings.current.open = false; setCreatorLibraryOpen(true); }}>기존 제작 초안 가져오기</button>}<button onClick={() => navigate({ view: 'legacy' })}>기존 제작·실행 도구 ({savedCount})</button></div></details></div>
     </header>
     <div className={styles.localNotice}>통합 PoC · 이 기기에 저장</div>
@@ -474,9 +584,11 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
       <div hidden={destination.view !== 'space'}>{outputActorMismatch ? <section className={styles.legacyNotice} role="status" aria-label="출력 링크의 인물 확인">
         <p>이 링크를 만든 인물과 현재 선택한 인물이 다릅니다. 개인 내용은 열지 않았습니다. 같은 브라우저에서 원래 인물을 직접 선택해 주세요.</p>
         <button onClick={() => navigate({ view: 'space' })}>현재 내 공간으로</button>
-      </section> : <ProgramSpace key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} selectedDocumentId={destination.view === 'space' ? destination.id : undefined} outputReturn={outputReturn} onUndo={() => history('undo')} onRedo={() => history('redo')} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRevisionHistory={setRevisionDocument} onOutputDocument={setOutputDocument} onRegisterEditors={registered => { editors.current = registered; }} onRegisterNavigation={registered => { spaceNavigation.current = registered; }} />}</div>
+      </section> : <ProgramSpace key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} selectedDocumentId={destination.view === 'space' ? destination.id : undefined} outputReturn={outputReturn} onUndo={() => history('undo')} onRedo={() => history('redo')} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRevisionHistory={setRevisionDocument} onOutputDocument={setOutputDocument} onRegisterEditors={registered => { editors.current = registered; }} onRegisterNavigation={registered => { spaceNavigation.current = registered; }} onStartReview={startReview} onRegisterReviewSpace={registered => { reviewSpace.current = registered; }} />}</div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined} selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} onStartText={startText} onUseVersion={useVersion} navigationState={discoveryStates[data.activeActorId] ?? emptyDiscoveryState} onNavigationStateChange={state => changeDiscoveryPresentation(data.activeActorId, state)} onRegisterNavigation={registered => { discoveryNavigation.current = registered; }} /></div>}
-      {seen.community && <div hidden={!['community', 'activity'].includes(destination.view)}><ProgramCommunity key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} view={communityView} selectedPostId={communitySelection} selectedReplyId={destination.view === 'community' ? destination.replyId : undefined} presentation={communityStates[data.activeActorId] ?? emptyProgramCommunityPresentation()} onPresentationChange={value => changeCommunityPresentation(data.activeActorId, value)} onRegisterEditors={registered => { communityEditors.current = registered; }} /></div>}
+      {seen.community && <div hidden={!['community', 'activity'].includes(destination.view)}><ProgramCommunity key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} view={communityView} selectedPostId={communitySelection} selectedReplyId={destination.view === 'community' ? destination.replyId : undefined} presentation={communityStates[data.activeActorId] ?? emptyProgramCommunityPresentation()} onPresentationChange={value => changeCommunityPresentation(data.activeActorId, value)} onRegisterEditors={registerCommunityEditors} reviewEntry={reviewEntry} captureReviewVisit={captureReviewVisit}
+        onReviewPublished={(draftId, postId) => { const context = reviewContext.current; if (context?.draftId === draftId && context.origin.actorId === current.current?.envelope.data.activeActorId) { context.postId = postId; refreshReviewContext(value => value + 1); } }}
+        reviewReturnPostId={reviewContext.current?.origin.actorId === data.activeActorId ? reviewContext.current?.postId : undefined} onReturnReview={returnFromReview} /></div>}
       {(legacySeen || destination.view === 'legacy') && <div hidden={destination.view !== 'legacy'}><ProgramLegacyWorkspace key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} onUndo={() => history('undo')} today={today} selectedFlowId={destination.view === 'legacy' ? destination.id : undefined} onRegisterEditors={registered => { legacyEditors.current = registered; }} /></div>}
       {(creatorSeen || destination.view === 'creator') && <div hidden={destination.view !== 'creator'}><ProgramCreatorWorkspace key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} active={destination.view === 'creator'} selectedDraftId={destination.view === 'creator' ? destination.id : creatorSelection} captureRoute={captureCreatorRoute} onRegisterEditors={registered => { creatorEditors.current = registered; }} /></div>}
     </main>

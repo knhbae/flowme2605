@@ -1,15 +1,15 @@
 import { test, expect, type Page } from '@playwright/test';
 import { login, openWorkspaceManagement, mockAlpha, session, sessionKey, users, emptyAccount, accountWithDocument, invalidAccountMarker, pairedSocialAccount, isSocialReadOrInit } from './alpha-auth.fixture';
 
-const workspaceHeading = (page: Page) => page.getByRole('heading', { name: '내 작업', exact: true });
+const workspaceRegion = (page: Page) => page.getByRole('region', { name: '내 공간', exact: true });
 const workspaceStatus = (page: Page) => page.locator(
   'main[data-note-layout="true"] section[aria-label="내 공간"] [role="status"][data-save-state]:visible, '
   + 'main:not([data-note-layout="true"]) section[aria-label="서버 저장 상태"] [role="status"][data-save-state]:visible',
 );
 async function expectWorkspaceReady(page: Page) {
-  await expect(workspaceHeading(page)).toBeVisible();
+  await expect(workspaceRegion(page)).toBeVisible();
   await expect(workspaceStatus(page)).toContainText('서버와 연결됨');
-  await expect(page.getByRole('region', { name: '내 공간', exact: true })).toBeVisible();
+  await expect(workspaceRegion(page).getByRole('heading', { level: 1 })).toBeVisible();
 }
 
 // Real Chromium + real Supabase SDK; all Auth/REST responses are synthetic HTTP fixtures.
@@ -176,7 +176,7 @@ for (const recoveringB of [false, true]) {
     await expect(page.getByRole('status')).toContainText('같은 프로필에서 최신 링크');
     await expect(page.locator('form')).toHaveCount(0);
     await expect(page.getByText(users.b.email, { exact: true })).toHaveCount(0);
-    await expect(workspaceHeading(page)).toHaveCount(0);
+    await expect(workspaceRegion(page)).toHaveCount(0);
     expect(mock.requests.slice(requestStart).filter(request => /\/rest\/|\/user|\/logout|\/recover/.test(request))).toEqual([]);
     expect(mock.state.pkceRequests).toEqual([]); expect(mock.state.updatedOwners).toEqual([]);
     expect(await page.evaluate(key => localStorage.getItem(key), sessionKey)).toBe(before);
@@ -187,13 +187,13 @@ for (const recoveringB of [false, true]) {
     await expect(page.locator('form')).toHaveCount(0);
     await expect(page.getByRole('heading', { name: '이메일 링크 확인 실패' })).toBeVisible();
     await expect(page.getByRole('heading', { name: '내 계정', exact: true })).toHaveCount(0);
-    await expect(workspaceHeading(page)).toHaveCount(0);
+    await expect(workspaceRegion(page)).toHaveCount(0);
     await expect(page.getByText(users.b.email, { exact: true })).toHaveCount(0);
     expect(mock.requests.slice(requestStart).filter(request => /\/rest\/|\/user|\/logout|\/recover/.test(request))).toEqual([]);
     await mock.assertBoundary(); await page.reload();
     await expect(page.getByRole('heading', { name: '이메일 링크 확인 실패' })).toBeVisible();
     await expect(page.getByRole('heading', { name: '내 계정', exact: true })).toHaveCount(0);
-    await expect(workspaceHeading(page)).toHaveCount(0);
+    await expect(workspaceRegion(page)).toHaveCount(0);
     await expect(page.getByText(users.b.email, { exact: true })).toHaveCount(0);
     expect(mock.requests.slice(requestStart).filter(request => /\/rest\/|\/user|\/logout|\/recover/.test(request))).toEqual([]);
     await expect(page.locator('form')).toHaveCount(0); await mock.assertBoundary();
@@ -357,7 +357,7 @@ test('late A REST result is ignored after logout and B login', async ({ page }) 
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   await expect(page.getByText(users.b.email, { exact: true })).toBeVisible();
   await expect(page.getByText(users.a.email, { exact: true })).toHaveCount(0);
-  await expect(workspaceHeading(page)).toHaveCount(0);
+  await expect(workspaceRegion(page)).toHaveCount(0);
   await mock.assertBoundary();
 });
 

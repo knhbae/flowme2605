@@ -35,7 +35,7 @@ function evaluate(expression: string, context: Record<string, unknown>) {
 const declaration = (name: string) => (find(n => ts.isFunctionDeclaration(n) && n.name?.text === name) as ts.FunctionDeclaration).getText(ast);
 const initializer = (name: string) => (find(n => ts.isVariableDeclaration(n) && n.name.getText(ast) === name) as ts.VariableDeclaration).initializer!.getText(ast);
 const effect = (part: string) => (find(n => ts.isCallExpression(n) && n.expression.getText(ast) === 'useEffect' && n.arguments[0]?.getText(ast).includes(part)) as ts.CallExpression).arguments[0].getText(ast);
-const shell = find(n => ts.isFunctionDeclaration(n) && n.name?.text === 'AlphaWorkspace') as ts.FunctionDeclaration;
+const shell = find(n => ts.isFunctionDeclaration(n) && n.name?.text === 'AlphaWorkspaceBody') as ts.FunctionDeclaration;
 const renderExpression = shell.body!.statements.filter(ts.isReturnStatement).at(-1)!.expression!.getText(ast);
 
 test('Flow creator entry requests a UI choice without creating a draft and passes explicit continue/cancel callbacks', () => {
@@ -82,8 +82,10 @@ test('creator entry UI choices open only after existing navigation input guards 
 
 test('pending modal recovery invokes exact same-request lookup without closing or discarding input', async () => {
   const calls: string[] = [];
-  const context = { pending: true, snapshot: { status: 'recovery-required', busy: false }, external: false, styles: { problem: 'problem' },
-    controller: { current: { resolvePending: async (retry: boolean) => { calls.push(`lookup:${retry}`); } } }, openLatest: () => { calls.push('discard'); } };
+  const context: Record<string, any> = { pending: true, snapshot: { status: 'recovery-required', busy: false }, external: false, styles: { problem: 'problem' },
+    reviewContext: { current: null }, captureReviewVisit: () => { throw Error('non-review lookup'); }, setMessage: () => {},
+    controller: { current: { snapshot: () => ({ pending: null }), resolvePending: async (retry: boolean) => { calls.push(`lookup:${retry}`); } } }, openLatest: () => { calls.push('discard'); } };
+  context.resolvePendingResult = evaluate(`(${declaration('resolvePendingResult')})`, context);
   const panel = evaluate(initializer('modalRecovery'), context);
   assert.equal(panel.props['aria-label'], '저장 결과 복구');
   const action = nodes(panel).find(node => node.type === 'button')!;
@@ -102,8 +104,10 @@ test('inspector native modal closes before returning focus to its menu opener', 
 });
 test('pending recovery replaces stale failure notice only after confirmed successful resolution', async () => {
   let message='저장 상태 확인이 필요합니다', successful=false;
-  const context={pending:true,snapshot:{status:'recovery-required',busy:false},external:false,styles:{},
-    controller:{current:{resolvePending:async()=>successful}},openLatest:()=>{},setMessage:(value:string)=>{message=value;}};
+  const context:Record<string,any>={pending:true,snapshot:{status:'recovery-required',busy:false},external:false,styles:{},
+    reviewContext:{current:null},captureReviewVisit:()=>{throw Error('non-review lookup');},
+    controller:{current:{snapshot:()=>({pending:null}),resolvePending:async()=>successful}},openLatest:()=>{},setMessage:(value:string)=>{message=value;}};
+  context.resolvePendingResult=evaluate(`(${declaration('resolvePendingResult')})`,context);
   const action=nodes(evaluate(initializer('modalRecovery'),context)).find(node=>node.type==='button')!;
   await action.props.onClick(); assert.equal(message,'저장 상태 확인이 필요합니다');
   successful=true; await action.props.onClick(); assert.equal(message,'저장 결과를 확인했습니다.');
@@ -127,6 +131,12 @@ function harness() {
     setItem: (key: string, raw: string) => { calls.push(`write:${key}`); storageValues.set(key, raw); }, removeItem: (key: string) => storageValues.delete(key) };
   const events = new Map<string, (event?: any) => void>(), copies: string[] = [];
   const context: Record<string, any> = {
+    syntheticRuntime: undefined, sessionEpoch: {}, sessionEpochRef: { current: {} },
+    reviewSpace: { current: null }, reviewContext: { current: null }, reviewRestore: { current: null },
+    reviewResultReceiver: { current: null }, reviewBusy: { current: false }, reviewInteraction: { current: 0 },
+    reviewAnnouncementGeneration: { current: 0 }, reviewAnnouncement: null, reviewEntry: null,
+    setReviewEntry: (value: unknown) => { context.reviewEntry = value; }, refreshReviewContext: () => {},
+    setReviewAnnouncement: (value: unknown) => { context.reviewAnnouncement = value; },
     config: {}, session: { userId: 'owner-a', accessToken: 'fixed-a-token' }, email: 'a@example.invalid',
     SLOT_KEY: 'flow:poc:personal-workspace:v1:alpha-m3:tab', POLL_MS: 20_000,
     styles: new Proxy({}, { get: (_, key) => String(key) }), labels: { ready: '서버와 연결됨', conflict: '다른 변경이 먼저 저장되었습니다', 'checking-result': '저장 결과 확인이 필요합니다' },
@@ -182,6 +192,12 @@ function harness() {
     history: async () => { calls.push('history'); }, restoreDraft: async () => { calls.push('restore'); }, clearDrafts: () => { calls.push('clear-recovery'); },
   };
   context.document.activeElement = context.document.body;
+  context.sessionEpochRef.current = context.sessionEpoch;
+  context.request = context.fetch;
+  context.reviewAnnouncementState = evaluate(`(${declaration('reviewAnnouncementState')})`, context);
+  for (const name of ['connectConfirmedReview', 'clearReviewContext', 'resolvePendingResult', 'captureReviewVisit', 'startReview', 'returnFromReview', 'signOut']) {
+    context[name] = (...args: unknown[]) => evaluate(`(${declaration(name)})`, context)(...args);
+  }
   const store = { snapshot: () => context.snapshot, mutate: async () => { calls.push('mutation'); return { ok: true, result: 'doc', changed: false }; },
     refresh: async () => { calls.push('refresh'); return true; }, resolvePending: async (retry: boolean) => { calls.push(`resolve:${retry}`); return true; },
     bindSession: () => calls.push('bind'), discardConflict: async () => { calls.push('discard'); return true; }, dispose: () => calls.push('dispose') };
@@ -198,7 +214,8 @@ function harness() {
   const present = evaluate(`(${declaration('present')})`, context);
   context.present = present;
   const render = () => {
-    context.pending = !!context.snapshot?.pending; context.unavailable = context.snapshot?.status === 'session-expired' || !context.data;
+    context.pending = !!context.snapshot?.pending; context.unavailable = evaluate(initializer('unavailable'), context);
+    context.reviewOwnsAnnouncement = evaluate(initializer('reviewOwnsAnnouncement'), context);
     context.localParticipationRecovery = evaluate(initializer('localParticipationRecovery'), context);
     context.participationMessage = evaluate(initializer('participationMessage'), context);
     context.mutate = evaluate(initializer('mutate'), context); context.openLatest = evaluate(`(${declaration('openLatest')})`, context);
@@ -243,23 +260,24 @@ function lostPrivateTextSave() {
   return { h, before, result, documentId, dirty: () => dirty, acknowledgments: () => acknowledgments, refuse: () => { eligible = false; } };
 }
 
-test('direct Flow entry opens the same search with or without community posts', async () => {
+test('B browse Flow entry opens the same search with or without community posts', async () => {
   for (const posts of [[], [{ id: 'visible-post' }]]) {
     const h = harness(), destinations: unknown[] = [];
     h.context.data.public.posts = posts;
+    h.context.browse = true;
     h.context.navigate = async (next: unknown) => { destinations.push(next); };
-    await h.button('Flow').props.onClick();
+    await h.button('Flow 찾기').props.onClick();
     assert.deepEqual(destinations, [{ view: 'discover' }]);
     assert(!h.calls.includes('mutation'));
   }
 });
 
-test('global entries expose personal work, Flow and stories while activity retains its named auxiliary entry', () => {
+test('approved B entries expose personal space, browse and activity outside account management', () => {
   const h = harness(); h.context.browse = true; h.context.destination = { view: 'discover' };
   const tree = h.render();
   const purpose = nodes(tree).find(node => node.type === 'nav' && node.props['aria-label'] === '주요 메뉴')!;
   const entries = nodes(purpose.props.children).filter(node => node.type === 'button');
-  assert.deepEqual(entries.map(node => text(node.props.children)), ['내 작업', 'Flow', '이야기']);
+  assert.deepEqual(entries.map(node => text(node.props.children)), ['내 공간', '둘러보기', '내 활동']);
   assert.equal(entries[0].props['aria-current'], undefined);
   assert.equal(entries[1].props['aria-current'], 'page'); assert.equal(entries[2].props['aria-current'], undefined);
   const management = nodes(tree).find(node => node.type === 'details' && node.props['aria-label'] === '계정 및 자료 관리')!;

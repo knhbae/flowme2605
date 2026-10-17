@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { verificationExitCode } from './program-verification-result.mjs';
+import { sanitizeFailureDiagnostics } from './program-verification-reporter.mjs';
 
 // Treat any nonempty CI marker conservatively, even CI="false". The explicit
 // local flag exercises this path without transferring source to an external CI.
@@ -14,6 +15,9 @@ export function publicVerificationResult(result) {
   const number = value => Number.isSafeInteger(value) ? value : null;
   const iso = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) ? value : null;
   const kinds = ['new-tests', 'npm-test', 'approved-tests', 'public-tests', 'build', 'docs', 'audit'];
+  const diagnostics = result.kind === 'new-tests'
+    ? sanitizeFailureDiagnostics(result.failureDiagnostics, result.testFileCount, result) : null;
+  const baseExitCode = verificationExitCode(result);
   return {
     schema: 'flowme-verification-public/1',
     kind: kinds.includes(result.kind) ? result.kind : 'unknown',
@@ -27,7 +31,8 @@ export function publicVerificationResult(result) {
     sourceChangedCount: result.sourceChangedDuringRun.length,
     sourceCount: result.sourceHashes.length,
     sourceSnapshotSha256: createHash('sha256').update(JSON.stringify(result.sourceHashes)).digest('hex'),
-    verifiedExitCode: verificationExitCode(result),
+    verifiedExitCode: baseExitCode || (diagnostics && diagnostics.status !== 'complete' ? 1 : 0),
+    ...(diagnostics ? { failureDiagnostics: diagnostics } : {}),
     rawOutputRetained: false, log: null,
   };
 }

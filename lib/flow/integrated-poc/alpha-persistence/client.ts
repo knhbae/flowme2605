@@ -42,6 +42,10 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
   let generation = 0, ownerId: string | null = null, repository: AlphaRepository | null = null;
   let state: AlphaRecovery | null = null, status: AlphaClientStatus = 'signed-out', busy = false, blocked = false;
   let lastReceipt: AlphaReceipt | null = null;
+  // Progress is not renewed authentication. Keep the existing expired-session
+  // presentation until this owner's current generation validates a fresh read.
+  // Recovery preimages and pending requests remain intact behind this view.
+  let accountHidden = false;
   // Transient diagnostic only: never stored in recovery or used to settle a pending request.
   let lastError: AlphaError | null = null;
   // Only this session's definitive execute rejection permits replacing its draft.
@@ -116,6 +120,7 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
     status = 'recovery-required'; blocked = true; return false;
   };
   const fail = (reason: AlphaError) => {
+    if (reason === 'unauthenticated') accountHidden = true;
     lastError = reason;
     status = reason === 'unauthenticated' ? 'session-expired' : reason === 'revision-conflict' || reason === 'undo-conflict' ? 'conflict'
       : reason === 'no-change' ? 'same-location' : 'recovery-required';
@@ -134,7 +139,9 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
       }
       state!.confirmed = detached(result.value);
       if (references) state!.references = detached(references); else delete state!.references;
-      return persist();
+      if (!persist()) return false;
+      accountHidden = false;
+      return true;
     } catch { if (current(epoch)) status = state!.pending ? 'checking-result' : 'recovery-required'; return false; }
   }
   async function acceptReceipt(receipt: AlphaReceipt, command: AlphaCommand, epoch: number, port: AlphaRepository): Promise<boolean> {
@@ -167,6 +174,7 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
       if (!current(epoch)) return false;
       if ((nativeHandoff(command) || command.kind === 'social' || command.kind === 'undo-social') && !knownWriteResponse(result)) { status = 'checking-result'; return false; }
       if (!result.ok) {
+        if (result.reason === 'unauthenticated') accountHidden = true;
         // A retry rejection cannot settle a previous ambiguous attempt. Auth or
         // availability failure also cannot establish the original commit outcome.
         if (!replay && result.reason !== 'unauthenticated' && result.reason !== 'unavailable') state!.pending = null;
@@ -185,6 +193,8 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
   }
   return {
     bindSession(nextOwner: string | null, port: AlphaRepository | null) {
+      // A same-owner token refresh alone does not validate cached account bytes.
+      accountHidden = accountHidden && nextOwner !== null && port !== null && nextOwner === ownerId;
       generation++; ownerId = nextOwner; repository = port; state = null; busy = false; blocked = false; lastReceipt = null;
       lastError = null; rejectedDraftRequestId = null; rejectedNativeHandoff = null; rejectedSocialDraft = null;
       status = 'signed-out';
@@ -198,7 +208,7 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
         status = state.pending ? 'checking-result' : state.draft ? 'recovery-required' : 'ready';
       } catch { status = 'recovery-required'; blocked = true; }
     },
-    snapshot: () => ({ ownerId, status, state: detached(state), lastReceipt: detached(lastReceipt), lastError,
+    snapshot: () => ({ ownerId, status: accountHidden ? 'session-expired' as const : status, state: detached(state), lastReceipt: detached(lastReceipt), lastError,
       retryableRejectedDraft: retryableRejectedDraft(), retryableNativeHandoff: retryableNativeHandoff(), retryableRejectedSocialDraft: retryableRejectedSocialDraft() }),
     matchesRejectedSocialDraft,
     async refresh() {

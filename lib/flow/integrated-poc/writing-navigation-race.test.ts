@@ -33,7 +33,7 @@ function fixture() {
   const context = { current, pendingNavigation, restoringNavigation, positions, destinationRef, window: { location, history, scrollY: 0 }, document: { activeElement: new Element() }, HTMLElement: Element,
     spaceNavigation: { current: { actorId, capture: () => ({ writing: { [doc.id]: { start: 0, end: 0, scrollTop: 0 } }, space: { selected: doc.id } }) } },
     discoveryStatesRef: { current: {} }, discoveryNavigation: { current: null }, communityStatesRef: { current: {} }, emptyProgramCommunityPresentation, programLocation, programNavigationMatchesDocument,
-    allowOutputReturnNavigation: () => true, settings: { current: null }, programCheckpointForNavigation, programCheckpointForWritingTarget,
+    allowOutputReturnNavigation: () => true, leavingReviewOrigin: { current: false }, settings: { current: null }, programCheckpointForNavigation, programCheckpointForWritingTarget,
     scopeFeedbackToDestination, setDestination: (next: any) => { destinationRef.current = next; }, setSeen: () => {} };
   const rememberNavigation = callback('rememberNavigation', context), navigate = callback('navigate', { ...context, rememberNavigation });
   return { ...context, navigate, rememberNavigation, doc, data, actorId, destination, historyWrites, feedbackWrites };

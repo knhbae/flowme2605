@@ -44,6 +44,7 @@ for (const reason of ['busy', 'conflict', 'checking-result']) {
     };
     const save = handler('./ProgramCommunity.tsx', 'save', {
       actorId: 'owner', storageScope: 'account', savedDraftRef, queue, saveFlights, mounted: { current: true }, programErrorMessage,
+      draftPending: () => JSON.stringify(wanted) !== JSON.stringify(savedDraftRef.current),
       programClone: structuredClone, setSaveState: (value: string) => { saveState = value; },
       setErrorNotice, setError: (value: string) => { setErrorNotice({ message: value }); }, setDraftConflict: (value: boolean) => { conflict = value; },
       saveProgramParticipationDraft: (_current: unknown, _actor: string, draft: unknown, options: any) => {

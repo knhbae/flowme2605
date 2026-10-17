@@ -210,20 +210,20 @@ function sourceFocusHarness() {
   const variable = find(node => ts.isVariableDeclaration(node) && node.name.getText(ast) === 'focusSourceRow') as ts.VariableDeclaration;
   const raw = '메모\n- [ ] 선택한 항목', doc = { id: 'document', lines: [{ id: 'memo' }, { id: 'task' }] };
   const state = { raw, dirty: false }, propsRef = { current: { docId: 'document' } };
-  const composingRef = { current: false }, calls: number[] = [];
+  const composingRef = { current: false }, calls: number[] = [], tools = { open: true };
   const ownerDocument = { activeElement: null as unknown };
   const textarea = { value: raw, readOnly: false, inert: true, ownerDocument };
   let disabled = false, visible = true, nativeResult = true;
   const focus = evaluate(variable.initializer!.getText(ast), {
     draftRef: { current: { getState: () => state } }, currentDoc: () => doc, textArea: () => textarea,
     propsRef, composingRef, regionPendingRef: { current: false }, actionsDisabled: () => disabled, M: { raw: () => raw },
-    hostRef: { current: { getClientRects: () => visible ? [{}] : [] } },
+    hostRef: { current: { getClientRects: () => visible ? [{}] : [], closest: () => ({ querySelector: () => tools }) } },
     editorRef: { current: { focus: (index: number) => {
       calls.push(index); if (!nativeResult) return false;
       textarea.inert = false; ownerDocument.activeElement = textarea; return true;
     } } },
   }) as (target: { documentId: string; lineId: string; raw: string }) => boolean;
-  return { raw, state, propsRef, composingRef, calls, textarea, focus,
+  return { raw, state, propsRef, composingRef, calls, textarea, focus, tools,
     target: { documentId: 'document', lineId: 'task', raw },
     disable: () => { disabled = true; }, hide: () => { visible = false; }, failNative: () => { nativeResult = false; } };
 }
@@ -232,6 +232,7 @@ test('registered source focus asks the native editor to unfold and focus the exa
   const h = sourceFocusHarness(); assert.equal(h.textarea.inert, true);
   assert.equal(h.focus(h.target), true); assert.deepEqual(h.calls, [1]);
   assert.equal(h.textarea.inert, false); assert.equal(h.textarea.ownerDocument.activeElement, h.textarea);
+  assert.equal(h.tools.open, false);
 });
 
 test('source focus rejects stale identity, raw, dirty, IME, readonly and hidden input before native focus', () => {
@@ -246,10 +247,10 @@ test('source focus rejects stale identity, raw, dirty, IME, readonly and hidden 
     if (reason === 'readonly') h.textarea.readOnly = true;
     if (reason === 'locked-or-invalid-or-saving') h.disable();
     if (reason === 'hidden') h.hide();
-    assert.equal(h.focus(h.target), false, reason); assert.deepEqual(h.calls, [], reason);
+    assert.equal(h.focus(h.target), false, reason); assert.deepEqual(h.calls, [], reason); assert.equal(h.tools.open, true);
   }
   const failed = sourceFocusHarness(); failed.failNative();
-  assert.equal(failed.focus(failed.target), false); assert.equal(failed.textarea.inert, true);
+  assert.equal(failed.focus(failed.target), false); assert.equal(failed.textarea.inert, true); assert.equal(failed.tools.open, true);
 });
 
 test('source focus port shares the existing registration lifetime and is cleared on unmount', () => {

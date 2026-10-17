@@ -35,11 +35,11 @@ const styles = new Proxy({}, { get: (_, key) => String(key) });
 function shellContext() {
   return { styles, storageError: false, localParticipationRecovery: null as any, pending: false, external: false,
     snapshot: { status: 'ready', busy: false, draft: null, retryableRejectedDraft: false, retryableNativeHandoff: false, retryableRejectedSocialDraft: false } as any,
-    destination: { view: 'space' }, unavailable: false, recoveries: null as any,
+    destination: { view: 'space' }, unavailable: false, recoveries: null as any, reviewOwnsAnnouncement: false,
     labels: evaluate(initializer(shell, 'labels'), {}), message: '', participationMessage: false,
     needsInputProtection: false, inputProtection: null as any, personalRecovery: null as any,
     controller: { current: { resolvePending: async (_retry: boolean) => false } },
-    setMessage(_value: string) {}, openLatest() {}, restoreDraft(_index: number) {}, clearDrafts() {}, history(_direction: string) {},
+    setMessage(_value: string) {}, resolvePendingResult: async () => {}, openLatest() {}, restoreDraft(_index: number) {}, clearDrafts() {}, history(_direction: string) {},
     navigator: { clipboard: { writeText: async (_raw: string) => {} } }, AlphaConflictReview: 'conflict-review' };
 }
 function shellStatusContext(context: Record<string, any>) {
@@ -335,11 +335,11 @@ test('editor recovery retains retry, download, progress and discard callbacks pl
   context.progressConflict = null; assert(!nodes(render(context)).some(node => node.type === 'button' && text(node) === '진행 조절 보기'));
 });
 
-test('presentation wrappers retain the exact pre-fix recovery callback and guard contracts', () => {
-  // Read from the byte-exact pre-fix snapshot, then embedded here so this
-  // permanent test does not depend on an ignored local QA artifact.
+test('presentation wrappers retain current recovery callbacks, disabled guards and review ownership', async () => {
+  // Keep the wrapper contracts exact, and execute the current recovery helper
+  // so delegating from JSX cannot drop its success and review-visit guards.
   const contracts: [ts.SourceFile, string][] = [
-    [shell, '<button type="button" disabled={snapshot?.busy} onClick={async () => { if (await controller.current?.resolvePending(true)) setMessage(\'저장 결과를 확인했습니다.\'); }}>저장 결과 확인 · 같은 요청 재시도</button>'],
+    [shell, '<button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>저장 결과 확인 · 같은 요청 재시도</button>'],
     [shell, '<button type="button" disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button>'],
     [shell, '<button type="button" disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreDraft(index)}>새 문서로 복구</button>'],
     [shell, '<button type="button" onClick={clearDrafts}>보관 입력 버리기</button>'],
@@ -352,5 +352,30 @@ test('presentation wrappers retain the exact pre-fix recovery callback and guard
     const normalized = contract.replace(/\s+/g, ' ');
     assert(find(tree, node => ts.isJsxElement(node) && node.openingElement.tagName.getText(tree) === 'button'
       && node.getText(tree).replace(/\s+/g, ' ') === normalized));
+  }
+  const resolveSource = find(shell, node => ts.isFunctionDeclaration(node) && node.name?.text === 'resolvePendingResult').getText(shell);
+  for (const mode of ['ordinary', 'review', 'rejected', 'stale-visit', 'missing-visit', 'changed-context', 'published'] as const) {
+    const context: { draftId: string; postId?: string } = { draftId: 'synthetic-review' };
+    const reviewContext = { current: context };
+    const calls: unknown[] = [], messages: string[] = [];
+    const resolvePendingResult = evaluate(`(${resolveSource})`, {
+      controller: { current: {
+        snapshot: () => ({ pending: mode === 'ordinary' ? null : {
+          kind: 'social', intent: { type: 'participation-submit', draft: { id: context.draftId } },
+        } }),
+        resolvePending: async (retry: boolean) => {
+          calls.push(retry);
+          if (mode === 'changed-context') reviewContext.current = { ...context };
+          if (mode === 'published') context.postId = 'synthetic-post';
+          return mode !== 'rejected';
+        },
+      } },
+      reviewContext,
+      captureReviewVisit: () => mode === 'missing-visit' ? null : () => mode !== 'stale-visit',
+      setMessage: (message: string) => messages.push(message),
+    });
+    await resolvePendingResult();
+    assert.deepEqual(calls, [true], mode);
+    assert.deepEqual(messages, mode === 'ordinary' || mode === 'review' ? ['저장 결과를 확인했습니다.'] : [], mode);
   }
 });
