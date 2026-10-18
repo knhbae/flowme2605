@@ -12,7 +12,7 @@ import { parseProgramLocation, programLocation, programNavigationMatchesDocument
 import { programErrorMessage, type ProgramDestination, type ProgramMutate, type ProgramNavigate } from '@/lib/flow/integrated-poc/ui-contract';
 import { nextProgramMutationFeedback, programMutationFeedbackAfterNavigation, type ProgramMutationFeedback } from '@/lib/flow/integrated-poc/mutation-feedback';
 import type { PersonalWorkspacePocReadModel, PersonalWorkspacePocState } from '@/lib/flow/personal-workspace-poc-contract';
-import { ProgramSpace } from './ProgramSpace';
+import { ProgramSpace, useProgramMobileWritingChrome } from './ProgramSpace';
 import { ProgramDiscovery, createProgramDiscoveryNavigationState, captureProgramDiscoveryPresentation, restoreProgramDiscoveryPresentation, programDiscoveryHasUnstoredInput, type ProgramDiscoveryNavigationState } from './ProgramDiscovery';
 import { ProgramCommunity } from './ProgramCommunity';
 import { emptyProgramCommunityPresentation, readProgramCommunityPresentation, type ProgramCommunityPresentation } from '@/lib/flow/integrated-poc/navigation';
@@ -79,6 +79,8 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
   const pendingNavigation = useRef<{ actorId: string; location: string; checkpoint: ProgramNavigationCheckpoint | null } | null>(null);
   const discoveryNavigation = useRef<ProgramDiscoveryNavigation | null>(null);
   const main = useRef<HTMLElement>(null);
+  const chromeRoot = useRef<HTMLDivElement>(null);
+  const writingWithKeyboard = useProgramMobileWritingChrome(chromeRoot, !!snapshot);
   const reviewSpace = useRef<ProgramReviewSpacePort | null>(null);
   const reviewContext = useRef<{ origin: ProgramReviewOrigin; port: ProgramReviewSpacePort; editor: ProgramEditorFlush | null; draftId: string; postId?: string } | null>(null);
   const [reviewEntry, setReviewEntry] = useState<ProgramReviewEntry | null>(null);
@@ -559,7 +561,7 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
     <div><button onClick={downloadPendingInput}>작성 중 입력 TXT 받기</button><button onClick={() => setConfirmExternal(true)}>입력 버리고 최신 상태 보기</button></div>
     {confirmExternal && <div><p>아직 저장하지 못한 입력을 버릴까요? 이미 저장된 다른 탭의 내용은 변경하지 않습니다.</p><button onClick={() => void acceptExternalDiscard()}>버리고 불러오기</button><button onClick={() => setConfirmExternal(false)}>입력 유지</button></div>}
   </section> : null;
-  return <div className={styles.app} data-testid="integrated-program-app">
+  return <div ref={chromeRoot} className={styles.app} data-testid="integrated-program-app" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined}>
     <a className={styles.skip} href="#program-main" onClick={event => { event.preventDefault(); main.current?.focus(); }}>본문으로</a>
     <header className={styles.header}><a className={styles.brand} href="#flowme/space" onClick={event => { event.preventDefault(); navigate({ view: 'space' }); }}>FlowMe</a>
       <nav aria-label="주요 메뉴"><button aria-current={destination.view === 'space' ? 'page' : undefined} onClick={() => navigate({ view: 'space' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="m2 10 10-8 10 8v11h-8v-7h-4v7H2Z"/></svg><span>내 공간</span></button><button aria-current={browse ? 'page' : undefined} onClick={() => navigate({ view: data.public.posts.length ? 'community' : 'discover' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" opacity=".22" d="M3 2h18v20H3Z"/><path fill="currentColor" d="M7 6h10v2H7zm0 5h10v2H7zm0 5h6v2H7z"/></svg><span>둘러보기</span></button><button aria-current={['activity', 'creator'].includes(destination.view) ? 'page' : undefined} onClick={() => navigate({ view: 'activity' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" opacity=".25" d="M2 7h20v15H2Z"/><path fill="currentColor" d="M2 3h8l3 4h9v4H2Z"/></svg><span>내 활동</span></button></nav>

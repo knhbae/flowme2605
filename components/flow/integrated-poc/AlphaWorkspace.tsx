@@ -19,7 +19,7 @@ import { type ProgramDestination, type ProgramMutate, programErrorMessage, PROGR
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
 import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
 import { textWorkspaceModel as M } from '@/lib/flow/integrated-poc/text-workspace';
-import { ProgramSpace } from './ProgramSpace';
+import { ProgramSpace, useProgramMobileWritingChrome } from './ProgramSpace';
 import { ProgramLegacyWorkspace } from './ProgramLegacyWorkspace';
 import { ProgramPrivateOutput } from './ProgramPrivateOutput';
 import { ProgramCreatorWorkspace } from './ProgramCreatorWorkspace';
@@ -84,6 +84,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const sessionEpoch = useMemo(() => ({}), [session.userId, session.accessToken]);
   const sessionEpochRef = useRef(sessionEpoch); sessionEpochRef.current = sessionEpoch;
   const [snapshot, setSnapshot] = useState<AlphaSyncSnapshot | null>(null), [data, setData] = useState<ProgramData | null>(null);
+  const chromeRoot = useRef<HTMLElement>(null);
+  const writingWithKeyboard = useProgramMobileWritingChrome(chromeRoot, !!snapshot && !!data);
   const [destination, setDestination] = useState<ProgramDestination>({ view: 'space' });
   const destinationRef = useRef(destination); destinationRef.current = destination;
   const reviewSpace = useRef<ProgramReviewSpacePort | null>(null);
@@ -121,6 +123,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const [recoveries, setRecoveries] = useState<AlphaUiRecoveryRecord | null>(null), [storageError, setStorageError] = useState(false);
   const [external, setExternal] = useState(false), [presentation, setPresentation] = useState(0), [leave, setLeave] = useState(false);
   const controller = useRef<Controller | null>(null), uiRecovery = useRef<UiRecovery | null>(null);
+  const automaticRead = useRef<{ store: Controller; ownerId: string; epoch: object; promise: Promise<boolean>; eligible: boolean } | null>(null);
   const editors = useRef<ProgramEditorFlush | null>(null), legacyEditors = useRef<ProgramEditorFlush | null>(null);
   const creatorEditors = useRef<ProgramEditorFlush | null>(null), creatorRecovery = useRef<ReturnType<typeof createAlphaCreatorRecovery> | null>(null);
   const parkedCreator = useRef<AlphaCreatorRecoveryEntry[]>([]), activeCreator = useRef<AlphaCreatorRecoveryEntry | null>(null);
@@ -219,7 +222,33 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const privateSave = !externalRef.current && prior?.ownerId === session.userId
       ? confirmedAlphaPrivateTextSave(session.userId, currentData.current, currentRevision.current,
         currentPublicRevision.current, pendingSave, next) : null;
-    const acceptedPrivateSave = !!privateSave && !!editors.current?.acceptConfirmedPrivateText?.(privateSave.before, privateSave.next);
+    const privateTextPort = editors.current;
+    const isolatedPrivateInput = () => {
+      try {
+        const displayed = currentData.current, confirmed = next.envelope?.data;
+        if (!privateSave || !privateTextPort || privateTextPort !== editors.current || !displayed || !confirmed
+          || !privateTextPort.hasPendingInput || privateTextPort.hasPendingInput() !== true
+          || !privateTextPort.pendingDocumentIds || !privateTextPort.captureDrafts || !privateTextPort.blocksExternalSnapshot
+          || privateTextPort.blocksExternalSnapshot(displayed, confirmed) !== false
+          || programDiscoveryHasUnstoredInput(discoveryStateRef.current)
+          || allEditors().some(port => port && port !== privateTextPort
+            && (!port.hasPendingInput || port.hasPendingInput() !== false))) return false;
+        const pending = privateTextPort.pendingDocumentIds(), drafts = privateTextPort.captureDrafts();
+        if (pending.length !== 1 || drafts.length !== 1 || drafts[0].documentId !== pending[0]
+          || typeof drafts[0].raw !== 'string') return false;
+        const id = pending[0], before = privateSave.before, after = privateSave.next;
+        if (!M.getDocument(before, id) || !M.getDocument(after, id)
+          || before.documents.some(doc => doc.id === id) !== after.documents.some(doc => doc.id === id)) return false;
+        const ids = new Set([...before.documents, ...before.flows, ...after.documents, ...after.flows].map(doc => doc.id));
+        const changed = [...ids].filter(docId => canonicalJson(M.getDocument(before, docId) ?? null)
+          !== canonicalJson(M.getDocument(after, docId) ?? null));
+        return changed.length === 1 && changed[0] === id;
+      } catch { return false; }
+    };
+    // OR receipt acceptance alone cannot exempt another pending editor.
+    const isolatedBefore = isolatedPrivateInput();
+    const acceptedPrivateSave = !!privateSave && !!privateTextPort?.acceptConfirmedPrivateText?.(privateSave.before, privateSave.next);
+    const acceptedPrivateInput = isolatedBefore && acceptedPrivateSave && isolatedPrivateInput();
     if (acceptedPrivateSave && privateSave && !hasInput()) {
       const confirmedText = privateSave.next;
       const saved = uiRecovery.current?.read();
@@ -254,7 +283,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       allEditors().forEach(port => { if (port?.acceptConfirmedSocialDrafts?.(next.envelope!.data)) acceptedSocialDraft = true; });
     }
     if (currentData.current && (currentRevision.current !== next.account.revision || currentPublicRevision.current !== (next.publicRevision ?? null))
-      && ownMutation.current === 0 && (hasInput() || (modalRef.current && !(exactOwnDraft && acceptedSocialDraft)))) {
+      && ownMutation.current === 0 && ((hasInput() && !acceptedPrivateInput) || (modalRef.current && !(exactOwnDraft && acceptedSocialDraft)))) {
       captureInput(); externalRef.current = true; setExternal(true); return;
     }
     if (externalRef.current) return;
@@ -381,7 +410,14 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     // Preservation reads have their own fresh snapshot. Avoid unrelated polling
     // while that dialog is open; never interrupt an already running request.
     if (disposed.current || preservationRef.current || document.visibilityState === 'hidden' || !store || store.snapshot().busy) return;
-    void store.refresh();
+    const before = store.snapshot();
+    const read = { store, ownerId: currentOwnerRef.current, epoch: sessionEpochRef.current,
+      eligible: !!before.account && !!before.envelope && before.ownerId === currentOwnerRef.current
+        && before.account.ownerId === currentOwnerRef.current && !before.pending && !before.draft
+        && ['ready', 'saved', 'same-location', 'cancelled'].includes(before.status),
+      promise: store.refresh().catch(() => false) };
+    automaticRead.current = read;
+    void read.promise.then(() => { if (automaticRead.current === read) automaticRead.current = null; });
   }
   function closePreservation() {
     if (!preservationRef.current || disposed.current || currentOwnerRef.current !== session.userId) return;
@@ -428,16 +464,41 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       document.removeEventListener('visibilitychange', visibility); window.removeEventListener('beforeunload', beforeUnload); };
   }, []);
   const mutate: ProgramMutate = async (label, build, options) => {
-    if (!controller.current || storageError) return { ok: false, reason: 'recovery-required' };
+    const store = controller.current, owner = currentOwnerRef.current, epoch = sessionEpochRef.current;
+    if (!store || storageErrorRef.current) return { ok: false, reason: 'recovery-required' };
     if (externalRef.current) return { ok: false, reason: 'conflict' };
     if (!captureInput()) return { ok: false, reason: 'recovery-required' };
+    const read = automaticRead.current;
+    // Only wait for our exact automatic read, before any mutation is built or
+    // dispatched. A write/UNKNOWN lookup never grants this waiting authority.
+    if (options?.groupId?.startsWith('text:') && !options.alphaCreator && !options.alphaSocial
+      && read?.eligible && read.store === store && read.ownerId === owner && read.epoch === epoch
+      && store.snapshot().busy) {
+      const refreshed = await read.promise;
+      if (disposed.current || controller.current !== store || currentOwnerRef.current !== owner
+        || sessionEpochRef.current !== epoch) return { ok: false, reason: 'session-expired' };
+      if (externalRef.current) return { ok: false, reason: 'conflict' };
+      if (storageErrorRef.current || preservationRef.current) return { ok: false, reason: 'recovery-required' };
+      const live = store.snapshot();
+      if (!refreshed || live.ownerId !== owner || live.account?.ownerId !== owner || !live.envelope
+        || live.busy || live.pending || live.draft || !['ready', 'saved', 'same-location', 'cancelled'].includes(live.status)) {
+        return { ok: false, reason: live.status === 'session-expired' ? 'session-expired'
+          : live.pending || live.draft ? 'unresolved' : live.busy ? 'busy' : 'recovery-required' };
+      }
+      // Newer keystrokes stay in the existing draft drain. Capture them too;
+      // retain the original builder and its workspace/merge checks unchanged.
+      if (!captureInput()) return { ok: false, reason: 'recovery-required' };
+    }
     const intent = typeof options?.alphaSocial === 'object' ? options.alphaSocial : undefined;
     // The matching composer owns this attempt's message; account recovery controls remain here.
     const reviewOwnsMessage = intent?.type === 'participation-submit' && intent.draft.id === reviewContext.current?.draftId;
     if (reviewOwnsMessage && captureReviewVisit()()) setMessage('');
     ownMutation.current++;
     try {
-      const outcome = await controller.current.mutate(label, build, options);
+      const outcome = await store.mutate(label, build, options);
+      // A completed operation does not grant a stale host presentation authority.
+      if (disposed.current || controller.current !== store || currentOwnerRef.current !== owner
+        || sessionEpochRef.current !== epoch) return outcome;
       if (!outcome.ok) {
         // A blocked click may resume after the original request settles.
         // Do not reintroduce its temporary wait notice after the final snapshot.
@@ -453,7 +514,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       else {
         if (!reviewOwnsMessage) setMessage('');
         // Drop only input that exactly matches confirmed server text. A newer keystroke stays protected.
-        const saved = uiRecovery.current?.read(), confirmed = controller.current.snapshot().account;
+        const saved = uiRecovery.current?.read(), confirmed = store.snapshot().account;
         const creatorSaved = creatorRecovery.current?.read();
         if (creatorSaved?.ok && creatorSaved.value && confirmed && creatorSaved.value.entries.every(entry => !entry.auxiliaries.length
           && canonicalJson(entry.working) === canonicalJson(confirmed.space.creatorWorkspace?.working ?? null))) {
@@ -851,7 +912,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         </details>}
         {!usesNoteChrome && serverUndo}
       </div>;
-  return <main className={styles.page} data-alpha-frame="b" data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
+  return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
     <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}>FlowMe</a>
       {!unavailable && <nav className={styles.globalNavigation} aria-label="주요 메뉴">
         <button type="button" aria-current={['space', 'legacy'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'space' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="m3 10 9-7 9 7v11H3z"/></svg><span>내 공간</span></button>

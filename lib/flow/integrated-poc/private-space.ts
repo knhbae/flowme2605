@@ -178,14 +178,19 @@ export function updateProgramTask(data: ProgramData, input: ProgramPrivateMutati
   });
 }
 
-export function recordProgramTaskProgress(data: ProgramData, input: ProgramPrivateMutationBase & { taskId: string; date: string; percent: number }): ProgramTransition<string> {
-  return mutate(data, input, 'private-task-progress', { taskId: input.taskId, date: input.date, percent: input.percent }, space => {
+export function recordProgramTaskProgress(data: ProgramData, input: ProgramPrivateMutationBase & { taskId: string; date: string; percent: number; correctionAsOfDate?: string }): ProgramTransition<string> {
+  return mutate(data, input, 'private-task-progress', { taskId: input.taskId, date: input.date, percent: input.percent,
+    ...(input.correctionAsOfDate === undefined ? {} : { correctionAsOfDate: input.correctionAsOfDate }) }, space => {
     if (programReferenceExecutionAccess(space, input.taskId).kind !== 'active') return { result: input.taskId, reason: 'unresolved' };
     if (programLegacyTaskQualityHold(space, input.taskId) || programLegacyPlanTaskExcluded(space, input.taskId)) return { result: input.taskId, reason: 'unresolved' };
     if (!programDate(input.date) || !Number.isInteger(input.percent) || input.percent < 0 || input.percent > 100) return { result: input.taskId, reason: 'invalid' };
     const exists = documents(space.text).some(doc => M.rowMeta(space.text, doc.id).some(row => row.id === input.taskId && row.progressTargetId === input.taskId));
     if (!exists) return { result: input.taskId, reason: 'missing' };
-    const next = M.recordProgress(space.text, input.taskId, input.date, input.percent);
+    if (input.correctionAsOfDate !== undefined && (!programDate(input.correctionAsOfDate) || input.date >= input.correctionAsOfDate
+      || M.currentProgress(space.text, input.taskId) === null || !documents(space.text).some(doc => M.parseDocument(doc, space.text).items.some(item => item.id === input.taskId && item.inputPercent !== undefined))
+      || !M.progressHistory(space.text, input.taskId).some(record => record.date === input.date))) return { result: input.taskId, reason: 'invalid' };
+    const next = input.correctionAsOfDate === undefined ? M.recordProgress(space.text, input.taskId, input.date, input.percent)
+      : M.correctProgressRecord(space.text, input.taskId, input.date, input.percent, input.correctionAsOfDate);
     if (next === space.text && !M.progressHistory(next, input.taskId).some(record => record.date === input.date && record.percent === input.percent)) return { result: input.taskId, reason: 'limit' };
     space.text = next;
     return { result: input.taskId };
