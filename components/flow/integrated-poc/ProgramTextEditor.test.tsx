@@ -9,6 +9,7 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import ts from 'typescript';
 import { createEmptyTextWorkspace, textWorkspaceModel as M, type TextWorkspaceState } from '../../../lib/flow/integrated-poc/text-workspace';
+import type { ProgramTextCommit } from '../../../lib/flow/integrated-poc/program-text-draft';
 import { planProgramDateBlockOrder } from '../../../lib/flow/integrated-poc/date-block-order';
 import { applyProgramLinePermutation, createProgramPermutationHistory } from '../../../lib/flow/integrated-poc/line-permutation';
 import type { createProgramTextDraft as DraftFactory, ProgramTextEditor as Component, ProgramReferencePanel as ReferencePanel, programTextProtectionMessage as ProtectionMessage, trapProgramDialogTab as TrapDialogTab, ProgramTextDraftState } from './ProgramTextEditor';
@@ -726,10 +727,11 @@ test('in-flight receipt advances only baseline while unsubmitted discarded and d
   const next = draft.getState().working; assert.equal(h.confirmSave(before, next), false);
   assert.equal(draft.getState().committed, before); assert.equal(draft.getState().saving, false);
   let finish: (value: boolean) => void = () => {}, writes = 0;
-  h.props.onCommit = (_value, _label, options) => {
+  const commit: ProgramTextCommit = (_value, _label, options) => {
     writes++; assert.equal(options?.expectedWorkspace, before);
     return new Promise<boolean>(resolve => { finish = resolve; });
   };
+  h.props.onCommit = commit;
   const flight = draft.save(); assert(draft.getState().saving);
   draft.updateRaw('진행 중 새 입력', '2026-09-30'); h.textarea.value = draft.getState().raw;
   h.textarea.selectionStart = 2; h.textarea.selectionEnd = 4; h.textarea.scrollTop = 18;
