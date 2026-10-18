@@ -10,7 +10,7 @@ import React from 'react';
 import { createProgramData, createProgramEnvelope, validateProgramData } from '../../../lib/flow/integrated-poc/program-data';
 import { programClone, type ProgramData, type ProgramTransition } from '../../../lib/flow/integrated-poc/contract';
 import { importProgramPublicVersion, recordProgramTaskProgress, updateProgramTask } from '../../../lib/flow/integrated-poc/private-space';
-import { textWorkspaceModel as M } from '../../../lib/flow/integrated-poc/text-workspace';
+import { textWorkspaceModel as M, type TextWorkspaceState } from '../../../lib/flow/integrated-poc/text-workspace';
 import { captureAlphaAccount, commandFromProgramTransition } from '../../../lib/flow/integrated-poc/alpha-persistence/program-adapter';
 import { executeAlphaSocialIntent } from '../../../lib/flow/integrated-poc/alpha-social/dispatch';
 import type { AlphaSocialIntent } from '../../../lib/flow/integrated-poc/alpha-social/contract';
@@ -469,28 +469,75 @@ test('PS18 explicit text date form can insert fresh date and time properties wit
   } finally { editor.unmount(); }
 });
 
-test('PS19 an account response arriving during text save synchronizes its committed property identities after settlement', async () => {
-  const f = publicFixture();
-  f.data = accepted(updateProgramTask(f.data, { actorId: f.actorId, requestId: 'schedule-clear-for-ack', expectedSpace: f.data.spaces[f.actorId],
-    taskId: f.taskId, patch: { date: null, time: '' } })).data;
-  const h = harness(f.data, f.documentId), props = h.render().editor.props;
-  let editor: ReturnType<typeof textEditorHarness>;
-  editor = textEditorHarness({ ...props, onCommit: async (...args) => {
-    const saved = await props.onCommit(...args);
-    const authoritative = programClone(h.data.spaces[f.actorId].text);
-    const oldIds = new Set([...f.data.spaces[f.actorId].text.documents, ...f.data.spaces[f.actorId].text.flows].flatMap(doc => doc.lines.map(line => line.id)));
-    for (const doc of [...authoritative.documents, ...authoritative.flows]) for (const line of doc.lines) if (!oldIds.has(line.id)) line.id = `server-${line.id}`;
-    editor.replace({ ...h.render().editor.props, workspace: authoritative }); editor.synchronize();
-    assert.notDeepEqual(editor.controller.getState().committed, authoritative, 'the response cannot replace a saving draft');
-    return saved;
-  } });
-  try {
-    editor.open(f.taskId); editor.draft('2026-10-05', '17:45'); await editor.submit();
-    assert.equal(h.successful, 1); assert.equal(editor.controller.getState().dirty, false);
-    assert.deepEqual(editor.controller.getState().committed, editor.committed);
-    assert.equal(editor.textarea.value, M.raw(M.getDocument(editor.committed, f.documentId)));
-    assert.equal(M.tasks(editor.committed).find(row => row.id === f.taskId)!.id, f.taskId);
-  } finally { editor.unmount(); }
+test('PS19 parent, confirmation and child share the actual server identities before or after commit settlement', async () => {
+  for (const order of ['before-settlement', 'after-settlement'] as const) {
+    const f = publicFixture();
+    f.data = accepted(updateProgramTask(f.data, { actorId: f.actorId, requestId: 'schedule-clear-for-ack-' + order,
+      expectedSpace: f.data.spaces[f.actorId], taskId: f.taskId, patch: { date: null, time: '' } })).data;
+    const baseline = programClone(f.data), h = harness(f.data, f.documentId, 'account', order), parentCommit = h.render().editor.props.onCommit;
+    const oldIds = new Set([...baseline.spaces[f.actorId].text.documents, ...baseline.spaces[f.actorId].text.flows]
+      .flatMap(doc => doc.lines.map(line => line.id)));
+    let editor: ReturnType<typeof textEditorHarness>, authoritative: TextWorkspaceState | undefined;
+    let acknowledged: TextWorkspaceState | null | undefined, observedFlight: Promise<boolean> | undefined;
+    let acknowledgments = 0, commits = 0, deliveries = 0, commitReturned = false;
+    const onCommit: ProgramTextEditorProps['onCommit'] = async (next, label, options) => {
+      commits++;
+      assert(options?.onPrivateTaskScheduleAcknowledged, 'new property IDs require the existing confirmation protocol');
+      const receive = options.onPrivateTaskScheduleAcknowledged;
+      const saved = await parentCommit(next, label, { ...options, onPrivateTaskScheduleAcknowledged: (pending: Promise<TextWorkspaceState | null>) => {
+        acknowledgments++;
+        void pending.then(value => { acknowledged = value; }, () => { acknowledged = null; });
+        receive(pending);
+      } });
+      assert.equal(saved, true);
+      authoritative = h.data.spaces[f.actorId].text;
+      const preview = h.calls[0].transition; assert(preview.ok);
+      assert.notDeepEqual(preview.data.spaces[f.actorId].text, authoritative, 'the real host regenerates newly inserted property IDs');
+      const generated = M.getDocument(authoritative, f.documentId)!.lines.filter(line => !oldIds.has(line.id)).map(line => line.id);
+      const proposed = M.getDocument(next, f.documentId)!.lines.filter(line => !oldIds.has(line.id)).map(line => line.id);
+      assert(generated.length > 0); assert.notDeepEqual(generated, proposed);
+      observedFlight = editor.controller.save();
+      const deliver = () => {
+        deliveries++; assert.equal(commitReturned, order === 'after-settlement');
+        const before = editor.controller.getState(), working = programClone(before.working);
+        assert(before.saving); assert(before.dirty);
+        editor.textarea.selectionStart = 3; editor.textarea.selectionEnd = 7; editor.textarea.scrollTop = 61;
+        const native = [editor.textarea.value, editor.textarea.selectionStart, editor.textarea.selectionEnd, editor.textarea.scrollTop];
+        h.render(); editor.replace({ ...h.render().editor.props, onCommit }); editor.synchronize();
+        assert.equal(editor.committed, authoritative, 'child props use the same parent canonical workspace');
+        const pending = editor.controller.getState();
+        assert.notDeepEqual(pending.committed, authoritative, 'a pending synchronization cannot replace the draft');
+        assert.equal(pending.working, before.working); assert.deepEqual(pending.working, working);
+        assert.equal(pending.raw, before.raw); assert.equal(pending.dirty, true); assert.equal(pending.saving, true);
+        assert.equal(pending.error, before.error); assert.deepEqual(pending.working.progressRecords, working.progressRecords);
+        assert.deepEqual([editor.textarea.value, editor.textarea.selectionStart, editor.textarea.selectionEnd, editor.textarea.scrollTop], native);
+        assert.equal(editor.controller.save(), observedFlight);
+        assert.equal(commits, 1); assert.equal(h.calls.length, 1); assert.equal(h.requests.length, 1);
+      };
+      if (order === 'after-settlement') setImmediate(deliver); else deliver();
+      commitReturned = true;
+      return saved;
+    };
+    editor = textEditorHarness({ ...h.render().editor.props, onCommit });
+    try {
+      editor.open(f.taskId); editor.draft('2026-10-05', '17:45'); await editor.submit();
+      assert(observedFlight); assert.equal(await observedFlight, true); await settle();
+      assert(authoritative); assert.equal(acknowledged, authoritative); assert.equal(deliveries, 1); assert.equal(acknowledgments, 1);
+      assert.equal(h.data.spaces[f.actorId].text, authoritative); assert.equal(editor.committed, authoritative);
+      const settled = editor.controller.getState();
+      assert.equal(settled.committed, authoritative); assert.deepEqual(settled.working, authoritative);
+      assert.equal(settled.dirty, false); assert.equal(settled.saving, false); assert.equal(settled.error, '');
+      assert.equal(settled.raw, M.raw(M.getDocument(authoritative, f.documentId))); assert.equal(editor.textarea.value, settled.raw);
+      assert.deepEqual([editor.textarea.selectionStart, editor.textarea.selectionEnd, editor.textarea.scrollTop], [3, 7, 61]);
+      const currentIds = new Set([...authoritative.documents, ...authoritative.flows].flatMap(doc => doc.lines.map(line => line.id)));
+      for (const id of oldIds) assert(currentIds.has(id), id);
+      assert.equal(M.tasks(authoritative).find(row => row.id === f.taskId)!.id, f.taskId);
+      assert.deepEqual(authoritative.progressRecords, baseline.spaces[f.actorId].text.progressRecords);
+      assert.equal(h.successful, 1); assert.equal(h.calls.length, 1); assert.equal(h.requests.length, 1); assert.equal(commits, 1);
+      assert.equal(h.requests[0].kind, 'social');
+      assert.deepEqual(h.data.public, baseline.public); assert.deepEqual(h.data.spaces['creator-minji'], baseline.spaces['creator-minji']);
+    } finally { editor.unmount(); }
+  }
 });
 
 test('PS20 exact linked rows keep the existing canonical task route for public copies, independent and native documents', async () => {

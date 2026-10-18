@@ -57,9 +57,26 @@ function editorContext() {
     propsRef: { current: { workspace: {} } }, orderHistoryRef: { current: { clear() {} } }, orderPositionsRef: { current: [] as unknown[] },
     orderEpochRef: { current: 0 }, editorRef: { current: { setValue(_raw: string, _options: unknown) {} } } };
 }
-function declarations(path: string, selector: string) {
+function declarations(path: string, selector: string, width?: number) {
   const result = new Map<string, string>();
-  postcss.parse(read(path)).walkRules(rule => { if (rule.selector === selector) rule.walkDecls(decl => { result.set(decl.prop, decl.value); }); });
+  postcss.parse(read(path)).walkRules(rule => {
+    if (rule.selector !== selector) return;
+    let ancestor: postcss.Container | postcss.Document | undefined = rule.parent;
+    while (ancestor) {
+      if (ancestor.type === 'atrule') {
+        const atRule = ancestor as postcss.AtRule;
+        if (atRule.name === 'media') {
+          if (width === undefined) return;
+          const ranges = Array.from(atRule.params.matchAll(/\((min|max)-width:\s*(\d+(?:\.\d+)?)px\)/g));
+          assert(ranges.length && !atRule.params.replace(/\((min|max)-width:\s*(\d+(?:\.\d+)?)px\)/g, '').replace(/\band\b/g, '').trim(),
+            'the source contract must explicitly support each selected media condition');
+          if (ranges.some(([, kind, limit]) => kind === 'max' ? width > Number(limit) : width < Number(limit))) return;
+        }
+      }
+      ancestor = ancestor.parent;
+    }
+    rule.walkDecls(decl => { result.set(decl.prop, decl.value); });
+  });
   return result;
 }
 
@@ -99,7 +116,7 @@ test('44px reserved Alpha row and bounded recovery overlays do not introduce an 
   assert.equal(messageBody.get('white-space'), undefined);
 });
 
-test('narrow editor feedback yields to fixed toolbar controls and fits two readable lines inside its 48px trigger', () => {
+test('feedback retains its 48px base trigger and a readable full-width 44px mobile row that can grow', () => {
   const disclosure = declarations('./ProgramTextEditor.module.css', '.saveFeedback');
   assert.equal(disclosure.get('flex'), '1 1 0'); assert.equal(disclosure.get('min-width'), '0');
   assert.equal(disclosure.get('max-width'), '120px'); assert.equal(disclosure.get('margin-left'), 'auto');
@@ -111,6 +128,21 @@ test('narrow editor feedback yields to fixed toolbar controls and fits two reada
   assert.notEqual(summary.get('display'), 'none'); assert.notEqual(summary.get('overflow'), 'hidden');
   assert.notEqual(summary.get('text-overflow'), 'ellipsis');
   assert.equal(2 * 18 + 2 * 6, 48, 'two lines plus padding preserve the reserved trigger height');
+  const desktop = declarations('./ProgramTextEditor.module.css', '.editor .saveFeedback > summary', 701);
+  assert.equal(desktop.get('min-height'), '48px'); assert.equal(desktop.get('padding'), '6px');
+  for (const width of [320, 390, 700]) {
+    const row = declarations('./ProgramTextEditor.module.css', '.toolbar > .saveFeedback', width);
+    assert.equal(row.get('order'), '5'); assert.equal(row.get('flex'), '1 0 100%');
+    assert.equal(row.get('width'), '100%'); assert.equal(row.get('max-width'), 'none'); assert.equal(row.get('min-width'), '0');
+    const mobile = declarations('./ProgramTextEditor.module.css', '.editor .saveFeedback > summary', width);
+    assert.equal(mobile.get('width'), '100%'); assert.equal(mobile.get('min-height'), '44px');
+    assert.equal(mobile.get('padding'), '8px 0'); assert.equal(mobile.get('box-sizing'), 'border-box');
+    assert.equal(mobile.get('font-size'), '12px'); assert.equal(mobile.get('line-height'), '18px');
+    assert.equal(mobile.get('white-space'), 'normal'); assert.equal(mobile.get('word-break'), 'keep-all');
+    assert.equal(mobile.get('height'), undefined); assert.equal(mobile.get('max-height'), undefined);
+    assert.notEqual(mobile.get('display'), 'none'); assert.notEqual(mobile.get('overflow'), 'hidden');
+    assert.notEqual(mobile.get('text-overflow'), 'ellipsis');
+  }
   assert.equal(declarations('./ProgramTextEditor.module.css', '.editorTools').get('flex'), '0 0 auto');
   assert.equal(declarations('./ProgramTextEditor.module.css', '.saveFeedback > .error').get('position'), 'absolute');
 });
@@ -138,7 +170,9 @@ test('saved Undo retains its handler, guards and 48px target in note management 
   }
   assert.equal(declarations('./AlphaWorkspace.module.css', '.page button').get('min-height'), '48px');
   assert.equal(declarations('./AlphaWorkspace.module.css', '.page button').get('min-width'), '48px');
-  assert.equal(declarations('./AlphaWorkspace.module.css', '.sync > .statusRow').get('grid-column'), '2 / -1');
+  assert.equal(declarations('./AlphaWorkspace.module.css', '.sync > .statusRow').get('grid-column'), '1 / -1');
+  assert.equal(declarations('./AlphaWorkspace.module.css', '.sync > .statusRow', 1199).get('grid-column'), '1 / -1');
+  assert.equal(declarations('./AlphaWorkspace.module.css', '.sync > .statusRow', 1200).get('grid-column'), '2 / -1');
   const style = declarations('./AlphaWorkspace.module.css', '.statusRow > button');
   assert.equal(style.get('flex'), '0 0 auto'); assert.equal(style.get('min-height'), '48px');
   const recovery = declarations('./AlphaWorkspace.module.css', '.inputRecovery');
