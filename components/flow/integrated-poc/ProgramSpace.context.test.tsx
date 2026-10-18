@@ -127,12 +127,17 @@ test('invalid HH:MM never reaches a mutation and stale schedule input cannot ove
 });
 
 test('opening task detail takes the exact target date/time without writing', () => {
-  const f = fixture(), space = f.data.spaces[f.data.activeActorId], allTasks = M.tasks(space.text), draft: string[] = [];
+  const f = fixture(), before = structuredClone(f.data), space = f.data.spaces[f.data.activeActorId], allTasks = M.tasks(space.text), draft: string[] = [];
+  const recordSelections: (string | null)[] = [], progressBaselines: { date: string; percent: string }[] = [];
   const open = actualFunction('openDetail', { document: { activeElement: {} }, previousFocus: { current: null }, detailExpected: { current: null },
     executionDraftOwner: { current: { dialog: 0, input: 0, taskId: null } },
-    setProgressDraftBaseline() {}, setTaskNotice() {}, M, today: '2026-10-04', recordDate: '2026-10-04', percent: '0', setRecordDate() {}, setPercent() {},
+    setProgressRecordDate: (value: string | null) => recordSelections.push(value),
+    setProgressDraftBaseline: (value: { date: string; percent: string }) => progressBaselines.push(value),
+    setTaskNotice() {}, M, today: '2026-10-04', recordDate: '2026-10-04', percent: '0', setRecordDate() {}, setPercent() {},
     space, allTasks, setExecutionDateDraft: (value: string) => draft.push(value), setExecutionTimeDraft: (value: string) => draft.push(value), setMessage() {}, setDetail() {} });
   open({ kind: 'task', id: f.taskId }); assert.deepEqual(draft, ['2026-09-30', '09:10']);
+  assert.deepEqual(recordSelections, [null]); assert.deepEqual(progressBaselines, [{ date: '2026-10-04', percent: '30' }]);
+  assert.deepEqual(f.data, before);
 });
 
 test('actual filter context shows the nested folder and query; reset only changes display filters', () => {

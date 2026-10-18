@@ -6,7 +6,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import ts from 'typescript';
 import { createEmptyTextWorkspace, textWorkspaceModel as M, type TextWorkspaceState } from '../../../lib/flow/integrated-poc/text-workspace';
 import { programFolderLinkPreview, isProgramFolderLinkPreviewCurrent, type ProgramFolderLinkPreview } from '../../../lib/flow/integrated-poc/folder-link-preview';
-import { programFolderLineTitle, linkProgramFolder } from '../../../lib/flow/integrated-poc/folder-link-slot';
+import { programFolderLineTitle, linkProgramFolder, programFolderLinkProblem, programFolderLinkProblems } from '../../../lib/flow/integrated-poc/folder-link-slot';
 import { programFolderInputSuggestion, programFolderPath, programFolderSuggestionPreservesSource } from '../../../lib/flow/integrated-poc/folder-link-suggestions';
 
 // Run production functions and JSX with the real model/helper. Native dialog geometry is separate browser QA.
@@ -53,7 +53,8 @@ function harness(raw = '- 미분류') {
   function context(extra: Record<string, unknown> = {}): Record<string, unknown> {
     return {
       M, props, propsRef, composingRef, inputLockedRef, draftRef, panel: h.panel, folderName: h.folderName,
-      programFolderLinkPreview, isProgramFolderLinkPreviewCurrent, programFolderLineTitle,
+      programFolderLinkPreview, isProgramFolderLinkPreviewCurrent, programFolderLineTitle, programFolderLinkProblem,
+      folderLinkProblems: h.panel?.kind === 'folder' ? programFolderLinkProblems(h.working, props.docId, h.panel.lineId) : new Map(),
       programFolderInputSuggestion, programFolderPath, programFolderSuggestionPreservesSource,
       programSame: (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b),
       linkProgramFolder: (...args: Parameters<typeof linkProgramFolder>) => { h.links.push(args); return linkProgramFolder(...args); },

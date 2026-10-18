@@ -15,7 +15,8 @@ test('captured date-section plus numeric progress and memo input is exact and re
   let {state,id}=fixture(CAPTURED_DATE_INPUT_BASE);const ids=M.tasks(state).map(task=>task.id);state=M.recordProgress(state,ids[0],'2026-09-11',10);const before=JSON.stringify(state);
   const next=M.editText(state,id,CAPTURED_DATE_INPUT,{progressDate:'2026-09-12'});
   assert.equal(M.raw(M.getDocument(next,id)),CAPTURED_DATE_INPUT);assert(M.validate(next));assert.deepEqual(M.tasks(next).map(task=>task.id),ids);
-  assert.deepEqual(M.tasks(next).map(task=>task.date),['2026-09-13','2026-09-13']);assert.deepEqual(M.progressHistory(next,ids[0]),[{date:'2026-09-11',percent:10},{date:'2026-09-13',percent:20}]);
+  assert.deepEqual(M.tasks(next).map(task=>task.date),['2026-09-13','2026-09-13']);assert.equal(M.currentProgress(next,ids[0]),20);
+  assert.deepEqual(M.progressHistory(next,ids[0]),[{date:'2026-09-11',percent:10}]);assert.deepEqual(next.progressRecords,state.progressRecords);
   assert.equal(JSON.stringify(state),before);assert.equal(M.editText(next,id,CAPTURED_DATE_INPUT),next);
 });
 test('explicit section insert/remove/change changes inherited dates without rewriting progress history',()=>{
