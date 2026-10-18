@@ -132,6 +132,7 @@ function harness() {
   const events = new Map<string, (event?: any) => void>(), copies: string[] = [];
   const context: Record<string, any> = {
     syntheticRuntime: undefined, sessionEpoch: {}, sessionEpochRef: { current: {} },
+    chromeRoot: { current: null }, writingWithKeyboard: false, automaticRead: { current: null },
     reviewSpace: { current: null }, reviewContext: { current: null }, reviewRestore: { current: null },
     reviewResultReceiver: { current: null }, reviewBusy: { current: false }, reviewInteraction: { current: 0 },
     reviewAnnouncementGeneration: { current: 0 }, reviewAnnouncement: null, reviewEntry: null,
@@ -234,6 +235,60 @@ function harness() {
     mutate: () => evaluate(initializer('mutate'), context)('edit', () => { throw Error('controller double must not build'); }),
   };
 }
+
+test('shell fixture retains the real chrome ref and keyboard presentation without a writer', () => {
+  const h = harness(), root = h.context.chromeRoot, calls = [...h.calls];
+  const ordinary = h.render();
+  assert.equal(ordinary.type, 'main'); assert.equal(ordinary.props.ref, root);
+  assert.equal(ordinary.props['data-writing-keyboard'], undefined);
+  h.context.writingWithKeyboard = true;
+  const writing = h.render();
+  assert.equal(writing.props.ref, root); assert.equal(writing.props['data-writing-keyboard'], 'true');
+  assert.equal(root.current, null); assert.deepEqual(h.calls, calls);
+});
+
+test('text mutation waits for its exact eligible automatic read before dispatch', async () => {
+  const h = harness(); h.initialize();
+  let release!: (ok: boolean) => void, mutations = 0;
+  const read = new Promise<boolean>(resolve => { release = resolve; });
+  const store = { ...h.store, refresh: () => read,
+    mutate: async () => { mutations++; return { ok: false, reason: 'busy' }; } };
+  h.context.controller.current = store;
+  h.context.refreshAutomatically();
+  const captured = h.context.automaticRead.current;
+  assert(captured); assert.equal(captured.store, store); assert.equal(captured.ownerId, h.context.currentOwnerRef.current);
+  assert.equal(captured.epoch, h.context.sessionEpochRef.current); assert.equal(captured.eligible, true);
+  h.context.snapshot = { ...h.context.snapshot, busy: true };
+  const mutate = evaluate(initializer('mutate'), h.context);
+  const pending = mutate('text edit', () => { throw Error('controller double must not build'); }, { groupId: 'text:fixture' });
+  await Promise.resolve(); assert.equal(mutations, 0);
+  h.context.snapshot = { ...h.context.snapshot, busy: false };
+  release(true); const result = await pending;
+  assert.equal(mutations, 1); assert.deepEqual(result, { ok: false, reason: 'busy' });
+  assert.equal(h.context.automaticRead.current, null);
+});
+
+test('automatic-read waiting never grants authority to another store owner or session epoch', async () => {
+  for (const changed of ['store', 'owner', 'epoch'] as const) {
+    const h = harness(); h.initialize();
+    let release!: (ok: boolean) => void, mutations = 0;
+    const read = new Promise<boolean>(resolve => { release = resolve; });
+    const store = { ...h.store, refresh: () => read,
+      mutate: async () => { mutations++; return { ok: true, result: null, changed: false }; } };
+    h.context.controller.current = store; h.context.refreshAutomatically();
+    assert.equal(h.context.automaticRead.current?.eligible, true);
+    h.context.snapshot = { ...h.context.snapshot, busy: true };
+    const mutate = evaluate(initializer('mutate'), h.context);
+    const pending = mutate('text edit', () => { throw Error('must not build'); }, { groupId: 'text:fixture' });
+    await Promise.resolve(); assert.equal(mutations, 0);
+    if (changed === 'store') h.context.controller.current = { ...store };
+    if (changed === 'owner') h.context.currentOwnerRef.current = 'owner-b';
+    if (changed === 'epoch') h.context.sessionEpochRef.current = {};
+    h.context.snapshot = { ...h.context.snapshot, busy: false }; release(true);
+    assert.deepEqual(await pending, { ok: false, reason: 'session-expired' }, changed);
+    assert.equal(mutations, 0, changed);
+  }
+});
 
 function lostPrivateTextSave() {
   const h = harness(), before = snapshot();

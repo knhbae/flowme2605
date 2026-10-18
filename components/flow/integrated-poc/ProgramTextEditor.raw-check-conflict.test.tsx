@@ -1,22 +1,10 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import ts from 'typescript';
 import { createEmptyTextWorkspace, textWorkspaceModel as M } from '../../../lib/flow/integrated-poc/text-workspace';
-import type { createProgramTextDraft as DraftFactory } from './ProgramTextEditor';
+import { createProgramTextDraft as createDraft } from '../../../lib/flow/integrated-poc/program-text-draft';
 
 // Reuse the existing context-test lane: actual pure draft function, memory-only commit.
 // No account, browser, clipboard, server or private registration data is used.
-const source = readFileSync(new URL('./ProgramTextEditor.tsx', import.meta.url), 'utf8');
-const ast = ts.createSourceFile('ProgramTextEditor.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-const declaration = ast.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'createProgramTextDraft');
-assert(declaration);
-const compiled = ts.transpileModule(`const value = (${declaration.getText(ast).replace(/^export\s+/, '')});`, {
-  compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
-}).outputText;
-const createDraft = new Function('M', 'programSame', 'programClone', `${compiled}; return value;`)(
-  M, (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b), structuredClone,
-) as typeof DraftFactory;
 const TODAY = '2026-10-05';
 function fixture(percent?: number) {
   let state = M.addDocument(createEmptyTextWorkspace(), { title: '격리 체크 시험' });
