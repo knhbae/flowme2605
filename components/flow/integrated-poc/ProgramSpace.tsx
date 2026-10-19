@@ -10,6 +10,7 @@ import { programOrderedExecutionRows, programTextExecutionKey, reorderProgramExe
 import { programExecutionDayPresentation, readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { mergeProgramTextWorkspace } from '@/lib/flow/integrated-poc/text-merge';
 import { flushProgramEditorCollection, prepareProgramDocumentAction, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
+import type { AlphaStructuralDraft, AlphaStructuralEditorPort } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
 import { textWorkspaceModel as M, type TextTask, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { programErrorMessage, type ProgramMutate, type ProgramNavigate, type ProgramMutationResult, type ProgramDestination } from '@/lib/flow/integrated-poc/ui-contract';
 import { emptyProgramRecurrencePresentation, programNavigationMatchesDocument, type ProgramSpaceNavigation } from '@/lib/flow/integrated-poc/navigation';
@@ -123,7 +124,7 @@ export type ProgramSpaceProps = {
   onOutputDocument?: (documentId: string) => void;
   onStartReview?: (documentId: string) => Promise<void>;
   onRegisterReviewSpace?: (port: ProgramReviewSpacePort | null) => void;
-  onRegisterEditors?: (editors: ProgramEditorFlush | null) => void;
+  onRegisterEditors?: (editors: (ProgramEditorFlush & AlphaStructuralEditorPort) | null) => void;
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
   /** Local view changes do not call mutate; the host must expose held authority. */
   canContinueWholeDocument?: () => boolean;
@@ -209,6 +210,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // editor commits can advance this chain; render props or arbitrary snapshots cannot.
   const moveFlush = useRef<{ actorId: string; expected: typeof space; conflict: boolean } | null>(null);
   const draftReaders = useRef<Record<string, (() => string) | null>>({});
+  const structuralDraftReaders = useRef<Record<string, (() => AlphaStructuralDraft | null) | null>>({});
   const confirmedSaveReaders = useRef<Record<string, ((before: TextWorkspaceState, next: TextWorkspaceState) => boolean) | null>>({});
   const inputLocks = useRef<Record<string, ((locked: boolean) => void) | null>>({}), inputLockCount = useRef(0);
   const [recordDate, setRecordDate] = useState(today), [percent, setPercent] = useState('0');
@@ -580,6 +582,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       blocksExternalSnapshot: (before, next) => Object.values(recurrencePorts.current).some(port => port?.blocksExternalSnapshot?.(before, next)),
       pendingDocumentIds: () => Object.keys(dirty.current).filter(id => dirty.current[id]),
       captureDrafts: () => [...Object.keys(dirty.current).filter(id => dirty.current[id]).map(id => ({ documentId: id, title: documentsRef.current.find(doc => doc.id === id)?.title ?? '작성 중 문서', raw: draftReaders.current[id]?.() ?? '' })), ...Object.values(recurrencePorts.current).flatMap(port => port?.captureDrafts?.() ?? [])],
+      captureStructuralDrafts: () => Object.keys(dirty.current).filter(id => dirty.current[id]).flatMap(id => {
+        const draft = structuralDraftReaders.current[id]?.(); return draft ? [draft] : [];
+      }),
       flushAll: flushAllEditors });
     return () => props.onRegisterEditors?.(null);
   }, [actorId]);
@@ -1222,6 +1227,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onRegisterSave={(save, status) => { saveRequests.current[id] = save; saveStatusReaders.current[id] = status ?? null; }}
           onRegisterSourceFocus={focus => registerSourceFocus(id, focus)}
           onRegisterDraft={read => { draftReaders.current[id] = read; }}
+          onRegisterStructuralDraft={read => { structuralDraftReaders.current[id] = read; }}
           onRegisterConfirmedSave={accept => { confirmedSaveReaders.current[id] = accept; }}
           onRegisterInputLock={lock => { inputLocks.current[id] = lock; lock?.(inputLockCount.current > 0); }}
           onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { if (collectionMode) { setMessage('기존 항목 분류는 모음이 아닙니다. 전체 문서에서 계속 작성합니다.'); return; } setFolderId(scopeId); setPeriod('all'); } else void openDocument(scopeId); }}

@@ -12,13 +12,14 @@ import { isSyntheticAlphaWorkspaceInput, type SyntheticAlphaWorkspaceRuntime } f
 import { newProgramReviewDraft, programReviewOriginReason, type ProgramReviewEntry, type ProgramReviewOrigin, type ProgramReviewSpacePort } from '@/lib/flow/integrated-poc/review-return';
 import { createAlphaTabRecovery } from '@/lib/flow/integrated-poc/alpha-sync/recovery';
 import { createAlphaUiRecovery, type AlphaUiDraft, type AlphaUiRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-ui-recovery';
+import { createAlphaStructuralRecovery, resolveAlphaStructuralRecovery, type AlphaStructuralEditorPort, type AlphaStructuralRecoveryEntry, type AlphaStructuralRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
 import { type ProgramData, type ProgramParticipationDraft, type ProgramPublicationDraft, programId } from '@/lib/flow/integrated-poc/contract';
 import type { ProgramProposalReviewDraft } from '@/lib/flow/integrated-poc/review-drafts';
 import { type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
 import { type ProgramDestination, type ProgramMutate, programErrorMessage, PROGRAM_BUSY_NOTICE } from '@/lib/flow/integrated-poc/ui-contract';
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
 import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
-import { textWorkspaceModel as M } from '@/lib/flow/integrated-poc/text-workspace';
+import { textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { ProgramSpace, useProgramMobileWritingChrome } from './ProgramSpace';
 import { ProgramLegacyWorkspace } from './ProgramLegacyWorkspace';
 import { ProgramPrivateOutput } from './ProgramPrivateOutput';
@@ -65,6 +66,41 @@ function mergeRecoveryDrafts(parked: readonly AlphaUiDraft[], active: readonly A
     if (seen.has(identity)) return false;
     seen.add(identity); return true;
   }).map(draft => ({ ...draft }));
+}
+
+/** Receipt proof belongs to confirmedAlphaPrivateTextSave. This only limits its
+ * local input exemption to one source document, including source subchecks. */
+function privateTextChangeIsolatedToDocument(before: TextWorkspaceState, next: TextWorkspaceState, documentId: string): boolean {
+  try {
+    if (!M.validate(before) || !M.validate(next) || !M.getDocument(before, documentId) || !M.getDocument(next, documentId)) return false;
+    const ids = new Set([...before.documents, ...before.flows, ...next.documents, ...next.flows].map(doc => doc.id));
+    const changed = [...ids].filter(id => canonicalJson(M.getDocument(before, id) ?? null) !== canonicalJson(M.getDocument(next, id) ?? null));
+    if (changed.length > 1 || changed.length === 1 && changed[0] !== documentId) return false;
+    const records = (state: TextWorkspaceState) => new Map(state.progressRecords.map(record => [JSON.stringify([record.taskId, record.date]), record]));
+    const oldRecords = records(before), newRecords = records(next);
+    const changedRecords = [...new Set([...oldRecords.keys(), ...newRecords.keys()])]
+      .filter(key => canonicalJson(oldRecords.get(key) ?? null) !== canonicalJson(newRecords.get(key) ?? null));
+    const owned = (state: TextWorkspaceState, targetId: string) => {
+      const owners = [...state.documents, ...state.flows].flatMap(doc => M.rowMeta(state, doc.id)
+        .filter(row => row.id === targetId && row.progressTargetId === targetId && !row.isReference).map(() => doc.id));
+      return owners.length === 1 && owners[0] === documentId;
+    };
+    if (changedRecords.some(key => {
+      const target = (oldRecords.get(key) ?? newRecords.get(key))!.taskId;
+      return !owned(before, target) || !owned(next, target);
+    })) return false;
+    if (changed.length === 1) return true;
+    // Empty document deltas are safe only when the whole remaining difference
+    // consists of nonempty records owned by that same dirty source document.
+    return changedRecords.length > 0
+      && canonicalJson({ ...before, progressRecords: [] }) === canonicalJson({ ...next, progressRecords: [] });
+  } catch { return false; }
+}
+
+function mergeStructuralRecoveryEntries(parked: readonly AlphaStructuralRecoveryEntry[], active: readonly AlphaStructuralRecoveryEntry[]) {
+  const entries = new Map<string, AlphaStructuralRecoveryEntry>();
+  for (const entry of [...parked, ...active]) entries.set(canonicalJson(entry), detached(entry));
+  return [...entries.values()];
 }
 
 type AlphaWorkspaceProps = {
@@ -121,10 +157,13 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const [reviewAnnouncement, setReviewAnnouncement] = useState<{ isCurrent: () => boolean } | null>(null);
   const reviewAnnouncementGeneration = useRef(0);
   const [recoveries, setRecoveries] = useState<AlphaUiRecoveryRecord | null>(null), [storageError, setStorageError] = useState(false);
+  const [structuralRecoveries, setStructuralRecoveries] = useState<AlphaStructuralRecoveryRecord | null>(null);
+  const structuralRecovery = useRef<ReturnType<typeof createAlphaStructuralRecovery> | null>(null);
+  const parkedStructural = useRef<AlphaStructuralRecoveryEntry[]>([]), activeStructural = useRef<AlphaStructuralRecoveryEntry[]>([]);
   const [external, setExternal] = useState(false), [presentation, setPresentation] = useState(0), [leave, setLeave] = useState(false);
   const controller = useRef<Controller | null>(null), uiRecovery = useRef<UiRecovery | null>(null);
   const automaticRead = useRef<{ store: Controller; ownerId: string; epoch: object; promise: Promise<boolean>; eligible: boolean } | null>(null);
-  const editors = useRef<ProgramEditorFlush | null>(null), legacyEditors = useRef<ProgramEditorFlush | null>(null);
+  const editors = useRef<(ProgramEditorFlush & AlphaStructuralEditorPort) | null>(null), legacyEditors = useRef<ProgramEditorFlush | null>(null);
   const creatorEditors = useRef<ProgramEditorFlush | null>(null), creatorRecovery = useRef<ReturnType<typeof createAlphaCreatorRecovery> | null>(null);
   const parkedCreator = useRef<AlphaCreatorRecoveryEntry[]>([]), activeCreator = useRef<AlphaCreatorRecoveryEntry | null>(null);
   const currentData = useRef<ProgramData | null>(null), currentRevision = useRef<number | null>(null);
@@ -157,7 +196,31 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (!saved.ok) { setStorageError(true); return false; }
     setCreatorRecoveries(saved.value); return true;
   }
+  function captureStructuralInput() {
+    const port = structuralRecovery.current;
+    if (!port) return true;
+    try {
+      const drafts = editors.current?.captureStructuralDrafts?.() ?? [];
+      const active = drafts.map(draft => ({ ...detached(draft), baseRevision: currentRevision.current ?? 0 }));
+      const entries = mergeStructuralRecoveryEntries(parkedStructural.current, active);
+      if (!entries.length) { activeStructural.current = active; return true; }
+      const saved = port.save(entries);
+      if (!saved.ok) { setStorageError(true); return false; }
+      activeStructural.current = active;
+      setStructuralRecoveries(saved.value); return true;
+    } catch { setStorageError(true); return false; }
+  }
+  function clearConfirmedStructuralInput(text: TextWorkspaceState) {
+    try {
+      const port = structuralRecovery.current, saved = port?.read();
+      if (!port || !saved?.ok || !saved.value || saved.value.ownerId !== session.userId
+        || (editors.current?.captureStructuralDrafts?.() ?? []).some(draft => canonicalJson(draft.next) !== canonicalJson(text))
+        || !saved.value.entries.every(entry => canonicalJson(entry.next) === canonicalJson(text))) return;
+      if (port.clear(saved.value).ok) { parkedStructural.current = []; activeStructural.current = []; setStructuralRecoveries(null); }
+    } catch { setStorageError(true); }
+  }
   function captureInput() {
+    const structuralSaved = captureStructuralInput();
     if (!captureCreator()) return false;
     const social = [publisherEditors.current, communityEditors.current, inspectorEditors.current].flatMap(port => port?.captureSocialDrafts?.() ?? []);
     activeSocial.current = social;
@@ -171,10 +234,10 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const discovery = discoveryStateRef.current;
     if (programDiscoveryHasUnstoredInput(discovery)) drafts.push({ title: discovery.pastedTitle || '탐색 중 보관 원문', raw: discovery.pastedText || JSON.stringify(discovery.transient ?? { url: discovery.url }, null, 2) });
     activeDrafts.current = drafts.map(draft => ({ ...draft }));
-    if (!drafts.length || !uiRecovery.current) return true;
+    if (!drafts.length || !uiRecovery.current) return structuralSaved;
     const saved = uiRecovery.current.save(mergeRecoveryDrafts(parkedDrafts.current, activeDrafts.current));
     if (!saved.ok) { setStorageError(true); return false; }
-    setRecoveries(saved.value); return true;
+    setRecoveries(saved.value); return structuralSaved;
   }
   function connectConfirmedReview(prior: AlphaSyncSnapshot | null, next: AlphaSyncSnapshot) {
     const pending = prior?.pending, receipt = next.lastReceipt, context = reviewContext.current;
@@ -239,10 +302,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         const id = pending[0], before = privateSave.before, after = privateSave.next;
         if (!M.getDocument(before, id) || !M.getDocument(after, id)
           || before.documents.some(doc => doc.id === id) !== after.documents.some(doc => doc.id === id)) return false;
-        const ids = new Set([...before.documents, ...before.flows, ...after.documents, ...after.flows].map(doc => doc.id));
-        const changed = [...ids].filter(docId => canonicalJson(M.getDocument(before, docId) ?? null)
-          !== canonicalJson(M.getDocument(after, docId) ?? null));
-        return changed.length === 1 && changed[0] === id;
+        return privateTextChangeIsolatedToDocument(before, after, id);
       } catch { return false; }
     };
     // OR receipt acceptance alone cannot exempt another pending editor.
@@ -251,6 +311,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const acceptedPrivateInput = isolatedBefore && acceptedPrivateSave && isolatedPrivateInput();
     if (acceptedPrivateSave && privateSave && !hasInput()) {
       const confirmedText = privateSave.next;
+      clearConfirmedStructuralInput(confirmedText);
       const saved = uiRecovery.current?.read();
       if (saved?.ok && saved.value && saved.value.drafts.every(draft => draft.documentId
         && !!M.getDocument(confirmedText, draft.documentId)
@@ -304,6 +365,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       const recovery = createAlphaTabRecovery(tabStorage, slot);
       const ui = createAlphaUiRecovery(tabStorage, { ownerId: session.userId, slotId: slot });
       uiRecovery.current = ui;
+      const structural = createAlphaStructuralRecovery(tabStorage, { ownerId: session.userId, slotId: slot });
+      structuralRecovery.current = structural; activeStructural.current = [];
+      const structuralLoaded = structural.read();
+      if (structuralLoaded.ok) { parkedStructural.current = structuralLoaded.value?.entries ?? []; setStructuralRecoveries(structuralLoaded.value); }
+      else setStorageError(true);
       const creatorPort = createAlphaCreatorRecovery(tabStorage, session.userId, slot);
       creatorRecovery.current = creatorPort; activeCreator.current = null;
       const socialPort = createAlphaSocialRecovery(tabStorage, session.userId, slot); socialRecovery.current = socialPort;
@@ -515,6 +581,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         if (!reviewOwnsMessage) setMessage('');
         // Drop only input that exactly matches confirmed server text. A newer keystroke stays protected.
         const saved = uiRecovery.current?.read(), confirmed = store.snapshot().account;
+        if (confirmed) clearConfirmedStructuralInput(confirmed.space.text);
         const creatorSaved = creatorRecovery.current?.read();
         if (creatorSaved?.ok && creatorSaved.value && confirmed && creatorSaved.value.entries.every(entry => !entry.auxiliaries.length
           && canonicalJson(entry.working) === canonicalJson(confirmed.space.creatorWorkspace?.working ?? null))) {
@@ -652,6 +719,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (store.snapshot().busy) { setMessage('서버 확인 중입니다. 확인이 끝나면 다시 열어 주세요. 입력은 보관했습니다.'); return; }
     if (store.snapshot().pending) { setMessage('먼저 저장 결과를 확인해 주세요.'); return; }
     parkedDrafts.current = mergeRecoveryDrafts(parkedDrafts.current, activeDrafts.current);
+    parkedStructural.current = mergeStructuralRecoveryEntries(parkedStructural.current, activeStructural.current);
     if (activeCreator.current && !parkedCreator.current.some(e => canonicalJson(e) === canonicalJson(activeCreator.current))) parkedCreator.current.push(activeCreator.current);
     activeCreator.current = null;
     parkedSocial.current = [...parkedSocial.current, ...activeSocial.current].filter((entry, index, list) => list.findIndex(other => canonicalJson(other) === canonicalJson(entry)) === index);
@@ -671,6 +739,43 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       title: `${draft.title || '보관 원문'} 복구`.slice(0, 240), raw: draft.raw,
     }));
     if (result.ok) { setDestination({ view: 'space', id: result.result }); setMessage('보관 원문을 새 문서로 저장했습니다. 확인 후 보관본을 정리할 수 있습니다.'); }
+  }
+  async function restoreStructuralDraft(index: number) {
+    const entry = structuralRecoveries?.entries[index], record = structuralRecoveries;
+    const store = controller.current, epoch = sessionEpochRef.current;
+    const ready = () => {
+      const live = store?.snapshot();
+      return !!entry && !!record && record.ownerId === session.userId && !!live?.account && !!live.envelope
+        && store === controller.current && epoch === sessionEpochRef.current && !disposed.current
+        && currentOwnerRef.current === session.userId && live.ownerId === session.userId && live.account.ownerId === session.userId
+        && live.account.source.actorId === session.userId
+        && live.envelope.data.activeActorId === session.userId && !storageErrorRef.current && !externalRef.current
+        && !preservationRef.current && !modalRef.current && !hasInput() && !live.busy && !live.pending && !live.draft
+        && ['ready', 'saved', 'same-location'].includes(live.status);
+    };
+    if (!entry || !ready()) { setMessage('먼저 저장 결과와 작성 중인 입력을 확인해 주세요. 복사 작업은 보관 중입니다.'); return; }
+    const live = store!.snapshot(), text = live.account!.space.text;
+    const resolved = resolveAlphaStructuralRecovery(text, entry);
+    if (resolved.status === 'already-present') { clearConfirmedStructuralInput(text); setMessage('이미 저장된 복사 작업입니다.'); return; }
+    if (resolved.status !== 'ready' || live.account!.revision !== entry.baseRevision) {
+      setMessage('저장본이 달라 복사 작업을 합치지 않았습니다. 보관한 입력을 먼저 확인해 주세요.'); return;
+    }
+    const result = await mutate('보관한 복사 작업 복구', current => {
+      if (!ready() || store!.snapshot().account?.revision !== entry.baseRevision || current.activeActorId !== session.userId || !current.spaces[session.userId]) {
+        return { ok: false, data: current, reason: 'conflict' };
+      }
+      const checked = resolveAlphaStructuralRecovery(current.spaces[session.userId].text, entry);
+      if (checked.status !== 'ready') return { ok: false, data: current, reason: 'conflict' };
+      const next = detached(current); next.spaces[session.userId].text = checked.workspace;
+      return { ok: true, data: next, changed: true, result: entry.documentId };
+    });
+    if (result.ok && store === controller.current && epoch === sessionEpochRef.current && currentOwnerRef.current === session.userId && !disposed.current) {
+      setDestination({ view: 'space', id: result.result }); setPresentation(value => value + 1); setMessage('보관한 문서·폴더와 행을 복구했습니다.');
+    }
+  }
+  function clearStructuralDrafts() {
+    if (structuralRecovery.current?.clear().ok) { parkedStructural.current = []; activeStructural.current = []; setStructuralRecoveries(null); }
+    else setStorageError(true);
   }
   function clearDrafts() {
     const cleared = uiRecovery.current?.clear();
@@ -878,7 +983,16 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         onCopy={raw => navigator.clipboard.writeText(raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))} />}
     </section>}
   </>;
-  const personalRecovery = recoveries && <details name={destination.view === 'space' ? 'program-input-feedback' : undefined} className={destination.view === 'space' ? styles.inputRecovery : styles.recovery} open={unavailable || !localParticipationRecovery && (external || snapshot?.status === 'conflict')} onKeyDown={event => {
+  const structuralRecoveryPanel = structuralRecoveries && <details className={destination.view === 'space' ? styles.inputRecovery : styles.recovery}>
+    <summary>보관한 복사 작업 {structuralRecoveries.entries.length}개</summary>
+    <div className={destination.view === 'space' ? styles.inputRecoveryBody : undefined}>
+      {structuralRecoveries.entries.map((entry, index) => <section key={`${entry.documentId}:${entry.baseRevision}:${index}`}>
+        <h2>{entry.next.documents.filter(doc => ![...entry.before.documents, ...entry.before.flows].some(prior => prior.id === doc.id)).map(doc => doc.title || '제목 없는 문서').join(', ')}</h2><p>복사한 새 문서와 폴더·행을 함께 보관했습니다.</p>
+        <button type="button" disabled={unavailable || pending || external || !!snapshot?.draft || hasInput()} onClick={() => void restoreStructuralDraft(index)}>복사 작업 복구</button></section>)}
+      <button type="button" onClick={clearStructuralDrafts}>보관한 복사 작업 지우기</button>
+    </div>
+  </details>;
+  const personalRecovery = <>{structuralRecoveryPanel}{recoveries && <details name={destination.view === 'space' ? 'program-input-feedback' : undefined} className={destination.view === 'space' ? styles.inputRecovery : styles.recovery} open={unavailable || !localParticipationRecovery && (external || snapshot?.status === 'conflict')} onKeyDown={event => {
     if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
     event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
     event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
@@ -890,7 +1004,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         <button type="button" disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreDraft(index)}>새 문서로 복구</button></section>)}
       <button type="button" onClick={clearDrafts}>보관 입력 버리기</button>
     </div>
-  </details>;
+  </details>}</>;
   const usesNoteChrome = destination.view === 'space' && !unavailable;
   const publicNotice = <details className={styles.notice} aria-label="개발계 안내"><summary>공개한 내용은 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 넣지 마세요.</summary>
       <p>개발용 통합 검증판 · 공개한 내용은 개발계의 다른 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 아직 넣지 마세요.</p></details>;

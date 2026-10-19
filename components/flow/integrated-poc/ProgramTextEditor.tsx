@@ -9,6 +9,7 @@ import { planProgramDateBlockOrder, type DateBlockOrderPlan, type DateOrderSelec
 import { applyProgramLinePermutation, createProgramPermutationHistory } from '@/lib/flow/integrated-poc/line-permutation';
 import { programSame } from '@/lib/flow/integrated-poc/controller';
 import { readProgramFolderCopyPreview, isProgramFolderCopyPreviewCurrent, copyProgramFolderOccurrence, type ProgramFolderCopyPreview } from '@/lib/flow/integrated-poc/folder-copy';
+import { createAlphaStructuralDraft, type AlphaStructuralDraft } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
 import { createProgramTextDraft, type ProgramTextCommit, type ProgramTextCommitOptions, type ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
 import type { ProgramReferenceAccess } from '@/lib/flow/integrated-poc/reference-execution-guard';
 import { linkProgramFolder, programFolderLineTitle, programFolderLinkProblem, programFolderLinkProblems } from '@/lib/flow/integrated-poc/folder-link-slot';
@@ -82,6 +83,7 @@ export interface ProgramTextEditorProps {
   onRegisterSourceFocus?: (focus: ProgramSourceFocus | null) => void;
   onRegisterInputLock?: (lock: ((locked: boolean) => void) | null) => void;
   onRegisterDraft?: (read: (() => string) | null) => void;
+  onRegisterStructuralDraft?: (read: (() => AlphaStructuralDraft | null) | null) => void;
   onRegisterConfirmedSave?: (accept: ((before: TextWorkspaceState, next: TextWorkspaceState) => boolean) | null) => void;
   onUndo?: () => void | Promise<void>;
   onRedo?: () => void | Promise<void>;
@@ -343,6 +345,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     return regionPortRef.current?.hasPending() ? regionPortRef.current.captureRaw() || draftRef.current?.getState().raw || ''
       : draftRef.current?.getState().raw ?? textArea()?.value ?? '';
   }
+  function captureStructuralDraft() {
+    const state = draftRef.current?.getState();
+    return state?.dirty ? createAlphaStructuralDraft(state.committed, state.working, propsRef.current.docId) : null;
+  }
   function acceptRegion(next: TextWorkspaceState, before: TextWorkspaceState) {
     const controller = draftRef.current;
     if (!controller || propsRef.current.readOnly || composingRef.current || controller.getState().saving
@@ -394,6 +400,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     propsRef.current.onRegisterSave?.(saveNow, () => ({ composing: composingRef.current, saving: !!draftRef.current?.getState().saving, failed: !!draftRef.current?.getState().error }));
     propsRef.current.onRegisterSourceFocus?.(focusSourceRow);
     propsRef.current.onRegisterDraft?.(captureDraftRaw);
+    propsRef.current.onRegisterStructuralDraft?.(captureStructuralDraft);
     propsRef.current.onRegisterInputLock?.(locked => {
       // Do not terminate a native IME composition by changing readOnly. Its
       // dirty signal makes the parent flush reject the context change instead.
@@ -403,7 +410,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (locked) { orderEpochRef.current++; cancelMove(); dialogRef.current?.close(); setPanel(null); setOrderPreview(null); }
       editorRef.current?.refresh();
     });
-    return () => { propsRef.current.onRegisterSave?.(null, null); propsRef.current.onRegisterSourceFocus?.(null); propsRef.current.onRegisterInputLock?.(null); propsRef.current.onRegisterDraft?.(null); };
+    return () => { propsRef.current.onRegisterSave?.(null, null); propsRef.current.onRegisterSourceFocus?.(null); propsRef.current.onRegisterInputLock?.(null); propsRef.current.onRegisterDraft?.(null); propsRef.current.onRegisterStructuralDraft?.(null); };
   }, [props.docId]);
   function scheduleSave() {
     if (timerRef.current) clearTimeout(timerRef.current);

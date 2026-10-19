@@ -16,6 +16,7 @@ import { executeAlphaSocialIntent } from '../../../lib/flow/integrated-poc/alpha
 import { newProgramParticipationDraft } from '../../../lib/flow/integrated-poc/participation-editor';
 import { confirmedAlphaPrivateTextSave } from '../../../lib/flow/integrated-poc/alpha-private-save-ack';
 import { programLocation } from '../../../lib/flow/integrated-poc/navigation';
+import { createAlphaStructuralRecovery, resolveAlphaStructuralRecovery } from '../../../lib/flow/integrated-poc/alpha-structural-recovery';
 
 // Execute the actual shell callbacks/effects/JSX with bounded browser/controller
 // doubles. No product injection points, network, real account or DOM are involved.
@@ -169,6 +170,10 @@ function harness() {
     currentData: { current: initial.envelope.data }, currentRevision: { current: initial.account.revision },
     editors: { current: null }, legacyEditors: { current: null }, uiRecovery: { current: null }, controller: { current: null },
     parkedDrafts: { current: [] }, activeDrafts: { current: [] },
+    structuralRecovery: { current: null }, structuralRecoveries: null,
+    parkedStructural: { current: [] }, activeStructural: { current: [] },
+    createAlphaStructuralRecovery, resolveAlphaStructuralRecovery,
+    setStructuralRecoveries: (value: unknown) => { context.structuralRecoveries = value; },
     creatorEditors: { current: null }, creatorRecovery: { current: null }, parkedCreator: { current: [] }, activeCreator: { current: null },
     creatorRecoveries: null, creatorSeen: false, creatorSelection: undefined, catalogDetailOpen: false, setCatalogDetailOpen: (value: boolean) => { context.catalogDetailOpen = value; }, destinationRef: { current: { view: 'space' } },
     setCreatorRecoveries: (value: unknown) => { context.creatorRecoveries = value; }, setCreatorSeen: (value: unknown) => { context.creatorSeen = value; }, setCreatorSelection: (value: unknown) => { context.creatorSelection = value; },
@@ -207,6 +212,12 @@ function harness() {
   context.allEditors = evaluate(initializer('allEditors'), context);
   context.hasInput = evaluate(initializer('hasInput'), context);
   context.captureCreator = evaluate(`(${declaration('captureCreator')})`, context);
+  context.mergeStructuralRecoveryEntries = evaluate(`(${declaration('mergeStructuralRecoveryEntries')})`, context);
+  context.captureStructuralInput = evaluate(`(${declaration('captureStructuralInput')})`, context);
+  context.clearConfirmedStructuralInput = (...args: unknown[]) => evaluate(`(${declaration('clearConfirmedStructuralInput')})`, context)(...args);
+  context.restoreStructuralDraft = (...args: unknown[]) => evaluate(`(${declaration('restoreStructuralDraft')})`, context)(...args);
+  context.clearStructuralDrafts = () => evaluate(`(${declaration('clearStructuralDrafts')})`, context)();
+  context.privateTextChangeIsolatedToDocument = evaluate(`(${declaration('privateTextChangeIsolatedToDocument')})`, context);
   context.captureInput = evaluate(`(${declaration('captureInput')})`, context);
   context.refreshAutomatically = evaluate(`(${declaration('refreshAutomatically')})`, context);
   context.closePreservation = evaluate(`(${declaration('closePreservation')})`, context);
@@ -223,6 +234,7 @@ function harness() {
     context.workspaceTools = evaluate(initializer('workspaceTools'), context);
     context.needsInputProtection = evaluate(initializer('needsInputProtection'), context);
     context.inputProtection = evaluate(initializer('inputProtection'), context);
+    context.structuralRecoveryPanel = evaluate(initializer('structuralRecoveryPanel'), context);
     context.personalRecovery = evaluate(initializer('personalRecovery'), context);
     for (const name of ['usesNoteChrome', 'publicNotice', 'serverUndo', 'serverStatus']) context[name] = evaluate(initializer(name), context);
     return evaluate(renderExpression, context);

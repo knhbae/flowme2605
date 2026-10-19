@@ -68,6 +68,8 @@ export function copyProgramFolderOccurrence(state: TextWorkspaceState, preview: 
   const selectedFolderIds = new Set(preview.folders.map(folder => folder.id));
   if (preview.items.some(item => !selectedFolderIds.has(preview.itemScopes[item.id]) ||
     (item.isCanonical && !selectedFolderIds.has(preview.taskScopes[item.id])))) return fail('항목의 소속이 선택한 묶음 밖에 있어 사본을 만들지 않았습니다.');
+  const currentValues = new Map(preview.items.map(item => [item.id, M.currentProgress(state, item.id)]));
+  if ([...currentValues.values()].some(value => value === null)) return fail('현재값을 확인하지 못해 사본을 만들지 않았습니다.');
   let next = M.addDocument(state, { title });
   if (next === state) return fail('새 문서를 만들 수 없습니다. 문서 수와 이름을 확인해 주세요.');
   const documentId = next.documents.at(-1)!.id;
@@ -86,7 +88,18 @@ export function copyProgramFolderOccurrence(state: TextWorkspaceState, preview: 
   const lineIds: Record<string, string> = { [preview.lineId]: rootLine.id };
   for (const line of preview.lines) if (line.id !== preview.lineId) lineIds[line.id] = programId('line');
   const indent = preview.depth * 2;
-  newDoc.lines = preview.lines.map(line => ({ id: lineIds[line.id], text: line.id === preview.lineId ? '- ' + (folderText ? '/' : '') + title : line.text.slice(indent) }));
+  const materializedValues = new Map(preview.items.filter(item => {
+    const current = currentValues.get(item.id);
+    return item.inputPercent === undefined && current != null && current !== (item.done ? 100 : 0);
+  }).map(item => [item.id, currentValues.get(item.id)!]));
+  newDoc.lines = preview.lines.map(line => {
+    let text = line.id === preview.lineId ? '- ' + (folderText ? '/' : '') + title : line.text.slice(indent);
+    const current = materializedValues.get(line.id);
+    // A fresh copy has no dated records. Carry history-backed current in its own
+    // token, including subchecks, without changing the original RAW or history.
+    if (current != null) text = text.replace(/^( *-\s+\[)[ xX](\](?:\s+|$))/, (_match, prefix: string, suffix: string) => `${prefix}${current}%${suffix}`);
+    return { id: lineIds[line.id], text };
+  });
   newDoc.folderId = root.scopeId; newDoc.folder = title;
   for (const binding of preview.bindings) if (binding.lineId !== preview.lineId && binding.kind === 'scope') next.bindings.push({
     kind: 'scope', docId: documentId, lineId: lineIds[binding.lineId], scopeId: folderIds[binding.scopeId],
@@ -106,8 +119,10 @@ export function copyProgramFolderOccurrence(state: TextWorkspaceState, preview: 
   const copiedItems = M.parseDocument(M.getDocument(next, documentId)!, next).items;
   if (!M.validate(next) || preview.items.some(item => {
     const copied = copiedItems.find(copy => copy.id === lineIds[item.id]);
+    const current = currentValues.get(item.id), materialized = materializedValues.has(item.id);
     return !copied || copied.title !== item.title || copied.date !== item.date || copied.note !== item.note || copied.time !== item.time ||
-      copied.isCanonical !== item.isCanonical || copied.inputPercent !== item.inputPercent || copied.done !== item.done;
+      copied.isCanonical !== item.isCanonical || copied.inputPercent !== (materialized ? current : item.inputPercent) ||
+      copied.done !== (materialized ? current === 100 : item.done) || M.currentProgress(next, copied.id) !== current;
   })) return fail('날짜·메모·현재값을 모두 보존할 수 없어 사본을 만들지 않았습니다.');
   if (!programSame(state.progressRecords, next.progressRecords)) return fail('기록 보존을 확인하지 못해 사본을 만들지 않았습니다.');
   const originalDocIds = new Set([...state.documents, ...state.flows].map(doc => doc.id));
