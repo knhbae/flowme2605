@@ -31,13 +31,19 @@ type Element = { type: any; props: Record<string, any> };
 const nodes = (value: any): Element[] => Array.isArray(value) ? value.flatMap(nodes) : !value || typeof value !== 'object' || !value.props ? [] : [value, ...nodes(value.props.children)];
 const text = (value: any): string => Array.isArray(value) ? value.map(text).join('') : value == null || typeof value === 'boolean' ? '' : typeof value === 'object' ? text(value.props?.children) : String(value);
 const button = (value: any, label: string) => { const result = nodes(value).find(node => node.type === 'button' && text(node) === label); assert(result); return result; };
+function personalRecoveryDisclosure(value: any): Element {
+  const disclosures = nodes(value).filter(node => node.type === 'details'
+    && nodes(node).some(child => child.type === 'textarea' && child.props['aria-label'] === '보관한 입력 1'));
+  assert.equal(disclosures.length, 1, 'one raw-input recovery disclosure must remain available');
+  return disclosures[0];
+}
 const styles = new Proxy({}, { get: (_, key) => String(key) });
 function shellContext() {
   return { styles, storageError: false, localParticipationRecovery: null as any, pending: false, external: false,
     snapshot: { status: 'ready', busy: false, draft: null, retryableRejectedDraft: false, retryableNativeHandoff: false, retryableRejectedSocialDraft: false } as any,
     destination: { view: 'space' }, unavailable: false, recoveries: null as any, reviewOwnsAnnouncement: false,
     labels: evaluate(initializer(shell, 'labels'), {}), message: '', participationMessage: false,
-    needsInputProtection: false, inputProtection: null as any, personalRecovery: null as any,
+    needsInputProtection: false, inputProtection: null as any, personalRecovery: null as any, structuralRecoveryPanel: null as any,
     controller: { current: { resolvePending: async (_retry: boolean) => false } },
     setMessage(_value: string) {}, resolvePendingResult: async () => {}, openLatest() {}, restoreDraft(_index: number) {}, clearDrafts() {}, history(_direction: string) {},
     navigator: { clipboard: { writeText: async (_raw: string) => {} } }, AlphaConflictReview: 'conflict-review' };
@@ -298,9 +304,12 @@ test('recovery Escape ignores composing, other keys and closed menus; closing fo
   const shellCtx = shellContext(); shellCtx.needsInputProtection = true;
   shellCtx.message = 'Synthetic message-only input guard with a full readable reason';
   shellCtx.recoveries = { drafts: [{ title: 'Synthetic', raw: 'exact\nraw  ' }] };
+  // A sibling disclosure must not be mistaken for the raw-input recovery inside the Fragment.
+  shellCtx.structuralRecoveryPanel = React.createElement('details', { 'data-synthetic-structural-recovery': true });
   const alpha = nodes(statusEvaluator(shellCtx)()).find(node => node.type === 'details')!;
   const message = nodes(statusEvaluator(shellCtx)()).find(node => node.props.className === 'feedbackMessage')!;
-  const personal = evaluate(initializer(shell, 'personalRecovery'), shellCtx);
+  const personalRoot = evaluate(initializer(shell, 'personalRecovery'), shellCtx), personal = personalRecoveryDisclosure(personalRoot);
+  assert(nodes(personalRoot).includes(shellCtx.structuralRecoveryPanel));
   const editorCtx = editorContext(), feedback = evaluate(classElement(editor, 'saveFeedback').getText(editor), editorCtx);
   for (const disclosure of [alpha, personal, feedback, message]) {
     for (const [key, composing, open] of [['Enter', false, true], ['Escape', true, true], ['Escape', false, false], ['Escape', false, true]] as const) {
@@ -320,9 +329,12 @@ test('recovery Escape ignores composing, other keys and closed menus; closing fo
 test('personal recovery keeps exact raw, count, scope, actions and all existing restore guards', async () => {
   const context = shellContext(), calls: unknown[] = [], raw = 'Synthetic\n- [ ] exact  \n';
   context.recoveries = { drafts: [{ title: 'Synthetic input', raw }] };
+  context.structuralRecoveryPanel = React.createElement('details', { 'data-synthetic-structural-recovery': true });
   context.navigator.clipboard.writeText = async value => { calls.push(['copy', value]); };
   context.restoreDraft = index => { calls.push(['restore', index]); }; context.clearDrafts = () => { calls.push('clear'); };
-  const render = evaluator(initializer(shell, 'personalRecovery'), context);
+  const recoveryRoot = evaluator(initializer(shell, 'personalRecovery'), context);
+  const render = (value = context) => personalRecoveryDisclosure(recoveryRoot(value));
+  assert(nodes(recoveryRoot(context)).includes(context.structuralRecoveryPanel));
   const tree = render(context), list = nodes(tree);
   assert.equal(tree.props.className, 'inputRecovery'); assert.equal(tree.props.open, false);
   assert.equal(tree.props.name, 'program-input-feedback');
