@@ -20,11 +20,78 @@ type RecoveryError = 'invalid' | 'not-read' | 'corrupt' | 'conflict' | 'storage-
 type RecoveryResult<T> = { ok: true; value: T } | { ok: false; reason: RecoveryError };
 type RecoverySave = { ok: true; changed: boolean; value: AlphaStructuralRecoveryRecord | null } | { ok: false; reason: RecoveryError };
 
+/** Prove a folder-only TXT edit without relaxing existing identities or values. */
+function folderStructuralTransition(documentId: string, before: TextWorkspaceState, next: TextWorkspaceState): boolean {
+  const folderIds = new Set([...before.folders, ...next.folders].map(folder => folder.id));
+  const folderBindings = (state: TextWorkspaceState) => state.bindings.filter(binding => binding.kind === 'scope' && folderIds.has(binding.scopeId));
+  const oldBindings = folderBindings(before), newBindings = folderBindings(next);
+  if (canonicalJson(before.folders) === canonicalJson(next.folders) && canonicalJson(oldBindings) === canonicalJson(newBindings)) return false;
+  const otherBindings = (state: TextWorkspaceState) => state.bindings.filter(binding => binding.kind !== 'scope' || !folderIds.has(binding.scopeId));
+  if (canonicalJson(otherBindings(before)) !== canonicalJson(otherBindings(next))
+    || canonicalJson(before.taskScopes) !== canonicalJson(next.taskScopes)
+    || canonicalJson(before.itemScopes) !== canonicalJson(next.itemScopes)
+    || canonicalJson(before.progressRecords) !== canonicalJson(next.progressRecords)) return false;
+  const oldBindingKeys = new Set(oldBindings.map(canonicalJson)), newBindingKeys = new Set(newBindings.map(canonicalJson));
+  if (oldBindings.some(binding => !newBindingKeys.has(canonicalJson(binding)))
+    || newBindings.some(binding => !oldBindingKeys.has(canonicalJson(binding)) && binding.docId !== documentId)) return false;
+
+  const source = M.getDocument(before, documentId)!, submitted = M.getDocument(next, documentId)!;
+  const sourceIds = new Set(source.lines.map(line => line.id));
+  const submittedLines = new Map(submitted.lines.map(line => [line.id, line]));
+  const oldRows = new Map(M.rowMeta(before, documentId).map(row => [row.id, row]));
+  const folderLines = new Set(M.rowMeta(next, documentId).filter(row => row.kind === 'scope' && row.scopeKind === 'folder').map(row => row.id));
+  for (const line of source.lines) {
+    const incoming = submittedLines.get(line.id), row = oldRows.get(line.id);
+    if (!incoming) return false;
+    if (incoming.text !== line.text && (!folderLines.has(line.id)
+      || !row || !['note', 'blank'].includes(row.kind) && !(row.kind === 'scope' && row.scopeKind === 'folder'))) return false;
+  }
+  if (submitted.lines.some(line => !sourceIds.has(line.id) && line.text.trim() && !folderLines.has(line.id))) return false;
+
+  const replay = M.editTextResult(before, documentId, M.raw(submitted), { folderText: true });
+  if (replay.reason !== null) return false;
+  const replayDocs = [...replay.state.documents, ...replay.state.flows], nextDocs = [...next.documents, ...next.flows];
+  if (replayDocs.length !== nextDocs.length || replay.state.folders.length !== next.folders.length) return false;
+  const oldIds = new Set([...before.documents, ...before.flows].flatMap(doc => [doc.id, ...doc.lines.map(line => line.id)]).concat(before.folders.map(folder => folder.id)));
+  const identities = new Map<string, string>(), targets = new Set<string>();
+  const pair = (generated: string, proposed: string) => {
+    if (oldIds.has(generated) || oldIds.has(proposed)) return generated === proposed;
+    if (identities.has(generated)) return identities.get(generated) === proposed;
+    if (targets.has(proposed)) return false;
+    identities.set(generated, proposed); targets.add(proposed); return true;
+  };
+  for (const [index, doc] of replayDocs.entries()) {
+    const incoming = nextDocs[index];
+    if (doc.id !== incoming.id || doc.lines.length !== incoming.lines.length) return false;
+    for (const [lineIndex, line] of doc.lines.entries()) {
+      const incomingLine = incoming.lines[lineIndex];
+      if (line.text !== incomingLine.text || doc.id !== documentId && line.id !== incomingLine.id || !pair(line.id, incomingLine.id)) return false;
+    }
+  }
+  for (const [index, folder] of replay.state.folders.entries()) if (!pair(folder.id, next.folders[index].id)) return false;
+  const id = (value: string) => identities.get(value) ?? value;
+  const aligned = detached(replay.state);
+  // Remap identity fields only; titles/raw text are user values, never IDs.
+  for (const doc of [...aligned.documents, ...aligned.flows]) {
+    doc.folderId = id(doc.folderId);
+    for (const line of doc.lines) line.id = id(line.id);
+  }
+  for (const folder of aligned.folders) { folder.id = id(folder.id); if (folder.parentId !== null) folder.parentId = id(folder.parentId); }
+  for (const binding of aligned.bindings) {
+    binding.lineId = id(binding.lineId);
+    if (binding.kind === 'scope') binding.scopeId = id(binding.scopeId); else binding.taskId = id(binding.taskId);
+  }
+  aligned.taskScopes = Object.fromEntries(Object.entries(aligned.taskScopes).map(([key, value]) => [id(key), id(value)]));
+  aligned.itemScopes = Object.fromEntries(Object.entries(aligned.itemScopes).map(([key, value]) => [id(key), id(value)]));
+  aligned.progressRecords = aligned.progressRecords.map(record => ({ ...record, taskId: id(record.taskId) }));
+  return canonicalJson(aligned) === canonicalJson(next);
+}
+
 function structuralTransition(documentId: unknown, before: TextWorkspaceState, next: TextWorkspaceState): boolean {
   if (!programIdentifier(documentId) || !M.validate(before) || !M.validate(next)
     || !M.getDocument(before, documentId) || !M.getDocument(next, documentId)) return false;
   const oldIds = new Set([...before.documents, ...before.flows].map(doc => doc.id));
-  return next.documents.some(doc => !oldIds.has(doc.id));
+  return next.documents.some(doc => !oldIds.has(doc.id)) || folderStructuralTransition(documentId, before, next);
 }
 
 /** Capture valid working structure even when a later raw edit is invalid. */

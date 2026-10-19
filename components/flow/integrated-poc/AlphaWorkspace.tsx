@@ -76,7 +76,7 @@ function privateTextChangeIsolatedToDocument(before: TextWorkspaceState, next: T
     const ids = new Set([...before.documents, ...before.flows, ...next.documents, ...next.flows].map(doc => doc.id));
     const changed = [...ids].filter(id => canonicalJson(M.getDocument(before, id) ?? null) !== canonicalJson(M.getDocument(next, id) ?? null));
     if (changed.length > 1) {
-      // A reference title edit may synchronize its canonical source. Preserve
+      // A linked title edit may synchronize its canonical source or references. Preserve
       // all identities/metadata and the exact non-title task frame, then let
       // the real model prove the complete propagation rather than an ID list.
       const withoutText = (state: TextWorkspaceState) => ({ ...state,
@@ -91,8 +91,12 @@ function privateTextChangeIsolatedToDocument(before: TextWorkspaceState, next: T
         const oldLine = source.lines[index], newLine = submitted.lines[index];
         if (oldLine.text === newLine.text) continue;
         const bindings = before.bindings.filter(binding => binding.kind === 'task' && binding.docId === documentId && binding.lineId === oldLine.id);
-        if (bindings.length !== 1 || !rows.some(row => row.id === oldLine.id && row.isReference)
-          || !submittedRows.some(row => row.id === newLine.id && row.isReference)) return false;
+        const oldRow = rows.find(row => row.id === oldLine.id), newRow = submittedRows.find(row => row.id === newLine.id);
+        const reference = bindings.length === 1 && oldRow?.isReference === true && newRow?.isReference === true;
+        const canonical = bindings.length === 0 && oldRow?.isCanonical === true && oldRow.isReference === false
+          && oldRow.progressTargetId === oldLine.id && newRow?.isCanonical === true && newRow.isReference === false
+          && newRow.progressTargetId === newLine.id;
+        if (!reference && !canonical) return false;
         // Same lexical frame as model.taskParts; parsing/replay below remains
         // authoritative. Only its title capture may differ, never token/indent.
         const frame = /^( *-\s+\[)([^\]\r\n]*)(\](?:\s+|$))(.*?)(\s*)$/;
