@@ -75,7 +75,36 @@ function privateTextChangeIsolatedToDocument(before: TextWorkspaceState, next: T
     if (!M.validate(before) || !M.validate(next) || !M.getDocument(before, documentId) || !M.getDocument(next, documentId)) return false;
     const ids = new Set([...before.documents, ...before.flows, ...next.documents, ...next.flows].map(doc => doc.id));
     const changed = [...ids].filter(id => canonicalJson(M.getDocument(before, id) ?? null) !== canonicalJson(M.getDocument(next, id) ?? null));
-    if (changed.length > 1 || changed.length === 1 && changed[0] !== documentId) return false;
+    if (changed.length > 1) {
+      // A reference title edit may synchronize its canonical source. Preserve
+      // all identities/metadata and the exact non-title task frame, then let
+      // the real model prove the complete propagation rather than an ID list.
+      const withoutText = (state: TextWorkspaceState) => ({ ...state,
+        documents: state.documents.map(doc => ({ ...doc, lines: doc.lines.map(line => ({ ...line, text: '' })) })),
+        flows: state.flows.map(doc => ({ ...doc, lines: doc.lines.map(line => ({ ...line, text: '' })) })),
+      });
+      if (canonicalJson(withoutText(before)) !== canonicalJson(withoutText(next))) return false;
+      const source = M.getDocument(before, documentId)!, submitted = M.getDocument(next, documentId)!;
+      const rows = M.rowMeta(before, documentId), submittedRows = M.rowMeta(next, documentId);
+      let titles = 0;
+      for (let index = 0; index < source.lines.length; index++) {
+        const oldLine = source.lines[index], newLine = submitted.lines[index];
+        if (oldLine.text === newLine.text) continue;
+        const bindings = before.bindings.filter(binding => binding.kind === 'task' && binding.docId === documentId && binding.lineId === oldLine.id);
+        if (bindings.length !== 1 || !rows.some(row => row.id === oldLine.id && row.isReference)
+          || !submittedRows.some(row => row.id === newLine.id && row.isReference)) return false;
+        // Same lexical frame as model.taskParts; parsing/replay below remains
+        // authoritative. Only its title capture may differ, never token/indent.
+        const frame = /^( *-\s+\[)([^\]\r\n]*)(\](?:\s+|$))(.*?)(\s*)$/;
+        const oldParts = frame.exec(oldLine.text), newParts = frame.exec(newLine.text);
+        if (!oldParts || !newParts || [1, 2, 3, 5].some(part => oldParts[part] !== newParts[part]) || oldParts[4] === newParts[4]) return false;
+        titles++;
+      }
+      if (!titles) return false;
+      const replay = M.editTextResult(before, documentId, M.raw(submitted), { folderText: true });
+      return replay.reason === null && canonicalJson(replay.state) === canonicalJson(next);
+    }
+    if (changed.length === 1 && changed[0] !== documentId) return false;
     const records = (state: TextWorkspaceState) => new Map(state.progressRecords.map(record => [JSON.stringify([record.taskId, record.date]), record]));
     const oldRecords = records(before), newRecords = records(next);
     const changedRecords = [...new Set([...oldRecords.keys(), ...newRecords.keys()])]
@@ -214,9 +243,24 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     try {
       const port = structuralRecovery.current, saved = port?.read();
       if (!port || !saved?.ok || !saved.value || saved.value.ownerId !== session.userId
-        || (editors.current?.captureStructuralDrafts?.() ?? []).some(draft => canonicalJson(draft.next) !== canonicalJson(text))
-        || !saved.value.entries.every(entry => canonicalJson(entry.next) === canonicalJson(text))) return;
-      if (port.clear(saved.value).ok) { parkedStructural.current = []; activeStructural.current = []; setStructuralRecoveries(null); }
+        || (editors.current?.captureStructuralDrafts?.() ?? []).some(draft => canonicalJson(draft.next) !== canonicalJson(text))) return;
+      const confirmed = new Set(saved.value.entries.filter(entry => canonicalJson(entry.next) === canonicalJson(text)).map(entry => canonicalJson(entry)));
+      if (!confirmed.size) return;
+      const remaining = saved.value.entries.filter(entry => !confirmed.has(canonicalJson(entry)));
+      // A synchronous capture may have advanced this same port since read().
+      // Recheck its whole expected record before the port's storage CAS/write.
+      const current = port.read();
+      if (!current.ok || canonicalJson(current.value) !== canonicalJson(saved.value)) return;
+      const persisted = remaining.length ? port.save(remaining) : port.clear(saved.value);
+      if (!persisted.ok) return;
+      const retain = (entries: readonly AlphaStructuralRecoveryEntry[]) => entries.filter(entry => !confirmed.has(canonicalJson(entry)));
+      parkedStructural.current = retain(parkedStructural.current);
+      activeStructural.current = retain(activeStructural.current);
+      setStructuralRecoveries(record => {
+        if (!record || record.ownerId !== saved.value!.ownerId || record.slotId !== saved.value!.slotId) return record;
+        const entries = retain(record.entries);
+        return entries.length ? { ...record, entries } : null;
+      });
     } catch { setStorageError(true); }
   }
   function captureInput() {
