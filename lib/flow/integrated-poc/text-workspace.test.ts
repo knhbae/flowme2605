@@ -74,13 +74,16 @@ test('progress tokens retain their lexical distinction and reject dot-only ratio
   assert.equal(M.parseProgressToken('.1').ok, false);
 });
 
-test('editor projection displays latest progress while retaining source spelling', () => {
+test('an explicit dated numeric record updates current RAW without changing its task identity', () => {
   let { state, id } = document('- [10] 준비');
-  const taskId = M.tasks(state)[0].id;
+  const taskId = M.tasks(state)[0].id, before = structuredClone(state);
   state = M.recordProgress(state, taskId, '2026-09-13', 100);
-  assert.equal(M.raw(state.documents[0]), '- [10] 준비');
+  assert.equal(M.raw(state.documents[0]), '- [100%] 준비'); assert.equal(M.currentProgress(state, taskId), 100);
+  assert.equal(M.tasks(state)[0].id, taskId);
+  assert.deepEqual(M.progressHistory(state, taskId), [{ date: '2026-09-13', percent: 100 }]);
   assert.equal(textEditorRows(state, id)[0].progressPercent, 100);
   assert.equal(textEditorRows(state, id)[0].progressTracked, true);
+  assert.equal(M.raw(before.documents[0]), '- [10] 준비'); assert.deepEqual(before.progressRecords, []);
 });
 
 test('folder catalog supports 32 levels, rejects cycles and level 33', () => {
@@ -94,7 +97,11 @@ test('folder catalog supports 32 levels, rejects cycles and level 33', () => {
 });
 
 test('source and dated history cannot be deleted by ambiguous or destructive raw edits', () => {
-  const { state, id } = document('- [20] 준비\n- [ ] 예약');
+  let { state, id } = document('- [20] 준비\n- [ ] 예약');
+  const taskId = M.tasks(state)[0].id;
+  state = M.recordProgress(state, taskId, '2026-09-12', 20);
+  const before = structuredClone(state);
   assert.equal(M.editText(state, id, ''), state);
   assert.equal(M.editText(state, id, '- [ ] 완전히 다름\n- [ ] 다른 일'), state);
+  assert.deepEqual(M.progressHistory(state, taskId), [{ date: '2026-09-12', percent: 20 }]); assert.deepEqual(state, before);
 });

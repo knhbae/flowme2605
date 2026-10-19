@@ -118,11 +118,20 @@ test('only100% is checked; zero and100 retain their original completion/reopen t
   }
 });
 
-test('the effective50% record is shown while the RAW40% source token remains intact', () => {
+test('explicit numeric records update current RAW while later current input preserves dated history', () => {
   const f = fixture({ rawPercent: 40, progressDate: DAY, percent: 50 }), before = JSON.stringify(f.data);
   const h = listHarness(f.data, [f.task]);
   assert.equal(text(h.check), '50%'); assert.equal(f.task.done, false);
-  assert.equal(M.raw(M.getDocument(f.data.spaces[f.data.activeActorId].text, f.documentId)!), f.raw);
+  const recorded = f.data.spaces[f.data.activeActorId].text, history = structuredClone(recorded.progressRecords);
+  assert.equal(M.currentProgress(recorded, f.task.id), 50);
+  assert.deepEqual(M.progressHistory(recorded, f.task.id), [{ date: DAY, percent: 50 }]);
+  assert.equal(M.raw(M.getDocument(recorded, f.documentId)!), f.raw.replace('[40%]', '[50%]'));
+  const current = M.editText(recorded, f.documentId, f.raw), data = structuredClone(f.data);
+  data.spaces[data.activeActorId].text = current;
+  const task = M.tasks(current).find(row => row.id === f.task.id); assert(task);
+  assert.equal(text(listHarness(data, [task]).check), '40%'); assert.equal(M.currentProgress(current, task.id), 40);
+  assert.equal(M.raw(M.getDocument(current, f.documentId)!), f.raw); assert.deepEqual(current.progressRecords, history);
+  assert.deepEqual(M.getDocument(current, f.documentId)!.lines.map(line => line.id), M.getDocument(recorded, f.documentId)!.lines.map(line => line.id));
   assert.equal(JSON.stringify(f.data), before);
 });
 

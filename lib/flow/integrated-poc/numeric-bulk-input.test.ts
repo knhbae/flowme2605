@@ -21,8 +21,12 @@ for (const token of ['20%', '20', '0.2']) test(`bulk numeric ${token} preserves 
   assert(M.validate(next));
   assert.equal(M.raw(next.documents[0]), raw);
   assert.equal(M.tasks(next)[0].id, taskId);
-  assert.deepEqual(M.progressHistory(next, taskId), [{ date: '2026-09-19', percent: 10 }, { date: '2026-09-23', percent: 40 }]);
-  assert.deepEqual(M.latestProgress(next, M.tasks(next)[1].id), { date: '2026-09-24', percent: 20 });
+  assert.equal(M.currentProgress(next, taskId), 40);
+  assert.deepEqual(M.progressHistory(next, taskId), [{ date: '2026-09-19', percent: 10 }]);
+  const addedId = M.tasks(next)[1].id;
+  assert.equal(M.currentProgress(next, addedId), 20); assert.equal(M.latestProgress(next, addedId), null);
+  assert.deepEqual(next.progressRecords, state.progressRecords);
+  assert.deepEqual(M.tasks(next).map(task => task.date), ['2026-09-23', '2026-09-24']);
   assert.deepEqual(state, before);
   assert.equal(M.editText(next, id, raw), next);
 });
@@ -37,10 +41,14 @@ test('unrelated multi-task rename still fails closed', () => {
   assert.equal(M.editText(state, id, '- [20%] 새 하나\n- [40%] 새 둘\n- [ ] 추가', { progressDate: '2026-09-12' }), state);
 });
 
-test('numeric bulk input without a valid explicit execution date remains atomic', () => {
+test('numeric bulk input needs no execution date; invalid options and input limits remain atomic', () => {
   const { state, id } = fixture('- [ ] 첫 준비');
   const raw = '- [40%] 첫 준비\n- [20%] 추가';
-  assert.equal(M.editText(state, id, raw), state);
+  const next = M.editText(state, id, raw);
+  assert.notEqual(next, state); assert(M.validate(next)); assert.equal(M.raw(next.documents[0]), raw);
+  assert.equal(M.tasks(next)[0].id, M.tasks(state)[0].id);
+  assert.deepEqual(M.tasks(next).map(task => M.currentProgress(next, task.id)), [40, 20]);
+  assert.deepEqual(next.progressRecords, []); assert.equal(M.raw(state.documents[0]), '- [ ] 첫 준비');
   assert.equal(M.editText(state, id, raw, { progressDate: '2026-02-30' }), state);
   assert.equal(M.editText(state, id, 'x'.repeat(100001)), state);
   assert.equal(M.editText(state, id, Array(1201).fill('- 메모').join('\n')), state);
@@ -61,7 +69,8 @@ for (const [token, percent] of [['0%', 0], ['100%', 100], ['0', 0], ['1.0', 100]
   const next = M.editText(state, id, `- [${token}] 첫 준비\n- [ ] 추가`, { progressDate: '2026-09-12' });
   assert.notEqual(next, state);
   assert.equal(M.tasks(next)[0].id, taskId);
-  assert.deepEqual(M.latestProgress(next, taskId), { date: '2026-09-12', percent });
+  assert.equal(M.currentProgress(next, taskId), percent); assert.equal(M.tasks(next)[0].done, percent === 100);
+  assert.equal(M.latestProgress(next, taskId), null); assert.deepEqual(next.progressRecords, state.progressRecords);
 });
 
 test('invalid numeric spellings do not turn an existing task into another identity', () => {
@@ -78,7 +87,9 @@ test('unique child progress edit under the same exact parent retains its ID', ()
   const next = M.editText(state, id, '- [ ] 부모\n  - [20%] 자식\n  - [ ] 추가', { progressDate: '2026-09-12' });
   assert.notEqual(next, state);
   assert.equal(next.documents[0].lines[1].id, childId);
-  assert.deepEqual(M.latestProgress(next, childId), { date: '2026-09-12', percent: 20 });
+  assert.equal(M.currentProgress(next, childId), 20); assert.equal(M.latestProgress(next, childId), null);
+  assert.deepEqual(next.progressRecords, state.progressRecords);
+  assert.equal(next.itemScopes[childId], state.itemScopes[childId]);
 });
 
 test('bulk numeric input cannot infer a changed parent or depth', () => {

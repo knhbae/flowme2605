@@ -207,11 +207,32 @@ test('numeric source spelling survives revision recovery while current cumulativ
   assert.deepEqual(data.spaces[actorId].text.progressRecords, progress); assert.equal(M.latestProgress(data.spaces[actorId].text, a)?.percent, 20);
 });
 
-test('raw-only numeric text without a progress date fails safely instead of inventing a date', () => {
+test('raw-only undated numeric recovery creates independent identities without inventing history or bypassing CAS and receipts', () => {
   const { data, docId } = fixture();
-  data.spaces[actorId].draftRevisions.push({ id: 'unresolved-numeric', documentId: docId, title: '원문', raw: '- [20] 날짜 없는 숫자', createdAt: now });
-  const before = programClone(data), result = restoreProgramRawRevisionAsDocument(data, { ...base(data), documentId: docId, revisionId: 'unresolved-numeric' });
-  assert(!result.ok && result.reason === 'unresolved'); assert.deepEqual(data, before);
+  const raw = '- [20] 날짜 없는 숫자\n  - 메모: 복구 메모';
+  data.spaces[actorId].draftRevisions.push({ id: 'unresolved-numeric', documentId: docId, title: '원문', raw, createdAt: now });
+  const before = programClone(data), request = { ...base(data), documentId: docId, revisionId: 'unresolved-numeric' };
+  const originalIds = new Set(before.spaces[actorId].text.documents.flatMap(doc => doc.lines.map(line => line.id)));
+  const preview = previewProgramDocumentRevisionRestore(data, { actorId, documentId: docId, revisionId: 'unresolved-numeric' });
+  assert(preview.ok); assert.equal(preview.result.mode, 'new-document');
+  const inPlace = restore(data, docId, 'unresolved-numeric'); assert(!inPlace.ok); assert.equal(inPlace.reason, 'unresolved');
+  const result = accepted(restoreProgramRawRevisionAsDocument(data, request)), space = result.data.spaces[actorId];
+  const recovered = M.getDocument(space.text, result.result); assert(recovered); assert.notEqual(recovered.id, docId);
+  assert.equal(M.raw(recovered), raw); assert(recovered.lines.every(line => !originalIds.has(line.id)));
+  const task = M.tasks(space.text).find(row => row.docId === recovered.id); assert(task); assert(!originalIds.has(task.id));
+  assert.equal(task.date, null); assert.equal(task.note, '복구 메모'); assert.equal(M.currentProgress(space.text, task.id), 20);
+  assert.deepEqual(M.progressHistory(space.text, task.id), []); assert.deepEqual(space.text.progressRecords, before.spaces[actorId].text.progressRecords);
+  assert.deepEqual(M.getDocument(space.text, docId), M.getDocument(before.spaces[actorId].text, docId));
+  assert.deepEqual(space.draftRevisions, before.spaces[actorId].draftRevisions);
+  assert.deepEqual(result.data.public, before.public); assert.deepEqual(result.data.spaces['creator-minji'], before.spaces['creator-minji']);
+  assert.equal(result.data.receipts.length, before.receipts.length + 1); assert.equal(result.data.receipts.at(-1)!.kind, 'document-revision-copy');
+  const retry = accepted(restoreProgramRawRevisionAsDocument(result.data, request));
+  assert.equal(retry.changed, false); assert.equal(retry.result, recovered.id); assert.equal(retry.data, result.data);
+  const stale = restoreProgramRawRevisionAsDocument(result.data, { ...request, requestId: 'raw-numeric-stale' });
+  assert(!stale.ok); assert.equal(stale.reason, 'conflict'); assert.equal(stale.data, result.data);
+  const duplicate = restoreProgramRawRevisionAsDocument(result.data, { ...request, revisionId: 'other-revision' });
+  assert(!duplicate.ok); assert.equal(duplicate.reason, 'duplicate-request'); assert.equal(duplicate.data, result.data);
+  assert.deepEqual(data, before);
 });
 
 test('existing unchecked or checked progress without dated records is preserved without inventing history', () => {

@@ -254,4 +254,5 @@
 .page[data-alpha-frame="b"] .workPane{width:calc(100% - 24px);max-width:none;margin:0 12px;padding:20px}
 .page[data-alpha-frame="b"] .browseNavigation{width:calc(100% - 24px);margin:0 12px 12px}
 .page[data-alpha-frame="b"] :is(button,a,input,select,textarea,summary){scroll-margin-top:80px;scroll-margin-bottom:calc(104px + env(safe-area-inset-bottom))}
+.page[data-alpha-frame="b"][data-writing-keyboard="true"] .globalNavigation{display:none}
 }

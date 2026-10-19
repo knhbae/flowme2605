@@ -9,6 +9,7 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import ts from 'typescript';
 import { createEmptyTextWorkspace, textWorkspaceModel as M, type TextWorkspaceState } from '../../../lib/flow/integrated-poc/text-workspace';
+import type { ProgramTextCommit } from '../../../lib/flow/integrated-poc/program-text-draft';
 import { planProgramDateBlockOrder } from '../../../lib/flow/integrated-poc/date-block-order';
 import { applyProgramLinePermutation, createProgramPermutationHistory } from '../../../lib/flow/integrated-poc/line-permutation';
 import type { createProgramTextDraft as DraftFactory, ProgramTextEditor as Component, ProgramReferencePanel as ReferencePanel, programTextProtectionMessage as ProtectionMessage, trapProgramDialogTab as TrapDialogTab, ProgramTextDraftState } from './ProgramTextEditor';
@@ -494,7 +495,10 @@ test('homonym proposals and the folder panel use full paths while choosing the e
   assert.equal(h.writes(), 1); assert.equal(binding.kind, 'scope');
   assert.equal(binding.kind === 'scope' ? binding.scopeId : null, 'personal-work');
   assert.equal(saved.documents[0].lines[0].id, lineId);
-  h.action('scope-picker'); assert(h.button('회사 / 업무')); assert(h.button('개인 / 업무'));
+  h.action('scope-picker'); assert(h.button('회사 / 업무'));
+  const selectedAncestor = h.nodes(h.render()).find(node => node.type === 'button' && node.props.children?.[0] === '개인 / 업무');
+  assert(selectedAncestor); assert.equal(selectedAncestor.props.disabled, true);
+  assert.match(String(selectedAncestor.props.children[1]?.props.children), /조상|자신|하위|연결/);
   assert.equal(h.writes(), 1); h.unmount();
 });
 
@@ -678,14 +682,27 @@ test('same-request acknowledgment clears only exact submitted input without repl
   assert.equal(h.writes(), 2); assert.equal(draft.getState().raw, '다음 입력');
 });
 
-test('newer typing including a return to the submitted raw never gains acknowledgment authority', async () => {
+test('newer typing accepts only the submitted receipt baseline while retaining its current dirty input', async () => {
   for (const returnToSubmitted of [false, true]) {
     const h = referenceMenuHarness('원래 메모'); h.reject(); const draft = h.draft(), before = draft.getState().committed;
-    draft.updateRaw('제출한 메모', '2026-09-30'); const next = draft.getState().working; await draft.save();
+    draft.updateRaw('제출한 메모', '2026-09-30'); const next = draft.getState().working;
+    assert.equal(await draft.save(), false);
     draft.updateRaw('새 입력', '2026-09-30');
     if (returnToSubmitted) draft.updateRaw('제출한 메모', '2026-09-30');
     h.textarea.value = draft.getState().raw;
-    assert.equal(h.confirmSave(before, next), false); assert(draft.getState().dirty); assert.equal(h.writes(), 1);
+    h.textarea.selectionStart = 1; h.textarea.selectionEnd = 2; h.textarea.scrollTop = 24;
+    const latest = draft.getState(), working = structuredClone(latest.working), history = structuredClone(latest.working.progressRecords);
+    assert.equal(h.confirmSave(before, next), true);
+    const accepted = draft.getState();
+    assert.equal(accepted.committed, next); assert.equal(accepted.working, latest.working);
+    assert.deepEqual(accepted.working, working); assert.deepEqual(accepted.working.progressRecords, history);
+    assert.equal(accepted.raw, latest.raw); assert.equal(accepted.dirty, true);
+    assert.equal(accepted.saving, latest.saving); assert.equal(accepted.error, latest.error);
+    assert.deepEqual(M.getDocument(accepted.working, h.docId)?.lines.map(line => line.id), M.getDocument(working, h.docId)?.lines.map(line => line.id));
+    assert.equal(h.textarea.value, latest.raw);
+    assert.deepEqual([h.textarea.selectionStart, h.textarea.selectionEnd, h.textarea.scrollTop], [1, 2, 24]);
+    assert.equal(h.writes(), 1); assert.equal(h.confirmSave(before, next), false);
+    assert.equal(draft.getState().committed, next); assert.equal(draft.getState().dirty, true);
   }
 });
 
@@ -704,13 +721,33 @@ test('acknowledgment refuses composition, native-only input, invalid input and c
   }
 });
 
-test('in-flight, unsubmitted and discarded input cannot accept a recovered confirmation', async () => {
+test('in-flight receipt advances only baseline while unsubmitted discarded and duplicate confirmations stay refused', async () => {
   const h = referenceMenuHarness('원래 메모'), draft = h.draft(), before = draft.getState().committed;
   draft.updateRaw('새 메모', '2026-09-30'); h.textarea.value = draft.getState().raw;
   const next = draft.getState().working; assert.equal(h.confirmSave(before, next), false);
-  let finish: (value: boolean) => void = () => {}; h.props.onCommit = () => new Promise<boolean>(resolve => { finish = resolve; });
-  const flight = draft.save(); assert(draft.getState().saving); assert.equal(h.confirmSave(before, next), false);
-  finish(false); await flight; assert(draft.discard(before)); assert.equal(h.confirmSave(before, next), false);
+  assert.equal(draft.getState().committed, before); assert.equal(draft.getState().saving, false);
+  let finish: (value: boolean) => void = () => {}, writes = 0;
+  const commit: ProgramTextCommit = (_value, _label, options) => {
+    writes++; assert.equal(options?.expectedWorkspace, before);
+    return new Promise<boolean>(resolve => { finish = resolve; });
+  };
+  h.props.onCommit = commit;
+  const flight = draft.save(); assert(draft.getState().saving);
+  draft.updateRaw('진행 중 새 입력', '2026-09-30'); h.textarea.value = draft.getState().raw;
+  h.textarea.selectionStart = 2; h.textarea.selectionEnd = 4; h.textarea.scrollTop = 18;
+  const latest = draft.getState(), working = structuredClone(latest.working), history = structuredClone(latest.working.progressRecords);
+  assert.equal(h.confirmSave(before, next), true);
+  assert.equal(draft.getState().committed, next); assert.equal(draft.getState().working, latest.working);
+  assert.deepEqual(draft.getState().working, working); assert.deepEqual(draft.getState().working.progressRecords, history);
+  assert.equal(draft.getState().raw, latest.raw); assert.equal(draft.getState().dirty, true); assert.equal(draft.getState().saving, true);
+  assert.equal(draft.getState().error, latest.error); assert.equal(draft.save(), flight); assert.equal(writes, 1);
+  assert.deepEqual([h.textarea.selectionStart, h.textarea.selectionEnd, h.textarea.scrollTop], [2, 4, 18]);
+  assert.equal(h.textarea.value, latest.raw); assert.equal(h.confirmSave(before, next), false);
+  finish(false); assert.equal(await flight, false);
+  assert.equal(draft.getState().committed, next); assert.equal(draft.getState().saving, false); assert.equal(draft.getState().dirty, true);
+  assert.equal(draft.getState().raw, latest.raw); assert.deepEqual(draft.getState().working, working); assert.equal(writes, 1);
+  assert(draft.discard(before)); h.textarea.value = draft.getState().raw;
+  assert.equal(h.confirmSave(before, next), false); assert.equal(draft.getState().committed, before);
 });
 
 function editorField(h: ReturnType<typeof referenceMenuHarness>, type: string) {
@@ -866,7 +903,10 @@ test('actual draft boundary accepts date-section plus numeric/memo bulk input on
   const input=original.replace('- [ ] 현재 준비','[2026-09-13]\n- [20%] 현재 준비\n  - 메모: PRIVATE_CREATOR_EXECUTION_1134');
   const draft=createProgramTextDraft(workspace,docId,async(next,_label,options)=>{writes++;assert.equal(options?.expectedWorkspace,workspace);assert.equal(M.raw(M.getDocument(next,docId)),input);assert.deepEqual(M.tasks(next).map(task=>task.id),ids);return true;},()=>{});
   assert(draft.updateRaw(input,'2026-09-12'));assert.equal(draft.getState().invalid,false);assert(await draft.save());assert.equal(writes,1);assert.equal(draft.getState().raw,input);assert.equal(draft.getState().dirty,false);
-  assert.deepEqual(M.latestProgress(draft.getState().committed,ids[0]),{date:'2026-09-13',percent:20});
+  assert.equal(M.currentProgress(draft.getState().committed,ids[0]),20);
+  assert.equal(M.latestProgress(draft.getState().committed,ids[0]),null);
+  assert.deepEqual(M.progressHistory(draft.getState().committed,ids[0]),[]);
+  assert.equal(M.tasks(draft.getState().committed).find(task=>task.id===ids[0])?.date,'2026-09-13');
   const invalid=input.replace('[20%]','[101%]');assert.equal(draft.updateRaw(invalid,'2026-09-12'),false);assert.equal(await draft.save(),false);assert.equal(writes,1);assert.equal(draft.getState().raw,invalid);
 });
 
@@ -990,7 +1030,9 @@ test('typing while a commit is pending is serialized and neither draft nor ID is
   assert.equal(writes.length, 2);
   assert.equal(M.tasks(draft.getState().committed)[0].id, firstId);
   assert.equal(draft.getState().raw, '- [20] 준비 마무리');
-  assert.equal(M.latestProgress(draft.getState().committed, firstId)?.percent, 20);
+  assert.equal(M.currentProgress(draft.getState().committed, firstId), 20);
+  assert.equal(M.latestProgress(draft.getState().committed, firstId), null);
+  assert.deepEqual(M.progressHistory(draft.getState().committed, firstId), []);
 });
 
 test('a pending failure keeps typing that arrived after the submitted snapshot', async () => {

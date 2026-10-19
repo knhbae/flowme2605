@@ -160,7 +160,7 @@ test('new input after a failed pending composition save still schedules the norm
   } finally { f.unmount(); }
 });
 
-test('composition-end plus failed document flush rejects stale ACK, then explicit latest retry permits document switch', async () => {
+test('composition-end keeps a failed flush blocked while an exact receipt advances only baseline before latest retry', async () => {
   const seed = fixture(), workspace = M.addDocument(seed.workspace, { title: '다음 문서' });
   const otherId = workspace.documents.find(doc => doc.id !== seed.docId)!.id;
   const f = fixture({ workspace, docId: seed.docId }); seed.unmount();
@@ -168,13 +168,24 @@ test('composition-end plus failed document flush rejects stale ACK, then explici
   try {
     const finish = pendingCommit(f), navigation = route(f, workspace), before = f.workspace;
     const first = f.initialRaw + ' 제출', latest = first + ' 최종';
-    f.input(first); await f.advance(450); const submitted = f.commits[0], oldConfirm = f.confirmedPort();
+    f.input(first); await f.advance(450); const submitted = f.commits[0], oldConfirm = f.confirmedPort(), submittedFlight = f.save();
     f.event('compositionstart');
     navigation.request(otherId); await f.settle(); await navigation.settled();
     assert.equal(navigation.selected(), f.docId); assert.equal(oldConfirm(before, submitted), false);
     f.event('compositionend'); f.input(latest); await f.settle();
     navigation.request(otherId); await f.settle(); finish(false); await f.settle(); await navigation.settled();
-    assert.equal(navigation.selected(), f.docId); assert.equal(oldConfirm(before, submitted), false);
+    assert.equal(navigation.selected(), f.docId); assert.equal(await submittedFlight, false);
+    const pending = f.draft(), working = structuredClone(pending.working), history = structuredClone(pending.working.progressRecords);
+    const selection = [f.textarea.selectionStart, f.textarea.selectionEnd, f.textarea.scrollTop, f.textarea.scrollLeft];
+    assert.equal(oldConfirm(before, submitted), true);
+    assert.equal(f.draft().committed, submitted); assert.equal(f.draft().working, pending.working);
+    assert.deepEqual(f.draft().working, working); assert.deepEqual(f.draft().working.progressRecords, history);
+    assert.equal(f.draft().raw, latest); assert.equal(f.draft().dirty, true); assert.equal(f.draft().saving, false);
+    assert.equal(f.draft().error, pending.error); assert(pending.error);
+    assert.equal(f.textarea.value, latest);
+    assert.deepEqual([f.textarea.selectionStart, f.textarea.selectionEnd, f.textarea.scrollTop, f.textarea.scrollLeft], selection);
+    assert.deepEqual(M.getDocument(f.draft().working, f.docId)!.lines.map(line => line.id), f.initialIds);
+    assert.equal(f.commits.length, 1); assert.equal(oldConfirm(before, submitted), false);
     await f.advance(900); assert.equal(f.commits.length, 1); assert.equal(f.draft().raw, latest);
     const retry = f.save(); finish(true); assert(await retry); await f.settle();
     navigation.request(otherId); await f.settle(); await navigation.settled();

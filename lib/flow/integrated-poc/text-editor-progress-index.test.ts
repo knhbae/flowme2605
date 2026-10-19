@@ -61,8 +61,9 @@ test('unrecorded tasks and subchecks keep checkbox fallback without becoming tra
   assert.deepEqual(state.progressRecords, []);
 });
 
-test('tracked zero, forty and one hundred override stale numeric source tokens', () => {
-  let { state, id } = document('- [10%] 시작\n- [10%] 진행\n- [10%] 완료');
+test('explicit numeric records update current tokens and later direct input preserves their dated history', () => {
+  const raw = '- [10%] 시작\n- [10%] 진행\n- [10%] 완료';
+  let { state, id } = document(raw);
   const ids = state.documents[0].lines.map(line => line.id);
   for (const [index, percent] of [0, 40, 100].entries()) {
     state = M.recordProgress(state, ids[index], '2026-10-13', percent);
@@ -71,7 +72,14 @@ test('tracked zero, forty and one hundred override stale numeric source tokens',
   assert.deepEqual(textEditorRows(state, id).map(progress), ids.map((targetId, index) => ({
     targetId, percent: [0, 40, 100][index], date: '2026-10-13', tracked: true,
   })));
-  assert.equal(M.raw(state.documents[0]), '- [10%] 시작\n- [10%] 진행\n- [10%] 완료');
+  assert.equal(M.raw(state.documents[0]), '- [0%] 시작\n- [40%] 진행\n- [100%] 완료');
+  const before = structuredClone(state), current = M.editText(state, id, raw);
+  assert.equal(M.raw(current.documents[0]), raw); assert(M.validate(current));
+  assert.deepEqual(textEditorRows(current, id).map(progress), ids.map(targetId => ({
+    targetId, percent: 10, date: '2026-10-13', tracked: true,
+  })));
+  assert.deepEqual(current.progressRecords, before.progressRecords);
+  assert.deepEqual(current.documents[0].lines.map(line => line.id), ids); assert.deepEqual(state, before);
 });
 
 test('reference rows use their canonical target history and retain local row identity', () => {

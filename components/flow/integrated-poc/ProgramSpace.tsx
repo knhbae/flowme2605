@@ -3,12 +3,14 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { programClone, programFailure, programId, programResult, type ProgramData, type ProgramPrivateSpace, type ProgramTransition, type ProgramWritingPosition } from '@/lib/flow/integrated-poc/contract';
 import { programDate } from '@/lib/flow/integrated-poc/program-data';
+import { programFolderCopyAccessProblem } from '@/lib/flow/integrated-poc/folder-copy';
 import { addProgramQuickTask, archiveProgramDocument, completeProgramTask, createProgramDocument, createProgramFolder, deleteProgramFolder, linkProgramTask, moveProgramFolder, recordProgramTaskProgress, renameProgramDocument, renameProgramFolder, setProgramDocumentFolder, updateProgramTask } from '@/lib/flow/integrated-poc/private-space';
 import { programDateRange, programExecutionTasks, programShiftDate, programShiftMonth, type ProgramPeriod } from '@/lib/flow/integrated-poc/execution';
 import { programOrderedExecutionRows, programTextExecutionKey, reorderProgramExecutionTimeline } from '@/lib/flow/integrated-poc/recurrence-order';
 import { programExecutionDayPresentation, readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { mergeProgramTextWorkspace } from '@/lib/flow/integrated-poc/text-merge';
 import { flushProgramEditorCollection, prepareProgramDocumentAction, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
+import type { AlphaStructuralDraft, AlphaStructuralEditorPort } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
 import { textWorkspaceModel as M, type TextTask, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { programErrorMessage, type ProgramMutate, type ProgramNavigate, type ProgramMutationResult, type ProgramDestination } from '@/lib/flow/integrated-poc/ui-contract';
 import { emptyProgramRecurrencePresentation, programNavigationMatchesDocument, type ProgramSpaceNavigation } from '@/lib/flow/integrated-poc/navigation';
@@ -40,6 +42,64 @@ import { addDocumentCollection, collectionDocumentIds, setDocumentCollectionLink
 import { createProgramWritingEntry } from '@/lib/flow/integrated-poc/writing-entry';
 import { canClassifyProgramTask, setProgramTaskClassification } from '@/lib/flow/integrated-poc/task-classification';
 
+/** Browser chrome/pinch zoom must not be mistaken for a soft keyboard. */
+export function programMobileWritingKeyboardOpen(baselineHeight: number, visibleHeight: number, scale = 1) {
+  return Number.isFinite(baselineHeight) && Number.isFinite(visibleHeight)
+    && Math.abs(scale - 1) < 0.05
+    && baselineHeight - visibleHeight > Math.max(120, baselineHeight * 0.18);
+}
+
+/** Presentation only. Never flush, remount, focus or change the native editor. */
+export function useProgramMobileWritingChrome(rootRef: React.RefObject<HTMLElement | null>, ready: boolean) {
+  const [hidden, setHidden] = useState(false);
+  useEffect(() => {
+    const root = rootRef.current, view = root?.ownerDocument.defaultView;
+    if (!ready || !root || !view) { setHidden(false); return; }
+    const visual = view.visualViewport;
+    const mobile = view.matchMedia?.('(max-width: 700px)');
+    let frame = 0, baselineHeight = Math.max(view.innerHeight, visual?.height ?? 0);
+    let writingEditor: Element | null = null;
+    const update = () => {
+      frame = 0;
+      const active = root.ownerDocument.activeElement;
+      const inside = !!active && root.contains(active);
+      const body = inside && active.matches('textarea:not([readonly]):not(:disabled)')
+        && !!active.closest('[data-native-editor="v11-core"], [data-folder-region]');
+      if (body) writingEditor = active.closest('[aria-label="개인 문서 편집"]');
+      const editorTool = inside && !!writingEditor?.contains(active)
+        && !!active.closest('[data-editor-tools]');
+      const writing = body || editorTool;
+      const visibleHeight = visual ? visual.height : view.innerHeight;
+      if (!writing) writingEditor = null;
+      // A title/search field may keep the keyboard open before returning to body.
+      // Do not replace the closed-keyboard baseline with that shrunken viewport.
+      if (!programMobileWritingKeyboardOpen(baselineHeight, visibleHeight, visual?.scale ?? 1)) {
+        baselineHeight = Math.max(view.innerHeight, visibleHeight);
+      }
+      const isMobile = mobile?.matches ?? view.innerWidth <= 700;
+      setHidden(isMobile && writing
+        && programMobileWritingKeyboardOpen(baselineHeight, visibleHeight, visual?.scale ?? 1));
+    };
+    const schedule = () => { if (!frame) frame = view.requestAnimationFrame(update); };
+    const orientation = () => {
+      baselineHeight = Math.max(view.innerHeight, visual?.height ?? 0); schedule();
+    };
+    root.addEventListener('focusin', schedule); root.addEventListener('focusout', schedule);
+    view.addEventListener('resize', schedule); view.addEventListener('orientationchange', orientation);
+    visual?.addEventListener('resize', schedule); visual?.addEventListener('scroll', schedule);
+    mobile?.addEventListener?.('change', schedule);
+    schedule();
+    return () => {
+      view.cancelAnimationFrame(frame);
+      root.removeEventListener('focusin', schedule); root.removeEventListener('focusout', schedule);
+      view.removeEventListener('resize', schedule); view.removeEventListener('orientationchange', orientation);
+      visual?.removeEventListener('resize', schedule); visual?.removeEventListener('scroll', schedule);
+      mobile?.removeEventListener?.('change', schedule);
+    };
+  }, [rootRef, ready]);
+  return hidden;
+}
+
 export type ProgramSpaceCapabilities = {
   discovery?: boolean;
   publication?: boolean;
@@ -64,7 +124,7 @@ export type ProgramSpaceProps = {
   onOutputDocument?: (documentId: string) => void;
   onStartReview?: (documentId: string) => Promise<void>;
   onRegisterReviewSpace?: (port: ProgramReviewSpacePort | null) => void;
-  onRegisterEditors?: (editors: ProgramEditorFlush | null) => void;
+  onRegisterEditors?: (editors: (ProgramEditorFlush & AlphaStructuralEditorPort) | null) => void;
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
   /** Local view changes do not call mutate; the host must expose held authority. */
   canContinueWholeDocument?: () => boolean;
@@ -150,9 +210,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // editor commits can advance this chain; render props or arbitrary snapshots cannot.
   const moveFlush = useRef<{ actorId: string; expected: typeof space; conflict: boolean } | null>(null);
   const draftReaders = useRef<Record<string, (() => string) | null>>({});
+  const structuralDraftReaders = useRef<Record<string, (() => AlphaStructuralDraft | null) | null>>({});
   const confirmedSaveReaders = useRef<Record<string, ((before: TextWorkspaceState, next: TextWorkspaceState) => boolean) | null>>({});
   const inputLocks = useRef<Record<string, ((locked: boolean) => void) | null>>({}), inputLockCount = useRef(0);
   const [recordDate, setRecordDate] = useState(today), [percent, setPercent] = useState('0');
+  const [progressRecordDate, setProgressRecordDate] = useState<string | null>(null);
   // An ACK must render even for a no-op save or repeated success message.
   const [progressDraftBaseline, setProgressDraftBaseline] = useState({ date: today, percent: '0' });
   const [executionDateDraft, setExecutionDateDraft] = useState('');
@@ -520,6 +582,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       blocksExternalSnapshot: (before, next) => Object.values(recurrencePorts.current).some(port => port?.blocksExternalSnapshot?.(before, next)),
       pendingDocumentIds: () => Object.keys(dirty.current).filter(id => dirty.current[id]),
       captureDrafts: () => [...Object.keys(dirty.current).filter(id => dirty.current[id]).map(id => ({ documentId: id, title: documentsRef.current.find(doc => doc.id === id)?.title ?? '작성 중 문서', raw: draftReaders.current[id]?.() ?? '' })), ...Object.values(recurrencePorts.current).flatMap(port => port?.captureDrafts?.() ?? [])],
+      captureStructuralDrafts: () => Object.keys(dirty.current).filter(id => dirty.current[id]).flatMap(id => {
+        const draft = structuralDraftReaders.current[id]?.(); return draft ? [draft] : [];
+      }),
       flushAll: flushAllEditors });
     return () => props.onRegisterEditors?.(null);
   }, [actorId]);
@@ -701,8 +766,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     executionDraftOwner.current = { dialog: executionDraftOwner.current.dialog + 1, input: 0, taskId: task?.id ?? null };
     // Row click state updates have not rendered yet. Read this exact target's
     // initial progress here instead of capturing the previous dialog's fields.
-    const initialProgress = task ? { date: today, percent: String(M.latestProgress(space.text, task.id)?.percent ?? (task.done ? 100 : 0)) } : { date: recordDate, percent };
-    setProgressDraftBaseline(initialProgress);
+    const initialProgress = task ? { date: today, percent: String(M.currentProgress(space.text, task.id) ?? (task.done ? 100 : 0)) } : { date: recordDate, percent };
+    setProgressRecordDate(null); setProgressDraftBaseline(initialProgress);
     if (task) { setRecordDate(initialProgress.date); setPercent(initialProgress.percent); }
     setExecutionDateDraft(task?.date ?? ''); setExecutionTimeDraft(task?.time ?? ''); setMessage(''); setDetail(next);
   }
@@ -1153,6 +1218,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             setFolderId(''); setMessage(''); return true;
           }}
           onCommit={(next, label, options) => editorCommit(id, next, label, options)}
+          folderCopyProblem={(state, docId, lineIds) => programFolderCopyAccessProblem({ ...space, text: state }, docId, lineIds)}
           validateWorkspace={next => programPreservesLockedDocumentContent(space, next) && programPreservesSeriesMetadata(space, next) && programPreservesLegacyQualityHold(space, next) && programPreservesLegacyPlanExcluded(space, next)}
           taskAccess={taskId => programReferenceExecutionAccess(space, taskId)}
           onOpenTaskOrigin={(documentId, lineId) => { void openDocument(documentId, lineId); }}
@@ -1161,6 +1227,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onRegisterSave={(save, status) => { saveRequests.current[id] = save; saveStatusReaders.current[id] = status ?? null; }}
           onRegisterSourceFocus={focus => registerSourceFocus(id, focus)}
           onRegisterDraft={read => { draftReaders.current[id] = read; }}
+          onRegisterStructuralDraft={read => { structuralDraftReaders.current[id] = read; }}
           onRegisterConfirmedSave={accept => { confirmedSaveReaders.current[id] = accept; }}
           onRegisterInputLock={lock => { inputLocks.current[id] = lock; lock?.(inputLockCount.current > 0); }}
           onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { if (collectionMode) { setMessage('기존 항목 분류는 모음이 아닙니다. 전체 문서에서 계속 작성합니다.'); return; } setFolderId(scopeId); setPeriod('all'); } else void openDocument(scopeId); }}
@@ -1226,7 +1293,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} /></li>;
           const task = entry.task;
           const origin = readProgramTaskOrigin(data, task);
-          const progress = M.latestProgress(space.text, task.id), value = progress?.percent ?? (task.done ? 100 : 0);
+          const progress = M.latestProgress(space.text, task.id), value = M.currentProgress(space.text, task.id) ?? (task.done ? 100 : 0);
           return <li key={entry.key} className={styles.task} data-task-id={task.id} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
@@ -1235,7 +1302,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               if (value > 0 && value < 100) { setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }
               else void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }));
             }}><span aria-hidden="true">{value === 100 ? '✓' : value ? `${value}%` : '□'}</span></button>
-            <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} onClick={() => moving ? void moveBefore(moving, entry.key) : void openDocument(task.docId, task.id)}><span className={styles.taskTitleText}>{task.title}</span><small>{!(period === 'today' && task.date === date) && <span>예정일 {task.date ?? '미정'}</span>}{task.time && <span>{task.time}</span>}{progress?.date && !(period === 'today' && progress.date === date && task.date === progress.date) && <span>진행 기록 {progress.date} · {value}%</span>}<span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}{taskFolderPath(task)} / {task.docTitle} →</span></small></button>
+            <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} onClick={() => moving ? void moveBefore(moving, entry.key) : void openDocument(task.docId, task.id)}><span className={styles.taskTitleText}>{task.title}</span><small>{!(period === 'today' && task.date === date) && <span>예정일 {task.date ?? '미정'}</span>}{task.time && <span>{task.time}</span>}{progress?.date && !(period === 'today' && progress.date === date && task.date === progress.date) && <span>진행 기록 {progress.date} · {progress.percent}%</span>}<span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}{taskFolderPath(task)} / {task.docTitle} →</span></small></button>
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>
@@ -1265,15 +1332,16 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {detailTask.time && <p className={styles.muted}>날짜만 미정으로 옮기면 시간은 유지됩니다.</p>}
         </section>
         <details key={`progress-${executionDraftOwner.current.dialog}`} className={styles.detailSection} data-detail-section="progress"><summary>진행 기록</summary>
-        <form onSubmit={async event => { event.preventDefault(); const requested = { dialog: executionDraftOwner.current.dialog, date: recordDate, percent };
-          const result = await run('진행 기록', current => recordProgramTaskProgress(current, { ...base(current), taskId: detailTask.id, date: requested.date, percent: Number(requested.percent) }));
+        <form onSubmit={async event => { event.preventDefault(); const requested = { dialog: executionDraftOwner.current.dialog, date: recordDate, percent,
+          correctionAsOfDate: progressRecordDate === recordDate && recordDate < today && detailTask.inputPercent !== undefined ? today : undefined };
+          const result = await run('진행 기록', current => recordProgramTaskProgress(current, { ...base(current), taskId: detailTask.id, date: requested.date, percent: Number(requested.percent), correctionAsOfDate: requested.correctionAsOfDate }));
           if (result.ok && executionDraftOwner.current.dialog === requested.dialog && executionDraftOwner.current.taskId === detailTask.id) { setProgressDraftBaseline({ date: requested.date, percent: requested.percent }); setMessage('해당 날짜의 누적 진행을 저장했습니다.'); }
         }}><h3>날짜별 진행</h3><label>기록 날짜<input type="date" value={recordDate} onChange={event => { executionDraftOwner.current.input++; setRecordDate(event.target.value); }} required /></label><label>누적 진행 (%)<input type="number" min={0} max={100} value={percent} onChange={event => { executionDraftOwner.current.input++; setPercent(event.target.value); }} required /></label><button>진행 기록</button></form>
-        <ul>{M.progressHistory(space.text, detailTask.id).map(record => <li key={record.date}><button onClick={() => { executionDraftOwner.current.input++; setRecordDate(record.date); setPercent(String(record.percent)); }}>{record.date} · {record.percent}%</button></li>)}</ul>
+        <ul>{M.progressHistory(space.text, detailTask.id).map(record => <li key={record.date}><button onClick={() => { executionDraftOwner.current.input++; setProgressRecordDate(record.date); setRecordDate(record.date); setPercent(String(record.percent)); }}>{record.date} · {record.percent}%</button></li>)}</ul>
         </details>
         <details key={`connections-${executionDraftOwner.current.dialog}`} className={styles.detailSection} data-detail-section="connections"><summary>연결·이동·순서</summary>
         {period !== 'documents' && <div className={styles.actions}><button onClick={() => moveStep(detailTask, -1)}>같은 날짜에서 위로</button><button onClick={() => moveStep(detailTask, 1)}>같은 날짜에서 아래로</button></div>}
-        <label className={styles.field}>다른 문서에 연결<select defaultValue="" onChange={async event => { const docId = event.target.value; if (!docId) return; await run('같은 할 일 연결', current => linkProgramTask(current, { ...base(current), documentId: docId, taskId: detailTask.id })); }}><option value="">문서 선택</option>{space.text.documents.filter(doc => doc.id !== detailTask.docId && !space.archivedDocumentIds.includes(doc.id)).map(doc => <option key={doc.id} value={doc.id}>{doc.title}</option>)}</select></label>
+        <label className={styles.field}>다른 문서에 연결<select defaultValue="" onChange={async event => { const docId = event.target.value; if (!docId) return; await run('같은 할 일 연결', current => linkProgramTask(current, { ...base(current), documentId: docId, taskId: detailTask.id })); }}><option value="">문서 선택</option>{space.text.documents.filter(doc => doc.id !== detailTask.docId && programDocumentContentLock(space, doc.id) === 'active').map(doc => <option key={doc.id} value={doc.id}>{doc.title}</option>)}</select></label>
         <ProgramTaskDocumentMove key={detailTask.id} data={data} taskId={detailTask.id} disabled={preparingDocumentAction} onMove={(destinationId, expectedSpace) => moveTaskDocument(detailTask.id, destinationId, expectedSpace)} onOpen={(documentId, taskId) => {
           if (detailSchedulePending || detailProgressPending) { setMessage('날짜·시간 또는 진행 입력을 적용하거나 취소한 뒤 원문을 열어 주세요.'); return; }
           void openDetailSource(documentId, taskId);

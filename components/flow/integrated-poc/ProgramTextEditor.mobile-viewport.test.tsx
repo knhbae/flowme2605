@@ -25,7 +25,9 @@ test('the sizing observer changes a host style and notifies guarded viewport lay
   const start = source.indexOf('    const host = hostRef.current, shell');
   const end = source.indexOf('  }, []);', start);
   const sizing = source.slice(start, end);
-  assert.match(sizing, /attributeFilter: \['hidden', 'open'\]/);
+  const filter = /attributeFilter:\s*\[([^\]]*)\]/.exec(sizing); assert(filter);
+  const observed = Array.from(filter[1].matchAll(/['"]([^'"]+)['"]/g), match => match[1]);
+  for (const name of ['hidden', 'open', 'data-writing-keyboard']) assert(observed.includes(name), name);
   assert.match(sizing, /getClientRects\(\).length/);
   assert.match(sizing, /position === 'fixed'/);
   assert.match(sizing, /setProperty\('--program-editor-visible-height',[\s\S]*editorRef\.current\?\.refreshViewport\(\)/);

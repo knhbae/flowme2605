@@ -16,6 +16,10 @@ import { executeAlphaSocialIntent } from '../../../lib/flow/integrated-poc/alpha
 import { newProgramParticipationDraft } from '../../../lib/flow/integrated-poc/participation-editor';
 import { confirmedAlphaPrivateTextSave } from '../../../lib/flow/integrated-poc/alpha-private-save-ack';
 import { programLocation } from '../../../lib/flow/integrated-poc/navigation';
+import { createAlphaStructuralRecovery, resolveAlphaStructuralRecovery } from '../../../lib/flow/integrated-poc/alpha-structural-recovery';
+import { createEmptyTextWorkspace, type TextWorkspaceState } from '../../../lib/flow/integrated-poc/text-workspace';
+import { createProgramTextDraft } from '../../../lib/flow/integrated-poc/program-text-draft';
+import { createAlphaStructuralDraft } from '../../../lib/flow/integrated-poc/alpha-structural-recovery';
 
 // Execute the actual shell callbacks/effects/JSX with bounded browser/controller
 // doubles. No product injection points, network, real account or DOM are involved.
@@ -132,6 +136,7 @@ function harness() {
   const events = new Map<string, (event?: any) => void>(), copies: string[] = [];
   const context: Record<string, any> = {
     syntheticRuntime: undefined, sessionEpoch: {}, sessionEpochRef: { current: {} },
+    chromeRoot: { current: null }, writingWithKeyboard: false, automaticRead: { current: null },
     reviewSpace: { current: null }, reviewContext: { current: null }, reviewRestore: { current: null },
     reviewResultReceiver: { current: null }, reviewBusy: { current: false }, reviewInteraction: { current: 0 },
     reviewAnnouncementGeneration: { current: 0 }, reviewAnnouncement: null, reviewEntry: null,
@@ -168,6 +173,10 @@ function harness() {
     currentData: { current: initial.envelope.data }, currentRevision: { current: initial.account.revision },
     editors: { current: null }, legacyEditors: { current: null }, uiRecovery: { current: null }, controller: { current: null },
     parkedDrafts: { current: [] }, activeDrafts: { current: [] },
+    structuralRecovery: { current: null }, structuralRecoveries: null,
+    parkedStructural: { current: [] }, activeStructural: { current: [] },
+    createAlphaStructuralRecovery, resolveAlphaStructuralRecovery,
+    setStructuralRecoveries: (value: unknown) => { context.structuralRecoveries = value; },
     creatorEditors: { current: null }, creatorRecovery: { current: null }, parkedCreator: { current: [] }, activeCreator: { current: null },
     creatorRecoveries: null, creatorSeen: false, creatorSelection: undefined, catalogDetailOpen: false, setCatalogDetailOpen: (value: boolean) => { context.catalogDetailOpen = value; }, destinationRef: { current: { view: 'space' } },
     setCreatorRecoveries: (value: unknown) => { context.creatorRecoveries = value; }, setCreatorSeen: (value: unknown) => { context.creatorSeen = value; }, setCreatorSelection: (value: unknown) => { context.creatorSelection = value; },
@@ -206,6 +215,12 @@ function harness() {
   context.allEditors = evaluate(initializer('allEditors'), context);
   context.hasInput = evaluate(initializer('hasInput'), context);
   context.captureCreator = evaluate(`(${declaration('captureCreator')})`, context);
+  context.mergeStructuralRecoveryEntries = evaluate(`(${declaration('mergeStructuralRecoveryEntries')})`, context);
+  context.captureStructuralInput = evaluate(`(${declaration('captureStructuralInput')})`, context);
+  context.clearConfirmedStructuralInput = (...args: unknown[]) => evaluate(`(${declaration('clearConfirmedStructuralInput')})`, context)(...args);
+  context.restoreStructuralDraft = (...args: unknown[]) => evaluate(`(${declaration('restoreStructuralDraft')})`, context)(...args);
+  context.clearStructuralDrafts = () => evaluate(`(${declaration('clearStructuralDrafts')})`, context)();
+  context.privateTextChangeIsolatedToDocument = evaluate(`(${declaration('privateTextChangeIsolatedToDocument')})`, context);
   context.captureInput = evaluate(`(${declaration('captureInput')})`, context);
   context.refreshAutomatically = evaluate(`(${declaration('refreshAutomatically')})`, context);
   context.closePreservation = evaluate(`(${declaration('closePreservation')})`, context);
@@ -222,6 +237,7 @@ function harness() {
     context.workspaceTools = evaluate(initializer('workspaceTools'), context);
     context.needsInputProtection = evaluate(initializer('needsInputProtection'), context);
     context.inputProtection = evaluate(initializer('inputProtection'), context);
+    context.structuralRecoveryPanel = evaluate(initializer('structuralRecoveryPanel'), context);
     context.personalRecovery = evaluate(initializer('personalRecovery'), context);
     for (const name of ['usesNoteChrome', 'publicNotice', 'serverUndo', 'serverStatus']) context[name] = evaluate(initializer(name), context);
     return evaluate(renderExpression, context);
@@ -234,6 +250,60 @@ function harness() {
     mutate: () => evaluate(initializer('mutate'), context)('edit', () => { throw Error('controller double must not build'); }),
   };
 }
+
+test('shell fixture retains the real chrome ref and keyboard presentation without a writer', () => {
+  const h = harness(), root = h.context.chromeRoot, calls = [...h.calls];
+  const ordinary = h.render();
+  assert.equal(ordinary.type, 'main'); assert.equal(ordinary.props.ref, root);
+  assert.equal(ordinary.props['data-writing-keyboard'], undefined);
+  h.context.writingWithKeyboard = true;
+  const writing = h.render();
+  assert.equal(writing.props.ref, root); assert.equal(writing.props['data-writing-keyboard'], 'true');
+  assert.equal(root.current, null); assert.deepEqual(h.calls, calls);
+});
+
+test('text mutation waits for its exact eligible automatic read before dispatch', async () => {
+  const h = harness(); h.initialize();
+  let release!: (ok: boolean) => void, mutations = 0;
+  const read = new Promise<boolean>(resolve => { release = resolve; });
+  const store = { ...h.store, refresh: () => read,
+    mutate: async () => { mutations++; return { ok: false, reason: 'busy' }; } };
+  h.context.controller.current = store;
+  h.context.refreshAutomatically();
+  const captured = h.context.automaticRead.current;
+  assert(captured); assert.equal(captured.store, store); assert.equal(captured.ownerId, h.context.currentOwnerRef.current);
+  assert.equal(captured.epoch, h.context.sessionEpochRef.current); assert.equal(captured.eligible, true);
+  h.context.snapshot = { ...h.context.snapshot, busy: true };
+  const mutate = evaluate(initializer('mutate'), h.context);
+  const pending = mutate('text edit', () => { throw Error('controller double must not build'); }, { groupId: 'text:fixture' });
+  await Promise.resolve(); assert.equal(mutations, 0);
+  h.context.snapshot = { ...h.context.snapshot, busy: false };
+  release(true); const result = await pending;
+  assert.equal(mutations, 1); assert.deepEqual(result, { ok: false, reason: 'busy' });
+  assert.equal(h.context.automaticRead.current, null);
+});
+
+test('automatic-read waiting never grants authority to another store owner or session epoch', async () => {
+  for (const changed of ['store', 'owner', 'epoch'] as const) {
+    const h = harness(); h.initialize();
+    let release!: (ok: boolean) => void, mutations = 0;
+    const read = new Promise<boolean>(resolve => { release = resolve; });
+    const store = { ...h.store, refresh: () => read,
+      mutate: async () => { mutations++; return { ok: true, result: null, changed: false }; } };
+    h.context.controller.current = store; h.context.refreshAutomatically();
+    assert.equal(h.context.automaticRead.current?.eligible, true);
+    h.context.snapshot = { ...h.context.snapshot, busy: true };
+    const mutate = evaluate(initializer('mutate'), h.context);
+    const pending = mutate('text edit', () => { throw Error('must not build'); }, { groupId: 'text:fixture' });
+    await Promise.resolve(); assert.equal(mutations, 0);
+    if (changed === 'store') h.context.controller.current = { ...store };
+    if (changed === 'owner') h.context.currentOwnerRef.current = 'owner-b';
+    if (changed === 'epoch') h.context.sessionEpochRef.current = {};
+    h.context.snapshot = { ...h.context.snapshot, busy: false }; release(true);
+    assert.deepEqual(await pending, { ok: false, reason: 'session-expired' }, changed);
+    assert.equal(mutations, 0, changed);
+  }
+});
 
 function lostPrivateTextSave() {
   const h = harness(), before = snapshot();
@@ -1326,4 +1396,234 @@ test('an old collection-view callback cannot overwrite a newer local relation', 
   } };
   assert.equal(await evaluate(`(${declaration('changeCollections')})`, h.context)({ version: 1, collections: [] }), false);
   assert.equal(writes, 0); assert.equal(h.context.collectionsSaving, false); assert(!h.calls.includes('mutation'));
+});
+
+
+// Linked-title receipt and structural recovery regressions use repository-relative
+// production sources. These are callback/model tests, not mounted DOM evidence.
+type LinkedTitleDirection = 'canonical-to-reference' | 'reference-to-canonical';
+function linkedTitleSeed(direction: LinkedTitleDirection = 'canonical-to-reference') {
+  let initial = M.addDocument(createEmptyTextWorkspace(), { title: 'Canonical source' });
+  const canonicalId = initial.documents.at(-1)!.id;
+  initial = M.editText(initial, canonicalId, '- [ ] Original title\n- [ ] Second canonical task\n  - [ ] Nested source check\nOriginal source memo');
+  const taskId = M.getDocument(initial, canonicalId)!.lines[0].id;
+  initial = M.addDocument(initial, { title: 'Linked reference' });
+  const linkedId = initial.documents.at(-1)!.id;
+  initial = M.linkTask(initial, linkedId, 0, taskId);
+  initial = M.addDocument(initial, { title: 'Unrelated document' });
+  const unrelatedId = initial.documents.at(-1)!.id;
+  initial = M.editText(initial, unrelatedId, 'Unrelated original memo\n- [ ] Unrelated task');
+  const documentId = direction === 'canonical-to-reference' ? canonicalId : linkedId;
+  const originalRaw = M.raw(M.getDocument(initial, documentId));
+  const submittedRaw = originalRaw.replace('Original title', 'Submitted title');
+  const newerRaw = originalRaw.replace('Original title', 'Newer dirty title');
+  const submitted = M.editText(initial, documentId, submittedRaw);
+  assert(M.validate(initial) && M.validate(submitted));
+  return { initial, canonicalId, linkedId, taskId, unrelatedId, documentId, submittedRaw, newerRaw, submitted };
+}
+function regressionSourceAst(file: string) {
+  const url = new URL(file, import.meta.url);
+  return ts.createSourceFile(url.pathname, readFileSync(url, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+}
+function regressionNode(root: ts.Node, predicate: (node: ts.Node) => boolean): ts.Node {
+  let found: ts.Node | undefined;
+  const visit = (node: ts.Node) => { if (found) return; if (predicate(node)) found = node; else ts.forEachChild(node, visit); };
+  visit(root); assert(found, 'required production source node exists'); return found;
+}
+function registerRegressionSpace(context: Record<string, any>) {
+  const root = regressionSourceAst('./ProgramSpace.tsx');
+  const call = regressionNode(root, node => ts.isCallExpression(node) && node.expression.getText(root) === 'useEffect'
+    && node.arguments[0]?.getText(root).includes('props.onRegisterEditors?.({ lockInput,')) as ts.CallExpression;
+  return evaluate('(' + call.arguments[0].getText(root) + ')', context)();
+}
+function registerRegressionConfirmation(context: Record<string, any>) {
+  const root = regressionSourceAst('./ProgramTextEditor.tsx');
+  const call = regressionNode(root, node => ts.isCallExpression(node)
+    && node.expression.getText(root) === 'propsRef.current.onRegisterConfirmedSave'
+    && !!node.arguments[0]) as ts.CallExpression;
+  evaluate('(() => { ' + call.getText(root) + '; })', context)();
+}
+function regressionEditorStructuralReader(draft: ReturnType<typeof createProgramTextDraft>, documentId: string) {
+  const root = regressionSourceAst('./ProgramTextEditor.tsx');
+  const fn = regressionNode(root, node => ts.isFunctionDeclaration(node) && node.name?.text === 'captureStructuralDraft');
+  const reader = evaluate('(' + fn.getText(root) + ')', {
+    draftRef: { current: draft }, propsRef: { current: { docId: documentId } }, createAlphaStructuralDraft,
+  }) as () => ReturnType<typeof createAlphaStructuralDraft>;
+  const registration = regressionNode(root, node => ts.isCallExpression(node)
+    && node.expression.getText(root) === 'propsRef.current.onRegisterStructuralDraft'
+    && node.arguments[0]?.getText(root) === 'captureStructuralDraft');
+  let registered: typeof reader | null = null;
+  evaluate('(() => { ' + registration.getText(root) + '; })', {
+    propsRef: { current: { onRegisterStructuralDraft: (value: typeof reader) => { registered = value; } } },
+    captureStructuralDraft: reader,
+  })();
+  assert.equal(registered, reader, 'actual editor registration supplies the structural reader');
+  return registered as unknown as typeof reader;
+}
+
+for (const direction of ['canonical-to-reference', 'reference-to-canonical'] as const) {
+  for (const lifecycle of ['settled-false', 'editor-in-flight'] as const) {
+    test('linked title exact receipt preserves newer input: ' + direction + ' / ' + lifecycle, async () => {
+      const f = linkedTitleSeed(direction), h = harness(), before = snapshot('owner-a', 0);
+      before.account.space.text = f.initial;
+      before.envelope = materializeAccount(before.account, { actorIds: ['owner-a'], public: before.envelope.data.public });
+      const dirty = { current: {} as Record<string, boolean> }, readers = { current: {} as Record<string, any> };
+      let finish!: (value: boolean) => void, writes = 0, submitted!: TextWorkspaceState, confirmations = 0;
+      const draft = createProgramTextDraft(f.initial, f.documentId, (next, _label, options) => {
+        writes++; assert.equal(options?.expectedWorkspace, f.initial);
+        submitted = next; return new Promise<boolean>(resolve => { finish = resolve; });
+      }, next => { dirty.current[f.documentId] = next.dirty; });
+      const native = { value: draft.getState().raw };
+      registerRegressionConfirmation({
+        alive: true, controller: draft, composingRef: { current: false }, inputLockedRef: { current: false },
+        textArea: () => native, propsRef: { current: { onRegisterConfirmedSave: (confirm: any) => {
+          readers.current[f.documentId] = (...args: any[]) => { confirmations++; return confirm(...args); };
+        } } },
+      });
+      let port: any;
+      const cleanup = registerRegressionSpace({
+        props: { onRegisterEditors: (value: any) => { port = value; } }, lockInput: () => () => {},
+        confirmedSaveReaders: readers, dirty, recurrencePorts: { current: {} },
+        documentsRef: { current: f.initial.documents }, draftReaders: { current: { [f.documentId]: () => draft.getState().raw } },
+        structuralDraftReaders: { current: {} }, flushAllEditors: () => draft.save(),
+      });
+      assert(port && typeof port.acceptConfirmedPrivateText === 'function');
+      assert(draft.updateRaw(f.submittedRaw)); native.value = draft.getState().raw;
+      const flight = draft.save(); assert.equal(writes, 1);
+      assert(draft.updateRaw(f.newerRaw)); native.value = draft.getState().raw;
+      if (lifecycle === 'settled-false') { finish(false); assert.equal(await flight, false); }
+      const latest = draft.getState(), latestBytes = canonicalJson(latest.working), bindings = canonicalJson(latest.working.bindings);
+      assert.equal(latest.saving, lifecycle === 'editor-in-flight');
+      const confirmed = structuredClone(before); confirmed.account.revision = 1; confirmed.account.space.text = submitted;
+      confirmed.envelope = materializeAccount(confirmed.account, { actorIds: ['owner-a'], public: before.envelope.data.public });
+      const pending = { schema: ALPHA_COMMAND_SCHEMA, kind: 'change-private' as const,
+        requestId: 'linked-title-' + direction + '-' + lifecycle, expectedRevision: 0,
+        changes: privateChanges(before.account.space, confirmed.account.space) };
+      const result = { ...confirmed, status: 'saved' as const, lastReceipt: { requestId: pending.requestId, kind: pending.kind, changed: true, revision: 1 } };
+      const proof = confirmedAlphaPrivateTextSave('owner-a', before.envelope.data, 0, null, pending, result);
+      assert(proof, 'synthetic same-request snapshot proves its complete result');
+      assert(h.context.privateTextChangeIsolatedToDocument(f.initial, submitted, f.documentId));
+      for (const id of [f.canonicalId, f.linkedId]) {
+        assert.equal(M.rowMeta(submitted, id).find(row => row.kind === 'task')?.title, 'Submitted title');
+      }
+      Object.assign(h.context, { snapshot: before, data: before.envelope.data });
+      h.context.currentData.current = before.envelope.data; h.context.currentRevision.current = 0;
+      h.context.previousSnapshot.current = { ...before, status: 'checking-result', pending, draft: pending };
+      h.context.editors.current = port;
+      // The shell counter remains the existing harness's zero. Editor.saving
+      // is a distinct lifecycle; this does not impose a new active-call guard.
+      assert.equal(h.context.ownMutation.current, 0);
+      h.present(result);
+      const accepted = draft.getState();
+      assert.equal(canonicalJson(accepted.committed), canonicalJson(submitted));
+      assert.equal(accepted.working, latest.working); assert.equal(canonicalJson(accepted.working), latestBytes);
+      assert.equal(accepted.raw, latest.raw); assert.equal(accepted.dirty, true);
+      assert.equal(accepted.saving, latest.saving); assert.equal(accepted.error, latest.error);
+      assert.equal(canonicalJson(accepted.working.bindings), bindings);
+      assert.equal(native.value, latest.raw);
+      assert.equal(h.context.currentRevision.current, 1); assert.equal(h.context.external, false);
+      assert.equal(canonicalJson(h.context.currentData.current.spaces['owner-a'].text), canonicalJson(submitted));
+      assert.equal(confirmations, 1); assert.equal(writes, 1);
+      const committed = accepted.committed;
+      const shellData = h.context.currentData.current, shellRevision = h.context.currentRevision.current;
+      const persistenceCalls = () => h.calls.filter(value => value === 'mutation' || value.startsWith('write:')).length;
+      const priorPersistenceCalls = persistenceCalls();
+      h.present(result);
+      assert.equal(draft.getState().committed, committed); assert.equal(confirmations, 1); assert.equal(writes, 1);
+      assert.equal(h.context.currentData.current, shellData); assert.equal(h.context.currentRevision.current, shellRevision);
+      assert.equal(h.context.external, false); assert.equal(persistenceCalls(), priorPersistenceCalls);
+      if (lifecycle === 'editor-in-flight') { finish(false); assert.equal(await flight, false); }
+      assert.equal(draft.getState().raw, latest.raw); assert.equal(draft.getState().working, latest.working);
+      assert.equal(canonicalJson(draft.getState().committed), canonicalJson(submitted)); assert.equal(draft.getState().dirty, true);
+      cleanup?.();
+    });
+  }
+}
+
+const linkedNonTitleCases: Array<[string, (f: ReturnType<typeof linkedTitleSeed>) => TextWorkspaceState]> = [
+  ['unrelated memo', f => M.editText(f.submitted, f.unrelatedId, 'Changed unrelated memo\n- [ ] Unrelated task')],
+  ['unrelated task title', f => M.editText(f.submitted, f.unrelatedId, 'Unrelated original memo\n- [ ] Changed unrelated task')],
+  ['document order', f => ({ ...f.submitted, documents: [...f.submitted.documents].reverse() })],
+  ['model line order', f => M.moveSubtree(f.submitted, f.canonicalId, f.taskId, null, 0)],
+  ['document metadata', f => { const next = structuredClone(f.submitted); M.getDocument(next, f.unrelatedId)!.title = 'Changed metadata'; return next; }],
+  ['reference unlink', f => M.editText(f.submitted, f.linkedId, 'Disconnected reference')],
+  ['progress history', f => M.recordProgress(f.submitted, f.taskId, '2026-10-19', 25)],
+  ['checkbox token', f => M.editText(f.submitted, f.documentId, M.raw(M.getDocument(f.submitted, f.documentId)).replace('- [ ] Submitted title', '- [x] Submitted title'))],
+  ['suffix space', f => M.editText(f.submitted, f.documentId, M.raw(M.getDocument(f.submitted, f.documentId)).replace('Submitted title', 'Submitted title '))],
+];
+for (const [name, build] of linkedNonTitleCases) test('linked title isolation rejects valid ' + name, () => {
+  const f = linkedTitleSeed(), next = build(f);
+  assert(M.validate(f.initial) && M.validate(next), 'negative control must be a valid model state');
+  assert.notEqual(canonicalJson(next), canonicalJson(f.submitted), 'negative control really changes the submitted title state');
+  const isolated = evaluate('(' + declaration('privateTextChangeIsolatedToDocument') + ')', { M, canonicalJson });
+  assert.equal(isolated(f.initial, next, f.documentId), false);
+});
+
+function capturedFolderRegression(shared: boolean) {
+  const h = harness(), before = snapshot('owner-a', 7);
+  let text = M.addDocument(createEmptyTextWorkspace(), { title: 'Synthetic folder source' });
+  const documentId = text.documents.at(-1)!.id;
+  if (shared) {
+    text = M.createFolderAt(text, documentId, 0, 'Shared old');
+    text = M.addDocument(text, { title: 'Synthetic other occurrence' });
+    const otherId = text.documents.at(-1)!.id;
+    const linked = M.editTextResult(text, otherId, '- /Shared old', { folderText: true });
+    assert.equal(linked.reason, null); text = linked.state;
+  }
+  before.account.space.text = text;
+  before.envelope = materializeAccount(before.account, { actorIds: ['owner-a'], public: before.envelope.data.public });
+  const draft = createProgramTextDraft(text, documentId, async () => false, () => {});
+  assert(draft.updateRaw(shared ? '- /Shared renamed' : '- /Synthetic new folder'));
+  const next = draft.getState().working;
+  assert(M.validate(next)); assert.equal(next.documents.length, text.documents.length);
+  const structuralReader = regressionEditorStructuralReader(draft, documentId);
+  let editors: any;
+  registerRegressionSpace({
+    props: { onRegisterEditors: (value: any) => { editors = value; } }, lockInput: () => () => {},
+    confirmedSaveReaders: { current: {} }, dirty: { current: { [documentId]: true } }, recurrencePorts: { current: {} },
+    documentsRef: { current: text.documents }, draftReaders: { current: { [documentId]: () => draft.getState().raw } },
+    structuralDraftReaders: { current: { [documentId]: structuralReader } }, flushAllEditors: () => draft.save(),
+  });
+  const identity = { ownerId: 'owner-a', slotId: shared ? 'folder-rename-regression' : 'folder-create-regression' };
+  const port = createAlphaStructuralRecovery(h.sessionStorage, identity);
+  assert(port.read().ok);
+  h.context.structuralRecovery.current = port; h.context.currentRevision.current = 7; h.context.editors.current = editors;
+  assert.equal(h.context.captureStructuralInput(), true);
+  const reread = createAlphaStructuralRecovery(h.sessionStorage, identity).read();
+  assert(reread.ok && reread.value); assert.equal(reread.value.entries.length, 1);
+  const record = reread.value, entry = record.entries[0];
+  assert.equal(entry.baseRevision, 7); assert.equal(entry.documentId, documentId);
+  assert.equal(canonicalJson(entry.before), canonicalJson(text)); assert.equal(canonicalJson(entry.next), canonicalJson(next));
+  const receiving = harness();
+  Object.assign(receiving.context, { snapshot: before, data: before.envelope.data, structuralRecoveries: record });
+  receiving.context.currentData.current = before.envelope.data; receiving.context.currentRevision.current = 7;
+  receiving.context.structuralRecovery.current = createAlphaStructuralRecovery(h.sessionStorage, identity);
+  assert(receiving.context.structuralRecovery.current.read().ok);
+  let mutations = 0, restored: TextWorkspaceState | null = null;
+  receiving.context.mutate = async (_label: string, build: (data: any) => any) => {
+    mutations++; const result = build(receiving.context.snapshot.envelope.data);
+    assert(result.ok, result.reason); restored = result.data.spaces['owner-a'].text;
+    return result;
+  };
+  return { h: receiving, before, next, record, entry, documentId, port,
+    mutations: () => mutations, restored: () => restored, storedRaw: () => h.sessionStorage.getItem(port.key) };
+}
+for (const shared of [false, true]) test('registered folder capture reaches shell restore: ' + (shared ? 'shared rename' : 'create'), async () => {
+  const f = capturedFolderRegression(shared), beforeRaw = f.storedRaw();
+  assert.equal(resolveAlphaStructuralRecovery(f.before.account.space.text, f.entry).status, 'ready');
+  await f.h.context.restoreStructuralDraft(0);
+  assert.equal(f.mutations(), 1);
+  assert.equal(canonicalJson(f.restored()), canonicalJson(f.next));
+  assert.equal(canonicalJson(f.next.bindings), canonicalJson(f.entry.next.bindings));
+  assert.deepEqual(f.h.context.destination, { view: 'space', id: f.documentId });
+  assert.equal(f.storedRaw(), beforeRaw, 'synthetic callback does not claim confirmed server cleanup');
+});
+for (const kind of ['revision', 'record-owner'] as const) test('shell folder recovery refuses changed ' + kind, async () => {
+  const f = capturedFolderRegression(false), beforeBytes = canonicalJson(f.before.envelope.data), recordBytes = f.storedRaw();
+  assert.equal(resolveAlphaStructuralRecovery(f.before.account.space.text, f.entry).status, 'ready');
+  if (kind === 'revision') f.h.context.snapshot.account.revision = 8;
+  else f.h.context.structuralRecoveries = { ...f.record, ownerId: 'owner-b' };
+  await f.h.context.restoreStructuralDraft(0);
+  assert.equal(f.mutations(), 0); assert.equal(canonicalJson(f.before.envelope.data), beforeBytes);
+  assert.equal(f.storedRaw(), recordBytes); assert.equal(f.h.context.structuralRecoveries.entries.length, 1);
 });

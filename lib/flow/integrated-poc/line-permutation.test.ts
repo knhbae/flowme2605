@@ -53,17 +53,31 @@ test('private Flow documents sort without changing their source version or other
   assert.deepEqual(apply(next, id, plan.beforeLineIds), workspace);
 });
 
-test('history rebase keeps later execution progress and unrelated document changes', () => {
+test('history rebase preserves unrelated documents but refuses a later numeric current edit in its own document', () => {
   const { state, id, next } = fixture(), history = createProgramPermutationHistory(id);
   assert(history.record(state, next));
   let current = M.addDocument(next, { title: '별도 문서' });
   const otherId = current.documents[1].id;
   current = M.editText(current, otherId, '보존할 새 메모');
-  current = M.recordProgress(current, M.tasks(current)[0].id, '2026-10-01', 80);
+  const unrelated = structuredClone(current);
   const restored = history.resolve(current, M.raw(state.documents[0]), 'historyUndo')!;
   assert(restored); assert.deepEqual(restored.progressRecords, current.progressRecords);
   assert.deepEqual(restored.documents[1], current.documents[1]);
   assert.deepEqual(restored.documents[0], state.documents[0]);
+  const redone = history.resolve(restored, M.raw(next.documents[0]), 'historyRedo');
+  assert(redone); assert.deepEqual(redone, current); assert.deepEqual(current, unrelated);
+  const target = M.tasks(state).find(task => task.inputPercent === 40); assert(target);
+  const latest = M.recordProgress(current, target.id, '2026-10-01', 80), before = structuredClone(latest);
+  assert.equal(M.currentProgress(latest, target.id), 80);
+  assert.deepEqual(M.progressHistory(latest, target.id), [{ date: '2026-10-01', percent: 80 }]);
+  assert.equal(history.can(latest, 'historyUndo'), false);
+  assert.equal(history.resolve(latest, M.raw(state.documents[0]), 'historyUndo'), null);
+  assert.equal(history.resolve(latest, M.raw(next.documents[0]), 'historyRedo'), null);
+  assert.equal(M.raw(M.getDocument(latest, id)), M.raw(M.getDocument(before, id)));
+  assert.deepEqual(M.getDocument(latest, id)!.lines.map(line => line.id), M.getDocument(before, id)!.lines.map(line => line.id));
+  assert.equal(M.currentProgress(latest, target.id), 80); assert.deepEqual(latest.progressRecords, before.progressRecords);
+  assert.deepEqual(M.getDocument(latest, otherId), M.getDocument(before, otherId));
+  assert.deepEqual(latest, before); assert.deepEqual(current, unrelated);
 });
 
 test('adversarial permutations cannot reorder or reparent subchecks, properties or unknown owned notes', () => {

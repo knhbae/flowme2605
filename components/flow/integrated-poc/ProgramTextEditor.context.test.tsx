@@ -7,7 +7,7 @@ import ts from 'typescript';
 import { createEmptyTextWorkspace, textWorkspaceModel as M, type TextWorkspaceState } from '../../../lib/flow/integrated-poc/text-workspace';
 import { readProgramTaskDatePresentation } from '../../../lib/flow/integrated-poc/execution-presentation';
 import { readProgramMemoContext, programTaskDateChangeHint } from '../../../lib/flow/integrated-poc/text-context-presentation';
-import type { createProgramTextDraft as DraftFactory, ProgramTextCommitOptions } from './ProgramTextEditor';
+import { createProgramTextDraft as createDraft, type ProgramTextCommitOptions } from '../../../lib/flow/integrated-poc/program-text-draft';
 
 // Execute the shipped presentation expressions and callbacks with the real model.
 // Static React markup and a memory commit are not browser/IME/geometry evidence.
@@ -46,8 +46,6 @@ function panelExpression(kind: 'insert' | 'date') {
 }
 const styles = new Proxy({}, { get: (_target, key) => String(key) });
 const same = (left: unknown, right: unknown) => JSON.stringify(left) === JSON.stringify(right);
-const clone = <T,>(value: T): T => structuredClone(value);
-const createDraft = actualFunction('createProgramTextDraft', { M, programSame: same, programClone: clone }) as typeof DraftFactory;
 const selectionAfterChange = actualFunction('programTextSelectionAfterChange', { M });
 const BASE_RAW = '[2026-10-01]\n- [ ] 선택한 할 일\n  - 메모: PRIVATE-BODY\n  - 시간: 09:00\n[2026-10-02]\n- [ ] 선택한 할 일\n  - 메모: 다른 날짜 메모';
 

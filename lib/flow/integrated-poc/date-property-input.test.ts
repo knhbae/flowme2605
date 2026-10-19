@@ -15,7 +15,10 @@ test('actual 13:09 Creator capture: parent date text changes inherited child wit
 });
 test('compound source input keeps date intention, numeric semantics, memo and child identity',()=>{
   const{state,id}=fixture(),ids=items(state,id).map(item=>item.id),raw=RAW.replace('[ ] 수용 준비','[40%] 수용 준비').replace('2026-09-14','2026-09-22').replace('  - 설명: 이전 설명','  - 메모: PRIVATE\n  - 설명: 이전 설명').replace('[ ] 이전 하위','[x] 개인 완료 하위');
-  const next=M.editText(state,id,raw,{progressDate:'2026-09-12'});assert.equal(M.raw(next.documents[0]),raw);assert.deepEqual(items(next,id).map(item=>item.id),ids);assert.equal(items(next,id)[1].date,'2026-09-22');assert.equal(M.latestProgress(next,ids[0])?.percent,40);
+  const before=structuredClone(state);
+  const next=M.editText(state,id,raw,{progressDate:'2026-09-12'});assert.equal(M.raw(next.documents[0]),raw);assert.deepEqual(items(next,id).map(item=>item.id),ids);assert.equal(items(next,id)[1].date,'2026-09-22');assert.equal(M.currentProgress(next,ids[0]),40);
+  assert.equal(M.currentProgress(next,ids[1]),100);assert.deepEqual(next.progressRecords,before.progressRecords);
+  assert.deepEqual(M.progressHistory(next,ids[0]),[]);assert.deepEqual(M.progressHistory(next,ids[1]),[]);assert.deepEqual(state,before);assert(M.validate(next));
   assert.equal(M.editText(next,id,raw,{progressDate:'2026-09-12'}),next);
 });
 test('explicit descendant date stays fixed; grandchild inherits only its immediate unchanged source lineage',()=>{

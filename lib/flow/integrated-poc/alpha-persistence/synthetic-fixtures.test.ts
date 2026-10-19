@@ -21,6 +21,7 @@ test('all synthetic envelopes survive exact JSON data roundtrip and preserve ind
 
 test('ordinary progress keeps chronological values and reference binds one canonical item with undo', () => {
   const f = fixture('independent-documents-reference-progress-undo'), s = f.envelope.data.spaces[f.actorId];
+  const before = JSON.stringify(f.envelope);
   const task = M.tasks(s.text).find(t => t.title === 'Synthetic ordinary task'); assert(task);
   assert.deepEqual(M.progressHistory(s.text, task.id).map(row => row.percent), [15, 45, 100]);
   assert.equal(s.text.bindings.filter(binding => binding.kind === 'task').length, 1);
@@ -30,8 +31,11 @@ test('ordinary progress keeps chronological values and reference binds one canon
   assert.equal(M.raw(numeric), '- [1] Integer spelling\n- [1.0] Ratio spelling');
   const integer = M.tasks(s.text).find(row => row.title === 'Integer spelling'), ratio = M.tasks(s.text).find(row => row.title === 'Ratio spelling'); assert(integer && ratio);
   assert.equal(integer.inputToken, '1'); assert.equal(ratio.inputToken, '1.0');
-  assert.equal(M.latestProgress(s.text, integer.id)?.percent, 1); assert.equal(M.latestProgress(s.text, ratio.id)?.percent, 100);
+  assert.equal(M.currentProgress(s.text, integer.id), 1); assert.equal(M.currentProgress(s.text, ratio.id), 100);
+  assert.deepEqual(M.progressHistory(s.text, integer.id), []); assert.deepEqual(M.progressHistory(s.text, ratio.id), []);
+  assert.notEqual(integer.id, ratio.id); assert.equal(integer.docId, numeric.id); assert.equal(ratio.docId, numeric.id);
   assert.equal(M.tasks(f.envelope.undo[f.actorId][0].workspace.text).length, 0);
+  assert.equal(JSON.stringify(f.envelope), before);
 });
 
 test('four origins preserve colliding source IDs as distinct saved copies and quick completion', () => {

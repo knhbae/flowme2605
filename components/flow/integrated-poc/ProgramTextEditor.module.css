@@ -180,6 +180,11 @@
 .toolbar > .status, .toolbar > .saveFeedback { order: 3; margin-left: 0; padding-inline: 4px; font-size: 13px; line-height: 20px; }
 .noteStatus { order: 2; margin-left: auto; min-width: 0; }
 .noteStatus:empty { display: none; }
+/* A recoverable save error needs its own readable row on a narrow toolbar. */
+@media (max-width: 700px) {
+  .toolbar > .saveFeedback { order: 5; flex: 1 0 100%; width: 100%; max-width: none; min-width: 0; padding-inline: 0; }
+  .editor .saveFeedback > summary { width: 100%; min-height: 44px; padding: 8px 0; }
+}
 .editorToolActions { width: min(280px, calc(100vw - 40px)); }
 .editorToolActions > div { display: grid; }
 .editorToolActions :where(button, summary) { white-space: normal; }
