@@ -1306,14 +1306,21 @@ export function ProgramSpace(props: ProgramSpaceProps) {
 
   // Writing states share one title/action heading and one guarded finder.
   // Period views retain their existing entry position and search scope.
+  function findPointerDown(event: React.PointerEvent) {
+    if (libraryComposing.current) { event.preventDefault(); event.stopPropagation(); return; }
+    rememberFindFocus(); if (libraryReturn.current?.area) event.preventDefault();
+  }
   const findActions = <div className={styles.findActions}>
     {period === 'documents' && <button className={styles.newWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글</button>}
     <button ref={libraryToggle} className={styles.libraryToggle} aria-label="글 찾기 · 내 문서와 할 일" aria-expanded={libraryOpen} aria-controls="program-library"
-      onPointerDown={event => { if (libraryComposing.current) { event.preventDefault(); event.stopPropagation(); return; } rememberFindFocus(); if (libraryReturn.current?.area) event.preventDefault(); }}
+      onPointerDown={findPointerDown}
       onClick={openFindPanel}>글 찾기</button>
   </div>;
   const compactNoteToday = !!props.noteHeader && period === 'today';
-  const periodTitle = <h1>{period === 'today' && date !== today ? '하루' : period === 'all' && collectionMode ? '전체 할 일' : periods.find(([key]) => key === period)?.[1]}{folder ? ` · ${folder.title}` : ''}</h1>;
+  const documentTitleText = selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : '필요한 내용을 먼저 적으세요';
+  const periodTitle = <h1>{period === 'today' ? (date === today ? `오늘 · ${programCalendarDate(today, today)}` : programCalendarDate(date, today))
+    : period === 'all' ? (collectionMode ? '전체 할 일' : folder ? folder.title : '분류')
+    : `${periods.find(([key]) => key === period)?.[1]}${folder ? ` · ${folder.title}` : ''}`}</h1>;
 
   const guardOccurrenceDraft = (event: React.SyntheticEvent) => {
     const pending = Object.entries(recurrencePorts.current).filter(([, port]) => port?.hasPendingInput?.());
@@ -1332,7 +1339,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     </div>
     <dialog ref={libraryDialog} id="program-library" className={styles.findDialog} aria-labelledby="program-find-title"
       onCancel={event => { event.preventDefault(); if (!libraryComposing.current) { cancelLibraryReveal(); setLibraryOpen(false); } }}>
-      <div className={styles.findHeading}><h2 id="program-find-title">글 찾기</h2><button type="button" onClick={() => { if (!libraryComposing.current) { cancelLibraryReveal(); setLibraryOpen(false); } }}>닫기</button></div>
+      <div className={styles.findHeading}><h2 id="program-find-title">{props.hostMainTabs ? '문서' : '글 찾기'}</h2><button type="button" onClick={() => { if (!libraryComposing.current) { cancelLibraryReveal(); setLibraryOpen(false); } }}>닫기</button></div>
+      {props.hostMainTabs && <button type="button" className={styles.sheetNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>＋ 새 글</button>}
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {libraryOpen && viewChangeNoticeContent}
       <label className={styles.field}>내 문서·할 일 찾기<input autoFocus id="program-private-search" type="search" value={query} onChange={event => { setQuery(event.target.value); setTaskNotice(null); }} /></label>
@@ -1370,7 +1378,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       <div hidden={period !== 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         <div className={styles.docHeading}>{sourceOriginOpen && <button type="button" className={styles.sourceReturn}
-          aria-label={`${sourceOriginLabel} 목록으로 돌아가기`} onClick={() => void returnToSourceOrigin()}>← {sourceOriginLabel}</button>}<h1>{selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : '필요한 내용을 먼저 적으세요'}</h1>{(!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</div>
+          aria-label={`${sourceOriginLabel} 목록으로 돌아가기`} onClick={() => void returnToSourceOrigin()}>← {sourceOriginLabel}</button>}<h1>{props.hostMainTabs
+          ? <button type="button" className={styles.titleButton} aria-haspopup="dialog" aria-expanded={libraryOpen} aria-controls="program-library"
+            aria-label={`${documentTitleText} · 문서 목록 열기`} onPointerDown={findPointerDown} onClick={openFindPanel}><span>{documentTitleText}</span><span aria-hidden="true"> ▾</span></button>
+          : documentTitleText}</h1>
+          {props.hostMainTabs ? selectedDocumentTools && <div className={styles.titleActions}>{selectedDocumentTools}</div>
+            : (!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</div>
         {props.noteHeader}
         <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
         {!selectedDoc && props.noteStatus}
@@ -1396,7 +1409,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onRegisterExternalGuard={read => { externalReaders.current[id] = read; }}
           docId={id} workspace={space.text} active={selected === id && period === 'documents'} initialPosition={positions.current[id] ?? (space.position.documentId === id ? space.position : undefined)}
           noteStatus={selected === id ? props.noteStatus : undefined}
-          noteActions={selected === id ? <>{props.noteHeader && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}{selectedDocumentExample}</> : undefined}
+          noteActions={selected === id ? <>{props.noteHeader && !props.hostMainTabs && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}{selectedDocumentExample}</> : undefined}
           folderId={collectionMode ? '' : folderId} directWriting={!!collectionMode} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
           onContinueWholeDocument={stage => {
             // folderId controls every retained editor. Never unmount another pending region.

@@ -309,3 +309,10 @@
 @media (max-width: 700px) {
   .page[data-alpha-frame="b"] .globalNavigation { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding-inline: 8px; }
 }
+
+/* R8b: in the space the screen title rows replace the fixed header bar on phones (the tabs stay at the bottom). */
+@media (max-width: 700px) {
+  .page[data-alpha-frame="b"][data-note-layout="true"] { padding-top: 8px; }
+  .page[data-alpha-frame="b"][data-note-layout="true"] > .header { height: 0; min-height: 0; padding: 0; border: 0; background: transparent; }
+  .page[data-alpha-frame="b"][data-note-layout="true"] > .header > :not(.globalNavigation) { display: none; }
+}

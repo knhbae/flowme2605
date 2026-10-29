@@ -63,3 +63,17 @@ test('tab marks: the space reports its main tab (week, month, date-less under �
   assert(space.includes('aria-label="기본 이동" hidden={!!props.hostMainTabs}'));
   assert(!alpha.includes('<span>내 공간</span>') && !alpha.includes('<span>둘러보기</span>'));
 });
+
+test('title rows: the writing title opens the document sheet, ⋯ keeps document actions; today and 분류 say what they show', () => {
+  const alphaCss = read('AlphaWorkspace.module.css');
+  assert(space.includes('className={styles.titleButton} aria-haspopup="dialog" aria-expanded={libraryOpen} aria-controls="program-library"'));
+  assert(space.includes('onPointerDown={findPointerDown} onClick={openFindPanel}'));
+  assert(space.includes('{props.hostMainTabs ? selectedDocumentTools && <div className={styles.titleActions}>{selectedDocumentTools}</div>'));
+  // The editor's "…" no longer carries 새 글·글 찾기·글 작업 under the host tabs; the sheet starts with ＋ 새 글.
+  assert(space.includes('{props.noteHeader && !props.hostMainTabs && <>{period === \'documents\' && findActions}{selectedDocumentTools}</>}{selectedDocumentExample}'));
+  assert(space.includes('{props.hostMainTabs && <button type="button" className={styles.sheetNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>＋ 새 글</button>}'));
+  assert(space.includes("period === 'today' ? (date === today ? `오늘 · ${programCalendarDate(today, today)}` : programCalendarDate(date, today))"));
+  assert(space.includes("period === 'all' ? (collectionMode ? '전체 할 일' : folder ? folder.title : '분류')"));
+  // On phones the fixed header bar gives way to the title rows; the tabs stay at the bottom.
+  assert(alphaCss.includes('.page[data-alpha-frame="b"][data-note-layout="true"] > .header > :not(.globalNavigation) { display: none; }'));
+});
