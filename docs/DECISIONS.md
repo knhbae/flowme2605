@@ -658,6 +658,8 @@ Every pinned review item must provide a directly openable primary artifact link.
 
 **Related docs:** [TOOLING.md](./TOOLING.md), [harness README](./harness/README.md)
 
+**Pre-push scope update (2026-10-29):** the pre-push hook now runs the checks the pushed range affects, matching the `AGENTS.md` rule. A push that changes only documents `docs:check` covers runs `npm run docs:check`; any other change, or a range the hook cannot read, still runs `npm run verify`. CI is unchanged.
+
 ### 2026-07-02 - URL-to-Flow uses lookup before AI generation
 
 **Decision:** The URL-to-Flow entry should check for an existing canonical URL conversion before using AI or creating a new Flow draft. If a Flow already exists for the same URL, FLOW should show that result first and let the user reuse it, change options, edit/fork it into a personal version, or continue to My Flow/export. AI extraction or new conversion work is the fallback when no suitable existing Flow exists or when the user explicitly chooses to revise.

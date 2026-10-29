@@ -7,8 +7,10 @@ import {
   classifyChangedPath,
   filterChangesByScopes,
   groupChanges,
+  isDocsOnlyPath,
   parsePorcelainStatus,
   recommendVerification,
+  selectPrePushCheck,
   summarizeStatuses,
 } from './repo-workflow.mjs';
 
@@ -76,4 +78,85 @@ test('recommends verification by blast radius without claiming execution', () =>
       'npm run test:e2e',
     ],
   );
+});
+
+test('treats only documents that docs:check covers and no code reads as docs-only', () => {
+  for (const file of [
+    'AGENTS.md',
+    'docs/TOOLING.md',
+    'docs/specs/2026-07-11-canonical-flow-data-model/spec.md',
+    '.agents/skills/flow-session-start/SKILL.md',
+    '.claude/skills/flow-session-start/SKILL.md',
+  ]) {
+    assert.equal(isDocsOnlyPath(file), true, file);
+  }
+
+  for (const file of [
+    'docs/content-audit/2026-07-01-curated-source-app-seed-v1.json',
+    'docs/content-audit/original-source-review/2026-06-02-korean-flow-content-ui-review-notes.md',
+    'docs/flow-rules/first-user-validation-script.md',
+    'docs/validation-sessions/TEMPLATE.md',
+    'docs/specs/2026-09-12-flowme-integrated-product-poc-program/git-local-evidence-manifest.json',
+    'lib/flow/README.md',
+    '.githooks/pre-push',
+    'package.json',
+  ]) {
+    assert.equal(isDocsOnlyPath(file), false, file);
+  }
+});
+
+const ZERO = '0'.repeat(40);
+const LOCAL = 'a'.repeat(40);
+const REMOTE = 'b'.repeat(40);
+const BASE = 'c'.repeat(40);
+
+function fakeGit(filesByRange, base = BASE) {
+  const calls = [];
+  return {
+    calls,
+    mergeBase: (head) => {
+      calls.push(['merge-base', head]);
+      return base;
+    },
+    changedFiles: (from, to) => {
+      calls.push(['diff', from, to]);
+      return filesByRange[`${from}..${to}`] ?? null;
+    },
+  };
+}
+
+test('pre-push runs docs:check only when every pushed ref changes docs alone', () => {
+  const docs = fakeGit({ [`${REMOTE}..${LOCAL}`]: ['docs/TOOLING.md', '.agents/skills/flow-session-start/SKILL.md'] });
+  assert.equal(selectPrePushCheck(`refs/heads/topic ${LOCAL} refs/heads/topic ${REMOTE}\n`, docs), 'docs:check');
+  assert.deepEqual(docs.calls, [['diff', REMOTE, LOCAL]]);
+
+  const mixed = fakeGit({ [`${REMOTE}..${LOCAL}`]: ['docs/TOOLING.md', 'scripts/workflows/repo-workflow.mjs'] });
+  assert.equal(selectPrePushCheck(`refs/heads/topic ${LOCAL} refs/heads/topic ${REMOTE}\n`, mixed), 'verify');
+
+  const twoRefs = fakeGit({
+    [`${REMOTE}..${LOCAL}`]: ['docs/TOOLING.md'],
+    [`${BASE}..${REMOTE}`]: ['lib/flow/date.ts'],
+  });
+  const raw = `refs/heads/a ${LOCAL} refs/heads/a ${REMOTE}\nrefs/heads/b ${REMOTE} refs/heads/b ${BASE}\n`;
+  assert.equal(selectPrePushCheck(raw, twoRefs), 'verify');
+});
+
+test('pre-push diffs a new remote branch from its merge base with main', () => {
+  const git = fakeGit({ [`${BASE}..${LOCAL}`]: ['AGENTS.md'] });
+  assert.equal(selectPrePushCheck(`refs/heads/topic ${LOCAL} refs/heads/topic ${ZERO}\n`, git), 'docs:check');
+  assert.deepEqual(git.calls, [['merge-base', LOCAL], ['diff', BASE, LOCAL]]);
+});
+
+test('pre-push falls back to verify when the range cannot be read', () => {
+  const noBase = fakeGit({}, '');
+  assert.equal(selectPrePushCheck(`refs/heads/topic ${LOCAL} refs/heads/topic ${ZERO}\n`, noBase), 'verify');
+
+  const unknownRemote = fakeGit({});
+  assert.equal(selectPrePushCheck(`refs/heads/topic ${LOCAL} refs/heads/topic ${REMOTE}\n`, unknownRemote), 'verify');
+});
+
+test('pre-push skips deleted refs instead of diffing them', () => {
+  const git = fakeGit({});
+  assert.equal(selectPrePushCheck(`(delete) ${ZERO} refs/heads/old ${REMOTE}\n`, git), 'docs:check');
+  assert.deepEqual(git.calls, []);
 });
