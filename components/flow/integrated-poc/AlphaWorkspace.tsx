@@ -26,6 +26,7 @@ import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
 import { textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { ProgramSpace, useProgramMobileWritingChrome } from './ProgramSpace';
 import { programSourceNavigationReady } from '@/lib/flow/integrated-poc/pending-source-navigation';
+import { DEV_NOTICE_TEXT, markDevNoticeSeen, readDevNoticeSeen } from '@/lib/flow/integrated-poc/dev-notice';
 import { ProgramLegacyWorkspace } from './ProgramLegacyWorkspace';
 import { ProgramPrivateOutput } from './ProgramPrivateOutput';
 import { ProgramCreatorWorkspace } from './ProgramCreatorWorkspace';
@@ -145,6 +146,10 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const structuralRecovery = useRef<ReturnType<typeof createAlphaStructuralRecovery> | null>(null);
   const parkedStructural = useRef<AlphaStructuralRecoveryEntry[]>([]), activeStructural = useRef<AlphaStructuralRecoveryEntry[]>([]);
   const [external, setExternal] = useState(false), [presentation, setPresentation] = useState(0), [leave, setLeave] = useState(false);
+  // The publication notice shows once per tab and account; storage that cannot be used keeps it showing.
+  const [devNoticeSeen, setDevNoticeSeen] = useState(false);
+  const devNoticeStorage = () => { try { return syntheticRuntime?.tabStorage ?? sessionStorage; } catch { return undefined; } };
+  useEffect(() => { setDevNoticeSeen(readDevNoticeSeen(devNoticeStorage(), session.userId)); }, [session.userId]);
   const openLatestLock = useRef<(() => void) | null>(null);
   // Release the old owner only after the replacement presentation commits, or on unmount.
   useEffect(() => {
@@ -1121,8 +1126,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     </div>
   </details>}</>;
   const usesNoteChrome = destination.view === 'space' && !unavailable;
-  const publicNotice = <details className={styles.notice} aria-label="개발계 안내"><summary>공개한 내용은 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 넣지 마세요.</summary>
-      <p>개발용 통합 검증판 · 공개한 내용은 개발계의 다른 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 아직 넣지 마세요.</p></details>;
+  // Once acknowledged, keep an element: ProgramSpace reads a truthy noteHeader as the note layout.
+  const publicNotice = devNoticeSeen ? <span hidden data-dev-notice="acknowledged" /> : <div className={styles.devNotice}>
+    <details className={styles.notice} aria-label="개발계 안내"><summary>공개한 내용은 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 넣지 마세요.</summary>
+      <p>{DEV_NOTICE_TEXT}</p></details>
+    <button type="button" onClick={() => { if (markDevNoticeSeen(devNoticeStorage(), session.userId)) setDevNoticeSeen(true); }}>확인</button></div>;
   const serverUndo = <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>;
   const serverStatus = <div className={styles.statusRow}>
         {!localParticipationRecovery && <p role={reviewOwnsAnnouncement ? undefined : 'status'} aria-live={reviewOwnsAnnouncement ? 'off' : 'polite'} data-save-state={snapshot?.status}>{pending && snapshot?.status !== 'saving' ? '저장 결과 확인이 필요합니다' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
@@ -1149,7 +1157,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         <button type="button" aria-current={['activity','creator'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" opacity=".25" d="M2 7h20v15H2Z"/><path fill="currentColor" d="M2 3h8l3 4h9v4H2Z"/></svg><span>내 활동</span></button>
       </nav>}
       <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1>
-      <span className={styles.development}>{syntheticRuntime ? '합성 검증' : '개발계'}</span></header>
+      <details className={styles.development}><summary>{syntheticRuntime ? '합성 검증' : '개발계'}</summary><p>{DEV_NOTICE_TEXT}</p></details></header>
     {browse && <nav className={styles.browseNavigation} aria-label="둘러보기 종류"><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({view:'community'})}>경험·질문·지식</button><button aria-current={['discover','flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({view:'discover'})}>Flow 찾기</button></nav>}
     <div className={styles.workPane} data-testid="alpha-work-pane">
     {!usesNoteChrome && publicNotice}

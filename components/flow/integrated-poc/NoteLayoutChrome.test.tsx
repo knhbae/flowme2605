@@ -20,3 +20,11 @@ test('"…" lies over the tab row only when the space directly follows it',()=>{
  assert(space.includes(room));
  assert(space.indexOf('.space[data-note-layout="true"] .contextActions .periods{position:static')<space.indexOf(room));
 });
+
+test('an acknowledged publication notice leaves no empty row, and the header badge can reopen it',()=>{
+ const alpha=css('AlphaWorkspace'),space=css('ProgramSpace');
+ assert(space.includes('.space[data-note-layout="true"] .periodNotice:has(> [hidden]:only-child) { display: none; }'));
+ assert(alpha.includes('.page[data-alpha-frame="b"] .header .development > summary {'));
+ assert(/\.page\[data-alpha-frame="b"\] \.header \.development > p \{ position: absolute;/.test(alpha));
+ assert(alpha.includes('.devNotice > button { flex: 0 0 auto; min-width: 48px; min-height: 48px; }'));
+});

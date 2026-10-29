@@ -260,6 +260,8 @@
 .space[data-note-layout="true"] .executionView > .periodHeading { display: contents; }
 .space[data-note-layout="true"] .periodHeading h1 { grid-column: 1 / -1; grid-row: 1; margin: 12px 0 0; }
 .space[data-note-layout="true"] .periodNotice { grid-column: 1 / -1; grid-row: 2; }
+/* An acknowledged publication notice leaves only a hidden marker; drop its empty grid cell. */
+.space[data-note-layout="true"] .periodNotice:has(> [hidden]:only-child) { display: none; }
 .space[data-note-layout="true"] .executionView > .periodPicker { grid-column: 2; grid-row: 3; max-width: 88px; }
 .space[data-note-layout="true"] .executionView .dateNav { grid-column: 1; grid-row: 3; justify-content: flex-start; }
 .space[data-note-layout="true"] .executionView .dateNav label { max-width: 140px; }

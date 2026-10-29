@@ -285,3 +285,15 @@
    Only when the space follows directly: a panel, recovery, or notice in between turns this off
    and "…" keeps its own row. The space's tab row reserves the 56px (ProgramSpace.module.css). */
 .page[data-note-layout="true"] .workPane:has(> .sync + div > section[data-note-layout="true"]:first-child) > .sync { height: 0; margin-bottom: 0; align-items: flex-start; }
+
+/* The publication notice shows once per tab with a 확인 button; the header badge reopens it at any time. */
+.devNotice { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.devNotice > .notice { flex: 1 1 auto; min-width: 0; }
+.devNotice > button { flex: 0 0 auto; min-width: 48px; min-height: 48px; }
+.page[data-alpha-frame="b"] .header .development { position: relative; padding: 0; }
+.page[data-alpha-frame="b"] .header .development > summary { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 7px; list-style: none; cursor: pointer; }
+.page[data-alpha-frame="b"] .header .development > summary::-webkit-details-marker { display: none; }
+.page[data-alpha-frame="b"] .header .development > p { position: absolute; z-index: 1; left: calc(100% + 12px); bottom: 0; width: min(320px, calc(100vw - 120px)); margin: 0; padding: 12px; border: 1px solid var(--b-line); border-radius: 8px; background: #fff; color: var(--b-ink); font-size: 13px; line-height: 20px; text-align: left; box-shadow: 0 8px 24px #15342620; }
+@media (max-width: 700px) {
+  .page[data-alpha-frame="b"] .header .development > p { left: auto; right: 0; bottom: auto; top: calc(100% + 8px); width: min(320px, calc(100vw - 24px)); }
+}
