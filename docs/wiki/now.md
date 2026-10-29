@@ -52,4 +52,4 @@ Alpha는 **R3**로 돌고 있다. 원문 복귀 여정은 검증 계정 001에�
 3. 후속 과제: `main`을 10/29 정책 커밋으로 최신화하고, 푸시 전 훅을 바뀐 범위에 맞는 검사만 돌게 수정
 4. 진행 순서의 다음 항목: 멀티 세션 분업 ([담당표](owners.md)가 전제)
 
-[담당표](owners.md) · [결정 기록](decision-log.md) · [위키 사용법](README.md)
+[할 일 목록](backlog.md) · [담당표](owners.md) · [결정 기록](decision-log.md) · [위키 사용법](README.md)
