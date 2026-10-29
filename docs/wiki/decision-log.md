@@ -2,6 +2,13 @@
 
 사용자 결정과 진행 결정. 추가만 한다. 결정이 바뀌면 원래 항목은 두고 새 항목에 "대체:"를 적는다. 오래 갈 제품·UX 규칙은 `docs/DECISIONS.md`에 둔다.
 
+## 2026-10-30 · R4 운영 반영, 자료실은 그대로
+
+- 결정: R4(`c37dbcab`, 빌드 `jhhnmp4NXb89Fh2IoLT8w`)를 07:21 KST에 반영했다. 확인 모드에서 Inspect·Deploy 명령마다 사용자가 승인했다. 운영 자료실(권리 미결 Flow 128건, 실제 채널·기관 이름 33건)은 끄지 않는다. 다음 후보에서 작성자 칸만 "FlowMe 정리 · 원문" 식으로 나눈다.
+- 사용자 원문: "다 너 제안대로 진행해줘", "일단 모두에게 보여도 상관없어."
+- 근거: `D:/flowme-alpha-today-classification-20261029-01a168e3/revision4/operations/execution.json`, 영수증 `revision4/orchestrator/operating-approval.json`
+- 상태: 반영됨. 001 실계정 확인과 코덱스 DB 확인 진행 중. 확인된 실패 때만 R3로 1회 복귀
+
 ## 2026-10-30 · R4 따로 반영, 누락 기능 4개, worktree 보관 W1~W9
 
 - 결정 1: R4(`c37dbcab`, 빌드 `jhhnmp4NXb89Fh2IoLT8w`)를 다음 후보를 기다리지 않고 따로 운영에 반영한다. R3 때와 같은 절차(확인 모드에서 명령마다 승인, 001 실계정 확인, 확인된 실패 때만 R3로 1회 복귀). 문서를 열자마자 쓴 글이 거절되는 결함은 R3에도 있어 R4로 나빠지지 않는다.
