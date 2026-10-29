@@ -34,6 +34,9 @@ export type ProgramEditorFlush = {
   hasPendingInput?: () => boolean;
   pendingDocumentIds?: () => string[];
   captureDrafts?: () => ProgramEditorDraft[];
+  /** Text kept only for the tab's input recovery, such as unconfirmed child panels. Unlike
+   * captureDrafts it never counts as pending input, an input boundary, or save-ACK ownership. */
+  captureRecoveryDrafts?: () => ProgramEditorDraft[];
   /** Called only after the shell proves an exact same-request private save. Never replace input. */
   acceptConfirmedPrivateText?: (before: TextWorkspaceState, next: TextWorkspaceState, ack?:OwnedWritingAck) => boolean;
   /** Explicit private social drafts; never restore these as personal raw documents. */

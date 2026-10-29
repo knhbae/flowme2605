@@ -253,7 +253,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       if (!saved.ok) { setStorageError(true); return false; }
       setSocialRecoveries(saved.value);
     }
-    const drafts = [editors.current, legacyEditors.current].flatMap(port => port?.captureDrafts?.() ?? []);
+    const drafts = [editors.current, legacyEditors.current].flatMap(port => [...(port?.captureDrafts?.() ?? []), ...(port?.captureRecoveryDrafts?.() ?? [])]);
     const discovery = discoveryStateRef.current;
     if (programDiscoveryHasUnstoredInput(discovery)) drafts.push({ title: discovery.pastedTitle || '탐색 중 보관 원문', raw: discovery.pastedText || JSON.stringify(discovery.transient ?? { url: discovery.url }, null, 2) });
     activeDrafts.current = drafts.map(draft => ({ ...draft }));
