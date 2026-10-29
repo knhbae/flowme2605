@@ -5,7 +5,7 @@
 | 담당 | 맡은 일 | 단독으로 쓰는 곳 | 상태 |
 | --- | --- | --- | --- |
 | 총괄 Claude (총괄 세션) | 계획·설계·배포 판단·위임, 위키, R4 구현 | `D:/flowme2605/flow-wiki` 의 `docs/wiki/**`, R4 worktree `D:/flowme2605/flow-alpha-r4-20261029` (브랜치 `agent/alpha-r4-busy-intent-20261029`), R4 원장 `…-01a168e3/revision4/` | 활동 |
-| 개발 세션 (Claude) | `main` 최신화 + 범위 인식 푸시 전 훅 → PR #220, `main` 의존성 보안 패치 → 별도 PR | `D:/flowme2605/flow-main-catchup-20261029` (브랜치 `agent/main-catchup-scoped-hook-20261029`), `D:/flowme2605/flow-main-deps-20261029` (브랜치 `agent/main-deps-audit-20261029`) | 10/29 활동 |
+| 개발 세션 (Claude) | `main` 최신화 + 범위 인식 푸시 전 훅 → PR #220, `main` 의존성 보안 패치 → 별도 PR | `D:/flowme2605/flow-main-catchup-20261029` (브랜치 `agent/main-catchup-scoped-hook-20261029`), `D:/flowme2605/flow-main-deps-20261029` (브랜치 `agent/main-deps-audit-20261029`), E2E 시계 고정 `D:/flowme2605/flow-e2e-clock-pin-20261029` (브랜치 `agent/e2e-clock-pin-20261029`, #220 머지 뒤 푸시) | 10/29 활동 |
 | 기획 세션 (Claude) | 저장소 정리 결정안(전달함), 기능 요구사항 검토(전달함), 자료 위험 스펙, 쓰기 방식 재기획(요구사항·서비스 조사) | `D:/flowme-claude-scratch/planning/` 만. repo·GitHub는 읽기 전용 | 10/29 활동 |
 | UX 세션 (Claude) | 긴 글 본문 공간, 반복 규칙 재열기, 저장 안내 UX 설계 | `D:/flowme-claude-scratch/ux/` 만. 코드는 읽기 전용 | 10/29 시작 |
 | 기타 세션 (Claude) | 코덱스 압축 세션 열림 확인(완료), 저장소 정리 결정안 v2(전달함, `misc/20261029/cleanup-v2/`) | `D:/flowme-claude-scratch/misc/` 만. 읽기 전용 | 10/29 대기 |
