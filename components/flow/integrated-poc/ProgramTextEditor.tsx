@@ -712,7 +712,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         meta.progressTargetId ? propsRef.current.taskAccess?.(meta.progressTargetId,currentState()) : undefined, today()),
       getRowMeta: () => documentInput.paint(controller.getState().working)??textEditorRows(controller.getState().working, props.docId),
       isActionDisabled: actionsDisabled,
-      explicitAddOnly:()=>!!propsRef.current.authoringMode,
+      // Enter keeps the list rules until S2; with the writing tools on, ＋ opens their menu and typed pickers stay off.
+      lineBreakEnter:()=>false,
+      typingPickers:()=>!propsRef.current.authoringMode,
+      plusOpensAuthoring:()=>!!propsRef.current.authoringMode,
       getAddAnchor:index=>propsRef.current.authoringMode?{parentIndex:index,bottomIndex:index}:null,
       isCheckDisabled: checkActionsDisabled,
       canApplyIndent: raw => !actionsDisabled() && M.raw(M.getDocument(M.editText(controller.getState().working, props.docId, raw, { progressDate: today() }), props.docId)) === raw,

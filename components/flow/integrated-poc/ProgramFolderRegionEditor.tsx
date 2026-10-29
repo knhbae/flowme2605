@@ -126,6 +126,9 @@ function NativeProgramRegion(props: {
     if (!host.current) return;
     const instance = nativeEditor.create(host.current, {
       value: latest.current.raw, label: latest.current.label, controls: false,
+      // Same writing-tool settings as the body editor so one document never splits its Enter or
+      // picker rules; controls:false already hides ＋ and pickers in this region.
+      lineBreakEnter: () => false, typingPickers: () => false,
       getRowMeta: () => latest.current.rows(),
       isActionDisabled: () => latest.current.readOnly,
       canApplyInput: raw => !latest.current.readOnly && latest.current.canApply(raw),

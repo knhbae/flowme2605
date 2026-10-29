@@ -22,7 +22,14 @@ declare namespace editor {
     getCheckAction?: (lineIndex: number, meta: TextEditorRowMeta) => 'toggle' | 'progress-open' | 'reference-open';
     getRowMeta?: () => TextEditorRowMeta[] | Record<number, TextEditorRowMeta>;
     isActionDisabled?: () => boolean;
+    /** Compatibility alias: true turns lineBreakEnter and plusOpensAuthoring on and typingPickers off. */
     explicitAddOnly?:()=>boolean;
+    /** Enter inserts one plain line break instead of the list continuation rules. */
+    lineBreakEnter?:()=>boolean;
+    /** Typing "- " or "- [ ] " at a line end opens the scope or task picker. */
+    typingPickers?:()=>boolean;
+    /** The row ＋ opens the writing insert menu instead of the default insert action. */
+    plusOpensAuthoring?:()=>boolean;
     getAddAnchor?:(lineIndex:number)=>{parentIndex:number;bottomIndex:number}|null;
     /** Separate direct-check admission; structural actions retain the common hold. */
     isCheckDisabled?: (lineIndex?: number) => boolean;

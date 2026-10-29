@@ -1,5 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
 import * as ts from 'typescript';
 import {createProgramTextDraft,type ProgramTextDraftState} from './program-text-draft';
 import {prepareWritingChild} from './writing-child-command';import {textWorkspaceModel as M,type TextWorkspaceState} from './text-workspace';
@@ -7,10 +8,13 @@ function fixture():TextWorkspaceState{const s:TextWorkspaceState={version:11,doc
 test('independent child uses its own registered ID/date/progress with real parent; old simple check and all old records remain',()=>{const before=fixture(),doc=M.getDocument(before,'d')!,r=prepareWritingChild(before,{docId:'d',parentId:'p',kind:'task',text:'새 하위\n하위 메모',expectedRaw:M.raw(doc)},()=> 'new-child');assert(r.ok,r.ok?'':r.reason);const child=M.tasks(r.workspace).find(t=>t.id==='new-child')!;assert.equal(child.parentTaskId,'p');assert.equal(child.date,'2026-10-28');assert.equal(r.workspace.taskScopes[child.id],'f');assert.equal(M.currentProgress(r.workspace,child.id),0);assert.deepEqual(r.workspace.progressRecords,before.progressRecords);assert.equal(r.workspace.taskScopes.simple,undefined);assert.equal(M.getDocument(r.workspace,'d')!.lines.find(l=>l.id==='simple')!.text,'  - [ ] 기존 간단 체크');const progress=M.recordProgress(r.workspace,child.id,'2026-10-28',40);assert.equal(M.currentProgress(progress,'p'),0);assert.equal(M.currentProgress(progress,child.id),40);});
 test('parent memo edits its owner in place, preserves old line and child/check identity; stale/empty requests allocate0',()=>{const before=fixture(),raw=M.raw(before.documents[0]);const r=prepareWritingChild(before,{docId:'d',parentId:'p',kind:'memo',text:'새 메모\n다음 줄',expectedRaw:raw});assert(r.ok,r.ok?'':r.reason);assert(M.getDocument(r.workspace,'d')!.lines.some(l=>l.id==='pm'));assert.equal(M.tasks(r.workspace).find(t=>t.id==='p')!.note,'새 메모\n다음 줄');assert.deepEqual(r.workspace.progressRecords,before.progressRecords);let ids=0;for(const text of['','   '])assert(!prepareWritingChild(before,{docId:'d',parentId:'p',kind:'task',text,expectedRaw:raw},()=>{ids++;return'x';}).ok);assert(!prepareWritingChild(before,{docId:'d',parentId:'p',kind:'task',text:'항목',expectedRaw:raw+'stale'},()=>{ids++;return'x';}).ok);assert.equal(ids,0);});
 
-test('actual native key handler inserts one LF for Enter/Shift+Enter in selected mode; composing or consumed IME Enter allocates nothing',()=>{
+const {resolve:resolveAddSettings}=createRequire(import.meta.url)('./text-add-settings.cjs') as {resolve:(config:Record<string,unknown>)=>{lineBreakEnter():boolean;typingPickers():boolean;plusOpensAuthoring():boolean}};
+test('actual native key handler inserts one LF for Enter/Shift+Enter when lineBreakEnter is on; composing or consumed IME Enter allocates nothing',()=>{
  const source=readFileSync(new URL('./vendor/text-editor.cjs',import.meta.url),'utf8'),start=source.indexOf('    function onKeydown(event) {'),end=source.indexOf("\n    listen(textarea, 'input'",start);assert(start>0&&end>start);
+ // The new setting and the older explicitAddOnly alias must reach the same line-break branch.
+ for(const config of[{lineBreakEnter:()=>true},{explicitAddOnly:()=>true}])
  for(const shiftKey of[false,true])for(const composing of[false,true])for(const consumed of[false,true]){
-  const inserted:string[]=[],area={value:'- [ ] 기존',readOnly:false},handler=new Function('imeEnterCycle','composing','config','textarea','remember','insert','let inputRejected=false,nextTabLeaves=false,indentLease=null;'+source.slice(start,end)+';return onKeydown;')({keydown:()=>consumed},composing,{explicitAddOnly:()=>true},area,()=>{},(text:string)=>{inserted.push(text);area.value+=text;});let prevented=0;
+  const inserted:string[]=[],area={value:'- [ ] 기존',readOnly:false},handler=new Function('imeEnterCycle','composing','config','addSettings','textarea','remember','insert','let inputRejected=false,nextTabLeaves=false,indentLease=null;'+source.slice(start,end)+';return onKeydown;')({keydown:()=>consumed},composing,config,resolveAddSettings(config),area,()=>{},(text:string)=>{inserted.push(text);area.value+=text;});let prevented=0;
   handler({key:'Enter',code:'Enter',keyCode:13,shiftKey,ctrlKey:false,metaKey:false,altKey:false,defaultPrevented:false,isComposing:composing,preventDefault:()=>{prevented++;}});
   assert.deepEqual(inserted,!composing&&!consumed?['\n']:[]);assert.equal(prevented,consumed||!composing?1:0);
  }
