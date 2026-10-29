@@ -4,6 +4,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { PROGRAM_CATALOG_SLUGS } from '@/lib/flow/integrated-poc/catalog';
 import type { CatalogLibrarySnapshot } from '@/lib/flow/integrated-poc/catalog-library';
 import { buildCatalogContent } from '@/lib/flow/integrated-poc/catalog-content';
+import { catalogCreditLine } from '@/lib/flow/integrated-poc/catalog-credit';
 import { isPublicFlowSourceOnHold } from '@/lib/flow/public-source-review-policy';
 import { isNativeCreatorCatalogContentSource } from '@/lib/flow/integrated-poc/native-creator-document-contract';
 import { executeAlphaCreatorIntent } from '@/lib/flow/integrated-poc/alpha-creator/dispatch';
@@ -47,7 +48,7 @@ export function AlphaCatalogContentImport({ data, mutate, navigate, sourceLibrar
     </li> : <li key={index}>이 콘텐츠는 원본을 확인하지 못해 가져올 수 없습니다.</li>)}</ul>
     {preview?.ok && !isPublicFlowSourceOnHold(preview.content.sourceSlug) && <section aria-label="가져올 콘텐츠 확인">
       <h2>{preview.content.bundle.flow.title}</h2><p>{preview.content.bundle.flow.description}</p>
-      <p>원래 작성자: {preview.content.bundle.flow.creator_name ?? '표시 없음'} · 관리 사본은 현재 로그인 계정에 저장합니다.</p>
+      <p>{catalogCreditLine(preview.content.bundle.flow, '원래 작성자')} · 관리 사본은 현재 로그인 계정에 저장합니다.</p>
       <a href={preview.content.bundle.flow.source_url} target="_blank" rel="noopener noreferrer">원래 출처 열기</a>
       {preview.content.bundle.flow.warning && <p>{preview.content.bundle.flow.warning}</p>}
       {preview.content.bundle.flow.source_status === 'needs_review' && <p>출처 재검토가 필요한 콘텐츠입니다. 최신 정보로 확인된 자료는 아닙니다.</p>}

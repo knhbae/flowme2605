@@ -8,6 +8,7 @@ import styles from './AlphaCatalogLibrary.module.css';
 import { CatalogLibraryContent } from './CatalogLibraryContent';
 import { AlphaCatalogCopyActions } from './AlphaCatalogCopyActions';
 import { inspectCatalogContentCapability } from '@/lib/flow/integrated-poc/catalog-content';
+import { catalogCreditLine } from '@/lib/flow/integrated-poc/catalog-credit';
 import { isPublicFlowSourceOnHold } from '@/lib/flow/public-source-review-policy';
 import { getCurrentPublicSourceBundle, getCurrentPublicSourceEdition } from '@/lib/flow/public-source-editions';
 
@@ -86,7 +87,7 @@ function LoadedCatalogLibrary({ data, mutate, navigate, library, stored, disable
         <h2 tabIndex={-1} ref={node => focusDetail(`flow:${bundle.flow.slug}:${variant}:${original}`, node)}>{bundle.flow.title}</h2><p>{variant ? '현재 작업 판본 · 2026-09-23' : reviewedEdition && !original ? '출처 대조를 마친 수정판 · 기존 개인 계획은 바꾸지 않습니다.' : '이전 PoC 원본 판본'}</p>
         {reviewedEdition && !variant && <button type="button" disabled={busy} onClick={() => setOriginal(!original)}>{original ? '출처 대조 수정판 보기' : '구판 원본 비교'}</button>}
         {library.variants.some(row => row.slug === selected) && <button type="button" disabled={busy} onClick={() => setVariant(!variant)}>{variant ? '이전 PoC 원본 보기' : '현재 작업 판본 비교'}</button>}
-        <p>{bundle.flow.description}</p><p>작성자: {bundle.flow.creator_name ?? '표시 없음'} · 출처 확인 기록: {bundle.flow.source_checked_at ?? '없음'} · 지금 다시 확인한 결과는 아닙니다.</p>
+        <p>{bundle.flow.description}</p><p>{catalogCreditLine(bundle.flow, '작성자')} · 출처 확인 기록: {bundle.flow.source_checked_at ?? '없음'} · 지금 다시 확인한 결과는 아닙니다.</p>
         {bundle.flow.source_url && /^https?:\/\//i.test(bundle.flow.source_url) && <a href={bundle.flow.source_url} target="_blank" rel="noopener noreferrer">원래 출처 열기</a>}
         {policy?.runtimeExcluded && <p>보관 대상 · 공개 제외 정책을 유지합니다. {policy.archive?.evidence}</p>}
         {bundle.flow.source_status === 'needs_review' && <p>출처 재검토 필요</p>}

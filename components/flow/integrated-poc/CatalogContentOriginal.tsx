@@ -1,6 +1,7 @@
 import React from 'react';
 import type { NativeCreatorCatalogContentSource } from '@/lib/flow/integrated-poc/native-creator-document-contract';
 import { projectCatalogContent } from '@/lib/flow/integrated-poc/catalog-content';
+import { catalogCreditLine } from '@/lib/flow/integrated-poc/catalog-credit';
 import { CatalogLibraryContent } from './CatalogLibraryContent';
 import type { FlowBundle } from '@/lib/flow/types';
 
@@ -11,7 +12,7 @@ export function CatalogContentOriginal({ source }: { source: NativeCreatorCatalo
   const { flow, sections, items } = result.content.bundle;
   return <details><summary>가져온 Flow의 원문·출처</summary>
     <p>기존 콘텐츠 {sections.length}개 구간 · {items.length}개 항목. 현재 편집본과 구분해 보관한 원본입니다.</p>
-    <p>{flow.description}</p><p>원래 작성자: {flow.creator_name ?? '표시 없음'}</p>
+    <p>{flow.description}</p><p>{catalogCreditLine(flow, '원래 작성자')}</p>
     <a href={flow.source_url} target="_blank" rel="noopener noreferrer">{flow.source_title ?? '원래 출처'}</a>
     {flow.warning && <p>{flow.warning}</p>}{flow.conversion_note && <p>{flow.conversion_note}</p>}
     {flow.source_status === 'needs_review' && <p>출처 재검토 필요</p>}
