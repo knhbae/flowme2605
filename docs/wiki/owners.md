@@ -5,7 +5,7 @@
 | 담당 | 맡은 일 | 단독으로 쓰는 곳 | 상태 |
 | --- | --- | --- | --- |
 | 총괄 Claude (총괄 세션) | 계획·설계·배포 판단·위임, 위키, R4 구현 | `D:/flowme2605/flow-wiki` 의 `docs/wiki/**`, R4 worktree `D:/flowme2605/flow-alpha-r4-20261029` (브랜치 `agent/alpha-r4-busy-intent-20261029`), R4 원장 `…-01a168e3/revision4/` | 활동 |
-| 개발 세션 (Claude) | `main` 최신화 + 범위 인식 푸시 전 훅 → PR | `D:/flowme2605/flow-main-catchup-20261029`, 브랜치 `agent/main-catchup-scoped-hook-20261029` | 10/29 시작 |
+| 개발 세션 (Claude) | `main` 최신화 + 범위 인식 푸시 전 훅 → PR #220, `main` 의존성 보안 패치 → 별도 PR | `D:/flowme2605/flow-main-catchup-20261029` (브랜치 `agent/main-catchup-scoped-hook-20261029`), `D:/flowme2605/flow-main-deps-20261029` (브랜치 `agent/main-deps-audit-20261029`) | 10/29 활동 |
 | 기획 세션 (Claude) | 저장소 정리 결정안: 열린 PR 25, worktree 109, 브랜치 | `D:/flowme-claude-scratch/planning/` 만. repo·GitHub는 읽기 전용 | 10/29 시작 |
 | UX 세션 (Claude) | 긴 글 본문 공간, 반복 규칙 재열기, 저장 안내 UX 설계 | `D:/flowme-claude-scratch/ux/` 만. 코드는 읽기 전용 | 10/29 시작 |
 | 기타 세션 (Claude) | 코덱스 압축 세션 열림 확인, C: 문서 폴더 용량 조사 | `D:/flowme-claude-scratch/misc/` 만. 읽기 전용 | 10/29 시작 |
@@ -15,6 +15,8 @@
 | 메인 체크아웃 미커밋 237경로 | 10/26 이전 세션들의 작업 | 없음 (동결) | 정리 결정 전 수정·커밋 금지 |
 
 ## 규칙
+
+0. PR·코드 리뷰는 기본으로 코덱스 총괄 스레드에 읽기 전용으로 맡긴다. 다른 Claude 세션이 만든 PR도 같다 (사용자 10/29).
 
 1. 활동 중인 행끼리 쓰는 경로가 겹치면 안 된다. 총괄이 새 행을 넣기 전에 확인한다.
 2. 행이 없는 세션은 쓰지 않는다. 읽기는 누구나 한다.
