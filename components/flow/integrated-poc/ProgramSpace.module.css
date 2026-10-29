@@ -310,3 +310,7 @@
 .personalAuthoring input[type=checkbox] { width: 18px; height: 18px; }
 .personalAuthoring button { min-height: 42px; padding: 8px 12px; text-align: left; }
 .personalAuthoring small { color: #666; line-height: 1.6; }
+/* Saved repeats lead the opened box so a reopened document shows its rule before any form default. */
+.repeatList { display: grid; gap: 6px; margin-top: 12px; }
+.repeatList p { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin: 0; }
+.repeatList span { flex: 1 1 200px; min-width: 0; overflow-wrap: anywhere; }

@@ -282,6 +282,23 @@ export function previewPersonalRounds(version: PersonalFlowVersion, options: Per
   return result.ok ? { ok: true, value: { ...result.value, rounds: result.value.rounds.slice(0, PERSONAL_AUTHORING_LIMITS.previewRounds) } } : result;
 }
 
+/** A document's own live repeats: rules on its tasks in document order, then the rule on the document's own Flow.
+ * Another document's Flow never counts, even when it is the first Flow the owner has. */
+export function documentRepeatSeries(owner: PersonalAuthoringV1 | undefined, documentId: string, taskIds: readonly string[]): PersonalSeriesOwner[] {
+  const live = (owner?.series ?? []).filter(s => !s.stopped);
+  return [
+    ...taskIds.flatMap(id => live.filter(s => s.source.kind === 'task' && s.source.taskId === id)),
+    ...live.filter(s => s.source.kind === 'flow' && s.source.flowId === documentId),
+  ];
+}
+
+const WEEKDAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
+/** Short reading of a saved rule for the reopened summary, e.g. "토요일 · 2회". */
+export function describePersonalRepeatRule(rule: PersonalRepeatRule): string {
+  const days = rule.kind === 'daily' ? '매일' : `${[...rule.weekdays].sort((a, b) => a - b).map(day => WEEKDAY_NAMES[day]).join('·')}요일`;
+  return `${days} · ${rule.end.kind === 'count' ? `${rule.end.count}회` : `${rule.end.date}까지`}`;
+}
+
 function nativeParent(task: TextTask, native: TextWorkspaceState): string | null {
   if (task.parentTaskId === null) return null;
   const binding = native.bindings.find(b => b.kind === 'task' && b.docId === task.docId && b.lineId === task.parentTaskId);

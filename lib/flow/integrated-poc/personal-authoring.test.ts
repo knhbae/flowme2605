@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   PERSONAL_AUTHORING_LIMITS, calculatePersonalRounds, previewPersonalRounds, resolvePersonalTaskDate, validatePersonalAuthoring, preservesPersonalAuthoringHistory,
-  planPersonalExecutionAnchorChange,
+  planPersonalExecutionAnchorChange, documentRepeatSeries, describePersonalRepeatRule,
   type PersonalAuthoringV1, type PersonalFlowVersion, type PersonalMaterializedRound, type PersonalRepeatRule,
   type PersonalSeriesOwner, type PersonalTaskReference, type PersonalActionSnapshot, type PersonalStandaloneExecution,
 } from './personal-authoring';
@@ -679,4 +679,29 @@ test('anchor change can add a fresh date property while retaining the existing d
   assert.equal(preservesPersonalAuthoringHistory(data, next, { before: native, next: updated }), true);
   assert.equal(M.getDocument(updated, execution.executionDocumentId)!.lines[0].text, '[2026-11-03]');
   assert.equal(beforeIds.every(id => M.getDocument(updated, execution.executionDocumentId)!.lines.some(l => l.id === id)), true);
+});
+
+test('a document owns only its task rules in document order and its own Flow rule', () => {
+  const version: PersonalFlowVersion = { id: 'v', taskRefs: [], nodes: [] };
+  const rule: PersonalRepeatRule = { kind: 'daily', startDate: '2026-10-29', end: { kind: 'count', count: 2 } };
+  const series = (id: string, source: PersonalSeriesOwner['source'], stopped = false): PersonalSeriesOwner =>
+    ({ id, source, currentRuleVersionId: 'r', ruleVersions: [{ id: 'r', rule }], stopped, rounds: [] });
+  const owner: PersonalAuthoringV1 = { version: 1, flows: [], series: [
+    series('other-flow', { kind: 'flow', flowId: 'other-doc', versionId: 'v' }),
+    series('second-task', { kind: 'task', taskId: 't2', version }),
+    series('own-flow', { kind: 'flow', flowId: 'doc', versionId: 'v' }),
+    series('stopped-task', { kind: 'task', taskId: 't1', version }, true),
+    series('first-task', { kind: 'task', taskId: 't1', version }),
+    series('foreign-task', { kind: 'task', taskId: 'elsewhere', version }),
+  ] };
+
+  assert.deepEqual(documentRepeatSeries(owner, 'doc', ['t1', 't2']).map(s => s.id), ['first-task', 'second-task', 'own-flow']);
+  assert.deepEqual(documentRepeatSeries(owner, 'doc-without-rules', []), []);
+  assert.deepEqual(documentRepeatSeries(undefined, 'doc', ['t1']), []);
+});
+
+test('a saved rule reads as days and end in one short phrase', () => {
+  assert.equal(describePersonalRepeatRule({ kind: 'weekdays', weekdays: [6], startDate: '2026-10-31', end: { kind: 'count', count: 2 } }), '토요일 · 2회');
+  assert.equal(describePersonalRepeatRule({ kind: 'weekdays', weekdays: [5, 1, 3], startDate: '2026-10-26', end: { kind: 'until', date: '2026-11-30' } }), '월·수·금요일 · 2026-11-30까지');
+  assert.equal(describePersonalRepeatRule({ kind: 'daily', startDate: '2026-10-29', end: { kind: 'count', count: 4 } }), '매일 · 4회');
 });
