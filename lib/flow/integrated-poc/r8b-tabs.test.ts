@@ -89,3 +89,50 @@ test('toolbar: ↶ ↷ and 반복 N; the Flow·반복 box is a sheet that stays 
   const label = /function repeatLabel\(id: string\) \{[\s\S]*?return count \? `반복 \$\{count\}` : '반복';\n  \}/.test(space.replace(/\r\n/g, '\n'));
   assert(label);
 });
+
+test('C1 scope line: each narrowing condition in words with ×, nothing when the list is not narrowed', async () => {
+  const { programViewScope } = await import('./view-scope');
+  const today = '2026-10-29', base = { period: 'today' as const, date: today, today, folderTitle: null, query: '' };
+  assert.deepEqual(programViewScope(base), []);
+  assert.deepEqual(programViewScope({ ...base, period: 'week' }).map(item => item.label), ['기간: 이번 주']);
+  assert.deepEqual(programViewScope({ ...base, period: 'week', date: '2026-11-05' }).map(item => item.label), ['기간: 11월 2일 주']);
+  assert.deepEqual(programViewScope({ ...base, period: 'month' }).map(item => item.label), ['기간: 이번 달']);
+  assert.deepEqual(programViewScope({ ...base, period: 'undated' }).map(item => item.label), ['기간: 날짜 없음']);
+  assert.deepEqual(programViewScope({ ...base, date: '2026-10-31' }).map(item => item.label), ['기간: 10월 31일 (토)']);
+  assert.deepEqual(programViewScope({ ...base, period: 'week', folderTitle: '회사', query: ' 견적 ' }).map(item => `${item.kind}:${item.label}`),
+    ['period:기간: 이번 주', 'folder:분류: 회사', 'query:검색: 견적']);
+  assert.deepEqual(programViewScope({ ...base, period: 'all' }), []);
+  assert.deepEqual(programViewScope({ ...base, period: 'documents', query: 'x' }), []);
+  const calls: string[] = [];
+  const clear = evaluate<(kind: string) => Promise<unknown>>(fn(space, 'clearScope'), {
+    changePeriod: async (period: string) => { calls.push(`period ${period}`); return true; }, changeFolder: async (id: string) => { calls.push(`folder '${id}'`); },
+    setQuery: (value: string) => calls.push(`query '${value}'`),
+  });
+  await clear('period'); await clear('folder'); await clear('query');
+  assert.deepEqual(calls, ['period today', "folder ''", "query ''"]);
+  assert(space.includes("<button type=\"button\" className={styles.scopeAll} onClick={() => void changePeriod('today', true)}>전체로 보기</button>"));
+});
+
+test('the search box filters only after Korean composition settles', () => {
+  const tree = ts.createSourceFile('x.tsx', space, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const handlers: Record<string, string> = {};
+  const visit = (node: ts.Node) => {
+    if (ts.isJsxAttribute(node) && node.initializer && ts.isJsxExpression(node.initializer) && node.initializer.expression) {
+      const tag = node.parent.parent as ts.JsxOpeningLikeElement;
+      if (tag.attributes.properties.some(attribute => attribute.getText(tree) === 'id="program-private-search"')) handlers[node.name.getText(tree)] = node.initializer.expression.getText(tree);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(tree);
+  const queries: string[] = [], drafts: string[] = [], composing = { current: false };
+  const scope = { setQuery: (value: string) => queries.push(value), setQueryDraft: (value: string) => drafts.push(value), queryComposing: composing, setTaskNotice: () => {} };
+  const change = evaluate<(event: unknown) => void>(handlers.onChange, scope), start = evaluate<() => void>(handlers.onCompositionStart, scope);
+  const end = evaluate<(event: unknown) => void>(handlers.onCompositionEnd, scope);
+  const type = (value: string, isComposing: boolean) => change({ target: { value }, nativeEvent: { isComposing } });
+  start(); type('ㄱ', true); type('견', true); type('견ㅈ', true);
+  assert.deepEqual([queries, drafts], [[], ['ㄱ', '견', '견ㅈ']]);
+  end({ currentTarget: { value: '견적' } });
+  assert.deepEqual(queries, ['견적']);
+  type('견적서', false);
+  assert.deepEqual(queries, ['견적', '견적서']);
+});

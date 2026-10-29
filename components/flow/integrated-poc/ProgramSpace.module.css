@@ -368,3 +368,9 @@
 /* R8b: the Flow·반복 box opens as a sheet from the toolbar's 반복 button. */
 .space .authoringSheet { padding-bottom: 24px; }
 .space .authoringSheet > .personalAuthoring, .space .authoringSheet > details { margin: 0 0 8px; }
+
+/* R8b C1: the scope line under the title, only while something narrows the list. */
+.space .scopeLine { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 36px; margin: 0 0 8px; font-size: 13px; }
+.space .scopeChip { display: inline-flex; align-items: center; gap: 2px; min-height: 32px; padding: 0 2px 0 10px; border-radius: 16px; background: var(--flowme-b-selected); color: var(--flowme-b-primary-strong); font-weight: 600; }
+.space .scopeChip > button { min-width: 32px; min-height: 32px; padding: 0; border: 0; border-radius: 16px; background: transparent; color: inherit; }
+.space .scopeAll { min-height: 36px; padding: 4px 10px; border-color: transparent; background: transparent; color: var(--flowme-b-primary); font-size: 13px; }

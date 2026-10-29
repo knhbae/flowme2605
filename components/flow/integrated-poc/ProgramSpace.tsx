@@ -12,6 +12,7 @@ import { programDateRange, programExecutionTasks, programShiftDate, programShift
 import { programOrderedExecutionRows, programTextExecutionKey, reorderProgramExecutionTimeline } from '@/lib/flow/integrated-poc/recurrence-order';
 import { programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
+import { programViewScope } from '@/lib/flow/integrated-poc/view-scope';
 import { ProgramGroupAddRow } from './ProgramGroupAddRow';
 import { mergeProgramTextWorkspace } from '@/lib/flow/integrated-poc/text-merge';
 import { flushProgramEditorCollection, prepareProgramDocumentAction, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
@@ -191,6 +192,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       || M.tasks(space.text).some(task => task.docId !== id && taskIds.includes(task.id));
   }
   const [date, setDate] = useState(today), [folderId, setFolderId] = useState(''), [query, setQuery] = useState('');
+  const [queryDraft, setQueryDraft] = useState(''), queryComposing = useRef(false);
+  useEffect(() => { if (!queryComposing.current) setQueryDraft(query); }, [query]);
   const [collectionId, setCollectionId] = useState(''), [quickDocumentId, setQuickDocumentId] = useState('');
   const collectionMode = props.documentCollections;
   const [selected, setSelected] = useState(() => initialProgramDocumentId(props, space));
@@ -1328,6 +1331,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       onClick={openFindPanel}>글 찾기</button>
   </div>;
   const compactNoteToday = !!props.noteHeader && period === 'today';
+  const viewScope = programViewScope({ period, date, today, folderTitle: folderId ? folderOptions.find(item => item.id === folderId)?.title ?? '선택한 분류' : null, query });
+  async function clearScope(kind: 'period' | 'folder' | 'query') {
+    if (kind === 'period') return changePeriod('today');
+    if (kind === 'folder') return changeFolder('');
+    setQuery('');
+  }
   const documentTitleText = selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : '필요한 내용을 먼저 적으세요';
   const periodTitle = <h1>{period === 'today' ? (date === today ? `오늘 · ${programCalendarDate(today, today)}` : programCalendarDate(date, today))
     : period === 'all' ? (collectionMode ? '전체 할 일' : folder ? folder.title : '분류')
@@ -1354,7 +1363,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {props.hostMainTabs && <button type="button" className={styles.sheetNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>＋ 새 글</button>}
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {libraryOpen && viewChangeNoticeContent}
-      <label className={styles.field}>내 문서·할 일 찾기<input autoFocus id="program-private-search" type="search" value={query} onChange={event => { setQuery(event.target.value); setTaskNotice(null); }} /></label>
+      <label className={styles.field}>내 문서·할 일 찾기<input autoFocus id="program-private-search" type="search" value={queryDraft}
+        onCompositionStart={() => { queryComposing.current = true; }}
+        onCompositionEnd={event => { queryComposing.current = false; setQuery(event.currentTarget.value); setTaskNotice(null); }}
+        onChange={event => { setQueryDraft(event.target.value); if (!queryComposing.current && !(event.nativeEvent as InputEvent).isComposing) { setQuery(event.target.value); setTaskNotice(null); } }} /></label>
       {query && <button type="button" onClick={() => setQuery('')}>검색 지우기</button>}
       {period !== 'documents' && <p className={styles.findScope}>현재 {periods.find(([key]) => key === period)?.[1]}{folder ? ` · ${folder.title}` : ''}에서 찾습니다. 닫으면 같은 보기로 돌아갑니다.</p>}
       {period !== 'documents' && query && <section aria-label="현재 보기의 할 일 검색 결과" className={styles.findTasks}>
@@ -1521,7 +1533,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             } finally { classificationRequest.current = false; setClassificationCreating(false); }
           }}><label>분류 이름<input name="title" required maxLength={100} disabled={classificationCreating} /></label><button type="submit" disabled={preparingDocumentAction || classificationCreating}>{classificationCreating ? '만드는 중…' : '만들기'}</button></form></details></div>}
         {collectionMode && <p className={styles.muted}>모음과 관계없이 모든 문서의 같은 할 일을 날짜별로 봅니다.</p>}
-        {(folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { void changeFolder(''); setQuery(''); }}>필터 해제</button></div>}
+        {props.hostMainTabs ? viewScope.length > 0 && <div className={styles.scopeLine} role="group" aria-label="지금 보는 범위">
+          {viewScope.map(item => <span key={item.kind} className={styles.scopeChip}>{item.label}
+            <button type="button" aria-label={`${item.label} 조건 풀기`} onClick={() => void clearScope(item.kind)}>×</button></span>)}
+          <button type="button" className={styles.scopeAll} onClick={() => void changePeriod('today', true)}>전체로 보기</button></div>
+          : (folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { void changeFolder(''); setQuery(''); }}>필터 해제</button></div>}
         {range.from && range.to && range.to !== range.from && <p className={styles.muted}>{programCalendarDate(range.from, today)} ~ {programCalendarDate(range.to, today)}</p>}
         <details className={styles.quickDisclosure} data-collapsible id={compactNoteToday ? 'program-note-quick-task' : undefined}
           {...(compactNoteToday ? { open: noteQuickOpen, hidden: !noteQuickOpen, onToggle: (event: React.SyntheticEvent<HTMLDetailsElement>) => setNoteQuickOpen(event.currentTarget.open) } : {})}>
