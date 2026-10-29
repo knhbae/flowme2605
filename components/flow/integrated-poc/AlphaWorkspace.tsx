@@ -19,7 +19,7 @@ import { createAlphaStructuralRecovery, resolveAlphaStructuralRecovery, type Alp
 import { type ProgramData, type ProgramParticipationDraft, type ProgramPublicationDraft, programId } from '@/lib/flow/integrated-poc/contract';
 import type { ProgramProposalReviewDraft } from '@/lib/flow/integrated-poc/review-drafts';
 import { programInputBoundaryCurrent, readProgramInputBoundary, programInputCanRelease, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
-import { type ProgramDestination, type ProgramMutate, programErrorMessage, PROGRAM_BUSY_NOTICE, PROGRAM_QUEUED_NOTICE } from '@/lib/flow/integrated-poc/ui-contract';
+import { type ProgramDestination, type ProgramMutate, programErrorMessage, PROGRAM_BUSY_NOTICE, PROGRAM_QUEUED_NOTICE, PROGRAM_SOURCE_QUEUED_NOTICE } from '@/lib/flow/integrated-poc/ui-contract';
 import { automaticReadToAwait, queueTap, sourceReturnWait, unqueueTap, type QueuedTaps } from '@/lib/flow/integrated-poc/automatic-read-wait';
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
 import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
@@ -666,13 +666,22 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     }
     return promise;
   };
+  // What a source return would wait for right now; null when it can check at once.
+  function sourceReturnWaiting() {
+    const store = controller.current;
+    return store ? sourceReturnWait(sourceReturnOperation.current, automaticRead.current,
+      { store, ownerId: currentOwnerRef.current, epoch: sessionEpochRef.current, busy: store.snapshot().busy }) : null;
+  }
+  function showSourceReturnQueued(queued: boolean) {
+    setMessage(value => queued ? (!value || value === PROGRAM_BUSY_NOTICE ? PROGRAM_SOURCE_QUEUED_NOTICE : value)
+      : value === PROGRAM_SOURCE_QUEUED_NOTICE ? '' : value);
+  }
   function awaitSourceReturnReady(): Promise<boolean> {
     const store = controller.current, owner = currentOwnerRef.current, epoch = sessionEpochRef.current;
     const visit = destinationRef.current, captured = sourceReturnOperation.current;
     // Wait for the unsettled operation the user started, else our own automatic
     // read. Waiting on neither while busy is what ended the return silently.
-    const waiting = store ? sourceReturnWait(captured, automaticRead.current,
-      { store, ownerId: owner, epoch, busy: store.snapshot().busy }) : null;
+    const waiting = sourceReturnWaiting();
     return programSourceNavigationReady(waiting,
       () => !disposed.current && controller.current === store && currentOwnerRef.current === owner
         && sessionEpochRef.current === epoch && destinationRef.current === visit
@@ -708,7 +717,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   useEffect(() => {
     if (queuedTaps.current.epoch === sessionEpoch) return;
     queuedTaps.current = { epoch: sessionEpoch, count: 0 };
-    setMessage(value => value === PROGRAM_QUEUED_NOTICE ? '' : value);
+    setMessage(value => value === PROGRAM_QUEUED_NOTICE || value === PROGRAM_SOURCE_QUEUED_NOTICE ? '' : value);
   }, [sessionEpoch]);
   useEffect(() => {
     const interacted = () => { reviewInteraction.current++; };
@@ -1204,6 +1213,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         documentCollections={collectionsMode && collectionsState ? { state: collectionsState, onChange: changeCollections } : undefined}
         navigate={next => { void navigate(next); }} capabilities={capability}
         sourceReturnEpoch={sessionEpoch} awaitSourceReturnReady={awaitSourceReturnReady}
+        sourceReturnWaits={() => !!sourceReturnWaiting()} onSourceReturnQueued={showSourceReturnQueued}
         canContinueWholeDocument={() => {
           const authority = controller.current?.snapshot();
           return !disposed.current && !externalRef.current && !!authority && !authority.pending && !authority.busy && authority.status !== 'conflict';

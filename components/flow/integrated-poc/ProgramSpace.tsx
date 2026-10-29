@@ -85,6 +85,10 @@ export type ProgramSpaceProps = {
   canContinueWholeDocument?: () => boolean;
   /** Wait only the already-running private operation before an explicit source return. */
   awaitSourceReturnReady?: () => Promise<boolean>;
+  /** Whether awaitSourceReturnReady would wait right now, so the wait can be shown at once. */
+  sourceReturnWaits?: () => boolean;
+  /** Show or clear the host's notice for a source open that is waiting. */
+  onSourceReturnQueued?: (queued: boolean) => void;
   sourceReturnEpoch?: object;
   /** Supplied only by the explicit synthetic Alpha entry in this candidate. */
   pmTextHost?: ProgramPmHostContext;
@@ -404,6 +408,19 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [completingTaskIds, setCompletingTaskIds] = useState<ReadonlySet<string>>(() => new Set());
   const sourceMounted = useRef(true), sourceSession = useRef(sourceEpoch);
   sourceSession.current = sourceEpoch;
+  // The source open now waiting out the host's check, shown on its row and in the
+  // host notice. A token, so an older wait on the same task cannot clear a newer one.
+  const sourceWaiting = useRef<object | null>(null);
+  const [sourceWaitingTask, setSourceWaitingTask] = useState<string | null>(null);
+  function showSourceWaiting(taskId: string): object {
+    const token = {};
+    sourceWaiting.current = token; setSourceWaitingTask(taskId); props.onSourceReturnQueued?.(true);
+    return token;
+  }
+  function clearSourceWaiting(token?: object) {
+    if (!sourceWaiting.current || (token && sourceWaiting.current !== token)) return;
+    sourceWaiting.current = null; setSourceWaitingTask(null); props.onSourceReturnQueued?.(false);
+  }
   useEffect(() => {
     if (completingTasks.current.epoch === sourceEpoch) return;
     completingTasks.current = { epoch: sourceEpoch, ids: new Set() };
@@ -412,15 +429,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   useEffect(() => {
     sourceMounted.current = true;
     const cancel = () => { sourceNavigation.cancel(); pendingSourceFocus.current = null; };
+    // A cancelled open stops waiting too, so its row and notice clear with it.
+    const cancelOpen = () => { cancel(); clearSourceWaiting(); };
     // Capture before the clicked source handler creates its new intent. A later
     // action, including input/revert or focus navigation, invalidates the old one.
     const events = ['pointerdown', 'click', 'keydown', 'beforeinput', 'input', 'compositionstart', 'wheel'] as const;
-    for (const event of events) document.addEventListener(event, cancel, true);
-    window.addEventListener('blur', cancel);
+    for (const event of events) document.addEventListener(event, cancelOpen, true);
+    window.addEventListener('blur', cancelOpen);
     return () => {
-      sourceMounted.current = false; cancel();
-      for (const event of events) document.removeEventListener(event, cancel, true);
-      window.removeEventListener('blur', cancel);
+      sourceMounted.current = false; cancelOpen();
+      for (const event of events) document.removeEventListener(event, cancelOpen, true);
+      window.removeEventListener('blur', cancelOpen);
     };
   }, [actorId, sourceEpoch, sourceNavigation]);
   function registerSourceFocus(documentId: string, focus: ProgramSourceFocus | null) {
@@ -842,7 +861,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       || Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.());
     if (taskId && writingBlocked()) { setMessage('작성 중인 입력을 저장하거나 취소한 뒤 원래 항목을 열어 주세요.'); return false; }
     if (taskId && props.awaitSourceReturnReady) {
-      if (!await intent.wait(props.awaitSourceReturnReady)) {
+      // Say at once that the open waits; a later action cancels it and clears this.
+      const waiting = props.sourceReturnWaits?.() ? showSourceWaiting(taskId) : undefined;
+      const ready = await intent.wait(props.awaitSourceReturnReady);
+      if (waiting) clearSourceWaiting(waiting);
+      if (!ready) {
         // Say why instead of leaving the user on the list without a word.
         if (ownsSource()) setMessage('원문을 열지 못했습니다. 다시 눌러 주세요.');
         return false;
@@ -1387,7 +1410,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                   true, undefined, undefined, true).then(done, done);
               }
             }}><span aria-hidden="true">{completingTaskIds.has(task.id) ? '…' : value === 100 ? '✓' : value ? `${value}%` : '□'}</span></button>
-            <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} onClick={() => moving ? void moveBefore(moving, entry.key) : void openDocument(task.docId, task.id)}><span className={styles.taskTitleText}>{task.title}</span><small>{!(period === 'today' && task.date === date) && <span>예정일 {task.date ?? '미정'}</span>}{task.time && <span>{task.time}</span>}{progress?.date && !(period === 'today' && progress.date === date && task.date === progress.date) && <span>진행 기록 {progress.date} · {progress.percent}%</span>}<span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}{taskFolderPath(task)} / {task.docTitle} →</span></small></button>
+            <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} aria-busy={sourceWaitingTask === task.id || undefined} onClick={() => moving ? void moveBefore(moving, entry.key) : void openDocument(task.docId, task.id)}><span className={styles.taskTitleText}>{task.title}</span><small>{!(period === 'today' && task.date === date) && <span>예정일 {task.date ?? '미정'}</span>}{task.time && <span>{task.time}</span>}{progress?.date && !(period === 'today' && progress.date === date && task.date === progress.date) && <span>진행 기록 {progress.date} · {progress.percent}%</span>}<span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}{taskFolderPath(task)} / {task.docTitle} →</span></small></button>
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>

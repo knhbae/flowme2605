@@ -38,6 +38,9 @@ export const PROGRAM_BUSY_NOTICE = '방금 누른 것은 실행하지 않았습�
 /** A tap waiting out a refresh runs by itself. Asking for a retry here would let
  *  the second tap reopen the task the first tap is about to complete. */
 export const PROGRAM_QUEUED_NOTICE = '서버 확인이 끝나면 이어서 처리합니다. 다시 누르지 않아도 됩니다.';
+/** A source open waiting out the same check. The list owns it: a later action
+ *  cancels the open and clears this too. */
+export const PROGRAM_SOURCE_QUEUED_NOTICE = '서버 확인이 끝나면 원문을 엽니다. 다시 누르지 않아도 됩니다.';
 
 export function programErrorMessage(reason: string): string {
   const messages: Record<string, string> = {
