@@ -121,3 +121,22 @@ test('a document owns personal authoring when it is a Flow, a Flow start, or has
   assert.equal(documentHasPersonalAuthoring(undefined, 'doc', ['p']), false);
   assert.equal(documentHasPersonalAuthoring({ version: 1, flows: [], series: [], executions: [{ id: 'e', flowId, versionId: 'v', anchorDate: '2026-10-30', executionDocumentId: 'start-doc', taskIds: {} }] }, 'start-doc', []), true);
 });
+
+test('the writing bar keeps its contract: order, never dimmed by composition or saves, focus kept, presses held', () => {
+  const { source } = component('ProgramTextEditor.tsx');
+  const between = (from: string, to: string) => { const start = source.indexOf(from), stop = source.indexOf(to, start); assert(start > 0 && stop > start, from); return source.slice(start, stop); };
+  const buttons = between('function barButtons(', '\n  }');
+  const order = ["barButton('task'", "barButton('outdent'", "barButton('indent'", "barButton('enter'", "barButton('menu'"].map(token => buttons.indexOf(token));
+  assert(order.every((at, index) => at > 0 && (index === 0 || at > order[index - 1])), 'bar order ☐ ← → ↵ ＋');
+  assert(source.includes('const barOff = inputLocked || !!props.readOnly;'));
+  const button = between('function barButton(', '\n  }');
+  assert(button.includes('disabled={barOff || off}') && button.includes('onPointerDown={event => { event.preventDefault(); }}'));
+  assert(source.includes('barHold.press(action, composingRef.current || !!draftRef.current?.getState().saving)'));
+  assert(between('function runBar(', '\n  }').includes('target.instance.enter(true)'));
+  assert(/\{props\.authoringMode && <div ref=\{barRef\} className=\{styles\.writingBar\} role="toolbar" aria-label="쓰기 도구" data-editor-tools>/.test(source));
+  assert(source.includes("{props.authoringMode && barButtons('toolbar')}"));
+  const css = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.module.css', import.meta.url), 'utf8');
+  assert(css.includes('.writingBar { display: none; }'));
+  assert(css.includes('.editor:has(.host textarea:focus, [data-folder-region] textarea:focus, .writingBar :focus) .writingBar {'));
+  assert(css.includes('.toolbar > .toolbarBarButton { display: none; }'));
+});

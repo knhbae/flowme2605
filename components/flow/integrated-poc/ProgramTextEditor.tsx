@@ -2,10 +2,11 @@
 
 import type {OwnedWritingAck} from '@/lib/flow/integrated-poc/writing-ack';
 import type {WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { readChildDrafts, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
+import { createWritingBarHold, taskMarkerLock, toggleTaskLine, writingBarLine, type WritingBarAction, type WritingBarLine } from '@/lib/flow/integrated-poc/writing-bar';
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
 import { planProgramDateBlockOrder, type DateBlockOrderPlan, type DateOrderSelection } from '@/lib/flow/integrated-poc/date-block-order';
@@ -292,6 +293,24 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [composing, setComposing] = useState(false);
   const disabled = inputLocked || !!props.readOnly || draft.invalid || draft.saving;
   const insertionDisabled=inputLocked||!!props.readOnly||draft.invalid||composing||regionPending||checkPending;
+  // Writing model A bar (S3): ☐ ← → ↵ ＋. Its buttons never dim for composition or a save;
+  // a press then is held, shown pressed, and runs once when input settles.
+  const [barLine, setBarLine] = useState<WritingBarLine>({ canOutdent: false, canIndent: false, isTask: false, markerLock: null });
+  const [barHold] = useState(createWritingBarHold), [heldBar, setHeldBar] = useState<WritingBarAction | null>(null);
+  const barRef = useRef<HTMLDivElement>(null), barLockId = useId();
+  useEffect(() => { releaseHeldBar(); }, [composing, draft.saving, inputLocked, props.readOnly, regionPending]);
+  // Other typing or leaving the editor cancels a held press; the composition's own input does not.
+  useEffect(() => {
+    const root = hostRef.current?.closest('section');
+    if (!root) return;
+    const cancel = () => { if (barHold.held()) { barHold.cancel(); setHeldBar(null); } };
+    const typed = (event: Event) => {
+      if (!composingRef.current && !['insertCompositionText', 'insertFromComposition', 'deleteByComposition', 'deleteCompositionText'].includes((event as InputEvent).inputType)) cancel();
+    };
+    const left = (event: FocusEvent) => { if (!(event.relatedTarget instanceof Node && root.contains(event.relatedTarget))) cancel(); };
+    root.addEventListener('beforeinput', typed, true); root.addEventListener('focusout', left);
+    return () => { root.removeEventListener('beforeinput', typed, true); root.removeEventListener('focusout', left); };
+  }, [barHold]);
 
   const currentState = () => draftRef.current?.getState().working ?? propsRef.current.workspace;
   const currentDoc = () => M.getDocument(currentState(), propsRef.current.docId);
@@ -330,6 +349,58 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const lineId = textarea.selectionStart === textarea.selectionEnd ? currentDoc()?.lines[index]?.id ?? null : null;
     if (suggestionLineRef.current !== lineId) { suggestionLineRef.current = lineId; setSuggestionLineId(lineId); setDismissedSuggestion(''); }
     propsRef.current.onPosition?.({ start: textarea.selectionStart, end: textarea.selectionEnd, scrollTop: textarea.scrollTop }, currentDoc()?.lines[index]?.id ?? null);
+    syncBarLine();
+  }
+  /** The editor the writing bar acts on: the body, or the focused folder region. */
+  function barEditor() {
+    if (propsRef.current.folderId) return regionPortRef.current?.activeEditor?.() ?? null;
+    const instance = editorRef.current, area = textArea();
+    return instance && area ? { instance, area } : null;
+  }
+  function readBarLine(): WritingBarLine | null {
+    const target = barEditor();
+    if (!target) return null;
+    const raw = target.area.value, caret = target.area.selectionStart, state = currentState(), docId = propsRef.current.docId;
+    let meta: TextEditorRowMeta | undefined;
+    if (propsRef.current.folderId) {
+      const snapshot = regionPortRef.current?.takeSnapshot();
+      if (!snapshot) return null;
+      meta = snapshot.lineId ? textEditorRows(state, docId).find(row => row.id === snapshot.lineId) : undefined;
+    } else {
+      const working = draftRef.current?.getState().working ?? state;
+      meta = (documentInputRef.current?.paint(working) ?? textEditorRows(working, docId))[raw.slice(0, caret).split('\n').length - 1];
+    }
+    return writingBarLine(raw, caret, isTask => isTask ? taskMarkerLock(meta, state, docId) : null);
+  }
+  function syncBarLine() {
+    if (!propsRef.current.authoringMode) return;
+    const next = readBarLine();
+    if (next) setBarLine(previous => previous.canOutdent === next.canOutdent && previous.canIndent === next.canIndent
+      && previous.isTask === next.isTask && previous.markerLock === next.markerLock ? previous : next);
+  }
+  function runBar(action: WritingBarAction) {
+    const target = barEditor();
+    if (!target || inputLockedRef.current || propsRef.current.readOnly) return;
+    if (action === 'menu') { if (!propsRef.current.folderId) openCurrentInsertMenu(target.instance.getSelection().lineIndex); return; }
+    if (action === 'enter') target.instance.enter(true);
+    else if (action === 'task') {
+      const line = readBarLine();
+      if (line?.isTask && line.markerLock) return;
+      const plan = toggleTaskLine(target.area.value, target.area.selectionStart);
+      target.instance.replaceRange(plan.start, plan.end, plan.text, { selectionAfter: { start: plan.caret, end: plan.caret } });
+    } else target.instance.indent(action === 'outdent');
+    syncBarLine();
+  }
+  function pressBar(action: WritingBarAction) {
+    if (inputLockedRef.current || propsRef.current.readOnly) return;
+    const run = barHold.press(action, composingRef.current || !!draftRef.current?.getState().saving);
+    setHeldBar(barHold.held());
+    if (run) runBar(run);
+  }
+  function releaseHeldBar() {
+    if (inputLockedRef.current || propsRef.current.readOnly) { barHold.cancel(); setHeldBar(null); return; }
+    const run = barHold.release(composingRef.current || !!draftRef.current?.getState().saving);
+    if (run) { setHeldBar(null); runBar(run); }
   }
   function closePanel() {
     if(panelComposingRef.current||composingRef.current)return;
@@ -962,6 +1033,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       let bottom = Math.min(view.innerHeight, visual ? visual.offsetTop + visual.height : view.innerHeight);
       const nav = shell.querySelector<HTMLElement>('nav[aria-label="기본 이동"], nav[aria-label="주요 메뉴"]');
       if (nav?.getClientRects().length && view.getComputedStyle(nav).position === 'fixed') bottom = Math.min(bottom, nav.getBoundingClientRect().top);
+      // The mobile writing bar sits right under the body, so the body ends above it.
+      const bar = barRef.current;
+      if (bar?.getClientRects().length) bottom -= bar.getBoundingClientRect().height + 4;
       const height = programEditorVisibleHeight(host.getBoundingClientRect().top, bottom);
       if (height !== null && host.style.getPropertyValue('--program-editor-visible-height') !== `${height}px`) {
         host.style.setProperty('--program-editor-visible-height', `${height}px`);
@@ -979,10 +1053,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     mutation.observe(shell, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'open', 'data-writing-keyboard'] });
     view.addEventListener('resize', schedule); view.addEventListener('scroll', schedule, { passive: true });
     visual?.addEventListener('resize', schedule); visual?.addEventListener('scroll', schedule);
+    // The writing bar shows while the body has focus (CSS), which no observer above sees.
+    const editorRoot = host.closest('section');
+    editorRoot?.addEventListener('focusin', schedule); editorRoot?.addEventListener('focusout', schedule);
     schedule();
     return () => { observer.disconnect(); mutation.disconnect(); view.cancelAnimationFrame(frame);
       view.removeEventListener('resize', schedule); view.removeEventListener('scroll', schedule);
-      visual?.removeEventListener('resize', schedule); visual?.removeEventListener('scroll', schedule); };
+      visual?.removeEventListener('resize', schedule); visual?.removeEventListener('scroll', schedule);
+      editorRoot?.removeEventListener('focusin', schedule); editorRoot?.removeEventListener('focusout', schedule); };
   }, []);
 
   const row = panel ? currentRow(panel.lineId) : undefined;
@@ -1236,6 +1314,26 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   const progressConflict = progressConflictToView();
   const inputPending=!!childTarget||programTextInputPending(draft,textArea()?.value,composing,regionPending,checkPending);
+  // Bar buttons turn off only for input protection, read-only, or a move they cannot make.
+  const barOff = inputLocked || !!props.readOnly;
+  const barStatus = props.readOnly ? '읽기 전용' : inputLocked ? '입력 잠시 멈춤' : draft.error ? '⚠ 저장 확인 필요'
+    : checkPending ? '체크 확인 중' : draft.saving || inputPending ? '●' : '저장됨';
+  function barButton(action: WritingBarAction, icon: string, label: string, keys: string, off: boolean, className?: string, describedBy?: string) {
+    return <button key={action} type="button" className={className} data-bar-action={action} data-held={heldBar === action ? 'true' : undefined}
+      aria-label={label} aria-describedby={describedBy} title={`${label} · ${keys}`} disabled={barOff || off}
+      onPointerDown={event => { event.preventDefault(); }} onClick={() => { pressBar(action); }}>{icon}</button>;
+  }
+  function barButtons(place: 'toolbar' | 'bar') {
+    const className = place === 'toolbar' ? styles.toolbarBarButton : undefined, locked = barLine.isTask && barLine.markerLock;
+    return <>
+      {barButton('task', '☐', barLine.isTask ? '일반 줄로 바꾸기' : '할 일로 바꾸기', '- [ ]', !!locked, className, locked ? barLockId + place : undefined)}
+      {locked && <span id={barLockId + place} hidden>{barLine.markerLock}</span>}
+      {barButton('outdent', '←', '내어쓰기', 'Shift+Tab', !barLine.canOutdent, className)}
+      {barButton('indent', '→', '들여쓰기', 'Tab', !barLine.canIndent, className)}
+      {barButton('enter', '↵', '할 일 아래 메모 줄', 'Shift+Enter', false, className)}
+      {place === 'bar' && barButton('menu', '＋', '추가 메뉴', '/', !!props.folderId)}
+    </>;
+  }
   return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onKeyDownCapture={event => {
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
@@ -1244,6 +1342,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     <div className={styles.toolbar}>
       {mode === 'text' && <button type="button" onClick={event => returnToDocumentMode(event.currentTarget)}>문서로 돌아가기</button>}
       <button type="button" hidden={!!props.folderId || props.directWriting && !props.noteStatus} disabled={insertionDisabled} onClick={() => { const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}>＋ 추가</button>
+      {props.authoringMode && barButtons('toolbar')}
       <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기'} aria-label="입력 되돌리기" onClick={() => { if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if(props.authoringMode&&!props.folderId)editorRef.current?.undo(); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
       <details className={styles.editorTools} data-editor-tools onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
@@ -1285,9 +1384,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     {folderView && <ProgramFolderRegionEditor key={`${props.docId}:${props.folderId}`} styles={regionStyles} view={folderView} readOnly={!!props.readOnly} locked={inputLocked || draft.saving} mode={mode} listEnterV2={!!props.authoringMode}
       workspace={currentState} onAccept={acceptRegion} onPersist={saveFullDraft} onDownload={downloadDraft}
       onContinueWholeDocument={continueWholeDocument}
-      onPosition={(start, end, lineId) => { regionPositionRef.current = { start, end }; propsRef.current.onPosition?.({ start, end, scrollTop: 0 }, lineId); }}
+      onPosition={(start, end, lineId) => { regionPositionRef.current = { start, end }; propsRef.current.onPosition?.({ start, end, scrollTop: 0 }, lineId); syncBarLine(); }}
       onRegister={port => { regionPortRef.current = port; }}
-      onPending={(pending, composing) => { regionPendingRef.current = pending; composingRef.current = composing; setRegionPending(pending); propsRef.current.onDirtyChange?.(pending || !!draftRef.current?.getState().dirty); }} />}
+      onPending={(pending, composing) => { regionPendingRef.current = pending; composingRef.current = composing; setRegionPending(pending); propsRef.current.onDirtyChange?.(pending || !!draftRef.current?.getState().dirty); if (!composing) queueMicrotask(releaseHeldBar); }} />}
+    {props.authoringMode && <div ref={barRef} className={styles.writingBar} role="toolbar" aria-label="쓰기 도구" data-editor-tools>
+      {barButtons('bar')}<span className={styles.barStatus} aria-hidden="true" data-warn={draft.error ? 'true' : undefined}>{barStatus}</span></div>}
     {panel && <dialog ref={dialogRef} className={styles.dialog} aria-label={title} onCompositionStartCapture={()=>{panelComposingRef.current=true;}} onCompositionEndCapture={()=>{panelComposingRef.current=false;}} onKeyDown={event => { trapProgramDialogTab(event.currentTarget, event); }} onCancel={event => { event.preventDefault(); closePanel(); cancelMove(); }}>
       <header><h3>{title}</h3><button type="button" aria-label="닫기" onClick={closePanel}>×</button></header>
       <div className={styles.dialogBody}>
