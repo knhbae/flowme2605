@@ -277,7 +277,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
         {sourceMeta?.sourceNeedsReview && <p className={styles.notice}>출처 재검토가 필요한 자료입니다. 시작 전 현재 조건을 원문에서 확인해 주세요.</p>}
       </section>
       <details className={styles.fullIntroduction}><summary>소개 전체 읽기</summary><p className={styles.pre}>{version.summary}</p>
-        <p className={styles.muted}>출처 확인 기록: {version.source.checkedAt ?? '없음'} · 지금 원문을 다시 확인한 결과는 아닙니다.</p>
+        {version.source.checkedAt && <p className={styles.muted}>출처 확인 기록: {version.source.checkedAt} · 지금 원문을 다시 확인한 결과는 아닙니다.</p>}
       </details>
       {existingCopyReturn}
       {storedCopy && !existingCopy && <section className={styles.notice} aria-label="기존 사본 확인"><p>이 Flow의 개인 사본이 있지만 지금 바로 열 수 없습니다. 내 공간에서 휴지통과 보관 상태를 확인해 주세요. 새 사본은 만들지 않습니다.</p><button type="button" disabled={pending} onClick={() => navigate({ view: 'space' })}>내 공간에서 확인</button></section>}
@@ -302,7 +302,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
       {existingCopyReturn}
         <section className={styles.source} aria-label="출처와 판본"><div className={styles.row}><strong>{version.source.label}</strong>
           {version.source.url && <a href={version.source.url} target="_blank" rel="noreferrer noopener">원문 열기 ↗</a>}</div>
-          <p className={styles.muted}>출처 확인 기록: {version.source.checkedAt ?? '없음'} · 지금 원문을 다시 확인한 결과는 아닙니다.</p>
+          {version.source.checkedAt && <p className={styles.muted}>출처 확인 기록: {version.source.checkedAt} · 지금 원문을 다시 확인한 결과는 아닙니다.</p>}
           {sourceMeta?.sourceNeedsReview && <p className={styles.notice}>이 자료는 출처 재검토가 필요합니다. 현재 조건을 원문에서 확인해 주세요.</p>}
           <label className={styles.field}>읽는 판본<select value={version.id} disabled={pending} onChange={event => { update({ versionByFlow: { ...state.versionByFlow, [flow.id]: event.target.value } }); navigate({ view: 'flow', id: flow.id, versionId: event.target.value }); }}>{versions.map(row => <option key={row.id} value={row.id}>판본 {row.number}{row.id === flow.currentVersionId ? ' · 최신 등록본' : ' · 이전 등록본'}</option>)}</select></label>
           <details><summary>소개 전체 읽기 · 적용 범위와 주의사항</summary><p className={styles.pre}>{version.summary}</p><p className={styles.muted}>{storageScope === 'account' ? '선택한 공개 판본은 개인 설정으로 바뀌지 않습니다. 개인 사본과 실행 기록은 따로 보관됩니다.' : '선택한 등록 판본은 개인 설정으로 바뀌지 않습니다. 작성자 검토와 발행은 로컬 PoC 안에서 이루어집니다.'}</p></details>
