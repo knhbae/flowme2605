@@ -59,6 +59,25 @@
   --flowme-mobile-save-clearance: calc(8.5rem + env(safe-area-inset-bottom));
   --flowme-mobile-map-save-clearance: calc(9.25rem + env(safe-area-inset-bottom));
   --flowme-mobile-export-clearance: calc(16rem + env(safe-area-inset-bottom));
+  /* Navy palette of the Alpha frame and the PoC spaces. Raw values live only here and are never
+     redefined, so the Alpha frame tokens, ProgramSpace, and ProgramApp compute the same color anywhere. */
+  --flowme-b-canvas: #eef1f7;
+  --flowme-b-surface: #fff;
+  --flowme-b-surface-subtle: #f4f6fb;
+  --flowme-b-selected: #e9edff;
+  --flowme-b-ink: #202a3c;
+  --flowme-b-muted: #59677e;
+  --flowme-b-line: #d6ddea;
+  --flowme-b-control: #7d89a2;
+  --flowme-b-primary: #3548ce;
+  --flowme-b-primary-strong: #293bab;
+  --flowme-b-primary-border: #b5c0ee;
+  --flowme-b-chrome: #182235;
+  --flowme-b-nav-text: #c8d1e1;
+  --flowme-b-nav-accent: #bec8ff;
+  --flowme-b-nav-active: #303e58;
+  --flowme-b-nav-hover: #25334a;
+  --flowme-b-nav-muted: #53627a;
 }
 
 body {
