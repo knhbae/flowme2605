@@ -394,6 +394,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const sourceFocusPorts = useRef<Record<string, ProgramSourceFocus | null>>({});
   const pendingSourceFocus = useRef<{ documentId: string; taskId: string; attempt: () => void; isCurrent: () => boolean; managedReturnFocus?: Element | null; findPanel?: HTMLDialogElement; findSourceOwner?: Element | null } | null>(null);
   const sourceNavigation = useMemo(createPendingProgramSourceNavigation, []);
+  const openingSource = useRef<string | null>(null);
   const sourceEpoch = props.sourceReturnEpoch ?? props.pmTextHost?.epoch;
   const sourceMounted = useRef(true), sourceSession = useRef(sourceEpoch);
   sourceSession.current = sourceEpoch;
@@ -906,6 +907,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     }
     return true;
   }
+  // A second tap on the same item while its first source open still waits for a
+  // refresh or save to settle must not start another: the new intent would take
+  // over, then be refused as busy, and neither tap would move.
+  async function openSource(id: string, taskId?: string) {
+    if (!taskId) return openDocument(id);
+    const key = `${id}\u0000${taskId}`;
+    if (openingSource.current === key) return false;
+    openingSource.current = key;
+    try { return await openDocument(id, taskId); }
+    finally { if (openingSource.current === key) openingSource.current = null; }
+  }
   async function openDetailSource(documentId: string, taskId: string) {
     if (detailSchedulePending || detailProgressPending) return;
     const owner = { ...executionDraftOwner.current };
@@ -1172,9 +1184,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {period !== 'documents' && query && <section aria-label="현재 보기의 할 일 검색 결과" className={styles.findTasks}>
         <h3>현재 보기의 할 일</h3>
         <ul className={styles.documents}>{executionRows.map(entry => {
-          if (entry.kind === 'text-task') return <li key={entry.key}><button onClick={() => void openDocument(entry.task.docId, entry.task.id)}>{entry.task.title}<small>{entry.task.docTitle}</small></button></li>;
+          if (entry.kind === 'text-task') return <li key={entry.key}><button onClick={() => void openSource(entry.task.docId, entry.task.id)}>{entry.task.title}<small>{entry.task.docTitle}</small></button></li>;
           const source = programSeriesMetadata(space).find(item => item.itemRef === entry.row.sourceItemRef);
-          return <li key={entry.key}><button disabled={!source} onClick={() => { if (source) void openDocument(source.documentId, source.lineId); }}>{entry.row.title}<small>반복 회차 · {entry.row.executionDate ?? '날짜 미정'}{!source && ' · 원문을 찾을 수 없습니다'}</small></button></li>;
+          return <li key={entry.key}><button disabled={!source} onClick={() => { if (source) void openSource(source.documentId, source.lineId); }}>{entry.row.title}<small>반복 회차 · {entry.row.executionDate ?? '날짜 미정'}{!source && ' · 원문을 찾을 수 없습니다'}</small></button></li>;
         })}</ul>
         {!executionRows.length && <p className={styles.muted}>현재 보기에는 검색 결과가 없습니다.</p>}
       </section>}
@@ -1194,12 +1206,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     </dialog>
     <div className={styles.content}>
       {props.outputReturn && <ProgramOutputReturn key={`${actorId}:${props.outputReturn.executionKey}`} data={data} destination={props.outputReturn} today={today} mutate={mutate}
-        onOpenSource={(id, line) => void openDocument(id, line)} onRegisterEditors={(port, key) => { recurrencePorts.current[key] = port; }} onUndo={props.onUndo} onRedo={props.onRedo} />}
+        onOpenSource={(id, line) => void openSource(id, line)} onRegisterEditors={(port, key) => { recurrencePorts.current[key] = port; }} onUndo={props.onUndo} onRedo={props.onRedo} />}
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {!libraryOpen && !detail && viewChangeNoticeContent}
       {!detail && taskNoticeContent}
       <div hidden={period !== 'documents'}>
-        <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
+        <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openSource(id, line)} />
         <div className={styles.docHeading}><h1>{selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : '필요한 내용을 먼저 적으세요'}</h1>{props.nativeAuthoringEnabled&&selectedDoc&&!authoringDocuments.includes(selectedDoc.id)&&<button type="button" disabled={preparingDocumentAction} onClick={()=>void openDocumentAction(id=>rememberAuthoringDocument(id))}>이 문서에서 새 쓰기 조작 사용(Alpha)</button>}{props.nativeAuthoringEnabled&&selectedDoc&&authoringDocuments.includes(selectedDoc.id)&&<button type='button' disabled={preparingDocumentAction} onClick={()=>void openDocumentAction(id=>forgetAuthoringDocument(id))}>기존 쓰기 조작으로</button>}{(!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</div>
         {props.noteHeader}
         <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
@@ -1218,7 +1230,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {selectedCollection && !selectedCollection.documentIds.includes(selectedDoc.id) && <p role="status" className={styles.muted}>이 문서는 선택한 모음에 없습니다. 원문은 그대로 열려 있습니다.</p>}
           </>}
         </>}
-        {props.nativeAuthoringEnabled&&selectedDoc&&authoringDocuments.includes(selectedDoc.id)&&!selectedTrashed&&!retentionSource&&<ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openDocument(documentId,taskId);}}/>}
+        {props.nativeAuthoringEnabled&&selectedDoc&&authoringDocuments.includes(selectedDoc.id)&&!selectedTrashed&&!retentionSource&&<ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openSource(documentId,taskId);}}/>}
         {opened.filter(id => docs.some(doc => doc.id === id)).map(id => <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor
           authoringMode={!!props.nativeAuthoringEnabled&&authoringDocuments.includes(id)} hostContext={props.pmTextHost}
           onRegisterInputCheckpoint={read => { inputCheckpointReaders.current[id] = read; }}
@@ -1273,7 +1285,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           folderCopyProblem={(state, docId, lineIds) => programFolderCopyAccessProblem({ ...space, text: state }, docId, lineIds)}
           validateWorkspace={next => programPreservesLockedDocumentContent(space, next) && programPreservesSeriesMetadata(space, next) && programPreservesLegacyQualityHold(space, next) && programPreservesLegacyPlanExcluded(space, next)}
           taskAccess={writingAccess}
-          onOpenTaskOrigin={(documentId, lineId) => { void openDocument(documentId, lineId); }}
+          onOpenTaskOrigin={(documentId, lineId) => { void openSource(documentId, lineId); }}
           onPosition={(position, lineId) => {
             const sourceFocus = pendingSourceFocus.current;
             // Passive reports from the retained editor must not replace the
@@ -1295,11 +1307,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {selectedDoc && !selectedArchived && <ProgramRecurrence key={`${actorId}:${selectedDoc.id}`} data={data} mutate={mutate} today={today} period="documents" date={date} documentId={selectedDoc.id} onPlanApplied={focusAppliedPlan}
           presentation={recurrencePresentation.documents[selectedDoc.id] ?? { page: 0, includeHeld: false, includeExcluded: false }} onPresentationChange={value => setRecurrencePresentation(previous => ({ ...previous, documents: { ...previous.documents, [selectedDoc.id]: value } }))}
           onRegisterEditors={port => { recurrencePorts.current[selectedDoc.id] = port; }}
-          onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} />}
+          onOpenSource={(id, line) => void openSource(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} />}
       </div>
       <div hidden={period === 'documents'} className={styles.executionView} data-note-today={compactNoteToday || undefined}>
         {period !== 'all' && <label className={styles.periodPicker}>기간<select aria-label="기간 보기" value={period} onChange={event => { void changePeriod(event.target.value as ProgramPeriod); }}>{periods.filter(([key]) => !['documents', 'all'].includes(key)).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>}
-        <ProgramRecurrencePlanRecovery data={data} today={today} folderId={folderId || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
+        <ProgramRecurrencePlanRecovery data={data} today={today} folderId={folderId || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openSource(id, line)} />
         <div className={styles.periodHeading}>{compactNoteToday ? <div className={styles.notePeriodTitle}>{periodTitle}<div className={styles.notePeriodActions}>
           <button type="button" aria-expanded={noteQuickOpen} aria-controls="program-note-quick-task" onClick={() => setNoteQuickOpen(value => !value)}>할 일 추가</button>
           <details ref={noteFindMenu} className={styles.notePeriodTools} onKeyDown={event => {
@@ -1340,7 +1352,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {occurrenceResult.issues.some(issue => issue !== 'query-window-limit') && <p role="alert">원본이 바뀌었거나 안전하게 연결하지 못한 회차는 보관 중입니다. 원문에서 확인해 주세요.</p>}
         {occurrenceResult.issues.includes('query-window-limit') && <p role="alert">조회 가능한 회차 범위를 넘었습니다. 표시된 목록이 전체는 아니며, 원문과 기존 기록은 보존했습니다.</p>}
         {occurrenceResult.pendingStarts.map(entry => <p role="status" key={entry.itemRef}>{entry.title} · {entry.reason === 'anchor-required' ? '내 기준일' : '내 시작일'} 미정
-          <button type="button" onClick={() => void openDocument(entry.documentId, entry.lineId)}>사본에서 날짜 정하기</button></p>)}
+          <button type="button" onClick={() => void openSource(entry.documentId, entry.lineId)}>사본에서 날짜 정하기</button></p>)}
         {!executionRows.length && <div className={styles.empty}><p>{folderId || query ? '현재 조회 조건에 맞는 할 일이 없습니다.' : '이 보기에 할 일이 없습니다.'}</p>{period !== 'all' && period !== 'documents' && <button type="button" onClick={() => void showAllTasksFromEmpty()}>전체 할 일에서 찾기</button>}</div>}
         <ul className={styles.tasks}>{executionDayRows.map(({ entry, heading }) => {
           if (entry.kind === 'occurrence') return <li key={entry.key} onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveExecutionStep(entry.key, event.key === 'ArrowUp' ? -1 : 1); } }} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}>
@@ -1348,7 +1360,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {period === 'today' && entry.row.executionDate && entry.row.executionDate < date && <small>계속할 회차</small>}
             <div className={styles.actions}><button onClick={() => moveExecutionStep(entry.key, -1)}>같은 날짜에서 위로</button><button onClick={() => moveExecutionStep(entry.key, 1)}>같은 날짜에서 아래로</button>{moving && <button onClick={() => void moveBefore(moving, entry.key)}>이 회차 앞에 놓기</button>}</div>
             <ProgramRecurrence data={data} mutate={mutate} today={today} period={period} date={date} row={entry.row} onPlanApplied={focusAppliedPlan} onRegisterEditors={port => { recurrencePorts.current[entry.row.key] = port; }}
-            onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} /></li>;
+            onOpenSource={(id, line) => void openSource(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} /></li>;
           const task = entry.task;
           const origin = readProgramTaskOrigin(data, task);
           const progress = M.latestProgress(space.text, task.id), value = M.currentProgress(space.text, task.id) ?? (task.done ? 100 : 0);
@@ -1360,7 +1372,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               if (value > 0 && value < 100) { setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }
               else void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }));
             }}><span aria-hidden="true">{value === 100 ? '✓' : value ? `${value}%` : '□'}</span></button>
-            <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} onClick={() => moving ? void moveBefore(moving, entry.key) : void openDocument(task.docId, task.id)}><span className={styles.taskTitleText}>{task.title}</span><small>{!(period === 'today' && task.date === date) && <span>예정일 {task.date ?? '미정'}</span>}{task.time && <span>{task.time}</span>}{progress?.date && !(period === 'today' && progress.date === date && task.date === progress.date) && <span>진행 기록 {progress.date} · {progress.percent}%</span>}<span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}{taskFolderPath(task)} / {task.docTitle} →</span></small></button>
+            <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} onClick={() => moving ? void moveBefore(moving, entry.key) : void openSource(task.docId, task.id)}><span className={styles.taskTitleText}>{task.title}</span><small>{!(period === 'today' && task.date === date) && <span>예정일 {task.date ?? '미정'}</span>}{task.time && <span>{task.time}</span>}{progress?.date && !(period === 'today' && progress.date === date && task.date === progress.date) && <span>진행 기록 {progress.date} · {progress.percent}%</span>}<span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}{taskFolderPath(task)} / {task.docTitle} →</span></small></button>
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>

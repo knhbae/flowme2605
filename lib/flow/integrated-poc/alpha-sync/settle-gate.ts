@@ -9,6 +9,8 @@ export type SettleGate = {
   begin(): () => void;
   /** Resolves true once the current settle ends, false if none is running, another action already waits, or maxMs passes. */
   wait(maxMs: number): Promise<boolean>;
+  /** True while an action waits, so the host can show that the tap will still run. */
+  isWaiting(): boolean;
 };
 
 export function createSettleGate(): SettleGate {
@@ -30,5 +32,6 @@ export function createSettleGate(): SettleGate {
           new Promise<boolean>(resolve => { timer = setTimeout(() => resolve(false), maxMs); })]);
       } finally { clearTimeout(timer); waiting = false; }
     },
+    isWaiting: () => waiting,
   };
 }

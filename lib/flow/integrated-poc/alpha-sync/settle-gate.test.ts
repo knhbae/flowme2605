@@ -50,6 +50,25 @@ test('ending an older settle does not release a newer one', async () => {
   assert.equal(await waiting, true);
 });
 
+test('isWaiting reports the queued tap only while it waits', async () => {
+  const gate = createSettleGate();
+  assert.equal(gate.isWaiting(), false);
+  const end = gate.begin(), waiting = gate.wait(1_000);
+  assert.equal(gate.isWaiting(), true);
+  end();
+  assert.equal(await waiting, true);
+  assert.equal(gate.isWaiting(), false);
+});
+
+test('isWaiting clears when the wait gives up', async () => {
+  const gate = createSettleGate();
+  gate.begin();
+  const waiting = gate.wait(20);
+  assert.equal(gate.isWaiting(), true);
+  assert.equal(await waiting, false);
+  assert.equal(gate.isWaiting(), false);
+});
+
 test('ending twice is harmless', async () => {
   const gate = createSettleGate(), end = gate.begin();
   end(); end();

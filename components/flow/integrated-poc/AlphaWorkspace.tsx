@@ -19,7 +19,7 @@ import { createAlphaStructuralRecovery, resolveAlphaStructuralRecovery, type Alp
 import { type ProgramData, type ProgramParticipationDraft, type ProgramPublicationDraft, programId } from '@/lib/flow/integrated-poc/contract';
 import type { ProgramProposalReviewDraft } from '@/lib/flow/integrated-poc/review-drafts';
 import { programInputBoundaryCurrent, readProgramInputBoundary, programInputCanRelease, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
-import { type ProgramDestination, type ProgramMutate, programErrorMessage, PROGRAM_BUSY_NOTICE } from '@/lib/flow/integrated-poc/ui-contract';
+import { type ProgramDestination, type ProgramMutate, programErrorMessage, PROGRAM_BUSY_NOTICE, PROGRAM_QUEUED_NOTICE } from '@/lib/flow/integrated-poc/ui-contract';
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
 import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
 import { textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
@@ -275,6 +275,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (disposed.current || currentOwnerRef.current !== session.userId) return;
     if (next.account && next.account.ownerId !== session.userId) return;
     if (!next.busy) setMessage(value => value === PROGRAM_BUSY_NOTICE ? '' : value);
+    // Only take over an empty or busy notice; a waiting tap never hides another failure.
+    if (next.queued) setMessage(value => !value || value === PROGRAM_BUSY_NOTICE ? PROGRAM_QUEUED_NOTICE : value);
+    else setMessage(value => value === PROGRAM_QUEUED_NOTICE ? '' : value);
     const prior = previousSnapshot.current;
     if (reviewAnnouncementState(prior) !== reviewAnnouncementState(next)) reviewAnnouncementGeneration.current++;
     previousSnapshot.current = next;
@@ -600,7 +603,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
             : failed?.retryableRejectedSocialDraft ? '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'
             : failed?.retryableRejectedDraft ? '저장되지 않았습니다. 입력을 수정한 뒤 다시 저장해 주세요.' : programErrorMessage(outcome.reason));
         }
-        else if (outcome.reason === 'busy' && !reviewOwnsMessage && controller.current?.snapshot().busy) setMessage(PROGRAM_BUSY_NOTICE);
+        else if (outcome.reason === 'busy' && !reviewOwnsMessage && controller.current?.snapshot().busy)
+          setMessage(controller.current.snapshot().queued ? PROGRAM_QUEUED_NOTICE : PROGRAM_BUSY_NOTICE);
       }
       else {
         if (!reviewOwnsMessage) setMessage('');

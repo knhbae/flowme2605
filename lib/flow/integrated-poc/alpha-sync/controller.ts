@@ -15,11 +15,12 @@ import { alphaSocialAllowedFields } from '../alpha-social/dispatch';
 import { isAlphaCreatorIntent } from '../alpha-creator/contract';
 import { createSettleGate } from './settle-gate';
 
-// Longest a tap waits for a refresh or result check before it is refused as busy.
-const SETTLE_WAIT_MS = 8_000;
+// Longest a tap waits for a refresh or result check before it is refused as
+// busy: the 20-second poll plus room for a slow mobile response.
+const SETTLE_WAIT_MS = 30_000;
 
 export type AlphaSyncSnapshot = { ownerId: string | null; account: AlphaAccount | null; envelope: ProgramEnvelope | null;
-  status: AlphaClientStatus; busy: boolean; draft: AlphaCommand | null; pending: AlphaCommand | null; canUndo: boolean; canRedo: boolean; retryableRejectedDraft?: boolean; retryableNativeHandoff?: boolean; retryableRejectedSocialDraft?: boolean; ownWritingAck?:OwnedWritingAck|null; lastReceipt?: AlphaReceipt | null; publicRevision?: number; references?: AlphaReferenceContext };
+  status: AlphaClientStatus; busy: boolean; queued?: boolean; draft: AlphaCommand | null; pending: AlphaCommand | null; canUndo: boolean; canRedo: boolean; retryableRejectedDraft?: boolean; retryableNativeHandoff?: boolean; retryableRejectedSocialDraft?: boolean; ownWritingAck?:OwnedWritingAck|null; lastReceipt?: AlphaReceipt | null; publicRevision?: number; references?: AlphaReferenceContext };
 type Success = { command: AlphaCommand; before: AlphaAccount; after: AlphaAccount };
 export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort; onChange?: (snapshot: AlphaSyncSnapshot) => void; requestId?: () => string;writingCompute?:WritingCompute }) {
   const client = createAlphaClient(isAccountForOwner, options.recovery,options.writingCompute);
@@ -49,7 +50,7 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
       noteWritingPhase('ack-materialize',started);
     }
     return { ownerId: current.ownerId, account: options.writingCompute?account:structuredClone(account), envelope, ownWritingAck:client.ownWritingAck(),
-      status: current.status, busy, draft: state?.draft ?? null, pending: state?.pending ?? null,
+      status: current.status, busy, queued: settleGate.isWaiting(), draft: state?.draft ?? null, pending: state?.pending ?? null,
       retryableRejectedDraft: !busy && current.retryableRejectedDraft,
       retryableNativeHandoff: !busy && current.retryableNativeHandoff,
       retryableRejectedSocialDraft: !busy && current.retryableRejectedSocialDraft,
@@ -87,7 +88,11 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
       // wait it out and then pass every check below against fresh data. A write
       // in flight, a typing save, or a second tap in the window still sees busy.
       const epoch = generation;
-      if (mutationOptions?.alphaWriting || !await settleGate.wait(SETTLE_WAIT_MS)) return rejected('busy');
+      if (mutationOptions?.alphaWriting) return rejected('busy');
+      // Publish `queued` while waiting so the host can say the tap will run.
+      const waiting = settleGate.wait(SETTLE_WAIT_MS); emit();
+      const ready = await waiting; emit();
+      if (!ready) return rejected('busy');
       if (epoch !== generation) return rejected('session-expired');
       if (busy) return rejected('busy');
     }
