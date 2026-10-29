@@ -9,7 +9,7 @@
 | 기획 세션 (Claude) | 저장소 정리 결정안·기능 요구사항 검토·자료 위험 명세·쓰기 A 기획과 구현 명세(전달함), 누락 기능 점검(10/30) | `D:/flowme-claude-scratch/planning/` 만. repo·GitHub는 읽기 전용 | 10/29 활동 |
 | UX 세션 (Claude) | UX 개편 R5~R9b 설계(전달함), 쓰기 A 화면 흐름(전달함), 누락 기능 러프 UX(10/30) | `D:/flowme-claude-scratch/ux/` 만. 코드는 읽기 전용 | 10/30 활동 |
 | 기타 세션 (Claude) | 저장소 정리안 v2 실행(사용자 승인 10/29), 이어서 worktree 보관 명세 | `D:/flowme-claude-scratch/misc/`, `repo-bundle-20261029/`, `main-checkout-uncommitted-20261029/`, `codex-archive-zst-66/`, `codex-archive-originals/` 삭제, 메인 체크아웃의 git ref(태그, 승인 명단의 브랜치 삭제, `refs/archive/pull/*`), GitHub PR 10개 닫기·원격 태그 30·원격 브랜치 210 삭제. worktree 제거는 안 함 | 10/29 활동 |
-| 코덱스 총괄 스레드 `01a168e3-1e7c-7800-bda6-c05c355a0068` | 조사·테스트·리뷰, Supabase 읽기 (기본 읽기 전용) | `D:/flowme-<주제>-<날짜>-01a168e3/`, inbox 회신 | 활동 |
+| 코덱스 총괄 스레드 `01a168e3-1e7c-7800-bda6-c05c355a0068` | 조사·테스트·리뷰, Supabase 읽기 (기본 읽기 전용). 10/30 묶음: R8a·R8b·R9b-1·R9b-2·S-a 리뷰, 공식 콘텐츠 사실 대조, worktree 보관 독립 검증, Alpha→main 계획, source-review 부채 11/21 대응, 성능 교차 확인 | `D:/flowme-<주제>-<날짜>-01a168e3/`, inbox 회신 | 활동 |
 | Dot (코덱스, 클라우드 크롬) | 합성 문서 화면 테스트 | 테스트 계정의 합성 문서, 결과는 총괄 스레드 경유 | 10/29 활동 |
 | 개발3 (10/26 구조, 코덱스) | 원문 복귀 후보 통합 | 과제 원장의 `revision*/candidate`, `development` | 원장상 소유, 현재 활동 미확인 |
 | 메인 체크아웃 미커밋 237경로 | 10/26 이전 세션들의 작업 | 없음 (동결) | 정리 결정 전 수정·커밋 금지 |
