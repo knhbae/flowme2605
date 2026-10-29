@@ -1494,23 +1494,41 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const editorStatus = programEditorStatus({ readOnly: !!props.readOnly, readOnlyLabel: props.disabledReason, error: !!draft.error,
     locked: inputLocked, saving: draft.saving, checking: checkPending, pending: inputPending });
   const serverWins = serverStatusWins(serverView, editorStatus);
-  const quietStatus = !!serverView && typing && !serverWins && (editorStatus.level === 6 && !inputLocked || editorStatus.level === 7);
-  // The bar's slot is the same status, short and visual only; the toolbar slot does the announcing.
-  const barStatus = serverWins ? serverView!.label : quietStatus || !serverView && editorStatus.level >= 6 && editorStatus.level < 8 && !inputLocked ? '●'
-    : props.readOnly ? '읽기 전용' : editorStatus.level === 3 ? '⚠ 저장 확인 필요' : inputLocked ? '입력 잠시 멈춤' : editorStatus.label;
   const statusWarn = (serverWins ? serverView!.level : editorStatus.level) <= 4;
-  /** The bar's copy of the one status slot: short and never announced. A warning there is a button
-   *  that opens the toolbar slot's recovery box (keyboard closes, the box and its actions show). */
+  // The words show the winner; the recovery boxes stay whichever wins, so no action is lost.
+  const statusLabel = serverWins ? serverView!.label : editorStatus.label;
+  const hasRecovery = !!serverView?.recovery || !!draft.error;
+  // While typing, anything short of a warning is one quiet dot, a fast "저장됨" included.
+  const quietStatus = !!serverView && typing && !statusWarn && !inputLocked;
+  // The bar's slot is the same status, short; the toolbar slot holds the one live announcement.
+  const barStatus = quietStatus || !serverView && editorStatus.level >= 6 && editorStatus.level < 8 && !inputLocked ? '●'
+    : props.readOnly ? '읽기 전용' : statusWarn ? `⚠ ${statusLabel}` : inputLocked ? '입력 잠시 멈춤' : statusLabel;
+  /** The bar's copy of the status: never announced. A warning there is a button only when there is
+   *  a recovery box to open (keyboard closes, the box and its actions show); otherwise just the words. */
   function barStatusSlot() {
-    if (!statusWarn) return <span className={styles.barStatus} aria-hidden="true">{barStatus}</span>;
-    return <button type="button" className={styles.barStatus} data-warn="true" aria-label={`${barStatus.replace(/^⚠ /, '')} · 복구 열기`}
+    if (!statusWarn || !hasRecovery) return <span className={styles.barStatus} aria-hidden="true" data-warn={statusWarn || undefined}>{barStatus}</span>;
+    return <button type="button" className={styles.barStatus} data-warn="true" aria-label={`${statusLabel} · 복구 열기`}
       onPointerDown={event => { event.preventDefault(); }} onClick={openStatusRecovery}>{barStatus}</button>;
   }
   function openStatusRecovery() {
-    const box = barRef.current?.closest('section')?.querySelector<HTMLDetailsElement>(`.${styles.serverSlot} details, .${styles.toolbar} > .${styles.saveFeedback}`);
+    const box = barRef.current?.closest('section')?.querySelector<HTMLDetailsElement>(`.${styles.statusSlot} details`);
     if (!box) return;
     box.open = true;
     box.querySelector<HTMLElement>('summary')?.focus();
+  }
+  /** The editor's own recovery box (다시 저장, 입력한 원문 받기, 저장본으로 되돌리기). */
+  function editorRecovery(announce: boolean) {
+    const label = props.readOnly ? '읽기 전용 · 복구' : inputLocked ? '입력 보호 · 복구' : '저장 확인 필요 · 복구';
+    return <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
+        if (event.key !== 'Escape' || event.nativeEvent.isComposing || composingRef.current || !event.currentTarget.open) return;
+        event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
+        event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
+      }}><summary title={props.readOnly ? props.disabledReason || '읽기 전용' : draft.error}>{announce ? <span role="alert">{label}</span> : <span>{label}</span>}</summary><div className={styles.error}><p>{draft.error}</p><div>
+      {progressConflict && <button type="button" onClick={showProgressConflict}>진행 조절 보기</button>}
+      <button type="button" disabled={!!props.readOnly || draft.invalid || draft.saving} onClick={() => { void saveNow(); }}>다시 저장</button>
+      <button type="button" onClick={downloadDraft}>입력한 원문 받기</button>
+      <button type="button" disabled={inputLocked || draft.saving} onClick={() => { if (draftRef.current?.discard(propsRef.current.workspace)) { orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++; editorRef.current?.setValue(draftRef.current.getState().raw, { preserveSelection: true }); } }}>저장본으로 되돌리기</button>
+      </div></div></details>;
   }
   function barButton(action: WritingBarAction, icon: string, label: string, keys: string, off: boolean, className?: string, describedBy?: string) {
     return <button key={action} type="button" className={className} data-bar-action={action} data-held={heldBar === action ? 'true' : undefined}
@@ -1556,19 +1574,16 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           {(props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" hidden={!!props.folderId} disabled={disabled || draft.dirty} aria-label="다시 실행" onClick={event => { closeEditorTools(event.currentTarget); if (orderHistoryRef.current.hasEntries()) nativeHistory('historyRedo'); else void props.onRedo?.(); }}>다시 실행</button>}
         </div>
       </details>
-      {!serverView && props.noteStatus && <div className={styles.noteStatus}>{props.noteStatus}</div>}
-      {serverWins ? <div className={styles.serverSlot} data-level={serverView!.level}>{serverView!.main}</div>
-        : draft.error ? <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
-        if (event.key !== 'Escape' || event.nativeEvent.isComposing || composingRef.current || !event.currentTarget.open) return;
-        event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
-        event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
-      }}><summary title={props.readOnly ? props.disabledReason || '읽기 전용' : draft.error}><span role="alert">{props.readOnly ? '읽기 전용 · 복구' : inputLocked ? '입력 보호 · 복구' : '저장 확인 필요 · 복구'}</span></summary><div className={styles.error}><p>{draft.error}</p><div>
-      {progressConflict && <button type="button" onClick={showProgressConflict}>진행 조절 보기</button>}
-      <button type="button" disabled={!!props.readOnly || draft.invalid || draft.saving} onClick={() => { void saveNow(); }}>다시 저장</button>
-      <button type="button" onClick={downloadDraft}>입력한 원문 받기</button>
-      <button type="button" disabled={inputLocked || draft.saving} onClick={() => { if (draftRef.current?.discard(propsRef.current.workspace)) { orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++; editorRef.current?.setValue(draftRef.current.getState().raw, { preserveSelection: true }); } }}>저장본으로 되돌리기</button>
-      </div></div></details>
-        : <span className={styles.status} role="status" aria-live="polite" data-quiet={quietStatus || undefined}>{quietStatus ? <span aria-hidden="true">●</span> : editorStatus.label}</span>}
+      {serverView ? <div className={styles.statusSlot} data-warn={statusWarn || undefined}>
+        {/* One live node: an alert for a warning (words hidden when a recovery box shows them), else a quiet status. */}
+        {statusWarn ? <span className={hasRecovery ? styles.srOnly : styles.status} role="alert">{statusLabel}</span>
+          : <span className={styles.status} role="status" aria-live="polite" data-quiet={quietStatus || undefined}>{quietStatus ? <span aria-hidden="true">●</span> : statusLabel}</span>}
+        {serverView.recovery}
+        {draft.error && editorRecovery(false)}
+      </div> : <>
+        {props.noteStatus && <div className={styles.noteStatus}>{props.noteStatus}</div>}
+        {draft.error ? editorRecovery(true) : <span className={styles.status} role="status" aria-live="polite">{editorStatus.label}</span>}
+      </>}
       {serverView?.extras && <div className={styles.serverExtras}>{serverView.extras}</div>}
     </div>
     {moving && <div className={styles.moveNotice} role="status"><span>{moving.label} · 하위 {moving.descendantCount}줄</span><button type="button" onClick={() => setPanel({ kind: 'move', lineId: moving.lineId })}>위치 선택</button><button type="button" onClick={cancelMove}>이동 취소</button></div>}

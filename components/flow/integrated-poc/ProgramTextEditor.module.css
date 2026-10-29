@@ -249,7 +249,9 @@
     position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
   }
   .editor:has(.writingBar):has(.host textarea:focus, [data-folder-region] textarea:focus, .writingBar :focus) .toolbar > .noteStatus:not(:has([role="alert"])) { display: none; }
-  .editor:has(.writingBar):has(.host textarea:focus, [data-folder-region] textarea:focus, .writingBar :focus) .toolbar > .serverSlot:not(:has([role="alert"])) {
+  /* While the bar shows, it is the one visible status; the slot keeps its live node for screen readers
+     and comes back as soon as a recovery box in it is open. */
+  .editor:has(.writingBar):has(.host textarea:focus, [data-folder-region] textarea:focus, .writingBar :focus) .toolbar > .statusSlot:not(:has(details[open])) {
     position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
   }
 }
@@ -266,11 +268,12 @@
    severe; notices that must stay (recovery panels, the last message) get their own row only when present. */
 .toolbar > .status { min-width: 4em; }
 .toolbar > .status[data-quiet] { color: var(--flowme-b-control, #7d89a2); }
-.toolbar > .serverSlot { order: 3; min-width: 0; margin-left: 0; padding-inline: 4px; font-size: 13px; line-height: 20px; }
-.toolbar > .serverSlot p { margin: 0; }
+.toolbar > .statusSlot { order: 3; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-width: 0; margin-left: 0; }
+.toolbar > .statusSlot > .status { margin-left: 0; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .toolbar > .serverExtras { order: 5; flex: 1 0 100%; min-width: 0; }
 @media (max-width: 700px) {
-  .toolbar > .serverSlot:has([role="alert"]) { flex: 1 0 100%; order: 5; padding-inline: 0; }
+  .toolbar > .statusSlot:has(details) { flex: 1 0 100%; order: 5; }
 }
 @media (max-width: 700px) {
   /* A warning in the bar is a button to its recovery box; it keeps the status width, not a 44px square. */

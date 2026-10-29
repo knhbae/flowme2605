@@ -1136,17 +1136,21 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       <p>{DEV_NOTICE_TEXT}</p></details>
     <button type="button" onClick={() => { if (markDevNoticeSeen(devNoticeStorage(), session.userId)) setDevNoticeSeen(true); }}>확인</button></div>;
   const serverUndo = <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>;
-  // The status and its recovery box, and the notices that always show. The note editor draws
-  // the first in its one status slot only when the server's status wins; the rest stays as it is.
-  const serverStatusMain = <>
-        {!localParticipationRecovery && <p role={reviewOwnsAnnouncement ? undefined : 'status'} aria-live={reviewOwnsAnnouncement ? 'off' : 'polite'} data-save-state={snapshot?.status}>{pendingUnknown ? '저장 여부 확인 못 함' : pending ? '저장 중…' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
-        {destination.view === 'space' && needsInputProtection && <details name="program-input-feedback" className={styles.inputRecovery} onKeyDown={event => {
+  // The recovery box with its actions. `announce` is off inside the note editor, whose one status
+  // slot does the announcing; elsewhere (today, 분류, no document) it keeps its own alert.
+  const inputRecoveryLabel = storageError ? '입력 보관 실패 · 확인' : pendingUnknown ? '저장 여부 확인 못 함'
+    : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장되지 않음 · 확인' : '입력 보호 · 확인';
+  const inputRecoveryBox = (announce: boolean) => destination.view === 'space' && needsInputProtection && <details name="program-input-feedback" className={styles.inputRecovery} onKeyDown={event => {
           if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
           event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
           event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
-        }}><summary><span role="alert">{storageError ? '입력 보관 실패 · 확인' : pendingUnknown ? '저장 여부 확인 못 함' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장되지 않음 · 확인' : '입력 보호 · 확인'}</span></summary>
+        }}><summary>{announce ? <span role="alert">{inputRecoveryLabel}</span> : <span>{inputRecoveryLabel}</span>}</summary>
           <div className={styles.inputRecoveryBody}>{inputProtection}</div>
-        </details>}
+        </details>;
+  // The status and its recovery box, and the notices that always show (today, 분류, no document).
+  const serverStatusMain = <>
+        {!localParticipationRecovery && <p role={reviewOwnsAnnouncement ? undefined : 'status'} aria-live={reviewOwnsAnnouncement ? 'off' : 'polite'} data-save-state={snapshot?.status}>{pendingUnknown ? '저장 여부 확인 못 함' : pending ? '저장 중…' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
+        {inputRecoveryBox(true)}
       </>;
   const serverStatusExtras = <>
         {destination.view === 'space' && personalRecovery}
@@ -1162,7 +1166,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       </div>;
   const serverStatusView: ProgramServerStatusView | null = usesNoteChrome ? {
     ...programServerStatus({ snapshot, storageError, external, participationRecovery: !!localParticipationRecovery }),
-    main: <div className={styles.statusSlot}>{serverStatusMain}</div>,
+    recovery: destination.view === 'space' && needsInputProtection ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,
     extras: destination.view === 'space' && (structuralRecoveryPanel || recoveries || message && !participationMessage)
       ? <div className={styles.statusRow}>{serverStatusExtras}</div> : null,
   } : null;
