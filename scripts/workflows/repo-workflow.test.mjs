@@ -7,8 +7,10 @@ import {
   classifyChangedPath,
   filterChangesByScopes,
   groupChanges,
+  isDocsOnlyChange,
   isDocsOnlyPath,
   parsePorcelainStatus,
+  parseRawDiff,
   recommendVerification,
   selectPrePushCheck,
   summarizeStatuses,
@@ -100,15 +102,41 @@ test('treats only documents that docs:check covers and no code reads as docs-onl
     'lib/flow/README.md',
     '.githooks/pre-push',
     'package.json',
+    '.agents/skills/humanize-korean/references/metrics.py',
+    '.claude/skills/humanize-korean/references/metrics.py',
+    '.agents/skills/humanize-korean/references/baseline.json',
+    '.agents/skills/flow-session-start/agents/openai.yaml',
   ]) {
     assert.equal(isDocsOnlyPath(file), false, file);
   }
+});
+
+test('reads modes from a raw diff so symlinks and type changes never count as docs', () => {
+  // Captured from `git diff --raw -z --no-renames` on a fixture repository.
+  const raw = ':000000 100644 0000000 b917a72 A\0.agents/skills/x/run.py\0'
+    + ':100644 100644 7898192 c1827f0 M\0docs/a.md\0'
+    + ':100644 000000 6178079 0000000 D\0docs/b.md\0'
+    + ':100644 120000 f2ad6c7 e77de85 T\0docs/c.md\0'
+    + ':000000 120000 0000000 e77de85 A\0docs/link.md\0';
+  const changes = parseRawDiff(raw);
+
+  assert.deepEqual(changes.map(({ file, status }) => `${status} ${file}`), [
+    'A .agents/skills/x/run.py',
+    'M docs/a.md',
+    'D docs/b.md',
+    'T docs/c.md',
+    'A docs/link.md',
+  ]);
+  assert.deepEqual(changes.map(isDocsOnlyChange), [false, true, true, false, false]);
+  assert.deepEqual(parseRawDiff(''), []);
 });
 
 const ZERO = '0'.repeat(40);
 const LOCAL = 'a'.repeat(40);
 const REMOTE = 'b'.repeat(40);
 const BASE = 'c'.repeat(40);
+
+const plain = (file) => ({ file, oldMode: '100644', newMode: '100644', status: 'M' });
 
 function fakeGit(filesByRange, base = BASE) {
   const calls = [];
@@ -120,7 +148,7 @@ function fakeGit(filesByRange, base = BASE) {
     },
     changedFiles: (from, to) => {
       calls.push(['diff', from, to]);
-      return filesByRange[`${from}..${to}`] ?? null;
+      return filesByRange[`${from}..${to}`]?.map((change) => (typeof change === 'string' ? plain(change) : change)) ?? null;
     },
   };
 }
@@ -139,6 +167,18 @@ test('pre-push runs docs:check only when every pushed ref changes docs alone', (
   });
   const raw = `refs/heads/a ${LOCAL} refs/heads/a ${REMOTE}\nrefs/heads/b ${REMOTE} refs/heads/b ${BASE}\n`;
   assert.equal(selectPrePushCheck(raw, twoRefs), 'verify');
+
+  const update = `refs/heads/topic ${LOCAL} refs/heads/topic ${REMOTE}\n`;
+  const skillScript = fakeGit({ [`${REMOTE}..${LOCAL}`]: [
+    '.agents/skills/humanize-korean/references/metrics.py',
+    '.claude/skills/humanize-korean/references/metrics.py',
+  ] });
+  assert.equal(selectPrePushCheck(update, skillScript), 'verify');
+
+  const docSymlink = fakeGit({ [`${REMOTE}..${LOCAL}`]: [
+    { file: 'docs/TOOLING.md', oldMode: '100644', newMode: '120000', status: 'T' },
+  ] });
+  assert.equal(selectPrePushCheck(update, docSymlink), 'verify');
 });
 
 test('pre-push diffs a new remote branch from its merge base with main', () => {
