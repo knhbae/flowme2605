@@ -33,7 +33,8 @@ Search large logs before reading them end to end. Read [IDEAS.md](./docs/IDEAS.m
 - Prefer existing patterns and the smallest coherent change. Protect user work and credentials.
 - Before bulk copying, packaging, or generating evidence, allowlist only the code and legitimate inputs needed for the result. Reference immutable large inputs by canonical path and SHA-256; set the task's file/byte budget from measured inputs and existing outputs, and give parallel work separate output roots. See the [workspace storage workflow](./docs/workflows/workspace-storage.md).
 - Check generated file counts, bytes, selected inputs, and large-input references against that plan. At closeout, retain unique work, required QA and failure evidence; report cleanup candidates by exact path, role, and measured size. These checks grant no deletion authority, and an earlier cleanup approval does not authorize a new cleanup.
-- Separate implementation, internal QA, deployment, and observed-user evidence.
+- Separate implementation, internal QA, deployment, and observed-user evidence. Whoever writes a change runs that change's own checks; independence comes from a second reviewer, not from withholding the checks from the author.
+- Delegate research, testing, simulation, and review to a read-only Codex run (`codex exec -s read-only`, or a review-only command). `/codex:rescue` defaults to a write-capable run, so state read-only when the task is investigation. Delegate a write-capable run only when the task earns its own worktree; make the small edits here instead. The shared checkout holds other sessions' uncommitted work, which no branch can restore.
 - Capture only durable decisions, actionable deferred ideas, approved specs, blockers, or release facts.
 - Keep the repo canonical; project to Notion only for active human review or action.
 - Do not edit `.env`, credentials, `old/`, `claude_ver/`, or legacy dumps without explicit approval.
