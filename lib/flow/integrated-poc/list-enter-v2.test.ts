@@ -3,6 +3,7 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextWorkspaceState } from './text-workspace';
+import { heldTargetVerdict, writingBarTarget } from './writing-bar';
 
 type Selection = { start: number; end: number; direction: string };
 const load = createRequire(import.meta.url);
@@ -176,9 +177,9 @@ test('a Shift+Enter memo saves as that task\'s memo and reopens under it; v2 lin
 // The writing bar's ↵ calls instance.enter(true): the same key handler, plus the line break a browser
 // inserts for a key the editor leaves alone. Compare it with a real Shift+Enter in every case.
 const enterMethod = slice('      enter(shift) {', '\n      },');
-function barEnter(raw: string, line: number, options: { v2?: boolean; composing?: boolean } = {}) {
+function barEnter(raw: string, line: number, options: { v2?: boolean; composing?: boolean; selectStart?: number } = {}) {
   const meta = rows(raw), caret = end(raw, line);
-  const textarea = { value: raw, readOnly: false }, selection: Selection = { start: caret, end: caret, direction: 'none' };
+  const textarea = { value: raw, readOnly: false }, selection: Selection = { start: options.selectStart ?? caret, end: caret, direction: 'none' };
   const editor = new Function('textarea', 'selection', 'imeEnterCycle', 'addSettings', 'inputPlans', 'config', 'getRowMeta', `
     let composing = false, destroyed = false, inputRejected = false, nextTabLeaves = false, indentLease = null;
     ${helpers}
@@ -216,4 +217,17 @@ test('the bar ↵ gives exactly the Shift+Enter result, and does nothing during 
   }
   const composing = barEnter('- [ ] 장보기', 0, { v2: true, composing: true });
   assert.deepEqual([composing.ran, composing.value], [false, '- [ ] 장보기']);
+});
+
+test('S3 re-review: a held ↵ meeting a range selected later would replace that text, so the verdict drops it', () => {
+  // Held at the end of "메모 ABC" while saving; then Shift+Left twice selects "BC" on the same line.
+  const raw = '메모 ABC', area = {}, held = writingBarTarget(area, raw, raw.length);
+  for (const v2 of [false, true]) {
+    const run = barEnter(raw, 0, { v2, selectStart: raw.length - 2 });
+    assert.equal(run.value, '메모 A\n', `the real vendor ↵ replaces the selection (v2 ${v2})`);
+  }
+  assert.equal(heldTargetVerdict(held, { surface: area, value: raw, caret: raw.length - 2, selectionEnd: raw.length, editable: true, connected: true, focusHere: true }), 'cancel');
+  // Unchanged caret: the same vendor call is the Shift+Enter the user pressed for.
+  assert.equal(heldTargetVerdict(held, { surface: area, value: raw, caret: raw.length, selectionEnd: raw.length, editable: true, connected: true, focusHere: true }), 'run');
+  assert.equal(barEnter(raw, 0).value, '메모 ABC\n');
 });

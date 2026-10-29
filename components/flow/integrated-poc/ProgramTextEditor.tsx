@@ -318,6 +318,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     typingTimer.current = setTimeout(() => { typingTimer.current = null; setTyping(false); }, 1000);
   }
   useEffect(() => () => { if (typingTimer.current) clearTimeout(typingTimer.current); }, []);
+  const compositionAnchorRef = useRef<{ area: HTMLTextAreaElement; offset: number } | null>(null);
+  // One retry chain at a time for the current held press, capped by elapsed time.
+  const barRetry = useRef<{ frame: number; serial: number; since: number } | null>(null);
   useEffect(() => { releaseHeldBar(); }, [composing, draft.saving, inputLocked, props.readOnly, regionPending]);
   // Other typing or leaving the editor cancels a held press; the composition's own input does not,
   // including a final insertText some keyboards send right after compositionend.
@@ -332,10 +335,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         || composedJustNow && type === 'insertText') return;
       cancel();
     };
-    const composed = () => { composedJustNow = true; if (settle) clearTimeout(settle); settle = setTimeout(() => { composedJustNow = false; settle = null; }, 0); };
+    const composed = () => { compositionAnchorRef.current = null; composedJustNow = true; if (settle) clearTimeout(settle); settle = setTimeout(() => { composedJustNow = false; settle = null; }, 0); };
+    const started = (event: Event) => {
+      const area = event.target instanceof HTMLTextAreaElement ? event.target : null;
+      compositionAnchorRef.current = area ? { area, offset: area.selectionStart } : null;
+    };
     const left = (event: FocusEvent) => { if (!(event.relatedTarget instanceof Node && root.contains(event.relatedTarget))) cancel(); };
-    root.addEventListener('beforeinput', typed, true); root.addEventListener('compositionend', composed, true); root.addEventListener('focusout', left);
-    return () => { if (settle) clearTimeout(settle); root.removeEventListener('beforeinput', typed, true); root.removeEventListener('compositionend', composed, true); root.removeEventListener('focusout', left); };
+    root.addEventListener('beforeinput', typed, true); root.addEventListener('compositionstart', started, true); root.addEventListener('compositionend', composed, true); root.addEventListener('focusout', left);
+    return () => { if (settle) clearTimeout(settle); root.removeEventListener('beforeinput', typed, true); root.removeEventListener('compositionstart', started, true); root.removeEventListener('compositionend', composed, true); root.removeEventListener('focusout', left); };
   }, [barHold]);
 
   const currentState = () => draftRef.current?.getState().working ?? propsRef.current.workspace;
@@ -399,7 +406,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const line = writingBarLine(raw, caret, isTask => isTask ? taskMarkerLock(meta, state, docId) : null);
     // A folder region keeps saved lines' kind and depth; offer only what its own check accepts.
     return propsRef.current.folderId
-      ? folderBarLine(line, raw, caret, next => !!regionPortRef.current?.canApplyActive?.(next), FOLDER_STRUCTURE_LOCK) : line;
+      ? folderBarLine(line, raw, caret, next => !!regionPortRef.current?.canApplyActive?.(next), FOLDER_STRUCTURE_LOCK, target.area.selectionEnd) : line;
   }
   function syncBarLine() {
     if (!propsRef.current.authoringMode) return;
@@ -426,24 +433,33 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // A held press remembers where it was aimed; a folder region may be read-only while it saves.
     const surface = busy ? propsRef.current.folderId ? regionPortRef.current?.activeEditor?.(true) ?? null : barEditor() : null;
     if (busy && !surface) return;
-    const run = barHold.press(action, busy, surface ? writingBarTarget(surface.area, surface.area.value, surface.area.selectionStart) : null);
+    const anchor = compositionAnchorRef.current, area = surface?.area;
+    const settled = area && composingRef.current && anchor?.area === area ? anchor.offset : area?.selectionStart;
+    stopBarRetry();
+    const run = barHold.press(action, busy, area ? writingBarTarget(area, area.value, area.selectionStart, settled) : null);
     setHeldBar(barHold.held());
     if (run) runBar(run);
   }
+  function stopBarRetry() { if (barRetry.current) { cancelAnimationFrame(barRetry.current.frame); barRetry.current = null; } }
   /** Run a held press once input settles, only where it was aimed. The press is taken only when its
-   *  target is ready, so a region still read-only right after its save keeps it (up to about a second). */
-  function releaseHeldBar(attempt = 0) {
-    if (!barHold.held()) return;
-    if (inputLockedRef.current || propsRef.current.readOnly) { barHold.cancel(); setHeldBar(null); return; }
+   *  target is ready, so a region still read-only right after its save keeps it, for up to one second. */
+  function releaseHeldBar() {
+    if (!barHold.held()) { stopBarRetry(); return; }
+    if (inputLockedRef.current || propsRef.current.readOnly) { stopBarRetry(); barHold.cancel(); setHeldBar(null); return; }
     if (composingRef.current || draftRef.current?.getState().saving) return;
     const target = barHold.target(), aimed = target?.surface as HTMLTextAreaElement | undefined, now = barEditor(), active = document.activeElement;
     const verdict = heldTargetVerdict(target, { surface: now?.area ?? null, value: now?.area.value ?? '', caret: now?.area.selectionStart ?? 0,
-      editable: !!now && !now.area.readOnly, connected: !!aimed?.isConnected,
+      selectionEnd: now?.area.selectionEnd ?? now?.area.selectionStart ?? 0, editable: !!now && !now.area.readOnly, connected: !!aimed?.isConnected,
       focusHere: !!active && (active === aimed || !!barRef.current?.contains(active) || active instanceof HTMLElement && !!active.closest('[data-bar-action]')) });
     if (verdict === 'wait') {
-      if (attempt < 60) requestAnimationFrame(() => releaseHeldBar(attempt + 1)); else { barHold.cancel(); setHeldBar(null); }
+      const serial = barHold.serial(), since = barRetry.current?.serial === serial ? barRetry.current.since : performance.now();
+      stopBarRetry();
+      if (performance.now() - since > 1000) { barHold.cancel(); setHeldBar(null); return; }
+      const frame = requestAnimationFrame(() => { if (barRetry.current?.frame === frame) releaseHeldBar(); });
+      barRetry.current = { frame, serial, since };
       return;
     }
+    stopBarRetry();
     const run = barHold.release(false);
     setHeldBar(null);
     if (verdict === 'run' && run) runBar(run);
@@ -474,8 +490,37 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // Update the native editor's existing selection/viewport listeners, not its value/history.
     area.dispatchEvent(new Event('select', { bubbles: true }));
   }
+  /** Folder view: what the menu's 들여쓰기/내어쓰기 would do to that line, checked by the region's own rule. */
+  function regionIndentPlan(lineId: string | null, outdent: boolean): { ok: true } | { ok: false; reason: string } {
+    const folderId = propsRef.current.folderId, view = folderId ? readProgramFolderRegions(currentState(), propsRef.current.docId, folderId) : null;
+    const region = lineId ? view?.regions.find(entry => !entry.readOnly && entry.lineIds.includes(lineId)) : undefined;
+    if (!view || !region || !lineId) return { ok: false, reason: REGION_OUTSIDE };
+    const lines = region.raw.split('\n'), index = region.lineIds.indexOf(lineId), text = lines[index] ?? '';
+    const next = outdent ? text.replace(/^( {1,2}|\t)/, '') : `  ${text}`;
+    if (next === text) return { ok: false, reason: '더 내어 쓸 수 없습니다.' };
+    lines[index] = next;
+    return planProgramRegionEdit(currentState(), view, region.key, lines.join('\n')).ok ? { ok: true } : { ok: false, reason: FOLDER_STRUCTURE_LOCK };
+  }
+  /** A deferred caret move must not take the caret from newer input that started meanwhile. */
+  function revealAllowed() {
+    const active = document.activeElement;
+    return !composingRef.current && !(active instanceof HTMLElement && active.matches('input, textarea, select, [contenteditable="true"]')
+      && !hostRef.current?.closest('section')?.contains(active));
+  }
   function indentFromMenu(outdent: boolean) {
-    const index = currentRow(panel?.lineId ?? null)?.index;
+    const lineId = panel?.lineId ?? null, index = currentRow(lineId)?.index;
+    if (propsRef.current.folderId) {
+      const plan = regionIndentPlan(lineId, outdent);
+      if (!plan.ok) { setMessage(plan.reason); return; }
+      closePanel();
+      // The region editor's own indent, so its input check (planProgramRegionEdit) decides again.
+      requestAnimationFrame(() => {
+        const port = regionPortRef.current;
+        if (!lineId || !revealAllowed() || !port?.revealLine?.(lineId)) return;
+        port.activeEditor?.()?.instance.indent(outdent);
+      });
+      return;
+    }
     closePanel();
     const selection = editorRef.current?.getSelection();
     if (index !== undefined && selection?.lineIndex !== index) editorRef.current?.focus(index);
@@ -734,7 +779,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // older snapshot; it must not keep this menu or the new caret waiting.
     delete childDrafts.current[target.parentId+':'+kind];dismissPanel(false,false);
     const index=currentDoc()?.lines.findIndex(l=>l.id===result.lineId)??-1;
-    if(folderId)requestAnimationFrame(()=>{regionPortRef.current?.revealLine?.(result.lineId);});
+    if(folderId)requestAnimationFrame(()=>{if(revealAllowed())regionPortRef.current?.revealLine?.(result.lineId);});
     else if(index>=0){const area=textArea();editorRef.current?.focus(index);area?.setSelectionRange(result.offset,result.offset);editorRef.current?.refreshViewport();rememberPosition();if(area)revealProgramEditorLine(area,index);}
     scheduleSave();return true;
   }
@@ -1073,7 +1118,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   useEffect(() => {
     /** Folder view: cap the focused region so its last line and the bar under it stay above the keyboard. */
     function fitFolderRegion(root: Element | null, barShown: boolean, bottom: number) {
-      const focused = root?.querySelector('[data-folder-region] textarea:focus')?.closest('[data-folder-region]');
+      const focused = root?.querySelector('[data-folder-region] :focus')?.closest('[data-folder-region]');
       for (const region of Array.from(root?.querySelectorAll<HTMLElement>('[data-folder-region] [data-readonly]') ?? [])) {
         const height = barShown && focused?.contains(region) ? programEditorVisibleHeight(region.getBoundingClientRect().top, bottom) : null;
         const value = height === null ? '' : `${Math.max(132, height)}px`;
@@ -1129,6 +1174,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const protectedExecutionPanel = !!panelAccess?.reason && !!panel && ['progress', 'date'].includes(panel.kind);
   const insertions = panel?.lineId ? M.insertionOptions(draft.working, props.docId, panel.lineId) : [];
   const memoContext = panel?.kind === 'insert' ? readProgramMemoContext(draft.working, props.docId, panel.lineId) : null;
+  const folderIndent = props.folderId && panel?.kind === 'insert' && row
+    ? { indent: regionIndentPlan(row.id, false), outdent: regionIndentPlan(row.id, true) } : null;
   const menuInsertions = insertions.filter(option=>!props.authoringMode||option.kind!=='subcheck'&&option.kind!=='note');
   // "하위 할 일" and "메모" open the same inline input, each already set to its kind, each saying its place.
   const childAnchor = panel?.kind === 'insert' && props.authoringMode && row ? authoringAnchor(row.index) : null;
@@ -1206,14 +1253,32 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if(!acceptRegion(plan.next,snapshot.view.workspace)){setMessage('지금은 이 영역에 넣을 수 없습니다. 저장이 끝난 뒤 다시 골라 주세요. 원문은 유지했습니다.');return false;}
     const lineId=M.getDocument(plan.next,propsRef.current.docId)?.lines[nextRaw.slice(0,caret).split('\n').length-1]?.id,column=caret-(nextRaw.lastIndexOf('\n',caret-1)+1);
     scheduleSave();
-    requestAnimationFrame(()=>{if(lineId)regionPortRef.current?.revealLine?.(lineId,column);});
+    requestAnimationFrame(()=>{if(lineId&&revealAllowed())regionPortRef.current?.revealLine?.(lineId,column);});
     return true;
   }
   /** Folder view ＋ or "/": save what the region holds first, so the menu works on real line IDs. */
   async function openRegionInsertMenu(){
     const port=regionPortRef.current;
     if(!port||port.isComposing()||inputLockedRef.current||propsRef.current.readOnly||checkPendingRef.current){setMessage('입력이나 문서 상태를 확인한 뒤 다시 열어 주세요. 원문은 유지했습니다.');return false;}
-    if(port.hasPending()){if(!await port.flush())return false;await new Promise(resolve=>requestAnimationFrame(resolve));}
+    if(!port.hasPending())return openRegionMenuAt(port);
+    // Waiting for the region's save: pin the request (document, folder view, editor, region line) and,
+    // like connectFlow, drop it on any newer press, key, focus move or input. No late menu.
+    const surface=port.activeEditor?.(true),aimed=surface?writingBarTarget(surface.area,surface.area.value,surface.area.selectionStart):null;
+    const docId=propsRef.current.docId,folderId=propsRef.current.folderId,controller=draftRef.current,owner=surface?.area.ownerDocument;
+    let interrupted=false;const interrupt=()=>{interrupted=true;};
+    const events=['pointerdown','keydown','focusin','beforeinput','compositionstart'];
+    for(const event of events)owner?.addEventListener(event,interrupt,true);
+    try{
+      if(!aimed||!await port.flush())return false;
+      await new Promise(resolve=>requestAnimationFrame(resolve));
+      const now=port.activeEditor?.();
+      if(interrupted||propsRef.current.active===false||propsRef.current.docId!==docId||propsRef.current.folderId!==folderId
+        ||draftRef.current!==controller||regionPortRef.current!==port||composingRef.current||inputLockedRef.current||!now
+        ||heldTargetVerdict(aimed,{surface:now.area,value:now.area.value,caret:now.area.selectionStart,editable:!now.area.readOnly,connected:now.area.isConnected,focusHere:true})!=='run')return false;
+      return openRegionMenuAt(port);
+    }finally{for(const event of events)owner?.removeEventListener(event,interrupt,true);}
+  }
+  function openRegionMenuAt(port:ProgramFolderRegionPort){
     const snapshot=port.takeSnapshot(),index=snapshot?.lineId?currentDoc()?.lines.findIndex(line=>line.id===snapshot.lineId)??-1:-1;
     if(!snapshot?.regionKey||index<0){setMessage('추가할 줄을 찾지 못했습니다. 분류 영역 안의 줄을 누른 뒤 다시 열어 주세요.');return false;}
     return openCurrentInsertMenu(index);
@@ -1574,8 +1639,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {row && <details className={styles.menuGroup} aria-label="선택 항목 문서 구조"><summary>문서 구조</summary><div className={styles.choices}>
         {row?.kind === 'scope' && row.scopeKind === 'folder' && props.folderCopyProblem && <button type="button" disabled={disabled} onClick={() => openFolderCopy(panel.lineId)}>이 폴더 묶음의 사본 만들기…</button>}
         {row?.kind === 'scope' && <small>폴더 연결을 포함하려면 편집 도구의 ‘문서 TXT 복사’를 쓰세요. 항목 기록을 유지해 옮기려면 하위 묶음 이동을 쓰세요.</small>}
-        {row && ['task', 'subcheck', 'scope'].includes(row.kind) && <button type="button" onClick={() => beginMove(panel.lineId, true)}>하위 묶음 이동</button>}
-        {row && <><button type="button" onClick={() => indentFromMenu(false)}>들여쓰기</button><button type="button" onClick={() => indentFromMenu(true)}>내어쓰기</button><button type="button" onClick={() => { closePanel(); editorRef.current?.toggleFold(row.index); }}>하위 내용 접기 / 펼치기</button></>}
+        {row && ['task', 'subcheck', 'scope'].includes(row.kind) && <button type="button" disabled={!!props.folderId} onClick={() => beginMove(panel.lineId, true)}>하위 묶음 이동</button>}
+        {row && <><button type="button" disabled={!!folderIndent && !folderIndent.indent.ok} onClick={() => indentFromMenu(false)}>들여쓰기</button>
+          <button type="button" disabled={!!folderIndent && !folderIndent.outdent.ok} onClick={() => indentFromMenu(true)}>내어쓰기</button>
+          <button type="button" disabled={!!props.folderId} onClick={() => { closePanel(); editorRef.current?.toggleFold(row.index); }}>하위 내용 접기 / 펼치기</button></>}
+        {folderIndent && <small>{!folderIndent.indent.ok || !folderIndent.outdent.ok ? FOLDER_STRUCTURE_LOCK : '분류 보기에서는 접기와 하위 묶음 이동을 쓸 수 없습니다. ‘전체 문서 보기’에서 해 주세요.'}</small>}
         </div></details>}
       </div>}
       {panel.kind === 'progress' && !protectedExecutionPanel && <ProgramProgressForm title={row?.title || row?.task?.title} date={date} percent={percent} disabled={disabled}

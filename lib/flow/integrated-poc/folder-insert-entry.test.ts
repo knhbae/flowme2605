@@ -3,6 +3,7 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import * as ts from 'typescript';
 import { planProgramRegionEdit, readProgramFolderRegions } from './folder-document-regions';
+import { heldTargetVerdict, writingBarTarget } from './writing-bar';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 
 // Folder view: ＋ and "/" open the body's insert menu, and a choice goes into the visible region
@@ -45,7 +46,7 @@ function regionInsertion(regionIndex: number) {
     planProgramRegionEdit, programRegionError: (reason: string) => `region:${reason}`, REGION_OUTSIDE, today: () => '2026-10-30', M,
     acceptRegion: (next: TextWorkspaceState, before: TextWorkspaceState) => { assert.equal(before, view.workspace); accepted.push(next); return true; },
     setMessage: (text: string) => messages.push(text), scheduleSave: () => calls.push('save'),
-    requestAnimationFrame: (callback: () => void) => { callback(); return 1; },
+    requestAnimationFrame: (callback: () => void) => { callback(); return 1; }, revealAllowed: () => true,
   });
   return { state, raw, apply, calls, messages, accepted };
 }
@@ -79,13 +80,16 @@ test('a choice that would land outside the visible region is refused, and nothin
 test('＋ in a folder view saves the pending region first, then opens the menu on the caret line; a failed save opens nothing', async () => {
   const run = async (flushed: boolean, pending = true) => {
     const opened: number[] = [], messages: string[] = [];
+    const area = { value: '- [ ] 가\n- [ ] 나', selectionStart: 12, readOnly: false, isConnected: true, ownerDocument: { addEventListener() {}, removeEventListener() {} } };
     const port = { isComposing: () => false, hasPending: () => pending, flush: async () => { pending = !flushed; return flushed; },
-      takeSnapshot: () => ({ lineId: 'b', regionKey: 'k' }) };
-    const open = evaluate<() => Promise<boolean>>(fn('openRegionInsertMenu'), {
-      regionPortRef: { current: port }, inputLockedRef: { current: false }, propsRef: { current: { readOnly: false } }, checkPendingRef: { current: false },
+      takeSnapshot: () => ({ lineId: 'b', regionKey: 'k' }), activeEditor: () => ({ area }) };
+    const scope = {
+      regionPortRef: { current: port }, inputLockedRef: { current: false }, propsRef: { current: { readOnly: false, active: true, docId: 'd', folderId: 'g' } },
+      checkPendingRef: { current: false }, composingRef: { current: false }, draftRef: { current: {} }, writingBarTarget, heldTargetVerdict,
       setMessage: (text: string) => messages.push(text), requestAnimationFrame: (callback: () => void) => { callback(); return 1; },
       currentDoc: () => ({ lines: [{ id: 'a' }, { id: 'b' }] }), openCurrentInsertMenu: (index: number) => { opened.push(index); return true; },
-    });
+    };
+    const open = evaluate<() => Promise<boolean>>(fn('openRegionInsertMenu'), { ...scope, openRegionMenuAt: evaluate(fn('openRegionMenuAt'), scope) });
     return { result: await open(), opened, messages };
   };
   assert.deepEqual(await run(true), { result: true, opened: [1], messages: [] });
