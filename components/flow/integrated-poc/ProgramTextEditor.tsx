@@ -108,7 +108,10 @@ export interface ProgramTextEditorProps {
   active?: boolean;
   /** Local document-collection UI: direct writing first, current-line tools secondary. */
   directWriting?: boolean;
+  /** The workspace-wide writing tools flag ('/' menu, add right below, ＋ menu); never per document. */
   authoringMode?:boolean;
+  /** Opens this document's Flow·repeat box from the ＋ menu. */
+  onOpenPersonalAuthoring?: () => void;
   /** Host-owned status/actions share the existing toolbar, not the input owner. */
   noteStatus?: React.ReactNode;
   noteActions?: React.ReactNode;
@@ -1306,6 +1309,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {props.authoringMode&&row&&authoringAnchor(row.index)&&<button type="button" onClick={()=>{openAuthoringChild(row.index);}}>부모 메모 · 독립 하위 할 일</button>}
         {insertions.filter(option=>!props.authoringMode||option.kind!=='subcheck'&&option.kind!=='note').map(option => <button type="button" key={`${option.kind}:${option.offset}:${option.depth}`} disabled={insertionDisabled} onClick={() => insertNative(option.offset, option.text, option.caretOffset)}>{option.label}<small>{option.relation}</small></button>)}
         {props.authoringMode&&<><button type="button" disabled={insertionDisabled} onClick={()=>insertAuthoringLayout('step')}>단계 추가</button><button type="button" disabled={insertionDisabled} onClick={()=>insertAuthoringLayout('description')}>설명 이어 쓰기</button></>}
+        {props.authoringMode&&props.onOpenPersonalAuthoring&&<button type="button" onClick={()=>{closePanel();props.onOpenPersonalAuthoring?.();}}>반복·Flow 만들기</button>}
         {!currentDoc()?.lines.length && <><button type="button" disabled={insertionDisabled} onClick={() => insertNative(0, '- [ ] ', 6)}>할 일</button><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(); }}>자유 메모</button></>}
         </section>
         <details className={styles.menuGroup} aria-label="추가·연결"><summary>추가·연결</summary><div className={styles.choices}>

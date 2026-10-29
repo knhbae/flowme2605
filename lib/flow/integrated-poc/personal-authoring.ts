@@ -292,6 +292,13 @@ export function documentRepeatSeries(owner: PersonalAuthoringV1 | undefined, doc
   ];
 }
 
+/** Whether a document already carries personal authoring of its own: it is a Flow, a Flow start, or has a live repeat. */
+export function documentHasPersonalAuthoring(owner: PersonalAuthoringV1 | undefined, documentId: string, taskIds: readonly string[]): boolean {
+  return !!owner && (owner.flows.some(f => f.flowId === documentId)
+    || (owner.executions ?? []).some(e => e.executionDocumentId === documentId)
+    || documentRepeatSeries(owner, documentId, taskIds).length > 0);
+}
+
 const WEEKDAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
 /** Short reading of a saved rule for the reopened summary, e.g. "토요일 · 2회". */
 export function describePersonalRepeatRule(rule: PersonalRepeatRule): string {

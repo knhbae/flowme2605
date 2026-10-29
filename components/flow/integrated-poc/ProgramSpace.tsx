@@ -20,6 +20,7 @@ import { programErrorMessage, type ProgramMutate, type ProgramNavigate, type Pro
 import { emptyProgramRecurrencePresentation, programNavigationMatchesDocument, type ProgramSpaceNavigation } from '@/lib/flow/integrated-poc/navigation';
 import { ProgramDocumentProvenance } from './ProgramDocumentProvenance';
 import { ProgramPersonalAuthoring } from './ProgramPersonalAuthoring';
+import { documentHasPersonalAuthoring } from '@/lib/flow/integrated-poc/personal-authoring';
 import type { ProgramPmHostContext } from '@/lib/flow/integrated-poc/rea-pm/app-host';
 import { programTextProgressTransition } from '@/lib/flow/integrated-poc/program-text-progress-transition';
 import { programTextTransition } from '@/lib/flow/integrated-poc/program-text-transition';
@@ -147,11 +148,22 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     beforeData: ProgramData; afterData: ProgramData; detail: boolean;
     accept?: (workspace: TextWorkspaceState | null) => void; timeout?: ReturnType<typeof setTimeout> } | null>(null);
   const [period, setPeriod] = useState<ProgramPeriod>('documents');
-  const [authoringDocuments,setAuthoringDocuments]=useState<string[]>([]);
-  const authoringPreferenceKey='flow:alpha:native-writing-ui:v1:'+actorId;
-  useEffect(()=>{try{const value=JSON.parse(localStorage.getItem(authoringPreferenceKey)??'[]');setAuthoringDocuments(Array.isArray(value)?value.filter((id):id is string=>typeof id==='string'):[]);}catch{setAuthoringDocuments([]);}},[authoringPreferenceKey]);
-  function rememberAuthoringDocument(id:string){setAuthoringDocuments(previous=>{const next=[...new Set([...previous,id])];try{localStorage.setItem(authoringPreferenceKey,JSON.stringify(next));}catch{setMessage('쓰기 조작 선택을 이 브라우저에 보관하지 못했습니다. 문서 저장은 기존 서버 경로를 사용합니다.');}return next;});}
-  function forgetAuthoringDocument(id:string){setAuthoringDocuments(previous=>{const next=previous.filter(value=>value!==id);try{localStorage.setItem(authoringPreferenceKey,JSON.stringify(next));}catch{setMessage('이 브라우저의 쓰기 조작 선택을 갱신하지 못했습니다.');}return next;});}
+  // Writing tools are workspace-wide. The Flow·repeat box shows where the document already has
+  // personal authoring, or after the ＋ menu asks for it; that ask is screen-only, never stored.
+  const [authoringRequests, setAuthoringRequests] = useState<string[]>([]);
+  const authoringBox = useRef<HTMLDivElement | null>(null), revealAuthoringBox = useRef(false);
+  function requestPersonalAuthoring(id: string) { revealAuthoringBox.current = true; setAuthoringRequests(previous => [...previous.filter(value => value !== id), id]); }
+  useEffect(() => {
+    if (!revealAuthoringBox.current) return; revealAuthoringBox.current = false;
+    const box = authoringBox.current?.querySelector<HTMLDetailsElement>(':scope > details:last-of-type');
+    if (box) { box.open = true; box.scrollIntoView({ block: 'nearest' }); }
+  }, [authoringRequests]);
+  function showsPersonalAuthoring(id: string) {
+    if (authoringRequests.includes(id)) return true;
+    const taskIds = M.rowMeta(space.text, id).flatMap(row => row.kind === 'task' ? [row.isReference ? row.taskId ?? '' : row.id] : []);
+    return documentHasPersonalAuthoring(space.personalAuthoring, id, taskIds)
+      || M.tasks(space.text).some(task => task.docId !== id && taskIds.includes(task.id));
+  }
   const [date, setDate] = useState(today), [folderId, setFolderId] = useState(''), [query, setQuery] = useState('');
   const [collectionId, setCollectionId] = useState(''), [quickDocumentId, setQuickDocumentId] = useState('');
   const collectionMode = props.documentCollections;
@@ -735,7 +747,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if(!await flushAllEditors()){showViewChangeBlocked();return false;}
       if(authority.conflict||selectedRef.current!==documentId)return false;
       const result=await run(label,current=>current.activeActorId!==actorId||!programSame(current.spaces[actorId],authority.expected)?programFailure(current,'conflict'):build(current));
-      if(result.ok&&openResult){rememberAuthoringDocument(result.result);setSelected(result.result);setOpened(previous=>previous.includes(result.result)?previous:[...previous,result.result]);setFolderId('');setPeriod('documents');props.navigate({view:'space',id:result.result});}return result.ok;
+      if(result.ok&&openResult){setSelected(result.result);setOpened(previous=>previous.includes(result.result)?previous:[...previous,result.result]);setFolderId('');setPeriod('documents');props.navigate({view:'space',id:result.result});}return result.ok;
     }finally{if(moveFlush.current===authority)moveFlush.current=null;preparing.current=false;setPreparingDocumentAction(false);release();}
   }
   // User intent is based on the displayed state, not whatever happens to be on disk at commit time.
@@ -1000,7 +1012,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (authority.conflict) { setMessage('문서가 바뀌어 새 문서를 만들지 않았습니다. 현재 내용을 확인한 뒤 다시 시도해 주세요.'); return; }
       const result = await run('문서 만들기', current => current.activeActorId !== actorId ? programFailure(current, 'conflict') : createProgramDocument(current, {
         actorId, requestId: programId('request'), expectedSpace: authority.expected, title, folderId: collectionMode ? 'folder-unfiled' : folderId || 'folder-unfiled' }));
-      if (result.ok) { if((event.nativeEvent as SubmitEvent).submitter?.getAttribute('data-new-authoring')==='true')rememberAuthoringDocument(result.result); form.reset(); setLibraryOpen(false); setSelected(result.result); setOpened(previous => [...previous, result.result]); setFolderId(''); setPeriod('documents'); props.navigate({ view: 'space', id: result.result }); }
+      if (result.ok) { form.reset(); setLibraryOpen(false); setSelected(result.result); setOpened(previous => [...previous, result.result]); setFolderId(''); setPeriod('documents'); props.navigate({ view: 'space', id: result.result }); }
     } finally { if (moveFlush.current === authority) moveFlush.current = null; preparing.current = false; setPreparingDocumentAction(false); release(); }
   }
   async function quickTask(event: React.FormEvent<HTMLFormElement>) {
@@ -1224,7 +1236,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         })}</ul>
         {!executionRows.length && <p className={styles.muted}>현재 보기에는 검색 결과가 없습니다.</p>}
       </section>}
-      <details className={styles.folderTools}><summary>이름을 정해 새 문서 만들기</summary><form className={styles.newDoc} onSubmit={newDocument}><label htmlFor="program-document-title">새 문서</label><div><input id="program-document-title" name="title" placeholder="문서 제목" required maxLength={240} /><button type="submit">만들기</button>{props.nativeAuthoringEnabled&&<button type="submit" data-new-authoring="true">새 쓰기로 작성(Alpha)</button>}</div></form></details>
+      <details className={styles.folderTools}><summary>이름을 정해 새 문서 만들기</summary><form className={styles.newDoc} onSubmit={newDocument}><label htmlFor="program-document-title">새 문서</label><div><input id="program-document-title" name="title" placeholder="문서 제목" required maxLength={240} /><button type="submit">만들기</button></div></form></details>
       {collectionMode ? <><label className={styles.field}>문서 모음<select aria-label="문서 모음" value={collectionId} onChange={event => { void changeCollection(event.target.value); }}><option value="">모든 문서</option>{collectionMode.state.collections.map(row => <option key={row.id} value={row.id}>{row.title}</option>)}</select></label>
         <details className={styles.folderTools}><summary>모음 만들기</summary><form onSubmit={async event => { event.preventDefault(); const form = event.currentTarget, title = String(new FormData(form).get('title') ?? '');
           if (await writeCollections(addDocumentCollection(collectionMode.state, programId('collection'), title))) form.reset();
@@ -1246,7 +1258,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {!detail && taskNoticeContent}
       <div hidden={period !== 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
-        <div className={styles.docHeading}><h1>{selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : '필요한 내용을 먼저 적으세요'}</h1>{props.nativeAuthoringEnabled&&selectedDoc&&!authoringDocuments.includes(selectedDoc.id)&&<button type="button" disabled={preparingDocumentAction} onClick={()=>void openDocumentAction(id=>rememberAuthoringDocument(id))}>이 문서에서 새 쓰기 조작 사용(Alpha)</button>}{props.nativeAuthoringEnabled&&selectedDoc&&authoringDocuments.includes(selectedDoc.id)&&<button type='button' disabled={preparingDocumentAction} onClick={()=>void openDocumentAction(id=>forgetAuthoringDocument(id))}>기존 쓰기 조작으로</button>}{(!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</div>
+        <div className={styles.docHeading}><h1>{selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : '필요한 내용을 먼저 적으세요'}</h1>{(!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</div>
         {props.noteHeader}
         <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
         {!selectedDoc && props.noteStatus}
@@ -1264,9 +1276,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {selectedCollection && !selectedCollection.documentIds.includes(selectedDoc.id) && <p role="status" className={styles.muted}>이 문서는 선택한 모음에 없습니다. 원문은 그대로 열려 있습니다.</p>}
           </>}
         </>}
-        {props.nativeAuthoringEnabled&&selectedDoc&&authoringDocuments.includes(selectedDoc.id)&&!selectedTrashed&&!retentionSource&&<ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openDocument(documentId,taskId);}}/>}
+        {props.nativeAuthoringEnabled&&selectedDoc&&showsPersonalAuthoring(selectedDoc.id)&&!selectedTrashed&&!retentionSource&&<div ref={authoringBox}><ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openDocument(documentId,taskId);}}/></div>}
         {opened.filter(id => docs.some(doc => doc.id === id)).map(id => <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor
-          authoringMode={!!props.nativeAuthoringEnabled&&authoringDocuments.includes(id)} hostContext={props.pmTextHost}
+          authoringMode={!!props.nativeAuthoringEnabled} onOpenPersonalAuthoring={() => requestPersonalAuthoring(id)} hostContext={props.pmTextHost}
           onRegisterInputCheckpoint={read => { inputCheckpointReaders.current[id] = read; }}
           onRegisterCaptureComplete={read => { captureReaders.current[id] = read; }}
           onRegisterExternalGuard={read => { externalReaders.current[id] = read; }}

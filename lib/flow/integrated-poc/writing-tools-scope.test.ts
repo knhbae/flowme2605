@@ -1,0 +1,101 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { readFileSync } from 'node:fs';
+import * as ts from 'typescript';
+import { createProgramData } from './program-data';
+import { connectPersonalFlow, createPersonalFlow, setPersonalRepeat } from './personal-authoring-commands';
+import { documentHasPersonalAuthoring } from './personal-authoring';
+import { textWorkspaceModel as M } from './text-workspace';
+import type { ProgramData, ProgramTransition } from './contract';
+
+// Run the actual expressions from the components; they do not render React or a browser.
+function component(file: string) {
+  const source = readFileSync(new URL(`../../../components/flow/integrated-poc/${file}`, import.meta.url), 'utf8');
+  return { source, tree: ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX) };
+}
+function find<T extends ts.Node>(tree: ts.SourceFile, match: (node: ts.Node) => node is T): T[] {
+  const found: T[] = [];
+  const visit = (node: ts.Node) => { if (match(node)) found.push(node); ts.forEachChild(node, visit); };
+  visit(tree);
+  return found;
+}
+const js = (code: string) => ts.transpileModule(code, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
+function editorSettings(file: string, scope: Record<string, unknown>) {
+  const { tree } = component(file);
+  const settings: Record<string, () => boolean> = {};
+  for (const property of find(tree, ts.isPropertyAssignment)) {
+    const name = property.name.getText(tree);
+    const call = ts.findAncestor(property, ts.isCallExpression);
+    if (!['lineBreakEnter', 'typingPickers', 'plusOpensAuthoring', 'explicitAddOnly'].includes(name) || call?.expression.getText(tree) !== 'nativeEditor.create') continue;
+    settings[name] = new Function(...Object.keys(scope), `return ${js(`(${property.initializer.getText(tree)})`)}`)(...Object.values(scope));
+  }
+  return settings;
+}
+
+test('the body editor keeps list Enter and turns typed pickers off and the writing ＋ on with the flag', () => {
+  const read = (authoringMode: boolean) => {
+    const settings = editorSettings('ProgramTextEditor.tsx', { propsRef: { current: { authoringMode } } });
+    assert.deepEqual(Object.keys(settings).sort(), ['lineBreakEnter', 'plusOpensAuthoring', 'typingPickers']);
+    return [settings.lineBreakEnter(), settings.typingPickers(), settings.plusOpensAuthoring()];
+  };
+  assert.deepEqual(read(true), [false, false, true]);
+  assert.deepEqual(read(false), [false, true, false]);
+});
+
+test('the folder region editor passes the same Enter and picker settings', () => {
+  const settings = editorSettings('ProgramFolderRegionEditor.tsx', {});
+  assert.deepEqual([settings.lineBreakEnter(), settings.typingPickers()], [false, false]);
+});
+
+test('writing tools follow the workspace flag, never a per-document or per-browser choice', () => {
+  const { source, tree } = component('ProgramSpace.tsx');
+  assert(!source.includes('native-writing-ui'), 'no per-browser selection key');
+  const modes = find(tree, ts.isJsxAttribute).filter(attribute => attribute.name.getText(tree) === 'authoringMode');
+  assert.equal(modes.length, 1);
+  assert.equal(modes[0].initializer?.getText(tree), '{!!props.nativeAuthoringEnabled}');
+  const editor = component('ProgramTextEditor.tsx').source;
+  assert(/props\.authoringMode&&props\.onOpenPersonalAuthoring&&<button type="button" onClick=\{\(\)=>\{closePanel\(\);props\.onOpenPersonalAuthoring\?\.\(\);\}\}>반복·Flow 만들기<\/button>/.test(editor));
+});
+
+function accept(result: ProgramTransition<string>) { assert(result.ok); return result; }
+function fixture() {
+  const initial = createProgramData();
+  initial.spaces[initial.activeActorId].text = { version: 11, folders: [{ id: 'f', title: '합성', parentId: null }],
+    documents: [{ id: 'doc', title: '합성', folder: '합성', folderId: 'f', lines: [{ id: 'p', text: '- [ ] 원래 할 일' }] },
+      { id: 'other', title: '다른 문서', folder: '합성', folderId: 'f', lines: [{ id: 'q', text: '- [ ] 다른 할 일' }] }],
+    flows: [], bindings: [], taskScopes: { p: 'f', q: 'f' }, itemScopes: { p: 'f', q: 'f' }, progressRecords: [] };
+  const created = accept(createPersonalFlow(initial, { documentId: 'doc', title: '새 반복', taskIds: ['p'] }));
+  return { data: created.data, flowId: created.result };
+}
+function shows(data: ProgramData, documentId: string, requests: string[] = []) {
+  const { tree } = component('ProgramSpace.tsx');
+  const [declaration] = find(tree, ts.isFunctionDeclaration).filter(node => node.name?.text === 'showsPersonalAuthoring');
+  assert(declaration);
+  const run = new Function('authoringRequests', 'space', 'M', 'documentHasPersonalAuthoring', `${js(declaration.getText(tree))}; return showsPersonalAuthoring;`)(
+    requests, data.spaces[data.activeActorId], M, documentHasPersonalAuthoring);
+  return run(documentId) as boolean;
+}
+
+test('the Flow·repeat box shows only where the document has a Flow, a repeat, or linked tasks, or after the ＋ menu asks', () => {
+  const { data, flowId } = fixture();
+  assert.equal(shows(data, 'doc'), false);
+  assert.equal(shows(data, 'doc', ['doc']), true);
+  assert.equal(shows(data, flowId), true);
+
+  const repeated = accept(setPersonalRepeat(data, { taskId: 'p', rule: { kind: 'daily', startDate: '2026-10-30', end: { kind: 'count', count: 2 } } })).data;
+  assert.equal(shows(repeated, 'doc'), true);
+
+  const linked = accept(connectPersonalFlow(data, { flowId, documentId: 'other' })).data;
+  assert.equal(shows(linked, 'other'), true);
+  // Another document's Flow rule does not reach a plain document.
+  const flowRule = accept(setPersonalRepeat(data, { flowId, rule: { kind: 'daily', startDate: '2026-10-30', end: { kind: 'count', count: 2 } } })).data;
+  assert.equal(shows(flowRule, 'doc'), false);
+});
+
+test('a document owns personal authoring when it is a Flow, a Flow start, or has a live repeat', () => {
+  const { data, flowId } = fixture(), owner = () => data.spaces[data.activeActorId].personalAuthoring;
+  assert.equal(documentHasPersonalAuthoring(owner(), flowId, []), true);
+  assert.equal(documentHasPersonalAuthoring(owner(), 'doc', ['p']), false);
+  assert.equal(documentHasPersonalAuthoring(undefined, 'doc', ['p']), false);
+  assert.equal(documentHasPersonalAuthoring({ version: 1, flows: [], series: [], executions: [{ id: 'e', flowId, versionId: 'v', anchorDate: '2026-10-30', executionDocumentId: 'start-doc', taskIds: {} }] }, 'start-doc', []), true);
+});
