@@ -7,7 +7,7 @@
 - 결정: R4(`c37dbcab`, 빌드 `jhhnmp4NXb89Fh2IoLT8w`)를 07:21 KST에 반영했다. 확인 모드에서 Inspect·Deploy 명령마다 사용자가 승인했다. 운영 자료실(권리 미결 Flow 128건, 실제 채널·기관 이름 33건)은 끄지 않는다. 다음 후보에서 작성자 칸만 "FlowMe 정리 · 원문" 식으로 나눈다.
 - 사용자 원문: "다 너 제안대로 진행해줘", "일단 모두에게 보여도 상관없어."
 - 근거: `D:/flowme-alpha-today-classification-20261029-01a168e3/revision4/operations/execution.json`, 영수증 `revision4/orchestrator/operating-approval.json`
-- 상태: 반영됨. 001 실계정 확인과 코덱스 DB 확인 진행 중. 확인된 실패 때만 R3로 1회 복귀
+- 상태: 반영됨. 001 실계정 확인 PASS(07:54, 범위 한정). R4 마감
 
 ## 2026-10-30 · R4 따로 반영, 누락 기능 4개, worktree 보관 W1~W9
 
