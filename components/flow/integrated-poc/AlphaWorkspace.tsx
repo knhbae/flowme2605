@@ -666,13 +666,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const waitsForRead = !!store && !!options?.awaitAutomaticRead
       && !!automaticReadToAwait(automaticRead.current, { store, ownerId: owner, epoch, busy: wasBusy }, options);
     const promise = performMutation(label, build, options);
-    // A rejected concurrent click must never replace the real operation. The
-    // read-only source no-op is not a new operation to wait for.
+    // A rejected concurrent click must never replace the real operation.
     const earlier = sourceReturnOperation.current;
     // A later waiting tap must not hide an earlier unsettled one, which takes the
     // writer first; a source return should wait for the save that really runs.
     const keepEarlier = waitsForRead && !!earlier && !earlier.settled && earlier.store === store && earlier.epoch === epoch;
-    if (store && (!wasBusy || waitsForRead) && !keepEarlier && store.snapshot().busy && label !== '작성 위치 기억') {
+    if (store && (!wasBusy || waitsForRead) && !keepEarlier && store.snapshot().busy) {
       const operation = { store, owner, epoch, promise, settled: false };
       sourceReturnOperation.current = operation;
       const settle = () => { operation.settled = true; };
