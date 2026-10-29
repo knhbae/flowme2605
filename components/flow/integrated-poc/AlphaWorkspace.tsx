@@ -427,7 +427,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const store = controller.current; if (!store) return;
     captureInput();
     store.bindSession(session.userId, legacyTransport?createAlphaLegacyWritingRepository(config,session,legacyTransport):createAlphaHttpRepository(config, session, request, { social: true }));
-    if (store.snapshot().pending) void store.resolvePending(false); else void store.refresh();
+    if (store.snapshot().pending) void store.resolvePending(false); else startAutomaticRead(store);
   }, [config, session.userId, session.accessToken, request]);
   useEffect(() => {
     let storage: Storage | null = null;
@@ -512,6 +512,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     // Preservation reads have their own fresh snapshot. Avoid unrelated polling
     // while that dialog is open; never interrupt an already running request.
     if (disposed.current || preservationRef.current || document.visibilityState === 'hidden' || !store || store.snapshot().busy) return;
+    startAutomaticRead(store);
+  }
+  // Every read the host starts on its own is registered, including the first one after a
+  // session binds: a text save or an opted-in tap typed during it waits it out instead of
+  // being refused as busy, which used to fail the first words written on a fresh page.
+  function startAutomaticRead(store: Controller) {
     const before = store.snapshot();
     const read = { store, ownerId: currentOwnerRef.current, epoch: sessionEpochRef.current,
       eligible: !!before.account && !!before.envelope && before.ownerId === currentOwnerRef.current
