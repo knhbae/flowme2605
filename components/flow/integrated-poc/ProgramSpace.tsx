@@ -394,10 +394,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const sourceFocusPorts = useRef<Record<string, ProgramSourceFocus | null>>({});
   const pendingSourceFocus = useRef<{ documentId: string; taskId: string; attempt: () => void; isCurrent: () => boolean; managedReturnFocus?: Element | null; findPanel?: HTMLDialogElement; findSourceOwner?: Element | null } | null>(null);
   const sourceNavigation = useMemo(createPendingProgramSourceNavigation, []);
-  // The task whose completion tap is still waiting or saving. The ref blocks a
-  // repeat tap at once; the state draws the row as waiting.
-  const completingTask = useRef<string | null>(null);
-  const [completingTaskId, setCompletingTaskId] = useState<string | null>(null);
+  // Tasks whose completion tap is still waiting or saving, one entry per task so
+  // two waiting rows do not overwrite each other. The ref blocks a repeat tap at
+  // once; the state draws those rows as waiting.
+  const completingTasks = useRef(new Set<string>());
+  const [completingTaskIds, setCompletingTaskIds] = useState<ReadonlySet<string>>(() => new Set());
   const sourceEpoch = props.sourceReturnEpoch ?? props.pmTextHost?.epoch;
   const sourceMounted = useRef(true), sourceSession = useRef(sourceEpoch);
   sourceSession.current = sourceEpoch;
@@ -1366,18 +1367,18 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
             {heading && !(props.noteHeader && period === 'today' && date === today && executionDayRows.every(row => row.group === 'on-date')) && <h2 className={styles.executionGroup}>{heading}</h2>}
-            <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskId === task.id ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskId === task.id || undefined} onClick={() => {
+            <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskIds.has(task.id) ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskIds.has(task.id) || undefined} onClick={() => {
               if (value > 0 && value < 100) { setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }
               else {
                 // A repeat tap while the first still waits or saves would act on a stale
                 // value, so ignore it; the first tap waits out a refresh by itself.
-                if (completingTask.current === task.id) return;
-                completingTask.current = task.id; setCompletingTaskId(task.id);
-                const done = () => { if (completingTask.current === task.id) { completingTask.current = null; setCompletingTaskId(null); } };
+                if (completingTasks.current.has(task.id)) return;
+                completingTasks.current.add(task.id); setCompletingTaskIds(new Set(completingTasks.current));
+                const done = () => { if (completingTasks.current.delete(task.id)) setCompletingTaskIds(new Set(completingTasks.current)); };
                 void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }),
                   true, undefined, undefined, true).then(done, done);
               }
-            }}><span aria-hidden="true">{completingTaskId === task.id ? '…' : value === 100 ? '✓' : value ? `${value}%` : '□'}</span></button>
+            }}><span aria-hidden="true">{completingTaskIds.has(task.id) ? '…' : value === 100 ? '✓' : value ? `${value}%` : '□'}</span></button>
             <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} onClick={() => moving ? void moveBefore(moving, entry.key) : void openDocument(task.docId, task.id)}><span className={styles.taskTitleText}>{task.title}</span><small>{!(period === 'today' && task.date === date) && <span>예정일 {task.date ?? '미정'}</span>}{task.time && <span>{task.time}</span>}{progress?.date && !(period === 'today' && progress.date === date && task.date === progress.date) && <span>진행 기록 {progress.date} · {progress.percent}%</span>}<span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}{taskFolderPath(task)} / {task.docTitle} →</span></small></button>
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}

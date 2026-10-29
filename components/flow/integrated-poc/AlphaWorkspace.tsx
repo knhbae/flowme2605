@@ -166,6 +166,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const ownMutation = useRef(0), disposed = useRef(false), externalRef = useRef(false);
   const sourceReturnOperation = useRef<{ store: Controller; owner: string; epoch: object;
     promise: ReturnType<ProgramMutate>; settled: boolean } | null>(null);
+  // Taps now waiting for the automatic read; the shared notice clears only when
+  // the last of them stops waiting, so one cannot erase another's notice.
+  const queuedTaps = useRef(0);
   const [collectionsMode, setCollectionsMode] = useState(false);
   const [collectionsState, setCollectionsState] = useState<DocumentCollections | null>(null);
   const [collectionsMessage, setCollectionsMessage] = useState('');
@@ -564,9 +567,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       // A waiting tap runs by itself; telling the user to press it again would
       // let that second press reopen the task this one is about to complete.
       const tap = !!options?.awaitAutomaticRead;
-      if (tap) setMessage(value => !value || value === PROGRAM_BUSY_NOTICE ? PROGRAM_QUEUED_NOTICE : value);
+      if (tap) { queuedTaps.current++; setMessage(value => !value || value === PROGRAM_BUSY_NOTICE ? PROGRAM_QUEUED_NOTICE : value); }
       const refreshed = await read.promise;
-      if (tap) setMessage(value => value === PROGRAM_QUEUED_NOTICE ? '' : value);
+      if (tap && --queuedTaps.current === 0) setMessage(value => value === PROGRAM_QUEUED_NOTICE ? '' : value);
       if (disposed.current || controller.current !== store || currentOwnerRef.current !== owner
         || sessionEpochRef.current !== epoch) return { ok: false, reason: 'session-expired' };
       if (externalRef.current) return { ok: false, reason: 'conflict' };
@@ -648,7 +651,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const promise = performMutation(label, build, options);
     // A rejected concurrent click must never replace the real operation. The
     // read-only source no-op is not a new operation to wait for.
-    if (store && (!wasBusy || waitsForRead) && store.snapshot().busy && label !== '작성 위치 기억') {
+    const earlier = sourceReturnOperation.current;
+    // A later waiting tap must not hide an earlier unsettled one, which takes the
+    // writer first; a source return should wait for the save that really runs.
+    const keepEarlier = waitsForRead && !!earlier && !earlier.settled && earlier.store === store && earlier.epoch === epoch;
+    if (store && (!wasBusy || waitsForRead) && !keepEarlier && store.snapshot().busy && label !== '작성 위치 기억') {
       const operation = { store, owner, epoch, promise, settled: false };
       sourceReturnOperation.current = operation;
       const settle = () => { operation.settled = true; };
