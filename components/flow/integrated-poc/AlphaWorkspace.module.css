@@ -289,3 +289,15 @@
 .statusSlot > p:is([data-save-state="ready"], [data-save-state="saved"], [data-save-state="same-location"]) { color: var(--flowme-text-secondary); font-weight: 400; }
 .statusSlot .inputRecoveryBody { right: auto; width: min(420px, calc(100vw - 32px)); }
 @media (max-width: 760px) { .statusSlot .inputRecoveryBody { right: 0; width: auto; } }
+
+/* R8a: the "…" menu in groups, one 복구함 with a count badge, and a one-line notice for saved input. */
+.menuGroup { display: grid; gap: 8px; padding-top: 8px; border-top: 1px solid var(--flowme-border); }
+.menuGroup > h3 { margin: 0; font-size: 13px; line-height: 20px; font-weight: 650; color: var(--flowme-text-secondary); }
+.menuGroup .managementActions button { min-height: 48px; }
+.menuBadge { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; margin-left: 4px; padding: 0 6px; border-radius: 10px; background: var(--flowme-action, #3548ce); color: #fff; font-size: 12px; font-weight: 700; line-height: 1; }
+.recoveryBox > summary, .menuNote > summary { min-height: 48px; align-content: center; cursor: pointer; }
+.recoveryBox > .recovery { margin: 8px 0; }
+.menuNote p { margin: 4px 0 0; line-height: 1.6; color: var(--flowme-text-secondary); }
+.savedNotice { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0; padding: 4px 12px; border-left: 3px solid var(--flowme-action, #3548ce); background: var(--flowme-surface); font-size: 14px; }
+.savedNotice > span { flex: 1 1 auto; min-width: 0; }
+.savedNotice > button { min-height: 44px; }

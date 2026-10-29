@@ -135,6 +135,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const [preservation, setPreservation] = useState(false);
   const preservationRef = useRef(false);
   const preservationOpener = useRef<HTMLElement | null>(null);
+  // R8a: the "…" menu and its 복구함, and the total the user last closed the saved-input notice at.
+  const managementMenu = useRef<HTMLDetailsElement | null>(null), recoveryBox = useRef<HTMLDetailsElement | null>(null);
+  const [savedNoticeClosedAt, setSavedNoticeClosedAt] = useState<number | null>(null);
   const preservationReturn = useRef<{ ownerId: string; controller: Controller | null; opener: HTMLElement | null } | null>(null);
   const modalRef = useRef(false); modalRef.current = !!publisher || !!inspector;
   const inspectorDialog = useRef<HTMLDialogElement | null>(null);
@@ -146,6 +149,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const reviewAnnouncementGeneration = useRef(0);
   const [recoveries, setRecoveries] = useState<AlphaUiRecoveryRecord | null>(null), [storageError, setStorageError] = useState(false);
   const [structuralRecoveries, setStructuralRecoveries] = useState<AlphaStructuralRecoveryRecord | null>(null);
+  // R8a: all saved input, counted for the 복구함 badge and the notice. When some goes away, lower the
+  // closed-at mark so the next newly saved input shows the notice again.
+  const savedTotal = (recoveries?.drafts.length ?? 0) + (structuralRecoveries?.entries.length ?? 0)
+    + (creatorRecoveries?.entries.length ?? 0) + (socialRecoveries?.entries.length ?? 0);
+  useEffect(() => { setSavedNoticeClosedAt(at => at !== null && savedTotal < at ? savedTotal : at); }, [savedTotal]);
   const structuralRecovery = useRef<ReturnType<typeof createAlphaStructuralRecovery> | null>(null);
   const parkedStructural = useRef<AlphaStructuralRecoveryEntry[]>([]), activeStructural = useRef<AlphaStructuralRecoveryEntry[]>([]);
   const [external, setExternal] = useState(false), [presentation, setPresentation] = useState(0), [leave, setLeave] = useState(false);
@@ -1072,16 +1080,6 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const pendingUnknown = pendingResultUnknown(snapshot);
   const unavailable = snapshot?.status === 'session-expired' || !data || data.activeActorId !== session.userId || snapshot?.ownerId !== session.userId;
   const browse = ['discover', 'flow', 'community'].includes(destination.view);
-  const workspaceTools = !unavailable && data && <div className={styles.workspaceUtilities}>
-    <nav className={styles.tabs} aria-label="Flow · 다른 도구">
-      <button type="button" aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>내 활동</button>
-      {data.spaces[session.userId].savedBindings.length > 0 && <button type="button" aria-current={destination.view === 'legacy' ? 'page' : undefined} onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>}
-    </nav>
-    <details className={styles.workspaceTools} hidden={destination.view !== 'space'}><summary>문서 정리 방식</summary><div className={styles.tabs} aria-label="문서 정리 방식">
-      <button type="button" aria-pressed={collectionsMode} disabled={collectionsSwitching || collectionsSaving || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError}
-        onClick={() => void switchCollectionsMode()}>{collectionsMode ? '기존 폴더로 보기' : '문서·모음 시험'}</button>
-    </div></details>
-  </div>;
   const modalRecovery = pendingUnknown
     ? <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 입력은 유지하고 같은 요청으로 확인합니다.</p><button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>{snapshot?.busy ? '확인 중…' : '다시 확인'}</button></section>
     : external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft ? <section className={styles.problem} aria-label="편집 중 변경 확인"><p>다른 변경이 먼저 저장되었습니다. 입력을 보관한 뒤 최신 내용을 확인해 주세요.</p><button disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button></section> : null;
@@ -1108,28 +1106,59 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         onCopy={raw => navigator.clipboard.writeText(raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))} />}
     </section>}
   </>;
-  const structuralRecoveryPanel = structuralRecoveries && <details className={destination.view === 'space' ? styles.inputRecovery : styles.recovery}>
+  const structuralRecoveryPanel = structuralRecoveries && <details className={styles.recovery}>
     <summary>보관한 복사 작업 {structuralRecoveries.entries.length}개</summary>
-    <div className={destination.view === 'space' ? styles.inputRecoveryBody : undefined}>
+    <div>
       {structuralRecoveries.entries.map((entry, index) => <section key={`${entry.documentId}:${entry.baseRevision}:${index}`}>
         <h2>{entry.next.documents.filter(doc => ![...entry.before.documents, ...entry.before.flows].some(prior => prior.id === doc.id)).map(doc => doc.title || '제목 없는 문서').join(', ')}</h2><p>복사한 새 문서와 폴더·행을 함께 보관했습니다.</p>
         <button type="button" disabled={unavailable || pending || external || !!snapshot?.draft || hasInput()} onClick={() => void restoreStructuralDraft(index)}>복사 작업 복구</button></section>)}
       <button type="button" onClick={clearStructuralDrafts}>보관한 복사 작업 지우기</button>
     </div>
   </details>;
-  const personalRecovery = <>{structuralRecoveryPanel}{recoveries && <details name={destination.view === 'space' ? 'program-input-feedback' : undefined} className={destination.view === 'space' ? styles.inputRecovery : styles.recovery} open={unavailable || !localParticipationRecovery && (external || snapshot?.status === 'conflict')} onKeyDown={event => {
+  const savedInputPanel = recoveries && <details className={styles.recovery} open={unavailable || !localParticipationRecovery && (external || snapshot?.status === 'conflict')} onKeyDown={event => {
     if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
     event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
     event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
   }}>
     <summary>보관한 입력 {recoveries.drafts.length}개</summary>
-    <div className={destination.view === 'space' ? styles.inputRecoveryBody : undefined}>
+    <div>
       {recoveries.drafts.map((draft, index) => <section key={index}><h2>{draft.title}</h2><textarea aria-label={`보관한 입력 ${index + 1}`} value={draft.raw} readOnly rows={5} />
         <button type="button" onClick={() => void navigator.clipboard.writeText(draft.raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))}>원문 복사</button>
         <button type="button" disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreDraft(index)}>새 문서로 복구</button></section>)}
       <button type="button" onClick={clearDrafts}>보관 입력 버리기</button>
     </div>
-  </details>}</>;
+  </details>;
+  // R8a 복구함: the four kinds of saved input in one place, each with its own buttons as before.
+  // Saving and restoring are unchanged; only where they show moved.
+  const creatorRecoveryPanel = <>
+    {creatorRecoveries && <details className={styles.recovery} open={unavailable || external || snapshot?.status === 'conflict'}>
+      <summary>보관한 제작 입력 {creatorRecoveries.entries.length}개</summary>
+      {creatorRecoveries.entries.map((entry, index) => <section key={index}><h2>{entry.working.title || '제작 중 원문'}</h2>
+        <textarea aria-label={`보관한 제작 원문 ${index + 1}`} readOnly rows={5} value={entry.working.nativePendingRawText ?? entry.working.rawText} />
+        <button disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreCreator(index)}>제작 작업본으로 복구</button>
+        <details><summary>제작 구조·비교 입력 보관본</summary><p>개인 문서로 만들지 않습니다. 비교 선택은 최신 제작본과 다시 확인해 적용하세요.</p>
+          <textarea aria-label={`제작 문맥 보관본 ${index + 1}`} readOnly value={JSON.stringify(entry, null, 2)} rows={6} /></details>
+      </section>)}
+      <button onClick={() => { const cleared = creatorRecovery.current?.clear(); if (cleared?.ok) { parkedCreator.current = []; activeCreator.current = null; setCreatorRecoveries(null); } else setStorageError(true); }}>보관 제작 입력 버리기</button>
+    </details>}
+  </>;
+  const socialRecoveryPanel = <>
+    {socialRecoveries && <details className={styles.recovery} open={unavailable || !localParticipationRecovery && (external || snapshot?.status === 'conflict')}>
+      <summary>보관한 공개·참여 입력 {socialRecoveries.entries.length}개</summary>
+      <p>선택한 항목·사진 연결·검토 문맥을 함께 보관했습니다. 복구해도 자동으로 게시하지 않습니다.</p>
+      {socialRecoveries.entries.map((entry, index) => <section key={index}><h2>{entry.kind === 'publication' ? '공개 초안' : entry.kind === 'participation' ? '참여 초안' : '제안 검토 초안'}</h2>
+        <textarea aria-label={`공개·참여 보관본 ${index + 1}`} readOnly rows={5} value={JSON.stringify(entry.value, null, 2)} />
+        <button disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreSocial(index)}>비공개 초안으로 복구</button></section>)}
+      <button onClick={() => { if (socialRecovery.current?.clear().ok) { parkedSocial.current = []; activeSocial.current = []; setSocialRecoveries(null); } else setStorageError(true); }}>보관 공개·참여 입력 버리기</button>
+    </details>}
+  </>;
+  // A new saved input, or saved input on opening the app, gets one line until the user closes it.
+  const savedNoticeShown = savedTotal > 0 && (savedNoticeClosedAt === null || savedTotal > savedNoticeClosedAt);
+  function openRecoveryBox() {
+    if (managementMenu.current) managementMenu.current.open = true;
+    if (recoveryBox.current) recoveryBox.current.open = true;
+    requestAnimationFrame(() => recoveryBox.current?.querySelector<HTMLElement>(':scope > summary')?.focus());
+  }
   const usesNoteChrome = destination.view === 'space' && !unavailable;
   // Once acknowledged, keep an element: ProgramSpace reads a truthy noteHeader as the note layout.
   const publicNotice = devNoticeSeen ? <span hidden data-dev-notice="acknowledged" /> : <div className={styles.devNotice}>
@@ -1154,7 +1183,6 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         {inputRecoveryBox(true)}
       </>;
   const serverStatusExtras = <>
-        {destination.view === 'space' && personalRecovery}
         {destination.view === 'space' && message && !participationMessage && <details name="program-input-feedback" className={styles.feedbackMessage}
           onKeyDown={event => { if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return; event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; event.currentTarget.querySelector('summary')?.focus({ preventScroll: true }); }}>
           <summary title={message}><span role="status">안내 · {message}</span></summary>
@@ -1168,7 +1196,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const serverStatusView: ProgramServerStatusView | null = usesNoteChrome ? {
     ...programServerStatus({ snapshot, storageError, external, participationRecovery: !!localParticipationRecovery }),
     recovery: destination.view === 'space' && needsInputProtection ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,
-    extras: destination.view === 'space' && (structuralRecoveryPanel || recoveries || message && !participationMessage)
+    extras: destination.view === 'space' && message && !participationMessage
       ? <div className={styles.statusRow}>{serverStatusExtras}</div> : null,
   } : null;
   return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
@@ -1185,49 +1213,59 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     {!usesNoteChrome && publicNotice}
     <section className={styles.sync} aria-label="서버 저장 상태">
       {!usesNoteChrome && serverStatus}
-      <details className={styles.management} aria-label="계정 및 자료 관리" onKeyDown={event => {
+      <details ref={managementMenu} className={styles.management} aria-label="계정 및 자료 관리" onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
         event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
       }} onBlur={event => {
         if (!preservationRef.current && event.relatedTarget && !event.currentTarget.contains(event.relatedTarget as Node)) event.currentTarget.open = false;
-      }}><summary aria-current={['activity', 'legacy'].includes(destination.view) ? 'page' : undefined} aria-label={destination.view === 'activity' ? '보조 메뉴 · 현재 위치: 내 활동' : destination.view === 'legacy' ? '보조 메뉴 · 현재 위치: 개인 Flow 상세' : '보조 메뉴 · 내 활동, 계정·자료 관리'}><span className={styles.auxiliaryLabel}>{destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : '더보기'}</span></summary><div className={styles.managementBody}>
-        <h2>계정 · 자료 관리</h2>
-        <div className={styles.account}><p>{email}</p>{snapshot?.account && <small>마지막 확인 판본 {snapshot.account.revision}</small>}</div>
-        <div className={styles.managementActions}>{usesNoteChrome && serverUndo}<button type="button" onClick={() => { captureInput(); if (hasInput() || pending) setLeave(true); else void signOut(); }}>로그아웃 · 계정 바꾸기</button>
-        <button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button>
-        <button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external}>다시 실행</button>
-        <button type="button" disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} onClick={event => {
+      }}><summary aria-current={['activity', 'legacy'].includes(destination.view) ? 'page' : undefined} aria-label={`${destination.view === 'activity' ? '보조 메뉴 · 현재 위치: 내 활동' : destination.view === 'legacy' ? '보조 메뉴 · 현재 위치: 개인 Flow 상세' : '보조 메뉴 · 내 활동, 계정·자료 관리'}${savedTotal ? ` · 보관한 입력 ${savedTotal}개` : ''}`}><span className={styles.auxiliaryLabel}>{destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : '더보기'}</span>{savedTotal > 0 && <span className={styles.menuBadge} aria-hidden="true">{savedTotal}</span>}</summary><div className={styles.managementBody}>
+        <h2>더보기</h2>
+        <section className={styles.menuGroup} aria-label="편집"><h3>편집</h3>
+          <div className={styles.managementActions}>{usesNoteChrome && serverUndo}<button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external}>다시 실행</button></div>
+        </section>
+        {!unavailable && data && <section className={styles.menuGroup} aria-label="내 활동"><h3>내 활동</h3>
+          <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>내 활동</button>
+            {data.spaces[session.userId].savedBindings.length > 0 && <button type="button" aria-current={destination.view === 'legacy' ? 'page' : undefined} onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>}</div>
+        </section>}
+        <section className={styles.menuGroup} aria-label="자료"><h3>자료</h3>
+          <details ref={recoveryBox} className={styles.recoveryBox} open={!!savedTotal && (unavailable || external || snapshot?.status === 'conflict')}>
+            <summary>복구함{savedTotal ? ` (${savedTotal})` : ''}</summary>
+            {savedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <p>보관한 입력이 없습니다.</p>}
+          </details>
+          <div className={styles.managementActions}>
+          <button type="button" disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} onClick={event => {
           if (disposed.current || currentOwnerRef.current !== session.userId) return;
           const opener = event.currentTarget;
           preservationOpener.current = opener; preservationReturn.current = null;
           void (async () => { const openingController = controller.current; if (!captureInput()) return; for (const port of allEditors()) if (port && !await port.flushAll()) return; if (disposed.current || controller.current !== openingController || currentOwnerRef.current !== session.userId) return; preservationRef.current = true; setPreservation(true); })();
-        }}>백업 · 복원 · 가져오기</button></div>{workspaceTools}</div></details>
+        }}>백업 · 복원 · 가져오기</button></div>
+        </section>
+        <section className={styles.menuGroup} aria-label="계정"><h3>계정</h3>
+          <div className={styles.account}><p>{email}</p></div>
+          <div className={styles.managementActions}><button type="button" onClick={() => { captureInput(); if (hasInput() || pending) setLeave(true); else void signOut(); }}>로그아웃 · 계정 바꾸기</button></div>
+        </section>
+        <section className={styles.menuGroup} aria-label="문제 해결"><h3>문제 해결</h3>
+          <div className={styles.managementActions}><button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button></div>
+          {snapshot?.account && <small className={styles.account}>서버 기록 번호 {snapshot.account.revision}</small>}
+        </section>
+        {!unavailable && data && destination.view === 'space' && <section className={styles.menuGroup} aria-label="실험"><h3>실험</h3>
+          <div className={styles.managementActions}><button type="button" aria-pressed={collectionsMode} disabled={collectionsSwitching || collectionsSaving || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError}
+            onClick={() => void switchCollectionsMode()}>{collectionsMode ? '기존 폴더로 보기' : '문서·모음 시험'}</button></div>
+        </section>}
+        <section className={styles.menuGroup} aria-label="개발계 안내"><h3>개발계 안내</h3>
+          <details className={styles.menuNote}><summary>개발계 안내</summary><p>{DEV_NOTICE_TEXT}</p></details>
+        </section>
+        </div></details>
     </section>
+    {savedNoticeShown && <p className={styles.savedNotice} role="status"><span>보관한 입력 {savedTotal}개</span>
+      <button type="button" onClick={openRecoveryBox}>복구함 열기</button>
+      <button type="button" aria-label="보관한 입력 안내 닫기" onClick={() => setSavedNoticeClosedAt(savedTotal)}>닫기</button></p>}
     {preservation && snapshot?.account && snapshot.references && <AlphaPreservationPanel key={session.userId} account={snapshot.account} references={snapshot.references}
       email={email} accessToken={session.accessToken} returnFocusTarget={preservationOpener.current} onClose={closePreservation} onSaved={async () => {
         ownMutation.current++; try { await controller.current?.refresh(); setPresentation(value => value + 1); } finally { ownMutation.current--; }
       }} />}
     {destination.view !== 'space' && inputProtectionFor(true)}
-    {destination.view !== 'space' && personalRecovery}
-    {creatorRecoveries && <details className={styles.recovery} open={unavailable || external || snapshot?.status === 'conflict'}>
-      <summary>보관한 제작 입력 {creatorRecoveries.entries.length}개</summary>
-      {creatorRecoveries.entries.map((entry, index) => <section key={index}><h2>{entry.working.title || '제작 중 원문'}</h2>
-        <textarea aria-label={`보관한 제작 원문 ${index + 1}`} readOnly rows={5} value={entry.working.nativePendingRawText ?? entry.working.rawText} />
-        <button disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreCreator(index)}>제작 작업본으로 복구</button>
-        <details><summary>제작 구조·비교 입력 보관본</summary><p>개인 문서로 만들지 않습니다. 비교 선택은 최신 제작본과 다시 확인해 적용하세요.</p>
-          <textarea aria-label={`제작 문맥 보관본 ${index + 1}`} readOnly value={JSON.stringify(entry, null, 2)} rows={6} /></details>
-      </section>)}
-      <button onClick={() => { const cleared = creatorRecovery.current?.clear(); if (cleared?.ok) { parkedCreator.current = []; activeCreator.current = null; setCreatorRecoveries(null); } else setStorageError(true); }}>보관 제작 입력 버리기</button>
-    </details>}
-    {socialRecoveries && <details className={styles.recovery} open={unavailable || !localParticipationRecovery && (external || snapshot?.status === 'conflict')}>
-      <summary>보관한 공개·참여 입력 {socialRecoveries.entries.length}개</summary>
-      <p>선택한 항목·사진 연결·검토 문맥을 함께 보관했습니다. 복구해도 자동으로 게시하지 않습니다.</p>
-      {socialRecoveries.entries.map((entry, index) => <section key={index}><h2>{entry.kind === 'publication' ? '공개 초안' : entry.kind === 'participation' ? '참여 초안' : '제안 검토 초안'}</h2>
-        <textarea aria-label={`공개·참여 보관본 ${index + 1}`} readOnly rows={5} value={JSON.stringify(entry.value, null, 2)} />
-        <button disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreSocial(index)}>비공개 초안으로 복구</button></section>)}
-      <button onClick={() => { if (socialRecovery.current?.clear().ok) { parkedSocial.current = []; activeSocial.current = []; setSocialRecoveries(null); } else setStorageError(true); }}>보관 공개·참여 입력 버리기</button>
-    </details>}
     {leave && <section className={styles.problem} aria-label="로그아웃 전 입력 확인"><p>저장하지 않은 입력을 이 탭에 보관한 뒤 로그아웃할 수 있습니다. 같은 계정으로 돌아와 복구하세요.</p>
       <button type="button" onClick={() => { if (captureInput() && canReleaseInput()) void signOut(); }}>입력 보관 후 로그아웃</button><button type="button" onClick={() => setLeave(false)}>계속 작성</button></section>}
     {destination.view !== 'space' && message && !participationMessage && <p className={styles.message} role="status">{message}</p>}
