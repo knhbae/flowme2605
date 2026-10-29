@@ -21,6 +21,17 @@ test('"…" lies over the tab row only when the space directly follows it',()=>{
  assert(space.indexOf('.space[data-note-layout="true"] .contextActions .periods{position:static')<space.indexOf(room));
 });
 
+test('"…" laid over the tab row is painted above it, so a tap reaches it (QA P2 b)',()=>{
+ const alpha=css('AlphaWorkspace'),space=css('ProgramSpace');
+ // The space section is positioned and later in the page; without a layer the tab row's nav took the tap.
+ assert(space.includes('.space { position: relative; }'));
+ const layer='.page[data-note-layout="true"] .sync > .management > summary { position: relative; z-index: 1; }';
+ assert(alpha.includes(layer));
+ // Only the summary: a z-index on the details would trap the open body (z-index 60) below the space's own menus.
+ assert(!/.sync ?> ?.management ?{[^}]*z-index/.test(alpha));
+ assert(alpha.includes('.managementBody { position: absolute; z-index: 60;'));
+});
+
 test('an acknowledged publication notice leaves no empty row, and the header badge can reopen it',()=>{
  const alpha=css('AlphaWorkspace'),space=css('ProgramSpace');
  assert(space.includes('.space[data-note-layout="true"] .periodNotice:has(> [hidden]:only-child) { display: none; }'));
