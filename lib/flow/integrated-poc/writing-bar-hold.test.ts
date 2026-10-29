@@ -239,3 +239,19 @@ test('folder view: only the focused region is capped above the bar; the others k
   // Focus on a bar button (inside the region it follows) still counts as that region being edited.
   assert(fn('fitFolderRegion').includes(`root?.querySelector('[data-folder-region] :focus')?.closest('[data-folder-region]')`));
 });
+
+test('a retry past its second is dropped even when the line becomes ready on that frame', () => {
+  const h = holdHarness({ folder: true });
+  h.state.editable = false;
+  h.press('task'); h.state.saving = false;
+  h.release();
+  h.state.clock = 1200; h.state.editable = true; h.frame();
+  assert.deepEqual([h.state.runs, h.barHold.held(), h.state.frames.size], [[], null, 0]);
+
+  const g = holdHarness({ folder: true });
+  g.state.editable = false;
+  g.press('task'); g.state.saving = false;
+  g.release();
+  g.state.clock = 600; g.state.editable = true; g.frame();
+  assert.deepEqual([g.state.runs, g.barHold.held()], [['task'], null]);
+});

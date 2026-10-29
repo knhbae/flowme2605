@@ -459,10 +459,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       barRetry.current = { frame, serial, since };
       return;
     }
+    // A retry that outlived its second is dropped even if the line just became ready.
+    const expired = barRetry.current?.serial === barHold.serial() && performance.now() - barRetry.current.since > 1000;
     stopBarRetry();
     const run = barHold.release(false);
     setHeldBar(null);
-    if (verdict === 'run' && run) runBar(run);
+    if (verdict === 'run' && run && !expired) runBar(run);
   }
   function closePanel() {
     if(panelComposingRef.current||composingRef.current)return;
