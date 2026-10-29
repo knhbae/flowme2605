@@ -5,6 +5,7 @@ import type {WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
 import React, { useEffect, useRef, useState } from 'react';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
+import { readChildDrafts, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
 import { planProgramDateBlockOrder, type DateBlockOrderPlan, type DateOrderSelection } from '@/lib/flow/integrated-poc/date-block-order';
@@ -97,6 +98,8 @@ export interface ProgramTextEditorProps {
   onRegisterInputLock?: (lock: ((locked: boolean) => void) | null) => void;
   onRegisterDraft?: (read: (() => string) | null) => void;
   onRegisterStructuralDraft?: (read: (() => AlphaStructuralDraft | null) | null) => void;
+  /** Unconfirmed memo/child-task panel text, for the tab's input recovery only. */
+  onRegisterChildDrafts?: (read: (() => ProgramChildDraft[]) | null) => void;
   onRegisterConfirmedSave?: (accept: ((before: TextWorkspaceState, next: TextWorkspaceState, ack?:OwnedWritingAck) => boolean) | null) => void;
   onUndo?: () => void | Promise<void>;
   onRedo?: () => void | Promise<void>;
@@ -269,6 +272,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const childTarget=panel?.kind==='child'?panel.child??null:null;
   const currentChild=()=>panelRef.current?.kind==='child'?panelRef.current.child??null:null;
   const childDrafts=useRef<Record<string,string>>({});
+  // Recovery reads panel text as it is; it never marks the document dirty or blocks other actions.
+  const captureChildDrafts=()=>readChildDrafts(childDrafts.current,M.tasks(currentState()));
   const panelComposingRef=useRef(false),compositionGeneration=useRef(0);
   const slashCommandRef=useRef<{lineId:string;raw:string;workspace:TextWorkspaceState;generation:number}|null>(null);
   const [moving, setMoving] = useState<Moving | null>(null);
@@ -489,6 +494,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     propsRef.current.onRegisterSourceFocus?.(focusSourceRow);
     propsRef.current.onRegisterDraft?.(captureDraftRaw);
     propsRef.current.onRegisterStructuralDraft?.(captureStructuralDraft);
+    propsRef.current.onRegisterChildDrafts?.(captureChildDrafts);
     propsRef.current.onRegisterCaptureComplete?.(()=>!currentChild());
     propsRef.current.onRegisterExternalGuard?.(()=>!!currentChild());
     propsRef.current.onRegisterInputLock?.(locked => {
@@ -500,7 +506,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (locked) { orderEpochRef.current++; cancelMove(); dialogRef.current?.close(); setPanel(null); setOrderPreview(null); }
       editorRef.current?.refresh();
     });
-    return () => { propsRef.current.onRegisterCaptureComplete?.(null);propsRef.current.onRegisterExternalGuard?.(null);propsRef.current.onRegisterSave?.(null, null); propsRef.current.onRegisterSourceFocus?.(null); propsRef.current.onRegisterInputLock?.(null); propsRef.current.onRegisterDraft?.(null); propsRef.current.onRegisterStructuralDraft?.(null); };
+    return () => { propsRef.current.onRegisterCaptureComplete?.(null);propsRef.current.onRegisterExternalGuard?.(null);propsRef.current.onRegisterSave?.(null, null); propsRef.current.onRegisterSourceFocus?.(null); propsRef.current.onRegisterInputLock?.(null); propsRef.current.onRegisterDraft?.(null); propsRef.current.onRegisterStructuralDraft?.(null); propsRef.current.onRegisterChildDrafts?.(null); };
   }, [props.docId]);
   function scheduleSave() {
     if (timerRef.current) clearTimeout(timerRef.current);
