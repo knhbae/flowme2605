@@ -90,6 +90,11 @@ test('F3: one live node at a time, and the bar\'s copy is never announced', () =
   assert(alpha.includes("<summary>{announce ? <span role=\"alert\">{inputRecoveryLabel}</span> : <span>{inputRecoveryLabel}</span>}</summary>"));
   assert(alpha.includes('recovery: destination.view === \'space\' && needsInputProtection ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,'));
   assert(alpha.includes('{inputRecoveryBox(true)}'));
+  // The box's body follows the same switch, so no alert or status is left inside it either.
+  assert(alpha.includes('<div className={styles.inputRecoveryBody}>{inputProtectionFor(announce)}</div>'));
+  assert(alpha.includes("role={announce ? 'alert' : undefined}") && alpha.includes("role={announce ? 'status' : undefined}"));
+  const protection = alpha.slice(alpha.indexOf('const inputProtectionFor'), alpha.indexOf('</>;', alpha.indexOf('const inputProtectionFor')));
+  assert(protection.length > 0 && !protection.includes('role="alert"') && !protection.includes('role="status"'));
   assert(!/\bmain:/.test(alpha.slice(alpha.indexOf('const serverStatusView'), alpha.indexOf('const serverStatusView') + 600)));
   // While the bar shows, the slot steps aside unless a box in it is open (the bar button opens one).
   assert(css.includes('.toolbar > .statusSlot:not(:has(details[open])) {'));

@@ -1091,8 +1091,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     || (snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending
     || external || snapshot?.status === 'conflict'
     || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft);
-  const inputProtection = <>
-    {storageError && <p className={styles.problem} role="alert">브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
+  // `announce` is off where the note editor's one status slot already announces this state.
+  const inputProtectionFor = (announce: boolean) => <>
+    {storageError && <p className={styles.problem} role={announce ? 'alert' : undefined}>브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
     {pendingUnknown && !localParticipationRecovery && <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 같은 요청으로 확인합니다.</p>
       <button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>{snapshot?.busy ? '확인 중…' : '다시 확인'}</button></section>}
     {(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending && !localParticipationRecovery && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>{snapshot?.retryableNativeHandoff
@@ -1101,7 +1102,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       : '저장되지 않았습니다. 입력은 남아 있습니다. 문서에서 내용을 수정한 뒤 ‘다시 저장’을 눌러 주세요.'}</p></section>}
     {(external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft) && !localParticipationRecovery && <section className={styles.problem} aria-label="다른 기기 변경과 입력 보호">
       <h2>내 입력과 서버의 변경을 확인해 주세요</h2><p>내 입력은 이 탭에 보관합니다. 최신 내용을 연 뒤 필요한 원문을 복구할 수 있습니다.</p>
-      {snapshot?.busy && <p role="status">서버 확인 중… 입력은 그대로 보관합니다.</p>}
+      {snapshot?.busy && <p role={announce ? 'status' : undefined}>서버 확인 중… 입력은 그대로 보관합니다.</p>}
       <button type="button" disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button>
       {snapshot?.draft && <AlphaConflictReview draft={snapshot.draft} account={snapshot.account}
         onCopy={raw => navigator.clipboard.writeText(raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))} />}
@@ -1145,7 +1146,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
           event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
         }}><summary>{announce ? <span role="alert">{inputRecoveryLabel}</span> : <span>{inputRecoveryLabel}</span>}</summary>
-          <div className={styles.inputRecoveryBody}>{inputProtection}</div>
+          <div className={styles.inputRecoveryBody}>{inputProtectionFor(announce)}</div>
         </details>;
   // The status and its recovery box, and the notices that always show (today, 분류, no document).
   const serverStatusMain = <>
@@ -1207,7 +1208,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       email={email} accessToken={session.accessToken} returnFocusTarget={preservationOpener.current} onClose={closePreservation} onSaved={async () => {
         ownMutation.current++; try { await controller.current?.refresh(); setPresentation(value => value + 1); } finally { ownMutation.current--; }
       }} />}
-    {destination.view !== 'space' && inputProtection}
+    {destination.view !== 'space' && inputProtectionFor(true)}
     {destination.view !== 'space' && personalRecovery}
     {creatorRecoveries && <details className={styles.recovery} open={unavailable || external || snapshot?.status === 'conflict'}>
       <summary>보관한 제작 입력 {creatorRecoveries.entries.length}개</summary>
