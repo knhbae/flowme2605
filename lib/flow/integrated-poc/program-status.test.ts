@@ -57,8 +57,9 @@ test('wiring: Alpha gives the note editor its status by context; the editor draw
   const editorSource = read('ProgramTextEditor.tsx'), alpha = read('AlphaWorkspace.tsx'), css = read('ProgramTextEditor.module.css');
   // Only the open document's editor (the one given noteStatus) takes the host's status; no host, no change.
   assert(editorSource.includes('serverView = props.noteStatus ? hostStatus : null'));
-  assert(editorSource.includes('{!serverView && props.noteStatus && <div className={styles.noteStatus}>{props.noteStatus}</div>}'));
-  assert(/\{serverWins \? <div className=\{styles\.serverSlot\} data-level=\{serverView!\.level\}>\{serverView!\.main\}<\/div>\s*: draft\.error \? <details/.test(editorSource));
+  // With a host the slot is the editor's own; without one, the host line and the editor status stay as before.
+  assert(/\{serverView \? <div className=\{styles\.statusSlot\} data-warn=\{statusWarn \|\| undefined\}>/.test(editorSource));
+  assert(editorSource.includes('{props.noteStatus && <div className={styles.noteStatus}>{props.noteStatus}</div>}'));
   assert(editorSource.includes('{serverView?.extras && <div className={styles.serverExtras}>{serverView.extras}</div>}'));
   assert(editorSource.includes("{barButtons('bar')}{barStatusSlot()}</div>;"));
   // The host still builds the same composite node for today, 분류 and the no-document screen.
@@ -66,8 +67,8 @@ test('wiring: Alpha gives the note editor its status by context; the editor draw
   assert(alpha.includes('noteStatus={usesNoteChrome ? serverStatus : undefined}'));
   assert(/const serverStatusView: ProgramServerStatusView \| null = usesNoteChrome \? \{\s*\.\.\.programServerStatus\(/.test(alpha));
   assert(alpha.includes('<ProgramServerStatusContext.Provider value={serverStatusView}>') && alpha.includes('</ProgramServerStatusContext.Provider>'));
-  // While the bar shows, the host status steps aside like the editor's, unless it carries an alert.
-  assert(css.includes('.toolbar > .serverSlot:not(:has([role="alert"])) {'));
+  // While the bar shows, the slot steps aside (its live node stays) unless a recovery box in it is open.
+  assert(css.includes('.toolbar > .statusSlot:not(:has(details[open])) {'));
 });
 
 test('typing keeps the slot quiet for one second after the last input', () => {
