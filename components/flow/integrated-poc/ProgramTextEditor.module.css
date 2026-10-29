@@ -88,7 +88,8 @@
 .status { font-size: 13px; line-height: 20px; color: #59645d; }
 .host :global(.tle-root) { --tle-font: 16px; background: #fffefa; color: #222b25; }
 .host :global(.tle-root[data-mode="live"] .tle-textarea),
-.host :global(.tle-root[data-mode="live"] .tle-presentation) { font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif; }
+.host :global(.tle-root[data-mode="live"] .tle-presentation),
+.host :global(.tle-root[data-mode="live"] .tle-native-ruler) { font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif; }
 .host :global(.tle-viewport) { border-radius: 0 0 12px 12px; }
 /* Native controls keep the existing 44px row lane, not the shell's 48px. */
 .editor .host :global(.tle-root :is(.tle-check-hit,.tle-fold-toggle,.tle-row-open,.tle-plus,.tle-row-menu)) { min-height: 44px; min-width: 44px; height: 44px; }
@@ -139,13 +140,13 @@
 .saveFeedback > .error { position: absolute; z-index: 60; top: calc(100% + 4px); left: 0; right: 0; box-sizing: border-box; max-height: min(52dvh, 420px); overflow: auto; overscroll-behavior: contain; border: 1px solid #efd8c2; border-radius: 8px; box-shadow: 0 8px 24px #15342620; }
 /* Reading prose shares the native gutter. Preserve RAW/caret metrics. */
 @media (max-width: 600px) {
-  .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-presentation) { padding-right: var(--tle-pad-right); }
+  .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-presentation) { padding-right: var(--tle-pad-right); }
   .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view) :is(.tle-viewport, .tle-controls)) { background: transparent; }
   /* A reading tap enters the native editor and restores its current-line menu.
      The toolbar's contextual add action stays available without a body rail. */
   .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-row-menu) { display: none; }
-  .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) :is(.tle-task-title, .tle-task-title-complete)) { display: inline; }
-  .editor .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) :is(.tle-task-date-open, .tle-task-origin-open, .tle-reference-open)) {
+  .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-task-title, .tle-task-title-complete)) { display: inline; }
+  .editor .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-task-date-open, .tle-task-origin-open, .tle-reference-open)) {
     position: static; display: inline-flex; vertical-align: middle; width: auto;
     min-width: 44px; min-height: 44px; margin-left: 6px; padding-inline: 8px;
     flex-direction: row; gap: 6px; color: #596b5d; font: inherit;
@@ -156,19 +157,19 @@
 
 /* Reading layout only: native RAW, composition and movement keep their ruler.
    The text nodes remain unchanged, so tap/copy offsets are still source offsets. */
-.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-check-anchor) { left: clamp(0px, calc(var(--tle-reading-depth, 0) * .5em), calc(100% - 32px)); }
-.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-hidden-syntax) { visibility: hidden; pointer-events: none; }
-.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-check-glyph) { left: 13px; }
-.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) :is(.tle-line-prose, .tle-line-property:not(.tle-line-date-property))) {
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-anchor) { left: clamp(0px, calc(var(--tle-reading-depth, 0) * .5em), calc(100% - 32px)); }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-hidden-syntax) { visibility: hidden; pointer-events: none; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-glyph) { left: 13px; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-line-prose, .tle-line-property:not(.tle-line-date-property))) {
   padding-left: var(--tle-indent, 0px);
   text-indent: calc(-1 * var(--tle-indent, 0px));
   color: #455b51;
 }
-.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-scope-label) { padding-left: 75px; }
-.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line-scope[data-scope-kind="folder"] .tle-scope-subtitle) {
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scope-label) { padding-left: 75px; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope[data-scope-kind="folder"] .tle-scope-subtitle) {
   position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
 }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line[data-source-blank="true"]) {
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line[data-source-blank="true"]) {
   min-height: 8px; line-height: 8px; font-size: 0;
 }
 
@@ -180,6 +181,11 @@
 .toolbar > .status, .toolbar > .saveFeedback { order: 3; margin-left: 0; padding-inline: 4px; font-size: 13px; line-height: 20px; }
 .noteStatus { order: 2; margin-left: auto; min-width: 0; }
 .noteStatus:empty { display: none; }
+/* A recoverable save error needs its own readable row on a narrow toolbar. */
+@media (max-width: 700px) {
+  .toolbar > .saveFeedback { order: 5; flex: 1 0 100%; width: 100%; max-width: none; min-width: 0; padding-inline: 0; }
+  .editor .saveFeedback > summary { width: 100%; min-height: 44px; padding: 8px 0; }
+}
 .editorToolActions { width: min(280px, calc(100vw - 40px)); }
 .editorToolActions > div { display: grid; }
 .editorToolActions :where(button, summary) { white-space: normal; }
@@ -188,10 +194,37 @@
 .host :global(.tle-controls), .host :global(.tle-root:is(.tle-reading-view,.tle-folded-view) .tle-viewport) { background: transparent; }
 .editor .toolbar > button { border-color: transparent; background: transparent; }
 /* Wrapped prose keeps the RAW ruler rather than a second hanging-indent ruler. */
-.host :global(.tle-root:is(.tle-reading-view,.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) :is(.tle-line-prose,.tle-line-property:not(.tle-line-date-property))) { padding-left: 0; text-indent: 0; }
+.host :global(.tle-root:is(.tle-reading-view,.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-line-prose,.tle-line-property:not(.tle-line-date-property))) { padding-left: 0; text-indent: 0; }
 /* Reading has its own ruler. Owned memo continuations retain their RAW depth. */
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line-owned-memo) { padding-left: var(--tle-indent, 0px); text-indent: calc(-1 * var(--tle-indent, 0px)); }
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-owned-memo) { padding-left: var(--tle-indent, 0px); text-indent: calc(-1 * var(--tle-indent, 0px)); }
 /* Reserve the existing scope control lane, but let a long name wrap fully. */
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line-scope > .tle-date-source) { position: absolute; top: 0; left: 0; max-width: 100%; overflow: hidden; white-space: pre; }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line-scope > .tle-scope-label) { position: relative; inset: auto; margin-left: clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)); height: auto; min-height: var(--tle-line); white-space: normal; align-items: flex-start; }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-scope-name) { overflow: visible; text-overflow: clip; white-space: normal; }
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-date-source) { position: absolute; top: 0; left: 0; max-width: 100%; overflow: hidden; white-space: pre; }
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-scope-label) { position: relative; inset: auto; margin-left: clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)); height: auto; min-height: var(--tle-line); white-space: normal; align-items: flex-start; }
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scope-name) { overflow: visible; text-overflow: clip; white-space: normal; }
+
+/* Reserve the note's server status independently of the local input controls.
+   Two ordinary status lines fit; recovery/error content can still grow. */
+@media (max-width: 700px) {
+  .toolbar > .noteStatus { order: 5; flex: 1 0 100%; width: 100%; margin-left: 0; min-height: 44px; }
+  .toolbar > .saveFeedback { order: 3; flex: 0 1 auto; width: auto; min-width: 0; max-width: none; padding-inline: 4px; }
+  .editor .saveFeedback > summary { width: auto; min-height: 48px; padding: 6px; }
+
+  /* The native textarea's 20px top + 64px bottom padding cannot fit a 64px
+     parent. Preserve its ruler and keep both containing boxes at that floor. */
+  .host, .host :global(.tle-root) { min-height: 84px; }
+
+  /* Folder content shares the dialog body scroll and visual viewport bounds. */
+  .dialog:has(.folderPreview) .choices button { flex-wrap: wrap; }
+  .dialog:has(.folderPreview) .choices small { flex: 1 1 100%; min-width: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+  .dialog:has(.folderPreview) .dialogBody > form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; }
+  .dialog:has(.folderPreview) .dialogBody > form > small { flex: 1 0 100%; min-width: 0; overflow-wrap: anywhere; }
+  .dialog:has(.folderPreview) .dialogBody > form > label { flex: 1 1 160px; min-width: 0; }
+  .dialog:has(.folderPreview) .dialogBody > form > button { flex: 0 0 auto; }
+}
+
+.authoringInline { display: grid; gap: 12px; min-width: 0; }
+.authoringInline p { font-size: 13px; color: #5e7467; }
+.dialog[open] { position: fixed; display: flex; flex-direction: column; top: var(--writing-dialog-top, 12px); left: var(--writing-dialog-left, 12px); right: auto; bottom: auto; margin: 0; width: min(430px, calc(var(--writing-view-width, 100vw) - 24px)); max-height: min(720px, calc(var(--writing-view-height, 100dvh) - 24px)); overflow: hidden; }
+.dialog[open] > header { position: relative; top: 0; flex-shrink: 0; }
+.dialogBody { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scroll-padding-block: 8px; }
+.dialogBody button { min-height: 44px; }

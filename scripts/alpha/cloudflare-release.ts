@@ -26,6 +26,7 @@ async function main() {
     ? (keyObject as Record<string, unknown>).FLOWME_ALPHA_M3_SIGNING_KEY : null;
   const env = releaseEnvironment(settings, signing, process.env);
   if (!env || !existsSync(resolve(candidateRoot, 'node_modules/next/dist/bin/next'))) throw Error('release-preflight-rejected');
+  env.FLOWME_ALPHA_NATIVE_AUTHORING_UI = process.env.FLOWME_ALPHA_NATIVE_AUTHORING_UI === 'enabled' ? 'enabled' : 'disabled';
   const buildId = readFileSync(resolve(candidateRoot, '.next/BUILD_ID'), 'utf8').trim();
   if (!/^[A-Za-z0-9_-]{1,100}$/.test(buildId)) throw Error('release-build-rejected');
   const oldCatalog = process.env.FLOWME_ALPHA_CATALOG_PACK_FILE;

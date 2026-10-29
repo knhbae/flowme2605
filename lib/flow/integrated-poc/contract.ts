@@ -173,6 +173,7 @@ export type ProgramPublicationDraft = {
   rows: ProgramPublicationDraftRow[]; updatedAt: string;
 };
 export type ProgramPrivateSpace = {
+  personalAuthoring?: import('./personal-authoring').PersonalAuthoringV1;
   text: TextWorkspaceState;
   archivedDocumentIds: string[];
   /** Recoverable private deletion, preserving document/line IDs and all history. */
@@ -222,7 +223,7 @@ export type ProgramEnvelope = {
   data: ProgramData;
   undo: Record<string, ProgramHistory[]>;
 };
-export type ProgramFailure = 'invalid' | 'missing' | 'forbidden' | 'conflict' | 'duplicate-request' | 'limit' | 'unresolved';
+export type ProgramFailure = 'invalid' | 'missing' | 'forbidden' | 'conflict' | 'duplicate-folder-name' | 'duplicate-request' | 'limit' | 'unresolved';
 export type ProgramTransition<T = string> =
   | { ok: true; data: ProgramData; changed: boolean; result: T }
   | { ok: false; data: ProgramData; reason: ProgramFailure };

@@ -1,5 +1,7 @@
+import {freezeWritingView,registerWritingView,noteWritingPhase,type WritingAckInput,type OwnedWritingAck} from '../writing-ack';
 import type { ProgramEnvelope } from '../contract';
-import type { ProgramMutate, ProgramMutationResult } from '../ui-contract';
+import type {WritingCompute,WritingIdentity,WritingReply} from '../writing-compute';
+import type { ProgramMutate, ProgramMutationResult, ProgramPrivateMutationObservation } from '../ui-contract';
 import { isAccountForOwner } from '../alpha-auth/account-access';
 import { createAlphaClient, type AlphaClientStatus } from '../alpha-persistence/client';
 import { ALPHA_COMMAND_SCHEMA, type AlphaAccount, type AlphaCommand, type AlphaReceipt, type AlphaRecoveryPort, type AlphaRepository, type AlphaReferenceContext } from '../alpha-persistence/contract';
@@ -13,45 +15,60 @@ import { alphaSocialAllowedFields } from '../alpha-social/dispatch';
 import { isAlphaCreatorIntent } from '../alpha-creator/contract';
 
 export type AlphaSyncSnapshot = { ownerId: string | null; account: AlphaAccount | null; envelope: ProgramEnvelope | null;
-  status: AlphaClientStatus; busy: boolean; draft: AlphaCommand | null; pending: AlphaCommand | null; canUndo: boolean; canRedo: boolean; retryableRejectedDraft?: boolean; retryableNativeHandoff?: boolean; retryableRejectedSocialDraft?: boolean; lastReceipt?: AlphaReceipt | null; publicRevision?: number; references?: AlphaReferenceContext };
+  status: AlphaClientStatus; busy: boolean; draft: AlphaCommand | null; pending: AlphaCommand | null; canUndo: boolean; canRedo: boolean; retryableRejectedDraft?: boolean; retryableNativeHandoff?: boolean; retryableRejectedSocialDraft?: boolean; ownWritingAck?:OwnedWritingAck|null; lastReceipt?: AlphaReceipt | null; publicRevision?: number; references?: AlphaReferenceContext };
 type Success = { command: AlphaCommand; before: AlphaAccount; after: AlphaAccount };
-export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort; onChange?: (snapshot: AlphaSyncSnapshot) => void; requestId?: () => string }) {
-  const client = createAlphaClient(isAccountForOwner, options.recovery);
+export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort; onChange?: (snapshot: AlphaSyncSnapshot) => void; requestId?: () => string;writingCompute?:WritingCompute }) {
+  const client = createAlphaClient(isAccountForOwner, options.recovery,options.writingCompute);
   let generation = 0, busy = false, repository: AlphaRepository | null = null, undo: Success | null = null;
   let redo: { expectedRevision: number; target: AlphaAccount; creatorUndoId?: string; socialUndoId?: string } | null = null;
-  const references = (owner: string) => client.snapshot().state?.references ?? emptyAlphaReferences(owner);
+  const references = (owner: string) => readClient().state?.references ?? emptyAlphaReferences(owner);
   const undoable = (command: AlphaCommand) => command.kind !== 'social' || !alphaSocialAllowedFields(command.intent).public.length;
+  // These frozen values came only from our closed presentation or sealed worker reply.
+  const copyOwned=<T,>(value:T):T=>options.writingCompute?(Object.isFrozen(value)?value:structuredClone(value)):detached(value);
+  const readClient=()=>options.writingCompute?client.presentation():client.snapshot();
+  let materialized:{frame:object;envelope:ProgramEnvelope}|null=null;
   const id = options.requestId ?? (() => crypto.randomUUID());
   function snapshot(): AlphaSyncSnapshot {
-    const current = client.snapshot(), state = current.state;
+    const current = readClient(), state = current.state;
+    const frame='confirmedFrame' in current?current.confirmedFrame as object:null;
     const account = current.status === 'session-expired' ? null : state?.confirmed ?? null;
+    const reference=state?.references??(account?emptyAlphaReferences(account.ownerId):null);
     const editable = !!account && !busy && !state?.pending && !state?.draft && ['ready', 'saved', 'same-location', 'cancelled'].includes(current.status);
-    return { ownerId: current.ownerId, account: detached(account), envelope: account ? materializeAccount(account, references(account.ownerId)) : null,
-      status: current.status, busy, draft: detached(state?.draft ?? null), pending: detached(state?.pending ?? null),
+    // The writing presentation owns an immutable copy per confirmed frame.
+    // Generic snapshots keep their detached account/envelope/reference copies.
+    let envelope:ProgramEnvelope|null=null;
+    if(account){
+      const started=performance.now();
+      if(frame&&materialized?.frame===frame)envelope=materialized.envelope;
+      else {envelope=materializeAccount(account,reference!);if(frame){freezeWritingView(envelope);registerWritingView(envelope.data,{frame,ownerId:account.ownerId,revision:account.revision,publicRevision:state?.references?.social?.revision??null});materialized={frame,envelope};}}
+      noteWritingPhase('ack-materialize',started);
+    }
+    return { ownerId: current.ownerId, account: options.writingCompute?account:structuredClone(account), envelope, ownWritingAck:client.ownWritingAck(),
+      status: current.status, busy, draft: state?.draft ?? null, pending: state?.pending ?? null,
       retryableRejectedDraft: !busy && current.retryableRejectedDraft,
       retryableNativeHandoff: !busy && current.retryableNativeHandoff,
       retryableRejectedSocialDraft: !busy && current.retryableRejectedSocialDraft,
-      lastReceipt: detached(current.lastReceipt),
+      lastReceipt: current.lastReceipt,
       ...(state?.references?.social ? { publicRevision: state.references.social.revision } : {}),
-      ...(account ? { references: detached(references(account.ownerId)) } : {}),
+      ...(account ? { references: options.writingCompute?reference!:structuredClone(reference!) } : {}),
       canUndo: editable && undo?.after.revision === account?.revision, canRedo: editable && redo?.expectedRevision === account?.revision };
   }
   const emit = () => { try { options.onChange?.(snapshot()); } catch { /* Presentation cannot undo a server commit. */ } };
   const rejected = (reason: string): ProgramMutationResult => ({ ok: false, reason });
-  async function execute(command: AlphaCommand, result: string, before: AlphaAccount, mode: 'edit' | 'undo' | 'redo', recordHistory = true, retryRejectedDraft = false, retryNativeHandoff = false, retryRejectedSocialDraft = false): Promise<ProgramMutationResult> {
+  async function execute(command: AlphaCommand, result: string, before: AlphaAccount, mode: 'edit' | 'undo' | 'redo', recordHistory = true, retryRejectedDraft = false, retryNativeHandoff = false, retryRejectedSocialDraft = false,writingIdentity?:WritingIdentity,preparedReply?:WritingReply,writeCheckpoint?:()=>boolean,writingAckInput?:WritingAckInput): Promise<ProgramMutationResult> {
     if (!isAlphaWireCommand(command)) return rejected('forbidden');
     const epoch = generation; busy = true;
     try {
-      const operation = client.execute(command, { retryRejectedDraft, retryNativeHandoff, retryRejectedSocialDraft }); emit();
+      const operation = client.execute(command, { retryRejectedDraft, retryNativeHandoff, retryRejectedSocialDraft,writingIdentity,preparedReply,writeCheckpoint,writingAckInput }); emit();
       const ok = await operation;
       if (epoch !== generation) return rejected('session-expired');
-      const next = client.snapshot(), account = next.state?.confirmed;
+      const next = readClient(), account = next.state?.confirmed;
       if (!ok) return next.status === 'same-location' ? { ok: true, result, changed: false }
         : rejected(next.lastError === 'limit' ? next.state?.pending ? 'checking-result' : 'limit' : next.status);
       if (next.status === 'saved' && account?.revision === before.revision + 1) {
         if (!recordHistory || !undoable(command)) { undo = null; redo = null; }
-        else if (mode === 'undo') { redo = { expectedRevision: account.revision, target: detached(before), ...(command.kind === 'undo-creator' ? { creatorUndoId: command.requestId } : {}), ...(command.kind === 'undo-social' ? { socialUndoId: command.requestId } : {}) }; undo = null; }
-        else { undo = { command: detached(command), before: detached(before), after: detached(account) }; redo = null; }
+        else if (mode === 'undo') { redo = { expectedRevision: account.revision, target: copyOwned(before), ...(command.kind === 'undo-creator' ? { creatorUndoId: command.requestId } : {}), ...(command.kind === 'undo-social' ? { socialUndoId: command.requestId } : {}) }; undo = null; }
+        else { undo = { command: copyOwned(command), before: copyOwned(before), after: copyOwned(account) }; redo = null; }
       } else if (next.status === 'saved') { undo = null; redo = null; }
       const resultId = next.lastReceipt?.requestId === command.requestId ? next.lastReceipt.resultId ?? result : result;
       const flowId = next.state?.references?.public.versions.find(version => version.id === resultId)?.flowId;
@@ -59,6 +76,7 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
     } finally { if (epoch === generation) { busy = false; emit(); } }
   }
   const mutate: ProgramMutate = async (_label, build, mutationOptions) => {
+    const started=performance.now();
     const current = snapshot();
     const retryNative = !!current.retryableNativeHandoff;
     const retrySocial = !!current.retryableRejectedSocialDraft;
@@ -68,6 +86,32 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
     if (retryNative && (!mutationOptions?.alphaCreator || mutationOptions.alphaSocial)) return rejected('unresolved');
     if (retrySocial && (!mutationOptions?.alphaSocial || mutationOptions.alphaCreator)) return rejected('unresolved');
     if (!current.account || !current.retryableRejectedDraft && !retryNative && !retrySocial && !['ready', 'saved', 'same-location', 'cancelled'].includes(current.status)) return rejected(current.status);
+    const writing=mutationOptions?.alphaWriting,compute=options.writingCompute;
+    if(writing&&compute){
+      if(mutationOptions.alphaCreator||mutationOptions.alphaSocial||retryNative||retrySocial||!current.references)return rejected('forbidden');
+      const epoch=generation,account=current.account,reference=current.references,requestId=id();
+      const identity={ownerId:account.ownerId,docId:writing.documentId,workingGeneration:writing.workingGeneration,baseRevision:account.revision,requestId};
+      const checkpoint=client.writeCheckpoint();
+      // Reserve this serialized writer before yielding. Calculation never owns
+      // persistence, permission, CAS, confirmation, or a later input generation.
+      busy=true;emit();compute.note('preflight',performance.now()-started);
+      try{
+        const reply=await compute.run(identity,{kind:'save',account,references:reference,expected:writing.expected,next:writing.next,position:writing.position});
+        if(epoch!==generation)return rejected('session-expired');
+        const handoff=performance.now();
+        if(!reply.ok||!reply.command||reply.command.requestId!==requestId||reply.command.expectedRevision!==account.revision
+          ||!isM3Command(reply.command)||writing.canSubmit?.()===false||!checkpoint())return rejected('conflict');
+        const observe=(event:ProgramPrivateMutationObservation)=>{try{mutationOptions.onPrivateMutation?.(detached(event));}catch{}};
+        compute.note('handoff',performance.now()-handoff);const dispatch=performance.now();
+        const operation=execute(reply.command,reply.result??writing.documentId,account,'edit',mutationOptions.history!==false,current.retryableRejectedDraft,false,false,identity,options.recovery.savePrepared?reply:undefined,checkpoint,{documentId:writing.documentId,generation:writing.workingGeneration,expected:writing.expected,next:writing.next});
+        compute.note('dispatch',performance.now()-dispatch);
+        if(mutationOptions.onPrivateMutation)observe({phase:'prepared',generation:epoch,before:account,command:reply.command,snapshot:snapshot()});
+        const outcome=await operation;
+        if(mutationOptions.onPrivateMutation)observe({phase:'settled',generation,before:account,command:reply.command,snapshot:snapshot(),result:outcome});
+        return outcome;
+      }catch{return rejected('worker-error');}
+      finally{if(epoch===generation&&busy){busy=false;emit();}}
+    }
     let result = '', failure: string | null = null;
     try {
       const catalogIntent = typeof mutationOptions?.alphaCreator === 'function' ? undefined : mutationOptions?.alphaCreator;
@@ -109,18 +153,26 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
           expectedRevision: command.expectedRevision, intent }, result, current.account, 'edit', mutationOptions?.history !== false, false, retryNative);
       }
       if (!isM3Command(command)) return rejected('forbidden');
-      return execute(command, result, current.account, 'edit', mutationOptions?.history !== false, current.retryableRejectedDraft);
+      if (command.kind !== 'change-private') return execute(command, result, current.account, 'edit', mutationOptions?.history !== false, current.retryableRejectedDraft);
+      const observer = mutationOptions?.onPrivateMutation, epoch = generation;
+      const observe = (event: ProgramPrivateMutationObservation) => { try { observer?.(detached(event)); } catch { /* Observation cannot undo a commit. */ } };
+      // execute enters busy synchronously; do not let a prepared observer start another writer.
+      const operation = execute(command, result, current.account, 'edit', mutationOptions?.history !== false, current.retryableRejectedDraft);
+      observe({ phase: 'prepared', generation: epoch, before: current.account, command, snapshot: snapshot() });
+      const outcome = await operation;
+      observe({ phase: 'settled', generation, before: current.account, command, snapshot: snapshot(), result: outcome });
+      return outcome;
     } catch { return rejected(failure ?? 'invalid'); }
   };
   async function settle(kind: 'refresh' | 'resolve', retry = false) {
     if (busy) return false;
-    const previous = client.snapshot().state;
+    const previous = readClient().state;
     const epoch = generation; busy = true;
     try {
       const operation = kind === 'refresh' ? client.refresh() : client.resolvePending(retry); emit();
       const result = await operation;
       if (epoch !== generation) return false;
-      const confirmed = client.snapshot().state?.confirmed, revision = confirmed?.revision;
+      const confirmed = readClient().state?.confirmed, revision = confirmed?.revision;
       if (undo && undo.after.revision !== revision) undo = null;
       if (redo && redo.expectedRevision !== revision) redo = null;
       // A resolved lost response is also a confirmed success, but only when the
@@ -140,15 +192,15 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
   return {
     snapshot, mutate,
     bindSession(ownerId: string | null, next: AlphaRepository | null) {
-      const changedOwner = client.snapshot().ownerId !== ownerId;
-      generation++; busy = false; repository = next;
+      const changedOwner = readClient().ownerId !== ownerId;
+      options.writingCompute?.cancel();generation++; busy = false; repository = next;
       if (changedOwner) { undo = null; redo = null; }
       client.bindSession(ownerId, next); emit();
     },
-    dispose() { generation++; busy = false; repository = null; undo = null; redo = null; client.bindSession(null, null); emit(); },
+    dispose() { options.writingCompute?.cancel();generation++; busy = false; repository = null; undo = null; redo = null; client.bindSession(null, null); emit(); },
     refresh: () => settle('refresh'), resolvePending: (retrySameRequest = false) => settle('resolve', retrySameRequest),
     async discardConflict() {
-      const current = client.snapshot();
+      const current = readClient();
       if (busy || !current.ownerId || !repository || !current.state?.draft || current.state.pending) return false;
       const cleared = detached(current.state); cleared.draft = null;
       try { if (!options.recovery.save(cleared)) return false; } catch { return false; }

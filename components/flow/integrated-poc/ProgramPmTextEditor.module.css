@@ -1,0 +1,19 @@
+.editor :global(.ProseMirror) { min-height: 12rem; max-height: 65vh; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 12px; outline-offset: 2px; }
+.editor :global(.occurrence) { display: flex; gap: 8px; min-height: 1.6em; }
+.editor :global(.marker) { flex: 0 0 20px; user-select: none; }
+.editor :global(.occurrence-content) { flex: 1; min-width: 0; white-space: pre-wrap; }
+.editor p { font-size: .85rem; }
+
+/* Raw PM text stays intact. Only Logic's verified readonly framing is hidden. */
+.editor :global(.readonly-syntax-token[hidden]) { display: none !important; }
+.editor :global(.occurrence[data-mode="opaque"]) { align-items: flex-start; line-height: 1.6; }
+.editor :global(.occurrence[data-mode="opaque"] > .occurrence-content) { overflow-wrap: anywhere; }
+
+/* Context has no action rail. Keep real blank rows and their source spacing. */
+.editor :global(.occurrence[data-mode="opaque"] > .marker:empty),
+.editor :global(.occurrence[data-mode="opaque"][data-semantic-presentation="raw"] > .marker) { display: none; }
+.editor :global(.occurrence[data-mode="opaque"][data-semantic-presentation="structured"][data-semantic-kind="date"]) { font-size: .875rem; font-weight: 600; }
+.editor :global(.occurrence[data-mode="opaque"][data-semantic-presentation="structured"][data-semantic-kind="scope"]) { font-size: .875rem; color: #59645d; }
+
+/* These disabled checks describe state; the live progress controls keep their hit area. */
+.editor :global(.occurrence[data-mode="opaque"][data-semantic-presentation="structured"] > .marker > input[type="checkbox"]:disabled) { box-sizing: border-box; width: 1.125em; height: 1.125em; min-width: 1.125em; min-height: 1.125em; max-width: 1.125em; max-height: 1.125em; margin: .2em 0 0; padding: 0; }

@@ -5,4 +5,4 @@ import { readAlphaAuthConfig } from '@/lib/flow/integrated-poc/alpha-auth/config
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'FlowMe 개발계 로그인', robots: { index: false, follow: false } };
-export default function AlphaPage() { return <AlphaAuthPanel config={readAlphaAuthConfig(process.env)} />; }
+export default function AlphaPage() { return <AlphaAuthPanel config={readAlphaAuthConfig(process.env)} appWriting nativeAuthoringEnabled={process.env.FLOWME_ALPHA_NATIVE_AUTHORING_UI==='enabled'} />; }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { SupabaseClient, Session } from '@supabase/supabase-js';
 import { ALPHA_AUTH_STORAGE_KEY, readAlphaCallback, type AlphaAuthConfig } from '@/lib/flow/integrated-poc/alpha-auth/config';
 import { getAlphaBrowserClient } from '@/lib/flow/integrated-poc/alpha-auth/browser-client';
@@ -8,7 +8,11 @@ import { isConfirmedAlphaLogout } from '@/lib/flow/integrated-poc/alpha-auth/log
 import { updateAlphaRecoveryPassword } from '@/lib/flow/integrated-poc/alpha-auth/recovery-password';
 import { createAlphaAccountAccess, createAlphaSessionBoundary, type AlphaSessionView, type VerifiedAlphaSession } from '@/lib/flow/integrated-poc/alpha-auth/account-access';
 import styles from './AlphaAuthPanel.module.css';
-import { AlphaWorkspace } from './AlphaWorkspace';
+import { AlphaWorkspace,AlphaWorkspaceLegacyWriting } from './AlphaWorkspace';
+import {createAlphaLegacyWritingTransport} from '@/lib/flow/integrated-poc/alpha-sync/legacy-writing-transport';
+import { AlphaAuthenticatedWritingWorkspace } from './AlphaAuthenticatedWritingWorkspace';
+import type { AlphaAuthenticatedWritingPorts } from '@/lib/flow/integrated-poc/alpha-sync/authenticated-writing-shell';
+import {AlphaAppWritingWorkspace} from './AlphaAppWritingWorkspace';
 
 type Mode = 'login' | 'signup' | 'reset' | 'new-password';
 type CallbackPhase = 'pending' | 'failed' | 'ready';
@@ -30,7 +34,7 @@ function authError(code?: string) {
   return '요청을 완료하지 못했습니다. 연결 상태를 확인하고 다시 시도해 주세요.';
 }
 
-export function AlphaAuthPanel({ config, callback = false }: { config: AlphaAuthConfig | null; callback?: boolean }) {
+export function AlphaAuthPanel({ config, callback = false, writing, appWriting=false, nativeAuthoringEnabled=false }: { config: AlphaAuthConfig | null; callback?: boolean; writing?: AlphaAuthenticatedWritingPorts;appWriting?:boolean;nativeAuthoringEnabled?:boolean }) {
   const [view, setView] = useState(initial), [mode, setMode] = useState<Mode>('login');
   const [email, setEmail] = useState(''), [password, setPassword] = useState(''), [confirm, setConfirm] = useState('');
   const [message, setMessage] = useState(''), [busy, setBusy] = useState(false), [ready, setReady] = useState(false);
@@ -47,6 +51,8 @@ export function AlphaAuthPanel({ config, callback = false }: { config: AlphaAuth
   const callbackAttempt = useRef<Promise<CallbackOutcome> | null>(null);
   const callbackRecoveryToken = useRef<string | null>(null);
   const logoutToken = useRef<string | null>(null);
+  const legacyTransport=useMemo(()=>config&&workspaceSession&&writing
+    ?createAlphaLegacyWritingTransport(config,workspaceSession,writing.request):null,[config,workspaceSession?.userId,workspaceSession?.accessToken,writing?.request]);
 
   useEffect(() => {
     if (!config) return;
@@ -92,7 +98,7 @@ export function AlphaAuthPanel({ config, callback = false }: { config: AlphaAuth
         // Same-owner token refresh must not unmount unsaved personal editors.
         // The workspace rebinds its fixed-token adapter and re-verifies on read.
         if (!ownerChanged && connection.snapshot().status === 'ready') return;
-        connection.bind(ownerId, createAlphaAccountAccess(config, { userId: ownerId, accessToken: session.access_token }));
+        connection.bind(ownerId, createAlphaAccountAccess(config, { userId: ownerId, accessToken: session.access_token }, writing?.request ?? fetch));
         // Auth event handlers must not await other auth methods (SDK lock/re-entrancy).
         queueMicrotask(() => { if (!disposed) void connection.load(); });
       };
@@ -132,7 +138,7 @@ export function AlphaAuthPanel({ config, callback = false }: { config: AlphaAuth
         if (callback) { callbackGate.current = 'failed'; setCallbackPhase('failed'); connection.bind(null, null); }
         setReady(true); setMessage('로그인 확인 중 연결이 끊겼습니다. 다시 시도해 주세요.');
       } });
-      void fetch(`${config.url}/auth/v1/settings`, { headers: { apikey: config.publishableKey }, cache: 'no-store', redirect: 'error' })
+      void (writing?.request ?? fetch)(`${config.url}/auth/v1/settings`, { headers: { apikey: config.publishableKey }, cache: 'no-store', redirect: 'error' })
         .then(async response => response.ok ? response.json() : null).then(settings => { if (!disposed) setGoogle(settings?.external?.google === true); }).catch(() => {});
     } catch {
       if (callback) { callbackGate.current = 'failed'; setCallbackPhase('failed'); }
@@ -240,11 +246,15 @@ export function AlphaAuthPanel({ config, callback = false }: { config: AlphaAuth
     catch { setMessage(authError()); } finally { if (mounted.current) setBusy(false); }
   }
   const signedIn = !!view.ownerId && !logoutPending;
+  const writingSession = workspaceSession && signedIn && mode !== 'new-password' && !recoveryBlocked && callbackPhase === 'ready' ? workspaceSession : null;
+  let legacy: React.ReactNode;
   if (config && workspaceSession && workspaceOwner === workspaceSession.userId && signedIn
     && mode !== 'new-password' && !recoveryBlocked && callbackPhase === 'ready') {
-    return <AlphaWorkspace key={workspaceSession.userId} config={config} session={workspaceSession} email={accountEmail} onSignOut={signOut} />;
-  }
-  return <main className={styles.page}>
+    legacy = writing
+      ?legacyTransport?<AlphaWorkspaceLegacyWriting key={workspaceSession.userId} config={config} session={workspaceSession} email={accountEmail} onSignOut={signOut} transport={legacyTransport}/>
+        :<p role="alert">기존 작성 연결을 확인하지 못했습니다. 입력을 다른 계정에 옮기지 않았습니다.</p>
+      :<AlphaWorkspace key={workspaceSession.userId} config={config} session={workspaceSession} email={accountEmail} onSignOut={signOut} pmWriting={appWriting?'v11-pm/1':undefined} nativeAuthoringEnabled={nativeAuthoringEnabled} />;
+  } else legacy = <main className={styles.page}>
     <header className={styles.header}><a href="/alpha" className={styles.brand}>FlowMe</a><span>개발계 · 로그인 검증</span></header>
     <section className={styles.panel} aria-labelledby="alpha-heading">
       {!config ? <><h1 id="alpha-heading">개발계 연결이 꺼져 있습니다</h1><p>설정된 개발 환경에서만 로그인할 수 있습니다. 기존 개인공간에는 영향을 주지 않습니다.</p></>
@@ -285,4 +295,9 @@ export function AlphaAuthPanel({ config, callback = false }: { config: AlphaAuth
       <a className={styles.back} href="/my?personalWorkspacePoc=v1">기존 로컬 PoC 열기 <span>로그인 계정과 별도 저장</span></a>
     </section>
   </main>;
+  // The isolated app candidate opts in through appWriting; other callers keep
+  // the existing legacy or explicitly injected writing branch.
+  // The opt-in child remains mounted across Auth events so a dirty owner can
+  // refuse retirement; it re-verifies the supplied session through the reader.
+  return config&&appWriting&&!writing?<AlphaAppWritingWorkspace config={config} session={writingSession} email={accountEmail} onSignOut={signOut} legacy={legacy}/>:config && writing ? <AlphaAuthenticatedWritingWorkspace config={config} session={writingSession} ports={writing} email={accountEmail} onSignOut={signOut} legacy={legacy}/> : legacy;
 }

@@ -12,6 +12,8 @@ export interface TextProgressRecord { taskId: string; date: string; percent: num
 export interface TextProgressCheckConflict { lineId: string; targetId: string }
 /** Native paste range, checked against the current source before identity assignment. */
 export interface TextInputSplice { start: number; end: number; text: string }
+/** Transient, explicit native intent; not account or storage metadata. */
+export interface TextTaskSplitIntent { kind: 'task-title-split'; sourceLineId: string; sourceRaw: string }
 export interface TextWorkspaceState {
   version: 11;
   documents: TextDocument[];
@@ -71,7 +73,7 @@ export interface TextEditorRowMeta {
   id: string; kind: TextRowKind | 'reference'; isCanonical: boolean; depth: number;
   guideLevels: number[]; subtreeEndIndex: number; label: string;
   progressTargetId?: string; progressPercent?: number; progressDate?: string | null;
-  progressTracked?: boolean; scopeKind?: 'folder' | 'flow'; subtitle?: string;
+  progressTracked?: boolean; lastRecordedPercent?: number; scopeKind?: 'folder' | 'flow'; subtitle?: string;
   scopeMismatch?: string; dateMismatch?: string;
 }
 export interface TextWorkspaceModel {
@@ -87,11 +89,14 @@ export interface TextWorkspaceModel {
   contextAt(state: TextWorkspaceState, docId: string, index: number): TextContext;
   insertionContext(state: TextWorkspaceState, docId: string, index: number, depth?: number): TextContext;
   insertionOptions(state: TextWorkspaceState, docId: string, lineId: string): TextInsertion[];
-  editText(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice }): TextWorkspaceState;
-  editTextResult(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice }): {
+  editText(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice; folderText?: boolean; taskSplit?: TextTaskSplitIntent }): TextWorkspaceState;
+  editTextResult(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice; folderText?: boolean; taskSplit?: TextTaskSplitIntent }): {
     state: TextWorkspaceState; reason: 'identity-ambiguous' | 'invalid-format' | 'progress-check-conflict' | 'blocked' | null;
     progressConflict?: TextProgressCheckConflict;
+    normalizedText?: string;
+    folderProblem?: 'name-conflict' | 'unknown-id' | 'identity-mismatch' | 'invalid-parent' | 'invalid-folder';
   };
+  exportFolderText(state: TextWorkspaceState, docId: string): string | null;
   addDocument(state: TextWorkspaceState, input: { title: string; folder?: string; folderId?: string }): TextWorkspaceState;
   addTask(state: TextWorkspaceState, input: { docId: string; title: string; date?: string | null; scopeId?: string }): TextWorkspaceState;
   updateTask(state: TextWorkspaceState, taskId: string, patch: { title?: string; done?: boolean; date?: string | null; note?: string; time?: string }): TextWorkspaceState;
@@ -108,6 +113,8 @@ export interface TextWorkspaceModel {
   moveTargets(state: TextWorkspaceState, docId: string, lineId: string): TextMoveTarget[];
   moveSubtree(state: TextWorkspaceState, docId: string, lineId: string, beforeLineId: string | null, depth?: number): TextWorkspaceState;
   recordProgress(state: TextWorkspaceState, taskId: string, date: string, percent: number): TextWorkspaceState;
+  correctProgressRecord(state: TextWorkspaceState, taskId: string, date: string, percent: number, asOfDate: string): TextWorkspaceState;
+  currentProgress(state: TextWorkspaceState, taskId: string): number | null;
   progressHistory(state: TextWorkspaceState, taskId: string): TextProgress[];
   latestProgress(state: TextWorkspaceState, taskId: string): TextProgress | null;
   parseProgressToken(token: string): { ok: boolean; percent: number | null; kind: 'percent' | 'integer' | 'ratio' | null };
@@ -116,9 +123,12 @@ export interface TextWorkspaceModel {
 /** Pure source transitions. Persistence and undo belong to the program transaction owner. */
 export const textWorkspaceModel: TextWorkspaceModel = model;
 
-/** Display current dated progress, never a stale numeric token from the source text. */
+/** Numeric current and the last dated snapshot are separate display values. */
 export function textEditorRows(state: TextWorkspaceState, docId: string): TextEditorRowMeta[] {
-  const rows = model.rowMeta(state, docId);
+  return projectTextEditorRows(state, model.rowMeta(state, docId));
+}
+/** Projection of a validated, owner-bound row snapshot; not an admission port. */
+export function projectTextEditorRows(state: TextWorkspaceState, rows: TextRow[]): TextEditorRowMeta[] {
   if (!rows.length) return [];
   // rowMeta has validated this snapshot. Reuse its current progress within
   // this projection only; a later call must observe new records on the same state.
@@ -127,6 +137,9 @@ export function textEditorRows(state: TextWorkspaceState, docId: string): TextEd
     const previous = latest.get(record.taskId);
     if (!previous || record.date > previous.date) latest.set(record.taskId, { date: record.date, percent: record.percent });
   }
+  // Only this synchronous projection shares the validated scope catalog.
+  // The next call must still observe same-object changes to titles/ownership.
+  let scopes: TextScope[] | undefined;
   return rows.map(row => {
     const targetId = row.progressTargetId;
     const progress = targetId ? latest.get(targetId) ?? null : null;
@@ -137,11 +150,14 @@ export function textEditorRows(state: TextWorkspaceState, docId: string): TextEd
       label: row.scopeTitle || row.title || row.task?.title || row.text,
     };
     if (targetId) Object.assign(meta, {
-      progressTargetId: targetId, progressPercent: progress?.percent ?? (row.done ? 100 : 0),
-      progressDate: progress?.date ?? null, progressTracked: !!progress,
+      progressTargetId: targetId, progressPercent: row.progressPercent ?? progress?.percent ?? (row.done ? 100 : 0),
+      progressDate: progress?.date ?? null, progressTracked: !!progress, lastRecordedPercent: progress?.percent,
     });
     if (row.kind === 'scope') Object.assign(meta, { scopeKind: row.scopeKind, subtitle: row.scopeKind === 'flow' ? '개인 사본' : '폴더' });
-    if (row.scopeMismatch) meta.scopeMismatch = model.scopes(state).find(scope => scope.id === row.scopeId)?.title ?? '';
+    if (row.scopeMismatch) {
+      scopes ??= model.scopes(state);
+      meta.scopeMismatch = scopes.find(scope => scope.id === row.scopeId)?.title ?? '';
+    }
     if (targetId && row.date !== row.groupDate) meta.dateMismatch = row.date?.slice(5).replace('-', '.') ?? '미정';
     return meta;
   });

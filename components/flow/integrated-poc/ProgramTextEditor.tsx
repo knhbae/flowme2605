@@ -1,16 +1,21 @@
 'use client';
 
-import React, { useEffect, useId, useRef, useState } from 'react';
+import type {OwnedWritingAck} from '@/lib/flow/integrated-poc/writing-ack';
+import type {WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
+import React, { useEffect, useRef, useState } from 'react';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
-import { textEditorRows, textWorkspaceModel as M, type TextInputSplice, type TextMoveSelection, type TextMoveTarget, type TextProgressCheckConflict, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
+import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
 import { planProgramDateBlockOrder, type DateBlockOrderPlan, type DateOrderSelection } from '@/lib/flow/integrated-poc/date-block-order';
 import { applyProgramLinePermutation, createProgramPermutationHistory } from '@/lib/flow/integrated-poc/line-permutation';
 import { programSame } from '@/lib/flow/integrated-poc/controller';
-import { programClone } from '@/lib/flow/integrated-poc/contract';
+import { readProgramFolderCopyPreview, isProgramFolderCopyPreviewCurrent, copyProgramFolderOccurrence, type ProgramFolderCopyPreview } from '@/lib/flow/integrated-poc/folder-copy';
+import { createAlphaStructuralDraft, type AlphaStructuralDraft } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
+import { createProgramTextDraft, type ProgramTextCommit, type ProgramTextCommitOptions, type ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
+import {createProgramDocumentInput,type ProgramDocumentInput} from '@/lib/flow/integrated-poc/program-document-input';
 import type { ProgramReferenceAccess } from '@/lib/flow/integrated-poc/reference-execution-guard';
-import { linkProgramFolder, programFolderLineTitle } from '@/lib/flow/integrated-poc/folder-link-slot';
+import { linkProgramFolder, programFolderLineTitle, programFolderLinkProblem, programFolderLinkProblems } from '@/lib/flow/integrated-poc/folder-link-slot';
 import { programFolderLinkPreview, isProgramFolderLinkPreviewCurrent, type ProgramFolderLinkPreview } from '@/lib/flow/integrated-poc/folder-link-preview';
 import { isProgramFolderViewCurrent, readProgramFolderRegions } from '@/lib/flow/integrated-poc/folder-document-regions';
 import { programFolderCreationLocation, programFolderInputSuggestion, programFolderPath, programFolderSuggestionPreservesSource } from '@/lib/flow/integrated-poc/folder-link-suggestions';
@@ -18,8 +23,28 @@ import { ProgramFolderRegionEditor, type ProgramFolderRegionPort, type ProgramFo
 import regionStyles from './ProgramFolderRegionEditor.module.css';
 import { readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { readProgramMemoContext, programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
+import { ProgramProgressForm } from './ProgramProgressForm';
+import {ProgramWritingInline} from './ProgramWritingInline';
+import {prepareWritingChild} from '@/lib/flow/integrated-poc/writing-child-command';
+import {planWritingInsertion} from '@/lib/flow/integrated-poc/writing-insertion-command';
+
+export { createProgramTextDraft } from '@/lib/flow/integrated-poc/program-text-draft';
+export type { ProgramTextCommitOptions, ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
 
 export interface ProgramTextPosition { start: number; end: number; scrollTop: number }
+
+/** Inline folder metadata disappears after an accepted import; retain the same
+ * visible line/column instead of leaving the caret at an encoded ID offset. */
+export function programFolderTextOffset(raw: string, visibleRaw: string, offset: number): number {
+  const source = raw.split('\n'), visible = visibleRaw.split('\n');
+  let remaining = Math.max(0, Math.min(raw.length, offset)), destination = 0;
+  for (let index = 0; index < source.length; index++) {
+    const line = visible[index] ?? '';
+    if (remaining <= source[index].length) return Math.min(visibleRaw.length, destination + Math.min(remaining, line.length));
+    remaining -= source[index].length + 1; destination += line.length + 1;
+  }
+  return visibleRaw.length;
+}
 type WritingSelection = ProgramTextPosition & { direction: 'forward' | 'backward' | 'none'; scrollLeft: number };
 
 /** Keep the same source characters when a menu action adds properties or moves a row. */
@@ -48,55 +73,51 @@ export function programTextSelectionAfterChange(before: TextWorkspaceState, next
 export type ProgramSourceFocus = (target: { documentId: string; lineId: string; raw: string }) => boolean;
 /** Read-only UI state for explaining a refused view change, not save authority. */
 export type ProgramTextSaveStatus = { composing: boolean; saving: boolean; failed: boolean };
-export type ProgramTextCommitOptions = {
-  groupId?: string;
-  expectedWorkspace?: TextWorkspaceState;
-  privateTaskSchedule?: { taskId: string; date: string | null; time: string };
-  /** UI-only confirmation of a successful schedule's server-generated property IDs. */
-  onPrivateTaskScheduleAcknowledged?: (confirmation: Promise<TextWorkspaceState | null>) => void;
-};
+
 export interface ProgramTextEditorProps {
+  /** Optional integration ports are ignored by the legacy editor. */
+  writingCompute?:WritingCompute;writingContext?:()=>{ownerId:string;baseRevision:number};
+  hostContext?: import('@/lib/flow/integrated-poc/rea-pm/app-host').ProgramPmHostContext;
+  onRegisterInputCheckpoint?: (read: (() => import('@/lib/flow/integrated-poc/document-action').ProgramEditorInputCheckpoint) | null) => void;
+  onRegisterCaptureComplete?: (read: (() => boolean) | null) => void;
+  onRegisterExternalGuard?: (read: ((before: import('@/lib/flow/integrated-poc/contract').ProgramData, next: import('@/lib/flow/integrated-poc/contract').ProgramData) => boolean) | null) => void;
   docId: string;
   workspace: TextWorkspaceState;
-  onCommit: (next: TextWorkspaceState, label: string, options?: ProgramTextCommitOptions) => Promise<boolean>;
+  onCommit: ProgramTextCommit;
   onPosition?: (selection: ProgramTextPosition, lineId: string | null) => void;
   initialPosition?: ProgramTextPosition;
   onOpenScope?: (scopeId: string) => void;
-  taskAccess?: (taskId: string) => ProgramReferenceAccess;
+  taskAccess?: (taskId: string, current?:TextWorkspaceState) => ProgramReferenceAccess;
+  folderCopyProblem?: (state: TextWorkspaceState, docId: string, lineIds: readonly string[]) => string | null;
   onOpenTaskOrigin?: (documentId: string, lineId: string) => void;
-  onConnectFlow?: (docId: string, lineId: string) => void;
+  onConnectFlow?: (docId: string, lineId: string | null, insertAfter: boolean) => void;
   onDirtyChange?: (dirty: boolean) => void;
   onRegisterSave?: (save: (() => Promise<boolean>) | null, status?: (() => ProgramTextSaveStatus) | null) => void;
   onRegisterSourceFocus?: (focus: ProgramSourceFocus | null) => void;
   onRegisterInputLock?: (lock: ((locked: boolean) => void) | null) => void;
   onRegisterDraft?: (read: (() => string) | null) => void;
-  onRegisterConfirmedSave?: (accept: ((before: TextWorkspaceState, next: TextWorkspaceState) => boolean) | null) => void;
+  onRegisterStructuralDraft?: (read: (() => AlphaStructuralDraft | null) | null) => void;
+  onRegisterConfirmedSave?: (accept: ((before: TextWorkspaceState, next: TextWorkspaceState, ack?:OwnedWritingAck) => boolean) | null) => void;
   onUndo?: () => void | Promise<void>;
   onRedo?: () => void | Promise<void>;
   readOnly?: boolean;
+  /** Retained editors keep their input/history, but not an open navigation menu. */
+  active?: boolean;
   /** Local document-collection UI: direct writing first, current-line tools secondary. */
   directWriting?: boolean;
+  authoringMode?:boolean;
   /** Host-owned status/actions share the existing toolbar, not the input owner. */
   noteStatus?: React.ReactNode;
   noteActions?: React.ReactNode;
   disabledReason?: string;
   validateWorkspace?: (next: TextWorkspaceState) => boolean;
+  /** Proposal gate: caller verifies current canonical private ownership and known copy/source exclusions. Absent means refuse. */
+  authorizeTaskSplit?: (lineId: string, current: TextWorkspaceState) => boolean;
   folderId?: string;
   onShowWholeDocument?: () => void;
   /** Parent checks other mounted drafts before running a synchronous local handoff. */
   onContinueWholeDocument?: (stage: () => boolean) => boolean;
   onShowFolderTasks?: () => void;
-}
-
-export interface ProgramTextDraftState {
-  committed: TextWorkspaceState;
-  working: TextWorkspaceState;
-  raw: string;
-  dirty: boolean;
-  saving: boolean;
-  invalid: boolean;
-  error: string;
-  progressConflict?: TextProgressCheckConflict;
 }
 
 /** Wrap only modal endpoints; intermediate controls retain their native Tab behavior. */
@@ -118,153 +139,6 @@ export function trapProgramDialogTab(
   const destination = event.shiftKey ? active === first ? last : null : active === last ? first : null;
   if (!destination) return false;
   event.preventDefault(); event.stopPropagation(); destination.focus(); return true;
-}
-
-/** Serializes draft commits while preserving newer typing and rejected raw input. */
-export function createProgramTextDraft(
-  workspace: TextWorkspaceState,
-  docId: string,
-  commit: ProgramTextEditorProps['onCommit'],
-  notify: (state: ProgramTextDraftState) => void,
-  validateWorkspace: (next: TextWorkspaceState) => boolean = () => true,
-) {
-  let state: ProgramTextDraftState = { committed: workspace, working: workspace, raw: M.raw(M.getDocument(workspace, docId)), dirty: false, saving: false, invalid: false, error: '' };
-  let flight: Promise<boolean> | null = null;
-  let label = '문서 편집';
-  let groupId: string | undefined;
-  let privateTaskSchedule: ProgramTextCommitOptions['privateTaskSchedule'];
-  let inputGeneration = 0;
-  let submitted: { before: TextWorkspaceState; next: TextWorkspaceState; generation: number } | null = null;
-  const pasteHistory: { before: TextWorkspaceState; after: TextWorkspaceState }[] = [];
-  const report = () => notify({ ...state });
-  const api = {
-    getState: () => state,
-    rejectRaw(raw: string) {
-      privateTaskSchedule = undefined;
-      inputGeneration++;
-      state = { ...state, raw, invalid: true, dirty: true, progressConflict: undefined, error: '문서 문맥이 바뀌어 순서를 반영하지 않았습니다. 입력은 남아 있습니다.' }; report();
-    },
-    updateRaw(raw: string, progressDate: string, input?: { inputType: string; inputSplice?: TextInputSplice }) {
-      privateTaskSchedule = undefined;
-      inputGeneration++;
-      const baseRaw = M.raw(M.getDocument(state.committed, docId));
-      const before = state.working;
-      const history = (input?.inputType === 'historyUndo' || input?.inputType === 'historyRedo') ? pasteHistory.slice().reverse().find(entry => {
-        const from = input.inputType === 'historyUndo' ? entry.after : entry.before;
-        const to = input.inputType === 'historyUndo' ? entry.before : entry.after;
-        return programSame(M.getDocument(before, docId), M.getDocument(from, docId)) && raw === M.raw(M.getDocument(to, docId));
-      }) : undefined;
-      const historyFrom = history && (input?.inputType === 'historyUndo' ? history.after : history.before);
-      const historyTo = history && (input?.inputType === 'historyUndo' ? history.before : history.after);
-      // Genuine native history may restore a paste snapshot only while its whole
-      // workspace still matches. Never overwrite newer records or another edit.
-      const edit: ReturnType<typeof M.editTextResult> = history
-        ? programSame(before, historyFrom) ? { state: historyTo!, reason: null } : { state: before, reason: 'identity-ambiguous' }
-        : raw === baseRaw ? { state: state.committed, reason: null }
-          : M.editTextResult(before, docId, raw, { progressDate, ...(input?.inputSplice ? { inputSplice: input.inputSplice } : {}) });
-      const next = edit.state;
-      const protectedChange = !validateWorkspace(next);
-      const invalid = protectedChange || M.raw(M.getDocument(next, docId)) !== raw;
-      if (!invalid && input?.inputSplice && next !== before) pasteHistory.push({ before, after: next });
-      state = { ...state, raw, working: invalid ? state.working : next, invalid,
-        dirty: state.saving || raw !== baseRaw || next !== state.committed,
-        progressConflict: !protectedChange && invalid && edit.reason === 'progress-check-conflict' ? edit.progressConflict : undefined,
-        error: protectedChange ? '보관·휴지통·복구 문서나 반복 규칙·보류 항목의 원문 표시는 여기서 바꿀 수 없습니다. 해당 줄을 원래대로 되돌리면 일반 할 일과 메모를 계속 편집할 수 있습니다. 입력은 보관 중입니다.'
-          : !invalid ? '' : edit.reason === 'identity-ambiguous'
-            ? '여러 줄의 변경을 기존 항목과 연결하지 못해 반영하지 않았습니다. 제목 수정과 줄 이동은 나누고, 여러 제목은 한 줄씩 수정해 저장해 주세요. 입력은 그대로 남아 있습니다.'
-            : edit.reason === 'invalid-format'
-              ? '날짜·진행률·들여쓰기 형식을 확인해 주세요. 입력은 그대로 남아 있습니다.'
-              : edit.reason === 'progress-check-conflict'
-                ? '진행 기록과 다른 체크 표시로 바꿀 수 없습니다. 체크 표시를 되돌린 뒤 ‘진행 조절’에서 변경해 주세요. 입력은 남아 있습니다.'
-              : '입력을 안전하게 반영하지 못했습니다. 변경을 나눠서 다시 시도해 주세요. 입력은 그대로 남아 있습니다.' };
-      label = '문서 편집'; groupId = `text:${docId}`; report();
-      return !invalid;
-    },
-    apply(next: TextWorkspaceState, nextLabel: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule']) {
-      if (state.invalid || state.saving || !M.validate(next) || !validateWorkspace(next) || next === state.working) return false;
-      inputGeneration++;
-      state = { ...state, working: next, raw: M.raw(M.getDocument(next, docId)), dirty: true, error: '', progressConflict: undefined };
-      label = nextLabel; groupId = undefined; privateTaskSchedule = schedule; report(); return true;
-    },
-    synchronize(next: TextWorkspaceState) {
-      if (state.dirty || state.saving || state.committed === next || programSame(state.committed, next)) return false;
-      state = { ...state, committed: next, working: next, raw: M.raw(M.getDocument(next, docId)), error: '', progressConflict: undefined };
-      report(); return true;
-    },
-    acceptConfirmedSave(before: TextWorkspaceState, next: TextWorkspaceState) {
-      if (!submitted || !state.dirty || state.saving || state.invalid || inputGeneration !== submitted.generation
-        || !programSame(submitted.before, before) || !programSame(submitted.next, next)
-        || !programSame(state.working, next) || state.raw !== M.raw(M.getDocument(next, docId))) return false;
-      state = { ...state, committed: next, working: next, dirty: false, error: '', progressConflict: undefined };
-      submitted = null; report(); return true;
-    },
-    discard(next: TextWorkspaceState) {
-      if (state.saving) return false;
-      privateTaskSchedule = undefined;
-      submitted = null; inputGeneration++;
-      state = { committed: next, working: next, raw: M.raw(M.getDocument(next, docId)), dirty: false, saving: false, invalid: false, error: '' };
-      report(); return true;
-    },
-    save(): Promise<boolean> {
-      if (flight) return flight;
-      if (state.invalid) return Promise.resolve(false);
-      if (!state.dirty) return Promise.resolve(true);
-      flight = (async () => {
-        while (state.dirty && !state.invalid) {
-          const next = state.working, submittedRaw = M.raw(M.getDocument(next, docId));
-          const before = state.committed, schedule = privateTaskSchedule;
-          const oldIds = new Set([...before.documents, ...before.flows].flatMap(doc => doc.lines.map(line => line.id)));
-          const insertedProperty = schedule && [...next.documents, ...next.flows].some(doc => doc.lines.some(line => !oldIds.has(line.id)));
-          let confirmation: Promise<TextWorkspaceState | null> | undefined;
-          submitted = { before: state.committed, next, generation: inputGeneration };
-          state = { ...state, saving: true, error: '', progressConflict: undefined }; report();
-          let accepted = false;
-          try { accepted = await commit(next, label, { groupId, expectedWorkspace: state.committed,
-            ...(schedule ? { privateTaskSchedule: schedule } : {}),
-            ...(insertedProperty ? { onPrivateTaskScheduleAcknowledged: (pending: Promise<TextWorkspaceState | null>) => { confirmation = pending; } } : {}) }); } catch { accepted = false; }
-          if (!accepted) {
-            state = { ...state, saving: false, dirty: true, error: '저장하지 못했습니다. 입력은 남아 있습니다. 다시 저장해 주세요.' };
-            report(); return false;
-          }
-          let committed = next, working = state.working;
-          if (confirmation) {
-            const authoritative = await confirmation.catch(() => null);
-            const comparable = programClone(next);
-            const identities = new Map<string, string>();
-            let valid = !!authoritative && M.validate(authoritative);
-            for (const doc of [...comparable.documents, ...comparable.flows]) {
-              const incoming = authoritative && M.getDocument(authoritative, doc.id);
-              if (!incoming) { valid = false; break; }
-              for (const [index, line] of doc.lines.entries()) if (!oldIds.has(line.id)) {
-                const replacement = incoming.lines[index];
-                if (!replacement || oldIds.has(replacement.id)) { valid = false; break; }
-                identities.set(line.id, replacement.id); line.id = replacement.id;
-              }
-            }
-            if (!valid || !programSame(comparable, authoritative)) {
-              state = { ...state, saving: false, dirty: true, error: '저장된 일정의 문맥을 확인하지 못했습니다. 입력은 남아 있습니다.' };
-              submitted = null; report(); return false;
-            }
-            // Change identities only. Newer raw text, selection and its dirty state remain owned by the editor.
-            working = programClone(state.working);
-            for (const doc of [...working.documents, ...working.flows]) for (const line of doc.lines) line.id = identities.get(line.id) ?? line.id;
-            if (!M.validate(working) || M.raw(M.getDocument(working, docId)) !== state.raw) {
-              state = { ...state, saving: false, dirty: true, error: '입력을 안전하게 연결하지 못했습니다. 입력은 남아 있습니다.' };
-              submitted = null; report(); return false;
-            }
-            committed = authoritative!;
-          }
-          const unchanged = state.working === next && state.raw === submittedRaw;
-          submitted = null;
-          state = { ...state, committed, working, saving: false, dirty: !unchanged };
-          report();
-        }
-        return !state.dirty;
-      })().finally(() => { flight = null; });
-      return flight;
-    },
-  };
-  return api;
 }
 
 function today() {
@@ -301,11 +175,12 @@ export function stageProgramRegionInput(controller: ReturnType<typeof createProg
   // Do not consume or stage the fragment until its retained destination accepts
   // the exact bytes. A composing/destroyed native instance can refuse setValue.
   if (guard.install && !guard.install(capture.raw)) return false;
-  if (capture.raw !== state.raw) controller.updateRaw(capture.raw, today());
+  if (capture.raw !== state.raw) controller.updateRaw(capture.raw);
   return controller.getState().raw === capture.raw;
 }
 
-type Panel = { kind: 'insert' | 'progress' | 'date' | 'folder' | 'move' | 'reference' | 'order'; lineId: string | null; folderSuggestionTitle?: string; folderLinkPreview?: ProgramFolderLinkPreview } | null;
+type ChildTarget={documentId:string;parentId:string;workspace:TextWorkspaceState;raw:string;title:string;date:string|null;scope:string;memo:string};
+type Panel = { kind: 'insert' | 'child' | 'progress' | 'date' | 'folder' | 'folder-copy' | 'move' | 'reference' | 'order'; lineId: string | null; child?:ChildTarget; folderSuggestionTitle?: string; folderLinkPreview?: ProgramFolderLinkPreview; folderCopyPreview?: ProgramFolderCopyPreview } | null;
 type Moving = TextMoveSelection & { targets: TextMoveTarget[] };
 
 export function programTextProtectionMessage(access?: ProgramReferenceAccess): string {
@@ -325,12 +200,45 @@ export function ProgramReferencePanel({ access, title, date, history, onOrigin, 
   </div>;
 }
 
+/** A default binary check records progress on the existing Item. Subchecks,
+ * partial progress and future-record ambiguity retain the explicit detail UI. */
+/** Presentation follows the real action; this never authorizes a mutation. */
+export function programCheckboxAction(meta: TextEditorRowMeta, access: ProgramReferenceAccess | undefined, date: string): 'toggle' | 'progress-open' | 'reference-open' {
+  if (!meta.progressTargetId || !access || access.kind !== 'active' || access.reason
+    || access.lineId !== meta.progressTargetId || !access.documentId) return 'reference-open';
+  if (meta.kind === 'subcheck' && !meta.isCanonical || (meta.progressDate ?? '') > date
+    || (meta.progressPercent !== 0 && meta.progressPercent !== 100)) return 'progress-open';
+  return ['task', 'reference'].includes(meta.kind)||meta.kind==='subcheck'&&meta.isCanonical ? 'toggle' : 'progress-open';
+}
+
+export function programDirectCheckboxChange(workspace: TextWorkspaceState, docId: string, lineId: string, date: string) {
+  const row = M.rowMeta(workspace, docId).find(entry => entry.id === lineId);
+  if (row?.kind === 'subcheck'&&!row.isCanonical) return { kind: 'panel', reason: 'subcheck' } as const;
+  const target = row?.progressTargetId;
+  if (!row||row.kind!=='task'&&!(row.kind==='subcheck'&&row.isCanonical) || !target) return { kind: 'blocked' } as const;
+  const value = M.currentProgress(workspace, target);
+  if (value === null) return { kind: 'blocked' } as const;
+  if (value > 0 && value < 100) return { kind: 'panel', reason: 'partial' } as const;
+  if ((M.latestProgress(workspace, target)?.date ?? '') > date) return { kind: 'panel', reason: 'future' } as const;
+  const percent = value === 100 ? 0 : 100;
+  const next = M.recordProgress(workspace, target, date, percent);
+  return next === workspace ? { kind: 'blocked' } as const : { kind: 'apply', next, target, percent } as const;
+}
+
+/** A pending command is not a committed edit; every completion recomputes this. */
+export function programTextInputPending(state:Pick<ProgramTextDraftState,'dirty'|'invalid'|'raw'>,nativeRaw:string|undefined,composing:boolean,region:boolean,checking:boolean){
+  return state.dirty||state.invalid||composing||region||checking||(nativeRaw!==undefined&&nativeRaw!==state.raw);
+}
+
 export function ProgramTextEditor(props: ProgramTextEditorProps) {
-  const progressHintId = useId();
   const propsRef = useRef(props); propsRef.current = props;
   const hostRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ReturnType<typeof nativeEditor.create> | null>(null);
   const draftRef = useRef<ReturnType<typeof createProgramTextDraft> | null>(null);
+  const documentInputRef=useRef<ProgramDocumentInput|null>(null);
+  const checkPendingRef=useRef<string|null>(null);
+  const checkNotifyRef=useRef<((pending:boolean)=>void)|undefined>(undefined);
+  const [checkPending,setCheckPending]=useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const movingRef = useRef<Moving | null>(null);
@@ -356,22 +264,50 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [draft, setDraft] = useState<ProgramTextDraftState>(() => ({ committed: props.workspace, working: props.workspace,
     raw: M.raw(M.getDocument(props.workspace, props.docId)), dirty: false, saving: false, invalid: false, error: '' }));
   const [mode, setMode] = useState<'live' | 'text'>('live');
-  const [panel, setPanel] = useState<Panel>(null);
+  const [panel, setPanelState] = useState<Panel>(null),panelRef=useRef<Panel>(null);
+  const setPanel=(next:Panel)=>{panelRef.current=next;setPanelState(next);};
+  const childTarget=panel?.kind==='child'?panel.child??null:null;
+  const currentChild=()=>panelRef.current?.kind==='child'?panelRef.current.child??null:null;
+  const childDrafts=useRef<Record<string,string>>({});
+  const panelComposingRef=useRef(false),compositionGeneration=useRef(0);
+  const slashCommandRef=useRef<{lineId:string;raw:string;workspace:TextWorkspaceState;generation:number}|null>(null);
   const [moving, setMoving] = useState<Moving | null>(null);
   const [date, setDate] = useState(today);
   const [time, setTime] = useState('');
   const [percent, setPercent] = useState('0');
+  const [progressRecordDate, setProgressRecordDate] = useState<string | null>(null);
   const [folderName, setFolderName] = useState('');
   const [message, setMessage] = useState('');
   const [composing, setComposing] = useState(false);
   const disabled = inputLocked || !!props.readOnly || draft.invalid || draft.saving;
+  const insertionDisabled=inputLocked||!!props.readOnly||draft.invalid||composing||regionPending||checkPending;
 
   const currentState = () => draftRef.current?.getState().working ?? propsRef.current.workspace;
   const currentDoc = () => M.getDocument(currentState(), propsRef.current.docId);
-  const currentRow = (lineId: string | null) => M.rowMeta(currentState(), propsRef.current.docId).find(row => row.id === lineId);
-  const accessFor = (lineId: string | null) => { const row = currentRow(lineId), target = row?.progressTargetId ?? row?.taskId; return target ? propsRef.current.taskAccess?.(target) : undefined; };
+  const currentRow = (lineId: string | null) => {const state=currentState();return(documentInputRef.current?.rows(state)??M.rowMeta(state,propsRef.current.docId)).find(row=>row.id===lineId);};
+  const accessFor = (lineId: string | null) => { const row = currentRow(lineId), target = row?.progressTargetId ?? row?.taskId; return target ? propsRef.current.taskAccess?.(target,currentState()) : undefined; };
   const textArea = () => hostRef.current?.querySelector<HTMLTextAreaElement>('textarea') ?? null;
-  const actionsDisabled = () => inputLockedRef.current || !!propsRef.current.readOnly || !!draftRef.current?.getState().invalid || !!draftRef.current?.getState().saving;
+  const actionsDisabled = () => !!checkPendingRef.current || inputLockedRef.current || !!propsRef.current.readOnly || !!draftRef.current?.getState().invalid || !!draftRef.current?.getState().saving;
+
+  const checkActionsDisabled = (lineIndex?:number) => {
+    const controller=draftRef.current,state=controller?.getState();
+    if(!controller||!state||checkPendingRef.current||inputLockedRef.current||propsRef.current.readOnly
+      ||state.invalid||composingRef.current||regionPendingRef.current)return true;
+    if(!state.saving)return false;
+    if(textArea()?.value!==state.raw)return true;
+    const doc=currentDoc(),date=today();
+    return !doc?.lines.some((line,index)=>{
+      if(lineIndex!==undefined&&index!==lineIndex)return false;
+      const row=currentRow(line.id),target=row?.progressTargetId,access=accessFor(line.id);
+      const meta=documentInputRef.current?.paint(state.working)?.[index];
+      const canonicalChild=row?.kind==='subcheck'&&row.isCanonical&&!row.isReference&&controller.canApplyLocal()
+        &&!!meta&&[0,100].includes(meta.progressPercent!)&&(meta.progressDate??'')<=date;
+      if(!controller.canCheck(line.id,date)&&!canonicalChild)return false;
+      return !!propsRef.current.taskAccess&&!!target&&!!access&&access.kind==='active'&&!access.reason
+        &&access.lineId===target&&!!access.documentId
+        &&!!M.getDocument(state.working,access.documentId)?.lines.some(source=>source.id===target);
+    });
+  };
 
   function rememberPosition() {
     if (propsRef.current.folderId) return;
@@ -383,11 +319,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     propsRef.current.onPosition?.({ start: textarea.selectionStart, end: textarea.selectionEnd, scrollTop: textarea.scrollTop }, currentDoc()?.lines[index]?.id ?? null);
   }
   function closePanel() {
+    if(panelComposingRef.current||composingRef.current)return;
+    dismissPanel(true,true);
+  }
+  function dismissPanel(restore:boolean,resumeSave:boolean) {
+    slashCommandRef.current=null;
     dialogRef.current?.close(); setPanel(null); setMessage(''); setOrderPreview(null);
     const saved = menuReturnRef.current; menuReturnRef.current = null;
-    if (composingRef.current || inputLockedRef.current) return;
-    editorRef.current?.focus();
-    if (saved) restoreWritingSelection(saved);
+    const state=draftRef.current?.getState();
+    if(state)propsRef.current.onDirtyChange?.(programTextInputPending(state,textArea()?.value,composingRef.current,regionPendingRef.current,!!checkPendingRef.current));
+    if(resumeSave&&state?.dirty&&!state.invalid&&!state.error)scheduleSave();
+    if(restore&&!composingRef.current&&!inputLockedRef.current){editorRef.current?.focus();if(saved)restoreWritingSelection(saved);}
   }
   function writingSelection(): WritingSelection | null {
     const area = textArea();
@@ -465,17 +407,18 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (composingRef.current) return false;
     if (timerRef.current) clearTimeout(timerRef.current);
     if (propsRef.current.readOnly) return false;
-    const controller = draftRef.current, before = propsRef.current.workspace;
+    const controller = draftRef.current;
     const saved = await (controller?.save() ?? false);
-    // An authoritative account response may rerender during the save. Its new
-    // property-row IDs belong to the committed workspace, after input settles.
-    if (saved && controller && controller === draftRef.current && propsRef.current.workspace !== before
-      && !composingRef.current && !regionPendingRef.current && controller.synchronize(propsRef.current.workspace)) {
-      editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true });
-    }
-    return saved;
+    // The draft owns the confirmed baseline and drains newer input. Parent
+    // props may still contain an earlier ACK until React commits its update;
+    // never adopt that stale snapshot backwards after a successful save.
+    // Generated property IDs use the draft confirmation port; external
+    // workspace updates keep the existing synchronization effect.
+    return saved&&!!controller&&!programTextInputPending(controller.getState(),textArea()?.value,composingRef.current,regionPendingRef.current,!!checkPendingRef.current);
   }
   async function saveNow() {
+    if(currentChild()){setMessage('추가 중인 내용을 적용하거나 닫은 뒤 계속해 주세요. 초안은 남아 있습니다.');return false;}
+    if(checkPendingRef.current)return false;
     if (composingRef.current) { setMessage('한글 입력을 마친 뒤 보기 범위를 바꿔 주세요.'); return false; }
     const saved = await (regionPortRef.current ? regionPortRef.current.flush() : saveFullDraft());
     if (saved && !composingRef.current && !regionPendingRef.current && !draftRef.current?.getState().dirty) {
@@ -484,8 +427,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     return saved;
   }
   function captureDraftRaw() {
+    // Recovery may retain unfinished native composition without admitting it
+    // as validated working state or submitting it to the server.
+    if(composingRef.current&&!regionPendingRef.current)return textArea()?.value??draftRef.current?.getState().raw??'';
     return regionPortRef.current?.hasPending() ? regionPortRef.current.captureRaw() || draftRef.current?.getState().raw || ''
       : draftRef.current?.getState().raw ?? textArea()?.value ?? '';
+  }
+  function captureStructuralDraft() {
+    const state = draftRef.current?.getState();
+    return state?.dirty ? createAlphaStructuralDraft(state.committed, state.working, propsRef.current.docId) : null;
   }
   function acceptRegion(next: TextWorkspaceState, before: TextWorkspaceState) {
     const controller = draftRef.current;
@@ -527,12 +477,20 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (index < 0) return false;
     // Native focus unfolds its presentation and removes inert before focusing.
     // Merely focusing the retained textarea cannot enter a folded document.
-    return editorRef.current?.focus(index) === true && textarea.ownerDocument.activeElement === textarea;
+    const focused = editorRef.current?.focus(index) === true && textarea.ownerDocument.activeElement === textarea;
+    if (focused) {
+      const tools = hostRef.current?.closest('section')?.querySelector<HTMLDetailsElement>('[data-editor-tools]');
+      if (tools) tools.open = false;
+    }
+    return focused;
   };
   useEffect(() => {
-    propsRef.current.onRegisterSave?.(saveNow, () => ({ composing: composingRef.current, saving: !!draftRef.current?.getState().saving, failed: !!draftRef.current?.getState().error }));
+    propsRef.current.onRegisterSave?.(saveNow, () => ({ composing: composingRef.current, saving: !!checkPendingRef.current || !!draftRef.current?.getState().saving, failed: !!draftRef.current?.getState().error }));
     propsRef.current.onRegisterSourceFocus?.(focusSourceRow);
     propsRef.current.onRegisterDraft?.(captureDraftRaw);
+    propsRef.current.onRegisterStructuralDraft?.(captureStructuralDraft);
+    propsRef.current.onRegisterCaptureComplete?.(()=>!currentChild());
+    propsRef.current.onRegisterExternalGuard?.(()=>!!currentChild());
     propsRef.current.onRegisterInputLock?.(locked => {
       // Do not terminate a native IME composition by changing readOnly. Its
       // dirty signal makes the parent flush reject the context change instead.
@@ -542,7 +500,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (locked) { orderEpochRef.current++; cancelMove(); dialogRef.current?.close(); setPanel(null); setOrderPreview(null); }
       editorRef.current?.refresh();
     });
-    return () => { propsRef.current.onRegisterSave?.(null, null); propsRef.current.onRegisterSourceFocus?.(null); propsRef.current.onRegisterInputLock?.(null); propsRef.current.onRegisterDraft?.(null); };
+    return () => { propsRef.current.onRegisterCaptureComplete?.(null);propsRef.current.onRegisterExternalGuard?.(null);propsRef.current.onRegisterSave?.(null, null); propsRef.current.onRegisterSourceFocus?.(null); propsRef.current.onRegisterInputLock?.(null); propsRef.current.onRegisterDraft?.(null); propsRef.current.onRegisterStructuralDraft?.(null); };
   }, [props.docId]);
   function scheduleSave() {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -585,10 +543,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const row = currentRow(lineId);
     if (!row?.progressTargetId) return;
     if (accessFor(lineId)?.reason) { setMessage(''); setPanel({ kind: 'reference', lineId }); return; }
-    const progress = M.latestProgress(currentState(), row.progressTargetId);
+    setProgressRecordDate(null);
     setDate(kind === 'date' ? row.date ?? '' : today());
     setTime(row.time ?? row.task?.time ?? '');
-    setPercent(String(progress?.percent ?? (row.done ? 100 : 0)));
+    setPercent(String(M.currentProgress(currentState(), row.progressTargetId) ?? (row.done ? 100 : 0)));
     setMessage(''); setPanel({ kind, lineId });
   }
   function progressConflictToView() {
@@ -597,7 +555,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       || composingRef.current || regionPendingRef.current || textArea()?.value !== state.raw) return null;
     const row = currentRow(conflict.lineId);
     if (!row || row.progressTargetId !== conflict.targetId) return null;
-    const access = propsRef.current.taskAccess?.(conflict.targetId);
+    const access = propsRef.current.taskAccess?.(conflict.targetId,currentState());
     if (propsRef.current.taskAccess && (!access || access.kind !== 'active' || access.reason
       || access.lineId !== conflict.targetId || !access.documentId
       || !M.getDocument(state.working, access.documentId)?.lines.some(line => line.id === conflict.targetId))) return null;
@@ -609,13 +567,107 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const conflict = progressConflictToView();
     if (conflict) openProgress(conflict.lineId);
   }
+  function authoringAnchor(index:number){
+    if(!propsRef.current.authoringMode)return null;
+    const state=currentState(),rows=documentInputRef.current?.rows(state)??M.rowMeta(state,propsRef.current.docId),selected=rows[index];if(!selected)return null;
+    let parent=selected.kind==='task'&&selected.isCanonical?selected:rows.find(row=>row.id===(selected.parentTaskId??selected.taskId)&&row.kind==='task'&&row.isCanonical);
+    if(!parent)return null;let bottom=parent.index;
+    for(let i=parent.index+1;i<parent.subtreeEndIndex;i++){if(['task','subcheck'].includes(rows[i]?.kind))break;bottom=i;}
+    return{parentIndex:parent.index,bottomIndex:bottom};
+  }
+  function openAuthoringChild(index:number){
+    if(!propsRef.current.authoringMode||inputLockedRef.current||propsRef.current.readOnly||checkPendingRef.current||composingRef.current||regionPendingRef.current||!draftRef.current?.canApplyLocal()||!draftRef.current.flush()){setMessage('현재는 하위 내용을 추가할 수 없습니다. 입력이나 저장 상태를 확인해 주세요.');return false;}
+    const state=currentState(),doc=currentDoc(),anchor=authoringAnchor(index);if(!doc||!anchor||textArea()?.value!==draftRef.current.getState().raw)return false;
+    const line=doc.lines[anchor.parentIndex],binding=state.bindings.find(b=>b.docId===doc.id&&b.lineId===line?.id&&b.kind==='task'),targetId=binding?.kind==='task'?binding.taskId:line?.id;
+    const ownedTask=documentInputRef.current?.rows(state)?.[anchor.parentIndex]?.task;
+    const task=ownedTask?.id===targetId?ownedTask:M.tasks(state).find(t=>t.id===targetId),access=task?propsRef.current.taskAccess?.(task.id,state):null;if(!task||!access||access.kind!=='active'||access.reason){setMessage(access?.reason??'이 항목에는 하위 내용을 추가할 수 없습니다.');return false;}
+    if(editorRef.current?.isFolded(anchor.parentIndex))editorRef.current.toggleFold(anchor.parentIndex);
+    const target:ChildTarget={documentId:task.docId,parentId:task.id,workspace:state,raw:M.raw(M.getDocument(state,task.docId)),title:task.title,date:task.date,scope:task.scopeTitle,memo:task.note};
+    if(timerRef.current)clearTimeout(timerRef.current);
+    setMessage('');setPanel({kind:'child',lineId:task.id,child:target});propsRef.current.onDirtyChange?.(true);return true;
+  }
+  async function submitAuthoringChild(kind:'memo'|'task',text:string){
+    const target=currentChild(),controller=draftRef.current;
+    if(!target||!controller||panelComposingRef.current||composingRef.current||regionPendingRef.current)return false;
+    if(inputLockedRef.current||propsRef.current.readOnly||!controller.canApplyLocal()){setMessage('현재는 추가를 적용할 수 없습니다. 입력과 저장 상태를 확인해 주세요. 초안은 남아 있습니다.');return false;}
+    const before=currentState(),access=propsRef.current.taskAccess?.(target.parentId,before);
+    if(before!==target.workspace||propsRef.current.docId!==target.documentId||access?.kind!=='active'||access.reason){setMessage('추가할 문맥이나 권한이 바뀌었습니다. 초안을 보관하고 현재 항목에서 다시 열어 주세요.');return false;}
+    const result=prepareWritingChild(before,{docId:target.documentId,parentId:target.parentId,kind,text,expectedRaw:target.raw});
+    if(!result.ok){setMessage(result.reason);return false;}
+    if(!controller.applyLocal(result.workspace,kind==='memo'?'부모 메모 수정':'독립 하위 할 일 추가')){setMessage('변경을 적용하지 못했습니다. 초안은 남아 있습니다.');return false;}
+    editorRef.current?.setValue(controller.getState().raw,{preserveSelection:true});
+    // The accepted source now owns the text and IDs. Saving may acknowledge an
+    // older snapshot; it must not keep this menu or the new caret waiting.
+    delete childDrafts.current[target.parentId+':'+kind];dismissPanel(false,false);
+    const index=currentDoc()?.lines.findIndex(l=>l.id===result.lineId)??-1;
+    if(index>=0){editorRef.current?.focus(index);textArea()?.setSelectionRange(result.offset,result.offset);editorRef.current?.refreshViewport();rememberPosition();}
+    scheduleSave();return true;
+  }
   function handleAction(action: nativeEditor.Action) {
+    if(action.type==='authoring-insert'){openCurrentInsertMenu(action.lineIndex);return;}
     if (action.type === 'move-cancel') { cancelMove(); return; }
-    if (actionsDisabled()) return false;
+    if (action.type==='toggle'?checkActionsDisabled(action.lineIndex):actionsDisabled()) return false;
     const lineId = currentDoc()?.lines[action.lineIndex]?.id ?? null;
+    if(composingRef.current)return false;
+    if(action.type!=='toggle'&&!draftRef.current?.flush())return false;
     if (action.type === 'move-select') { beginMove(lineId, false); return; }
     if (action.type === 'move-drop') { if (action.beforeLineId !== undefined && action.depth !== undefined) void finishMove(action.beforeLineId, action.depth); return; }
-    if (action.type === 'progress-open' || action.type === 'toggle') { openProgress(lineId); return; }
+    if (action.type === 'toggle') {
+      if (!lineId || composingRef.current || regionPendingRef.current) return false;
+      const access = accessFor(lineId);
+      const target = currentRow(lineId)?.progressTargetId;
+      if (!propsRef.current.taskAccess || !target || !access || access.kind !== 'active' || access.reason
+        || access.lineId !== target || !access.documentId
+        || !M.getDocument(currentState(), access.documentId)?.lines.some(line => line.id === target)) {
+        setPanel({ kind: 'reference', lineId }); return false;
+      }
+      const controller=draftRef.current,compute=propsRef.current.writingCompute,context=propsRef.current.writingContext?.();
+      if(controller&&compute&&context){
+        const before=currentState(),selected=writingSelection();
+        let locallyApplied=controller.applyCheck(lineId,today());
+        const selectedRow=currentRow(lineId);
+        if(!locallyApplied&&selectedRow?.kind==='subcheck'&&selectedRow.isCanonical&&!selectedRow.isReference&&controller.canApplyLocal()){
+          const change=programDirectCheckboxChange(before,propsRef.current.docId,lineId,today());
+          if(change.kind==='apply')locallyApplied=controller.applyLocal(change.next,'독립 하위 할 일 체크 변경');
+        }
+        if(locallyApplied){
+          cancelMove();orderHistoryRef.current.clear();orderPositionsRef.current=[];orderEpochRef.current++;
+          editorRef.current?.setValue(controller.getState().raw,{preserveSelection:true});
+          const returned=selected&&programTextSelectionAfterChange(before,currentState(),propsRef.current.docId,selected);if(returned)restoreWritingSelection(returned);
+          editorRef.current?.refresh();void saveNow();return;
+        }
+        // Unsupported/structural checks cannot borrow a normal save exemption.
+        if(controller.getState().saving)return false;
+        const generation=controller.generation(),requestId=crypto.randomUUID(),docId=propsRef.current.docId,policy=JSON.stringify(access);
+        const notifyCheck=propsRef.current.onDirtyChange;
+        if(timerRef.current)clearTimeout(timerRef.current);checkPendingRef.current=requestId;checkNotifyRef.current=notifyCheck;setCheckPending(true);notifyCheck?.(true);
+        void compute.run({...context,docId,workingGeneration:generation,requestId},{kind:'check',workspace:before,lineId,date:today()}).then(reply=>{
+          if(checkPendingRef.current!==requestId||draftRef.current!==controller)return;
+          checkPendingRef.current=null;setCheckPending(false);
+          const live=propsRef.current.writingContext?.();
+          if(!reply.ok||live?.ownerId!==context.ownerId||live.baseRevision!==context.baseRevision||propsRef.current.docId!==docId
+            ||controller.generation()!==generation||currentState()!==before||inputLockedRef.current||propsRef.current.readOnly||composingRef.current
+            ||policy!==JSON.stringify(propsRef.current.taskAccess?.(target,currentState()))){setMessage('체크할 문맥이 바뀌어 반영하지 않았습니다. 입력은 유지했습니다.');scheduleSave();return;}
+          if(reply.panel){openProgress(lineId);if(reply.panel==='future')setMessage('미래 날짜의 진행 기록이 있습니다. 기록 날짜를 확인한 뒤 변경해 주세요.');}
+          else if(reply.workspace)void apply(reply.workspace,'할 일 체크 변경');
+          else setMessage('체크 변경을 반영하지 못했습니다. 현재 내용과 기록은 유지했습니다.');
+        }).catch(()=>{if(draftRef.current===controller)setMessage('체크를 확인하지 못했습니다. 현재 입력은 유지했습니다.');}).finally(()=>{
+          if(draftRef.current!==controller||propsRef.current.docId!==docId)return;
+          if(checkPendingRef.current===requestId){checkPendingRef.current=null;setCheckPending(false);}
+          checkNotifyRef.current=undefined;
+          notifyCheck?.(programTextInputPending(controller.getState(),textArea()?.value,composingRef.current,regionPendingRef.current,!!checkPendingRef.current));
+        });return;
+      }
+      if(!draftRef.current?.flush())return false;
+      const change = programDirectCheckboxChange(currentState(), propsRef.current.docId, lineId, today());
+      if (change.kind === 'panel') {
+        openProgress(lineId);
+        if (change.reason === 'future') setMessage('미래 날짜의 진행 기록이 있습니다. 기록 날짜를 확인한 뒤 변경해 주세요.');
+      } else if (change.kind === 'apply') void apply(change.next, change.percent === 100 ? '할 일 완료' : '완료 취소');
+      else setMessage('체크 변경을 반영하지 못했습니다. 현재 내용과 기록은 유지했습니다.');
+      return;
+    }
+    if (action.type === 'progress-open') { openProgress(lineId); return; }
     if (action.type === 'task-date') { openProgress(lineId, 'date'); return; }
     if (action.type === 'scope-open') {
       const scopeId = currentRow(lineId)?.scopeId;
@@ -632,33 +684,51 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const host = hostRef.current;
     if (!host) return;
     let alive = true;
-    const controller = createProgramTextDraft(propsRef.current.workspace, props.docId,
+    checkPendingRef.current=null;setCheckPending(false);
+    const documentInput=createProgramDocumentInput(propsRef.current.workspace,props.docId);documentInputRef.current=documentInput;
+    const controller = createProgramTextDraft(documentInput.initial, props.docId,
       (...args) => propsRef.current.onCommit(...args), next => {
         if (!alive) return;
-        setDraft(next); propsRef.current.onDirtyChange?.(next.dirty || composingRef.current || regionPendingRef.current);
+        setDraft(next); propsRef.current.onDirtyChange?.(!!currentChild()||programTextInputPending(next,textArea()?.value,composingRef.current,regionPendingRef.current,!!checkPendingRef.current));
         queueMicrotask(() => { if (alive) editorRef.current?.refresh(); });
-      }, next => propsRef.current.validateWorkspace?.(next) ?? true);
+      }, next => propsRef.current.validateWorkspace?.(next) ?? true,documentInput,!!propsRef.current.writingCompute,()=>propsRef.current.validateWorkspace);
     draftRef.current = controller; setDraft(controller.getState());
-    propsRef.current.onRegisterConfirmedSave?.((before, next) => {
+    propsRef.current.onRegisterConfirmedSave?.((before, next, ack) => {
       if (!alive || composingRef.current || inputLockedRef.current || textArea()?.value !== controller.getState().raw) return false;
       // Confirmation updates state only; preserve the native textarea and its selection/history.
-      return controller.acceptConfirmedSave(before, next);
+      return controller.acceptConfirmedSave(before, next, ack);
     });
     orderHistoryRef.current = createProgramPermutationHistory(props.docId); orderPositionsRef.current = []; orderEpochRef.current++; pendingOrderRef.current = null;
     movingRef.current = null; setMoving(null); setPanel(null);
     const instance = nativeEditor.create(host, {
-      value: controller.getState().raw, label: '문서 내용',
-      getRowMeta: () => textEditorRows(controller.getState().working, props.docId),
+      value: controller.getState().raw, label: '문서 내용', taskSplitEnabled: !!propsRef.current.authorizeTaskSplit,
+      getCheckAction: (_index, meta) => programCheckboxAction(meta,
+        meta.progressTargetId ? propsRef.current.taskAccess?.(meta.progressTargetId,currentState()) : undefined, today()),
+      getRowMeta: () => documentInput.paint(controller.getState().working)??textEditorRows(controller.getState().working, props.docId),
       isActionDisabled: actionsDisabled,
+      explicitAddOnly:()=>!!propsRef.current.authoringMode,
+      getAddAnchor:index=>propsRef.current.authoringMode?{parentIndex:index,bottomIndex:index}:null,
+      isCheckDisabled: checkActionsDisabled,
       canApplyIndent: raw => !actionsDisabled() && M.raw(M.getDocument(M.editText(controller.getState().working, props.docId, raw, { progressDate: today() }), props.docId)) === raw,
+      canApplyTaskSplit: (raw, intent) => {
+        if (!intent.taskSplit) return true;
+        const before = controller.getState().working;
+        if (actionsDisabled() || propsRef.current.authorizeTaskSplit?.(intent.taskSplit.sourceLineId, before) !== true) return false;
+        const next = M.editTextResult(before, props.docId, raw, { folderText: true,
+          inputSplice: { start: intent.start, end: intent.end, text: intent.text }, taskSplit: intent.taskSplit });
+        return next.reason === null && M.raw(M.getDocument(next.state, props.docId)) === raw
+          && (propsRef.current.validateWorkspace?.(next.state) ?? true);
+      },
       onChange: (raw, input) => {
         if (inputLockedRef.current || propsRef.current.readOnly) { editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true }); return; }
         if (raw === controller.getState().raw) { historyTypeRef.current = ''; return; }
+        const beforeRaw=controller.getState().raw;
         cancelMove();
         orderEpochRef.current++;
         const pending = pendingOrderRef.current;
         const historyType = input?.inputType || historyTypeRef.current; historyTypeRef.current = '';
         const restored = orderHistoryRef.current.resolve(controller.getState().working, raw, historyType);
+        const beforeText = controller.getState().working;
         let accepted = false;
         if (pending) {
           accepted = pending.raw === raw && programSame(pending.before, controller.getState().working) && controller.apply(pending.next, '같은 구간 날짜순 정렬');
@@ -666,12 +736,29 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           else controller.rejectRaw(raw);
         } else if (restored) accepted = controller.apply(restored, historyType === 'historyUndo' ? '날짜순 정렬 입력 취소' : '날짜순 정렬 다시 실행');
         else if ((historyType === 'historyUndo' || historyType === 'historyRedo') && orderHistoryRef.current.can(controller.getState().working, historyType)) controller.rejectRaw(raw);
-        else accepted = controller.updateRaw(raw, today(), { inputType: historyType || input?.inputType || '', inputSplice: input?.inputSplice });
+        else if (input?.taskSplit && propsRef.current.authorizeTaskSplit?.(input.taskSplit.sourceLineId, controller.getState().working) !== true) controller.rejectRaw(raw);
+        else accepted = controller.updateRaw(raw, '', { inputType: historyType || input?.inputType || '', inputSplice: input?.inputSplice,compositionGeneration:compositionGeneration.current, ...(input?.taskSplit ? { taskSplit: input.taskSplit } : {}) });
         if (restored && accepted) {
           const position = orderPositionsRef.current.slice().reverse().find(entry => programSame(M.getDocument(entry.state, props.docId), M.getDocument(restored, props.docId)));
           if (position) queueMicrotask(() => { const area = textArea(); if (area && area.value === raw) { area.setSelectionRange(position.selection.start, position.selection.end, position.selection.direction); area.scrollTop = position.scrollTop; rememberPosition(); } });
         }
-        if (accepted) scheduleSave();
+        if (accepted) {
+          const afterText = controller.getState().working;
+          const renamed = new Set(beforeText.folders.filter(folder => afterText.folders.some(next => next.id === folder.id && next.title !== folder.title)).map(folder => folder.id));
+          if (afterText.bindings.some(binding => binding.kind === 'scope' && binding.docId !== props.docId && renamed.has(binding.scopeId))) {
+            setMessage('폴더 이름을 바꾸면 연결된 다른 글에도 같은 이름이 표시됩니다.');
+          }
+          const visibleRaw = controller.getState().raw, area = textArea();
+          if (visibleRaw !== raw && area) {
+            const start = programFolderTextOffset(raw, visibleRaw, area.selectionStart);
+            const end = programFolderTextOffset(raw, visibleRaw, area.selectionEnd);
+            const direction = area.selectionDirection;
+            editorRef.current?.setValue(visibleRaw, { preserveSelection: true });
+            area.setSelectionRange(start, end, direction);
+          }
+          requestAuthoringSlash(beforeRaw,historyType||input?.inputType||'');
+          scheduleSave();
+        }
         else if (timerRef.current) clearTimeout(timerRef.current);
         rememberPosition();
       },
@@ -679,15 +766,37 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     });
     editorRef.current = instance;
     const textarea = host.querySelector<HTMLTextAreaElement>('textarea');
-    const compositionStart = () => { composingRef.current = true; setComposing(true); orderEpochRef.current++; setOrderPreview(null); propsRef.current.onDirtyChange?.(true); };
+    let lastAuthoringSlash='';
+    function requestAuthoringSlash(beforeRaw:string,inputType:string){
+      if(!propsRef.current.authoringMode||!textarea||composingRef.current
+        ||!['insertText','insertReplacementText','insertCompositionText'].includes(inputType))return;
+      const raw=textarea.value,caret=textarea.selectionStart;
+      if(raw===beforeRaw||textarea.selectionEnd!==caret||raw[caret-1]!=='/')return;
+      const rowStart=raw.lastIndexOf('\n',caret-1)+1,rowEnd=raw.indexOf('\n',caret);
+      if(raw.slice(rowStart,rowEnd<0?raw.length:rowEnd).trim()!=='/')return;
+      let start=0,oldEnd=beforeRaw.length,newEnd=raw.length;
+      while(start<oldEnd&&start<newEnd&&beforeRaw[start]===raw[start])start++;
+      while(oldEnd>start&&newEnd>start&&beforeRaw[oldEnd-1]===raw[newEnd-1]){oldEnd--;newEnd--;}
+      if(raw.slice(start,newEnd)!=='/'||/[^\t ]/.test(beforeRaw.slice(start,oldEnd)))return;
+      queueMicrotask(()=>{
+        if(!alive||composingRef.current||!textarea||propsRef.current.docId!==props.docId||inputLockedRef.current
+          ||propsRef.current.readOnly||textarea.value!==raw||textarea.selectionStart!==caret||textarea.selectionEnd!==caret)return;
+        const state=controller.getState();if(state.invalid||state.raw!==raw)return;
+        const index=raw.slice(0,caret).split('\n').length-1,line=currentDoc()?.lines[index];
+        if(line?.text.trim()!=='/')return;
+        const key=line.id+':'+controller.generation()+':'+raw;if(lastAuthoringSlash===key)return;lastAuthoringSlash=key;
+        openCurrentInsertMenu(index);
+      });
+    }
+    const compositionStart = () => { compositionGeneration.current++;controller.cancelPreparedRaw();composingRef.current = true; setComposing(true); orderEpochRef.current++; setOrderPreview(null); propsRef.current.onDirtyChange?.(true); };
     const compositionEnd = () => {
-      composingRef.current = false; setComposing(false);
+      compositionGeneration.current++;controller.cancelPreparedRaw();composingRef.current = false; setComposing(false);
       // The native target listener publishes the final raw after this capture listener.
       // Even unchanged raw must release protection and rearm a timer spent composing.
       queueMicrotask(() => {
         if (!alive || composingRef.current) return;
         const state = controller.getState();
-        propsRef.current.onDirtyChange?.(state.dirty || regionPendingRef.current);
+        propsRef.current.onDirtyChange?.(!!currentChild()||programTextInputPending(state,textArea()?.value,composingRef.current,regionPendingRef.current,!!checkPendingRef.current));
         setMessage(previous => previous === '한글 입력을 마친 뒤 보기 범위를 바꿔 주세요.' ? '' : previous);
         if (state.dirty && !state.saving && !state.invalid && !state.error) scheduleSave();
       });
@@ -695,6 +804,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     host.addEventListener('compositionstart', compositionStart, true);
     host.addEventListener('compositionend', compositionEnd, true);
     const preventLockedInput = (event: Event) => {
+      controller.cancelPreparedRaw();
       const type = (event as InputEvent).inputType;
       if ((inputLockedRef.current || (controller.getState().saving && (type === 'historyUndo' || type === 'historyRedo'))) && !composingRef.current) { event.preventDefault(); event.stopImmediatePropagation(); }
       if (!event.defaultPrevented && !composingRef.current && textarea && propsRef.current.validateWorkspace && !type?.startsWith('history')) {
@@ -704,9 +814,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         else if (type === 'deleteContentBackward') { insert = ''; if (start === end) start = Math.max(0, start - 1); }
         else if (type === 'deleteContentForward') { insert = ''; if (start === end) end = Math.min(textarea.value.length, end + 1); }
         if (insert !== null) {
-          const candidate = M.editText(controller.getState().working, props.docId, textarea.value.slice(0, start) + insert + textarea.value.slice(end), { progressDate: today(),
-            ...(type === 'insertFromPaste' ? { inputSplice: { start, end, text: insert } } : {}) });
-          if (!propsRef.current.validateWorkspace(candidate)) {
+          const raw=textarea.value.slice(0,start)+insert+textarea.value.slice(end);
+          if (!controller.prepareRaw(raw,{inputType:type??'',compositionGeneration:compositionGeneration.current,...(type==='insertFromPaste'?{inputSplice:{start,end,text:insert}}:{})})) {
             event.preventDefault(); event.stopImmediatePropagation();
             const index = textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1;
             setMessage(programTextProtectionMessage(accessFor(currentDoc()?.lines[index]?.id ?? null)));
@@ -714,7 +823,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         }
       }
     };
-    const observeInput = (event: Event) => { historyTypeRef.current = (event as InputEvent).inputType || historyTypeRef.current; };
+    const observeInput = (event: Event) => {
+      const input=event as InputEvent;historyTypeRef.current=input.inputType||historyTypeRef.current;
+    };
     if (textarea) {
       textarea.id = `program-text-${encodeURIComponent(props.docId)}`;
       textarea.readOnly = inputLockedRef.current || !!propsRef.current.readOnly;
@@ -744,16 +855,25 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (textarea) for (const event of ['select', 'scroll', 'keyup', 'click', 'blur']) textarea.removeEventListener(event, rememberPosition);
       textarea?.removeEventListener('beforeinput', preventLockedInput, true);
       textarea?.removeEventListener('input', observeInput, true);
-      instance.destroy(); editorRef.current = null; draftRef.current = null;
+      checkPendingRef.current=null;
+      checkNotifyRef.current?.(programTextInputPending(controller.getState(),textarea?.value,composingRef.current,regionPendingRef.current,false));checkNotifyRef.current=undefined;
+      instance.destroy(); editorRef.current = null; draftRef.current = null;documentInputRef.current=null;
     };
     // Keep the same native textarea through every edit, failed save and parent rerender.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.docId]);
 
   useEffect(() => {
-    if (!regionPendingRef.current && draftRef.current?.synchronize(props.workspace)) {
+    const controller = draftRef.current;
+    if (!regionPendingRef.current && controller?.synchronize(props.workspace)) {
       orderEpochRef.current++; orderHistoryRef.current.clear(); orderPositionsRef.current = [];
-      editorRef.current?.setValue(draftRef.current.getState().raw, { preserveSelection: true });
+      const installed = editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true }) === true;
+      if (draftRef.current !== controller) return;
+      // synchronize reports before native installation; publish the completed
+      // handoff without releasing any actual input owner or failed installation.
+      const state = controller.getState();
+      propsRef.current.onDirtyChange?.(!installed || !!currentChild() || state.saving
+        || programTextInputPending(state, textArea()?.value, composingRef.current, regionPendingRef.current, !!checkPendingRef.current));
     }
   }, [props.workspace, regionPending]);
   useEffect(() => {
@@ -764,6 +884,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     editorRef.current?.refresh();
   }, [props.readOnly, props.directWriting, props.docId]);
   useEffect(() => { editorRef.current?.setMode(mode); }, [mode, props.docId]);
+  useEffect(() => {
+    if (props.active !== false) return;
+    const tools = hostRef.current?.closest('section')?.querySelector<HTMLDetailsElement>('[data-editor-tools]');
+    if (tools) tools.open = false;
+  }, [props.active]);
   useEffect(() => {
     const previous = previousFolderRef.current; previousFolderRef.current = props.folderId;
     // Only an explicit, successful fragment handoff restores its caret. Ordinary
@@ -782,9 +907,31 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     }
   }, [panel]);
 
+  useEffect(()=>{
+    const dialog=dialogRef.current;if(!panel||!dialog)return;
+    const view=dialog.ownerDocument.defaultView;if(!view)return;
+    const visual=view.visualViewport;let frame=0;
+    const update=()=>{
+      frame=0;const width=visual?.width??view.innerWidth,height=visual?.height??view.innerHeight;
+      dialog.style.setProperty('--writing-view-height',height+'px');
+      dialog.style.setProperty('--writing-view-width',width+'px');
+      dialog.style.setProperty('--writing-dialog-top',((visual?.offsetTop??0)+12)+'px');
+      dialog.style.setProperty('--writing-dialog-left',((visual?.offsetLeft??0)+Math.max(12,(width-430)/2))+'px');
+      const body=dialog.querySelector<HTMLElement>('.'+styles.dialogBody),active=dialog.ownerDocument.activeElement;
+      if(body&&active instanceof HTMLElement&&body.contains(active)){
+        const visible=body.getBoundingClientRect(),field=active.getBoundingClientRect();
+        if(field.bottom>visible.bottom)body.scrollTop+=field.bottom-visible.bottom+8;
+        else if(field.top<visible.top)body.scrollTop-=visible.top-field.top+8;
+      }
+    };
+    const schedule=()=>{if(!frame)frame=view.requestAnimationFrame(update);};
+    update();visual?.addEventListener('resize',schedule);visual?.addEventListener('scroll',schedule);view.addEventListener('resize',schedule);dialog.addEventListener('focusin',schedule);
+    return()=>{if(frame)view.cancelAnimationFrame(frame);visual?.removeEventListener('resize',schedule);visual?.removeEventListener('scroll',schedule);view.removeEventListener('resize',schedule);dialog.removeEventListener('focusin',schedule);};
+  },[panel]);
+
   // Keep the native install/sync lifecycle intact; observe layout after it mounts.
   useEffect(() => {
-    const host = hostRef.current, shell = host?.closest('main');
+    const host = hostRef.current, shell = host?.closest('[data-alpha-frame], [data-testid="integrated-program-app"]') ?? host?.closest('main');
     if (!host || !shell) return;
     const view = host.ownerDocument.defaultView;
     if (!view) return;
@@ -794,8 +941,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       frame = 0;
       if (!host.getClientRects().length) return;
       let bottom = Math.min(view.innerHeight, visual ? visual.offsetTop + visual.height : view.innerHeight);
-      const nav = shell.querySelector<HTMLElement>('nav[aria-label="기본 이동"]');
-      if (nav && view.getComputedStyle(nav).position === 'fixed') bottom = Math.min(bottom, nav.getBoundingClientRect().top);
+      const nav = shell.querySelector<HTMLElement>('nav[aria-label="기본 이동"], nav[aria-label="주요 메뉴"]');
+      if (nav?.getClientRects().length && view.getComputedStyle(nav).position === 'fixed') bottom = Math.min(bottom, nav.getBoundingClientRect().top);
       const height = programEditorVisibleHeight(host.getBoundingClientRect().top, bottom);
       if (height !== null && host.style.getPropertyValue('--program-editor-visible-height') !== `${height}px`) {
         host.style.setProperty('--program-editor-visible-height', `${height}px`);
@@ -810,7 +957,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // Hidden retained editors and sibling notices can change top without changing
     // the shell's minimum height. No input/value/selection observer is needed.
     const mutation = new MutationObserver(schedule);
-    mutation.observe(shell, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'open'] });
+    mutation.observe(shell, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'open', 'data-writing-keyboard'] });
     view.addEventListener('resize', schedule); view.addEventListener('scroll', schedule, { passive: true });
     visual?.addEventListener('resize', schedule); visual?.addEventListener('scroll', schedule);
     schedule();
@@ -821,6 +968,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
 
   const row = panel ? currentRow(panel.lineId) : undefined;
   const creationLocation = panel?.kind === 'folder' ? programFolderCreationLocation(draft.working, props.docId, panel.lineId) : null;
+  const folderLinkProblems = panel?.kind === 'folder' ? programFolderLinkProblems(draft.working, props.docId, panel.lineId) : new Map();
   const panelAccess = panel ? accessFor(panel.lineId) : undefined;
   const protectedExecutionPanel = !!panelAccess?.reason && !!panel && ['progress', 'date'].includes(panel.kind);
   const insertions = panel?.lineId ? M.insertionOptions(draft.working, props.docId, panel.lineId) : [];
@@ -830,33 +978,72 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const dateChangeHint = programTaskDateChangeHint(dateContext, date, {
     current: row?.task?.time ?? row?.time ?? '', draft: time,
   });
+  function openCurrentInsertMenu(index:number){
+    const controller=draftRef.current,doc=currentDoc(),line=doc?.lines[index];
+    if(!controller||inputLockedRef.current||propsRef.current.readOnly||controller.getState().invalid||composingRef.current||regionPendingRef.current||checkPendingRef.current){setMessage('입력이나 문서 상태를 확인한 뒤 다시 열어 주세요. 원문은 유지했습니다.');return false;}
+    const raw=controller.getState().raw;
+    slashCommandRef.current=line?.text.trim()==='/'?{lineId:line.id,raw,workspace:currentState(),generation:controller.generation()}:null;
+    setMessage('');setPanel({kind:'insert',lineId:line?.id??null});return true;
+  }
   function insertNative(offset: number, text: string, caret: number) {
-    if (actionsDisabled()) return;
-    closePanel();
-    if (!editorRef.current?.replaceRange(offset, offset, text, { selectionAfter: { start: caret, end: caret } })) setMessage('브라우저가 입력을 적용하지 못했습니다. 본문에서 직접 입력할 수 있습니다.');
+    const controller=draftRef.current,before=currentState(),doc=currentDoc(),area=textArea(),slash=slashCommandRef.current;
+    if(!controller||!doc||!area||inputLockedRef.current||propsRef.current.readOnly||controller.getState().invalid||composingRef.current||panelComposingRef.current||regionPendingRef.current||checkPendingRef.current){setMessage('현재는 항목을 추가할 수 없습니다. 입력은 유지했습니다.');return;}
+    const raw=controller.getState().raw;if(area.value!==raw){setMessage('본문 입력을 확인한 뒤 다시 선택해 주세요. 원문은 유지했습니다.');return;}
+    let command:null|{start:number;end:number;raw:string}=null;
+    if(slash){
+      const index=doc.lines.findIndex(line=>line.id===slash.lineId),line=doc.lines[index];
+      if(before!==slash.workspace||controller.generation()!==slash.generation||raw!==slash.raw||!line||line.text.trim()!=='/'){setMessage('추가 위치의 문맥이 바뀌었습니다. 현재 줄에서 다시 열어 주세요.');return;}
+      const start=doc.lines.slice(0,index).reduce((n,line)=>n+line.text.length+1,0)+line.text.indexOf('/');command={start,end:start+1,raw};
+    }
+    const plan=planWritingInsertion(raw,{offset,text,caretOffset:caret},command);
+    if(!plan||!controller.prepareRaw(plan.nextRaw,{inputType:'insertText',compositionGeneration:compositionGeneration.current},true)){setMessage('이 위치에는 추가할 수 없습니다. 원문과 추가 명령은 유지했습니다.');return;}
+    const previous=panelRef.current,returned=menuReturnRef.current;
+    // A native modal makes the background textarea inert. Close it before the
+    // one browser transaction that consumes slash and inserts the scaffold.
+    dismissPanel(false,false);
+    const applied=editorRef.current?.replaceRange(plan.start,plan.end,plan.text,{selectionAfter:plan.selectionAfter});
+    if(!applied||controller.getState().invalid||controller.getState().raw!==plan.nextRaw){
+      if(currentState()===before&&area.value===raw){if(returned)restoreWritingSelection(returned);slashCommandRef.current=slash;menuReturnRef.current=returned;setPanel(previous?{...previous}:{kind:'insert',lineId:doc.lines.at(-1)?.id??null});}
+      setMessage('브라우저가 추가를 적용하지 못했습니다. 현재 입력은 유지했습니다.');return;
+    }
+    editorRef.current?.refreshViewport();rememberPosition();
+  }
+  function insertAuthoringLayout(kind:'step'|'description'){
+    const doc=currentDoc(),index=currentRow(panel?.lineId??null)?.index??Math.max(0,(doc?.lines.length??1)-1);if(!doc)return;const at=doc.lines.slice(0,index+1).reduce((n,line,i)=>n+line.text.length+(i<index?1:0),0),text=(doc.lines.length?'\n':'')+(kind==='step'?'## ':'');insertNative(at,text,at+text.length);
   }
   function scopeSlot(lineId: string | null) {
-    let state = currentState();
+    const state = currentState();
     const doc = M.getDocument(state, propsRef.current.docId);
     if (!doc) return null;
     const selected = currentRow(lineId);
-    if (selected && /^ *-\s*$/.test(selected.text)) return { state, index: selected.index, lineId: selected.id };
-    const index = selected?.subtreeEndIndex ?? doc.lines.length;
-    const depth = selected?.kind === 'scope' ? selected.depth + 1 : selected?.kind === 'date' ? 0 : selected?.depth ?? 0;
-    const lines = doc.lines.map(line => line.text);
-    lines.splice(index, 0, `${'  '.repeat(depth)}- `);
-    state = M.editText(state, doc.id, lines.join('\n'), { progressDate: today() });
-    const inserted = M.getDocument(state, doc.id)?.lines[index];
-    if (!inserted || !/^ *-\s*$/.test(inserted.text)) return null;
-    return { state, index, lineId: inserted.id };
+    // Describe the location only. Preparing a persisted row here would leave
+    // it behind when the user closes the target picker without selecting.
+    return { lineId: selected?.id ?? null, insertAfter: !(selected && /^ *-\s*$/.test(selected.text)) };
   }
   async function connectFlow(lineId: string | null) {
-    if (!propsRef.current.onConnectFlow) return;
+    const isActive = () => propsRef.current.active !== false;
+    if (!propsRef.current.onConnectFlow || !isActive() || actionsDisabled() || composingRef.current) return;
+    const docId = propsRef.current.docId, controller = draftRef.current;
     const slot = scopeSlot(lineId);
     if (!slot) { setMessage('이 위치에는 연결할 수 없습니다.'); return; }
     closePanel();
-    const ready = slot.state === currentState() ? await saveNow() : await apply(slot.state, 'Flow 연결 위치');
-    if (ready) propsRef.current.onConnectFlow(propsRef.current.docId, slot.lineId);
+    // Closing our own menu restores focus. Only later user intent cancels the
+    // deferred modal; a save ACK must not take over newer input or another doc.
+    const area = textArea(), owner = area?.ownerDocument;
+    let interrupted = false;
+    const interrupt = () => { interrupted = true; };
+    const events = ['pointerdown', 'keydown', 'focusin', 'beforeinput', 'compositionstart'];
+    for (const event of events) owner?.addEventListener(event, interrupt, true);
+    try {
+      const ready = await saveNow();
+      if (ready && !interrupted && isActive() && propsRef.current.docId === docId && draftRef.current === controller
+        && area === textArea() && !actionsDisabled() && !composingRef.current
+        && !regionPendingRef.current && !controller?.getState().dirty) {
+        propsRef.current.onConnectFlow?.(docId, slot.lineId, slot.insertAfter);
+      }
+    } finally {
+      for (const event of events) owner?.removeEventListener(event, interrupt, true);
+    }
   }
   async function attachFolder(scopeId: string | null) {
     if (actionsDisabled() || composingRef.current) return;
@@ -871,6 +1058,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         || programFolderLineTitle(state, propsRef.current.docId, panel.lineId) !== panel.folderSuggestionTitle)) {
       setMessage('현재 줄이 바뀌었습니다. 닫고 다시 폴더를 선택해 주세요.'); return;
     }
+    const problem = scopeId ? programFolderLinkProblem(state, props.docId, panel?.lineId ?? null, scopeId) : null;
+    if (problem) { setMessage(problem.message); return; }
     const next = linkProgramFolder(state, props.docId, panel?.lineId ?? null, scopeId ? { scopeId } : { title: folderName });
     if (next === state) { setMessage('같은 이름·위치·폴더 연결을 확인해 주세요.'); return; }
     if (panel?.folderSuggestionTitle !== undefined && !programFolderSuggestionPreservesSource(state, next)) {
@@ -911,6 +1100,34 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     setFolderName(suggestionTitle ?? programFolderLineTitle(currentState(), propsRef.current.docId, lineId) ?? '');
     setMessage(''); setPanel({ kind: 'folder', lineId, folderSuggestionTitle: suggestionTitle, folderLinkPreview: preview });
   }
+  function openFolderCopy(lineId: string | null) {
+    if (!lineId || actionsDisabled() || composingRef.current || regionPendingRef.current) return;
+    const state = currentState(), docId = propsRef.current.docId;
+    const preview = readProgramFolderCopyPreview(state, docId, lineId);
+    if (!preview) { setMessage('선택한 일반 폴더 묶음에서 사본을 만들어 주세요.'); return; }
+    const check = propsRef.current.folderCopyProblem;
+    if (!check) { setMessage('이 문서에서는 폴더 사본을 만들 수 없습니다.'); return; }
+    const problem = check(state, docId, preview.lines.map(line => line.id));
+    if (problem) { setMessage(problem); return; }
+    setFolderName(''); setMessage(''); setPanel({ kind: 'folder-copy', lineId, folderCopyPreview: preview });
+  }
+  async function makeFolderCopy() {
+    if (actionsDisabled() || composingRef.current || regionPendingRef.current) return;
+    const preview = panel?.kind === 'folder-copy' ? panel.folderCopyPreview : null;
+    const state = currentState();
+    if (!preview || preview.docId !== propsRef.current.docId || !isProgramFolderCopyPreviewCurrent(state, preview)) {
+      setMessage('선택한 폴더 내용이 바뀌었습니다. 닫고 다시 선택해 주세요.'); return;
+    }
+    const check = propsRef.current.folderCopyProblem;
+    if (!check) { setMessage('이 문서에서는 폴더 사본을 만들 수 없습니다.'); return; }
+    const problem = check(state, preview.docId, preview.lines.map(line => line.id));
+    if (problem) { setMessage(problem); return; }
+    const result = copyProgramFolderOccurrence(state, preview, folderName);
+    if (!result.ok) { setMessage(result.message); return; }
+    closePanel();
+    if (!await apply(result.workspace, '폴더 독립 사본')) return;
+    if (await saveNow()) setMessage('사본을 새 문서에 저장했습니다. 문서 목록에서 ‘' + folderName.trim() + '’을 열 수 있습니다.');
+  }
   function insertDateSection() {
     const doc = currentDoc(); if (!doc) return;
     const raw = M.raw(doc), insertion = `${raw && !raw.endsWith('\n') ? '\n' : ''}[${today()}]\n`;
@@ -922,9 +1139,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!target) return;
     const parsed = M.parseProgressToken(percent.trim());
     if (!parsed.ok || parsed.percent === null || !date) { setMessage('진행률과 기록 날짜를 확인해 주세요. 예: 20, 20%, 0.2'); return; }
-    const next = M.recordProgress(currentState(), target, date, parsed.percent);
+    const correction = progressRecordDate === date && date < today() && currentRow(panel?.lineId ?? null)?.progressPercent !== undefined;
+    const next = correction ? M.correctProgressRecord(currentState(), target, date, parsed.percent, today())
+      : M.recordProgress(currentState(), target, date, parsed.percent);
     if (next === currentState()) { closePanel(); return; }
-    closePanel(); await apply(next, '날짜별 누적 진행');
+    closePanel(); await apply(next, correction ? '날짜별 진행 기록 수정' : '날짜별 누적 진행');
   }
   async function applyDate() {
     if (actionsDisabled() || composingRef.current || regionPendingRef.current) return;
@@ -944,7 +1163,22 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  const title = protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'progress' ? '누적 진행률' : panel?.kind === 'date' ? '항목 날짜' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : '이 위치에 추가';
+  async function copyFolderText() {
+    if (composingRef.current || inputLockedRef.current || actionsDisabled() || propsRef.current.folderId) return;
+    const docId = propsRef.current.docId;
+    if (!await saveNow() || composingRef.current || inputLockedRef.current || propsRef.current.docId !== docId
+      || draftRef.current?.getState().dirty || draftRef.current?.getState().invalid) return;
+    const text = M.exportFolderText(currentState(), docId);
+    if (text === null) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setMessage('폴더 연결을 포함한 TXT를 복사했습니다.');
+    } catch {
+      setMessage('TXT를 복사하지 못했습니다. 브라우저의 클립보드 권한을 확인해 주세요.');
+    }
+  }
+
+  const title = panel?.kind==='child' ? '부모 메모 · 독립 하위 할 일' : protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'progress' ? '누적 진행률' : panel?.kind === 'date' ? '항목 날짜' : panel?.kind === 'folder-copy' ? '폴더 사본 만들기' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : panel?.kind === 'insert' && row?.progressTargetId ? '항목 작업' : '이 위치에 추가';
   const folderView = props.folderId ? readProgramFolderRegions(draft.working, props.docId, props.folderId) : null;
   const suggestionKey = `${suggestionLineId}:${currentRow(suggestionLineId)?.text ?? ''}`;
   const suggestion = props.folderId || props.readOnly || inputLocked || draft.invalid || composing || panel || dismissedSuggestion === suggestionKey
@@ -982,16 +1216,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     openFolderPanel(current.lineId, current.title);
   }
   const progressConflict = progressConflictToView();
-  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={draft.dirty ? 'true' : 'false'} onKeyDownCapture={event => {
+  const inputPending=!!childTarget||programTextInputPending(draft,textArea()?.value,composing,regionPending,checkPending);
+  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onKeyDownCapture={event => {
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
-    if (event.key === 'Escape' && (panel || movingRef.current)) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
+    if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
     else if (event.key === 'Escape' && suggestion && !event.nativeEvent?.isComposing && !composingRef.current) { event.preventDefault(); event.stopPropagation(); setDismissedSuggestion(suggestionKey); }
   }}>
     <div className={styles.toolbar}>
       {mode === 'text' && <button type="button" onClick={event => returnToDocumentMode(event.currentTarget)}>문서로 돌아가기</button>}
-      <button type="button" hidden={!!props.folderId || props.directWriting && !props.noteStatus} disabled={disabled} onClick={() => { const index = editorRef.current?.getSelection().lineIndex ?? 0; setPanel({ kind: 'insert', lineId: currentDoc()?.lines[index]?.id ?? null }); }}>＋ 추가</button>
-      <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기'} aria-label="입력 되돌리기" onClick={() => { if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
-      <details className={styles.editorTools} onKeyDown={event => {
+      <button type="button" hidden={!!props.folderId || props.directWriting && !props.noteStatus} disabled={insertionDisabled} onClick={() => { const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}>＋ 추가</button>
+      <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기'} aria-label="입력 되돌리기" onClick={() => { if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if(props.authoringMode&&!props.folderId)editorRef.current?.undo(); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
+      <details className={styles.editorTools} data-editor-tools onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; event.currentTarget.querySelector('summary')?.focus();
       }}>
@@ -999,7 +1234,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <div className={styles.editorToolActions}>
           {props.noteActions}
           <button type="button" aria-pressed={mode === 'text'} disabled={inputLocked || composing} onClick={event => { if (composingRef.current || inputLockedRef.current) return; closeEditorTools(event.currentTarget); setMode(mode === 'text' ? 'live' : 'text'); }}>원문 {mode === 'text' ? '닫기' : '보기'}</button>
-          {props.directWriting && <button type="button" disabled={disabled} onClick={event => { closeEditorTools(event.currentTarget); const index = editorRef.current?.getSelection().lineIndex ?? 0; setPanel({ kind: 'insert', lineId: currentDoc()?.lines[index]?.id ?? null }); }}>현재 줄에 추가</button>}
+          <button type="button" hidden={!!props.folderId} disabled={disabled || composing} onClick={event => { closeEditorTools(event.currentTarget); void copyFolderText(); }}>문서 TXT 복사</button>
+          {props.directWriting && <button type="button" disabled={insertionDisabled} onClick={event => { closeEditorTools(event.currentTarget); const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}>현재 줄에 추가</button>}
           <button type="button" hidden={!!props.folderId} disabled={disabled || draft.dirty} onClick={event => { closeEditorTools(event.currentTarget); previewOrder(); }}>날짜순 정렬</button>
           {(props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" hidden={!!props.folderId} disabled={disabled || draft.dirty} aria-label="다시 실행" onClick={event => { closeEditorTools(event.currentTarget); if (orderHistoryRef.current.hasEntries()) nativeHistory('historyRedo'); else void props.onRedo?.(); }}>다시 실행</button>}
         </div>
@@ -1015,7 +1251,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       <button type="button" onClick={downloadDraft}>입력한 원문 받기</button>
       <button type="button" disabled={inputLocked || draft.saving} onClick={() => { if (draftRef.current?.discard(propsRef.current.workspace)) { orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++; editorRef.current?.setValue(draftRef.current.getState().raw, { preserveSelection: true }); } }}>저장본으로 되돌리기</button>
       </div></div></details>
-        : <span className={styles.status} role="status" aria-live="polite">{props.readOnly ? props.disabledReason || '읽기 전용' : inputLocked ? '변경을 마치는 중… 입력을 잠시 보호합니다.' : draft.saving ? '저장 중…' : draft.dirty || !!props.folderId && regionPending ? '편집 중' : '저장됨'}</span>}
+        : <span className={styles.status} role="status" aria-live="polite">{props.readOnly ? props.disabledReason || '읽기 전용' : inputLocked ? '변경을 마치는 중… 입력을 잠시 보호합니다.' : checkPending ? '체크 확인 중…' : draft.saving ? '저장 중…' : inputPending ? '편집 중' : '저장됨'}</span>}
     </div>
     {moving && <div className={styles.moveNotice} role="status"><span>{moving.label} · 하위 {moving.descendantCount}줄</span><button type="button" onClick={() => setPanel({ kind: 'move', lineId: moving.lineId })}>위치 선택</button><button type="button" onClick={cancelMove}>이동 취소</button></div>}
     {message && !panel && <p className={styles.message} role="status">{message}</p>}
@@ -1033,8 +1269,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       onPosition={(start, end, lineId) => { regionPositionRef.current = { start, end }; propsRef.current.onPosition?.({ start, end, scrollTop: 0 }, lineId); }}
       onRegister={port => { regionPortRef.current = port; }}
       onPending={(pending, composing) => { regionPendingRef.current = pending; composingRef.current = composing; setRegionPending(pending); propsRef.current.onDirtyChange?.(pending || !!draftRef.current?.getState().dirty); }} />}
-    {panel && <dialog ref={dialogRef} className={styles.dialog} aria-label={title} onKeyDown={event => { trapProgramDialogTab(event.currentTarget, event); }} onCancel={event => { event.preventDefault(); closePanel(); cancelMove(); }}>
+    {panel && <dialog ref={dialogRef} className={styles.dialog} aria-label={title} onCompositionStartCapture={()=>{panelComposingRef.current=true;}} onCompositionEndCapture={()=>{panelComposingRef.current=false;}} onKeyDown={event => { trapProgramDialogTab(event.currentTarget, event); }} onCancel={event => { event.preventDefault(); closePanel(); cancelMove(); }}>
       <header><h3>{title}</h3><button type="button" aria-label="닫기" onClick={closePanel}>×</button></header>
+      <div className={styles.dialogBody}>
+      {childTarget&&<ProgramWritingInline key={childTarget.parentId} parentTitle={childTarget.title} date={childTarget.date} scope={childTarget.scope} memo={childTarget.memo} readDraft={kind=>childDrafts.current[childTarget.parentId+':'+kind]} remember={(kind,text)=>{childDrafts.current[childTarget.parentId+':'+kind]=text;}} onSubmit={submitAuthoringChild}/>}
+
       {message && <p role="alert" className={styles.message}>{message}</p>}
       {panel.kind === 'order' && <div className={styles.choices}>
         <label>정렬할 구간<select value={panel.lineId ?? ''} onChange={event => previewOrder(event.target.value)}>
@@ -1055,8 +1294,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           {accessFor(panel.lineId)?.reason ? <button type="button" onClick={() => setPanel({ kind: 'reference', lineId: panel.lineId })}>기록·원래 항목 보기</button> : <><button type="button" onClick={() => openProgress(panel.lineId)}>진행 기록</button><button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜 바꾸기</button></>}
         </section>}
         <section className={styles.menuSection} aria-label="이 위치에 추가"><h4>이 위치에 추가</h4>
-        {insertions.map(option => <button type="button" key={`${option.kind}:${option.offset}:${option.depth}`} onClick={() => insertNative(option.offset, option.text, option.caretOffset)}>{option.label}<small>{option.relation}</small></button>)}
-        {!currentDoc()?.lines.length && <><button type="button" onClick={() => insertNative(0, '- [ ] ', 6)}>할 일</button><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(); }}>자유 메모</button></>}
+        {props.authoringMode&&row&&authoringAnchor(row.index)&&<button type="button" onClick={()=>{openAuthoringChild(row.index);}}>부모 메모 · 독립 하위 할 일</button>}
+        {insertions.filter(option=>!props.authoringMode||option.kind!=='subcheck'&&option.kind!=='note').map(option => <button type="button" key={`${option.kind}:${option.offset}:${option.depth}`} disabled={insertionDisabled} onClick={() => insertNative(option.offset, option.text, option.caretOffset)}>{option.label}<small>{option.relation}</small></button>)}
+        {props.authoringMode&&<><button type="button" disabled={insertionDisabled} onClick={()=>insertAuthoringLayout('step')}>단계 추가</button><button type="button" disabled={insertionDisabled} onClick={()=>insertAuthoringLayout('description')}>설명 이어 쓰기</button></>}
+        {!currentDoc()?.lines.length && <><button type="button" disabled={insertionDisabled} onClick={() => insertNative(0, '- [ ] ', 6)}>할 일</button><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(); }}>자유 메모</button></>}
         </section>
         <details className={styles.menuGroup} aria-label="추가·연결"><summary>추가·연결</summary><div className={styles.choices}>
         <button type="button" onClick={insertDateSection}>날짜 구획 · 문서 끝에</button>
@@ -1069,31 +1310,38 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {props.onConnectFlow && <button type="button" onClick={() => { void connectFlow(panel.lineId); }}>Flow 연결</button>}
         </div></details>
         {row && <details className={styles.menuGroup} aria-label="선택 항목 문서 구조"><summary>문서 구조</summary><div className={styles.choices}>
-        {row?.kind === 'scope' && <small>TXT 복붙은 글자만 복사합니다. 폴더 연결과 기록을 유지해 옮기려면 하위 묶음 이동을 쓰세요.</small>}
+        {row?.kind === 'scope' && row.scopeKind === 'folder' && props.folderCopyProblem && <button type="button" disabled={disabled} onClick={() => openFolderCopy(panel.lineId)}>이 폴더 묶음의 사본 만들기…</button>}
+        {row?.kind === 'scope' && <small>폴더 연결을 포함하려면 편집 도구의 ‘문서 TXT 복사’를 쓰세요. 항목 기록을 유지해 옮기려면 하위 묶음 이동을 쓰세요.</small>}
         {row && ['task', 'subcheck', 'scope'].includes(row.kind) && <button type="button" onClick={() => beginMove(panel.lineId, true)}>하위 묶음 이동</button>}
         {row && <><button type="button" onClick={() => indentFromMenu(false)}>들여쓰기</button><button type="button" onClick={() => indentFromMenu(true)}>내어쓰기</button><button type="button" onClick={() => { closePanel(); editorRef.current?.toggleFold(row.index); }}>하위 내용 접기 / 펼치기</button></>}
         </div></details>}
       </div>}
-      {panel.kind === 'progress' && !protectedExecutionPanel && <form onSubmit={event => { event.preventDefault(); void applyProgress(); }}>
-        <p>{row?.title || row?.task?.title}</p><label>기록 날짜<input type="date" required value={date} onChange={event => setDate(event.target.value)} /></label>
-        <label>그날까지의 누적 진행률<input inputMode="decimal" required value={percent} onChange={event => setPercent(event.target.value)} aria-describedby={progressHintId} /></label>
-        <small id={progressHintId}>20, 20%, 0.2는 20%입니다. 날짜별 값을 더하지 않습니다.</small>
-        <div className={styles.quickProgress}>{[0, 20, 50, 100].map(value => <button type="button" key={value} onClick={() => setPercent(String(value))}>{value}%</button>)}</div>
-        <button type="submit" disabled={disabled}>진행 저장</button>
-        {row?.progressTargetId && M.progressHistory(draft.working, row.progressTargetId).length > 0 && <details><summary>날짜별 기록</summary><div className={styles.choices}>{M.progressHistory(draft.working, row.progressTargetId).map(record => <button type="button" key={record.date} onClick={() => { setDate(record.date); setPercent(String(record.percent)); }}>{record.date}<span>{record.percent}%</span></button>)}</div></details>}
-      </form>}
+      {panel.kind === 'progress' && !protectedExecutionPanel && <ProgramProgressForm title={row?.title || row?.task?.title} date={date} percent={percent} disabled={disabled}
+        history={row?.progressTargetId ? M.progressHistory(draft.working, row.progressTargetId) : []} onDate={setDate} onPercent={setPercent}
+        onHistory={recordDate=>{const record=row?.progressTargetId?M.progressHistory(draft.working,row.progressTargetId).find(entry=>entry.date===recordDate):null;if(record){setProgressRecordDate(record.date);setDate(record.date);setPercent(String(record.percent));}}}
+        onSubmit={()=>{void applyProgress();}} />}
       {panel.kind === 'date' && !protectedExecutionPanel && <form onSubmit={event => { event.preventDefault(); void applyDate(); }}><p className={styles.dateTarget}>{row?.title || row?.task?.title}</p>
         {dateContext && <p className={styles.contextHint} aria-label="날짜 출처">{dateContext.label}{dateContext.context && <small>{dateContext.context}</small>}</p>}
         <label>실행 날짜<input type="date" value={date} onChange={event => setDate(event.target.value)} /></label><label>시간<input type="time" step={60} value={time} onChange={event => setTime(event.target.value)} /></label>
         {dateChangeHint && <p className={styles.contextHint} role="status">{dateChangeHint}</p>}
         <button type="button" onClick={() => setDate('')}>날짜 미정</button><button type="submit" disabled={disabled}>날짜·시간 적용</button></form>}
-      {panel.kind === 'folder' && <><div className={styles.folderPreview} aria-label="폴더 연결 위치"><strong>{panel.folderLinkPreview?.locationLabel}</strong>{panel.folderLinkPreview?.source && <small>기준 줄: {panel.folderLinkPreview.source.text || '빈 줄'}</small>}{panel.folderLinkPreview?.destination.relation !== 'same-line' && <small>기존 내용과 하위 항목은 그대로 둡니다.</small>}</div><div className={styles.choices}>{M.scopes(draft.working).filter(scope => scope.kind === 'folder').map(scope => <button type="button" key={scope.id} disabled={disabled} onClick={() => { void attachFolder(scope.id); }}>{programFolderPath(draft.working, scope.id)}</button>)}</div><form onSubmit={event => { event.preventDefault(); void attachFolder(null); }}>{creationLocation !== null && <small>생성 위치: {creationLocation}</small>}<label>새 폴더 이름<input value={folderName} maxLength={100} onChange={event => setFolderName(event.target.value)} /></label><button type="submit" disabled={!folderName.trim() || disabled}>만들어 연결</button></form></>}
+      {panel.kind === 'folder-copy' && <form onSubmit={event => { event.preventDefault(); void makeFolderCopy(); }}>
+        <p>선택한 ‘{panel.folderCopyPreview?.title}’ 묶음만 새 문서로 복사합니다.</p>
+        <small>최상위 폴더에 새 사본을 만듭니다. 현재값·날짜·메모는 유지하고 날짜별 기록은 복사하지 않습니다.</small>
+        <label>새 사본 이름<input value={folderName} maxLength={100} required onChange={event => setFolderName(event.target.value)} /></label>
+        <button type="submit" disabled={disabled || !folderName.trim()}>사본 만들어 저장</button>
+      </form>}
+      {panel.kind === 'folder' && <><div className={styles.folderPreview} aria-label="폴더 연결 위치"><strong>{panel.folderLinkPreview?.locationLabel}</strong>{panel.folderLinkPreview?.source && <small>기준 줄: {panel.folderLinkPreview.source.text || '빈 줄'}</small>}{panel.folderLinkPreview?.destination.relation !== 'same-line' && <small>기존 내용과 하위 항목은 그대로 둡니다.</small>}</div><div className={styles.choices}>{M.scopes(draft.working).filter(scope => scope.kind === 'folder').map(scope => {
+        const problem = folderLinkProblems.get(scope.id);
+        return <button type="button" key={scope.id} disabled={disabled || !!problem} onClick={() => { void attachFolder(scope.id); }}>{programFolderPath(draft.working, scope.id)}{problem && <small>{problem.message}</small>}</button>;
+      })}</div><form onSubmit={event => { event.preventDefault(); void attachFolder(null); }}>{creationLocation !== null && <small>생성 위치: {creationLocation}</small>}<label>새 폴더 이름<input value={folderName} maxLength={100} onChange={event => setFolderName(event.target.value)} /></label><button type="submit" disabled={!folderName.trim() || disabled}>만들어 연결</button></form></>}
       {panel.kind === 'move' && <div className={styles.choices}>{moving?.targets.map(target => <button type="button" key={target.targetKey} onClick={() => { void finishMove(target.beforeLineId, target.depth); }}>{target.label}<small>깊이 {target.depth}</small></button>)}</div>}
       {(panel.kind === 'reference' || protectedExecutionPanel) && <ProgramReferencePanel access={panelAccess} title={row?.task?.title || row?.title || '연결된 항목'} date={row?.date ?? null}
         history={row?.progressTargetId ? M.progressHistory(draft.working, row.progressTargetId) : []}
         onProgress={() => openProgress(panel.lineId)} onDate={() => openProgress(panel.lineId, 'date')}
         onOrigin={props.onOpenTaskOrigin ? () => { const access = accessFor(panel.lineId); if (!access?.documentId) return; closePanel(); void saveNow().then(saved => { if (saved) propsRef.current.onOpenTaskOrigin?.(access.documentId!, access.lineId); }); } : undefined}
         onUnlink={row?.isReference && !props.readOnly ? () => { const lineId = panel.lineId; closePanel(); if (lineId) void apply(M.unlink(currentState(), props.docId, lineId), '항목 연결 해제'); } : undefined} />}
+      </div>
     </dialog>}
   </section>;
 }

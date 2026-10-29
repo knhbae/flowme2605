@@ -23,6 +23,7 @@ export type AlphaConflictComparison = {
   summaries: string[];
 };
 const fieldLabels: Record<Exclude<AlphaPrivateField, 'text'>, string> = {
+  personalAuthoring:'개인 Flow 판본·실행·반복',
   archivedDocumentIds: '문서 보관 상태', documentTrash: '휴지통', copies: '개인 계획과 원본 연결',
   savedBindings: '개인 계획의 문서 연결', draftRevisions: '문서 저장판본', participationDrafts: '질문·경험 입력',
   publicationDrafts: '공개 초안', publications: '공개한 내용의 연결', position: '작성 위치',

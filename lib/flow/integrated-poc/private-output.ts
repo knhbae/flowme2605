@@ -68,7 +68,7 @@ export function inspectProgramPrivateOutput(data: ProgramData, input: { actorId:
       const source = /^(?:출처|항목 출처|sourceUrl):\s*(\S+)\s*$/mi.exec(note)?.[1] ?? facts?.sourceUrl ?? null;
       const sourceUrl = source && classifyProgramUrl(source, []).kind !== 'invalid' ? source : null;
       if (source && !sourceUrl) warnings.push(`${task.title}: 출처 링크로 사용할 수 없는 주소는 링크 필드에서 제외했습니다. 메모 원문은 유지합니다.`);
-      return { id: task.id, kind: 'task', title: task.title, date: task.date, progress: M.latestProgress(space.text, task.id)?.percent ?? (task.done ? 100 : task.inputPercent ?? 0), note, time: task.time, sourceUrl,
+      return { id: task.id, kind: 'task', title: task.title, date: task.date, progress: M.currentProgress(space.text, task.id) ?? (task.done ? 100 : task.inputPercent ?? 0), note, time: task.time, sourceUrl,
         returnTarget: { documentId: task.docId, executionKey: programTextExecutionKey(task) },
         sourceDate: facts?.sourceDate ?? null, sourceTime: facts?.wallTime ?? null, timeZone: facts?.timeZone ?? null,
         resourceUrl: facts?.resourceUrl && classifyProgramUrl(facts.resourceUrl, []).kind !== 'invalid' ? facts.resourceUrl : null,

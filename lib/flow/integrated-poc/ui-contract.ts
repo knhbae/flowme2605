@@ -1,6 +1,10 @@
+import type {TextWorkspaceState} from './text-workspace';
+import type {ProgramWritingPosition} from './contract';
 import type { ProgramData, ProgramTransition } from './contract';
 import type { AlphaCreatorIntent } from './alpha-creator/contract';
 import type { AlphaSocialIntent } from './alpha-social/contract';
+import type { AlphaAccount, AlphaPrivateCommand } from './alpha-persistence/contract';
+import type { AlphaSyncSnapshot } from './alpha-sync/controller';
 
 export type ProgramDestination = {
   view: 'space' | 'discover' | 'community' | 'activity' | 'flow' | 'legacy' | 'creator';
@@ -15,11 +19,16 @@ export type ProgramDestination = {
 };
 export type ProgramNavigate = (destination: ProgramDestination, options?: { writingLineId?: string; replace?: boolean }) => void;
 export type ProgramMutationResult = { ok: true; result: string; flowId?: string; changed?: boolean; presentationPending?: true } | { ok: false; reason: string };
+/** Exact private command observations from the controller, never inferred from boolean text commits. */
+export type ProgramPrivateMutationObservation = {
+  generation: number; before: AlphaAccount; command: AlphaPrivateCommand; snapshot: AlphaSyncSnapshot;
+} & ({ phase: 'prepared' } | { phase: 'settled'; result: ProgramMutationResult });
+export type ProgramPrivateMutationObserver = (event: ProgramPrivateMutationObservation) => void;
 /** All program writers go through the same serialized, validated owner. */
 export type ProgramMutate = (
   label: string,
   build: (current: ProgramData) => ProgramTransition<string>,
-  options?: { groupId?: string; history?: boolean; alphaCreator?: AlphaCreatorIntent | (() => AlphaCreatorIntent); alphaSocial?: AlphaSocialIntent | (() => AlphaSocialIntent) },
+  options?: { alphaWriting?:{documentId:string;expected:TextWorkspaceState;next:TextWorkspaceState;position?:ProgramWritingPosition;workingGeneration:number;canSubmit?:()=>boolean}; groupId?: string; history?: boolean; alphaCreator?: AlphaCreatorIntent | (() => AlphaCreatorIntent); alphaSocial?: AlphaSocialIntent | (() => AlphaSocialIntent); onPrivateMutation?: ProgramPrivateMutationObserver },
 ) => Promise<ProgramMutationResult>;
 
 /** Only the host observing live controller state should show/clear this notice. */
@@ -27,6 +36,7 @@ export const PROGRAM_BUSY_NOTICE = '저장하거나 서버 상태를 확인하�
 
 export function programErrorMessage(reason: string): string {
   const messages: Record<string, string> = {
+    'duplicate-folder-name': '같은 위치에 같은 이름의 폴더가 있습니다. 다른 이름을 입력해 주세요.',
     invalid: '입력 내용을 확인해 주세요. 저장된 내용은 바뀌지 않았습니다.',
     missing: '연결한 내용이 없거나 보관되었습니다. 현재 목록에서 다시 선택해 주세요.',
     forbidden: '이 내용은 현재 선택한 작성자가 수정할 수 없습니다.',

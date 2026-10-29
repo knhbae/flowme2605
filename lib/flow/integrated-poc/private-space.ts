@@ -89,7 +89,7 @@ export function createProgramFolder(data: ProgramData, input: ProgramPrivateMuta
     const parentId = input.parentId ?? null;
     if (!singleLine(input.title, 100)) return { result: '', reason: 'invalid' };
     if (parentId && !space.text.folders.some(folder => folder.id === parentId)) return { result: '', reason: 'missing' };
-    if (space.text.folders.some(folder => folder.parentId === parentId && folder.title === input.title.trim())) return { result: '', reason: 'conflict' };
+    if (space.text.folders.some(folder => folder.parentId === parentId && folder.title === input.title.trim())) return { result: '', reason: 'duplicate-folder-name' };
     if (space.text.folders.length >= 100) return { result: '', reason: 'limit' };
     const id = programId('folder'); space.text.folders.push({ id, title: input.title.trim(), parentId });
     if (!M.validate(space.text)) return { result: id, reason: 'limit' };
@@ -103,7 +103,7 @@ export function renameProgramFolder(data: ProgramData, input: ProgramPrivateMuta
     if (!folder) return { result: input.folderId, reason: 'missing' };
     if (folder.id === 'folder-unfiled') return { result: folder.id, reason: 'forbidden' };
     if (!singleLine(input.title, 100)) return { result: folder.id, reason: 'invalid' };
-    if (space.text.folders.some(row => row.id !== folder.id && row.parentId === folder.parentId && row.title === input.title.trim())) return { result: folder.id, reason: 'conflict' };
+    if (space.text.folders.some(row => row.id !== folder.id && row.parentId === folder.parentId && row.title === input.title.trim())) return { result: folder.id, reason: 'duplicate-folder-name' };
     space.text = M.renameScope(space.text, folder.id, input.title); return { result: folder.id };
   });
 }
@@ -118,7 +118,7 @@ export function moveProgramFolder(data: ProgramData, input: ProgramPrivateMutati
       if (parent === folder.id) return { result: folder.id, reason: 'invalid' };
       parent = space.text.folders.find(row => row.id === parent)?.parentId ?? null;
     }
-    if (space.text.folders.some(row => row.id !== folder.id && row.parentId === input.parentId && row.title === folder.title)) return { result: folder.id, reason: 'conflict' };
+    if (space.text.folders.some(row => row.id !== folder.id && row.parentId === input.parentId && row.title === folder.title)) return { result: folder.id, reason: 'duplicate-folder-name' };
     folder.parentId = input.parentId;
     return { result: folder.id, reason: M.validate(space.text) ? undefined : 'limit' };
   });
@@ -178,14 +178,19 @@ export function updateProgramTask(data: ProgramData, input: ProgramPrivateMutati
   });
 }
 
-export function recordProgramTaskProgress(data: ProgramData, input: ProgramPrivateMutationBase & { taskId: string; date: string; percent: number }): ProgramTransition<string> {
-  return mutate(data, input, 'private-task-progress', { taskId: input.taskId, date: input.date, percent: input.percent }, space => {
+export function recordProgramTaskProgress(data: ProgramData, input: ProgramPrivateMutationBase & { taskId: string; date: string; percent: number; correctionAsOfDate?: string }): ProgramTransition<string> {
+  return mutate(data, input, 'private-task-progress', { taskId: input.taskId, date: input.date, percent: input.percent,
+    ...(input.correctionAsOfDate === undefined ? {} : { correctionAsOfDate: input.correctionAsOfDate }) }, space => {
     if (programReferenceExecutionAccess(space, input.taskId).kind !== 'active') return { result: input.taskId, reason: 'unresolved' };
     if (programLegacyTaskQualityHold(space, input.taskId) || programLegacyPlanTaskExcluded(space, input.taskId)) return { result: input.taskId, reason: 'unresolved' };
     if (!programDate(input.date) || !Number.isInteger(input.percent) || input.percent < 0 || input.percent > 100) return { result: input.taskId, reason: 'invalid' };
     const exists = documents(space.text).some(doc => M.rowMeta(space.text, doc.id).some(row => row.id === input.taskId && row.progressTargetId === input.taskId));
     if (!exists) return { result: input.taskId, reason: 'missing' };
-    const next = M.recordProgress(space.text, input.taskId, input.date, input.percent);
+    if (input.correctionAsOfDate !== undefined && (!programDate(input.correctionAsOfDate) || input.date >= input.correctionAsOfDate
+      || M.currentProgress(space.text, input.taskId) === null || !documents(space.text).some(doc => M.parseDocument(doc, space.text).items.some(item => item.id === input.taskId && item.inputPercent !== undefined))
+      || !M.progressHistory(space.text, input.taskId).some(record => record.date === input.date))) return { result: input.taskId, reason: 'invalid' };
+    const next = input.correctionAsOfDate === undefined ? M.recordProgress(space.text, input.taskId, input.date, input.percent)
+      : M.correctProgressRecord(space.text, input.taskId, input.date, input.percent, input.correctionAsOfDate);
     if (next === space.text && !M.progressHistory(next, input.taskId).some(record => record.date === input.date && record.percent === input.percent)) return { result: input.taskId, reason: 'limit' };
     space.text = next;
     return { result: input.taskId };
@@ -209,18 +214,34 @@ export function addProgramQuickTask(data: ProgramData, input: ProgramPrivateMuta
   });
 }
 
-export function linkProgramTask(data: ProgramData, input: ProgramPrivateMutationBase & { documentId: string; taskId: string; lineId?: string | null }): ProgramTransition<string> {
-  return mutate(data, input, 'private-task-link', { documentId: input.documentId, taskId: input.taskId, lineId: input.lineId ?? null }, space => {
+export function linkProgramTask(data: ProgramData, input: ProgramPrivateMutationBase & { documentId: string; taskId: string; lineId?: string | null; insertAfterLineId?: string | null }): ProgramTransition<string> {
+  return mutate(data, input, 'private-task-link', { documentId: input.documentId, taskId: input.taskId, lineId: input.lineId ?? null,
+    ...(input.insertAfterLineId !== undefined ? { insertAfterLineId: input.insertAfterLineId } : {}) }, space => {
     const doc = M.getDocument(space.text, input.documentId);
     if (!doc) return { result: '', reason: 'missing' };
     if (programDocumentContentLock(space, doc.id) !== 'active') return { result: doc.id, reason: 'unresolved' };
     const existing = space.text.bindings.find(binding => binding.kind === 'task' && binding.docId === doc.id && binding.taskId === input.taskId);
     if (existing) return { result: existing.lineId };
-    const index = input.lineId ? doc.lines.findIndex(line => line.id === input.lineId) : doc.lines.length;
-    if (index < 0) return { result: '', reason: 'missing' };
-    if (index < doc.lines.length && !/^ *-?\s*$/.test(doc.lines[index].text)) return { result: '', reason: 'conflict' };
-    const next = M.linkTask(space.text, doc.id, index, input.taskId);
-    if (next === space.text) return { result: '', reason: 'invalid' };
+    let text = space.text;
+    let index = input.lineId ? doc.lines.findIndex(line => line.id === input.lineId) : doc.lines.length;
+    if (input.insertAfterLineId !== undefined) {
+      if (input.lineId || input.insertAfterLineId !== null && !programIdentifier(input.insertAfterLineId)) return { result: '', reason: 'invalid' };
+      const selected = input.insertAfterLineId ? M.rowMeta(text, doc.id).find(row => row.id === input.insertAfterLineId) : undefined;
+      if (input.insertAfterLineId && !selected) return { result: '', reason: 'missing' };
+      index = selected?.subtreeEndIndex ?? doc.lines.length;
+      const depth = selected?.kind === 'scope' ? selected.depth + 1 : selected?.kind === 'date' ? 0 : selected?.depth ?? 0;
+      const lines = doc.lines.map(line => line.text);
+      lines.splice(index, 0, `${'  '.repeat(depth)}- `);
+      text = M.editText(text, doc.id, lines.join('\n'));
+      if (!/^ *-\s*$/.test(M.getDocument(text, doc.id)?.lines[index]?.text ?? '')) return { result: '', reason: 'invalid' };
+    } else {
+      if (index < 0) return { result: '', reason: 'missing' };
+      if (index < doc.lines.length && !/^ *-?\s*$/.test(doc.lines[index].text)) return { result: '', reason: 'conflict' };
+    }
+    // Slot and link share the existing private transaction. Refusal leaves no
+    // prepared row; viewing/cancelling the picker never reaches this mutation.
+    const next = M.linkTask(text, doc.id, index, input.taskId);
+    if (next === text) return { result: '', reason: 'invalid' };
     space.text = next; return { result: M.getDocument(next, doc.id)!.lines[index].id };
   });
 }

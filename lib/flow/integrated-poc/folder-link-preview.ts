@@ -1,4 +1,4 @@
-import { programFolderLineTitle } from './folder-link-slot';
+import { readProgramFolderSlot } from './folder-link-slot';
 import { programFolderCreationLocation, programFolderInputSuggestion, programFolderPath } from './folder-link-suggestions';
 import { textWorkspaceModel as M, type TextRowKind, type TextWorkspaceState } from './text-workspace';
 
@@ -35,15 +35,10 @@ export function programFolderLinkPreview(
   state: TextWorkspaceState, docId: string, lineId: string | null, mode: ProgramFolderLinkMode = 'direct',
 ): ProgramFolderLinkPreview | null {
   if (!M.validate(state)) return null;
-  const doc = M.getDocument(state, docId);
-  if (!doc) return null;
-  const row = M.rowMeta(state, docId).find(entry => entry.id === lineId);
-  // An explicit end-of-document choice is different from a disappeared row.
-  if (lineId !== null && !row) return null;
+  const slot = readProgramFolderSlot(state, docId, lineId);
+  if (!slot) return null;
+  const { doc, row, inPlace, index, depth } = slot;
   if (mode === 'proposal' && !programFolderInputSuggestion(state, docId, lineId)) return null;
-  const inPlace = !!row && (/^ *-\s*$/.test(row.text) || programFolderLineTitle(state, docId, lineId) !== null);
-  const index = inPlace ? row!.index : row?.subtreeEndIndex ?? doc.lines.length;
-  const depth = inPlace ? row!.depth : row?.kind === 'scope' ? row.depth + 1 : row?.kind === 'date' ? 0 : row?.depth ?? 0;
   const context = M.insertionContext(state, docId, index, depth);
   if (!context.valid) return null;
   const relation: ProgramFolderLinkRelation = inPlace ? 'same-line' : !row ? 'document-end'

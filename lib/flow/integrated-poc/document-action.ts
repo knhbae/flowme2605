@@ -1,3 +1,4 @@
+import type {OwnedWritingAck} from './writing-ack';
 import type { ProgramData, ProgramPublicationDraft, ProgramParticipationDraft } from './contract';
 import type { ProgramCreatorWorking } from './creator-workspace-contract';
 import type { ProgramProposalReviewDraft } from './review-drafts';
@@ -19,17 +20,22 @@ export async function prepareProgramDocumentAction(input: {
 }
 
 export type ProgramEditorDraft = { title: string; raw: string; documentId?: string };
+/** Ephemeral input ownership only; never a persisted/account/ACK revision. */
+export type ProgramEditorInputCheckpoint = { ownerId: string; revision: number };
 export type ProgramEditorSocialDraft =
   | { kind: 'publication'; value: ProgramPublicationDraft }
   | { kind: 'participation'; value: ProgramParticipationDraft }
   | { kind: 'review'; value: { proposalId: string; draft: ProgramProposalReviewDraft } };
 export type ProgramEditorFlush = {
   flushAll: () => Promise<boolean>; lockInput: () => () => void;
+  /** False means raw backup does not prove the current typed input can be handed off. */
+  captureComplete?: () => boolean;
+  inputCheckpoint?: () => readonly ProgramEditorInputCheckpoint[];
   hasPendingInput?: () => boolean;
   pendingDocumentIds?: () => string[];
   captureDrafts?: () => ProgramEditorDraft[];
   /** Called only after the shell proves an exact same-request private save. Never replace input. */
-  acceptConfirmedPrivateText?: (before: TextWorkspaceState, next: TextWorkspaceState) => boolean;
+  acceptConfirmedPrivateText?: (before: TextWorkspaceState, next: TextWorkspaceState, ack?:OwnedWritingAck) => boolean;
   /** Explicit private social drafts; never restore these as personal raw documents. */
   captureSocialDrafts?: () => ProgramEditorSocialDraft[];
   /** Advance only an exact confirmed private draft after a lost response; never replace input. */
@@ -41,6 +47,25 @@ export type ProgramEditorFlush = {
   /** Non-document editors can protect their own persisted draft on external changes. */
   blocksExternalSnapshot?: (before: ProgramData, next: ProgramData) => boolean;
 };
+/** RAW recovery success does not prove a typed PM owner can be released. */
+export function programInputCanRelease(editors:readonly (ProgramEditorFlush|null)[]):boolean {
+  try { return editors.every(port=>!port?.captureComplete||port.captureComplete()); }
+  catch { return false; }
+}
+export type ProgramInputBoundary = { port: ProgramEditorFlush | null; value: string }[];
+/** Read all mounted owners, including clean children. RAW comparison is a fallback
+ * for existing ports; PM supplies a monotonic checkpoint to detect input/revert ABA. */
+export function readProgramInputBoundary(editors:readonly (ProgramEditorFlush|null)[]):ProgramInputBoundary|null {
+  try { return editors.map(port=>({port,value:JSON.stringify({
+    input:port?.inputCheckpoint?.()??null,pending:port?.hasPendingInput?.()??false,
+    documents:port?.pendingDocumentIds?.()??[],raw:port?.captureDrafts?.()??[],
+    social:port?.captureSocialDrafts?.()??[],creator:port?.captureCreatorWorking?.()??null,
+  })})); } catch { return null; }
+}
+export function programInputBoundaryCurrent(before:ProgramInputBoundary,editors:readonly (ProgramEditorFlush|null)[]):boolean {
+  const next=readProgramInputBoundary(editors);
+  return !!next&&before.length===next.length&&before.every((row,index)=>row.port===next[index].port&&row.value===next[index].value);
+}
 /** External storage may change ownership or remove a mounted editor. Never let
  * that unmount an unsaved draft, including native composition still in the DOM. */
 export function programInputBlocksSnapshot(before: ProgramData, next: ProgramData, editors: readonly (ProgramEditorFlush | null)[], external = false): boolean {

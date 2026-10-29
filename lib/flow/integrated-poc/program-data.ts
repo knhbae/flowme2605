@@ -1,3 +1,4 @@
+import {validatePersonalAuthoring} from './personal-authoring';
 import {
   PROGRAM_LIMITS, PROGRAM_SCHEMA, type ProgramData, type ProgramEnvelope,
   type ProgramPrivateSpace, type ProgramPublicItem, type ProgramPublicRepository,
@@ -14,6 +15,9 @@ import { isProgramExecutionTimelineOrders } from './recurrence-order-contract';
 import { validateProgramPublicationRecurrenceDraft, validateProgramPublicRecurringSchedule } from './public-recurrence-contract';
 import { readProgramPublicCopyRecurrenceSource } from './public-copy-recurrence';
 import { validateProgramOrdinaryTiming, validateProgramOrdinaryTimingDraft } from './public-ordinary-time';
+import {REA_TEXT_SCHEMA,readStoredProgramText,freezeStored,type DeepReadonly,type StoredProgramEnvelope,type StoredTextRead} from './rea-stored-text';
+import {canonicalJson,detached} from './alpha-persistence/json';
+import {REA_ORDERED_TEXT_SCHEMA,readOrderedStoredProgramText,type OrderedTextRead,type ReaOrderedStoredSpace} from './rea-stored-text';
 
 type Row = Record<string, unknown>;
 const own = (row: object, key: string) => Object.prototype.hasOwnProperty.call(row, key);
@@ -196,10 +200,11 @@ export function createProgramEnvelope(data = createProgramData()): ProgramEnvelo
 }
 function privateSpace(value: unknown, data: ProgramData, actorId: string): value is ProgramPrivateSpace {
   const required = ['text', 'archivedDocumentIds', 'copies', 'savedBindings', 'draftRevisions', 'participationDrafts', 'publicationDrafts', 'publications', 'position', 'timelineOrders', 'legacySnapshot', 'legacyQuickItemLines', 'legacyTimelinePolicies'];
-  const extensions = ['retentionDocuments', 'creatorDraftImports', 'creatorWorkspace', 'catalogLibrary', 'proposalReviewDrafts', 'recurrenceExecution', 'recurrencePlans', 'executionTimelineOrders', 'documentTrash'];
+  const extensions = ['personalAuthoring', 'retentionDocuments', 'creatorDraftImports', 'creatorWorkspace', 'catalogLibrary', 'proposalReviewDrafts', 'recurrenceExecution', 'recurrencePlans', 'executionTimelineOrders', 'documentTrash'];
   if (!programRecord(value) || !required.every(key => own(value, key))
     || Object.keys(value).some(key => !required.includes(key) && !extensions.includes(key)) || !textWorkspaceModel.validate(value.text)) return false;
   const text = value.text, docs = [...text.documents, ...text.flows];
+  if(Object.hasOwn(value,'personalAuthoring')&&!validatePersonalAuthoring(value.personalAuthoring,text))return false;
   const doc = (id: unknown) => docs.find(row => row.id === id);
   const version = (id: unknown) => data.public.versions.find(row => row.id === id);
   const retention = value.retentionDocuments ?? {};
@@ -293,7 +298,8 @@ function privateSpace(value: unknown, data: ProgramData, actorId: string): value
     && ['start', 'end', 'scrollTop'].every(key => typeof position[key] === 'number' && Number.isFinite(position[key]) && (position[key] as number) >= 0)
     && Number.isSafeInteger(position.start) && Number.isSafeInteger(position.end) && (position.end as number) >= (position.start as number);
 }
-export function validateProgramData(value: unknown): value is ProgramData {
+type PrivateSpaceCheck=(space:unknown,data:ProgramData,actorId:string)=>boolean;
+function validateProgramDataUsing(value: unknown,checkSpace:PrivateSpaceCheck): boolean {
   try {
     const service = programRecord(value) && value.projection === 'alpha-social-v1';
     if (!programShape(value, ['actors', 'activeActorId', 'spaces', 'public', 'receipts', ...(service ? ['projection'] : [])])) return false;
@@ -302,22 +308,106 @@ export function validateProgramData(value: unknown): value is ProgramData {
     const actorIds = (value.actors as Row[]).map(row => row.id as string);
     if (!actorIds.includes(value.activeActorId as string) || !programShape(value.spaces, actorIds) || !validateProgramPublicRepository(value.public, actorIds)) return false;
     const data = value as unknown as ProgramData;
-    if (!Object.entries(value.spaces).every(([actorId,space]) => privateSpace(space, data, actorId))) return false;
+    if (!Object.entries(value.spaces).every(([actorId,space]) => checkSpace(space, data, actorId))) return false;
     if (!list(value.receipts, row => programShape(row, ['id', 'actorId', 'fingerprint', 'resultId', 'kind']) && programIdentifier(row.id) && actorIds.includes(row.actorId as string)
       && programString(row.fingerprint, 12_000_000, true) && programIdentifier(row.resultId) && programString(row.kind, 80, true))) return false;
     return new Set((value.receipts as Row[]).map(row => JSON.stringify([row.actorId, row.id]))).size === value.receipts.length;
   } catch { return false; }
 }
+export function validateProgramData(value:unknown):value is ProgramData{return validateProgramDataUsing(value,privateSpace);}
 /** Replaceable DEV projection budget, not the local PoC actor creation policy. */
 export const PROGRAM_ALPHA_PROJECTION_ACTOR_LIMIT = 512;
-export function validateProgramEnvelope(value: unknown, options: { allowAlphaProjection?: boolean } = {}): value is ProgramEnvelope {
+function validateProgramEnvelopeUsing(value: unknown, options: { allowAlphaProjection?: boolean },checkSpace:PrivateSpaceCheck): boolean {
   try {
     if (!programShape(value, ['schema', 'revision', 'data', 'undo']) || value.schema !== PROGRAM_SCHEMA
-      || !Number.isSafeInteger(value.revision) || (value.revision as number) < 0 || !validateProgramData(value.data)
-      || value.data.projection !== undefined && !options.allowAlphaProjection) return false;
-    if (!programShape(value.undo, value.data.actors.map(actor => actor.id))) return false;
-    const data = value.data;
+      || !Number.isSafeInteger(value.revision) || (value.revision as number) < 0 || !validateProgramDataUsing(value.data,checkSpace)) return false;
+    // The shared runner consumes actor/public metadata only. It never treats a
+    // stored typed text as a legacy TextWorkspaceState or exposes this cast.
+    const data=value.data as ProgramData;
+    if(data.projection!==undefined&&!options.allowAlphaProjection)return false;
+    if (!programShape(value.undo, data.actors.map(actor => actor.id))) return false;
     return Object.entries(value.undo).every(([actorId,history]) => list(history, entry => programShape(entry, ['label', 'groupId', 'workspace'])
-      && programString(entry.label, 240, true) && optional(entry.groupId, programIdentifier) && privateSpace(entry.workspace, data, actorId), PROGRAM_LIMITS.history));
+      && programString(entry.label, 240, true) && optional(entry.groupId, programIdentifier) && checkSpace(entry.workspace, data, actorId), PROGRAM_LIMITS.history));
   } catch { return false; }
+}
+/** Existing app entry remains a v11-only type guard. */
+export function validateProgramEnvelope(value:unknown,options:{allowAlphaProjection?:boolean}={}):value is ProgramEnvelope{return validateProgramEnvelopeUsing(value,options,privateSpace);}
+
+export type StoredProgramEnvelopeRead=
+ |{kind:'v11-readonly';snapshot:DeepReadonly<ProgramEnvelope>;writeAllowed:false;writeBlockedReason:'USE_EXISTING_V11_PORTS'}
+ |{kind:'rea-readonly';snapshot:DeepReadonly<StoredProgramEnvelope>;text:Extract<StoredTextRead,{kind:'rea-readonly'}>;writeAllowed:false;writeBlockedReason:'REA_READERS_NOT_CONNECTED'}
+ |{kind:'blocked';reason:string;preservedInput:unknown;writeAllowed:false};
+/** Restricted, explicit stored-reader entry. No migration or generic writable
+ * ProgramEnvelope is produced for a tagged payload. All old guards stay closed. */
+export function inspectStoredProgramEnvelope(input:unknown,options:{allowAlphaProjection?:boolean}={}):StoredProgramEnvelopeRead{
+ const blocked=(reason:string):StoredProgramEnvelopeRead=>({kind:'blocked',reason,preservedInput:input,writeAllowed:false});
+ try{
+  const value=detached(input) as any;
+  if(validateProgramEnvelope(value,options))return{kind:'v11-readonly',snapshot:freezeStored(value),writeAllowed:false,writeBlockedReason:'USE_EXISTING_V11_PORTS'};
+  if(!programRecord(value?.data?.spaces))return blocked('INVALID_PROGRAM_ENVELOPE');
+  const spaces=Object.values<any>(value.data.spaces),tagged=spaces.filter(s=>s?.text?.schema===REA_TEXT_SCHEMA);
+  if(!tagged.length)return blocked(spaces.some(s=>s?.text?.schema!==undefined||s?.text?.version!==11)?'UNKNOWN_TEXT_VERSION':'INVALID_V11_ENVELOPE');
+  // First read profile: one personal owner, no imported/source-dependent aux
+  // context or Undo. Reject it rather than synthesize legacy lines to validate.
+  if(value.data.actors?.length!==1||tagged.length!==1||spaces.length!==1)return blocked('UNSUPPORTED_PRIVATE_CONTEXT');
+  const actorId=value.data.activeActorId;
+  if(!Array.isArray(value.undo?.[actorId])||value.undo[actorId].length)return blocked('UNSUPPORTED_UNDO_CONTEXT');
+  const empty=createProgramPrivateSpace(),emptyAux=Object.fromEntries(Object.entries(empty).filter(([key])=>key!=='text'));
+  let reason='INVALID_PROGRAM_ENVELOPE',read:Extract<StoredTextRead,{kind:'rea-readonly'}>|null=null;
+  const checkSpace:PrivateSpaceCheck=space=>{
+   if(!programRecord(space))return false;
+   const result=readStoredProgramText(space.text);
+   if(result.kind!=='rea-readonly'){reason=result.kind==='blocked'?result.reason:'UNSUPPORTED_PRIVATE_CONTEXT';return false;}
+   const aux=Object.fromEntries(Object.entries(space).filter(([key])=>key!=='text'));
+   if(canonicalJson(aux)!==canonicalJson(emptyAux)){reason='UNSUPPORTED_PRIVATE_CONTEXT';return false;}
+   read=result;return true;
+  };
+  if(!validateProgramEnvelopeUsing(value,options,checkSpace)||!read)return blocked(reason);
+  return{kind:'rea-readonly',snapshot:freezeStored(value as StoredProgramEnvelope),text:read,writeAllowed:false,writeBlockedReason:'REA_READERS_NOT_CONNECTED'};
+ }catch{return blocked('NON_JSON_PROGRAM_ENVELOPE');}
+}
+
+export type OrderedProgramEnvelope=Omit<ProgramEnvelope,'data'>&{
+ data:Omit<ProgramData,'spaces'>&{spaces:Record<string,ReaOrderedStoredSpace>};
+};
+export type OrderedProgramEnvelopeRead=StoredProgramEnvelopeRead|{
+ kind:'rea-ordered-readonly';snapshot:DeepReadonly<OrderedProgramEnvelope>;text:OrderedTextRead;
+ writeAllowed:false;writeBlockedReason:'ORDERED_PROFILE_REQUIRES_EXPLICIT_WRITER';
+ positionSupport:'PRESERVE_ONLY_NO_PM_RESTORE';
+};
+/** Separate profile; never relax the v11 or version-1 validators. */
+export function inspectOrderedStoredProgramEnvelope(input:unknown):OrderedProgramEnvelopeRead{
+ const blocked=(reason:string):OrderedProgramEnvelopeRead=>({kind:'blocked',reason,preservedInput:input,writeAllowed:false});
+ try{
+  const value=detached(input) as any;
+  if(!programRecord(value?.data?.spaces))return blocked('INVALID_PROGRAM_ENVELOPE');
+  const spaces=Object.values<any>(value.data.spaces);
+  if(!spaces.some(s=>s?.text?.schema===REA_ORDERED_TEXT_SCHEMA))return inspectStoredProgramEnvelope(input);
+  const actorId=value.data.activeActorId;
+  if(value.data.actors?.length!==1||spaces.length!==1||value.data.projection!==undefined
+   ||!Array.isArray(value.undo?.[actorId])||value.undo[actorId].length)return blocked('UNSUPPORTED_ORDERED_OWNER_OR_UNDO');
+  if(!programRecord(value.data.public)||Object.values(value.data.public).some(rows=>!Array.isArray(rows)||rows.length))
+   return blocked('UNSUPPORTED_ORDERED_PUBLIC_CONTEXT');
+  const empty=createProgramPrivateSpace();
+  const rest=(space:Record<string,unknown>)=>Object.fromEntries(Object.entries(space).filter(([key])=>!['text','archivedDocumentIds','position'].includes(key)));
+  let read:OrderedTextRead|null=null,reason='INVALID_ORDERED_AUX';
+  const check:PrivateSpaceCheck=space=>{
+   if(!programRecord(space))return false;
+   const result=readOrderedStoredProgramText(space.text);
+   if(result.kind!=='rea-ordered-readonly'){reason=result.kind==='blocked'?result.reason:'ORDERED_TEXT_REQUIRED';return false;}
+   if(canonicalJson(rest(space))!==canonicalJson(rest(empty))){reason='UNSUPPORTED_ORDERED_AUX_CONTEXT';return false;}
+   const text=result.snapshot,ids=space.archivedDocumentIds;
+   if(!Array.isArray(ids)||new Set(ids).size!==ids.length||ids.some(id=>typeof id!=='string'||!Object.hasOwn(text.documents,id)))return false;
+   const p=space.position;
+   if(!programShape(p,['documentId','lineId','start','end','scrollTop'])
+    ||!optional(p.documentId,id=>typeof id==='string'&&Object.hasOwn(text.documents,id))
+    ||!optional(p.lineId,id=>typeof id==='string'&&typeof p.documentId==='string'&&Object.hasOwn(text.documents[p.documentId].blocks,id))
+    ||!['start','end','scrollTop'].every(key=>typeof p[key]==='number'&&Number.isFinite(p[key])&&(p[key] as number)>=0)
+    ||!Number.isSafeInteger(p.start)||!Number.isSafeInteger(p.end)||(p.end as number)<(p.start as number))return false;
+   read=result;return true;
+  };
+  if(!validateProgramEnvelopeUsing(value,{},check)||!read)return blocked(reason);
+  return{kind:'rea-ordered-readonly',snapshot:freezeStored(value as OrderedProgramEnvelope),text:read,
+   writeAllowed:false,writeBlockedReason:'ORDERED_PROFILE_REQUIRES_EXPLICIT_WRITER',positionSupport:'PRESERVE_ONLY_NO_PM_RESTORE'};
+ }catch{return blocked('NON_JSON_ORDERED_ENVELOPE');}
 }

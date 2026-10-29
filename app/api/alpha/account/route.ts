@@ -1,7 +1,7 @@
-import { createAlphaCommandHandler } from '@/lib/flow/integrated-poc/alpha-server/command-handler';
+import { createAlphaWritingRoute } from '@/lib/flow/integrated-poc/alpha-server/writing-route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export async function POST(request: Request): Promise<Response> {
-  return createAlphaCommandHandler(process.env)(request);
+  return createAlphaWritingRoute(process.env)(request);
 }

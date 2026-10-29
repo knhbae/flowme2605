@@ -2,7 +2,7 @@ import type { ProgramPrivateSpace } from './contract';
 import { programSame } from './controller';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 import { programLegacyTaskQualityHold } from './legacy-map-review';
-import { programLegacyPlanTaskExcluded } from './program-legacy-plan-target';
+import { programLegacyPlanExcludedTargets } from './program-legacy-plan-target';
 import {programNativeSelectedRows,programNativeSelectionHeld} from './creator-native-execution-validation';
 
 export type ProgramReferenceAccess = { documentId: string | null; lineId: string; reason: string | null; kind: 'active' | 'archived' | 'trash' | 'retention' | 'quality-hold' | 'excluded' | 'missing' };
@@ -22,16 +22,53 @@ const reasons: Record<Exclude<ProgramReferenceAccess['kind'], 'active'>, string>
   missing: '원래 항목을 찾을 수 없습니다. 이 연결은 남겨 두거나 해제할 수 있습니다.',
 };
 export function programReferenceExecutionAccess(space: ProgramPrivateSpace, taskId: string): ProgramReferenceAccess {
+  return referenceExecutionAccess(space,taskId);
+}
+function referenceExecutionAccess(space: ProgramPrivateSpace, taskId: string, excluded?: Set<string>): ProgramReferenceAccess {
   const doc = [...space.text.documents, ...space.text.flows].find(doc => doc.lines.some(line => line.id === taskId));
   if (!doc) return { documentId: null, lineId: taskId, kind: 'missing', reason: reasons.missing };
   let kind = programDocumentContentLock(space, doc.id);
   if (kind === 'active' && programLegacyTaskQualityHold(space, taskId)) kind = 'quality-hold';
-  if (kind === 'active' && programLegacyPlanTaskExcluded(space, taskId)) kind = 'excluded';
+  if (kind === 'active' && (excluded??programLegacyPlanExcludedTargets(space)).has(taskId)) kind = 'excluded';
   if(kind==='active')for(const owner of Object.values(space.creatorWorkspace?.nativeExecutionSources??{})){
     const selected=programNativeSelectedRows(owner).find(s=>s.row.lines.some(l=>l.id===taskId));if(!selected)continue;
     if(selected.disposition!=='active')kind='excluded';else if(programNativeSelectionHeld(owner,selected.selection))kind='quality-hold';
   }
   return { documentId: doc.id, lineId: taskId, kind, reason: kind === 'active' ? null : reasons[kind] };
+}
+/** One host-policy owner. Current private frames supply structure, never policy.
+ * Replaced policy/text/actor owners create a new reader in ProgramSpace. */
+export function createProgramReferenceExecutionAccess(space:ProgramPrivateSpace,ownerId:string){
+  const baseline=space.text,excluded=programLegacyPlanExcludedTargets(space),rights=new Map<string,ProgramReferenceAccess>();
+  const baselineIds=new Set([...baseline.documents,...baseline.flows].flatMap(doc=>doc.lines.map(line=>line.id)));
+  const policyKeys=['savedBindings','copies','creatorWorkspace','archivedDocumentIds','documentTrash','retentionDocuments','legacySnapshot'] as const;
+  const policy=policyKeys.map(key=>space[key]),legacyRaw=space.legacySnapshot?.raw;
+  const scopes=new Set([...baseline.folders.map(f=>f.id),...baseline.flows.map(f=>f.id)]);
+  const frames=new WeakMap<TextWorkspaceState,Map<string,Map<string,ProgramReferenceAccess>>>();
+  const missing=(id:string):ProgramReferenceAccess=>({documentId:null,lineId:id,kind:'missing',reason:reasons.missing});
+  return (taskId:string,current:TextWorkspaceState=baseline):ProgramReferenceAccess=>{
+    if(!ownerId||space.text!==baseline||space.legacySnapshot?.raw!==legacyRaw||policyKeys.some((key,i)=>space[key]!==policy[i]))return missing(taskId);
+    const doc=[...current.documents,...current.flows].find(d=>d.lines.some(l=>l.id===taskId));if(!doc)return missing(taskId);
+    let known=rights.get(taskId);
+    if(!known){known=referenceExecutionAccess(space,taskId,excluded);rights.set(taskId,known);}
+    if(known.kind!=='missing')return known.documentId===doc.id?known:missing(taskId);
+    // Only a frozen, validated local frame in an existing active personal doc
+    // can introduce a line before its submitted snapshot is acknowledged.
+    if(current===baseline||!Object.isFrozen(current)||!baseline.documents.some(d=>d.id===doc.id)
+      ||!current.documents.some(d=>d===doc)||programDocumentContentLock(space,doc.id)!=='active')return missing(taskId);
+    let documents=frames.get(current);if(!documents){documents=new Map();frames.set(current,documents);}
+    let local=documents.get(doc.id);
+    if(!local){
+      local=new Map();documents.set(doc.id,local);
+      if(M.validate(current))for(const item of M.parseDocument(doc,current).items){
+        if(baselineIds.has(item.id)||!item.isCanonical||!scopes.has(current.itemScopes[item.id])||current.taskScopes[item.id]!==current.itemScopes[item.id]
+          ||current.bindings.some(b=>b.kind==='task'&&(b.lineId===item.id||b.taskId===item.id)))continue;
+        if(item.parentTaskId){const parent=local.get(item.parentTaskId)??referenceExecutionAccess(space,item.parentTaskId,excluded);if(parent.kind!=='active'||parent.documentId!==doc.id)continue;}
+        local.set(item.id,{documentId:doc.id,lineId:item.id,kind:'active',reason:null});
+      }
+    }
+    return local.get(taskId)??missing(taskId);
+  };
 }
 /** Editor writes cannot change a locked canonical document through an active reference.
  * Document name/folder metadata and unlinking a reference in another document are

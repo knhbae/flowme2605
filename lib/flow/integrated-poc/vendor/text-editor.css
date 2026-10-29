@@ -19,7 +19,7 @@
 }
 .tle-root *, .tle-root *::before, .tle-root *::after { box-sizing: border-box; }
 .tle-root[data-mode] { --tle-pad-left: 14px; --tle-pad-right: 110px; }
-.tle-textarea, .tle-presentation {
+.tle-textarea, .tle-presentation, .tle-native-ruler {
   box-sizing: border-box;
   margin: 0;
   padding: var(--tle-pad-top) var(--tle-pad-right) 64px var(--tle-pad-left);
@@ -57,6 +57,20 @@
   border-radius: inherit;
 }
 .tle-textarea::selection { background: rgba(105, 178, 159, .29); }
+.tle-native-ruler { position: absolute; inset: 0; width: 100%; visibility: hidden; pointer-events: none; }
+.tle-native-line { position: relative; min-height: var(--tle-line); }
+/* Native paint owns all edited/selected rows, including incomplete syntax and
+ * composition. The ruler reads RAW layout only; it never admits domain state. */
+.tle-root[data-mode="live"].tle-native-input .tle-textarea,
+.tle-root[data-mode="live"].tle-native-input.tle-composing .tle-textarea {
+  color: #304b43; -webkit-text-fill-color: #304b43;
+  -webkit-mask-image: linear-gradient(to bottom, transparent var(--tle-native-top), #000 var(--tle-native-top), #000 var(--tle-native-bottom), transparent var(--tle-native-bottom));
+  mask-image: linear-gradient(to bottom, transparent var(--tle-native-top), #000 var(--tle-native-top), #000 var(--tle-native-bottom), transparent var(--tle-native-bottom));
+}
+.tle-root[data-mode="live"].tle-native-input .tle-viewport {
+  -webkit-mask-image: linear-gradient(to bottom, #000 var(--tle-native-top), transparent var(--tle-native-top), transparent var(--tle-native-bottom), #000 var(--tle-native-bottom));
+  mask-image: linear-gradient(to bottom, #000 var(--tle-native-top), transparent var(--tle-native-top), transparent var(--tle-native-bottom), #000 var(--tle-native-bottom));
+}
 .tle-textarea:focus-visible { box-shadow: inset 0 0 0 2px rgba(19, 115, 92, .22); }
 .tle-viewport { position: absolute; z-index: 1; inset: 0; overflow: hidden; pointer-events: none; }
 .tle-presentation { position: absolute; inset: 0 auto auto 0; width: 100%; min-height: 100%; pointer-events: none; }
@@ -243,3 +257,8 @@
 /* A wrapped Item and its owned properties share an inert rail outside RAW. */
 .tle-item-membership { display: none; position: absolute; left: -6px; top: 0; bottom: 0; width: 2px; background: #89ad9e; pointer-events: none; user-select: none; -webkit-user-select: none; }
 .tle-root[data-mode="live"]:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase]) .tle-line[data-membership-wrapped="true"] > .tle-item-membership { display: block; }
+
+/* Only eligible native check actions return; row-open and fold stay hidden.
+ * Clip the 44px box to the RAW prefix/first line without changing text metrics. */
+.tle-root[data-mode="live"].tle-edit-check-ready:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-hit { display: block; clip-path: inset(0 var(--tle-check-clip-right, 44px) var(--tle-check-clip-bottom, 44px) 0); }
+.tle-root[data-mode="live"].tle-edit-check-ready:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-hit > .tle-progress-badge { visibility: hidden; }

@@ -41,5 +41,7 @@
 }
 @media(prefers-reduced-motion:reduce){.app *{scroll-behavior:auto!important;transition:none!important}}
 
+@media(max-width:700px){.app[data-writing-keyboard="true"] .header nav{display:none}}
+
 /* White settings surface keeps the cobalt focus used in the work pane. */
 .app .header .settings :is(button,a,summary,input,select,textarea):focus-visible{outline-color:var(--b-primary)}

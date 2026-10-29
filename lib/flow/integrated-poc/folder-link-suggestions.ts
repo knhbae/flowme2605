@@ -1,4 +1,4 @@
-import { programFolderLineTitle } from './folder-link-slot';
+import { readProgramFolderLine, readProgramFolderSlot } from './folder-link-slot';
 import { textWorkspaceModel as M, type TextContext, type TextWorkspaceState } from './text-workspace';
 
 export interface ProgramFolderInputSuggestion {
@@ -49,21 +49,18 @@ function folderCreationLocation(state: TextWorkspaceState, depth: number, contex
 
 /** Display the same slot/parent used by explicit linkProgramFolder creation. */
 export function programFolderCreationLocation(state: TextWorkspaceState, docId: string, lineId: string | null): string | null {
-  const doc = M.getDocument(state, docId);
-  if (!doc) return null;
-  const row = M.rowMeta(state, docId).find(entry => entry.id === lineId);
-  const inPlace = !!row && (/^ *-\s*$/.test(row.text) || programFolderLineTitle(state, docId, lineId) !== null);
-  const index = inPlace ? row!.index : row?.subtreeEndIndex ?? doc.lines.length;
-  const depth = inPlace ? row!.depth : row?.kind === 'scope' ? row.depth + 1 : row?.kind === 'date' ? 0 : row?.depth ?? 0;
+  const slot = readProgramFolderSlot(state, docId, lineId);
+  if (!slot) return null;
+  const { index, depth } = slot;
   return folderCreationLocation(state, depth, M.insertionContext(state, docId, index, depth));
 }
 
 /** A proposal only: an unmatched name may open the existing creation panel. */
 export function programFolderInputSuggestion(state: TextWorkspaceState, docId: string, lineId: string | null): ProgramFolderInputSuggestion | null {
   if (state.bindings.length >= MODEL_MAX_BINDING_COUNT) return null;
-  const title = programFolderLineTitle(state, docId, lineId);
-  if (title === null || lineId === null) return null;
-  const row = M.rowMeta(state, docId).find(entry => entry.id === lineId);
+  const line = readProgramFolderLine(state, docId, lineId);
+  if (line === null || lineId === null) return null;
+  const { title, row } = line;
   // attachScope serializes this spelling; other whitespace remains plain input.
   if (!row || row.text !== `${'  '.repeat(row.depth)}- ${title}`) return null;
   const context = M.insertionContext(state, docId, row.index, row.depth);

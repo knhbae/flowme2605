@@ -1,4 +1,4 @@
-import type { TextEditorRowMeta, TextMoveSelection, TextMoveTarget } from '../text-workspace';
+import type { TextEditorRowMeta, TextMoveSelection, TextMoveTarget, TextTaskSplitIntent } from '../text-workspace';
 
 declare namespace editor {
   interface Selection {
@@ -14,16 +14,23 @@ declare namespace editor {
     kind: 'replace' | 'enter' | 'indent'; start: number; end: number; text: string;
     selectionBefore: { start: number; end: number; direction: Selection['direction'] };
     selectionAfter: { start: number; end: number; direction: Selection['direction'] };
-    outdent?: boolean; startLine?: number; endLine?: number;
+    outdent?: boolean; startLine?: number; endLine?: number; taskSplit?: TextTaskSplitIntent;
   }
   interface Options {
-    value?: string; label?: string; controls?: boolean;
+    value?: string; label?: string; controls?: boolean; taskSplitEnabled?: boolean;
+    /** Display the actual full-writer action; the handler rechecks write authority. */
+    getCheckAction?: (lineIndex: number, meta: TextEditorRowMeta) => 'toggle' | 'progress-open' | 'reference-open';
     getRowMeta?: () => TextEditorRowMeta[] | Record<number, TextEditorRowMeta>;
     isActionDisabled?: () => boolean;
+    explicitAddOnly?:()=>boolean;
+    getAddAnchor?:(lineIndex:number)=>{parentIndex:number;bottomIndex:number}|null;
+    /** Separate direct-check admission; structural actions retain the common hold. */
+    isCheckDisabled?: (lineIndex?: number) => boolean;
     canApplyIndent?: (value: string, details: { outdent: boolean; startLine: number; endLine: number }) => boolean;
     canApplyInput?: (value: string, intent: InputIntent) => boolean;
+    canApplyTaskSplit?: (value: string, intent: InputIntent) => boolean;
     onInputRejected?: (intent: InputIntent) => void;
-    onChange?: (value: string, input?: { inputType: string; inputSplice?: { start: number; end: number; text: string } }) => void;
+    onChange?: (value: string, input?: { inputType: string; inputSplice?: { start: number; end: number; text: string }; taskSplit?: TextTaskSplitIntent }) => void;
     onAction?: (action: Action) => unknown;
   }
   interface Instance {

@@ -1,4 +1,8 @@
-import type { AlphaAccount, AlphaCommand, AlphaError, AlphaReceipt, AlphaRecovery, AlphaRecoveryPort, AlphaRepository, AlphaReferenceContext } from './contract';
+import {createWritingAckIssuer,freezeWritingView,noteWritingPhase,type WritingAckInput} from '../writing-ack';
+import type { AlphaAccount, AlphaCommand, AlphaError, AlphaReceipt, AlphaRecovery, AlphaRecoveryPort, AlphaRepository, AlphaReferenceContext, AlphaSpace } from './contract';
+import {ALPHA_LIMITS} from './contract';
+import type {WritingCompute,WritingIdentity,WritingReply,PreparedWriting} from '../writing-compute';
+import type {ProgramPrivateSpace} from '../contract';
 import { canonicalJson, detached } from './json';
 import { validateAlphaCommand } from './fake-server';
 import { isAlphaWireCommand, isAlphaWireReceipt } from '../alpha-sync/wire';
@@ -37,11 +41,36 @@ export const ALPHA_STATUS_COPY: Record<AlphaClientStatus, string> = {
   'same-location': '같은 위치입니다', cancelled: '취소했습니다', conflict: '다른 기기 변경',
   'session-expired': '로그인 만료', 'checking-result': '결과 확인 중', 'recovery-required': '복구 필요',
 };
-export function createAlphaClient(validate: (value: unknown, ownerId: string, references?: AlphaReferenceContext) => value is AlphaAccount,
-  recovery: AlphaRecoveryPort = createAlphaMemoryRecovery()) {
-  let generation = 0, ownerId: string | null = null, repository: AlphaRepository | null = null;
-  let state: AlphaRecovery | null = null, status: AlphaClientStatus = 'signed-out', busy = false, blocked = false;
+export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace>(validate: (value: unknown, ownerId: string, references?: AlphaReferenceContext) => value is AlphaAccount<Space>,
+  recovery: AlphaRecoveryPort<Space> = createAlphaMemoryRecovery<Space>(),writingCompute?:WritingCompute) {
+  let generation = 0, ownerId: string | null = null, repository: AlphaRepository<Space> | null = null;
+  let state: AlphaRecovery<Space> | null = null, status: AlphaClientStatus = 'signed-out', busy = false, blocked = false;
   let lastReceipt: AlphaReceipt | null = null;
+  let writingIdentity:WritingIdentity|undefined;
+  let confirmedFrame:object=Object.freeze({});
+  const ackIssuer=createWritingAckIssuer();
+  let activeAck:{identity:WritingIdentity;input:WritingAckInput;before:object}|null=null;
+  let viewFrame:object|null=null,viewConfirmed:AlphaAccount<Space>|null=null,viewReferences:AlphaReferenceContext|undefined;
+  const viewSlots=new Map<string,{source:unknown;copy:unknown}>();
+  function viewCopy<T>(key:string,value:T):T{const hit=viewSlots.get(key);if(hit&&hit.source===value)return hit.copy as T;const copy=freezeWritingView(privateCopy(value));viewSlots.set(key,{source:value,copy});return copy;}
+  function presentation(){
+    const started=performance.now();
+    try{if(viewFrame!==confirmedFrame){viewConfirmed=freezeWritingView(privateCopy(state?.confirmed??null));viewReferences=state?.references?freezeWritingView(privateCopy(state.references)):undefined;viewFrame=confirmedFrame;}
+      return {ownerId,status:accountHidden?'session-expired' as const:status,confirmedFrame,
+        state:state?{...state,confirmed:viewConfirmed,references:viewReferences,pending:viewCopy('pending',state.pending),draft:viewCopy('draft',state.draft)}:null,
+        lastReceipt:viewCopy('receipt',lastReceipt),lastError,retryableRejectedDraft:retryableRejectedDraft(),retryableNativeHandoff:retryableNativeHandoff(),retryableRejectedSocialDraft:retryableRejectedSocialDraft()};
+    }finally{noteWritingPhase('ack-confirmed-snapshot',started,writingIdentity);}
+  }
+  const verifiedBytes=new WeakMap<object,string>();
+  const writeProofs=new WeakSet<()=>boolean>();
+  // Closed private graph: external accounts/commands/recovery enter only through
+  // canonical framing and existing validators. No caller gets borrowed state.
+  function privateCopy<T>(value:T):T{
+    if(!writingCompute)return detached(value);
+    const depth=(v:unknown,n:number):void=>{if(n>ALPHA_LIMITS.depth)throw Error('alpha-json-depth');if(v&&typeof v==='object')for(const part of Object.values(v))depth(part,n+1);};depth(value,0);
+    const raw=JSON.stringify(value);if(new TextEncoder().encode(raw).length>ALPHA_LIMITS.bytes)throw Error('alpha-too-large');return JSON.parse(raw) as T;
+  }
+  const stamp=(requestId:string):WritingIdentity=>({...writingIdentity,ownerId:ownerId!,docId:writingIdentity?.docId??'@account',workingGeneration:writingIdentity?.workingGeneration??generation,baseRevision:state?.confirmed?.revision??0,requestId});
   // Progress is not renewed authentication. Keep the existing expired-session
   // presentation until this owner's current generation validates a fresh read.
   // Recovery preimages and pending requests remain intact behind this view.
@@ -116,52 +145,130 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
   };
   const current = (epoch: number) => generation === epoch && !!repository && !!state;
   const persist = () => {
-    try { if (state && recovery.save(detached(state))) return true; } catch { /* Preserve the last durable copy. */ }
-    status = 'recovery-required'; blocked = true; return false;
+    const epoch = generation, previous = state;
+    try { if (previous && recovery.save(privateCopy(previous))) return current(epoch) && state === previous; } catch { /* Preserve the last durable copy. */ }
+    if (current(epoch) && state === previous) { status = 'recovery-required'; blocked = true; }
+    return false;
   };
+  async function persistAsync(){
+    if(!recovery.prepare)return persist();
+    const epoch=generation,previous=state;
+    try{if(previous){const prepared=await recovery.prepare(privateCopy(previous),writingIdentity);
+      if(!current(epoch)||state!==previous)return false;
+      const saved=prepared?.()??false;if(!current(epoch)||state!==previous)return false;if(saved)return true;}}
+    catch{/* Keep the prior durable copy and the live obligation. */}
+    if(current(epoch)&&state===previous){status='recovery-required';blocked=true;}return false;
+  }
   const fail = (reason: AlphaError) => {
     if (reason === 'unauthenticated') accountHidden = true;
     lastError = reason;
     status = reason === 'unauthenticated' ? 'session-expired' : reason === 'revision-conflict' || reason === 'undo-conflict' ? 'conflict'
       : reason === 'no-change' ? 'same-location' : 'recovery-required';
   };
-  async function readCurrent(epoch: number, port: AlphaRepository, minimum = 0): Promise<boolean> {
+  type ReadCandidate = { account: AlphaAccount<Space>; references?: AlphaReferenceContext };
+  async function readCandidate(epoch: number, port: AlphaRepository<Space>, minimum = 0): Promise<ReadCandidate | null> {
     try {
       const result = await port.read();
-      if (!current(epoch)) return false;
-      if (!result.ok) { fail(result.reason); return false; }
-      const references = port.references?.() ?? undefined;
-      if (!validate(result.value, ownerId!, references) || result.value.revision < Math.max(minimum, state!.confirmed?.revision ?? 0)
-        || (result.value.revision === state!.confirmed?.revision && canonicalJson(result.value) !== canonicalJson(state!.confirmed))
+      const decodeStart=performance.now();
+      if (!current(epoch)) return null;
+      if (!result.ok) { fail(result.reason); return null; }
+      let references = port.references?.() ?? undefined;
+      let account=result.value;
+      let accountBytes:string|undefined;
+      if(writingCompute){
+        // Strict framing rejects getters/symbols/non-JSON before structured clone.
+        accountBytes=canonicalJson(account);const referencesJson=canonicalJson(references??{actorIds:[ownerId!],public:{flows:[],versions:[],posts:[],replies:[],reactions:[],proposals:[]}});
+        noteWritingPhase('ack-account-frame',decodeStart,writingIdentity);
+        const reply=await writingCompute.run(stamp(crypto.randomUUID()),{kind:'account',accountJson:accountBytes,referencesJson});
+        if(!current(epoch)||repository!==port)return null;
+        if(!reply.ok||!reply.account){status=state!.pending?'checking-result':'recovery-required';return null;}
+        if(references&&canonicalJson(port.references?.())!==referencesJson){status=state!.pending?'checking-result':'recovery-required';return null;}
+        references=references?reply.references:undefined;
+        account=reply.account as AlphaAccount<Space>;verifiedBytes.set(account,accountBytes);
+      }
+      if ((!writingCompute&&!validate(account, ownerId!, references)) || account.revision < Math.max(minimum, state!.confirmed?.revision ?? 0)
+        || (account.revision === state!.confirmed?.revision && (accountBytes??canonicalJson(account)) !== (state!.confirmed&&verifiedBytes.get(state!.confirmed)||canonicalJson(state!.confirmed)))
         || (state!.references?.social && (!references?.social || references.social.revision < state!.references.social.revision
           || references.social.revision === state!.references.social.revision && canonicalJson(references.public) !== canonicalJson(state!.references.public)))) {
-        status = 'recovery-required'; return false;
+        if (current(epoch)) status = state!.pending ? 'checking-result' : 'recovery-required'; return null;
       }
-      state!.confirmed = detached(result.value);
-      if (references) state!.references = detached(references); else delete state!.references;
-      if (!persist()) return false;
-      accountHidden = false;
-      return true;
-    } catch { if (current(epoch)) status = state!.pending ? 'checking-result' : 'recovery-required'; return false; }
+      if (!current(epoch) || repository !== port) return null;
+      if(!writingCompute)noteWritingPhase('ack-account-frame',decodeStart,writingIdentity);
+      return { account: writingCompute?account:detached(account), ...(references ? { references: detached(references) } : {}) };
+    } catch { if (current(epoch)) status = state!.pending ? 'checking-result' : 'recovery-required'; return null; }
   }
-  async function acceptReceipt(receipt: AlphaReceipt, command: AlphaCommand, epoch: number, port: AlphaRepository): Promise<boolean> {
+  async function commitCandidate(candidate: ReadCandidate, epoch: number, port: AlphaRepository<Space>, previous: AlphaRecovery<Space>, clearPending = false): Promise<boolean> {
+    if (!current(epoch) || repository !== port || state !== previous) return false;
+    const next = { ...privateCopy(previous), confirmed: candidate.account };
+    if (candidate.references) next.references = candidate.references; else delete next.references;
+    if (clearPending) { next.pending = null; next.draft = null; }
+    let saved = false;
+    try {
+      if(recovery.prepare){const started=performance.now();const prepared=await recovery.prepare(privateCopy(next),writingIdentity);noteWritingPhase('ack-recovery-prepare-await',started,writingIdentity);if(!current(epoch)||repository!==port||state!==previous)return false;const commitStart=performance.now();try{saved=prepared?.()??false;}finally{noteWritingPhase('ack-recovery-commit',commitStart,writingIdentity);}}
+      else saved = recovery.save(privateCopy(next));
+    } catch { /* Retain the original obligation. */ }
+    // A synchronous recovery port may re-enter bindSession. Never overwrite its
+    // new owner/state or publish an old success, including on persistence failure.
+    if (!current(epoch) || repository !== port || state !== previous) return false;
+    if (!saved) { status = 'recovery-required'; blocked = true; return false; }
+    state = next; confirmedFrame=Object.freeze({}); accountHidden = false; return true;
+  }
+  async function readCurrent(epoch: number, port: AlphaRepository<Space>, minimum = 0): Promise<boolean> {
+    const previous = state!;
+    const candidate = await readCandidate(epoch, port, minimum);
+    return !!candidate && await commitCandidate(candidate, epoch, port, previous);
+  }
+  async function acceptReceipt(receipt: AlphaReceipt, command: AlphaCommand, epoch: number, port: AlphaRepository<Space>): Promise<boolean> {
     if (!current(epoch)) return false;
+    const previous = state!, original = detached(command), before = privateCopy(previous.confirmed);
+    const confirmedIdentity=previous.confirmed,referencesIdentity=previous.references,pendingIdentity=previous.pending,draftIdentity=previous.draft;
+    const commandBytes = canonicalJson(original), referencesBytes = canonicalJson(previous.references ?? null);
+    if (!previous.pending || canonicalJson(previous.pending) !== commandBytes
+      || previous.draft && canonicalJson(previous.draft) !== commandBytes
+      || original.kind === 'change-private' && (!before || before.revision !== original.expectedRevision)) {
+      status = 'checking-result'; return false;
+    }
     if (receipt.requestId !== command.requestId || receipt.kind !== command.kind || !Number.isSafeInteger(receipt.revision)
       || receipt.revision !== command.expectedRevision + (receipt.changed ? 1 : 0) || typeof receipt.changed !== 'boolean'
       || ((command.kind === 'social' || command.kind === 'undo-social') && (!Number.isSafeInteger(receipt.publicRevision)
         || receipt.publicRevision! < command.expectedPublicRevision || receipt.publicRevision! > command.expectedPublicRevision + 1))) {
       status = 'recovery-required'; return false;
     }
-    if (!await readCurrent(epoch, port, receipt.revision)) return false;
-    if (!current(epoch)) return false;
-    if (receipt.publicRevision !== undefined && (state!.references?.social?.revision ?? -1) < receipt.publicRevision) { status = 'recovery-required'; return false; }
-    state!.pending = null; state!.draft = null;
-    if (!persist()) return false;
+    const ownAck=activeAck;
+    const candidate = await readCandidate(epoch, port, receipt.revision);
+    if (!candidate || !current(epoch) || state !== previous || repository !== port) return false;
+    if (writingCompute ? previous.pending!==pendingIdentity||previous.draft!==draftIdentity||previous.confirmed!==confirmedIdentity||previous.references!==referencesIdentity
+      : canonicalJson(previous.pending) !== commandBytes || canonicalJson(previous.confirmed) !== canonicalJson(before)
+      || canonicalJson(previous.references ?? null) !== referencesBytes) { status = 'checking-result'; return false; }
+    if (receipt.publicRevision !== undefined && (candidate.references?.social?.revision ?? -1) < receipt.publicRevision) { status = 'recovery-required'; return false; }
+    if(original.kind==='change-private'&&writingCompute){
+      const reply=await writingCompute.run(stamp(crypto.randomUUID()),{kind:'receipt',before:before as unknown as AlphaAccount,command:original,candidate:candidate.account as unknown as AlphaAccount,receipt});
+      if(!current(epoch)||state!==previous||repository!==port)return false;
+      if(!reply.ok||previous.pending!==pendingIdentity||previous.draft!==draftIdentity||previous.confirmed!==confirmedIdentity||previous.references!==referencesIdentity){status='checking-result';return false;}
+    }else if (original.kind === 'change-private') {
+      // The submitted preimage is authoritative. A later valid shape or a newer
+      // revision cannot prove this request's full private result.
+      const expected = detached(before!);
+      for (const change of original.changes) {
+        if (change.present) Reflect.set(expected.space, change.field, detached(change.value));
+        else Reflect.deleteProperty(expected.space, change.field);
+      }
+      const changed = canonicalJson(expected.space) !== canonicalJson(before!.space);
+      expected.revision = before!.revision + (changed ? 1 : 0);
+      if (receipt.changed !== changed || receipt.revision !== expected.revision
+        || canonicalJson(candidate.account) !== canonicalJson(expected)) { status = 'checking-result'; return false; }
+    }
+    const unchangedReferences=!!ownAck&&referencesBytes===canonicalJson(candidate.references??null);
+    if (!await commitCandidate(candidate, epoch, port, previous, true)) return false;
     lastReceipt = detached(receipt);
     lastError = null;
-    status = receipt.changed ? 'saved' : 'same-location'; return true;
+    status = receipt.changed ? 'saved' : 'same-location';
+    if(ownAck&&activeAck===ownAck&&unchangedReferences&&receipt.changed){
+      const settled=state;ackIssuer.issue(ownAck.identity,ownAck.input,ownAck.before,confirmedFrame,()=>current(epoch)&&repository===port&&state===settled&&!blocked&&!accountHidden&&status==='saved'&&!state?.pending&&!state?.draft);
+    }
+    return true;
   }
-  async function send(command: AlphaCommand, epoch: number, port: AlphaRepository, replay = false): Promise<boolean> {
+  async function send(command: AlphaCommand, epoch: number, port: AlphaRepository<Space>, replay = false): Promise<boolean> {
     try {
       const nativeBaseline = !replay && nativeHandoff(command) && state!.confirmed
         && command.expectedRevision === state!.confirmed.revision ? { requestId: command.requestId, body: retryBody(command),
@@ -192,10 +299,11 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
     } catch { if (current(epoch)) status = 'checking-result'; return false; }
   }
   return {
-    bindSession(nextOwner: string | null, port: AlphaRepository | null) {
+    bindSession(nextOwner: string | null, port: AlphaRepository<Space> | null) {
       // A same-owner token refresh alone does not validate cached account bytes.
       accountHidden = accountHidden && nextOwner !== null && port !== null && nextOwner === ownerId;
-      generation++; ownerId = nextOwner; repository = port; state = null; busy = false; blocked = false; lastReceipt = null;
+      ackIssuer.clear();activeAck=null;confirmedFrame=Object.freeze({});viewFrame=null;viewSlots.clear();
+      generation++; ownerId = nextOwner; repository = port; state = null; busy = false; blocked = false; lastReceipt = null;writingIdentity=undefined;
       lastError = null; rejectedDraftRequestId = null; rejectedNativeHandoff = null; rejectedSocialDraft = null;
       status = 'signed-out';
       if (nextOwner === null || port === null) { repository = null; ownerId = null; return; }
@@ -208,11 +316,19 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
         status = state.pending ? 'checking-result' : state.draft ? 'recovery-required' : 'ready';
       } catch { status = 'recovery-required'; blocked = true; }
     },
-    snapshot: () => ({ ownerId, status: accountHidden ? 'session-expired' as const : status, state: detached(state), lastReceipt: detached(lastReceipt), lastError,
+    snapshot: () => ({ ownerId, status: accountHidden ? 'session-expired' as const : status, state: privateCopy(state), lastReceipt: privateCopy(lastReceipt), lastError,
       retryableRejectedDraft: retryableRejectedDraft(), retryableNativeHandoff: retryableNativeHandoff(), retryableRejectedSocialDraft: retryableRejectedSocialDraft() }),
+    presentation,
+    ownWritingAck:()=>ackIssuer.read(),
+    writeCheckpoint(){const epoch=generation,own=state,confirmed=own?.confirmed,refs=own?.references,draft=own?.draft,port=repository,storageCheck=ownerId?recovery.checkpoint?.(ownerId):undefined;
+      const proof=()=>current(epoch)&&repository===port&&state===own&&state?.confirmed===confirmed&&state?.references===refs&&state?.draft===draft&&!state?.pending&&!busy&&!blocked&&!accountHidden&&(storageCheck?.()??true);writeProofs.add(proof);return proof;},
     matchesRejectedSocialDraft,
     async refresh() {
+      ackIssuer.clear();activeAck=null;
       if (!repository || !state || busy || blocked) return false;
+      // Keep confirmed + references as the original pending request's preimage.
+      // Only resolvePending's exact receipt/readback path can release it.
+      if (state.pending) { status = 'checking-result'; return false; }
       const rejected = retryableRejectedDraft() ? { requestId: rejectedDraftRequestId, error: lastError,
         confirmed: canonicalJson(state.confirmed), references: canonicalJson(state.references ?? null) } : null;
       const nativeRejected = retryableNativeHandoff() ? rejectedNativeHandoff : null;
@@ -238,7 +354,7 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
         return ok;
       } finally { if (current(epoch)) busy = false; }
     },
-    async execute(command: AlphaCommand, options: { cancelled?: boolean; retryRejectedDraft?: boolean; retryNativeHandoff?: boolean; retryRejectedSocialDraft?: boolean } = {}) {
+    async execute(command: AlphaCommand, options: { cancelled?: boolean; retryRejectedDraft?: boolean; retryNativeHandoff?: boolean; retryRejectedSocialDraft?: boolean;writingIdentity?:WritingIdentity;preparedReply?:WritingReply;writeCheckpoint?:()=>boolean;writingAckInput?:WritingAckInput } = {}) {
       if (!repository || !state || busy || blocked || state.pending) return false;
       if (options.retryRejectedSocialDraft && (options.retryRejectedDraft || options.retryNativeHandoff || !canRetryRejectedSocialDraft(command))) return false;
       if (options.retryNativeHandoff && (options.retryRejectedDraft || options.retryRejectedSocialDraft || !canRetryNativeHandoff(command))) return false;
@@ -249,24 +365,41 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
       lastError = null; rejectedDraftRequestId = null; rejectedNativeHandoff = null; rejectedSocialDraft = null;
       if (options.cancelled) { status = 'cancelled'; return false; }
       if (!validateAlphaCommand(command) && !isAlphaWireCommand(command)) { status = 'recovery-required'; return false; }
-      if (command.kind === 'change-private' && (command.changes.length === 0 || state.confirmed && command.expectedRevision === state.confirmed.revision
+      let prepared:PreparedWriting|null=null;
+      if(writingCompute&&recovery.savePrepared&&options.preparedReply&&options.writingIdentity&&options.writeCheckpoint&&writeProofs.has(options.writeCheckpoint)
+        &&options.writeCheckpoint()&&state.references&&options.preparedReply.command===command){
+        prepared=writingCompute.consumeSave(options.preparedReply,options.writingIdentity);writeProofs.delete(options.writeCheckpoint);
+      }
+      if(options.preparedReply&&!prepared){status='recovery-required';return false;}
+      if (command.kind === 'change-private' && (command.changes.length === 0 || !prepared&&state.confirmed && command.expectedRevision === state.confirmed.revision
         && command.changes.every(change => Object.hasOwn(state!.confirmed!.space, change.field) === change.present
           && (!change.present || canonicalJson(state!.confirmed!.space[change.field]) === canonicalJson(change.value))))) {
         if (options.retryRejectedDraft) {
-          const previous = state; state = { ...state, draft: null };
-          if (!persist()) { state = previous; return false; }
+          const epoch = generation, previous = state; state = { ...state, draft: null };
+          if (!persist()) { if (current(epoch)) state = previous; return false; }
         }
         status = 'same-location'; return false;
       }
       const epoch = generation, port = repository; busy = true;
+      ackIssuer.clear();activeAck=null;
+      writingIdentity=options.writingIdentity;
+      if(prepared?.ackEligible&&options.writingAckInput&&writingIdentity)activeAck={identity:{...writingIdentity},input:options.writingAckInput,before:confirmedFrame};
       try {
         const previous = options.retryRejectedDraft || options.retryNativeHandoff || options.retryRejectedSocialDraft ? detached(state) : null;
-        state.pending = detached(command); state.draft = detached(command);
-        if (!persist()) { if (previous) state = previous; return false; }
+        if(prepared){
+          state={...prepared.recoveryValue} as AlphaRecovery<Space>;
+          const saved=recovery.savePrepared!(prepared);
+          if(!current(epoch)||repository!==port)return false;
+          if(!saved){status='recovery-required';blocked=true;if(previous)state=previous;return false;}
+        }else{
+          state.pending = detached(command); state.draft = detached(command);
+          if (!await persistAsync()) { if (previous && current(epoch)) state = previous; return false; }
+        }
         status = 'saving'; return await send(command, epoch, port);
-      } finally { if (current(epoch)) busy = false; }
+      } finally { if (current(epoch)) {busy = false;activeAck=null;} }
     },
     async resolvePending(retrySameRequest = false) {
+      ackIssuer.clear();activeAck=null;
       if (!repository || !state?.pending || busy || blocked) return false;
       lastError = null; rejectedDraftRequestId = null; rejectedNativeHandoff = null; rejectedSocialDraft = null;
       const epoch = generation, port = repository, command = detached(state.pending); busy = true;
