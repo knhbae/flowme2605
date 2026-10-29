@@ -6,7 +6,7 @@ import React, { useEffect, useId, useRef, useState } from 'react';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { readChildDrafts, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
-import { createWritingBarHold, taskMarkerLock, toggleTaskLine, writingBarLine, type WritingBarAction, type WritingBarLine } from '@/lib/flow/integrated-poc/writing-bar';
+import { createWritingBarHold, folderBarLine, heldTargetVerdict, taskMarkerLock, toggleTaskLine, writingBarLine, writingBarTarget, type WritingBarAction, type WritingBarLine, type WritingBarTarget } from '@/lib/flow/integrated-poc/writing-bar';
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
 import { planProgramDateBlockOrder, type DateBlockOrderPlan, type DateOrderSelection } from '@/lib/flow/integrated-poc/date-block-order';
@@ -150,6 +150,7 @@ export function trapProgramDialogTab(
   event.preventDefault(); event.stopPropagation(); destination.focus(); return true;
 }
 
+const FOLDER_STRUCTURE_LOCK = '분류 보기에서는 저장된 줄의 종류와 들여쓰기를 바꿀 수 없습니다. ‘전체 문서 보기’에서 바꿔 주세요.';
 const REGION_OUTSIDE = '이 자리는 지금 보는 분류 영역 밖이라 여기서 넣지 않았습니다. 원문은 그대로입니다. 전체 문서에서 추가해 주세요.';
 
 function today() {
@@ -302,20 +303,26 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // Writing model A bar (S3): ☐ ← → ↵ ＋. Its buttons never dim for composition or a save;
   // a press then is held, shown pressed, and runs once when input settles.
   const [barLine, setBarLine] = useState<WritingBarLine>({ canOutdent: false, canIndent: false, isTask: false, markerLock: null });
-  const [barHold] = useState(createWritingBarHold), [heldBar, setHeldBar] = useState<WritingBarAction | null>(null);
+  const [barHold] = useState(() => createWritingBarHold<WritingBarTarget>()), [heldBar, setHeldBar] = useState<WritingBarAction | null>(null);
   const barRef = useRef<HTMLDivElement>(null), barLockId = useId();
   useEffect(() => { releaseHeldBar(); }, [composing, draft.saving, inputLocked, props.readOnly, regionPending]);
-  // Other typing or leaving the editor cancels a held press; the composition's own input does not.
+  // Other typing or leaving the editor cancels a held press; the composition's own input does not,
+  // including a final insertText some keyboards send right after compositionend.
   useEffect(() => {
     const root = hostRef.current?.closest('section');
     if (!root) return;
+    let composedJustNow = false, settle: ReturnType<typeof setTimeout> | null = null;
     const cancel = () => { if (barHold.held()) { barHold.cancel(); setHeldBar(null); } };
     const typed = (event: Event) => {
-      if (!composingRef.current && !['insertCompositionText', 'insertFromComposition', 'deleteByComposition', 'deleteCompositionText'].includes((event as InputEvent).inputType)) cancel();
+      const type = (event as InputEvent).inputType;
+      if (composingRef.current || ['insertCompositionText', 'insertFromComposition', 'deleteByComposition', 'deleteCompositionText'].includes(type)
+        || composedJustNow && type === 'insertText') return;
+      cancel();
     };
+    const composed = () => { composedJustNow = true; if (settle) clearTimeout(settle); settle = setTimeout(() => { composedJustNow = false; settle = null; }, 0); };
     const left = (event: FocusEvent) => { if (!(event.relatedTarget instanceof Node && root.contains(event.relatedTarget))) cancel(); };
-    root.addEventListener('beforeinput', typed, true); root.addEventListener('focusout', left);
-    return () => { root.removeEventListener('beforeinput', typed, true); root.removeEventListener('focusout', left); };
+    root.addEventListener('beforeinput', typed, true); root.addEventListener('compositionend', composed, true); root.addEventListener('focusout', left);
+    return () => { if (settle) clearTimeout(settle); root.removeEventListener('beforeinput', typed, true); root.removeEventListener('compositionend', composed, true); root.removeEventListener('focusout', left); };
   }, [barHold]);
 
   const currentState = () => draftRef.current?.getState().working ?? propsRef.current.workspace;
@@ -376,13 +383,16 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       const working = draftRef.current?.getState().working ?? state;
       meta = (documentInputRef.current?.paint(working) ?? textEditorRows(working, docId))[raw.slice(0, caret).split('\n').length - 1];
     }
-    return writingBarLine(raw, caret, isTask => isTask ? taskMarkerLock(meta, state, docId) : null);
+    const line = writingBarLine(raw, caret, isTask => isTask ? taskMarkerLock(meta, state, docId) : null);
+    // A folder region keeps saved lines' kind and depth; offer only what its own check accepts.
+    return propsRef.current.folderId
+      ? folderBarLine(line, raw, caret, next => !!regionPortRef.current?.canApplyActive?.(next), FOLDER_STRUCTURE_LOCK) : line;
   }
   function syncBarLine() {
     if (!propsRef.current.authoringMode) return;
     const next = readBarLine();
     if (next) setBarLine(previous => previous.canOutdent === next.canOutdent && previous.canIndent === next.canIndent
-      && previous.isTask === next.isTask && previous.markerLock === next.markerLock ? previous : next);
+      && previous.isTask === next.isTask && previous.markerLock === next.markerLock && previous.structureLock === next.structureLock ? previous : next);
   }
   function runBar(action: WritingBarAction) {
     const target = barEditor();
@@ -391,7 +401,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (action === 'enter') target.instance.enter(true);
     else if (action === 'task') {
       const line = readBarLine();
-      if (line?.isTask && line.markerLock) return;
+      if (line?.markerLock) return;
       const plan = toggleTaskLine(target.area.value, target.area.selectionStart);
       target.instance.replaceRange(plan.start, plan.end, plan.text, { selectionAfter: { start: plan.caret, end: plan.caret } });
     } else target.instance.indent(action === 'outdent');
@@ -399,14 +409,31 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   function pressBar(action: WritingBarAction) {
     if (inputLockedRef.current || propsRef.current.readOnly) return;
-    const run = barHold.press(action, composingRef.current || !!draftRef.current?.getState().saving);
+    const busy = composingRef.current || !!draftRef.current?.getState().saving;
+    // A held press remembers where it was aimed; a folder region may be read-only while it saves.
+    const surface = busy ? propsRef.current.folderId ? regionPortRef.current?.activeEditor?.(true) ?? null : barEditor() : null;
+    if (busy && !surface) return;
+    const run = barHold.press(action, busy, surface ? writingBarTarget(surface.area, surface.area.value, surface.area.selectionStart) : null);
     setHeldBar(barHold.held());
     if (run) runBar(run);
   }
-  function releaseHeldBar() {
+  /** Run a held press once input settles, only where it was aimed. The press is taken only when its
+   *  target is ready, so a region still read-only right after its save keeps it (up to about a second). */
+  function releaseHeldBar(attempt = 0) {
+    if (!barHold.held()) return;
     if (inputLockedRef.current || propsRef.current.readOnly) { barHold.cancel(); setHeldBar(null); return; }
-    const run = barHold.release(composingRef.current || !!draftRef.current?.getState().saving);
-    if (run) { setHeldBar(null); runBar(run); }
+    if (composingRef.current || draftRef.current?.getState().saving) return;
+    const target = barHold.target(), aimed = target?.surface as HTMLTextAreaElement | undefined, now = barEditor(), active = document.activeElement;
+    const verdict = heldTargetVerdict(target, { surface: now?.area ?? null, value: now?.area.value ?? '', caret: now?.area.selectionStart ?? 0,
+      editable: !!now && !now.area.readOnly, connected: !!aimed?.isConnected,
+      focusHere: !!active && (active === aimed || !!barRef.current?.contains(active) || active instanceof HTMLElement && !!active.closest('[data-bar-action]')) });
+    if (verdict === 'wait') {
+      if (attempt < 60) requestAnimationFrame(() => releaseHeldBar(attempt + 1)); else { barHold.cancel(); setHeldBar(null); }
+      return;
+    }
+    const run = barHold.release(false);
+    setHeldBar(null);
+    if (verdict === 'run' && run) runBar(run);
   }
   function closePanel() {
     if(panelComposingRef.current||composingRef.current)return;
@@ -1031,6 +1058,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
 
   // Keep the native install/sync lifecycle intact; observe layout after it mounts.
   useEffect(() => {
+    /** Folder view: cap the focused region so its last line and the bar under it stay above the keyboard. */
+    function fitFolderRegion(root: Element | null, barShown: boolean, bottom: number) {
+      const focused = root?.querySelector('[data-folder-region] textarea:focus')?.closest('[data-folder-region]');
+      for (const region of Array.from(root?.querySelectorAll<HTMLElement>('[data-folder-region] [data-readonly]') ?? [])) {
+        const height = barShown && focused?.contains(region) ? programEditorVisibleHeight(region.getBoundingClientRect().top, bottom) : null;
+        const value = height === null ? '' : `${Math.max(132, height)}px`;
+        if (region.style.maxHeight !== value) region.style.maxHeight = value;
+      }
+    }
     const host = hostRef.current, shell = host?.closest('[data-alpha-frame], [data-testid="integrated-program-app"]') ?? host?.closest('main');
     if (!host || !shell) return;
     const view = host.ownerDocument.defaultView;
@@ -1039,13 +1075,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     let frame = 0;
     const update = () => {
       frame = 0;
-      if (!host.getClientRects().length) return;
       let bottom = Math.min(view.innerHeight, visual ? visual.offsetTop + visual.height : view.innerHeight);
       const nav = shell.querySelector<HTMLElement>('nav[aria-label="기본 이동"], nav[aria-label="주요 메뉴"]');
       if (nav?.getClientRects().length && view.getComputedStyle(nav).position === 'fixed') bottom = Math.min(bottom, nav.getBoundingClientRect().top);
-      // The mobile writing bar sits right under the body, so the body ends above it.
-      const bar = barRef.current;
-      if (bar?.getClientRects().length) bottom -= bar.getBoundingClientRect().height + 4;
+      // The mobile writing bar sits right under the body (or the folder region being edited), so that ends above it.
+      const bar = barRef.current, barShown = !!bar?.getClientRects().length;
+      if (barShown) bottom -= bar!.getBoundingClientRect().height + 4;
+      if (!host.getClientRects().length) { fitFolderRegion(host.closest('section'), barShown, bottom); return; }
       const height = programEditorVisibleHeight(host.getBoundingClientRect().top, bottom);
       if (height !== null && host.style.getPropertyValue('--program-editor-visible-height') !== `${height}px`) {
         host.style.setProperty('--program-editor-visible-height', `${height}px`);
@@ -1385,16 +1421,19 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       onPointerDown={event => { event.preventDefault(); }} onClick={() => { pressBar(action); }}>{icon}</button>;
   }
   function barButtons(place: 'toolbar' | 'bar') {
-    const className = place === 'toolbar' ? styles.toolbarBarButton : undefined, locked = barLine.isTask && barLine.markerLock;
+    const className = place === 'toolbar' ? styles.toolbarBarButton : undefined, locked = barLine.markerLock, moved = barLine.structureLock;
     return <>
       {barButton('task', '☐', barLine.isTask ? '일반 줄로 바꾸기' : '할 일로 바꾸기', '- [ ]', !!locked, className, locked ? barLockId + place : undefined)}
       {locked && <span id={barLockId + place} hidden>{barLine.markerLock}</span>}
-      {barButton('outdent', '←', '내어쓰기', 'Shift+Tab', !barLine.canOutdent, className)}
-      {barButton('indent', '→', '들여쓰기', 'Tab', !barLine.canIndent, className)}
+      {moved && <span id={barLockId + place + 'move'} hidden>{moved}</span>}
+      {barButton('outdent', '←', '내어쓰기', 'Shift+Tab', !barLine.canOutdent, className, moved ? barLockId + place + 'move' : undefined)}
+      {barButton('indent', '→', '들여쓰기', 'Tab', !barLine.canIndent, className, moved ? barLockId + place + 'move' : undefined)}
       {barButton('enter', '↵', '할 일 아래 메모 줄', 'Shift+Enter', false, className)}
       {place === 'bar' && barButton('menu', '＋', '추가 메뉴', '/', false)}
     </>;
   }
+  const writingBar = <div ref={barRef} className={styles.writingBar} role="toolbar" aria-label="쓰기 도구" data-editor-tools>
+      {barButtons('bar')}<span className={styles.barStatus} aria-hidden="true" data-warn={draft.error ? 'true' : undefined}>{barStatus}</span></div>;
   return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onKeyDownCapture={event => {
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
@@ -1446,11 +1485,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     {folderView && <ProgramFolderRegionEditor key={`${props.docId}:${props.folderId}`} styles={regionStyles} view={folderView} readOnly={!!props.readOnly} locked={inputLocked || draft.saving} mode={mode} listEnterV2={!!props.authoringMode}
       workspace={currentState} onAccept={acceptRegion} onPersist={saveFullDraft} onDownload={downloadDraft}
       onContinueWholeDocument={continueWholeDocument} onInsertMenu={props.authoringMode ? () => { void openRegionInsertMenu(); } : undefined}
+      afterActive={props.authoringMode ? writingBar : undefined}
       onPosition={(start, end, lineId) => { regionPositionRef.current = { start, end }; propsRef.current.onPosition?.({ start, end, scrollTop: 0 }, lineId); syncBarLine(); }}
       onRegister={port => { regionPortRef.current = port; }}
       onPending={(pending, composing) => { regionPendingRef.current = pending; composingRef.current = composing; setRegionPending(pending); propsRef.current.onDirtyChange?.(pending || !!draftRef.current?.getState().dirty); if (!composing) queueMicrotask(releaseHeldBar); }} />}
-    {props.authoringMode && <div ref={barRef} className={styles.writingBar} role="toolbar" aria-label="쓰기 도구" data-editor-tools>
-      {barButtons('bar')}<span className={styles.barStatus} aria-hidden="true" data-warn={draft.error ? 'true' : undefined}>{barStatus}</span></div>}
+    {props.authoringMode && !folderView && writingBar}
     {panel && <dialog ref={dialogRef} className={styles.dialog} aria-label={title} onCompositionStartCapture={()=>{panelComposingRef.current=true;}} onCompositionEndCapture={()=>{panelComposingRef.current=false;}} onKeyDown={event => { trapProgramDialogTab(event.currentTarget, event); }} onCancel={event => { event.preventDefault(); closePanel(); cancelMove(); }}>
       <header><h3>{title}</h3><button type="button" aria-label="닫기" onClick={closePanel}>×</button></header>
       <div className={styles.dialogBody}>

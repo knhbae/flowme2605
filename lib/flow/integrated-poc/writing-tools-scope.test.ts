@@ -131,9 +131,12 @@ test('the writing bar keeps its contract: order, never dimmed by composition or 
   assert(source.includes('const barOff = inputLocked || !!props.readOnly;'));
   const button = between('function barButton(', '\n  }');
   assert(button.includes('disabled={barOff || off}') && button.includes('onPointerDown={event => { event.preventDefault(); }}'));
-  assert(source.includes('barHold.press(action, composingRef.current || !!draftRef.current?.getState().saving)'));
+  assert(source.includes('const busy = composingRef.current || !!draftRef.current?.getState().saving;')
+    && source.includes('barHold.press(action, busy, surface ? writingBarTarget(surface.area, surface.area.value, surface.area.selectionStart) : null)'));
   assert(between('function runBar(', '\n  }').includes('target.instance.enter(true)'));
-  assert(/\{props\.authoringMode && <div ref=\{barRef\} className=\{styles\.writingBar\} role="toolbar" aria-label="쓰기 도구" data-editor-tools>/.test(source));
+  assert(/const writingBar = <div ref=\{barRef\} className=\{styles\.writingBar\} role="toolbar" aria-label="쓰기 도구" data-editor-tools>/.test(source));
+  // Under the body, or right after the folder region being edited.
+  assert(source.includes('{props.authoringMode && !folderView && writingBar}') && source.includes('afterActive={props.authoringMode ? writingBar : undefined}'));
   assert(source.includes("{props.authoringMode && barButtons('toolbar')}"));
   const css = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.module.css', import.meta.url), 'utf8');
   assert(css.includes('.writingBar { display: none; }'));
