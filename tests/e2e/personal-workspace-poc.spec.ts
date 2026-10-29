@@ -1010,6 +1010,8 @@ test.describe('FlowMe 개인공간 v4.1 기능형 PoC', () => {
 
   test('844x390 month exposes 28 empty date sections, date-specific Quick add, recovery, and panel-internal scroll', async ({ page }) => {
     test.setTimeout(120_000);
+    // Fixture items land on today and tomorrow; a 30-day month keeps exactly 28 dates empty.
+    await page.clock.setFixedTime(new Date('2026-09-02T03:00:00Z'));
     const calls: StorageMutation[] = [];
     await installFixturesAndAudit(page, calls);
     await page.setViewportSize({ width: 844, height: 390 });

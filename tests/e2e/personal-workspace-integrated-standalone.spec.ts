@@ -1496,6 +1496,8 @@ test('844x390 month expands exactly 28 empty dates and every date can create a d
     sentinelBytes: operatingBytes,
     seedFlag: 'flowme-integrated-standalone-a9-month-seeded',
   });
+  // The month view opens on the current month; the September fixture dates need a September clock.
+  await page.clock.setFixedTime(new Date('2026-09-02T03:00:00Z'));
   await page.setViewportSize({ width: 844, height: 390 });
   await page.goto(HTML_URL);
 
