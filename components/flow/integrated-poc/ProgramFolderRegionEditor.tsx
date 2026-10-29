@@ -24,8 +24,11 @@ export interface ProgramFolderRegionPort {
   discard(): void;
   undo?(): boolean;
   takeSnapshot(): ProgramFolderRegionSnapshot | null;
-  /** The editable region the writing bar acts on: the pending one, else the last focused one. */
-  activeEditor?(): { instance: ReturnType<typeof nativeEditor.create>; area: HTMLTextAreaElement } | null;
+  /** The editable region the writing bar acts on: the pending one, else the last focused one.
+   *  `allowReadOnly` also returns it while it is read-only during a save (to aim a held press). */
+  activeEditor?(allowReadOnly?: boolean): { instance: ReturnType<typeof nativeEditor.create>; area: HTMLTextAreaElement } | null;
+  /** Whether the active region's own check would accept this region text (the bar's dry run). */
+  canApplyActive?(raw: string): boolean;
   /** Put the caret in a saved line of an editable region (at `column`, else the line end) and show it. */
   revealLine?(lineId: string, column?: number): boolean;
 }
@@ -199,6 +202,8 @@ export function ProgramFolderRegionEditor(props: {
   onContinueWholeDocument?(): void;
   /** Open the body editor's insert menu for the caret's line (＋ is in the toolbar and the writing bar). */
   onInsertMenu?(): void;
+  /** Drawn right after the region being edited (the writing bar), so it stays next to that text. */
+  afterActive?: React.ReactNode;
   styles: Record<string, string>;
 }) {
   const styles = props.styles;
@@ -207,6 +212,7 @@ export function ProgramFolderRegionEditor(props: {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const root = useRef<HTMLDivElement>(null);
   const surfaces = useRef(new Map<string, NativeRegionPort>()), activeKey = useRef<string | null>(null);
+  const [activeRegion, setActiveRegion] = useState<string | null>(null);
   const [notice, setNotice] = useState('');
   const [controller] = useState(() => createProgramRegionDraft({
     workspace: () => latest.current.workspace(), accept: (next, before) => latest.current.onAccept(next, before),
@@ -221,9 +227,12 @@ export function ProgramFolderRegionEditor(props: {
       const pending = controller.getState().pending;
       const port = surfaces.current.get(pending?.key ?? activeKey.current ?? '') ?? Array.from(surfaces.current.values()).find(entry => !entry.area.readOnly);
       return !!port && !port.area.readOnly && port.instance.undo();
-    }, activeEditor: () => {
+    }, activeEditor: allowReadOnly => {
       const port = surfaces.current.get(controller.getState().pending?.key ?? activeKey.current ?? '');
-      return port && !port.area.readOnly ? port : null;
+      return port && (allowReadOnly || !port.area.readOnly) ? port : null;
+    }, canApplyActive: raw => {
+      const key = controller.getState().pending?.key ?? activeKey.current;
+      return !!key && planProgramRegionEdit(latest.current.workspace(), controller.getState().pending?.view ?? latest.current.view, key, raw).ok;
     }, revealLine: (lineId, column) => {
       const region = latest.current.view.regions.find(entry => !entry.readOnly && entry.lineIds.includes(lineId));
       const port = region && surfaces.current.get(region.key);
@@ -256,6 +265,8 @@ export function ProgramFolderRegionEditor(props: {
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => { if (!controller.isComposing()) void controller.flush(); }, 450);
   }
+  // The bar follows the region last edited, or the first editable one before any is.
+  const barRegion = view.regions.some(region => region.key === activeRegion && !region.readOnly) ? activeRegion : view.regions.find(region => !region.readOnly)?.key;
   const context = new Map(view.regions.flatMap(region => region.contextRows).filter(row => !view.regions.some(region => !region.readOnly && row.index >= region.startIndex && row.index < region.endIndex)).map(row => [row.id, row]));
   const entries = [...Array.from(context.values()).map(row => ({ index: row.index, row, region: null })),
     ...view.regions.map((region, ordinal) => ({ index: region.startIndex, row: null, region, ordinal }))].sort((a, b) => a.index - b.index);
@@ -287,9 +298,11 @@ export function ProgramFolderRegionEditor(props: {
         onSlash={props.onInsertMenu ? () => { activeKey.current = entry.region!.key; latest.current.onInsertMenu?.(); } : undefined}
         onPosition={(start, end, raw) => {
           activeKey.current = entry.region!.key;
+          if (activeRegion !== entry.region!.key) setActiveRegion(entry.region!.key);
           const preview = previewProgramRegionText(controller.getState().pending?.view ?? view, entry.region!.key, raw);
           if (preview) latest.current.onPosition(preview.offset + start, preview.offset + end, preview.lineId(raw.slice(0, start).split('\n').length - 1));
         }} />
+      {entry.region.key === barRegion && props.afterActive}
     </div> : null)}
     {state.pending && <div className={styles.actions}><button type="button" disabled={props.readOnly || props.locked || state.composing} onClick={() => { void controller.flush(); }}>영역 저장</button>
       <button type="button" disabled={props.locked || state.composing} onClick={() => controller.discard()}>영역 입력 취소</button></div>}
