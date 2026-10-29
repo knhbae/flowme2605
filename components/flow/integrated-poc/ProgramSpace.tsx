@@ -927,7 +927,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
 
   async function openDocument(id: string, taskId?: string,
-    request?: { canOpen: () => boolean; onBusy: () => void }): Promise<boolean> {
+    request?: { canOpen: () => boolean }): Promise<boolean> {
     if (request && !request.canOpen()) return false;
     pendingSourceFocus.current = null;
     const sourceFocusOwner = document.activeElement;
@@ -954,24 +954,20 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (document.activeElement !== sourceFocusOwner
         && (document.activeElement !== document.body || sourceFocusOwner?.isConnected)) return false;
     }
-    let targetPosition: ProgramWritingPosition | null = null;
-    const remembered = await run('작성 위치 기억', current => {
-      if (current.activeActorId !== actorId) return programFailure(current, 'conflict');
-      const currentSpace = current.spaces[actorId], doc = M.getDocument(currentSpace.text, id);
-      if (!doc) return programFailure(current, 'missing');
-      if (taskId) {
-        const target = programCheckpointForWritingTarget(current, { view: 'space', id }, taskId, null)?.writing?.[id];
-        if (!target) return programFailure(current, 'missing');
-        targetPosition = { documentId: id, lineId: taskId, ...target };
-      }
-      const cached = selected && positions.current[selected];
-      // Reading/navigation is presentation-only. Real editor commits retain
-      // their writing position; history checkpoints retain read-only returns.
-      if (cached) positions.current[selected] = normalizeProgramWritingPosition(currentSpace.text, cached);
-      return programResult(current, current, id);
-    }, false, undefined, ownsSource);
     if (!ownsSource()) return false;
-    if (!remembered.ok) { if (remembered.reason === 'busy') request?.onBusy(); return false; }
+    // Reading/navigation is presentation-only, so read the shown data directly. A no-op write
+    // re-validated the whole workspace (over a second on a full space) while the tap waited,
+    // and was refused whenever a background read held the writer.
+    const current = dataRef.current, currentSpace = current.spaces[actorId];
+    if (current.activeActorId !== actorId) return false;
+    let targetPosition: ProgramWritingPosition | null = null;
+    const target = taskId ? programCheckpointForWritingTarget(current, { view: 'space', id }, taskId, null)?.writing?.[id] : null;
+    if (!M.getDocument(currentSpace.text, id) || taskId && !target) { setMessage(programErrorMessage('missing')); return false; }
+    if (taskId && target) targetPosition = { documentId: id, lineId: taskId, ...target };
+    const cached = selected && positions.current[selected];
+    // Real editor commits retain their writing position; history checkpoints retain read-only returns.
+    if (cached) positions.current[selected] = normalizeProgramWritingPosition(currentSpace.text, cached);
+    setMessage('');
     if (taskId && writingBlocked()) {
       if (request) setMessage('작성 중인 입력을 저장하거나 취소한 뒤 원래 항목을 열어 주세요.');
       return false;
@@ -1033,8 +1029,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       && executionDraftOwner.current.dialog === owner.dialog
       && executionDraftOwner.current.taskId === owner.taskId
       && executionDraftOwner.current.input === owner.input;
-    const opened = await openDocument(documentId, taskId, { canOpen: ownsPanel,
-      onBusy: () => setMessage('서버 작업 중이라 원문을 열지 못했습니다. 작업이 끝나면 ‘원문 열기’를 다시 눌러 주세요.') });
+    const opened = await openDocument(documentId, taskId, { canOpen: ownsPanel });
     if (opened && ownsPanel()) {
       close();
       const focusRequest = pendingSourceFocus.current;

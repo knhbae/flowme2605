@@ -270,6 +270,9 @@
    Only when the space follows directly: a panel, recovery, or notice in between turns this off
    and "…" keeps its own row. The space's tab row reserves the 56px (ProgramSpace.module.css). */
 .page[data-note-layout="true"] .workPane:has(> .sync + div > section[data-note-layout="true"]:first-child) > .sync { height: 0; margin-bottom: 0; align-items: flex-start; }
+/* The space section is positioned and comes later, so its tab row painted over the "…" and took the tap.
+   The summary gets a layer of its own; the open menu body keeps z-index 60 in the page. */
+.page[data-note-layout="true"] .sync > .management > summary { position: relative; z-index: 1; }
 
 /* The publication notice shows once per tab with a 확인 button; the header badge reopens it at any time. */
 .devNotice { display: flex; align-items: center; gap: 8px; min-width: 0; }
