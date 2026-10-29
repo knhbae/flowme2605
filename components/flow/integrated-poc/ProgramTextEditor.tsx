@@ -305,6 +305,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [barLine, setBarLine] = useState<WritingBarLine>({ canOutdent: false, canIndent: false, isTask: false, markerLock: null });
   const [barHold] = useState(() => createWritingBarHold<WritingBarTarget>()), [heldBar, setHeldBar] = useState<WritingBarAction | null>(null);
   const barRef = useRef<HTMLDivElement>(null), barLockId = useId();
+  const compositionAnchorRef = useRef<{ area: HTMLTextAreaElement; offset: number } | null>(null);
+  // One retry chain at a time for the current held press, capped by elapsed time.
+  const barRetry = useRef<{ frame: number; serial: number; since: number } | null>(null);
   useEffect(() => { releaseHeldBar(); }, [composing, draft.saving, inputLocked, props.readOnly, regionPending]);
   // Other typing or leaving the editor cancels a held press; the composition's own input does not,
   // including a final insertText some keyboards send right after compositionend.
@@ -319,10 +322,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         || composedJustNow && type === 'insertText') return;
       cancel();
     };
-    const composed = () => { composedJustNow = true; if (settle) clearTimeout(settle); settle = setTimeout(() => { composedJustNow = false; settle = null; }, 0); };
+    const composed = () => { compositionAnchorRef.current = null; composedJustNow = true; if (settle) clearTimeout(settle); settle = setTimeout(() => { composedJustNow = false; settle = null; }, 0); };
+    const started = (event: Event) => {
+      const area = event.target instanceof HTMLTextAreaElement ? event.target : null;
+      compositionAnchorRef.current = area ? { area, offset: area.selectionStart } : null;
+    };
     const left = (event: FocusEvent) => { if (!(event.relatedTarget instanceof Node && root.contains(event.relatedTarget))) cancel(); };
-    root.addEventListener('beforeinput', typed, true); root.addEventListener('compositionend', composed, true); root.addEventListener('focusout', left);
-    return () => { if (settle) clearTimeout(settle); root.removeEventListener('beforeinput', typed, true); root.removeEventListener('compositionend', composed, true); root.removeEventListener('focusout', left); };
+    root.addEventListener('beforeinput', typed, true); root.addEventListener('compositionstart', started, true); root.addEventListener('compositionend', composed, true); root.addEventListener('focusout', left);
+    return () => { if (settle) clearTimeout(settle); root.removeEventListener('beforeinput', typed, true); root.removeEventListener('compositionstart', started, true); root.removeEventListener('compositionend', composed, true); root.removeEventListener('focusout', left); };
   }, [barHold]);
 
   const currentState = () => draftRef.current?.getState().working ?? propsRef.current.workspace;
@@ -386,7 +393,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const line = writingBarLine(raw, caret, isTask => isTask ? taskMarkerLock(meta, state, docId) : null);
     // A folder region keeps saved lines' kind and depth; offer only what its own check accepts.
     return propsRef.current.folderId
-      ? folderBarLine(line, raw, caret, next => !!regionPortRef.current?.canApplyActive?.(next), FOLDER_STRUCTURE_LOCK) : line;
+      ? folderBarLine(line, raw, caret, next => !!regionPortRef.current?.canApplyActive?.(next), FOLDER_STRUCTURE_LOCK, target.area.selectionEnd) : line;
   }
   function syncBarLine() {
     if (!propsRef.current.authoringMode) return;
@@ -413,24 +420,33 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // A held press remembers where it was aimed; a folder region may be read-only while it saves.
     const surface = busy ? propsRef.current.folderId ? regionPortRef.current?.activeEditor?.(true) ?? null : barEditor() : null;
     if (busy && !surface) return;
-    const run = barHold.press(action, busy, surface ? writingBarTarget(surface.area, surface.area.value, surface.area.selectionStart) : null);
+    const anchor = compositionAnchorRef.current, area = surface?.area;
+    const settled = area && composingRef.current && anchor?.area === area ? anchor.offset : area?.selectionStart;
+    stopBarRetry();
+    const run = barHold.press(action, busy, area ? writingBarTarget(area, area.value, area.selectionStart, settled) : null);
     setHeldBar(barHold.held());
     if (run) runBar(run);
   }
+  function stopBarRetry() { if (barRetry.current) { cancelAnimationFrame(barRetry.current.frame); barRetry.current = null; } }
   /** Run a held press once input settles, only where it was aimed. The press is taken only when its
-   *  target is ready, so a region still read-only right after its save keeps it (up to about a second). */
-  function releaseHeldBar(attempt = 0) {
-    if (!barHold.held()) return;
-    if (inputLockedRef.current || propsRef.current.readOnly) { barHold.cancel(); setHeldBar(null); return; }
+   *  target is ready, so a region still read-only right after its save keeps it, for up to one second. */
+  function releaseHeldBar() {
+    if (!barHold.held()) { stopBarRetry(); return; }
+    if (inputLockedRef.current || propsRef.current.readOnly) { stopBarRetry(); barHold.cancel(); setHeldBar(null); return; }
     if (composingRef.current || draftRef.current?.getState().saving) return;
     const target = barHold.target(), aimed = target?.surface as HTMLTextAreaElement | undefined, now = barEditor(), active = document.activeElement;
     const verdict = heldTargetVerdict(target, { surface: now?.area ?? null, value: now?.area.value ?? '', caret: now?.area.selectionStart ?? 0,
-      editable: !!now && !now.area.readOnly, connected: !!aimed?.isConnected,
+      selectionEnd: now?.area.selectionEnd ?? now?.area.selectionStart ?? 0, editable: !!now && !now.area.readOnly, connected: !!aimed?.isConnected,
       focusHere: !!active && (active === aimed || !!barRef.current?.contains(active) || active instanceof HTMLElement && !!active.closest('[data-bar-action]')) });
     if (verdict === 'wait') {
-      if (attempt < 60) requestAnimationFrame(() => releaseHeldBar(attempt + 1)); else { barHold.cancel(); setHeldBar(null); }
+      const serial = barHold.serial(), since = barRetry.current?.serial === serial ? barRetry.current.since : performance.now();
+      stopBarRetry();
+      if (performance.now() - since > 1000) { barHold.cancel(); setHeldBar(null); return; }
+      const frame = requestAnimationFrame(() => { if (barRetry.current?.frame === frame) releaseHeldBar(); });
+      barRetry.current = { frame, serial, since };
       return;
     }
+    stopBarRetry();
     const run = barHold.release(false);
     setHeldBar(null);
     if (verdict === 'run' && run) runBar(run);
@@ -1089,7 +1105,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   useEffect(() => {
     /** Folder view: cap the focused region so its last line and the bar under it stay above the keyboard. */
     function fitFolderRegion(root: Element | null, barShown: boolean, bottom: number) {
-      const focused = root?.querySelector('[data-folder-region] textarea:focus')?.closest('[data-folder-region]');
+      const focused = root?.querySelector('[data-folder-region] :focus')?.closest('[data-folder-region]');
       for (const region of Array.from(root?.querySelectorAll<HTMLElement>('[data-folder-region] [data-readonly]') ?? [])) {
         const height = barShown && focused?.contains(region) ? programEditorVisibleHeight(region.getBoundingClientRect().top, bottom) : null;
         const value = height === null ? '' : `${Math.max(132, height)}px`;

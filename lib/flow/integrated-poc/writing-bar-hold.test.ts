@@ -28,7 +28,7 @@ test('a held press runs only on the same surface and line, with the text above u
   const area = {}, other = {}, value = '- [ ] 첫 줄\n- [ ] 둘째 줄\n셋째', target = writingBarTarget(area, value, value.indexOf('둘째') + 2);
   assert.deepEqual([target.lineIndex, target.before], [1, '- [ ] 첫 줄\n']);
   const now = (patch: Partial<Parameters<typeof heldTargetVerdict>[1]>) =>
-    heldTargetVerdict(target, { surface: area, value, caret: value.indexOf('둘째'), editable: true, connected: true, focusHere: true, ...patch });
+    heldTargetVerdict(target, { surface: area, value, caret: value.indexOf('둘째') + 2, editable: true, connected: true, focusHere: true, ...patch });
   assert.equal(now({}), 'run');
   // Composition on that line moved the caret and added text: still the same line.
   assert.equal(now({ value: value.replace('둘째 줄', '둘째 줄을 고침'), caret: value.indexOf('둘째') + 7 }), 'run');
@@ -43,9 +43,27 @@ test('a held press runs only on the same surface and line, with the text above u
   assert.equal(heldTargetVerdict(null, { surface: area, value, caret: 0, editable: true, connected: true, focusHere: true }), 'cancel');
 });
 
+test('S3 re-review: a range selected after the hold, or the caret moved back over the text, drops it; composition does not', () => {
+  const area = {}, value = '메모 ABC', target = writingBarTarget(area, value, value.length);
+  const now = (patch: Partial<Parameters<typeof heldTargetVerdict>[1]>) =>
+    heldTargetVerdict(target, { surface: area, value, caret: value.length, selectionEnd: value.length, editable: true, connected: true, focusHere: true, ...patch });
+  assert.equal(now({}), 'run');
+  assert.equal(now({ caret: value.length - 2 }), 'cancel');                                  // Shift+Left over "BC"
+  assert.equal(now({ caret: value.length - 2, selectionEnd: value.length - 2 }), 'cancel');  // ← moved back
+  assert.equal(now({ value: value + 'D', caret: value.length + 1, selectionEnd: value.length + 1 }), 'run'); // forward is fine
+  // Held while "가" was composing as "ㄱ": the settled text stops where composition started.
+  const composing = '메모 ㄱ', start = composing.length - 1, held = writingBarTarget(area, composing, composing.length, start);
+  assert.equal(held.head, '메모 ');
+  const done = '메모 가';
+  assert.equal(heldTargetVerdict(held, { surface: area, value: done, caret: done.length, selectionEnd: done.length, editable: true, connected: true, focusHere: true }), 'run');
+  // Without that anchor the jamo-to-syllable change would look like a different text and drop it.
+  assert.equal(heldTargetVerdict(writingBarTarget(area, composing, composing.length), { surface: area, value: done, caret: done.length, selectionEnd: done.length, editable: true, connected: true, focusHere: true }), 'cancel');
+});
+
 function holdHarness(options: { folder?: boolean } = {}) {
-  const area = { value: '- [ ] 장보기\n- [ ] 빨래', selectionStart: 3, readOnly: false, isConnected: true };
-  const state = { saving: true, composing: false, editable: true, active: area as unknown, frames: [] as (() => void)[], runs: [] as string[] };
+  const area = { value: '- [ ] 장보기\n- [ ] 빨래', selectionStart: 3, selectionEnd: 3, readOnly: false, isConnected: true };
+  const state = { saving: true, composing: false, editable: true, active: area as unknown, frames: new Map<number, () => void>(), runs: [] as string[], clock: 0, cancelled: [] as number[] };
+  let frameId = 0;
   const barHold = createWritingBarHold<WritingBarTarget>();
   const editor = () => state.editable ? { instance: {}, area } : null;
   const scope = {
@@ -54,11 +72,16 @@ function holdHarness(options: { folder?: boolean } = {}) {
     regionPortRef: { current: { activeEditor: (allowReadOnly?: boolean) => allowReadOnly || state.editable ? { instance: {}, area } : null } },
     barEditor: () => options.folder ? editor() : { instance: {}, area }, barHold, setHeldBar: () => {}, runBar: (action: string) => state.runs.push(action),
     writingBarTarget, heldTargetVerdict, barRef: { current: { contains: () => false } }, HTMLElement: class {},
-    document: { get activeElement() { return state.active; } }, requestAnimationFrame: (callback: () => void) => { state.frames.push(callback); return state.frames.length; },
+    document: { get activeElement() { return state.active; } }, performance: { now: () => state.clock },
+    requestAnimationFrame: (callback: () => void) => { state.frames.set(++frameId, callback); return frameId; },
+    cancelAnimationFrame: (id: number) => { state.cancelled.push(id); state.frames.delete(id); },
+    barRetry: { current: null as unknown }, compositionAnchorRef: { current: null as unknown },
   };
-  const release = evaluate<(attempt?: number) => void>(fn('releaseHeldBar'), scope);
-  const press = evaluate<(action: string) => void>(fn('pressBar'), { ...scope, releaseHeldBar: release });
-  return { area, state, barHold, press, release };
+  const stopBarRetry = evaluate<() => void>(fn('stopBarRetry'), scope);
+  const release = evaluate<() => void>(fn('releaseHeldBar'), { ...scope, stopBarRetry });
+  const press = evaluate<(action: string) => void>(fn('pressBar'), { ...scope, stopBarRetry, releaseHeldBar: release });
+  const frame = () => { const [id, callback] = [...state.frames][0]; state.frames.delete(id); callback(); };
+  return { area, state, barHold, press, release, frame, scope };
 }
 
 test('real press and release: a press held during a save runs on its line once; moved caret or focus drops it', () => {
@@ -81,6 +104,22 @@ test('real press and release: a press held during a save runs on its line once; 
   h.state.active = {};
   h.state.saving = false; h.release();
   assert.deepEqual([h.state.runs, h.barHold.held()], [[], null]);
+
+  // Same line, but a range selected while waiting: dropped, nothing restored.
+  h = holdHarness();
+  h.press('enter');
+  h.area.selectionStart = 0; h.area.selectionEnd = 3;
+  h.state.saving = false; h.release();
+  assert.deepEqual([h.state.runs, h.barHold.held(), h.area.selectionStart, h.area.selectionEnd], [[], null, 0, 3]);
+
+  // Held while composing: compared from where composition started, so the composed syllable passes.
+  h = holdHarness();
+  h.area.value = '- [ ] 장보기 ㄱ'; h.area.selectionStart = h.area.selectionEnd = h.area.value.length;
+  h.scope.compositionAnchorRef.current = { area: h.area, offset: h.area.value.length - 1 };
+  h.state.composing = true; h.press('enter');
+  h.state.composing = false; h.area.value = '- [ ] 장보기 가';
+  h.state.saving = false; h.release();
+  assert.deepEqual(h.state.runs, ['enter']);
 });
 
 test('folder region right after its save: the held press waits for the region to be editable, then runs once', () => {
@@ -91,12 +130,34 @@ test('folder region right after its save: the held press waits for the region to
   h.state.saving = false;
   h.release();
   // Still read-only: not consumed, retried on the next frame.
-  assert.deepEqual([h.state.runs, h.barHold.held(), h.state.frames.length], [[], 'task', 1]);
+  assert.deepEqual([h.state.runs, h.barHold.held(), h.state.frames.size], [[], 'task', 1]);
   h.state.editable = true;
-  h.state.frames.shift()!();
+  h.frame();
   assert.deepEqual([h.state.runs, h.barHold.held()], [['task'], null]);
   h.release();
   assert.deepEqual(h.state.runs, ['task']);
+});
+
+test('one retry chain per held press, capped at one second of real time; a newer press cancels the older frame', () => {
+  const h = holdHarness({ folder: true });
+  h.state.editable = false;
+  h.press('task'); h.state.saving = false;
+  h.release(); h.release();
+  assert.equal(h.state.frames.size, 1);                     // a second release replaces, never adds, a frame
+  h.state.clock = 400; h.frame();
+  assert.deepEqual([h.barHold.held(), h.state.frames.size], ['task', 1]);
+  h.state.clock = 1200; h.frame();
+  assert.deepEqual([h.barHold.held(), h.state.frames.size, h.state.runs], [null, 0, []]);
+
+  const g = holdHarness({ folder: true });
+  g.state.editable = false;
+  g.press('task'); g.state.saving = false; g.release();
+  const [older] = [...g.state.frames.keys()];
+  g.state.saving = true; g.press('indent');                 // a newer hold
+  assert(g.state.cancelled.includes(older) && !g.state.frames.has(older));
+  g.state.clock = 900; g.state.saving = false; g.release();
+  g.state.clock = 1500; g.frame();                           // the newer hold's own clock started at 900
+  assert.equal(g.barHold.held(), 'indent');
 });
 
 test('IME end order: the final insertText right after compositionend keeps the hold; later typing drops it', () => {
@@ -104,15 +165,21 @@ test('IME end order: the final insertText right after compositionend keeps the h
     && node.arguments[0].getText(tree).includes('composedJustNow'));
   const listeners = new Map<string, (event: unknown) => void>(), timers: (() => void)[] = [];
   const root = { addEventListener: (type: string, listener: (event: unknown) => void) => listeners.set(type, listener), removeEventListener: () => {}, contains: () => true };
-  const barHold = createWritingBarHold<WritingBarTarget>(), composing = { current: false };
+  const barHold = createWritingBarHold<WritingBarTarget>(), composing = { current: false }, anchor = { current: null as unknown };
+  class FakeArea { selectionStart = 7; }
   evaluate<() => void>((effect as ts.CallExpression).arguments[0].getText(tree), {
-    hostRef: { current: { closest: () => root } }, barHold, setHeldBar: () => {}, composingRef: composing,
-    setTimeout: (callback: () => void) => { timers.push(callback); return timers.length; }, clearTimeout: () => {},
+    hostRef: { current: { closest: () => root } }, barHold, setHeldBar: () => {}, composingRef: composing, compositionAnchorRef: anchor,
+    HTMLTextAreaElement: FakeArea, setTimeout: (callback: () => void) => { timers.push(callback); return timers.length; }, clearTimeout: () => {},
   })();
   const input = (inputType: string) => listeners.get('beforeinput')!({ inputType });
+  // compositionstart records where composition began; compositionend forgets it.
+  const area = new FakeArea();
+  listeners.get('compositionstart')!({ target: area });
+  assert.deepEqual(anchor.current, { area, offset: 7 });
   barHold.press('enter', true, null);
   composing.current = true; input('insertCompositionText'); input('insertText');
   composing.current = false; listeners.get('compositionend')!({});
+  assert.equal(anchor.current, null);
   input('insertText');
   assert.equal(barHold.held(), 'enter');
   timers.splice(0).forEach(callback => callback());
@@ -148,6 +215,11 @@ test('folder region: saved lines keep ☐ ← → off with the reason; the bar n
     if (result.canOutdent) assert(accepts(withLine(lines[index].replace(/^( {1,2}|\t)/, ''))));
     assert.equal(result.structureLock !== null && result.structureLock !== undefined, base.canIndent && !result.canIndent || base.canOutdent && !result.canOutdent);
   }
+  // A selection over several lines: the one-line check cannot speak for the native plan, so ← → stay off.
+  const typed = `${raw}\n    - [ ] 새 하위`, from = raw.length + 1, multi = folderBarLine(writingBarLine(typed, 3, () => null), typed, 3, () => true, reason, from + 5);
+  assert.deepEqual([multi.canIndent, multi.canOutdent, multi.structureLock], [false, false, '분류 보기에서는 여러 줄을 한 번에 들이거나 내어 쓸 수 없습니다. 한 줄씩 해 주세요.']);
+  const single = folderBarLine(writingBarLine(typed, from + 2, () => null), typed, from + 2, () => true, reason, from + 6);
+  assert.equal(single.structureLock, null);
 });
 
 test('folder view: only the focused region is capped above the bar; the others keep their own height', () => {
@@ -164,4 +236,6 @@ test('folder view: only the focused region is capped above the bar; the others k
   assert.deepEqual([first.style.maxHeight, second.style.maxHeight], ['', '']);
   const tight = host(900); fit({ querySelector: () => ({ closest: () => ({ contains: () => true }) }), querySelectorAll: () => [tight] }, true, 1000);
   assert.equal(tight.style.maxHeight, '132px');
+  // Focus on a bar button (inside the region it follows) still counts as that region being edited.
+  assert(fn('fitFolderRegion').includes(`root?.querySelector('[data-folder-region] :focus')?.closest('[data-folder-region]')`));
 });
