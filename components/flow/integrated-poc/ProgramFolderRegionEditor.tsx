@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { planProgramRegionEdit, isProgramFolderViewCurrent, type ProgramFolderDocumentView } from '@/lib/flow/integrated-poc/folder-document-regions';
 import { textEditorRows, textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
+import { revealProgramEditorLine } from './editor-reveal';
 
 export interface ProgramFolderRegionSnapshot {
   view: ProgramFolderDocumentView;
@@ -25,6 +26,8 @@ export interface ProgramFolderRegionPort {
   takeSnapshot(): ProgramFolderRegionSnapshot | null;
   /** The editable region the writing bar acts on: the pending one, else the last focused one. */
   activeEditor?(): { instance: ReturnType<typeof nativeEditor.create>; area: HTMLTextAreaElement } | null;
+  /** Put the caret in a saved line of an editable region (at `column`, else the line end) and show it. */
+  revealLine?(lineId: string, column?: number): boolean;
 }
 export function programRegionError(reason: string): string {
   if (['stale-workspace', 'stale-region', 'invalid-view'].includes(reason)) return '다른 곳에서 문서가 바뀌었습니다. 입력은 남아 있습니다. 입력을 받은 뒤 저장본으로 돌아가 주세요.';
@@ -121,6 +124,8 @@ function NativeProgramRegion(props: {
   onCompose(composing: boolean, raw: string): void;
   onPosition(start: number, end: number, raw: string): void;
   onRegister(port: NativeRegionPort | null): void;
+  /** A typed "/" alone on its line; never for paste, composition, or a "/" inside text. */
+  onSlash?(): void;
   className: string;
 }) {
   const host = useRef<HTMLDivElement>(null), latest = useRef(props); latest.current = props;
@@ -146,12 +151,22 @@ function NativeProgramRegion(props: {
     const position = () => latest.current.onPosition(area.selectionStart, area.selectionEnd, area.value);
     const start = () => latest.current.onCompose(true, area.value);
     const end = () => latest.current.onCompose(false, area.value);
+    const slash = (event: Event) => {
+      const caret = area.selectionStart, value = area.value, input = event as InputEvent;
+      if (!latest.current.onSlash || input.isComposing || latest.current.composing() || input.inputType !== 'insertText' || input.data !== '/'
+        || area.selectionEnd !== caret || value[caret - 1] !== '/') return;
+      const rowStart = value.lastIndexOf('\n', caret - 1) + 1, rowEnd = value.indexOf('\n', caret);
+      if (value.slice(rowStart, rowEnd < 0 ? value.length : rowEnd).trim() !== '/') return;
+      queueMicrotask(() => { if (area.value === value && area.selectionStart === caret && !latest.current.composing()) latest.current.onSlash?.(); });
+    };
     for (const event of ['select', 'keyup', 'click', 'focus', 'blur']) area.addEventListener(event, position);
     area.addEventListener('compositionstart', start, true); area.addEventListener('compositionend', end, true);
+    area.addEventListener('input', slash);
     latest.current.onRegister({ instance, area });
     return () => {
       for (const event of ['select', 'keyup', 'click', 'focus', 'blur']) area.removeEventListener(event, position);
       area.removeEventListener('compositionstart', start, true); area.removeEventListener('compositionend', end, true);
+      area.removeEventListener('input', slash);
       latest.current.onRegister(null); instance.destroy(); editor.current = null;
     };
   }, []);
@@ -182,6 +197,8 @@ export function ProgramFolderRegionEditor(props: {
   onPosition(start: number, end: number, lineId: string | null): void;
   onDownload(): void;
   onContinueWholeDocument?(): void;
+  /** Open the body editor's insert menu for the caret's line (＋ is in the toolbar and the writing bar). */
+  onInsertMenu?(): void;
   styles: Record<string, string>;
 }) {
   const styles = props.styles;
@@ -207,6 +224,17 @@ export function ProgramFolderRegionEditor(props: {
     }, activeEditor: () => {
       const port = surfaces.current.get(controller.getState().pending?.key ?? activeKey.current ?? '');
       return port && !port.area.readOnly ? port : null;
+    }, revealLine: (lineId, column) => {
+      const region = latest.current.view.regions.find(entry => !entry.readOnly && entry.lineIds.includes(lineId));
+      const port = region && surfaces.current.get(region.key);
+      if (!region || !port || port.area.readOnly || controller.getState().pending) return false;
+      const index = region.lineIds.indexOf(lineId), lines = port.area.value.split('\n');
+      if (index < 0 || index >= lines.length) return false;
+      const offset = lines.slice(0, index).reduce((sum, line) => sum + line.length + 1, 0) + Math.min(column ?? lines[index].length, lines[index].length);
+      activeKey.current = region.key;
+      port.area.focus({ preventScroll: true }); port.area.setSelectionRange(offset, offset);
+      revealProgramEditorLine(port.area, index);
+      return true;
     }, takeSnapshot: () => {
       if (controller.isComposing() || controller.getState().saving || latest.current.readOnly || latest.current.locked) return null;
       const pending = controller.getState().pending, captured = pending?.view ?? latest.current.view;
@@ -256,6 +284,7 @@ export function ProgramFolderRegionEditor(props: {
           else { controller.update(view, entry.region!.key, raw); controller.compose(false); schedule(); }
         }}
         onRegister={port => { if (port) surfaces.current.set(entry.region!.key, port); else surfaces.current.delete(entry.region!.key); }}
+        onSlash={props.onInsertMenu ? () => { activeKey.current = entry.region!.key; latest.current.onInsertMenu?.(); } : undefined}
         onPosition={(start, end, raw) => {
           activeKey.current = entry.region!.key;
           const preview = previewProgramRegionText(controller.getState().pending?.view ?? view, entry.region!.key, raw);

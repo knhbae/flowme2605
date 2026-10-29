@@ -250,3 +250,11 @@
   }
   .editor:has(.writingBar):has(.host textarea:focus, [data-folder-region] textarea:focus, .writingBar :focus) .toolbar > .noteStatus:not(:has([role="alert"])) { display: none; }
 }
+
+/* ＋ menu place preview: the pressed task, its memo and children, and a dashed line where the choice lands. */
+.insertPreview { margin: 0; padding: 6px 0; list-style: none; border: 1px solid var(--flowme-b-line, #d6ddea); border-radius: 8px; background: var(--flowme-b-surface-subtle, #f4f6fb); font-size: 13px; line-height: 20px; }
+.insertPreview li { padding: 1px 8px; color: var(--flowme-b-muted, #59677e); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.insertPreview li[data-kind="anchor"] { color: var(--flowme-b-ink, #202a3c); font-weight: 700; }
+.insertPreview li[data-kind="new"] { margin: 2px 6px; border: 1px dashed var(--flowme-b-primary, #3548ce); border-radius: 6px; color: var(--flowme-b-primary-strong, #293bab); font-weight: 600; }
+/* A line just added from the menu stays lightly marked for 1.5 s. */
+.editor :global(.tle-line[data-just-added="true"]) { background: var(--flowme-b-selected, #e9edff); transition: background-color .4s; }

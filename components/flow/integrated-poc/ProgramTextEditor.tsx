@@ -19,9 +19,11 @@ import {createProgramDocumentInput,type ProgramDocumentInput} from '@/lib/flow/i
 import type { ProgramReferenceAccess } from '@/lib/flow/integrated-poc/reference-execution-guard';
 import { linkProgramFolder, programFolderLineTitle, programFolderLinkProblem, programFolderLinkProblems } from '@/lib/flow/integrated-poc/folder-link-slot';
 import { programFolderLinkPreview, isProgramFolderLinkPreviewCurrent, type ProgramFolderLinkPreview } from '@/lib/flow/integrated-poc/folder-link-preview';
-import { isProgramFolderViewCurrent, readProgramFolderRegions } from '@/lib/flow/integrated-poc/folder-document-regions';
+import { isProgramFolderViewCurrent, planProgramRegionEdit, readProgramFolderRegions } from '@/lib/flow/integrated-poc/folder-document-regions';
+import { childPlace, insertPlaceAfter, insertPreview, planLayoutInsertion, type InsertPreviewLine } from '@/lib/flow/integrated-poc/writing-insert-place';
+import { revealProgramEditorLine } from './editor-reveal';
 import { programFolderCreationLocation, programFolderInputSuggestion, programFolderPath, programFolderSuggestionPreservesSource } from '@/lib/flow/integrated-poc/folder-link-suggestions';
-import { ProgramFolderRegionEditor, type ProgramFolderRegionPort, type ProgramFolderRegionSnapshot } from './ProgramFolderRegionEditor';
+import { ProgramFolderRegionEditor, programRegionError, type ProgramFolderRegionPort, type ProgramFolderRegionSnapshot } from './ProgramFolderRegionEditor';
 import regionStyles from './ProgramFolderRegionEditor.module.css';
 import { readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { readProgramMemoContext, programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
@@ -148,6 +150,8 @@ export function trapProgramDialogTab(
   event.preventDefault(); event.stopPropagation(); destination.focus(); return true;
 }
 
+const REGION_OUTSIDE = '이 자리는 지금 보는 분류 영역 밖이라 여기서 넣지 않았습니다. 원문은 그대로입니다. 전체 문서에서 추가해 주세요.';
+
 function today() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -186,7 +190,7 @@ export function stageProgramRegionInput(controller: ReturnType<typeof createProg
   return controller.getState().raw === capture.raw;
 }
 
-type ChildTarget={documentId:string;parentId:string;workspace:TextWorkspaceState;raw:string;title:string;date:string|null;scope:string;memo:string};
+type ChildTarget={documentId:string;parentId:string;workspace:TextWorkspaceState;raw:string;title:string;date:string|null;scope:string;memo:string;kind?:'memo'|'task'};
 type Panel = { kind: 'insert' | 'child' | 'progress' | 'date' | 'folder' | 'folder-copy' | 'move' | 'reference' | 'order'; lineId: string | null; child?:ChildTarget; folderSuggestionTitle?: string; folderLinkPreview?: ProgramFolderLinkPreview; folderCopyPreview?: ProgramFolderCopyPreview } | null;
 type Moving = TextMoveSelection & { targets: TextMoveTarget[] };
 
@@ -283,6 +287,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const captureChildDrafts=()=>readChildDrafts(childDrafts.current,M.tasks(currentState()));
   const panelComposingRef=useRef(false),compositionGeneration=useRef(0);
   const slashCommandRef=useRef<{lineId:string;raw:string;workspace:TextWorkspaceState;generation:number}|null>(null);
+  // The insert menu's place preview follows the focused or hovered choice; null means the first one.
+  const [previewKey,setPreviewKey]=useState<string|null>(null);
   const [moving, setMoving] = useState<Moving | null>(null);
   const [date, setDate] = useState(today);
   const [time, setTime] = useState('');
@@ -381,7 +387,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function runBar(action: WritingBarAction) {
     const target = barEditor();
     if (!target || inputLockedRef.current || propsRef.current.readOnly) return;
-    if (action === 'menu') { if (!propsRef.current.folderId) openCurrentInsertMenu(target.instance.getSelection().lineIndex); return; }
+    if (action === 'menu') { if (propsRef.current.folderId) void openRegionInsertMenu(); else openCurrentInsertMenu(target.instance.getSelection().lineIndex); return; }
     if (action === 'enter') target.instance.enter(true);
     else if (action === 'task') {
       const line = readBarLine();
@@ -660,14 +666,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     for(let i=parent.index+1;i<parent.subtreeEndIndex;i++){if(['task','subcheck'].includes(rows[i]?.kind))break;bottom=i;}
     return{parentIndex:parent.index,bottomIndex:bottom};
   }
-  function openAuthoringChild(index:number){
+  function openAuthoringChild(index:number,kind?:'memo'|'task'){
     if(!propsRef.current.authoringMode||inputLockedRef.current||propsRef.current.readOnly||checkPendingRef.current||composingRef.current||regionPendingRef.current||!draftRef.current?.canApplyLocal()||!draftRef.current.flush()){setMessage('현재는 하위 내용을 추가할 수 없습니다. 입력이나 저장 상태를 확인해 주세요.');return false;}
     const state=currentState(),doc=currentDoc(),anchor=authoringAnchor(index);if(!doc||!anchor||textArea()?.value!==draftRef.current.getState().raw)return false;
     const line=doc.lines[anchor.parentIndex],binding=state.bindings.find(b=>b.docId===doc.id&&b.lineId===line?.id&&b.kind==='task'),targetId=binding?.kind==='task'?binding.taskId:line?.id;
     const ownedTask=documentInputRef.current?.rows(state)?.[anchor.parentIndex]?.task;
     const task=ownedTask?.id===targetId?ownedTask:M.tasks(state).find(t=>t.id===targetId),access=task?propsRef.current.taskAccess?.(task.id,state):null;if(!task||!access||access.kind!=='active'||access.reason){setMessage(access?.reason??'이 항목에는 하위 내용을 추가할 수 없습니다.');return false;}
     if(editorRef.current?.isFolded(anchor.parentIndex))editorRef.current.toggleFold(anchor.parentIndex);
-    const target:ChildTarget={documentId:task.docId,parentId:task.id,workspace:state,raw:M.raw(M.getDocument(state,task.docId)),title:task.title,date:task.date,scope:task.scopeTitle,memo:task.note};
+    const target:ChildTarget={documentId:task.docId,parentId:task.id,workspace:state,raw:M.raw(M.getDocument(state,task.docId)),title:task.title,date:task.date,scope:task.scopeTitle,memo:task.note,kind};
     if(timerRef.current)clearTimeout(timerRef.current);
     setMessage('');setPanel({kind:'child',lineId:task.id,child:target});propsRef.current.onDirtyChange?.(true);return true;
   }
@@ -679,13 +685,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if(before!==target.workspace||propsRef.current.docId!==target.documentId||access?.kind!=='active'||access.reason){setMessage('추가할 문맥이나 권한이 바뀌었습니다. 초안을 보관하고 현재 항목에서 다시 열어 주세요.');return false;}
     const result=prepareWritingChild(before,{docId:target.documentId,parentId:target.parentId,kind,text,expectedRaw:target.raw});
     if(!result.ok){setMessage(result.reason);return false;}
+    // In a folder view the new line must land inside a part this view can edit, or it would vanish from sight.
+    const folderId=propsRef.current.folderId;
+    if(folderId&&!readProgramFolderRegions(result.workspace,target.documentId,folderId)?.regions.some(region=>!region.readOnly&&region.lineIds.includes(result.lineId))){setMessage(REGION_OUTSIDE);return false;}
     if(!controller.applyLocal(result.workspace,kind==='memo'?'부모 메모 수정':'독립 하위 할 일 추가')){setMessage('변경을 적용하지 못했습니다. 초안은 남아 있습니다.');return false;}
     editorRef.current?.setValue(controller.getState().raw,{preserveSelection:true});
     // The accepted source now owns the text and IDs. Saving may acknowledge an
     // older snapshot; it must not keep this menu or the new caret waiting.
     delete childDrafts.current[target.parentId+':'+kind];dismissPanel(false,false);
     const index=currentDoc()?.lines.findIndex(l=>l.id===result.lineId)??-1;
-    if(index>=0){editorRef.current?.focus(index);textArea()?.setSelectionRange(result.offset,result.offset);editorRef.current?.refreshViewport();rememberPosition();}
+    if(folderId)requestAnimationFrame(()=>{regionPortRef.current?.revealLine?.(result.lineId);});
+    else if(index>=0){const area=textArea();editorRef.current?.focus(index);area?.setSelectionRange(result.offset,result.offset);editorRef.current?.refreshViewport();rememberPosition();if(area)revealProgramEditorLine(area,index);}
     scheduleSave();return true;
   }
   function handleAction(action: nativeEditor.Action) {
@@ -1070,6 +1080,27 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const protectedExecutionPanel = !!panelAccess?.reason && !!panel && ['progress', 'date'].includes(panel.kind);
   const insertions = panel?.lineId ? M.insertionOptions(draft.working, props.docId, panel.lineId) : [];
   const memoContext = panel?.kind === 'insert' ? readProgramMemoContext(draft.working, props.docId, panel.lineId) : null;
+  const menuInsertions = insertions.filter(option=>!props.authoringMode||option.kind!=='subcheck'&&option.kind!=='note');
+  // "하위 할 일" and "메모" open the same inline input, each already set to its kind, each saying its place.
+  const childAnchor = panel?.kind === 'insert' && props.authoringMode && row ? authoringAnchor(row.index) : null;
+  const childLine = childAnchor ? currentDoc()?.lines[childAnchor.parentIndex] : undefined;
+  const childPlaceInfo = childLine ? childPlace(draft.working, props.docId, childLine.id) : null;
+  const childParent = childLine && childPlaceInfo ? { id: childLine.id, place: childPlaceInfo, depth: currentRow(childLine.id)?.depth ?? 0,
+    memo: !!M.tasks(draft.working).find(task => task.id === childLine.id)?.note } : null;
+  const layoutPlaces = panel?.kind === 'insert' && props.authoringMode
+    ? { step: planLayoutInsertion(draft.working, props.docId, panel.lineId, 'step'), description: planLayoutInsertion(draft.working, props.docId, panel.lineId, 'description') }
+    : { step: null, description: null };
+  const previewChoices: { key: string; anchorId: string; at: number; depth: number; label: string }[] = [];
+  if (childParent) previewChoices.push({ key: 'child', anchorId: childParent.id, at: childParent.place.index, depth: childParent.depth + 1, label: '새 하위 할 일이 여기에' });
+  if (row) {
+    for (const option of menuInsertions) previewChoices.push({ key: `${option.kind}:${option.offset}:${option.depth}`, anchorId: row.id, at: option.index, depth: option.depth, label: option.kind === 'note' ? '새 메모가 여기에' : '새 할 일이 여기에' });
+    for (const kind of ['step', 'description'] as const) {
+      const place = layoutPlaces[kind];
+      if (place?.ok) previewChoices.push({ key: kind, anchorId: row.id, at: place.index, depth: 0, label: kind === 'step' ? '새 단계가 여기에' : '설명이 여기에' });
+    }
+  }
+  const previewChoice = previewChoices.find(choice => choice.key === previewKey) ?? previewChoices[0];
+  const placePreview: InsertPreviewLine[] = previewChoice ? insertPreview(draft.working, props.docId, previewChoice.anchorId, previewChoice.at, previewChoice.depth, previewChoice.label) : [];
   const dateContext = panel?.kind === 'date' && !protectedExecutionPanel && row?.progressTargetId
     ? readProgramTaskDatePresentation(draft.working, { id: row.progressTargetId, docId: props.docId }) : null;
   const dateChangeHint = programTaskDateChangeHint(dateContext, date, {
@@ -1080,7 +1111,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if(!controller||inputLockedRef.current||propsRef.current.readOnly||controller.getState().invalid||composingRef.current||regionPendingRef.current||checkPendingRef.current){setMessage('입력이나 문서 상태를 확인한 뒤 다시 열어 주세요. 원문은 유지했습니다.');return false;}
     const raw=controller.getState().raw;
     slashCommandRef.current=line?.text.trim()==='/'?{lineId:line.id,raw,workspace:currentState(),generation:controller.generation()}:null;
-    setMessage('');setPanel({kind:'insert',lineId:line?.id??null});return true;
+    setPreviewKey(null);setMessage('');setPanel({kind:'insert',lineId:line?.id??null});return true;
   }
   function insertNative(offset: number, text: string, caret: number) {
     const controller=draftRef.current,before=currentState(),doc=currentDoc(),area=textArea(),slash=slashCommandRef.current;
@@ -1093,6 +1124,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       const start=doc.lines.slice(0,index).reduce((n,line)=>n+line.text.length+1,0)+line.text.indexOf('/');command={start,end:start+1,raw};
     }
     const plan=planWritingInsertion(raw,{offset,text,caretOffset:caret},command);
+    // A folder view hides the body editor; the change goes through the region's own check instead.
+    if(plan&&propsRef.current.folderId){if(applyRegionInsertion(plan.nextRaw,plan.selectionAfter.start))dismissPanel(false,false);return;}
     if(!plan||!controller.prepareRaw(plan.nextRaw,{inputType:'insertText',compositionGeneration:compositionGeneration.current},true)){setMessage('이 위치에는 추가할 수 없습니다. 원문과 추가 명령은 유지했습니다.');return;}
     const previous=panelRef.current,returned=menuReturnRef.current;
     // A native modal makes the background textarea inert. Close it before the
@@ -1104,9 +1137,37 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       setMessage('브라우저가 추가를 적용하지 못했습니다. 현재 입력은 유지했습니다.');return;
     }
     editorRef.current?.refreshViewport();rememberPosition();
+    revealProgramEditorLine(area,plan.nextRaw.slice(0,plan.selectionAfter.start).split('\n').length-1);
   }
   function insertAuthoringLayout(kind:'step'|'description'){
-    const doc=currentDoc(),index=currentRow(panel?.lineId??null)?.index??Math.max(0,(doc?.lines.length??1)-1);if(!doc)return;const at=doc.lines.slice(0,index+1).reduce((n,line,i)=>n+line.text.length+(i<index?1:0),0),text=(doc.lines.length?'\n':'')+(kind==='step'?'## ':'');insertNative(at,text,at+text.length);
+    // After the pressed line's whole block, and only where no line changes what it belongs to.
+    const place=planLayoutInsertion(currentState(),propsRef.current.docId,panel?.lineId??null,kind);
+    if(!place.ok){setMessage(place.reason);return;}
+    insertNative(place.offset,place.text,place.caretOffset);
+  }
+  /** Folder view: put a menu insertion into the visible region through the region's own check. */
+  function applyRegionInsertion(nextRaw:string,caret:number){
+    const port=regionPortRef.current,snapshot=port?.takeSnapshot(),region=snapshot?.view.regions.find(entry=>entry.key===snapshot.regionKey&&!entry.readOnly);
+    if(!port||!snapshot||!region||port.hasPending()){setMessage('분류 영역의 입력이나 저장을 마친 뒤 다시 골라 주세요. 원문은 유지했습니다.');return false;}
+    const before=snapshot.view.fullRaw.split('\n'),after=nextRaw.split('\n'),end=region.endIndex+after.length-before.length;
+    if(end<region.startIndex||after.slice(0,region.startIndex).join('\n')!==before.slice(0,region.startIndex).join('\n')
+      ||after.slice(end).join('\n')!==before.slice(region.endIndex).join('\n')){setMessage(REGION_OUTSIDE);return false;}
+    const plan=planProgramRegionEdit(currentState(),snapshot.view,region.key,after.slice(region.startIndex,end).join('\n'),{progressDate:today()});
+    if(!plan.ok){setMessage(programRegionError(plan.reason));return false;}
+    if(!acceptRegion(plan.next,snapshot.view.workspace)){setMessage('지금은 이 영역에 넣을 수 없습니다. 저장이 끝난 뒤 다시 골라 주세요. 원문은 유지했습니다.');return false;}
+    const lineId=M.getDocument(plan.next,propsRef.current.docId)?.lines[nextRaw.slice(0,caret).split('\n').length-1]?.id,column=caret-(nextRaw.lastIndexOf('\n',caret-1)+1);
+    scheduleSave();
+    requestAnimationFrame(()=>{if(lineId)regionPortRef.current?.revealLine?.(lineId,column);});
+    return true;
+  }
+  /** Folder view ＋ or "/": save what the region holds first, so the menu works on real line IDs. */
+  async function openRegionInsertMenu(){
+    const port=regionPortRef.current;
+    if(!port||port.isComposing()||inputLockedRef.current||propsRef.current.readOnly||checkPendingRef.current){setMessage('입력이나 문서 상태를 확인한 뒤 다시 열어 주세요. 원문은 유지했습니다.');return false;}
+    if(port.hasPending()){if(!await port.flush())return false;await new Promise(resolve=>requestAnimationFrame(resolve));}
+    const snapshot=port.takeSnapshot(),index=snapshot?.lineId?currentDoc()?.lines.findIndex(line=>line.id===snapshot.lineId)??-1:-1;
+    if(!snapshot?.regionKey||index<0){setMessage('추가할 줄을 찾지 못했습니다. 분류 영역 안의 줄을 누른 뒤 다시 열어 주세요.');return false;}
+    return openCurrentInsertMenu(index);
   }
   function scopeSlot(lineId: string | null) {
     const state = currentState();
@@ -1275,7 +1336,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     }
   }
 
-  const title = panel?.kind==='child' ? '부모 메모 · 독립 하위 할 일' : protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'progress' ? '누적 진행률' : panel?.kind === 'date' ? '항목 날짜' : panel?.kind === 'folder-copy' ? '폴더 사본 만들기' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : panel?.kind === 'insert' && row?.progressTargetId ? '항목 작업' : '이 위치에 추가';
+  const title = panel?.kind==='child' ? childTarget?.kind==='task' ? '하위 할 일' : childTarget?.kind==='memo' ? '메모' : '부모 메모 · 독립 하위 할 일' :protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'progress' ? '누적 진행률' : panel?.kind === 'date' ? '항목 날짜' : panel?.kind === 'folder-copy' ? '폴더 사본 만들기' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : panel?.kind === 'insert' && row?.progressTargetId ? '항목 작업' : '이 위치에 추가';
   const folderView = props.folderId ? readProgramFolderRegions(draft.working, props.docId, props.folderId) : null;
   const suggestionKey = `${suggestionLineId}:${currentRow(suggestionLineId)?.text ?? ''}`;
   const suggestion = props.folderId || props.readOnly || inputLocked || draft.invalid || composing || panel || dismissedSuggestion === suggestionKey
@@ -1331,7 +1392,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       {barButton('outdent', '←', '내어쓰기', 'Shift+Tab', !barLine.canOutdent, className)}
       {barButton('indent', '→', '들여쓰기', 'Tab', !barLine.canIndent, className)}
       {barButton('enter', '↵', '할 일 아래 메모 줄', 'Shift+Enter', false, className)}
-      {place === 'bar' && barButton('menu', '＋', '추가 메뉴', '/', !!props.folderId)}
+      {place === 'bar' && barButton('menu', '＋', '추가 메뉴', '/', false)}
     </>;
   }
   return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onKeyDownCapture={event => {
@@ -1341,7 +1402,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }}>
     <div className={styles.toolbar}>
       {mode === 'text' && <button type="button" onClick={event => returnToDocumentMode(event.currentTarget)}>문서로 돌아가기</button>}
-      <button type="button" hidden={!!props.folderId || props.directWriting && !props.noteStatus} disabled={insertionDisabled} onClick={() => { const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}>＋ 추가</button>
+      <button type="button" hidden={props.directWriting && !props.noteStatus} disabled={props.folderId ? inputLocked || !!props.readOnly || draft.invalid || composing || checkPending : insertionDisabled}
+        onClick={() => { if (props.folderId) { void openRegionInsertMenu(); return; } const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}>＋ 추가</button>
       {props.authoringMode && barButtons('toolbar')}
       <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기'} aria-label="입력 되돌리기" onClick={() => { if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if(props.authoringMode&&!props.folderId)editorRef.current?.undo(); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
       <details className={styles.editorTools} data-editor-tools onKeyDown={event => {
@@ -1383,7 +1445,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     <div ref={hostRef} className={`${styles.host}${props.directWriting ? ` ${styles.directWriting}` : ''}`} hidden={!!props.folderId} data-native-editor="v11-core" />
     {folderView && <ProgramFolderRegionEditor key={`${props.docId}:${props.folderId}`} styles={regionStyles} view={folderView} readOnly={!!props.readOnly} locked={inputLocked || draft.saving} mode={mode} listEnterV2={!!props.authoringMode}
       workspace={currentState} onAccept={acceptRegion} onPersist={saveFullDraft} onDownload={downloadDraft}
-      onContinueWholeDocument={continueWholeDocument}
+      onContinueWholeDocument={continueWholeDocument} onInsertMenu={props.authoringMode ? () => { void openRegionInsertMenu(); } : undefined}
       onPosition={(start, end, lineId) => { regionPositionRef.current = { start, end }; propsRef.current.onPosition?.({ start, end, scrollTop: 0 }, lineId); syncBarLine(); }}
       onRegister={port => { regionPortRef.current = port; }}
       onPending={(pending, composing) => { regionPendingRef.current = pending; composingRef.current = composing; setRegionPending(pending); propsRef.current.onDirtyChange?.(pending || !!draftRef.current?.getState().dirty); if (!composing) queueMicrotask(releaseHeldBar); }} />}
@@ -1392,7 +1454,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     {panel && <dialog ref={dialogRef} className={styles.dialog} aria-label={title} onCompositionStartCapture={()=>{panelComposingRef.current=true;}} onCompositionEndCapture={()=>{panelComposingRef.current=false;}} onKeyDown={event => { trapProgramDialogTab(event.currentTarget, event); }} onCancel={event => { event.preventDefault(); closePanel(); cancelMove(); }}>
       <header><h3>{title}</h3><button type="button" aria-label="닫기" onClick={closePanel}>×</button></header>
       <div className={styles.dialogBody}>
-      {childTarget&&<ProgramWritingInline key={childTarget.parentId} parentTitle={childTarget.title} date={childTarget.date} scope={childTarget.scope} memo={childTarget.memo} readDraft={kind=>childDrafts.current[childTarget.parentId+':'+kind]} remember={(kind,text)=>{childDrafts.current[childTarget.parentId+':'+kind]=text;}} onSubmit={submitAuthoringChild}/>}
+      {childTarget&&<ProgramWritingInline key={childTarget.parentId+(childTarget.kind??'')} initialKind={childTarget.kind} parentTitle={childTarget.title} date={childTarget.date} scope={childTarget.scope} memo={childTarget.memo} readDraft={kind=>childDrafts.current[childTarget.parentId+':'+kind]} remember={(kind,text)=>{childDrafts.current[childTarget.parentId+':'+kind]=text;}} onSubmit={submitAuthoringChild}/>}
 
       {message && <p role="alert" className={styles.message}>{message}</p>}
       {panel.kind === 'order' && <div className={styles.choices}>
@@ -1414,9 +1476,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           {accessFor(panel.lineId)?.reason ? <button type="button" onClick={() => setPanel({ kind: 'reference', lineId: panel.lineId })}>기록·원래 항목 보기</button> : <><button type="button" onClick={() => openProgress(panel.lineId)}>진행 기록</button><button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜 바꾸기</button></>}
         </section>}
         <section className={styles.menuSection} aria-label="이 위치에 추가"><h4>이 위치에 추가</h4>
-        {props.authoringMode&&row&&authoringAnchor(row.index)&&<button type="button" onClick={()=>{openAuthoringChild(row.index);}}>부모 메모 · 독립 하위 할 일</button>}
-        {insertions.filter(option=>!props.authoringMode||option.kind!=='subcheck'&&option.kind!=='note').map(option => <button type="button" key={`${option.kind}:${option.offset}:${option.depth}`} disabled={insertionDisabled} onClick={() => insertNative(option.offset, option.text, option.caretOffset)}>{option.label}<small>{option.relation}</small></button>)}
-        {props.authoringMode&&<><button type="button" disabled={insertionDisabled} onClick={()=>insertAuthoringLayout('step')}>단계 추가</button><button type="button" disabled={insertionDisabled} onClick={()=>insertAuthoringLayout('description')}>설명 이어 쓰기</button></>}
+        {placePreview.length>0&&<ol className={styles.insertPreview} aria-hidden="true">{placePreview.map((line,index)=><li key={index} data-kind={line.kind} style={{paddingInlineStart:`${Math.min(line.depth,4)*14+8}px`}}>{line.text}</li>)}</ol>}
+        {childParent&&<button type="button" onFocus={()=>setPreviewKey('child')} onMouseEnter={()=>setPreviewKey('child')} onClick={()=>{openAuthoringChild(row!.index,'task');}}>하위 할 일<small>{childParent.place.label}</small></button>}
+        {menuInsertions.map(option => <button type="button" key={`${option.kind}:${option.offset}:${option.depth}`} disabled={insertionDisabled}
+          onFocus={()=>setPreviewKey(`${option.kind}:${option.offset}:${option.depth}`)} onMouseEnter={()=>setPreviewKey(`${option.kind}:${option.offset}:${option.depth}`)}
+          onClick={() => insertNative(option.offset, option.text, option.caretOffset)}>{option.label}<small>{option.label.startsWith('다음 ')&&row?insertPlaceAfter(option.index-row.index-1,row.title||row.task?.title||row.text.trim()):option.relation}</small></button>)}
+        {childParent&&<button type="button" onClick={()=>{openAuthoringChild(row!.index,'memo');}}>메모<small>{childParent.memo?'이 할 일에 붙임 · 있는 메모를 고침':'이 할 일에 붙임'}</small></button>}
+        {props.authoringMode&&(['step','description'] as const).map(kind=>{const place=layoutPlaces[kind];return <button type="button" key={kind} disabled={insertionDisabled||!place?.ok}
+          onFocus={()=>setPreviewKey(kind)} onMouseEnter={()=>setPreviewKey(kind)} onClick={()=>insertAuthoringLayout(kind)}>{kind==='step'?'단계 추가':'설명 이어 쓰기'}
+          <small>{place?.ok?insertPlaceAfter(place.after,place.blockTitle):'여기에는 넣을 수 없음'}</small></button>;})}
         {props.authoringMode&&props.onOpenPersonalAuthoring&&<button type="button" onClick={()=>{closePanel();props.onOpenPersonalAuthoring?.();}}>반복·Flow 만들기</button>}
         {!currentDoc()?.lines.length && <><button type="button" disabled={insertionDisabled} onClick={() => insertNative(0, '- [ ] ', 6)}>할 일</button><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(); }}>자유 메모</button></>}
         </section>
