@@ -282,3 +282,10 @@
 @media (max-width: 700px) {
   .page[data-alpha-frame="b"] .header .development > p { left: auto; right: 0; bottom: auto; top: calc(100% + 8px); width: min(320px, calc(100vw - 24px)); }
 }
+
+/* R6b: the server status inside the note editor's one slot stays inline, never a row of its own. */
+.statusSlot { position: relative; display: flex; align-items: center; gap: 4px; min-width: 0; }
+.statusSlot > p[data-save-state] { min-width: 0; margin: 0; font-size: 13px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.statusSlot > p:is([data-save-state="ready"], [data-save-state="saved"], [data-save-state="same-location"]) { color: var(--flowme-text-secondary); font-weight: 400; }
+.statusSlot .inputRecoveryBody { right: auto; width: min(420px, calc(100vw - 32px)); }
+@media (max-width: 760px) { .statusSlot .inputRecoveryBody { right: 0; width: auto; } }

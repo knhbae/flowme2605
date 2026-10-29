@@ -2,7 +2,9 @@
 
 import type {OwnedWritingAck} from '@/lib/flow/integrated-poc/writing-ack';
 import type {WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
-import React, { useEffect, useId, useRef, useState } from 'react';
+import React, { useContext, useEffect, useId, useRef, useState } from 'react';
+import { programEditorStatus, serverStatusWins } from '@/lib/flow/integrated-poc/program-status';
+import { ProgramServerStatusContext } from './program-status-context';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { readChildDrafts, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
@@ -305,6 +307,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [barLine, setBarLine] = useState<WritingBarLine>({ canOutdent: false, canIndent: false, isTask: false, markerLock: null });
   const [barHold] = useState(() => createWritingBarHold<WritingBarTarget>()), [heldBar, setHeldBar] = useState<WritingBarAction | null>(null);
   const barRef = useRef<HTMLDivElement>(null), barLockId = useId();
+  // R6b: with the host's status (Alpha note), one slot shows one status. Only the open document's
+  // editor gets noteStatus, so only it takes the host's status; without a host nothing changes.
+  const hostStatus = useContext(ProgramServerStatusContext), serverView = props.noteStatus ? hostStatus : null;
+  // While typing, saving and editing show as one quiet dot, so the 450 ms saves do not flicker words.
+  const [typing, setTyping] = useState(false), typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  function markTyping() {
+    setTyping(true);
+    if (typingTimer.current) clearTimeout(typingTimer.current);
+    typingTimer.current = setTimeout(() => { typingTimer.current = null; setTyping(false); }, 1000);
+  }
+  useEffect(() => () => { if (typingTimer.current) clearTimeout(typingTimer.current); }, []);
   useEffect(() => { releaseHeldBar(); }, [composing, draft.saving, inputLocked, props.readOnly, regionPending]);
   // Other typing or leaving the editor cancels a held press; the composition's own input does not,
   // including a final insertText some keyboards send right after compositionend.
@@ -1413,8 +1426,27 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const inputPending=!!childTarget||programTextInputPending(draft,textArea()?.value,composing,regionPending,checkPending);
   // Bar buttons turn off only for input protection, read-only, or a move they cannot make.
   const barOff = inputLocked || !!props.readOnly;
-  const barStatus = props.readOnly ? '읽기 전용' : inputLocked ? '입력 잠시 멈춤' : draft.error ? '⚠ 저장 확인 필요'
-    : checkPending ? '체크 확인 중' : draft.saving || inputPending ? '●' : '저장됨';
+  const editorStatus = programEditorStatus({ readOnly: !!props.readOnly, readOnlyLabel: props.disabledReason, error: !!draft.error,
+    locked: inputLocked, saving: draft.saving, checking: checkPending, pending: inputPending });
+  const serverWins = serverStatusWins(serverView, editorStatus);
+  const quietStatus = !!serverView && typing && !serverWins && (editorStatus.level === 6 && !inputLocked || editorStatus.level === 7);
+  // The bar's slot is the same status, short and visual only; the toolbar slot does the announcing.
+  const barStatus = serverWins ? serverView!.label : quietStatus || !serverView && editorStatus.level >= 6 && editorStatus.level < 8 && !inputLocked ? '●'
+    : props.readOnly ? '읽기 전용' : editorStatus.level === 3 ? '⚠ 저장 확인 필요' : inputLocked ? '입력 잠시 멈춤' : editorStatus.label;
+  const statusWarn = (serverWins ? serverView!.level : editorStatus.level) <= 4;
+  /** The bar's copy of the one status slot: short and never announced. A warning there is a button
+   *  that opens the toolbar slot's recovery box (keyboard closes, the box and its actions show). */
+  function barStatusSlot() {
+    if (!statusWarn) return <span className={styles.barStatus} aria-hidden="true">{barStatus}</span>;
+    return <button type="button" className={styles.barStatus} data-warn="true" aria-label={`${barStatus.replace(/^⚠ /, '')} · 복구 열기`}
+      onPointerDown={event => { event.preventDefault(); }} onClick={openStatusRecovery}>{barStatus}</button>;
+  }
+  function openStatusRecovery() {
+    const box = barRef.current?.closest('section')?.querySelector<HTMLDetailsElement>(`.${styles.serverSlot} details, .${styles.toolbar} > .${styles.saveFeedback}`);
+    if (!box) return;
+    box.open = true;
+    box.querySelector<HTMLElement>('summary')?.focus();
+  }
   function barButton(action: WritingBarAction, icon: string, label: string, keys: string, off: boolean, className?: string, describedBy?: string) {
     return <button key={action} type="button" className={className} data-bar-action={action} data-held={heldBar === action ? 'true' : undefined}
       aria-label={label} aria-describedby={describedBy} title={`${label} · ${keys}`} disabled={barOff || off}
@@ -1433,8 +1465,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     </>;
   }
   const writingBar = <div ref={barRef} className={styles.writingBar} role="toolbar" aria-label="쓰기 도구" data-editor-tools>
-      {barButtons('bar')}<span className={styles.barStatus} aria-hidden="true" data-warn={draft.error ? 'true' : undefined}>{barStatus}</span></div>;
-  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onKeyDownCapture={event => {
+      {barButtons('bar')}{barStatusSlot()}</div>;
+  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInputCapture={serverView ? markTyping : undefined} onKeyDownCapture={event => {
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
     else if (event.key === 'Escape' && suggestion && !event.nativeEvent?.isComposing && !composingRef.current) { event.preventDefault(); event.stopPropagation(); setDismissedSuggestion(suggestionKey); }
@@ -1459,8 +1491,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           {(props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" hidden={!!props.folderId} disabled={disabled || draft.dirty} aria-label="다시 실행" onClick={event => { closeEditorTools(event.currentTarget); if (orderHistoryRef.current.hasEntries()) nativeHistory('historyRedo'); else void props.onRedo?.(); }}>다시 실행</button>}
         </div>
       </details>
-      {props.noteStatus && <div className={styles.noteStatus}>{props.noteStatus}</div>}
-      {draft.error ? <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
+      {!serverView && props.noteStatus && <div className={styles.noteStatus}>{props.noteStatus}</div>}
+      {serverWins ? <div className={styles.serverSlot} data-level={serverView!.level}>{serverView!.main}</div>
+        : draft.error ? <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || composingRef.current || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
         event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
@@ -1470,7 +1503,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       <button type="button" onClick={downloadDraft}>입력한 원문 받기</button>
       <button type="button" disabled={inputLocked || draft.saving} onClick={() => { if (draftRef.current?.discard(propsRef.current.workspace)) { orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++; editorRef.current?.setValue(draftRef.current.getState().raw, { preserveSelection: true }); } }}>저장본으로 되돌리기</button>
       </div></div></details>
-        : <span className={styles.status} role="status" aria-live="polite">{props.readOnly ? props.disabledReason || '읽기 전용' : inputLocked ? '변경을 마치는 중… 입력을 잠시 보호합니다.' : checkPending ? '체크 확인 중…' : draft.saving ? '저장 중…' : inputPending ? '편집 중' : '저장됨'}</span>}
+        : <span className={styles.status} role="status" aria-live="polite" data-quiet={quietStatus || undefined}>{quietStatus ? <span aria-hidden="true">●</span> : editorStatus.label}</span>}
+      {serverView?.extras && <div className={styles.serverExtras}>{serverView.extras}</div>}
     </div>
     {moving && <div className={styles.moveNotice} role="status"><span>{moving.label} · 하위 {moving.descendantCount}줄</span><button type="button" onClick={() => setPanel({ kind: 'move', lineId: moving.lineId })}>위치 선택</button><button type="button" onClick={cancelMove}>이동 취소</button></div>}
     {message && !panel && <p className={styles.message} role="status">{message}</p>}
