@@ -56,6 +56,8 @@ declare namespace editor {
       selectionAfter?: { start: number; end: number; direction?: Selection['direction'] };
     }): boolean;
     indent(outdent?: boolean): boolean;
+    /** Run the Enter key handler as a real Enter/Shift+Enter would; false while composing or read-only. */
+    enter(shift?: boolean): boolean;
     setMoveState(value: (TextMoveSelection & { targets: TextMoveTarget[] }) | null): boolean;
     focusMoveTarget(ordinal: number): boolean;
     prepareAction(lineIndex: number): boolean;

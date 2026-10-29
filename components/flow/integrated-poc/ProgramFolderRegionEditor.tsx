@@ -23,6 +23,8 @@ export interface ProgramFolderRegionPort {
   discard(): void;
   undo?(): boolean;
   takeSnapshot(): ProgramFolderRegionSnapshot | null;
+  /** The editable region the writing bar acts on: the pending one, else the last focused one. */
+  activeEditor?(): { instance: ReturnType<typeof nativeEditor.create>; area: HTMLTextAreaElement } | null;
 }
 export function programRegionError(reason: string): string {
   if (['stale-workspace', 'stale-region', 'invalid-view'].includes(reason)) return '다른 곳에서 문서가 바뀌었습니다. 입력은 남아 있습니다. 입력을 받은 뒤 저장본으로 돌아가 주세요.';
@@ -202,6 +204,9 @@ export function ProgramFolderRegionEditor(props: {
       const pending = controller.getState().pending;
       const port = surfaces.current.get(pending?.key ?? activeKey.current ?? '') ?? Array.from(surfaces.current.values()).find(entry => !entry.area.readOnly);
       return !!port && !port.area.readOnly && port.instance.undo();
+    }, activeEditor: () => {
+      const port = surfaces.current.get(controller.getState().pending?.key ?? activeKey.current ?? '');
+      return port && !port.area.readOnly ? port : null;
     }, takeSnapshot: () => {
       if (controller.isComposing() || controller.getState().saving || latest.current.readOnly || latest.current.locked) return null;
       const pending = controller.getState().pending, captured = pending?.view ?? latest.current.view;

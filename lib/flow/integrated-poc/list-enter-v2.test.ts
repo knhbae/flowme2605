@@ -172,3 +172,48 @@ test('a Shift+Enter memo saves as that task\'s memo and reopens under it; v2 lin
   const afterDate = press('[2026-10-30]\n- [ ] 장보기', 0, { v2: true }).value;
   assert.deepEqual(saved(afterDate), { tasks: [['장보기', '']], reopened: afterDate });
 });
+
+// The writing bar's ↵ calls instance.enter(true): the same key handler, plus the line break a browser
+// inserts for a key the editor leaves alone. Compare it with a real Shift+Enter in every case.
+const enterMethod = slice('      enter(shift) {', '\n      },');
+function barEnter(raw: string, line: number, options: { v2?: boolean; composing?: boolean } = {}) {
+  const meta = rows(raw), caret = end(raw, line);
+  const textarea = { value: raw, readOnly: false }, selection: Selection = { start: caret, end: caret, direction: 'none' };
+  const editor = new Function('textarea', 'selection', 'imeEnterCycle', 'addSettings', 'inputPlans', 'config', 'getRowMeta', `
+    let composing = false, destroyed = false, inputRejected = false, nextTabLeaves = false, indentLease = null;
+    ${helpers}
+    ${lineHelpers}
+    function remember() {}
+    function indent() { return false; }
+    function canApplyInput() { return true; }
+    function insert(text) {
+      textarea.value = textarea.value.slice(0, selection.start) + text + textarea.value.slice(selection.end);
+      selection.start = selection.end = selection.start + text.length; return true;
+    }
+    function replaceRange(start, end, text, settings) {
+      textarea.value = textarea.value.slice(0, start) + text + textarea.value.slice(end);
+      const after = settings && settings.selectionAfter, caret = start + text.length;
+      selection.start = after ? after.start : caret; selection.end = after ? after.end : caret; return true;
+    }
+    ${keydown}
+    function ${enterMethod.trim()}
+    }
+    return { enter, compose(on) { composing = on; } };`)(
+    textarea, selection, { keydown: () => false }, resolve({ listEnterV2: () => !!options.v2 }), inputPlans, {}, () => meta);
+  if (options.composing) editor.compose(true);
+  const ran = editor.enter(true);
+  return { value: textarea.value, caret: selection.start, ran };
+}
+
+test('the bar ↵ gives exactly the Shift+Enter result, and does nothing during composition', () => {
+  const cases: [string, number][] = [
+    ['- [ ] 장보기', 0], ['- [ ] 장보기\n  - 메모: 우유\n- [ ] 다음', 0], ['- [ ] 장보기\n  - 메모: 우유', 1],
+    ['[2026-10-30]', 0], ['- [ ] ', 0], ['- [ ] 부모\n  - [ ] 하위', 1], ['그냥 글', 0],
+  ];
+  for (const [raw, line] of cases) for (const v2 of [false, true]) {
+    const bar = barEnter(raw, line, { v2 }), key = press(raw, line, { v2, shift: true });
+    assert.deepEqual([bar.value, bar.caret], [key.value, key.caret], JSON.stringify([raw, line, v2]));
+  }
+  const composing = barEnter('- [ ] 장보기', 0, { v2: true, composing: true });
+  assert.deepEqual([composing.ran, composing.value], [false, '- [ ] 장보기']);
+});
