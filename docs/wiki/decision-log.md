@@ -18,7 +18,7 @@
 - 실행: 기타 세션. force push와 훅 우회 금지, 막히면 멈추고 보고.
 - 사용자 원문: "정리안 v2를 권장대로 진행"
 - 근거: `D:/flowme-claude-scratch/misc/20261029/cleanup-v2/DECISIONS-v2.md`, 교차 검토 `D:/flowme-claude-scratch/inbox/cleanup-crossreview-20261029-2200.md`
-- 상태: 실행 중
+- 상태: 실행됨(10/29 23:22). 훅 우회 없음. worktree 제거만 보관 명세 뒤로 남음
 
 ## 2026-10-29 · 쓰기 방식은 하나로, 어떤 방식인지는 다시 기획
 
