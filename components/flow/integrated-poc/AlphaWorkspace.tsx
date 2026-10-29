@@ -20,6 +20,7 @@ import { type ProgramData, type ProgramParticipationDraft, type ProgramPublicati
 import type { ProgramProposalReviewDraft } from '@/lib/flow/integrated-poc/review-drafts';
 import { programInputBoundaryCurrent, readProgramInputBoundary, programInputCanRelease, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
 import { type ProgramDestination, type ProgramMutate, programErrorMessage, PROGRAM_BUSY_NOTICE, PROGRAM_QUEUED_NOTICE } from '@/lib/flow/integrated-poc/ui-contract';
+import { automaticReadToAwait, sourceReturnWait } from '@/lib/flow/integrated-poc/automatic-read-wait';
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
 import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
 import { textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
@@ -164,7 +165,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const currentOwnerRef = useRef(session.userId); currentOwnerRef.current = session.userId;
   const ownMutation = useRef(0), disposed = useRef(false), externalRef = useRef(false);
   const sourceReturnOperation = useRef<{ store: Controller; owner: string; epoch: object;
-    promise: ReturnType<ProgramMutate> } | null>(null);
+    promise: ReturnType<ProgramMutate>; settled: boolean } | null>(null);
   const [collectionsMode, setCollectionsMode] = useState(false);
   const [collectionsState, setCollectionsState] = useState<DocumentCollections | null>(null);
   const [collectionsMessage, setCollectionsMessage] = useState('');
@@ -275,9 +276,6 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (disposed.current || currentOwnerRef.current !== session.userId) return;
     if (next.account && next.account.ownerId !== session.userId) return;
     if (!next.busy) setMessage(value => value === PROGRAM_BUSY_NOTICE ? '' : value);
-    // Only take over an empty or busy notice; a waiting tap never hides another failure.
-    if (next.queued) setMessage(value => !value || value === PROGRAM_BUSY_NOTICE ? PROGRAM_QUEUED_NOTICE : value);
-    else setMessage(value => value === PROGRAM_QUEUED_NOTICE ? '' : value);
     const prior = previousSnapshot.current;
     if (reviewAnnouncementState(prior) !== reviewAnnouncementState(next)) reviewAnnouncementGeneration.current++;
     previousSnapshot.current = next;
@@ -559,13 +557,16 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (!store || storageErrorRef.current) return { ok: false, reason: 'recovery-required' };
     if (externalRef.current) return { ok: false, reason: 'conflict' };
     if (!captureInput()) return { ok: false, reason: 'recovery-required' };
-    const read = automaticRead.current;
     // Only wait for our exact automatic read, before any mutation is built or
     // dispatched. A write/UNKNOWN lookup never grants this waiting authority.
-    if (options?.groupId?.startsWith('text:') && !options.alphaCreator && !options.alphaSocial
-      && read?.eligible && read.store === store && read.ownerId === owner && read.epoch === epoch
-      && store.snapshot().busy) {
+    const read = automaticReadToAwait(automaticRead.current, { store, ownerId: owner, epoch, busy: store.snapshot().busy }, options);
+    if (read) {
+      // A waiting tap runs by itself; telling the user to press it again would
+      // let that second press reopen the task this one is about to complete.
+      const tap = !!options?.awaitAutomaticRead;
+      if (tap) setMessage(value => !value || value === PROGRAM_BUSY_NOTICE ? PROGRAM_QUEUED_NOTICE : value);
       const refreshed = await read.promise;
+      if (tap) setMessage(value => value === PROGRAM_QUEUED_NOTICE ? '' : value);
       if (disposed.current || controller.current !== store || currentOwnerRef.current !== owner
         || sessionEpochRef.current !== epoch) return { ok: false, reason: 'session-expired' };
       if (externalRef.current) return { ok: false, reason: 'conflict' };
@@ -573,6 +574,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       const live = store.snapshot();
       if (!refreshed || live.ownerId !== owner || live.account?.ownerId !== owner || !live.envelope
         || live.busy || live.pending || live.draft || !['ready', 'saved', 'same-location', 'cancelled'].includes(live.status)) {
+        // Another waiting tap took the writer first. This one did not run, so say so.
+        if (tap && live.busy && !live.pending && !live.draft) setMessage(value => !value ? PROGRAM_BUSY_NOTICE : value);
         return { ok: false, reason: live.status === 'session-expired' ? 'session-expired'
           : live.pending || live.draft ? 'unresolved' : live.busy ? 'busy' : 'recovery-required' };
       }
@@ -603,8 +606,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
             : failed?.retryableRejectedSocialDraft ? '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'
             : failed?.retryableRejectedDraft ? '저장되지 않았습니다. 입력을 수정한 뒤 다시 저장해 주세요.' : programErrorMessage(outcome.reason));
         }
-        else if (outcome.reason === 'busy' && !reviewOwnsMessage && controller.current?.snapshot().busy)
-          setMessage(controller.current.snapshot().queued ? PROGRAM_QUEUED_NOTICE : PROGRAM_BUSY_NOTICE);
+        else if (outcome.reason === 'busy' && !reviewOwnsMessage && controller.current?.snapshot().busy) setMessage(PROGRAM_BUSY_NOTICE);
       }
       else {
         if (!reviewOwnsMessage) setMessage('');
@@ -639,20 +641,29 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const mutate: ProgramMutate = (label, build, options) => {
     const store = controller.current, owner = currentOwnerRef.current, epoch = sessionEpochRef.current;
     const wasBusy = !!store?.snapshot().busy;
+    // A tap that will wait out our automatic read is a real operation too: a
+    // source return pressed after it waits for it, not for the read alone.
+    const waitsForRead = !!store && !!options?.awaitAutomaticRead
+      && !!automaticReadToAwait(automaticRead.current, { store, ownerId: owner, epoch, busy: wasBusy }, options);
     const promise = performMutation(label, build, options);
     // A rejected concurrent click must never replace the real operation. The
     // read-only source no-op is not a new operation to wait for.
-    if (store && !wasBusy && store.snapshot().busy && label !== '작성 위치 기억') {
-      sourceReturnOperation.current = { store, owner, epoch, promise };
+    if (store && (!wasBusy || waitsForRead) && store.snapshot().busy && label !== '작성 위치 기억') {
+      const operation = { store, owner, epoch, promise, settled: false };
+      sourceReturnOperation.current = operation;
+      const settle = () => { operation.settled = true; };
+      void promise.then(settle, settle);
     }
     return promise;
   };
   function awaitSourceReturnReady(): Promise<boolean> {
     const store = controller.current, owner = currentOwnerRef.current, epoch = sessionEpochRef.current;
     const visit = destinationRef.current, captured = sourceReturnOperation.current;
-    const operation = store?.snapshot().busy && captured?.store === store
-      && captured.owner === owner && captured.epoch === epoch ? captured : null;
-    return programSourceNavigationReady(operation?.promise ?? null,
+    // Wait for the unsettled operation the user started, else our own automatic
+    // read. Waiting on neither while busy is what ended the return silently.
+    const waiting = store ? sourceReturnWait(captured, automaticRead.current,
+      { store, ownerId: owner, epoch, busy: store.snapshot().busy }) : null;
+    return programSourceNavigationReady(waiting,
       () => !disposed.current && controller.current === store && currentOwnerRef.current === owner
         && sessionEpochRef.current === epoch && destinationRef.current === visit
         && sourceReturnOperation.current === captured,

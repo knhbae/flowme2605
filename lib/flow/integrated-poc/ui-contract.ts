@@ -28,14 +28,16 @@ export type ProgramPrivateMutationObserver = (event: ProgramPrivateMutationObser
 export type ProgramMutate = (
   label: string,
   build: (current: ProgramData) => ProgramTransition<string>,
-  options?: { alphaWriting?:{documentId:string;expected:TextWorkspaceState;next:TextWorkspaceState;position?:ProgramWritingPosition;workingGeneration:number;canSubmit?:()=>boolean}; groupId?: string; history?: boolean; alphaCreator?: AlphaCreatorIntent | (() => AlphaCreatorIntent); alphaSocial?: AlphaSocialIntent | (() => AlphaSocialIntent); onPrivateMutation?: ProgramPrivateMutationObserver },
+  options?: { alphaWriting?:{documentId:string;expected:TextWorkspaceState;next:TextWorkspaceState;position?:ProgramWritingPosition;workingGeneration:number;canSubmit?:()=>boolean}; groupId?: string; history?: boolean; alphaCreator?: AlphaCreatorIntent | (() => AlphaCreatorIntent); alphaSocial?: AlphaSocialIntent | (() => AlphaSocialIntent); onPrivateMutation?: ProgramPrivateMutationObserver;
+    /** The click fixed its whole intent up front, so it may wait out the host's automatic read instead of being refused as busy. */
+    awaitAutomaticRead?: boolean },
 ) => Promise<ProgramMutationResult>;
 
 /** Only the host observing live controller state should show/clear this notice. */
-export const PROGRAM_BUSY_NOTICE = '저장하거나 서버 상태를 확인하고 있습니다. 끝나면 다시 시도해 주세요.';
+export const PROGRAM_BUSY_NOTICE = '방금 누른 것은 실행하지 않았습니다. 저장이나 서버 확인이 끝난 뒤 필요하면 다시 눌러 주세요.';
 /** A tap waiting out a refresh runs by itself. Asking for a retry here would let
  *  the second tap reopen the task the first tap is about to complete. */
-export const PROGRAM_QUEUED_NOTICE = '확인이 끝나면 이어서 처리합니다. 다시 누르지 않아도 됩니다.';
+export const PROGRAM_QUEUED_NOTICE = '서버 확인이 끝나면 이어서 처리합니다. 다시 누르지 않아도 됩니다.';
 
 export function programErrorMessage(reason: string): string {
   const messages: Record<string, string> = {

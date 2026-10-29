@@ -395,6 +395,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const pendingSourceFocus = useRef<{ documentId: string; taskId: string; attempt: () => void; isCurrent: () => boolean; managedReturnFocus?: Element | null; findPanel?: HTMLDialogElement; findSourceOwner?: Element | null } | null>(null);
   const sourceNavigation = useMemo(createPendingProgramSourceNavigation, []);
   const openingSource = useRef<string | null>(null);
+  // The task whose completion tap is still waiting or saving. The ref blocks a
+  // repeat tap at once; the state draws the row as waiting.
+  const completingTask = useRef<string | null>(null);
+  const [completingTaskId, setCompletingTaskId] = useState<string | null>(null);
   const sourceEpoch = props.sourceReturnEpoch ?? props.pmTextHost?.epoch;
   const sourceMounted = useRef(true), sourceSession = useRef(sourceEpoch);
   sourceSession.current = sourceEpoch;
@@ -706,7 +710,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // User intent is based on the displayed state, not whatever happens to be on disk at commit time.
   const base = (_current: ProgramData) => ({ actorId, requestId: programId('request'), expectedSpace: detailExpected.current ?? formExpected.current ?? space });
   const run = async (label: string, build: (current: ProgramData) => ProgramTransition<string>, history = true,
-    schedule?: { taskId: string; date: string | null; time?: string; onAcknowledged?: (workspace: TextWorkspaceState | null) => void }, ownsPresentation?: () => boolean) => {
+    schedule?: { taskId: string; date: string | null; time?: string; onAcknowledged?: (workspace: TextWorkspaceState | null) => void }, ownsPresentation?: () => boolean,
+    awaitAutomaticRead = false) => {
     const noticeOwner = { ...executionDraftOwner.current }, noticeView = presentation.current;
     let committedSpace: typeof space | null = null;
     let beforeSchedule: typeof space | null = null;
@@ -716,7 +721,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const alphaSocial = target && task && schedule ? { type: 'private-task-schedule' as const, ...target,
       date: schedule.date, time: schedule.time ?? task.time ?? '' } : undefined;
     const result = await mutate(label, current => { const next = build(current); if (next.ok) { if (schedule) { beforeSchedule = current.spaces[actorId]; beforeScheduleData = current; committedScheduleData = next.data; } committedSpace = next.data.spaces[actorId]; } return next; },
-      { history, ...(alphaSocial ? { alphaSocial } : {}) });
+      { history, ...(alphaSocial ? { alphaSocial } : {}), ...(awaitAutomaticRead ? { awaitAutomaticRead } : {}) });
     // A read-only source return must not change a later dialog's message or baseline.
     if (ownsPresentation && !ownsPresentation()) return result;
     if (result.ok) {
@@ -830,7 +835,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       || Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.());
     if (taskId && writingBlocked()) { setMessage('작성 중인 입력을 저장하거나 취소한 뒤 원래 항목을 열어 주세요.'); return false; }
     if (taskId && props.awaitSourceReturnReady) {
-      if (!await intent.wait(props.awaitSourceReturnReady) || !ownsSource()) return false;
+      if (!await intent.wait(props.awaitSourceReturnReady)) {
+        // Say why instead of leaving the user on the list without a word.
+        if (ownsSource()) setMessage('원문을 열지 못했습니다. 다시 눌러 주세요.');
+        return false;
+      }
+      if (!ownsSource()) return false;
       if (writingBlocked()) { setMessage('작성 중인 입력을 저장하거나 취소한 뒤 원래 항목을 열어 주세요.'); return false; }
       if (document.activeElement !== sourceFocusOwner
         && (document.activeElement !== document.body || sourceFocusOwner?.isConnected)) return false;
@@ -1368,10 +1378,18 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
             {heading && !(props.noteHeader && period === 'today' && date === today && executionDayRows.every(row => row.group === 'on-date')) && <h2 className={styles.executionGroup}>{heading}</h2>}
-            <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} onClick={() => {
+            <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskId === task.id ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskId === task.id || undefined} onClick={() => {
               if (value > 0 && value < 100) { setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }
-              else void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }));
-            }}><span aria-hidden="true">{value === 100 ? '✓' : value ? `${value}%` : '□'}</span></button>
+              else {
+                // A repeat tap while the first still waits or saves would act on a stale
+                // value, so ignore it; the first tap waits out a refresh by itself.
+                if (completingTask.current === task.id) return;
+                completingTask.current = task.id; setCompletingTaskId(task.id);
+                const done = () => { if (completingTask.current === task.id) { completingTask.current = null; setCompletingTaskId(null); } };
+                void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }),
+                  true, undefined, undefined, true).then(done, done);
+              }
+            }}><span aria-hidden="true">{completingTaskId === task.id ? '…' : value === 100 ? '✓' : value ? `${value}%` : '□'}</span></button>
             <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} onClick={() => moving ? void moveBefore(moving, entry.key) : void openSource(task.docId, task.id)}><span className={styles.taskTitleText}>{task.title}</span><small>{!(period === 'today' && task.date === date) && <span>예정일 {task.date ?? '미정'}</span>}{task.time && <span>{task.time}</span>}{progress?.date && !(period === 'today' && progress.date === date && task.date === progress.date) && <span>진행 기록 {progress.date} · {progress.percent}%</span>}<span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}{taskFolderPath(task)} / {task.docTitle} →</span></small></button>
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
