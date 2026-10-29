@@ -36,3 +36,35 @@ export function sourceReturnWait<S>(captured: SourceReturnOperation<S> | null, r
   if (read?.eligible && read.store === scope.store && read.ownerId === scope.ownerId && read.epoch === scope.epoch) return read.promise.then(ok => ({ ok }));
   return null;
 }
+
+/** Taps waiting for the automatic read, counted per session. */
+export type QueuedTaps = { epoch: object; count: number };
+
+/** Count a waiting tap. A new session starts from zero, because an old
+ *  session's tap can no longer run once its read ends. */
+export function queueTap(ref: { current: QueuedTaps }, epoch: object): QueuedTaps {
+  if (ref.current.epoch !== epoch) ref.current = { epoch, count: 0 };
+  ref.current.count++;
+  return ref.current;
+}
+
+/** Whether the shared "will continue" notice should clear: only when the last
+ *  waiting tap of the current session stops waiting. */
+export function unqueueTap(ref: { current: QueuedTaps }, queued: QueuedTaps): boolean {
+  return --queued.count === 0 && ref.current === queued;
+}
+
+/** Tasks whose completion tap is still waiting or saving, kept per session. */
+export type CompletingTasks = { epoch: object | undefined; ids: Set<string> };
+
+/** The current session's set; a new session starts with no locks. */
+export function completingInSession(ref: { current: CompletingTasks }, epoch: object | undefined): Set<string> {
+  if (ref.current.epoch !== epoch) ref.current = { epoch, ids: new Set() };
+  return ref.current.ids;
+}
+
+/** Release a tap's lock in the set it was taken in. True when that set is
+ *  still the current one, so the waiting rows need redrawing. */
+export function finishCompleting(ref: { current: CompletingTasks }, ids: Set<string>, taskId: string): boolean {
+  return ids.delete(taskId) && ref.current.ids === ids;
+}

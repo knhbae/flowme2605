@@ -20,7 +20,7 @@ import { type ProgramData, type ProgramParticipationDraft, type ProgramPublicati
 import type { ProgramProposalReviewDraft } from '@/lib/flow/integrated-poc/review-drafts';
 import { programInputBoundaryCurrent, readProgramInputBoundary, programInputCanRelease, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
 import { type ProgramDestination, type ProgramMutate, programErrorMessage, PROGRAM_BUSY_NOTICE, PROGRAM_QUEUED_NOTICE } from '@/lib/flow/integrated-poc/ui-contract';
-import { automaticReadToAwait, sourceReturnWait } from '@/lib/flow/integrated-poc/automatic-read-wait';
+import { automaticReadToAwait, queueTap, sourceReturnWait, unqueueTap, type QueuedTaps } from '@/lib/flow/integrated-poc/automatic-read-wait';
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
 import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
 import { textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
@@ -167,8 +167,10 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const sourceReturnOperation = useRef<{ store: Controller; owner: string; epoch: object;
     promise: ReturnType<ProgramMutate>; settled: boolean } | null>(null);
   // Taps now waiting for the automatic read; the shared notice clears only when
-  // the last of them stops waiting, so one cannot erase another's notice.
-  const queuedTaps = useRef(0);
+  // the last of them stops waiting, so one cannot erase another's notice. Counted
+  // per session: an old session's tap can no longer run, so it neither holds nor
+  // clears the new session's notice.
+  const queuedTaps = useRef<QueuedTaps>({ epoch: sessionEpoch, count: 0 });
   const [collectionsMode, setCollectionsMode] = useState(false);
   const [collectionsState, setCollectionsState] = useState<DocumentCollections | null>(null);
   const [collectionsMessage, setCollectionsMessage] = useState('');
@@ -567,9 +569,10 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       // A waiting tap runs by itself; telling the user to press it again would
       // let that second press reopen the task this one is about to complete.
       const tap = !!options?.awaitAutomaticRead;
-      if (tap) { queuedTaps.current++; setMessage(value => !value || value === PROGRAM_BUSY_NOTICE ? PROGRAM_QUEUED_NOTICE : value); }
+      const queued = tap ? queueTap(queuedTaps, epoch) : null;
+      if (queued) setMessage(value => !value || value === PROGRAM_BUSY_NOTICE ? PROGRAM_QUEUED_NOTICE : value);
       const refreshed = await read.promise;
-      if (tap && --queuedTaps.current === 0) setMessage(value => value === PROGRAM_QUEUED_NOTICE ? '' : value);
+      if (queued && unqueueTap(queuedTaps, queued)) setMessage(value => value === PROGRAM_QUEUED_NOTICE ? '' : value);
       if (disposed.current || controller.current !== store || currentOwnerRef.current !== owner
         || sessionEpochRef.current !== epoch) return { ok: false, reason: 'session-expired' };
       if (externalRef.current) return { ok: false, reason: 'conflict' };
@@ -702,6 +705,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     setMessage('저장 결과를 확인했습니다.');
   }
   useEffect(() => { clearReviewContext(); }, [sessionEpoch]);
+  useEffect(() => {
+    if (queuedTaps.current.epoch === sessionEpoch) return;
+    queuedTaps.current = { epoch: sessionEpoch, count: 0 };
+    setMessage(value => value === PROGRAM_QUEUED_NOTICE ? '' : value);
+  }, [sessionEpoch]);
   useEffect(() => {
     const interacted = () => { reviewInteraction.current++; };
     window.addEventListener('pointerdown', interacted, true); window.addEventListener('keydown', interacted, true);

@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { programClone, programFailure, programId, programResult, type ProgramData, type ProgramPrivateSpace, type ProgramTransition, type ProgramWritingPosition } from '@/lib/flow/integrated-poc/contract';
 import { programDate } from '@/lib/flow/integrated-poc/program-data';
 import { programFolderCopyAccessProblem } from '@/lib/flow/integrated-poc/folder-copy';
+import { completingInSession, finishCompleting, type CompletingTasks } from '@/lib/flow/integrated-poc/automatic-read-wait';
 import { addProgramQuickTask, archiveProgramDocument, completeProgramTask, createProgramDocument, createProgramFolder, deleteProgramFolder, linkProgramTask, moveProgramFolder, recordProgramTaskProgress, renameProgramDocument, renameProgramFolder, setProgramDocumentFolder, updateProgramTask } from '@/lib/flow/integrated-poc/private-space';
 import { programDateRange, programExecutionTasks, programShiftDate, programShiftMonth, type ProgramPeriod } from '@/lib/flow/integrated-poc/execution';
 import { programOrderedExecutionRows, programTextExecutionKey, reorderProgramExecutionTimeline } from '@/lib/flow/integrated-poc/recurrence-order';
@@ -394,14 +395,20 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const sourceFocusPorts = useRef<Record<string, ProgramSourceFocus | null>>({});
   const pendingSourceFocus = useRef<{ documentId: string; taskId: string; attempt: () => void; isCurrent: () => boolean; managedReturnFocus?: Element | null; findPanel?: HTMLDialogElement; findSourceOwner?: Element | null } | null>(null);
   const sourceNavigation = useMemo(createPendingProgramSourceNavigation, []);
+  const sourceEpoch = props.sourceReturnEpoch ?? props.pmTextHost?.epoch;
   // Tasks whose completion tap is still waiting or saving, one entry per task so
   // two waiting rows do not overwrite each other. The ref blocks a repeat tap at
-  // once; the state draws those rows as waiting.
-  const completingTasks = useRef(new Set<string>());
+  // once; the state draws those rows as waiting. Kept per session: a new session
+  // starts with no locks, and an old tap's finish touches only its own set.
+  const completingTasks = useRef<CompletingTasks>({ epoch: sourceEpoch, ids: new Set() });
   const [completingTaskIds, setCompletingTaskIds] = useState<ReadonlySet<string>>(() => new Set());
-  const sourceEpoch = props.sourceReturnEpoch ?? props.pmTextHost?.epoch;
   const sourceMounted = useRef(true), sourceSession = useRef(sourceEpoch);
   sourceSession.current = sourceEpoch;
+  useEffect(() => {
+    if (completingTasks.current.epoch === sourceEpoch) return;
+    completingTasks.current = { epoch: sourceEpoch, ids: new Set() };
+    setCompletingTaskIds(new Set());
+  }, [sourceEpoch]);
   useEffect(() => {
     sourceMounted.current = true;
     const cancel = () => { sourceNavigation.cancel(); pendingSourceFocus.current = null; };
@@ -1372,9 +1379,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               else {
                 // A repeat tap while the first still waits or saves would act on a stale
                 // value, so ignore it; the first tap waits out a refresh by itself.
-                if (completingTasks.current.has(task.id)) return;
-                completingTasks.current.add(task.id); setCompletingTaskIds(new Set(completingTasks.current));
-                const done = () => { if (completingTasks.current.delete(task.id)) setCompletingTaskIds(new Set(completingTasks.current)); };
+                const ids = completingInSession(completingTasks, sourceSession.current);
+                if (ids.has(task.id)) return;
+                ids.add(task.id); setCompletingTaskIds(new Set(ids));
+                const done = () => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); };
                 void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }),
                   true, undefined, undefined, true).then(done, done);
               }
