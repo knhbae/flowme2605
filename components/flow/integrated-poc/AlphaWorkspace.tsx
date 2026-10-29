@@ -22,6 +22,8 @@ import { programInputBoundaryCurrent, readProgramInputBoundary, programInputCanR
 import { type ProgramDestination, type ProgramMutate, programErrorMessage, PROGRAM_BUSY_NOTICE, PROGRAM_QUEUED_NOTICE, PROGRAM_SOURCE_QUEUED_NOTICE } from '@/lib/flow/integrated-poc/ui-contract';
 import { automaticReadToAwait, queueTap, sourceReturnWait, unqueueTap, type QueuedTaps } from '@/lib/flow/integrated-poc/automatic-read-wait';
 import { pendingResultUnknown } from '@/lib/flow/integrated-poc/save-status';
+import { programServerStatus } from '@/lib/flow/integrated-poc/program-status';
+import { ProgramServerStatusContext, type ProgramServerStatusView } from './program-status-context';
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
 import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
 import { textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
@@ -1134,7 +1136,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       <p>{DEV_NOTICE_TEXT}</p></details>
     <button type="button" onClick={() => { if (markDevNoticeSeen(devNoticeStorage(), session.userId)) setDevNoticeSeen(true); }}>확인</button></div>;
   const serverUndo = <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>;
-  const serverStatus = <div className={styles.statusRow}>
+  // The status and its recovery box, and the notices that always show. The note editor draws
+  // the first in its one status slot only when the server's status wins; the rest stays as it is.
+  const serverStatusMain = <>
         {!localParticipationRecovery && <p role={reviewOwnsAnnouncement ? undefined : 'status'} aria-live={reviewOwnsAnnouncement ? 'off' : 'polite'} data-save-state={snapshot?.status}>{pendingUnknown ? '저장 여부 확인 못 함' : pending ? '저장 중…' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
         {destination.view === 'space' && needsInputProtection && <details name="program-input-feedback" className={styles.inputRecovery} onKeyDown={event => {
           if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
@@ -1143,14 +1147,25 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         }}><summary><span role="alert">{storageError ? '입력 보관 실패 · 확인' : pendingUnknown ? '저장 여부 확인 못 함' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장되지 않음 · 확인' : '입력 보호 · 확인'}</span></summary>
           <div className={styles.inputRecoveryBody}>{inputProtection}</div>
         </details>}
+      </>;
+  const serverStatusExtras = <>
         {destination.view === 'space' && personalRecovery}
         {destination.view === 'space' && message && !participationMessage && <details name="program-input-feedback" className={styles.feedbackMessage}
           onKeyDown={event => { if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return; event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; event.currentTarget.querySelector('summary')?.focus({ preventScroll: true }); }}>
           <summary title={message}><span role="status">안내 · {message}</span></summary>
           <div className={styles.inputRecoveryBody}><p className={styles.feedbackMessageText}>{message}</p></div>
         </details>}
+      </>;
+  const serverStatus = <div className={styles.statusRow}>
+        {serverStatusMain}{serverStatusExtras}
         {!usesNoteChrome && serverUndo}
       </div>;
+  const serverStatusView: ProgramServerStatusView | null = usesNoteChrome ? {
+    ...programServerStatus({ snapshot, storageError, external, participationRecovery: !!localParticipationRecovery }),
+    main: <div className={styles.statusSlot}>{serverStatusMain}</div>,
+    extras: destination.view === 'space' && (structuralRecoveryPanel || recoveries || message && !participationMessage)
+      ? <div className={styles.statusRow}>{serverStatusExtras}</div> : null,
+  } : null;
   return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
     <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}>FlowMe</a>
       {!unavailable && <nav className={styles.globalNavigation} aria-label="주요 메뉴">
@@ -1216,6 +1231,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       <div hidden={destination.view !== 'space'}>
         {collectionsMode && <p className={styles.notice}>모음 연결은 이 브라우저에만 저장됩니다. 문서·할 일은 기존 서버에 저장되며, 기존 폴더는 바뀌지 않습니다.</p>}
         {collectionsMessage && <p className={styles.message} role="status">{collectionsMessage}</p>}
+        <ProgramServerStatusContext.Provider value={serverStatusView}>
         <ProgramSpace key={`space:${session.userId}:${presentation}:${collectionsMode ? 'collections' : 'folders'}`} data={data} today={programLocalDate()} mutate={mutate}
         nativeAuthoringEnabled={nativeAuthoringEnabled} writingCompute={writingCompute.current??undefined} writingContext={() => ({ownerId:session.userId,baseRevision:currentRevision.current??0})}
         pmTextHost={syntheticRuntime||pmWriting==='v11-pm/1' ? { ownerId: session.userId, epoch: sessionEpoch, snapshot: () => sessionEpochRef.current === sessionEpoch && !disposed.current && currentOwnerRef.current === session.userId ? controller.current?.snapshot() ?? null : null } : undefined}
@@ -1230,7 +1246,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         }}
         selectedDocumentId={destination.view === 'space' ? destination.id : undefined} onUndo={() => history('undo')} onRedo={() => history('redo')}
         onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }}
-        onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></div>
+        onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></ProgramServerStatusContext.Provider></div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} storageScope="account"
         selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined}
         selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} onUseVersion={useVersion} onStartText={startText} onCreateFlow={openCreatorEntry} navigationState={discoveryState} onNavigationStateChange={setDiscoveryState} /></div>}

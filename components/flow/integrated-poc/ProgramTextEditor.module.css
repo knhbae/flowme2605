@@ -249,6 +249,9 @@
     position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
   }
   .editor:has(.writingBar):has(.host textarea:focus, [data-folder-region] textarea:focus, .writingBar :focus) .toolbar > .noteStatus:not(:has([role="alert"])) { display: none; }
+  .editor:has(.writingBar):has(.host textarea:focus, [data-folder-region] textarea:focus, .writingBar :focus) .toolbar > .serverSlot:not(:has([role="alert"])) {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
 }
 
 /* ＋ menu place preview: the pressed task, its memo and children, and a dashed line where the choice lands. */
@@ -258,3 +261,18 @@
 .insertPreview li[data-kind="new"] { margin: 2px 6px; border: 1px dashed var(--flowme-b-primary, #3548ce); border-radius: 6px; color: var(--flowme-b-primary-strong, #293bab); font-weight: 600; }
 /* A line just added from the menu stays lightly marked for 1.5 s. */
 .editor :global(.tle-line[data-just-added="true"]) { background: var(--flowme-b-selected, #e9edff); transition: background-color .4s; }
+
+/* R6b: one status slot. The host status sits where the editor status sits and wins only when more
+   severe; notices that must stay (recovery panels, the last message) get their own row only when present. */
+.toolbar > .status { min-width: 4em; }
+.toolbar > .status[data-quiet] { color: var(--flowme-b-control, #7d89a2); }
+.toolbar > .serverSlot { order: 3; min-width: 0; margin-left: 0; padding-inline: 4px; font-size: 13px; line-height: 20px; }
+.toolbar > .serverSlot p { margin: 0; }
+.toolbar > .serverExtras { order: 5; flex: 1 0 100%; min-width: 0; }
+@media (max-width: 700px) {
+  .toolbar > .serverSlot:has([role="alert"]) { flex: 1 0 100%; order: 5; padding-inline: 0; }
+}
+@media (max-width: 700px) {
+  /* A warning in the bar is a button to its recovery box; it keeps the status width, not a 44px square. */
+  .writingBar > button.barStatus { flex: 0 1 8.5em; width: auto; min-width: 0; padding: 0 4px; border: 0; background: transparent; font-size: 13px; color: #b45309; }
+}
