@@ -31,7 +31,7 @@ Search large logs before reading them end to end. Read [IDEAS.md](./docs/IDEAS.m
 - Capture only durable decisions, actionable deferred ideas, approved specs, blockers, or release facts.
 - Keep the repo canonical; project to Notion only for active human review or action.
 - Do not edit `.env`, credentials, `old/`, `claude_ver/`, or legacy dumps without explicit approval.
-- Do not commit, push, PR, merge, deploy, or destructively clean up without explicit approval.
+- Commit, push, PR, merge, and deploy on your own judgment once the change's minimum check in [Checks](#checks) passes, Production included; report the exact candidate, checks run, and what stays unverified. Do not force-push, rewrite published history, or destructively clean up without explicit approval.
 
 ## Checks
 
