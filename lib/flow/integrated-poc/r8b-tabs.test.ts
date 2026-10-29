@@ -77,3 +77,15 @@ test('title rows: the writing title opens the document sheet, ⋯ keeps document
   // On phones the fixed header bar gives way to the title rows; the tabs stay at the bottom.
   assert(alphaCss.includes('.page[data-alpha-frame="b"][data-note-layout="true"] > .header > :not(.globalNavigation) { display: none; }'));
 });
+
+test('toolbar: ↶ ↷ and 반복 N; the Flow·반복 box is a sheet that stays mounted, and the "…" keeps editing tools', () => {
+  const editor = read('ProgramTextEditor.tsx');
+  assert(editor.includes("{props.authoringMode && <button type=\"button\" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId} title=\"다시 실행\" aria-label=\"다시 실행\""));
+  assert(editor.includes('{props.repeatLabel && props.onOpenPersonalAuthoring && <button type="button" className={styles.repeatButton} aria-haspopup="dialog" onClick={() => props.onOpenPersonalAuthoring?.()}>{props.repeatLabel}</button>}'));
+  assert(editor.includes('{!props.authoringMode && (props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" hidden={!!props.folderId}'));
+  assert(space.includes('if (props.hostMainTabs) { const sheet = authoringSheet.current; if (sheet && !sheet.open) sheet.showModal(); return; }'));
+  assert(space.includes('className={`${styles.findDialog} ${styles.authoringSheet}`} aria-labelledby="program-authoring-title"'));
+  assert(space.includes("repeatLabel={props.hostMainTabs && props.nativeAuthoringEnabled && selected === id ? repeatLabel(id) : undefined}"));
+  const label = /function repeatLabel\(id: string\) \{[\s\S]*?return count \? `반복 \$\{count\}` : '반복';\n  \}/.test(space.replace(/\r\n/g, '\n'));
+  assert(label);
+});

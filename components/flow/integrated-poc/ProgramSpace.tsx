@@ -22,7 +22,7 @@ import { programErrorMessage, type ProgramMutate, type ProgramNavigate, type Pro
 import { emptyProgramRecurrencePresentation, programNavigationMatchesDocument, type ProgramSpaceNavigation } from '@/lib/flow/integrated-poc/navigation';
 import { ProgramDocumentProvenance } from './ProgramDocumentProvenance';
 import { ProgramPersonalAuthoring } from './ProgramPersonalAuthoring';
-import { documentHasPersonalAuthoring } from '@/lib/flow/integrated-poc/personal-authoring';
+import { documentHasPersonalAuthoring, documentRepeatSeries } from '@/lib/flow/integrated-poc/personal-authoring';
 import type { ProgramPmHostContext } from '@/lib/flow/integrated-poc/rea-pm/app-host';
 import { programTextProgressTransition } from '@/lib/flow/integrated-poc/program-text-progress-transition';
 import { programTextTransition } from '@/lib/flow/integrated-poc/program-text-transition';
@@ -167,7 +167,18 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // personal authoring, or after the ＋ menu asks for it; that ask is screen-only, never stored.
   const [authoringRequests, setAuthoringRequests] = useState<string[]>([]);
   const authoringBox = useRef<HTMLDivElement | null>(null), revealAuthoringBox = useRef(false);
-  function requestPersonalAuthoring(id: string) { revealAuthoringBox.current = true; setAuthoringRequests(previous => [...previous.filter(value => value !== id), id]); }
+  function requestPersonalAuthoring(id: string) {
+    // Under the host tabs the Flow·반복 box is a sheet the toolbar's 반복 opens (R8b); it stays mounted, so its input survives closing.
+    if (props.hostMainTabs) { const sheet = authoringSheet.current; if (sheet && !sheet.open) sheet.showModal(); return; }
+    revealAuthoringBox.current = true; setAuthoringRequests(previous => [...previous.filter(value => value !== id), id]);
+  }
+  const authoringSheet = useRef<HTMLDialogElement | null>(null);
+  /** "반복 2" when the document has live repeats, else "반복". */
+  function repeatLabel(id: string) {
+    const taskIds = M.rowMeta(space.text, id).flatMap(row => row.kind === 'task' ? [row.isReference ? row.taskId ?? '' : row.id] : []);
+    const count = documentRepeatSeries(space.personalAuthoring, id, taskIds).length;
+    return count ? `반복 ${count}` : '반복';
+  }
   useEffect(() => {
     if (!revealAuthoringBox.current) return; revealAuthoringBox.current = false;
     const box = authoringBox.current?.querySelector<HTMLDetailsElement>(':scope > details:last-of-type');
@@ -1401,9 +1412,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {selectedCollection && !selectedCollection.documentIds.includes(selectedDoc.id) && <p role="status" className={styles.muted}>이 문서는 선택한 모음에 없습니다. 원문은 그대로 열려 있습니다.</p>}
           </>}
         </>}
-        {props.nativeAuthoringEnabled&&selectedDoc&&showsPersonalAuthoring(selectedDoc.id)&&!selectedTrashed&&!retentionSource&&<div ref={authoringBox}><ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openDocument(documentId,taskId);}}/></div>}
+        {props.nativeAuthoringEnabled&&selectedDoc&&!selectedTrashed&&!retentionSource&&(props.hostMainTabs
+          ? <dialog ref={authoringSheet} className={`${styles.findDialog} ${styles.authoringSheet}`} aria-labelledby="program-authoring-title" onCancel={event => { event.preventDefault(); authoringSheet.current?.close(); }}>
+            <div className={styles.findHeading}><h2 id="program-authoring-title">반복 · Flow</h2><button type="button" onClick={() => authoringSheet.current?.close()}>닫기</button></div>
+            <ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{authoringSheet.current?.close();void openDocument(documentId,taskId);}}/>
+          </dialog>
+          : showsPersonalAuthoring(selectedDoc.id)&&<div ref={authoringBox}><ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openDocument(documentId,taskId);}}/></div>)}
         {opened.filter(id => docs.some(doc => doc.id === id)).map(id => <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor
           authoringMode={!!props.nativeAuthoringEnabled} onOpenPersonalAuthoring={() => requestPersonalAuthoring(id)} hostContext={props.pmTextHost}
+          repeatLabel={props.hostMainTabs && props.nativeAuthoringEnabled && selected === id ? repeatLabel(id) : undefined}
           onRegisterInputCheckpoint={read => { inputCheckpointReaders.current[id] = read; }}
           onRegisterCaptureComplete={read => { captureReaders.current[id] = read; }}
           onRegisterExternalGuard={read => { externalReaders.current[id] = read; }}
