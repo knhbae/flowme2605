@@ -1,5 +1,7 @@
 import { programDate } from './program-data';
+import { programLocalDate } from './execution';
 import type { ProgramTaskDatePresentation } from './execution-presentation';
+import { programCalendarDate } from './date-label';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 
 export type ProgramMemoContext = {
@@ -32,14 +34,16 @@ export function readProgramMemoContext(state: TextWorkspaceState, documentId: st
 
 /** Explain the existing handler's date effect, without changing that handler. */
 export function programTaskDateChangeHint(presentation: ProgramTaskDatePresentation | null,
-  dateDraft: string, timeEdit?: { current: string; draft: string }): string | null {
+  dateDraft: string, timeEdit?: { current: string; draft: string }, today = programLocalDate()): string | null {
   if (!presentation || typeof dateDraft !== 'string' || dateDraft !== '' && !programDate(dateDraft)) return null;
   const date = dateDraft || null;
+  // Every calendar date ends in "일", so "로" always fits.
+  const day = date ? `${programCalendarDate(date, today, false)}로` : '미정으로';
   if (date === presentation.effectiveDate) {
     const validTime = (value: unknown) => typeof value === 'string' && (value === '' || /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value));
     if (presentation.source === 'individual' || !timeEdit || !validTime(timeEdit.current) || !validTime(timeEdit.draft)
       || timeEdit.current === timeEdit.draft) return null;
-    return `시간을 바꾸면 실행 날짜도 ${date ?? '미정'}으로 개별 지정됩니다. 원문 위치와 구획 날짜는 그대로입니다.`;
+    return `시간을 바꾸면 이 할 일의 날짜도 ${day} 정해집니다. 원문 위치와 날짜 묶음은 그대로입니다.`;
   }
-  return `실행 날짜를 ${date ?? '미정'}으로 개별 지정합니다. 원문 위치와 구획 날짜는 그대로입니다.`;
+  return `이 할 일만 ${day} 정합니다. 원문 위치와 날짜 묶음은 그대로입니다.`;
 }

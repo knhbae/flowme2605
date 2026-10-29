@@ -16,6 +16,14 @@ export function programOrderedExecutionRows(data: ProgramData, query: ProgramExe
   const rows: ProgramOrderedExecutionRow[] = [...programExecutionTasks(space, query).map(task => ({ kind: 'text-task' as const, key: programTextExecutionKey(task), date: task.date, task })),
     ...recurrence.rows.map(row => ({ kind: 'occurrence' as const, key: programOccurrenceTargetKey(row), date: row.executionDate, row }))];
   const natural = new Map(rows.map((row, index) => [row.key, index])), authoritative = new Map<string, string[]>();
+  // A day nobody has ordered by hand runs by time; rows without a time go last. A saved order wins.
+  const time = (row: ProgramOrderedExecutionRow) => (row.kind === 'text-task' ? row.task.time : row.row.time) || '99:99';
+  for (const date of new Set(rows.map(row => row.date ?? 'undated'))) {
+    if (space.executionTimelineOrders?.[date]?.length || space.timelineOrders[date]?.length) continue;
+    const bucket = rows.filter(row => (row.date ?? 'undated') === date), slots = bucket.map(row => natural.get(row.key)!);
+    bucket.sort((a, b) => (time(a) < time(b) ? -1 : time(a) > time(b) ? 1 : 0) || natural.get(a.key)! - natural.get(b.key)!)
+      .forEach((row, index) => natural.set(row.key, slots[index]));
+  }
   for (const date of new Set(rows.map(row => row.date ?? 'undated'))) {
     const mixed = space.executionTimelineOrders?.[date] ?? [], old = space.timelineOrders[date] ?? [];
     const current = new Set(rows.filter(row => (row.date ?? 'undated') === date && row.kind === 'text-task').map(row => row.kind === 'text-task' ? row.task.id : ''));
