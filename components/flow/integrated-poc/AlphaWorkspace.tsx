@@ -21,6 +21,7 @@ import type { ProgramProposalReviewDraft } from '@/lib/flow/integrated-poc/revie
 import { programInputBoundaryCurrent, readProgramInputBoundary, programInputCanRelease, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
 import { type ProgramDestination, type ProgramMutate, programErrorMessage, PROGRAM_BUSY_NOTICE, PROGRAM_QUEUED_NOTICE, PROGRAM_SOURCE_QUEUED_NOTICE } from '@/lib/flow/integrated-poc/ui-contract';
 import { automaticReadToAwait, queueTap, sourceReturnWait, unqueueTap, type QueuedTaps } from '@/lib/flow/integrated-poc/automatic-read-wait';
+import { pendingResultUnknown } from '@/lib/flow/integrated-poc/save-status';
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
 import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
 import { textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
@@ -61,9 +62,9 @@ function reviewAnnouncementState(snapshot: AlphaSyncSnapshot | null | undefined)
     snapshot?.draft?.requestId, snapshot?.lastReceipt?.requestId, snapshot?.account?.revision, snapshot?.publicRevision]);
 }
 const labels: Record<AlphaSyncSnapshot['status'], string> = {
-  'signed-out': '로그인이 필요합니다', ready: '서버와 연결됨', saving: '서버에 저장 중…', saved: '서버 저장 확인',
+  'signed-out': '로그인이 필요합니다', ready: '저장됨', saving: '저장 중…', saved: '저장됨',
   'same-location': '변경 없음', cancelled: '취소했습니다', conflict: '다른 변경이 먼저 저장되었습니다',
-  'session-expired': '로그인이 만료되었습니다', 'checking-result': '저장 결과 확인이 필요합니다', 'recovery-required': '저장 상태를 확인해 주세요',
+  'session-expired': '로그인이 만료되었습니다', 'checking-result': '저장 여부 확인 못 함', 'recovery-required': '저장 상태를 확인해 주세요',
 };
 function mergeRecoveryDrafts(parked: readonly AlphaUiDraft[], active: readonly AlphaUiDraft[]): AlphaUiDraft[] {
   const seen = new Set<string>();
@@ -1066,6 +1067,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const participationMessage = !!localParticipationRecovery && [programErrorMessage('checking-result'), '저장 결과를 확인했습니다.',
     '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'].includes(message);
   const pending = !!snapshot?.pending;
+  const pendingUnknown = pendingResultUnknown(snapshot);
   const unavailable = snapshot?.status === 'session-expired' || !data || data.activeActorId !== session.userId || snapshot?.ownerId !== session.userId;
   const browse = ['discover', 'flow', 'community'].includes(destination.view);
   const workspaceTools = !unavailable && data && <div className={styles.workspaceUtilities}>
@@ -1078,19 +1080,19 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         onClick={() => void switchCollectionsMode()}>{collectionsMode ? '기존 폴더로 보기' : '문서·모음 시험'}</button>
     </div></details>
   </div>;
-  const modalRecovery = pending && snapshot?.status !== 'saving'
-    ? <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 입력은 유지하고 같은 요청으로 확인합니다.</p><button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>저장 결과 확인 · 같은 요청 재시도</button></section>
+  const modalRecovery = pendingUnknown
+    ? <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 입력은 유지하고 같은 요청으로 확인합니다.</p><button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>{snapshot?.busy ? '확인 중…' : '다시 확인'}</button></section>
     : external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft ? <section className={styles.problem} aria-label="편집 중 변경 확인"><p>다른 변경이 먼저 저장되었습니다. 입력을 보관한 뒤 최신 내용을 확인해 주세요.</p><button disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button></section> : null;
   // Presentation only: storage, pending authority and recovery actions stay
   // unchanged. In personal space their disclosure does not resize the document.
-  const needsInputProtection = storageError || !localParticipationRecovery && (pending && snapshot?.status !== 'saving'
+  const needsInputProtection = storageError || !localParticipationRecovery && (pendingUnknown
     || (snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending
     || external || snapshot?.status === 'conflict'
     || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft);
   const inputProtection = <>
     {storageError && <p className={styles.problem} role="alert">브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
-    {pending && snapshot?.status !== 'saving' && !localParticipationRecovery && <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 같은 요청으로 확인합니다.</p>
-      <button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>저장 결과 확인 · 같은 요청 재시도</button></section>}
+    {pendingUnknown && !localParticipationRecovery && <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 같은 요청으로 확인합니다.</p>
+      <button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>{snapshot?.busy ? '확인 중…' : '다시 확인'}</button></section>}
     {(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending && !localParticipationRecovery && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>{snapshot?.retryableNativeHandoff
       ? '저장되지 않았습니다. 비교와 선택은 유지했습니다. 같은 선택으로 다시 적용해 주세요.'
       : snapshot?.retryableRejectedSocialDraft ? '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'
@@ -1133,12 +1135,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     <button type="button" onClick={() => { if (markDevNoticeSeen(devNoticeStorage(), session.userId)) setDevNoticeSeen(true); }}>확인</button></div>;
   const serverUndo = <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>;
   const serverStatus = <div className={styles.statusRow}>
-        {!localParticipationRecovery && <p role={reviewOwnsAnnouncement ? undefined : 'status'} aria-live={reviewOwnsAnnouncement ? 'off' : 'polite'} data-save-state={snapshot?.status}>{pending && snapshot?.status !== 'saving' ? '저장 결과 확인이 필요합니다' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
+        {!localParticipationRecovery && <p role={reviewOwnsAnnouncement ? undefined : 'status'} aria-live={reviewOwnsAnnouncement ? 'off' : 'polite'} data-save-state={snapshot?.status}>{pendingUnknown ? '저장 여부 확인 못 함' : pending ? '저장 중…' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
         {destination.view === 'space' && needsInputProtection && <details name="program-input-feedback" className={styles.inputRecovery} onKeyDown={event => {
           if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
           event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
           event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
-        }}><summary><span role="alert">{storageError ? '입력 보관 실패 · 확인' : pending ? '저장 결과 확인' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장되지 않음 · 확인' : '입력 보호 · 확인'}</span></summary>
+        }}><summary><span role="alert">{storageError ? '입력 보관 실패 · 확인' : pendingUnknown ? '저장 여부 확인 못 함' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장되지 않음 · 확인' : '입력 보호 · 확인'}</span></summary>
           <div className={styles.inputRecoveryBody}>{inputProtection}</div>
         </details>}
         {destination.view === 'space' && personalRecovery}
