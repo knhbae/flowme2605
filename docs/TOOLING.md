@@ -85,7 +85,7 @@ Use repository-level automation before tool-specific runtime hooks.
 | Gate | Scope | Command |
 |------|-------|---------|
 | Local pre-commit hook | Fast docs and skill drift check before each commit | `npm run docs:check` |
-| Local pre-push hook | Core code confidence before publishing a branch | `npm run verify` |
+| Local pre-push hook | Checks scoped to the pushed range: docs-only pushes (plain Markdown files that `docs:check` covers, including skill `.md` files, minus `docs/content-audit/`, `docs/flow-rules/`, and `docs/validation-sessions/`, which code reads) run the docs check; anything else, including skill scripts or data, symlinks, and type changes, or an unreadable range, runs the full suite. A new branch is diffed from its merge base with `main` | `npm run docs:check` or `npm run verify` |
 | GitHub CI core job | Pull requests and pushes to `main` | `npm run verify` |
 | GitHub CI dependency gate | Pull requests and pushes to `main` | `npm run security:audit` blocks high-severity findings |
 | GitHub CI E2E job | Pull requests and pushes to `main` | `npm run build`, `npx playwright install --with-deps chromium`, `npm run test:e2e`, then retain report/test artifacts |

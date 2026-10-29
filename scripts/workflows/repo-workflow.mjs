@@ -125,6 +125,76 @@ export function recommendVerification(files) {
   return [...new Set(commands)];
 }
 
+// Markdown that check-docs.mjs scans or sync-skills.mjs mirrors, minus the docs
+// folders that npm test or the build reads as data. Skill scripts, data, and
+// metadata are not docs.
+const DOCS_ONLY_ROOT_FILES = new Set(['AGENTS.md', 'agent.md', 'README.md', 'design.md']);
+const DOCS_READ_BY_CODE = ['docs/content-audit/', 'docs/flow-rules/', 'docs/validation-sessions/'];
+const ZERO_SHA = /^0+$/;
+// Absent, regular, or executable file. Symlinks (120000) and submodules (160000)
+// escape both checkers, so they never count as docs.
+const PLAIN_FILE_MODE = /^(000000|100644|100755)$/;
+
+export function isDocsOnlyPath(value) {
+  const file = normalizeRepoPath(value);
+  if (!file.endsWith('.md')) return false;
+  if (DOCS_ONLY_ROOT_FILES.has(file)) return true;
+  if (file.startsWith('.agents/skills/') || file.startsWith('.claude/skills/')) return true;
+  return file.startsWith('docs/') && !DOCS_READ_BY_CODE.some((prefix) => file.startsWith(prefix));
+}
+
+// Parses `git diff --raw -z --no-renames` output into one entry per path.
+export function parseRawDiff(raw) {
+  const fields = raw.split('\0');
+  const changes = [];
+  for (let index = 0; index + 1 < fields.length; index += 2) {
+    if (!fields[index].startsWith(':')) break;
+    const [oldMode, newMode, , , status] = fields[index].slice(1).split(' ');
+    changes.push({ file: normalizeRepoPath(fields[index + 1]), oldMode, newMode, status });
+  }
+  return changes;
+}
+
+export function isDocsOnlyChange({ file, oldMode, newMode, status }) {
+  return status !== 'T' && PLAIN_FILE_MODE.test(oldMode) && PLAIN_FILE_MODE.test(newMode) && isDocsOnlyPath(file);
+}
+
+export function parsePrePushUpdates(raw) {
+  return raw.split(/\r?\n/).filter((line) => line.trim()).map((line) => {
+    const [localRef, localSha, remoteRef, remoteSha] = line.trim().split(/\s+/);
+    return { localRef, localSha, remoteRef, remoteSha };
+  });
+}
+
+// Returns the npm script the pre-push hook runs for the refs Git passes on stdin.
+// mergeBase(head) gives the base for a new remote ref; changedFiles(base, head)
+// returns parseRawDiff entries, or null when the range cannot be read, which
+// falls back to the full suite.
+export function selectPrePushCheck(rawUpdates, { mergeBase, changedFiles }) {
+  const changes = [];
+  for (const { localSha, remoteSha } of parsePrePushUpdates(rawUpdates)) {
+    if (ZERO_SHA.test(localSha)) continue;
+    const base = ZERO_SHA.test(remoteSha) ? mergeBase(localSha) : remoteSha;
+    const changed = base ? changedFiles(base, localSha) : null;
+    if (!changed) return 'verify';
+    changes.push(...changed);
+  }
+  return changes.every(isDocsOnlyChange) ? 'docs:check' : 'verify';
+}
+
+function prePushGit(remote) {
+  return {
+    mergeBase: (head) => git(['merge-base', `refs/remotes/${remote}/main`, head], { allowFailure: true }),
+    changedFiles: (base, head) => {
+      try {
+        return parseRawDiff(git(['diff', '--raw', '-z', '--no-renames', base, head], { maxBuffer: 256 * 1024 * 1024 }));
+      } catch {
+        return null;
+      }
+    },
+  };
+}
+
 function latestAuditEntries(limit = 5) {
   const directory = path.join(REPO_ROOT, 'docs', 'content-audit');
   if (!fs.existsSync(directory)) return [];
@@ -234,6 +304,18 @@ export function buildWorkflowReport(mode, options = {}) {
 
 function main() {
   const mode = process.argv[2];
+  if (mode === 'pre-push-check') {
+    let check = 'verify';
+    try {
+      check = selectPrePushCheck(fs.readFileSync(0, 'utf8'), prePushGit(process.argv[3] || 'origin'));
+    } catch (error) {
+      console.error(`pre-push scope: ${error.message}`);
+    }
+    console.error(`pre-push scope: npm run ${check}`);
+    console.log(check);
+    return;
+  }
+
   const json = process.argv.includes('--json');
   const scopeArgument = process.argv.find((argument) => argument.startsWith('--scope='));
   const scopes = scopeArgument ? scopeArgument.slice('--scope='.length).split(',').filter(Boolean) : [];

@@ -27,11 +27,12 @@ Search large logs before reading them end to end. Read [IDEAS.md](./docs/IDEAS.m
 
 - Treat user statements as evidence or direction unless they are explicit instructions. Judge with evidence, assumptions, and tradeoffs.
 - Prefer existing patterns and the smallest coherent change. Protect user work and credentials.
-- Separate implementation, internal QA, deployment, and observed-user evidence.
+- Separate implementation, internal QA, deployment, and observed-user evidence. Whoever writes a change runs that change's own checks; independence comes from a second reviewer, not from withholding the checks from the author.
+- Delegate research, testing, simulation, and review to a read-only Codex run (`codex exec -s read-only`, or a review-only command). `/codex:rescue` defaults to a write-capable run, so state read-only when the task is investigation. Delegate a write-capable run only when the task earns its own worktree; make the small edits here instead. The shared checkout holds other sessions' uncommitted work, which no branch can restore.
 - Capture only durable decisions, actionable deferred ideas, approved specs, blockers, or release facts.
 - Keep the repo canonical; project to Notion only for active human review or action.
 - Do not edit `.env`, credentials, `old/`, `claude_ver/`, or legacy dumps without explicit approval.
-- Do not commit, push, PR, merge, deploy, or destructively clean up without explicit approval.
+- Commit, push, PR, merge, and deploy on your own judgment once the checks your change affects, from [Checks](#checks), pass, Production included; report the exact candidate, checks run, and what stays unverified. A check that already failed before your change does not block you when you confirm the failure is identical before and after and name it in that report; a new, changed, or newly reached failure does block you, and an unrelated red check is never a reason to skip a check your change does affect. Do not force-push, rewrite published history, or destructively clean up without explicit approval.
 
 ## Checks
 

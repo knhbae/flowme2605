@@ -6,4 +6,12 @@ if [ "$FLOW_SKIP_HOOKS" = "1" ] || [ "$FLOW_SKIP_PRE_PUSH" = "1" ]; then
   exit 0
 fi
 
-npm run verify
+# Git passes the pushed refs on stdin. A docs-only push runs docs:check;
+# anything else, or a range that cannot be read, runs the full verify.
+check=$(node scripts/workflows/repo-workflow.mjs pre-push-check "$1" || echo verify)
+
+if [ "$check" = "docs:check" ]; then
+  npm run docs:check
+else
+  npm run verify
+fi
