@@ -302,7 +302,11 @@
 .space,.space[data-note-layout="true"]{padding-bottom:0}
 .space .contextActions .periods,.space[data-note-layout="true"] .contextActions .periods{position:static;inset:auto;z-index:auto;display:flex;flex-wrap:wrap;gap:8px;width:auto;max-width:100%;margin:0;padding:0 0 12px;border-top:0;border-bottom:1px solid var(--pw-line);background:transparent;box-shadow:none}
 .space .contextActions .periods>button,.space[data-note-layout="true"] .contextActions .periods>button{width:auto;flex:0 0 auto}
+/* Room for the workspace "…" menu that note layouts lay over the right end of this row (48px + 8px). */
+.space[data-note-layout="true"] .contextActions .periods { padding-right: 56px; }
 .personalAuthoring { margin: 8px 0 18px; border: 1px solid var(--border, #ddd); border-radius: 10px; padding: 12px; }
+/* Closed boxes are one 48px summary row; only the bottom rule stays so two stacked boxes never double a border. */
+.personalAuthoring:not([open]) { margin: 0 0 8px; padding: 0 12px; border-width: 0 0 1px; border-radius: 0; }
 .personalAuthoring summary { cursor: pointer; font-weight: 600; }
 .personalAuthoring fieldset { display: grid; gap: 10px; margin-top: 16px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; min-width: 0; }
 .personalAuthoring label { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }

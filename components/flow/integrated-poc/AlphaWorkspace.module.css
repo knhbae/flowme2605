@@ -280,3 +280,8 @@
   .page[data-alpha-frame="b"][data-note-layout="true"]:has([data-program-period="documents"][aria-current="page"]) .workPane { padding-block: 12px; }
   .page[data-alpha-frame="b"][data-note-layout="true"]:has([data-program-period="documents"][aria-current="page"]) .sync { margin-bottom: 8px; }
 }
+
+/* Note layouts lay the "…" menu over the right end of the tab row instead of giving it a line.
+   Only when the space follows directly: a panel, recovery, or notice in between turns this off
+   and "…" keeps its own row. The space's tab row reserves the 56px (ProgramSpace.module.css). */
+.page[data-note-layout="true"] .workPane:has(> .sync + div > section[data-note-layout="true"]:first-child) > .sync { height: 0; margin-bottom: 0; align-items: flex-start; }
