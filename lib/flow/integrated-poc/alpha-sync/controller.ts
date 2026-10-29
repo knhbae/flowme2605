@@ -13,6 +13,10 @@ import { emptyAlphaReferences } from '../alpha-social/projection';
 import { isAlphaSocialIntent } from '../alpha-social/contract';
 import { alphaSocialAllowedFields } from '../alpha-social/dispatch';
 import { isAlphaCreatorIntent } from '../alpha-creator/contract';
+import { createSettleGate } from './settle-gate';
+
+// Longest a tap waits for a refresh or result check before it is refused as busy.
+const SETTLE_WAIT_MS = 8_000;
 
 export type AlphaSyncSnapshot = { ownerId: string | null; account: AlphaAccount | null; envelope: ProgramEnvelope | null;
   status: AlphaClientStatus; busy: boolean; draft: AlphaCommand | null; pending: AlphaCommand | null; canUndo: boolean; canRedo: boolean; retryableRejectedDraft?: boolean; retryableNativeHandoff?: boolean; retryableRejectedSocialDraft?: boolean; ownWritingAck?:OwnedWritingAck|null; lastReceipt?: AlphaReceipt | null; publicRevision?: number; references?: AlphaReferenceContext };
@@ -20,6 +24,7 @@ type Success = { command: AlphaCommand; before: AlphaAccount; after: AlphaAccoun
 export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort; onChange?: (snapshot: AlphaSyncSnapshot) => void; requestId?: () => string;writingCompute?:WritingCompute }) {
   const client = createAlphaClient(isAccountForOwner, options.recovery,options.writingCompute);
   let generation = 0, busy = false, repository: AlphaRepository | null = null, undo: Success | null = null;
+  const settleGate = createSettleGate();
   let redo: { expectedRevision: number; target: AlphaAccount; creatorUndoId?: string; socialUndoId?: string } | null = null;
   const references = (owner: string) => readClient().state?.references ?? emptyAlphaReferences(owner);
   const undoable = (command: AlphaCommand) => command.kind !== 'social' || !alphaSocialAllowedFields(command.intent).public.length;
@@ -77,10 +82,18 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
   }
   const mutate: ProgramMutate = async (_label, build, mutationOptions) => {
     const started=performance.now();
+    if (busy) {
+      // A refresh or result check holds the slot only to read, so one tap may
+      // wait it out and then pass every check below against fresh data. A write
+      // in flight, a typing save, or a second tap in the window still sees busy.
+      const epoch = generation;
+      if (mutationOptions?.alphaWriting || !await settleGate.wait(SETTLE_WAIT_MS)) return rejected('busy');
+      if (epoch !== generation) return rejected('session-expired');
+      if (busy) return rejected('busy');
+    }
     const current = snapshot();
     const retryNative = !!current.retryableNativeHandoff;
     const retrySocial = !!current.retryableRejectedSocialDraft;
-    if (busy) return rejected('busy');
     if (current.pending || current.draft && !current.retryableRejectedDraft && !retryNative && !retrySocial) return rejected('unresolved');
     if (current.retryableRejectedDraft && (mutationOptions?.alphaCreator || mutationOptions?.alphaSocial)) return rejected('unresolved');
     if (retryNative && (!mutationOptions?.alphaCreator || mutationOptions.alphaSocial)) return rejected('unresolved');
@@ -168,6 +181,7 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
     if (busy) return false;
     const previous = readClient().state;
     const epoch = generation; busy = true;
+    const released = settleGate.begin();
     try {
       const operation = kind === 'refresh' ? client.refresh() : client.resolvePending(retry); emit();
       const result = await operation;
@@ -187,7 +201,7 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
         } else { redo = { expectedRevision: confirmed.revision, target: detached(previous.confirmed), ...(previous.pending.kind === 'undo-creator' ? { creatorUndoId: previous.pending.requestId } : {}), ...(previous.pending.kind === 'undo-social' ? { socialUndoId: previous.pending.requestId } : {}) }; undo = null; }
       }
       return result;
-    } finally { if (epoch === generation) { busy = false; emit(); } }
+    } finally { if (epoch === generation) { busy = false; emit(); } released(); }
   }
   return {
     snapshot, mutate,
