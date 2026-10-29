@@ -30,6 +30,8 @@ declare namespace editor {
     typingPickers?:()=>boolean;
     /** The row ＋ opens the writing insert menu instead of the default insert action. */
     plusOpensAuthoring?:()=>boolean;
+    /** List Enter v2: date header and folder lines end with a plain line; Shift+Enter at a task's end opens its memo line. */
+    listEnterV2?:()=>boolean;
     getAddAnchor?:(lineIndex:number)=>{parentIndex:number;bottomIndex:number}|null;
     /** Separate direct-check admission; structural actions retain the common hold. */
     isCheckDisabled?: (lineIndex?: number) => boolean;

@@ -209,6 +209,9 @@ export function ProgramReferencePanel({ access, title, date, history, onOrigin, 
 /** A default binary check records progress on the existing Item. Subchecks,
  * partial progress and future-record ambiguity retain the explicit detail UI. */
 /** Presentation follows the real action; this never authorizes a mutation. */
+/** A checkbox line with no title yet. */
+const EMPTY_TITLE_TASK = /^\s*-\s+\[([ xX]|\d+(?:\.\d+)?%?)\]\s*$/;
+
 export function programCheckboxAction(meta: TextEditorRowMeta, access: ProgramReferenceAccess | undefined, date: string): 'toggle' | 'progress-open' | 'reference-open' {
   if (!meta.progressTargetId || !access || access.kind !== 'active' || access.reason
     || access.lineId !== meta.progressTargetId || !access.documentId) return 'reference-open';
@@ -301,6 +304,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const controller=draftRef.current,state=controller?.getState();
     if(!controller||!state||checkPendingRef.current||inputLockedRef.current||propsRef.current.readOnly
       ||state.invalid||composingRef.current||regionPendingRef.current)return true;
+    // With the writing tools on, a task without a title cannot be checked; the line is left as written.
+    if(lineIndex!==undefined&&propsRef.current.authoringMode&&EMPTY_TITLE_TASK.test(currentDoc()?.lines[lineIndex]?.text??''))return true;
     if(!state.saving)return false;
     if(textArea()?.value!==state.raw)return true;
     const doc=currentDoc(),date=today();
@@ -715,10 +720,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         meta.progressTargetId ? propsRef.current.taskAccess?.(meta.progressTargetId,currentState()) : undefined, today()),
       getRowMeta: () => documentInput.paint(controller.getState().working)??textEditorRows(controller.getState().working, props.docId),
       isActionDisabled: actionsDisabled,
-      // Enter keeps the list rules until S2; with the writing tools on, ＋ opens their menu and typed pickers stay off.
+      // Enter keeps the list rules; with the writing tools on, ＋ opens their menu, typed pickers stay off,
+      // and list Enter v2 applies (one flag, so turning it off restores the R3 Enter).
       lineBreakEnter:()=>false,
       typingPickers:()=>!propsRef.current.authoringMode,
       plusOpensAuthoring:()=>!!propsRef.current.authoringMode,
+      listEnterV2:()=>!!propsRef.current.authoringMode,
       getAddAnchor:index=>propsRef.current.authoringMode?{parentIndex:index,bottomIndex:index}:null,
       isCheckDisabled: checkActionsDisabled,
       canApplyIndent: raw => !actionsDisabled() && M.raw(M.getDocument(M.editText(controller.getState().working, props.docId, raw, { progressDate: today() }), props.docId)) === raw,
@@ -1275,7 +1282,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       {!folderView?.regions.length && <p>이 분류에 맞는 내용이 없습니다. 전체 문서에서 확인할 수 있습니다.</p>}
     </div>}
     <div ref={hostRef} className={`${styles.host}${props.directWriting ? ` ${styles.directWriting}` : ''}`} hidden={!!props.folderId} data-native-editor="v11-core" />
-    {folderView && <ProgramFolderRegionEditor key={`${props.docId}:${props.folderId}`} styles={regionStyles} view={folderView} readOnly={!!props.readOnly} locked={inputLocked || draft.saving} mode={mode}
+    {folderView && <ProgramFolderRegionEditor key={`${props.docId}:${props.folderId}`} styles={regionStyles} view={folderView} readOnly={!!props.readOnly} locked={inputLocked || draft.saving} mode={mode} listEnterV2={!!props.authoringMode}
       workspace={currentState} onAccept={acceptRegion} onPersist={saveFullDraft} onDownload={downloadDraft}
       onContinueWholeDocument={continueWholeDocument}
       onPosition={(start, end, lineId) => { regionPositionRef.current = { start, end }; propsRef.current.onPosition?.({ start, end, scrollTop: 0 }, lineId); }}

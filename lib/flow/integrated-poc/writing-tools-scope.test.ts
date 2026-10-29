@@ -26,25 +26,47 @@ function editorSettings(file: string, scope: Record<string, unknown>) {
   for (const property of find(tree, ts.isPropertyAssignment)) {
     const name = property.name.getText(tree);
     const call = ts.findAncestor(property, ts.isCallExpression);
-    if (!['lineBreakEnter', 'typingPickers', 'plusOpensAuthoring', 'explicitAddOnly'].includes(name) || call?.expression.getText(tree) !== 'nativeEditor.create') continue;
+    if (!['lineBreakEnter', 'typingPickers', 'plusOpensAuthoring', 'listEnterV2', 'explicitAddOnly'].includes(name) || call?.expression.getText(tree) !== 'nativeEditor.create') continue;
     settings[name] = new Function(...Object.keys(scope), `return ${js(`(${property.initializer.getText(tree)})`)}`)(...Object.values(scope));
   }
   return settings;
 }
 
-test('the body editor keeps list Enter and turns typed pickers off and the writing ＋ on with the flag', () => {
+test('the body editor keeps list Enter; the flag turns typed pickers off, the writing ＋ on, and list Enter v2 on', () => {
   const read = (authoringMode: boolean) => {
     const settings = editorSettings('ProgramTextEditor.tsx', { propsRef: { current: { authoringMode } } });
-    assert.deepEqual(Object.keys(settings).sort(), ['lineBreakEnter', 'plusOpensAuthoring', 'typingPickers']);
-    return [settings.lineBreakEnter(), settings.typingPickers(), settings.plusOpensAuthoring()];
+    assert.deepEqual(Object.keys(settings).sort(), ['lineBreakEnter', 'listEnterV2', 'plusOpensAuthoring', 'typingPickers']);
+    return [settings.lineBreakEnter(), settings.typingPickers(), settings.plusOpensAuthoring(), settings.listEnterV2()];
   };
-  assert.deepEqual(read(true), [false, false, true]);
-  assert.deepEqual(read(false), [false, true, false]);
+  assert.deepEqual(read(true), [false, false, true, true]);
+  assert.deepEqual(read(false), [false, true, false, false]);
 });
 
-test('the folder region editor passes the same Enter and picker settings', () => {
-  const settings = editorSettings('ProgramFolderRegionEditor.tsx', {});
-  assert.deepEqual([settings.lineBreakEnter(), settings.typingPickers()], [false, false]);
+test('the folder region editor passes the same Enter, picker, and list Enter v2 settings', () => {
+  for (const listEnterV2 of [false, true]) {
+    const settings = editorSettings('ProgramFolderRegionEditor.tsx', { latest: { current: { listEnterV2 } } });
+    assert.deepEqual([settings.lineBreakEnter(), settings.typingPickers(), settings.listEnterV2()], [false, false, listEnterV2]);
+  }
+  const { tree } = component('ProgramTextEditor.tsx');
+  const region = find(tree, ts.isJsxAttribute).filter(attribute => attribute.name.getText(tree) === 'listEnterV2');
+  assert.deepEqual(region.map(attribute => attribute.initializer?.getText(tree)), ['{!!props.authoringMode}']);
+});
+
+test('with the writing tools on, an untitled task cannot be checked; titled tasks and the flag off are unchanged', () => {
+  const { tree } = component('ProgramTextEditor.tsx');
+  const declaration = (name: string) => find(tree, ts.isVariableDeclaration).filter(node => node.name.getText(tree) === name)[0]?.initializer;
+  const pattern = declaration('EMPTY_TITLE_TASK'), check = declaration('checkActionsDisabled');
+  assert(pattern && check);
+  const lines = ['- [ ] ', '- [ ] 장보기', '  - [x]   ', '- [50%] '];
+  const run = (authoringMode: boolean) => {
+    const disabled = new Function('EMPTY_TITLE_TASK', 'draftRef', 'checkPendingRef', 'inputLockedRef', 'propsRef', 'composingRef', 'regionPendingRef', 'currentDoc',
+      `return ${js(`(${check.getText(tree)})`)}`)(new Function(`return ${pattern.getText(tree)}`)(),
+      { current: { getState: () => ({ invalid: false, saving: false, raw: '' }) } }, { current: null }, { current: false },
+      { current: { readOnly: false, authoringMode } }, { current: false }, { current: false }, () => ({ lines: lines.map(text => ({ text })) }));
+    return lines.map((_, index) => disabled(index));
+  };
+  assert.deepEqual(run(true), [true, false, true, true]);
+  assert.deepEqual(run(false), [false, false, false, false]);
 });
 
 test('writing tools follow the workspace flag, never a per-document or per-browser choice', () => {

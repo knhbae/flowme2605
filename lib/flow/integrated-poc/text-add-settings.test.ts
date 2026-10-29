@@ -3,7 +3,7 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
-type AddSettings = { lineBreakEnter(): boolean; typingPickers(): boolean; plusOpensAuthoring(): boolean };
+type AddSettings = { lineBreakEnter(): boolean; typingPickers(): boolean; plusOpensAuthoring(): boolean; listEnterV2(): boolean };
 const { resolve } = createRequire(import.meta.url)('./text-add-settings.cjs') as { resolve: (config: Record<string, unknown>) => AddSettings };
 const read = (settings: AddSettings) => [settings.lineBreakEnter(), settings.typingPickers(), settings.plusOpensAuthoring()];
 
@@ -68,4 +68,10 @@ test('the row ＋ opens the writing insert menu only when plusOpensAuthoring is 
   };
   assert.deepEqual(click({}), [['insert', 3]]);
   assert.deepEqual(click({ plusOpensAuthoring: () => true }), [['authoring-insert', 3]]);
+});
+
+test('list Enter v2 is off unless asked for, and the old alias never turns it on', () => {
+  assert.equal(resolve({}).listEnterV2(), false);
+  assert.equal(resolve({ explicitAddOnly: () => true }).listEnterV2(), false);
+  assert.equal(resolve({ listEnterV2: () => true }).listEnterV2(), true);
 });

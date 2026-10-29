@@ -110,6 +110,7 @@ function NativeProgramRegion(props: {
   label: string;
   mode?: 'live' | 'text';
   readOnly: boolean;
+  listEnterV2?: boolean;
   composing(): boolean;
   rows(): ReturnType<typeof textEditorRows>;
   canApply(raw: string): boolean;
@@ -128,7 +129,7 @@ function NativeProgramRegion(props: {
       value: latest.current.raw, label: latest.current.label, controls: false,
       // Same writing-tool settings as the body editor so one document never splits its Enter or
       // picker rules; controls:false already hides ＋ and pickers in this region.
-      lineBreakEnter: () => false, typingPickers: () => false,
+      lineBreakEnter: () => false, typingPickers: () => false, listEnterV2: () => !!latest.current.listEnterV2,
       getRowMeta: () => latest.current.rows(),
       isActionDisabled: () => latest.current.readOnly,
       canApplyInput: raw => !latest.current.readOnly && latest.current.canApply(raw),
@@ -169,6 +170,8 @@ export function ProgramFolderRegionEditor(props: {
   readOnly: boolean;
   locked: boolean;
   mode?: 'live' | 'text';
+  /** Same list Enter v2 setting as the body editor. */
+  listEnterV2?: boolean;
   workspace(): TextWorkspaceState;
   onAccept(next: TextWorkspaceState, before: TextWorkspaceState): boolean;
   onPersist(): Promise<boolean>;
@@ -230,7 +233,7 @@ export function ProgramFolderRegionEditor(props: {
     </div> : entry.region && !entry.region.readOnly ? <div key={entry.region.key} className={styles.region} data-folder-region={entry.region.key}>
       <span className={styles.regionLabel}>원문 {entry.region.startIndex + 1}–{Math.max(entry.region.startIndex + 1, entry.region.endIndex)}줄</span>
       <NativeProgramRegion label={`폴더 영역 ${'ordinal' in entry ? entry.ordinal! + 1 : 1} 원문`}
-        mode={props.mode}
+        mode={props.mode} listEnterV2={props.listEnterV2}
         raw={state.pending?.key === entry.region.key ? state.pending.raw : entry.region.raw}
         readOnly={props.readOnly || props.locked || !!state.pending && state.pending.key !== entry.region.key}
         composing={controller.isComposing} className={styles.regionHost}
