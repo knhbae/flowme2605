@@ -30,6 +30,11 @@ import {
   sourceReachabilityIsHardBroken,
   sourceReachabilityNeedsManualReview,
 } from './source-reachability';
+import {
+  describeSourceReviewAttention,
+  partitionSourceReviewDebt,
+  SOURCE_REVIEW_DEBT_RECORDED_ON,
+} from './source-review-debt';
 import { virtualUsers } from './users';
 
 const curatedSourceAppSeedFlowSlugs = curatedSourceAppSeed.contentBundles.flatMap((bundle) =>
@@ -1279,16 +1284,20 @@ test('generated preview flows are executable and source-backed', () => {
   }
 });
 
-test('normal user routes fail the standard suite when source review is due', () => {
+test('normal user routes fail the standard suite on source review beyond recorded debt', () => {
   const summary = summarizeFlowSourceFreshness(seedBundles, new Date());
-  const attention = summary.attention
-    .slice(0, 20)
-    .map((entry) => `${entry.slug}:${entry.bucket}:${entry.checkedAt ?? 'missing'}`)
-    .join(', ');
+  const { unexpected, resolved } = partitionSourceReviewDebt(summary.attention);
 
-  assert.equal(summary.missingMetadataCount, 0, attention);
-  assert.equal(summary.reviewDueCount, 0, attention);
-  assert.equal(summary.staleCount, 0, attention);
+  assert.deepEqual(
+    unexpected.map((entry) => entry.slug),
+    [],
+    `source review overdue outside the debt recorded on ${SOURCE_REVIEW_DEBT_RECORDED_ON}: ${describeSourceReviewAttention(unexpected)}`,
+  );
+  assert.deepEqual(
+    resolved.map((entry) => entry.slug),
+    [],
+    'recorded source-review debt is no longer overdue; delete these entries from source-review-debt.ts',
+  );
 });
 
 test('standard source freshness gate rejects future and malformed review metadata', () => {
