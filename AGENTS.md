@@ -27,7 +27,8 @@ Search large logs before reading them end to end. Read [IDEAS.md](./docs/IDEAS.m
 
 - Treat user statements as evidence or direction unless they are explicit instructions. Judge with evidence, assumptions, and tradeoffs.
 - Prefer existing patterns and the smallest coherent change. Protect user work and credentials.
-- Separate implementation, internal QA, deployment, and observed-user evidence.
+- Separate implementation, internal QA, deployment, and observed-user evidence. Whoever writes a change runs that change's own checks; independence comes from a second reviewer, not from withholding the checks from the author.
+- Delegate research, testing, simulation, and review to a read-only Codex run (`codex exec -s read-only`, or a review-only command). `/codex:rescue` defaults to a write-capable run, so state read-only when the task is investigation. Delegate a write-capable run only when the task earns its own worktree; make the small edits here instead. The shared checkout holds other sessions' uncommitted work, which no branch can restore.
 - Capture only durable decisions, actionable deferred ideas, approved specs, blockers, or release facts.
 - Keep the repo canonical; project to Notion only for active human review or action.
 - Do not edit `.env`, credentials, `old/`, `claude_ver/`, or legacy dumps without explicit approval.
