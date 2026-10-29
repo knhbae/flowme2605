@@ -42,6 +42,10 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
   const [callbackPhase, setCallbackPhase] = useState<CallbackPhase>(callback ? 'pending' : 'ready');
   const callbackGate = useRef<CallbackPhase>(callback ? 'pending' : 'ready');
   const [recoveryBlocked, setRecoveryBlocked] = useState(false);
+  // Text typed into the server-rendered form before hydration is reset by the
+  // controlled inputs, so the fields stay locked until the form is live.
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => { setHydrated(true); }, []);
   const [workspaceSession, setWorkspaceSession] = useState<VerifiedAlphaSession | null>(null);
   const [workspaceOwner, setWorkspaceOwner] = useState<string | null>(null);
   const client = useRef<SupabaseClient | null>(null), boundary = useRef<ReturnType<typeof createAlphaSessionBoundary> | null>(null);
@@ -280,9 +284,9 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
           <p>계정과 서버 접근을 확인하는 개발 화면입니다. 실제 개인 자료는 아직 넣지 마세요.</p>
           {google && mode === 'login' && <button className={styles.secondary} disabled={!ready || busy} onClick={() => void signInGoogle()}>Google로 계속</button>}
           <form onSubmit={event => void submit(event)}>
-            {mode !== 'new-password' && <label>이메일<input name="email" type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} disabled={busy} /></label>}
-            {mode !== 'reset' && <label>{mode === 'new-password' ? '새 비밀번호' : '비밀번호'}<input name="password" type="password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} required minLength={mode === 'login' ? 1 : 8} value={password} onChange={e => setPassword(e.target.value)} disabled={busy} /></label>}
-            {(mode === 'signup' || mode === 'new-password') && <label>비밀번호 확인<input name="confirmPassword" type="password" autoComplete="new-password" required minLength={8} value={confirm} onChange={e => setConfirm(e.target.value)} disabled={busy} /></label>}
+            {mode !== 'new-password' && <label>이메일<input name="email" type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} disabled={busy || !hydrated} /></label>}
+            {mode !== 'reset' && <label>{mode === 'new-password' ? '새 비밀번호' : '비밀번호'}<input name="password" type="password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} required minLength={mode === 'login' ? 1 : 8} value={password} onChange={e => setPassword(e.target.value)} disabled={busy || !hydrated} /></label>}
+            {(mode === 'signup' || mode === 'new-password') && <label>비밀번호 확인<input name="confirmPassword" type="password" autoComplete="new-password" required minLength={8} value={confirm} onChange={e => setConfirm(e.target.value)} disabled={busy || !hydrated} /></label>}
             <button type="submit" disabled={!ready || busy}>{busy ? '확인 중…' : mode === 'reset' ? '복구 이메일 요청' : headings[mode]}</button>
           </form>
           <nav className={styles.actions} aria-label="로그인 방법">
