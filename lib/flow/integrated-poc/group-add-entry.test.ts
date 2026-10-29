@@ -84,3 +84,13 @@ test('empty Enter, Esc, or leaving an empty line closes it; composing Esc and le
   h.field.value = ''; h.blur(); assert.equal(h.closes.length, 3);
   assert.deepEqual(h.adds, []);
 });
+
+test('an add may clear the line only if the title and time did not change while it was saving', () => {
+  const entry = createGroupAddEntry();
+  const quiet = entry.mark();
+  assert.equal(entry.unchangedSince(quiet), true);
+  const typed = entry.mark(); entry.edited();
+  assert.equal(entry.unchangedSince(typed), false);
+  const composed = entry.mark(); entry.compositionStart(); entry.compositionEnd();
+  assert.equal(entry.unchangedSince(composed), false);
+});

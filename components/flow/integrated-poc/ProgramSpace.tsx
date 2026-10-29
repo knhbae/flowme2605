@@ -449,7 +449,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   // "← 오늘" lives only while that same source stays open; any other document or view drops it.
   const [sourceOrigin, setSourceOrigin] = useState<SourceOrigin | null>(null);
-  const [sourceRestore, setSourceRestore] = useState<SourceOrigin | null>(null);
+  // The return also remembers what started it (a tab or "← 오늘") so focus moves on only from there.
+  const [sourceRestore, setSourceRestore] = useState<(SourceOrigin & { opener: Element | null }) | null>(null);
   useEffect(() => {
     setSourceOrigin(origin => origin && (origin.actorId !== actorId || period !== 'documents' || selected !== origin.documentId) ? null : origin);
   }, [actorId, period, selected]);
@@ -463,7 +464,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     void openDocument(task.docId, task.id).then(opened => { if (opened && dataRef.current.activeActorId === origin.actorId) setSourceOrigin(origin); });
   }
   async function returnToSourceOrigin() {
-    const origin = sourceOrigin;
+    const origin = sourceOrigin, opener = document.activeElement;
     if (!origin || inputLockCount.current > 0) return;
     const release = lockInput();
     try {
@@ -471,7 +472,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (!await flushAllEditors()) { showViewChangeBlocked(); return; }
       if (dataRef.current.activeActorId !== origin.actorId) return;
       setSourceOrigin(null); setPeriod(origin.view.period); setDate(origin.view.date); setFolderId(origin.view.folderId); setQuery(origin.view.query);
-      setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setSourceRestore(origin);
+      setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setSourceRestore({ ...origin, opener });
     } finally { release(); }
   }
   useEffect(() => {
@@ -491,7 +492,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       }
       if (Math.abs(offset) > 1) window.scrollBy({ top: offset, behavior: 'instant' });
       const active = document.activeElement;
-      if (!active || active === document.body || !active.getClientRects().length)
+      if (!active || active === document.body || !active.getClientRects().length || active === origin.opener)
         row.querySelector<HTMLButtonElement>(`button.${styles.taskTitle}`)?.focus({ preventScroll: true });
     });
     return () => cancelAnimationFrame(frame);
@@ -1495,7 +1496,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {addingDate === item.addDate && item.addDate && <ProgramGroupAddRow key={`${actorId}:${item.addDate}`} date={item.addDate} dayLabel={programCalendarDate(item.addDate, today)} inputRef={groupAddField}
               onAdd={(title, time) => addOnDay(item.addDate!, title, time)} onClose={() => closeGroupAdd(item.addDate!)} />}
           </React.Fragment>;
-          if (item.kind === 'empty-days') return <li key="empty-days" className={styles.emptyDays}><button type="button" aria-expanded={item.open} onClick={() => setEmptyDaysOpen(open => !open)}>
+          if (item.kind === 'empty-days') return <li key="empty-days" className={styles.emptyDays}><button type="button" aria-expanded={item.open} onClick={() => {
+            // Folding would unmount a line being written on an empty day; keep it open and go back to it.
+            if (item.open && addingDate && item.dates.includes(addingDate)) {
+              if (groupAddField.current?.value.trim()) { groupAddField.current.focus(); return; }
+              setAddingDate(null);
+            }
+            setEmptyDaysOpen(open => !open);
+          }}>
             할 일 없는 날 {item.dates.length}일 · {item.open ? '접기' : '펼치기'}</button></li>;
           const entry = item.entry;
           if (entry.kind === 'occurrence') return <li key={entry.key} onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveExecutionStep(entry.key, event.key === 'ArrowUp' ? -1 : 1); } }} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}>

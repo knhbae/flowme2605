@@ -4,9 +4,14 @@
 export type GroupAddAction = 'add' | 'close' | 'ignore';
 
 export function createGroupAddEntry() {
-  let composing = false, saving = false;
+  let composing = false, saving = false, edits = 0;
   return {
-    compositionStart() { composing = true; },
+    compositionStart() { composing = true; edits++; },
+    /** The title or time changed. An add that started before this must not clear the line. */
+    edited() { edits++; },
+    /** Taken when an add starts; its success may clear the line only if nothing changed since. */
+    mark() { return edits; },
+    unchangedSince(mark: number) { return edits === mark; },
     compositionEnd() { composing = false; },
     /** Enter or the 추가 button. `isComposing` is the key event's own flag (false for a button). */
     submit(title: string, isComposing = false): GroupAddAction {
