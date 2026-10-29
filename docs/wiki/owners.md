@@ -4,7 +4,11 @@
 
 | 담당 | 맡은 일 | 단독으로 쓰는 곳 | 상태 |
 | --- | --- | --- | --- |
-| 총괄 Claude (메인 세션) | 계획·설계·코드·배포 판단·위임, 위키 | `D:/flowme2605/flow-wiki` 의 `docs/wiki/**`, 자기 작업 worktree | 활동 |
+| 총괄 Claude (총괄 세션) | 계획·설계·배포 판단·위임, 위키, R4 구현 | `D:/flowme2605/flow-wiki` 의 `docs/wiki/**`, R4 worktree `D:/flowme2605/flow-alpha-r4-20261029` (브랜치 `agent/alpha-r4-busy-intent-20261029`), R4 원장 `…-01a168e3/revision4/` | 활동 |
+| 개발 세션 (Claude) | `main` 최신화 + 범위 인식 푸시 전 훅 → PR | `D:/flowme2605/flow-main-catchup-20261029`, 브랜치 `agent/main-catchup-scoped-hook-20261029` | 10/29 시작 |
+| 기획 세션 (Claude) | 저장소 정리 결정안: 열린 PR 25, worktree 109, 브랜치 | `D:/flowme-claude-scratch/planning/` 만. repo·GitHub는 읽기 전용 | 10/29 시작 |
+| UX 세션 (Claude) | 긴 글 본문 공간, 반복 규칙 재열기, 저장 안내 UX 설계 | `D:/flowme-claude-scratch/ux/` 만. 코드는 읽기 전용 | 10/29 시작 |
+| 기타 세션 (Claude) | 코덱스 압축 세션 열림 확인, C: 문서 폴더 용량 조사 | `D:/flowme-claude-scratch/misc/` 만. 읽기 전용 | 10/29 시작 |
 | 코덱스 총괄 스레드 `01a168e3-1e7c-7800-bda6-c05c355a0068` | 조사·테스트·리뷰, Supabase 읽기 (기본 읽기 전용) | `D:/flowme-<주제>-<날짜>-01a168e3/`, inbox 회신 | 활동 |
 | Dot (코덱스, 클라우드 크롬) | 합성 문서 화면 테스트 | 테스트 계정의 합성 문서, 결과는 총괄 스레드 경유 | 10/29 활동 |
 | 개발3 (10/26 구조, 코덱스) | 원문 복귀 후보 통합 | 과제 원장의 `revision*/candidate`, `development` | 원장상 소유, 현재 활동 미확인 |
