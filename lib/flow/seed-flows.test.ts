@@ -33,6 +33,7 @@ import {
 import {
   describeSourceReviewAttention,
   partitionSourceReviewDebt,
+  SOURCE_REVIEW_DEBT,
   SOURCE_REVIEW_DEBT_RECORDED_ON,
 } from './source-review-debt';
 import { virtualUsers } from './users';
@@ -1297,6 +1298,18 @@ test('normal user routes fail the standard suite on source review beyond recorde
     [],
     'recorded source-review debt is no longer overdue; delete these entries from source-review-debt.ts',
   );
+});
+
+test('recorded source-review debt does not absorb a new metadata error on a listed Flow', () => {
+  const [recorded] = SOURCE_REVIEW_DEBT;
+  const overdue = { slug: recorded.slug, checkedAt: recorded.sourceCheckedAt, bucket: 'review_due' };
+
+  assert.equal(partitionSourceReviewDebt([overdue]).matchedCount, 1);
+  assert.equal(partitionSourceReviewDebt([{ ...overdue, bucket: 'stale' }]).matchedCount, 1);
+
+  const broken = partitionSourceReviewDebt([{ ...overdue, bucket: 'missing_metadata' }]);
+  assert.equal(broken.matchedCount, 0);
+  assert.deepEqual(broken.unexpected.map((entry) => entry.slug), [recorded.slug]);
 });
 
 test('reviewed source mismatches stay in preview while corrected routes use current evidence', () => {

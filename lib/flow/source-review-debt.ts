@@ -120,6 +120,10 @@ const DEBT_KEYS: ReadonlySet<string> = new Set(
   SOURCE_REVIEW_DEBT.map((entry) => debtKey(entry.slug, entry.sourceCheckedAt)),
 );
 
+// Recorded debt only covers a Flow that is overdue for review. Any other
+// attention bucket on a recorded Flow, such as missing_metadata, is new drift.
+const DEBT_BUCKETS: ReadonlySet<string> = new Set(['review_due', 'stale']);
+
 /**
  * Split a freshness summary's `attention` list against the recorded debt.
  *
@@ -139,7 +143,7 @@ export function partitionSourceReviewDebt(attention: readonly SourceFreshnessAtt
 
   for (const entry of attention) {
     const key = debtKey(entry.slug, entry.checkedAt ?? null);
-    if (DEBT_KEYS.has(key)) {
+    if (DEBT_BUCKETS.has(entry.bucket) && DEBT_KEYS.has(key)) {
       matched.add(key);
       continue;
     }
