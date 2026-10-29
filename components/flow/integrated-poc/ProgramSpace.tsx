@@ -85,6 +85,13 @@ export type ProgramSpaceProps = {
   onRegisterReviewSpace?: (port: ProgramReviewSpacePort | null) => void;
   onRegisterEditors?: (editors: (ProgramEditorFlush & AlphaStructuralEditorPort) | null) => void;
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
+  /** R8b: the host draws the main tabs (쓰기·오늘·분류) and chooses one through this port. The space's own
+   *  period state stays here; this is not onRegisterNavigation, so source opens keep their focus path. */
+  onRegisterMainTabs?: (port: { choose(tab: ProgramMainTab): Promise<boolean> } | null) => void;
+  /** Which main tab the space now shows, for the host's tabs. */
+  onMainTabChange?: (tab: ProgramMainTab) => void;
+  /** The host draws the main tabs, so the space's own tab row stays hidden. */
+  hostMainTabs?: boolean;
   /** Local view changes do not call mutate; the host must expose held authority. */
   canContinueWholeDocument?: () => boolean;
   /** Wait only the already-running private operation before an explicit source return. */
@@ -99,6 +106,9 @@ export type ProgramSpaceProps = {
   /** Optional whole-document links supplied by a local or account-owned browser host. */
   documentCollections?: { state: DocumentCollections; onChange: (next: DocumentCollections) => Promise<boolean>; initialWritingDocumentId?: string };
 };
+export type ProgramMainTab = 'documents' | 'today' | 'all';
+/** The main tab a period belongs to: week, month and date-less are under 오늘. */
+export const programMainTabOf = (period: ProgramPeriod): ProgramMainTab => period === 'documents' || period === 'all' ? period : 'today';
 type Detail = { kind: 'task'; id: string } | { kind: 'folder'; id: string } | { kind: 'connect'; docId: string; lineId: string | null; insertAfter: boolean } | null;
 type LibraryWritingHandoff = { epoch: number; documentId: string; folderId: string; focusOwner: Element | null };
 /** The list view a row's title opened its source from, and where that row sat on screen. */
@@ -235,8 +245,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     });
     return () => cancelAnimationFrame(frame);
   }, [writingFocus, selected, actorId, period]);
-  function focusViewControl() { (viewMenu.current?.querySelector<HTMLElement>('[data-program-period][aria-current="page"]')
-    ?? viewMenu.current?.querySelector<HTMLElement>('[data-program-period="today"]'))?.focus({ preventScroll: true }); }
+  function focusViewControl() {
+    // With the host's tabs, its current tab is the view control.
+    const hosted = props.hostMainTabs ? root.current?.ownerDocument.querySelector<HTMLElement>('[data-main-tab][aria-current="page"]') : null;
+    (hosted ?? viewMenu.current?.querySelector<HTMLElement>('[data-program-period][aria-current="page"]')
+      ?? viewMenu.current?.querySelector<HTMLElement>('[data-program-period="today"]'))?.focus({ preventScroll: true });
+  }
   useEffect(() => {
     const closeOutside = (event: Event) => {
       const menu = documentMenu.current;
@@ -475,6 +489,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setSourceRestore({ ...origin, opener });
     } finally { release(); }
   }
+  /** One way to change the main tab, for the space's own tabs and the host's: the tab a source was
+   *  opened from goes back there (R7); any other tab is an ordinary period change. */
+  function chooseMainTab(key: ProgramMainTab): Promise<boolean> {
+    return sourceOriginOpen && sourceOriginTab(sourceOrigin!) === key ? returnToSourceOrigin().then(() => true) : changePeriod(key, true);
+  }
+  const chooseMainTabRef = useRef(chooseMainTab); chooseMainTabRef.current = chooseMainTab;
+  useEffect(() => {
+    props.onRegisterMainTabs?.({ choose: tab => chooseMainTabRef.current(tab) });
+    return () => props.onRegisterMainTabs?.(null);
+  }, [actorId]);
+  useEffect(() => { props.onMainTabChange?.(programMainTabOf(period)); }, [period]);
   useEffect(() => {
     const origin = sourceRestore;
     if (!origin) return;
@@ -1301,8 +1326,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     onCompositionStartCapture={() => { libraryComposing.current = true; }} onCompositionEndCapture={() => { libraryComposing.current = false; }}
     onClickCapture={guardOccurrenceDraft} onKeyDownCapture={event => { if (!['Tab', 'Shift', 'Escape'].includes(event.key)) guardOccurrenceDraft(event); }}>
     <div className={styles.contextActions}>
-      <nav ref={viewMenu} className={styles.periods} aria-label="기본 이동">{mainPeriods.map(([key, label]) => <button key={key} data-program-period={key} aria-current={period === key || key === 'today' && ['week', 'month', 'undated'].includes(period) ? 'page' : undefined}
-        onClick={() => void (sourceOriginOpen && sourceOriginTab(sourceOrigin!) === key ? returnToSourceOrigin() : changePeriod(key, true))}>{key === 'all' && collectionMode ? '전체 할 일' : label}</button>)}</nav>
+      <nav ref={viewMenu} className={styles.periods} aria-label="기본 이동" hidden={!!props.hostMainTabs}>{mainPeriods.map(([key, label]) => <button key={key} data-program-period={key} aria-current={period === key || key === 'today' && ['week', 'month', 'undated'].includes(period) ? 'page' : undefined}
+        onClick={() => void chooseMainTab(key as ProgramMainTab)}>{key === 'all' && collectionMode ? '전체 할 일' : label}</button>)}</nav>
       {period !== 'documents' && !props.noteHeader && findActions}
     </div>
     <dialog ref={libraryDialog} id="program-library" className={styles.findDialog} aria-labelledby="program-find-title"

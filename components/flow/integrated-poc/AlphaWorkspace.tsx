@@ -27,7 +27,7 @@ import { ProgramServerStatusContext, type ProgramServerStatusView } from './prog
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
 import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
 import { textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
-import { ProgramSpace, useProgramMobileWritingChrome } from './ProgramSpace';
+import { ProgramSpace, useProgramMobileWritingChrome, type ProgramMainTab } from './ProgramSpace';
 import { programSourceNavigationReady } from '@/lib/flow/integrated-poc/pending-source-navigation';
 import { DEV_NOTICE_TEXT, markDevNoticeSeen, readDevNoticeSeen } from '@/lib/flow/integrated-poc/dev-notice';
 import { ProgramLegacyWorkspace } from './ProgramLegacyWorkspace';
@@ -137,6 +137,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const preservationOpener = useRef<HTMLElement | null>(null);
   // R8a: the "…" menu and its 복구함, and the total the user last closed the saved-input notice at.
   const managementMenu = useRef<HTMLDetailsElement | null>(null), recoveryBox = useRef<HTMLDetailsElement | null>(null);
+  // R8b: the bottom tabs 쓰기·오늘·분류 drive the space through its main-tab port; 더보기 opens the menu.
+  const mainTabs = useRef<{ choose(tab: ProgramMainTab): Promise<boolean> } | null>(null);
+  const [mainTab, setMainTab] = useState<ProgramMainTab>('documents');
   const [savedNoticeClosedAt, setSavedNoticeClosedAt] = useState<number | null>(null);
   const preservationReturn = useRef<{ ownerId: string; controller: Controller | null; opener: HTMLElement | null } | null>(null);
   const modalRef = useRef(false); modalRef.current = !!publisher || !!inspector;
@@ -1154,6 +1157,16 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   </>;
   // A new saved input, or saved input on opening the app, gets one line until the user closes it.
   const savedNoticeShown = savedTotal > 0 && (savedNoticeClosedAt === null || savedTotal > savedNoticeClosedAt);
+  async function chooseMainTab(tab: ProgramMainTab) {
+    if (destination.view !== 'space') await navigate({ view: 'space' });
+    await mainTabs.current?.choose(tab);
+  }
+  function toggleMoreMenu() {
+    const menu = managementMenu.current;
+    if (!menu) return;
+    menu.open = !menu.open;
+    if (menu.open) requestAnimationFrame(() => menu.querySelector<HTMLElement>(':scope > div :is(button, summary)')?.focus());
+  }
   function openRecoveryBox() {
     if (managementMenu.current) managementMenu.current.open = true;
     if (recoveryBox.current) recoveryBox.current.open = true;
@@ -1202,9 +1215,13 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
     <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}>FlowMe</a>
       {!unavailable && <nav className={styles.globalNavigation} aria-label="주요 메뉴">
-        <button type="button" aria-current={['space', 'legacy'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'space' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="m3 10 9-7 9 7v11H3z"/></svg><span>내 공간</span></button>
-        <button type="button" aria-current={['discover', 'flow', 'community'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 3h16v18H4zm3 4h10v2H7zm0 5h10v2H7zm0 5h6v2H7z"/></svg><span>둘러보기</span></button>
-        <button type="button" aria-current={['activity','creator'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" opacity=".25" d="M2 7h20v15H2Z"/><path fill="currentColor" d="M2 3h8l3 4h9v4H2Z"/></svg><span>내 활동</span></button>
+        {([['documents', '쓰기', 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4'], ['today', '오늘', 'M4 4h16v16H4zm4 8 3 3 5-6'], ['all', '분류', 'M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z']] as const).map(([tab, label, path]) =>
+          <button type="button" key={tab} data-main-tab={tab} aria-current={destination.view === 'space' && mainTab === tab ? 'page' : undefined} onClick={() => void chooseMainTab(tab)}>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" d={path}/></svg><span>{label}</span></button>)}
+        <button type="button" data-main-tab="more" aria-current={['discover', 'flow', 'community', 'activity', 'legacy', 'creator'].includes(destination.view) ? 'page' : undefined}
+          aria-label={`더보기${savedTotal ? ` · 보관한 입력 ${savedTotal}개` : ''}`} onPointerDown={event => { event.preventDefault(); }} onClick={toggleMoreMenu}>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M5 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg><span>더보기</span>
+          {savedTotal > 0 && <span className={styles.navBadge} aria-hidden="true">{savedTotal}</span>}</button>
       </nav>}
       <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1>
       <details className={styles.development}><summary>{syntheticRuntime ? '합성 검증' : '개발계'}</summary><p>{DEV_NOTICE_TEXT}</p></details></header>
@@ -1216,11 +1233,16 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       <details ref={managementMenu} className={styles.management} aria-label="계정 및 자료 관리" onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
-        event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
+        // The 더보기 tab opened it; its own summary is hidden under the tabs.
+        (document.querySelector<HTMLElement>('[data-main-tab="more"]') ?? event.currentTarget.querySelector('summary'))?.focus({ preventScroll: true });
       }} onBlur={event => {
         if (!preservationRef.current && event.relatedTarget && !event.currentTarget.contains(event.relatedTarget as Node)) event.currentTarget.open = false;
       }}><summary aria-current={['activity', 'legacy'].includes(destination.view) ? 'page' : undefined} aria-label={`${destination.view === 'activity' ? '보조 메뉴 · 현재 위치: 내 활동' : destination.view === 'legacy' ? '보조 메뉴 · 현재 위치: 개인 Flow 상세' : '보조 메뉴 · 내 활동, 계정·자료 관리'}${savedTotal ? ` · 보관한 입력 ${savedTotal}개` : ''}`}><span className={styles.auxiliaryLabel}>{destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : '더보기'}</span>{savedTotal > 0 && <span className={styles.menuBadge} aria-hidden="true">{savedTotal}</span>}</summary><div className={styles.managementBody}>
         <h2>더보기</h2>
+        {!unavailable && <section className={styles.menuGroup} aria-label="둘러보기"><h3>둘러보기</h3>
+          <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}>경험·질문·지식</button>
+            <button type="button" aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>Flow 찾기</button></div>
+        </section>}
         <section className={styles.menuGroup} aria-label="편집"><h3>편집</h3>
           <div className={styles.managementActions}>{usesNoteChrome && serverUndo}<button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external}>다시 실행</button></div>
         </section>
@@ -1276,6 +1298,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         {collectionsMessage && <p className={styles.message} role="status">{collectionsMessage}</p>}
         <ProgramServerStatusContext.Provider value={serverStatusView}>
         <ProgramSpace key={`space:${session.userId}:${presentation}:${collectionsMode ? 'collections' : 'folders'}`} data={data} today={programLocalDate()} mutate={mutate}
+        hostMainTabs onRegisterMainTabs={port => { mainTabs.current = port; }} onMainTabChange={setMainTab}
         nativeAuthoringEnabled={nativeAuthoringEnabled} writingCompute={writingCompute.current??undefined} writingContext={() => ({ownerId:session.userId,baseRevision:currentRevision.current??0})}
         pmTextHost={syntheticRuntime||pmWriting==='v11-pm/1' ? { ownerId: session.userId, epoch: sessionEpoch, snapshot: () => sessionEpochRef.current === sessionEpoch && !disposed.current && currentOwnerRef.current === session.userId ? controller.current?.snapshot() ?? null : null } : undefined}
         noteHeader={usesNoteChrome ? publicNotice : undefined} noteStatus={usesNoteChrome ? serverStatus : undefined}
