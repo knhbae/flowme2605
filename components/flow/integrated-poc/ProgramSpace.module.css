@@ -315,3 +315,39 @@
 .repeatList { display: grid; gap: 6px; margin-top: 12px; }
 .repeatList p { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin: 0; }
 .repeatList span { flex: 1 1 200px; min-width: 0; overflow-wrap: anywhere; }
+
+/* R7 today rows: about 60px a row, a check whose shape says its state, day headings with "＋",
+   one meta line, and "← 오늘" back to the list a source was opened from. */
+.space .executionView .tasks { max-width: 760px; }
+.space .task, .space[data-note-layout="true"] .task { box-sizing: border-box; min-height: 60px; padding: 6px 4px; align-items: center; }
+.space .taskTitle { padding: 4px 8px; line-height: 22px; }
+.space .taskTitleText, .space[data-note-layout="true"] .taskTitleText { line-height: 22px; }
+.space .taskTitle small, .space[data-note-layout="true"] .taskTitle small { display: block; margin-top: 0; font-size: 12px; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.space .taskTitle small > span, .space[data-note-layout="true"] .taskTitle small > span, .space .taskTitle .taskOrigin { display: inline; }
+.space .task[data-done] .taskTitleText { color: var(--flowme-b-muted); text-decoration: line-through; }
+.rowLate { font-style: normal; font-weight: 700; color: #986209; }
+.rowBusy { color: var(--flowme-b-primary-strong); font-weight: 600; }
+@media (max-width: 760px) { .taskFolder { display: none; } }
+
+.space .check, .space[data-note-layout="true"] .check { display: inline-flex; align-items: center; justify-content: center; border-color: transparent; background: transparent; }
+.space .check[aria-pressed=true] { background: transparent; }
+.space .check > .checkMark[data-check] { position: relative; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; padding: 0; border: 2px solid var(--flowme-b-control); border-radius: 6px; background: var(--flowme-b-surface); color: var(--flowme-b-primary); font-size: 13px; font-weight: 700; line-height: 1; }
+.space .check > .checkMark[data-check="done"] { border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); }
+.space .check > .checkMark[data-check="done"]::after { content: ""; position: absolute; left: 6px; top: 2px; width: 6px; height: 11px; border: solid #ffffff; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
+.space .check > .checkMark[data-check="busy"] { border-style: dashed; border-color: var(--flowme-b-primary); }
+.space .check > .checkMark[data-check="partial"] { width: auto; min-width: 40px; height: 24px; padding: 0 6px; border: 1px solid #dfd2b8; border-radius: 12px; background: #fcf8ed; color: #785627; font-size: 12px; }
+
+.space .dayHeading { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; margin-top: 16px; }
+.space .dayHeading .executionGroup { margin: 0; font-size: 13px; line-height: 20px; font-weight: 700; color: var(--flowme-b-muted); }
+.space .dayHeading[data-late] .executionGroup { color: #986209; }
+.space .dayAdd { flex: 0 0 auto; min-width: 44px; padding: 0; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 20px; line-height: 1; }
+.space .emptyDays > button { min-height: 44px; padding: 8px 4px; border: 0; background: transparent; color: var(--flowme-b-muted); font-size: 13px; }
+.space .groupAdd > form { display: flex; align-items: center; gap: 6px; padding: 6px 4px; border-bottom: 1px solid var(--flowme-b-line); }
+.space .groupAdd input[name="title"] { flex: 1 1 auto; min-width: 0; }
+.space .groupAdd .dayChip { flex: 0 0 auto; padding: 2px 8px; border-radius: 12px; background: var(--flowme-b-selected); color: var(--flowme-b-primary-strong); font-size: 12px; line-height: 20px; }
+.space .groupAdd .timeChip { flex: 0 0 auto; width: auto; padding: 4px 10px; font-size: 13px; }
+.space .groupAdd button[type="submit"] { flex: 0 0 auto; }
+
+.space .sourceReturn { flex: 0 0 auto; min-height: 44px; padding: 0 10px; border: 0; border-radius: 8px; background: var(--flowme-b-selected); color: var(--flowme-b-primary-strong); font-weight: 700; white-space: nowrap; }
+.space .docHeading:has(> .sourceReturn), .space[data-note-layout="true"] .docHeading:has(> .sourceReturn) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.space .docHeading:has(> .sourceReturn) > h1 { flex: 1 1 180px; min-width: 0; }
