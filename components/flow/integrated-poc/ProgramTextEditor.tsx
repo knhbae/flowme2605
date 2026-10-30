@@ -24,7 +24,8 @@ import type { ProgramReferenceAccess } from '@/lib/flow/integrated-poc/reference
 import { linkProgramFolder, programFolderLineTitle, programFolderLinkProblem, programFolderLinkProblems } from '@/lib/flow/integrated-poc/folder-link-slot';
 import { programFolderLinkPreview, isProgramFolderLinkPreviewCurrent, type ProgramFolderLinkPreview } from '@/lib/flow/integrated-poc/folder-link-preview';
 import { isProgramFolderViewCurrent, planProgramRegionEdit, readProgramFolderRegions } from '@/lib/flow/integrated-poc/folder-document-regions';
-import { childPlace, insertPlaceAfter, insertPreview, planLayoutInsertion, type InsertPreviewLine } from '@/lib/flow/integrated-poc/writing-insert-place';
+import { childPlace, insertPlaceAfter, insertPreview, planLayoutInsertion, programInsertMenuTitle, programLayoutPlaceNote, programPlaceNote, type InsertPreviewLine } from '@/lib/flow/integrated-poc/writing-insert-place';
+import { programWritingDialogPlace } from '@/lib/flow/integrated-poc/writing-dialog-place';
 import { revealProgramEditorLine } from './editor-reveal';
 import { programFolderCreationLocation, programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
 import { ProgramFolderRegionEditor, programRegionError, type ProgramFolderRegionPort, type ProgramFolderRegionSnapshot } from './ProgramFolderRegionEditor';
@@ -215,7 +216,7 @@ export function ProgramReferencePanel({ access, title, date, history, onOrigin, 
   return <div className={styles.choices}><p>{title}</p>{access?.reason && <p role="status">{access.reason}</p>}
     <p>항목 날짜: {date ?? '미정'}</p>
     {history.length ? <details><summary>날짜별 기록 읽기 · {history.length}개</summary><ul>{history.map(record => <li key={record.date}>{record.date} · {record.percent}%</li>)}</ul></details> : <p>저장된 진행 기록이 없습니다.</p>}
-    {!access?.reason && <><button type="button" onClick={onProgress}>진행 기록</button><button type="button" onClick={onDate}>날짜 바꾸기</button></>}
+    {!access?.reason && <><button type="button" onClick={onProgress}>진행 기록</button><button type="button" onClick={onDate}>날짜·시간</button></>}
     {access?.documentId && onOrigin && <button type="button" onClick={onOrigin}>원래 문서의 항목 열기</button>}
     {onUnlink && <button type="button" onClick={onUnlink}>이 연결만 해제</button>}
   </div>;
@@ -1260,11 +1261,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const view=dialog.ownerDocument.defaultView;if(!view)return;
     const visual=view.visualViewport;let frame=0;
     const update=()=>{
-      frame=0;const width=visual?.width??view.innerWidth,height=visual?.height??view.innerHeight;
-      dialog.style.setProperty('--writing-view-height',height+'px');
-      dialog.style.setProperty('--writing-view-width',width+'px');
-      dialog.style.setProperty('--writing-dialog-top',((visual?.offsetTop??0)+12)+'px');
-      dialog.style.setProperty('--writing-dialog-left',((visual?.offsetLeft??0)+Math.max(12,(width-430)/2))+'px');
+      frame=0;
+      // W5: on a phone the dialog is a sheet whose bottom follows the visual viewport (the keyboard's top).
+      for (const [name, value] of Object.entries(programWritingDialogPlace(view, visual))) dialog.style.setProperty(name, value);
       const body=dialog.querySelector<HTMLElement>('.'+styles.dialogBody),active=dialog.ownerDocument.activeElement;
       if(body&&active instanceof HTMLElement&&body.contains(active)){
         const visible=body.getBoundingClientRect(),field=active.getBoundingClientRect();
@@ -1372,7 +1371,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     for (const option of menuInsertions) previewChoices.push({ key: `${option.kind}:${option.offset}:${option.depth}`, anchorId: row.id, at: option.index, depth: option.depth, label: option.kind === 'note' ? '새 메모가 여기에' : '새 할 일이 여기에' });
     for (const kind of ['step', 'description'] as const) {
       const place = layoutPlaces[kind];
-      if (place?.ok) previewChoices.push({ key: kind, anchorId: row.id, at: place.index, depth: 0, label: kind === 'step' ? '새 단계가 여기에' : '설명이 여기에' });
+      if (place?.ok) previewChoices.push({ key: kind, anchorId: row.id, at: place.index, depth: 0, label: kind === 'step' ? '새 소제목이 여기에' : '일반 글이 여기에' });
     }
   }
   const previewChoice = previewChoices.find(choice => choice.key === previewKey) ?? previewChoices[0];
@@ -1621,7 +1620,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     }
   }
 
-  const title = panel?.kind==='child' ? childTarget?.kind==='task' ? '하위 할 일' : childTarget?.kind==='memo' ? '메모' : '부모 메모 · 독립 하위 할 일' :protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'progress' ? '누적 진행률' : panel?.kind === 'date' ? '항목 날짜' : panel?.kind === 'folder-copy' ? '폴더 사본 만들기' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : panel?.kind === 'insert' && row?.progressTargetId ? '항목 작업' : '이 위치에 추가';
+  // W5: the ＋ menu's head is its target line in one line ("‘…’ 아래에", or 새 줄 for an empty line or a typed "/").
+  // A registered task's menu also holds its 진행·날짜, so its head is the task alone and the add choices get "추가".
+  const menuTargetText = row ? memoContext?.label || row.title || row.task?.title || row.text : '';
+  const title = panel?.kind==='child' ? childTarget?.kind==='task' ? `‘${childTarget.title}’ 아래 하위 할 일` : childTarget?.kind==='memo' ? `‘${childTarget.title}’ 메모` : programInsertMenuTitle(childTarget?.title) :protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'progress' ? '진행 기록' : panel?.kind === 'date' ? '날짜·시간' : panel?.kind === 'folder-copy' ? '폴더 사본 만들기' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : panel?.kind === 'insert' && row?.progressTargetId ? `‘${menuTargetText.trim()}’` : programInsertMenuTitle(menuTargetText);
   const folderView = props.folderId ? readProgramFolderRegions(draft.working, props.docId, props.folderId) : null;
   const progressConflict = progressConflictToView();
   const inputPending=!!childTarget||programTextInputPending(draft,textArea()?.value,composing,regionPending,checkPending);
@@ -1758,7 +1760,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     {props.authoringMode && !folderView && writingBar}
     {props.authoringMode && !folderView && <div ref={roomRef} className={styles.keyboardRoom} aria-hidden="true" />}
     {panel && <dialog ref={dialogRef} className={styles.dialog} aria-label={title} onCompositionStartCapture={()=>{panelComposingRef.current=true;}} onCompositionEndCapture={()=>{panelComposingRef.current=false;}} onKeyDown={event => { trapProgramDialogTab(event.currentTarget, event); }} onCancel={event => { event.preventDefault(); closePanel(); cancelMove(); }}>
-      <header><h3>{title}</h3><button type="button" aria-label="닫기" onClick={closePanel}>×</button></header>
+      <header><h3 title={title}>{title}</h3><button type="button" aria-label="닫기" onClick={closePanel}>×</button></header>
       <div className={styles.dialogBody}>
       {childTarget&&<ProgramWritingInline key={childTarget.parentId+(childTarget.kind??'')} initialKind={childTarget.kind} parentTitle={childTarget.title} date={childTarget.date} scope={childTarget.scope} memo={childTarget.memo} readDraft={kind=>childDrafts.current[childTarget.parentId+':'+kind]} remember={(kind,text)=>{childDrafts.current[childTarget.parentId+':'+kind]=text;}} onSubmit={submitAuthoringChild}/>}
 
@@ -1775,26 +1777,25 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <button type="button" disabled={disabled || orderPreview?.plan.status !== 'ready'} onClick={applyOrder}>원문에 날짜순 적용</button>
       </div>}
       {panel.kind === 'insert' && <div className={styles.choices}>
-        {row && <p className={styles.menuTarget}>{memoContext?.label || row.title || row.task?.title || row.text}</p>}
         {memoContext && <p className={styles.contextHint}>{memoContext.continuation}</p>}
         {row?.kind === 'subcheck' && row.isCanonical === true && !row.isReference && <small className={styles.registeredNotice}>이 하위 항목은 별도 할 일로 등록돼 있습니다. 들여쓰기를 바꿔도 등록과 진행 기록은 유지됩니다.</small>}
         {row?.progressTargetId && <section className={styles.menuSection} aria-label="선택 항목 진행·날짜"><h4>진행·날짜</h4>
-          {accessFor(panel.lineId)?.reason ? <button type="button" onClick={() => setPanel({ kind: 'reference', lineId: panel.lineId })}>기록·원래 항목 보기</button> : <><button type="button" onClick={() => openProgress(panel.lineId)}>진행 기록</button><button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜 바꾸기</button></>}
+          {accessFor(panel.lineId)?.reason ? <button type="button" onClick={() => setPanel({ kind: 'reference', lineId: panel.lineId })}>기록·원래 항목 보기</button> : <><button type="button" onClick={() => openProgress(panel.lineId)}>진행 기록</button><button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜·시간</button></>}
         </section>}
-        <section className={styles.menuSection} aria-label="이 위치에 추가"><h4>이 위치에 추가</h4>
-        {placePreview.length>0&&<ol className={styles.insertPreview} aria-hidden="true">{placePreview.map((line,index)=><li key={index} data-kind={line.kind} style={{paddingInlineStart:`${Math.min(line.depth,4)*14+8}px`}}>{line.text}</li>)}</ol>}
-        {childParent&&<button type="button" onFocus={()=>setPreviewKey('child')} onMouseEnter={()=>setPreviewKey('child')} onClick={()=>{openAuthoringChild(row!.index,'task');}}>하위 할 일<small>{childParent.place.label}</small></button>}
+        <section className={styles.menuSection} aria-label="이 위치에 추가">{row?.progressTargetId && <h4>추가</h4>}
+        {placePreview.length>0&&<ol className={styles.insertPreview} aria-hidden="true">{placePreview.filter(line => !(line.kind === 'anchor' && line.text.trim() === '/')).map((line,index)=><li key={index} data-kind={line.kind} style={{paddingInlineStart:`${Math.min(line.depth,4)*14+8}px`}}>{line.text}</li>)}</ol>}
+        {childParent&&<button type="button" onFocus={()=>setPreviewKey('child')} onMouseEnter={()=>setPreviewKey('child')} onClick={()=>{openAuthoringChild(row!.index,'task');}}>하위 할 일{programPlaceNote(childParent.place.label) && <small>{programPlaceNote(childParent.place.label)}</small>}</button>}
         {menuInsertions.map(option => <button type="button" key={`${option.kind}:${option.offset}:${option.depth}`} disabled={insertionDisabled}
           onFocus={()=>setPreviewKey(`${option.kind}:${option.offset}:${option.depth}`)} onMouseEnter={()=>setPreviewKey(`${option.kind}:${option.offset}:${option.depth}`)}
-          onClick={() => insertNative(option.offset, option.text, option.caretOffset)}>{option.label}<small>{option.label.startsWith('다음 ')&&row?insertPlaceAfter(option.index-row.index-1,row.title||row.task?.title||row.text.trim()):option.relation}</small></button>)}
+          onClick={() => insertNative(option.offset, option.text, option.caretOffset)}>{option.label}{(note => note && <small>{note}</small>)(programPlaceNote(option.label.startsWith('다음 ')&&row?insertPlaceAfter(option.index-row.index-1,row.title||row.task?.title||row.text.trim()):option.relation))}</button>)}
         {childParent&&<button type="button" onClick={()=>{openAuthoringChild(row!.index,'memo');}}>메모<small>{childParent.memo?'이 할 일에 붙임 · 있는 메모를 고침':'이 할 일에 붙임'}</small></button>}
         {props.authoringMode&&(['step','description'] as const).map(kind=>{const place=layoutPlaces[kind];return <button type="button" key={kind} disabled={insertionDisabled||!place?.ok}
-          onFocus={()=>setPreviewKey(kind)} onMouseEnter={()=>setPreviewKey(kind)} onClick={()=>insertAuthoringLayout(kind)}>{kind==='step'?'단계 추가':'설명 이어 쓰기'}
-          <small>{place?.ok?insertPlaceAfter(place.after,place.blockTitle):'여기에는 넣을 수 없음'}</small></button>;})}
+          onFocus={()=>setPreviewKey(kind)} onMouseEnter={()=>setPreviewKey(kind)} onClick={()=>insertAuthoringLayout(kind)}>{kind==='step'?'소제목 추가':'일반 글 추가'}
+          {(note => note && <small>{note}</small>)(place?.ok?programLayoutPlaceNote(kind,place):'여기에는 넣을 수 없음')}</button>;})}
         {props.authoringMode&&props.onOpenPersonalAuthoring&&<button type="button" onClick={()=>{closePanel();props.onOpenPersonalAuthoring?.();}}>반복·Flow 만들기</button>}
-        {!currentDoc()?.lines.length && <><button type="button" disabled={insertionDisabled} onClick={() => insertNative(0, '- [ ] ', 6)}>할 일</button><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(); }}>자유 메모</button></>}
+        {!currentDoc()?.lines.length && <><button type="button" disabled={insertionDisabled} onClick={() => insertNative(0, '- [ ] ', 6)}>할 일</button><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(); }}>일반 글</button></>}
         </section>
-        <details className={styles.menuGroup} aria-label="추가·연결"><summary>추가·연결</summary><div className={styles.choices}>
+        <details className={styles.menuGroup} aria-label="연결·구획"><summary>연결·구획</summary><div className={styles.choices}>
         <button type="button" onClick={insertDateSection}>날짜 구획 · 문서 끝에</button>
         <button type="button" onClick={() => openFolderPanel(panel.lineId)}>폴더 연결</button>
         {row?.isReference && panelAccess?.documentId && panelAccess.lineId === (row.progressTargetId ?? row.taskId) && !panelAccess.reason && <button type="button" disabled={disabled} onClick={() => {
@@ -1804,7 +1805,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         }}>연결된 항목 보기</button>}
         {props.onConnectFlow && <button type="button" onClick={() => { void connectFlow(panel.lineId); }}>Flow 연결</button>}
         </div></details>
-        {row && <details className={styles.menuGroup} aria-label="선택 항목 문서 구조"><summary>문서 구조</summary><div className={styles.choices}>
+        {row && <details className={styles.menuGroup} aria-label="선택 항목 옮기기·접기"><summary>옮기기·접기</summary><div className={styles.choices}>
         {row?.kind === 'scope' && row.scopeKind === 'folder' && props.folderCopyProblem && <button type="button" disabled={disabled} onClick={() => openFolderCopy(panel.lineId)}>이 폴더 묶음의 사본 만들기…</button>}
         {row?.kind === 'scope' && <small>폴더 연결을 포함하려면 편집 도구의 ‘문서 TXT 복사’를 쓰세요. 항목 기록을 유지해 옮기려면 하위 묶음 이동을 쓰세요.</small>}
         {row && ['task', 'subcheck', 'scope'].includes(row.kind) && <button type="button" disabled={!!props.folderId} onClick={() => beginMove(panel.lineId, true)}>하위 묶음 이동</button>}
