@@ -55,8 +55,7 @@ N1에 들어간 것:
   - 리뷰: 코덱스 전부 APPROVE
   - 통합 QA: GO(`inbox/wnext3-qa-final-20261031-0538.md`)
   - 보안 정적 검토: APPROVE
-- 반영 묶음은 봉인과 Inspect를 통과했다(`D:lowme-work\codex
-2-deploy-20261031-01a168e3evision-n2\`, 빌드 `mmmwO6qIvFWpPbC_3Sj6w`). Deploy는 아직 하지 않았다.
+- 반영 묶음은 봉인과 Inspect를 통과했다(`D:/flowme-work/codex/n2-deploy-20261031-01a168e3/revision-n2/`, 빌드 `mmmwO6qIvFWpPbC_3Sj6w`). Deploy는 아직 하지 않았다.
 - 반영 조건
   - ★ N1 실계정 S5
   - ★ W 실폰 짧은 확인(약 8분, 진행표 `planning/s4-20261030/S4-W-SHEET.md`, 페이지 v7 `072405f3`)
