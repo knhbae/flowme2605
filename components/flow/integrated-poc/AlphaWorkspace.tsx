@@ -45,6 +45,7 @@ import { createAlphaCommunityMediaPort } from '@/lib/flow/integrated-poc/alpha-s
 import { createAlphaCreatorRecovery, type AlphaCreatorRecoveryEntry, type AlphaCreatorRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-creator-recovery';
 import { setProgramCreatorWorking } from '@/lib/flow/integrated-poc/creator-workspace';
 import { canonicalJson, detached } from '@/lib/flow/integrated-poc/alpha-persistence/json';
+import { announcedRecoveries, recoveryDraftIdentity } from '@/lib/flow/integrated-poc/saved-input-notice';
 import { confirmedAlphaPrivateTextSave } from '@/lib/flow/integrated-poc/alpha-private-save-ack';
 import { createAlphaDocumentCollections } from '@/lib/flow/integrated-poc/alpha-document-collections';
 import type { DocumentCollections } from '@/lib/flow/integrated-poc/document-collections';
@@ -141,6 +142,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const mainTabs = useRef<{ choose(tab: ProgramMainTab): Promise<boolean> } | null>(null);
   const [mainTab, setMainTab] = useState<ProgramMainTab>('documents');
   const [savedNoticeClosedAt, setSavedNoticeClosedAt] = useState<number | null>(null);
+  // The last mutation failed; captured input counts as saved input until one succeeds.
+  const [saveFailed, setSaveFailed] = useState(false);
   const preservationReturn = useRef<{ ownerId: string; controller: Controller | null; opener: HTMLElement | null } | null>(null);
   const modalRef = useRef(false); modalRef.current = !!publisher || !!inspector;
   const inspectorDialog = useRef<HTMLDialogElement | null>(null);
@@ -152,11 +155,6 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const reviewAnnouncementGeneration = useRef(0);
   const [recoveries, setRecoveries] = useState<AlphaUiRecoveryRecord | null>(null), [storageError, setStorageError] = useState(false);
   const [structuralRecoveries, setStructuralRecoveries] = useState<AlphaStructuralRecoveryRecord | null>(null);
-  // R8a: all saved input, counted for the 복구함 badge and the notice. When some goes away, lower the
-  // closed-at mark so the next newly saved input shows the notice again.
-  const savedTotal = (recoveries?.drafts.length ?? 0) + (structuralRecoveries?.entries.length ?? 0)
-    + (creatorRecoveries?.entries.length ?? 0) + (socialRecoveries?.entries.length ?? 0);
-  useEffect(() => { setSavedNoticeClosedAt(at => at !== null && savedTotal < at ? savedTotal : at); }, [savedTotal]);
   const structuralRecovery = useRef<ReturnType<typeof createAlphaStructuralRecovery> | null>(null);
   const parkedStructural = useRef<AlphaStructuralRecoveryEntry[]>([]), activeStructural = useRef<AlphaStructuralRecoveryEntry[]>([]);
   const [external, setExternal] = useState(false), [presentation, setPresentation] = useState(0), [leave, setLeave] = useState(false);
@@ -628,6 +626,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       if (disposed.current || controller.current !== store || currentOwnerRef.current !== owner
         || sessionEpochRef.current !== epoch) return outcome;
       if (!outcome.ok) {
+        if (outcome.reason !== 'busy') setSaveFailed(true);
         // A blocked click may resume after the original request settles.
         // Do not reintroduce its temporary wait notice after the final snapshot.
         if (outcome.reason !== 'busy' && !reviewOwnsMessage) {
@@ -640,6 +639,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         else if (outcome.reason === 'busy' && !reviewOwnsMessage && controller.current?.snapshot().busy) setMessage(PROGRAM_BUSY_NOTICE);
       }
       else {
+        setSaveFailed(false);
         if (!reviewOwnsMessage) setMessage('');
         // Drop only input that exactly matches confirmed server text. A newer keystroke stays protected.
         const saved = uiRecovery.current?.read(), confirmed = store.snapshot().account;
@@ -1097,6 +1097,18 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     || (snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending
     || external || snapshot?.status === 'conflict'
     || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft);
+  // R8a: saved input, counted for the 복구함 badge and the notice. Every input is still captured to the
+  // tab, but the capture of input the editors are saving normally counts only once it is at risk:
+  // protection, a failed or unknown save, an ended session or broken storage. Otherwise ordinary typing
+  // showed "보관한 입력 1개" from the first key until the save. When some goes away, lower the closed-at
+  // mark so the next newly saved input shows the notice again.
+  const inputAtRisk = needsInputProtection || unavailable || saveFailed
+    || ['signed-out', 'recovery-required', 'checking-result'].includes(snapshot?.status ?? '');
+  const savedTotal = announcedRecoveries(recoveries?.drafts, parkedDrafts.current, activeDrafts.current, inputAtRisk, recoveryDraftIdentity)
+    + announcedRecoveries(structuralRecoveries?.entries, parkedStructural.current, activeStructural.current, inputAtRisk)
+    + announcedRecoveries(creatorRecoveries?.entries, parkedCreator.current, activeCreator.current ? [activeCreator.current] : [], inputAtRisk)
+    + announcedRecoveries(socialRecoveries?.entries, parkedSocial.current, activeSocial.current, inputAtRisk);
+  useEffect(() => { setSavedNoticeClosedAt(at => at !== null && savedTotal < at ? savedTotal : at); }, [savedTotal]);
   // `announce` is off where the note editor's one status slot already announces this state.
   const inputProtectionFor = (announce: boolean) => <>
     {storageError && <p className={styles.problem} role={announce ? 'alert' : undefined}>브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
