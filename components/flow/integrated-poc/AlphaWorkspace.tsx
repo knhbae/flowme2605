@@ -1240,9 +1240,13 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const savedNotice = savedNoticeShown && <p className={styles.savedNotice} role="status"><span>확인이 필요한 입력 {savedTotal}개</span>
     <button type="button" onClick={openRecoveryBox}>복구함 열기</button>
     <button type="button" aria-label="확인이 필요한 입력 안내 닫기" onClick={() => setSavedNoticeClosedAt(savedTotal)}>닫기</button></p>;
-  // W11: in the note chrome the notices around the title share one line, by priority: saved input, then the
+  // W11: on the 쓰기 tab the notices around the title share one line, by priority: saved input, then the
   // development notice, then the new-document notice (ProgramSpace keeps that one for screen readers only).
-  const noteNotice = savedNotice || publicNotice, noteNoticeShown = !!savedNotice || !devNoticeSeen;
+  // On 오늘 and 분류 the saved-input notice keeps its own place above the work pane (that slot under the title is
+  // the writing one), and still comes first: the development notice waits until it is closed.
+  const writingTab = usesNoteChrome && mainTab === 'documents';
+  const noteNotice = writingTab ? savedNotice || publicNotice : savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice;
+  const noteNoticeShown = writingTab && (!!savedNotice || !devNoticeSeen);
   const serverUndo = <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>;
   // The recovery box with its actions. `announce` is off inside the note editor, whose one status
   // slot does the announcing; elsewhere (today, 분류, no document) it keeps its own alert.
@@ -1346,7 +1350,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         </section>
         </div></details>
     </section>
-    {!usesNoteChrome && savedNotice}
+    {!writingTab && savedNotice}
     {preservation && snapshot?.account && snapshot.references && <AlphaPreservationPanel key={session.userId} account={snapshot.account} references={snapshot.references}
       email={email} accessToken={session.accessToken} returnFocusTarget={preservationOpener.current} onClose={closePreservation} onSaved={async () => {
         ownMutation.current++; try { await controller.current?.refresh(); if (!replaceEditors()) setMessage(keptEditorsNotice('서버 자료는 반영했습니다.')); } finally { ownMutation.current--; }
@@ -1365,7 +1369,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         hostMainTabs onRegisterMainTabs={port => { mainTabs.current = port; }} onMainTabChange={setMainTab}
         nativeAuthoringEnabled={nativeAuthoringEnabled} writingCompute={writingCompute.current??undefined} writingContext={() => ({ownerId:session.userId,baseRevision:currentRevision.current??0})}
         pmTextHost={syntheticRuntime||pmWriting==='v11-pm/1' ? { ownerId: session.userId, epoch: sessionEpoch, snapshot: () => sessionEpochRef.current === sessionEpoch && !disposed.current && currentOwnerRef.current === session.userId ? controller.current?.snapshot() ?? null : null } : undefined}
-        noteHeader={usesNoteChrome ? noteNotice : undefined} noteNoticeShown={usesNoteChrome && noteNoticeShown} noteStatus={usesNoteChrome ? serverStatus : undefined}
+        noteHeader={usesNoteChrome ? noteNotice : undefined} noteNoticeShown={noteNoticeShown} noteStatus={usesNoteChrome ? serverStatus : undefined}
         documentCollections={collectionsMode && collectionsState ? { state: collectionsState, onChange: changeCollections } : undefined}
         navigate={next => { void navigate(next); }} capabilities={capability}
         sourceReturnEpoch={sessionEpoch} awaitSourceReturnReady={awaitSourceReturnReady}

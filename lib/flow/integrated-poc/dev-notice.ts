@@ -9,7 +9,16 @@ export const DEV_NOTICE_TEXT = '개발용 통합 검증판 · 공개한 내용�
 export const DEV_NOTICE_VERSION = '2026-10-31';
 
 const KEY_PREFIX = 'flow:poc:personal-workspace:v1:alpha-m3:dev-notice:';
-const key = (ownerId: string, version: string) => `${KEY_PREFIX}${version}:${ownerId}`;
+/** The account part of the key: a 128-bit FNV digest (four seeds, as legacy IDs use), so device storage never
+ *  holds the account ID itself. It keeps the raw ID out of storage; it is not a secret from whoever has the ID. */
+function accountKey(ownerId: string): string {
+  return [0x811c9dc5, 0x9e3779b9, 0x85ebca6b, 0xc2b2ae35].map(seed => {
+    let hash = seed;
+    for (let i = 0; i < ownerId.length; i++) hash = Math.imul(hash ^ ownerId.charCodeAt(i), 0x01000193);
+    return (hash >>> 0).toString(16).padStart(8, '0');
+  }).join('');
+}
+const key = (ownerId: string, version: string) => `${KEY_PREFIX}${version}:${accountKey(ownerId)}`;
 
 export function readDevNoticeSeen(storage: Pick<Storage, 'getItem'> | undefined, ownerId: string, version = DEV_NOTICE_VERSION): boolean {
   try { return storage?.getItem(key(ownerId, version)) === 'seen'; } catch { return false; }

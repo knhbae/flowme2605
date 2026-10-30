@@ -14,11 +14,14 @@ const hostCss = read('../../../components/flow/integrated-poc/AlphaWorkspace.mod
 const vendor = read('./vendor/text-editor.cjs');
 const editorCss = read('./vendor/text-editor.css');
 
-test('one slot under the title: saved input first, then the development notice; the new-document line goes quiet', () => {
-  assert.match(host, /const noteNotice = savedNotice \|\| publicNotice, noteNoticeShown = !!savedNotice \|\| !devNoticeSeen;/);
-  assert.match(host, /noteHeader=\{usesNoteChrome \? noteNotice : undefined\} noteNoticeShown=\{usesNoteChrome && noteNoticeShown\}/);
-  // Outside the note chrome both keep their old places; inside it, nothing above the work pane.
-  assert.match(host, /\{!usesNoteChrome && savedNotice\}/);
+test('one slot under the title on 쓰기: saved input first, then the development notice; the new-document line goes quiet', () => {
+  // Review P1: only the 쓰기 tab moves the saved-input notice under the title. 오늘·분류 keep it above the work
+  // pane, where it shows (the writing slot is hidden there), and it still comes before the development notice.
+  assert.match(host, /const writingTab = usesNoteChrome && mainTab === 'documents';/);
+  assert.match(host, /const noteNotice = writingTab \? savedNotice \|\| publicNotice : savedNotice \? <span hidden data-dev-notice="after-saved-input" \/> : publicNotice;/);
+  assert.match(host, /const noteNoticeShown = writingTab && \(!!savedNotice \|\| !devNoticeSeen\);/);
+  assert.match(host, /noteHeader=\{usesNoteChrome \? noteNotice : undefined\} noteNoticeShown=\{noteNoticeShown\}/);
+  assert.match(host, /\{!writingTab && savedNotice\}/);
   assert.match(host, /\{!usesNoteChrome && publicNotice\}/);
   assert.equal(host.match(/className=\{styles\.savedNotice\}/g)?.length, 1);
   // The saved-input notice itself is unchanged: count, 복구함 열기, 닫기.

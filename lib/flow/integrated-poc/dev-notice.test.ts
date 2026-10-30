@@ -40,6 +40,21 @@ test('new wording (a raised version) shows the notice once more', () => {
   assert.equal(readDevNoticeSeen(storage, 'owner-c'), false);
 });
 
+test('the stored key never holds the account ID; different accounts get different keys (W11 review P2)', () => {
+  const storage = device(), ids = ['22222222-2222-4222-8222-222222222222', '33333333-3333-4333-8333-333333333333'];
+  for (const id of ids) markDevNoticeSeen(storage, id);
+  const keys = Array.from({ length: storage.length }, (_, index) => storage.key(index)!);
+  assert.equal(keys.length, 2);
+  for (const id of ids) {
+    assert(keys.every(key => !key.includes(id)), 'no raw ID');
+    // Nor any long piece of it.
+    for (const part of id.split('-').filter(part => part.length >= 8)) assert(keys.every(key => !key.includes(part)), part);
+  }
+  assert(keys.every(key => /:[0-9a-f]{32}$/.test(key)), keys.join(' '));
+  assert.equal(readDevNoticeSeen(storage, ids[0]), true);
+  assert.equal(readDevNoticeSeen(storage, ids[1]), true);
+});
+
 test('unusable storage keeps the notice showing', () => {
   const broken = { getItem: () => { throw Error('blocked'); }, setItem: () => { throw Error('quota'); } };
   assert.equal(readDevNoticeSeen(broken, 'owner-a'), false);
