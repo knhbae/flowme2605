@@ -205,6 +205,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [moving, setMoving] = useState<string | null>(null), [showArchived, setShowArchived] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const libraryToggle = useRef<HTMLButtonElement | null>(null);
+  // The host's writing title ▾ opens the same sheet; it never shares libraryToggle.
+  const titleToggle = useRef<HTMLButtonElement | null>(null);
   const noteFindMenu = useRef<HTMLDetailsElement | null>(null);
   const noteFindMenuSummary = useRef<HTMLElement | null>(null);
   const [noteQuickOpen, setNoteQuickOpen] = useState(false);
@@ -245,7 +247,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const documentMenu = useRef<HTMLDetailsElement | null>(null);
   const viewMenu = useRef<HTMLElement | null>(null);
   const writingRequest = useRef<string | null>(null);
-  const [writingFocus, setWritingFocus] = useState<{ id: string; actorId: string; focusOwner: Element | null } | null>(null);
+  const [writingFocus, setWritingFocus] = useState<{ id: string; actorId: string; focusOwner: Element | null; managedReturnFocus?: Element | null } | null>(null);
+  const writingFocusRef = useRef(writingFocus); writingFocusRef.current = writingFocus;
   useEffect(() => {
     setWritingNotice(current => current?.actorId === actorId && current.documentId === selected && period === 'documents' ? current : null);
   }, [actorId, selected, period]);
@@ -254,7 +257,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const frame = requestAnimationFrame(() => {
       const area = root.current?.querySelector<HTMLTextAreaElement>('[data-program-document]:not([hidden]) textarea');
       if (area && !area.readOnly && area.getClientRects().length && dataRef.current.activeActorId === writingFocus.actorId
-        && (document.activeElement === writingFocus.focusOwner || document.activeElement === document.body)) area.focus();
+        && (document.activeElement === writingFocus.focusOwner || document.activeElement === document.body
+          || !!writingFocus.managedReturnFocus && document.activeElement === writingFocus.managedReturnFocus)) area.focus();
       setWritingFocus(current => current === writingFocus ? null : current);
     });
     return () => cancelAnimationFrame(frame);
@@ -414,6 +418,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const focusBeforeClose = document.activeElement;
     const ownsFocus = panel.contains(focusBeforeClose);
     panel.close(); libraryReturn.current = null;
+    // ＋ 새 글 in the sheet: close() just put focus back on the sheet's opener.
+    // Hand that observed focus to this exact writing request, unless the user moved on.
+    const writing = writingFocusRef.current;
+    if (writing?.focusOwner && panel.contains(writing.focusOwner)
+      && (focusBeforeClose === writing.focusOwner || focusBeforeClose === document.body)) writing.managedReturnFocus = document.activeElement;
     const sourceReturn = pendingSourceFocus.current;
     // Switching today/find to writing removes the clicked result in the same
     // commit. Only that captured, now-detached owner may explain body focus.
@@ -588,7 +597,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         || props.canContinueWholeDocument?.() === false || !window.matchMedia('(max-width:760px)').matches
         || selectedRef.current !== request.documentId || presentation.current.period !== 'documents'
         || presentation.current.folderId !== request.folderId) return;
-      const button = libraryToggle.current, host = root.current;
+      const button = props.hostMainTabs ? titleToggle.current : libraryToggle.current, host = root.current;
       const documentHost = Array.from(host?.querySelectorAll<HTMLElement>('[data-program-document]') ?? [])
         .find(element => element.dataset.programDocument === request.documentId);
       const editor = documentHost?.querySelector<HTMLElement>('section[aria-label="개인 문서 편집"]');
@@ -1402,7 +1411,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         <div className={styles.docHeading}>{sourceOriginOpen && <button type="button" className={styles.sourceReturn}
           aria-label={`${sourceOriginLabel} 목록으로 돌아가기`} onClick={() => void returnToSourceOrigin()}>← {sourceOriginLabel}</button>}<h1>{props.hostMainTabs
-          ? <button type="button" className={styles.titleButton} aria-haspopup="dialog" aria-expanded={libraryOpen} aria-controls="program-library"
+          ? <button ref={titleToggle} type="button" className={styles.titleButton} aria-haspopup="dialog" aria-expanded={libraryOpen} aria-controls="program-library"
             aria-label={`${documentTitleText} · 문서 목록 열기`} onPointerDown={findPointerDown} onClick={openFindPanel}><span>{documentTitleText}</span><span aria-hidden="true"> ▾</span></button>
           : documentTitleText}</h1>
           {props.hostMainTabs ? selectedDocumentTools && <div className={styles.titleActions}>{selectedDocumentTools}</div>
