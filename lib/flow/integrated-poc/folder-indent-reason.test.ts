@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { createProgramTextDraft } from './program-text-draft';
+import { indentTouchesLinkedFolder } from './folder-line-hold';
+import { createProgramTextDraft, FOLDER_INDENT_NOTICE } from './program-text-draft';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 
 // D11 A (folder grammar 4판, retrace R2): ⇤·⇥ on a linked folder line was refused as "TXT의 폴더 연결이 현재
@@ -62,4 +64,24 @@ test('the draft shows the 4판 words; ↶ puts the line back, saving resumes and
   assert.equal(draft.getState().invalid, false);
   assert.equal(await draft.save(), true);
   assert.equal(M.raw(M.getDocument(sent[0], TYPED)), typed, 'the earlier input is saved with it');
+});
+
+// D11 (d): instead of refusing after the fact, ⇤·⇥ that would move a linked folder line change nothing.
+test('an indent over a linked folder line, alone or with other lines, is the case that is skipped', () => {
+  const start = account();
+  // RAW lines: 0 첫 줄 · 1 - /운동 · 2 - /하위 · 3 할 일 · 4 - /독서 · 5 다른 일 · 6 메모
+  for (const [from, to, touches] of [[1, 1, true], [2, 3, true], [4, 4, true], [3, 5, true], [0, 0, false], [3, 3, false], [5, 6, false]] as const) {
+    assert.equal(indentTouchesLinkedFolder(start, TYPED, from, to), touches, `${from}..${to}`);
+  }
+  assert.equal(FOLDER_INDENT_NOTICE, '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. 분류 화면의 상위 폴더에서 옮겨 주세요.');
+});
+
+test('the editor skips such an indent in canApplyIndent and keeps Tab in the text', () => {
+  const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
+  assert.match(editor, /if \(state\.raw === textArea\(\)\?\.value && indentTouchesLinkedFolder\(state\.working, props\.docId, details\.startLine, details\.endLine\)\) \{\r?\n\s*folderIndentSkipped\.current = true; setMessage\(FOLDER_INDENT_NOTICE\); return false;/);
+  assert.match(editor, /onKeyDown=\{event => \{ if \(event\.key === 'Tab' && folderIndentSkipped\.current\) event\.preventDefault\(\); folderIndentSkipped\.current = false; \}\}/);
+  // The bar and a held press reach the same check through the native editor's indent.
+  assert.match(editor, /\} else target\.instance\.indent\(action === 'outdent'\);/);
+  const vendor = readFileSync(new URL('./vendor/text-editor.cjs', import.meta.url), 'utf8');
+  assert.match(vendor, /if \(typeof config\.canApplyIndent === 'function' && config\.canApplyIndent\(plan\.nextRaw, intent\) !== true\)/);
 });

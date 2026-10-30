@@ -41,6 +41,9 @@ export interface ProgramTextDraftState {
 }
 
 /** Serializes draft commits while preserving newer typing and rejected raw input. */
+/** D11 (d): ⇤·⇥ on a linked folder line changes nothing and says why (D11 A's words, without the undo hint). */
+export const FOLDER_INDENT_NOTICE = '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. 분류 화면의 상위 폴더에서 옮겨 주세요.';
+
 const FOLDER_PROBLEM_TEXT: Record<string, string> = {
   'name-conflict': '같은 위치에 이름이 겹치는 폴더가 있습니다. 다른 이름을 입력해 주세요. 입력은 남아 있습니다.',
   'unknown-id': '현재 작업 공간에 없는 폴더 연결입니다. 연결 정보를 지우고 폴더 이름만 입력해 주세요. 입력은 남아 있습니다.',
