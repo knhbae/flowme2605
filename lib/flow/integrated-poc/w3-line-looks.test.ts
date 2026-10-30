@@ -34,13 +34,15 @@ test("rows without the caret drop '- 메모:' and '##' from sight, keeping the R
   assert.match(render, /const memo = !propertyLabel && checkOwner !== null && safeMeta\.kind === 'property' \? \/\^\(\[ \\t\]\+-\\s\+메모:\\s\?\)\(\.\*\)\$\/\.exec\(line\) : null;/);
   assert.match(render, /row\.append\(makeSpan\('tle-memo-syntax', memo\[1\]\), makeSpan\('tle-memo-text', memo\[2\]\)\);/);
   // A heading is a label over its unseen RAW line, as a date is.
-  assert.match(render, /const heading = safeMeta && safeMeta\.kind === 'heading' \? \/\^ \*#\{1,6\}\\s\+\(\\S\.\*\)\$\/\.exec\(line\) : null;/);
-  assert.match(render, /row\.append\(makeSpan\('tle-date-source', line\), makeSpan\('tle-date-label tle-heading-label', heading\[1\]\)\);/);
+  assert.match(render, /const heading = safeMeta && safeMeta\.kind === 'heading' \? \/\^ \*\(#\{1,6\}\)\\s\+\(\\S\.\*\)\$\/\.exec\(line\) : null;/);
+  assert.match(render, /const title = makeSpan\('tle-date-label tle-heading-label', heading\[2\]\);/);
+  assert.match(render, /row\.append\(makeSpan\('tle-date-source', line\), title\);/);
   // The caret's rows (and IME) are decided before either branch: RAW, as before.
   assert(render.indexOf("row.classList.add('tle-line-raw');") < render.indexOf('} else if (heading) {'));
   assert(render.indexOf("row.classList.add('tle-line-raw');") < render.indexOf('} else if (memo) {'));
   assert.match(rule('.tle-memo-syntax'), /color: transparent;/);
-  assert.match(rule('.tle-heading-label'), /font-weight: 800;/);
+  // W3 fix: bold by a stroke, not a wider weight, so the wrapped title fits the RAW box (w3-fix test).
+  assert.match(rule('.tle-heading-label'), /font-weight: 400; -webkit-text-stroke: 0\.6px currentColor;/);
 });
 
 test('the painted spans never change the RAW advances: no padding, margin, border, font or spacing in the flow', () => {

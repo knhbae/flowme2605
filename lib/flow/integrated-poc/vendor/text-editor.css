@@ -128,7 +128,10 @@
 }
 .tle-property-date-label { color: var(--flowme-b-muted); font-weight: 400; }
 /* W3: a heading without its #s, bold; a memo without '- 메모:' (kept in the flow, transparent), muted with a 2px rail. */
-.tle-heading-label { font-weight: 800; }
+/* The heading title wraps over the RAW box it replaces: the same advances (a stroke stands in for bold, which is
+ * wider), the RAW indent as a first-line indent, no ellipsis. As the line's suffix it never needs more lines than
+ * the RAW text under it; anything past the box is clipped, never painted over the next row. */
+.tle-heading-label { inset: 0; text-indent: var(--tle-indent, 0px); white-space: pre-wrap; overflow-wrap: break-word; text-overflow: clip; font-weight: 400; -webkit-text-stroke: 0.6px currentColor; }
 .tle-memo-syntax { position: relative; color: transparent; }
 .tle-memo-syntax::after { content: ""; position: absolute; top: 0; bottom: 0; right: 6px; width: 2px; background: var(--flowme-b-line); }
 .tle-memo-text { color: var(--flowme-b-muted); }
