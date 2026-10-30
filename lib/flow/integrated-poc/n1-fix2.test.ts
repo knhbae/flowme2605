@@ -66,6 +66,6 @@ test('the empty add line closes on a blur only after the press that caused it ha
   const row = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramGroupAddRow.tsx', import.meta.url), 'utf8');
   assert.match(row, /if \(action === 'close'\) \{ if \(fromBlur\) closeAfterPress\(\); else props\.onClose\(\); return; \}/);
   assert.match(row, /void act\(entry\.leave\(props\.inputRef\.current\?\.value \?\? ''\), true\); \}\}>/);
-  assert.match(row, /window\.addEventListener\('pointerup', done, true\); window\.addEventListener\('pointercancel', done, true\);/);
-  assert.match(row, /const close = \(\) => setTimeout\(\(\) => \{ if \(mounted\.current\) props\.onClose\(\); \}, 0\);/);
+  // N1 fix 3: the wait for the press and its click lives in press-aware-close.ts (tested there).
+  assert.match(row, /blurClose\.current\?\.request\(/);
 });
