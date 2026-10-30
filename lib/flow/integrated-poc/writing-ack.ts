@@ -1,6 +1,6 @@
 import {textWorkspaceModel as M,type TextWorkspaceState} from './text-workspace';
 import {canonicalJson} from './alpha-persistence/json';
-import {finishedFolderDeclarations} from './folder-line-hold';
+import {folderDeclarationOnly,folderReplay} from './folder-line-hold';
 import type {ProgramData} from './contract';
 import type {AlphaCommand,AlphaReceipt} from './alpha-persistence/contract';
 import type {WritingIdentity} from './writing-compute';
@@ -88,10 +88,12 @@ export function privateTextChangeIsolatedToDocument(before: TextWorkspaceState, 
         titles++;
       }
       if (!titles) return false;
-      const replay = M.editTextResult(before, documentId, M.raw(submitted), { folderText: true, folderDeclare: finishedFolderDeclarations(before, next, documentId) });
+      const replay = M.editTextResult(before, documentId, M.raw(submitted), { folderText: true, ...folderReplay(before, next, documentId) });
       return replay.reason === null && canonicalJson(replay.state) === canonicalJson(next);
     }
     if (changed.length === 1 && changed[0] !== documentId) return false;
+    // A held "- /name" saved as text, then finished with the same raw: only its folders and links change.
+    if (!changed.length && folderDeclarationOnly(before, next, documentId)) return true;
     const records = (state: TextWorkspaceState) => new Map(state.progressRecords.map(record => [JSON.stringify([record.taskId, record.date]), record]));
     const oldRecords = records(before), newRecords = records(next);
     const changedRecords = [...new Set([...oldRecords.keys(), ...newRecords.keys()])]

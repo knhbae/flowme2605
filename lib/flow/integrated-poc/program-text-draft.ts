@@ -52,13 +52,13 @@ export function createProgramTextDraft(
   let submitted: { before: TextWorkspaceState; next: TextWorkspaceState; generation: number; allowBasicChecks: boolean } | null = null;
   const pasteHistory: { before: TextWorkspaceState; after: TextWorkspaceState }[] = [];
   const report = () => notify({ ...state });
-  type Input = { inputType: string; inputSplice?: TextInputSplice; taskSplit?: TextTaskSplitIntent; compositionGeneration?: number; folderHold?: number[]; folderDeclare?: number[] };
-  const signature=(input?:Input)=>JSON.stringify(input?{inputType:input.inputType,inputSplice:input.inputSplice,taskSplit:input.taskSplit,compositionGeneration:input.compositionGeneration,folderHold:input.folderHold,folderDeclare:input.folderDeclare}:null);
+  type Input = { inputType: string; inputSplice?: TextInputSplice; taskSplit?: TextTaskSplitIntent; compositionGeneration?: number; folderHold?: number[]; folderDeclare?: number[]; folderLink?: number[] };
+  const signature=(input?:Input)=>JSON.stringify(input?{inputType:input.inputType,inputSplice:input.inputSplice,taskSplit:input.taskSplit,compositionGeneration:input.compositionGeneration,folderHold:input.folderHold,folderDeclare:input.folderDeclare,folderLink:input.folderLink}:null);
   function deriveRaw(raw:string,input?:Input){
       const baseRaw = M.raw(M.getDocument(state.committed, docId));
       const before = state.working;
       const committedLines = M.getDocument(state.committed, docId)?.lines ?? [];
-      const canRestoreCommitted = !input?.folderDeclare && raw === baseRaw && programSame({ ...before,
+      const canRestoreCommitted = !input?.folderDeclare && !input?.folderLink && raw === baseRaw && programSame({ ...before,
         documents: before.documents.map(doc => doc.id === docId ? { ...doc, lines: committedLines } : doc),
         flows: before.flows.map(doc => doc.id === docId ? { ...doc, lines: committedLines } : doc),
       }, state.committed);
@@ -77,7 +77,7 @@ export function createProgramTextDraft(
         : canRestoreCommitted ? { state: state.committed, reason: null }
           : proof ? { state: proof.next.workspace, reason: null }
           : M.editTextResult(before, docId, raw, { folderText: true, ...(input?.inputSplice ? { inputSplice: input.inputSplice } : {}), ...(input?.taskSplit ? { taskSplit: input.taskSplit } : {}),
-            ...(input?.folderHold ? { folderHold: input.folderHold } : {}), ...(input?.folderDeclare ? { folderDeclare: input.folderDeclare } : {}) });
+            ...(input?.folderHold ? { folderHold: input.folderHold } : {}), ...(input?.folderDeclare ? { folderDeclare: input.folderDeclare } : {}), ...(input?.folderLink ? { folderLink: input.folderLink } : {}) });
       return {baseRaw,before,proof,edit};
   }
   let prepared: {state:ProgramTextDraftState;raw:string;signature:string;ownerRevision:number|undefined;context:unknown;value:ReturnType<typeof deriveRaw>}|null=null;
@@ -159,12 +159,14 @@ export function createProgramTextDraft(
       return !invalid;
     },
     /** A typed "- /name" line was kept as text (folderHold); judge it once now that it is finished.
-     * False when there is nothing to declare, or when the judgement refused it (the error keeps the input). */
-    declareFolderLine(lineIndex: number) {
+     * linkOnly (left, not finished explicitly) links only a folder of exactly that name and makes nothing.
+     * False when there is nothing to do, or when the judgement refused it (the error keeps the input). */
+    declareFolderLine(lineIndex: number, linkOnly = false) {
       if (state.invalid) return false;
-      const check = M.editTextResult(state.working, docId, state.raw, { folderText: true, folderDeclare: [lineIndex] });
+      const lines = linkOnly ? { folderLink: [lineIndex] } : { folderDeclare: [lineIndex] };
+      const check = M.editTextResult(state.working, docId, state.raw, { folderText: true, ...lines });
       if (check.reason === null && check.state === state.working) return false;
-      return api.updateRaw(state.raw, '', { inputType: 'folderDeclare', folderDeclare: [lineIndex] });
+      return api.updateRaw(state.raw, '', { inputType: 'folderDeclare', ...lines });
     },
     apply(next: TextWorkspaceState, nextLabel: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule']) {
       if (state.invalid || state.saving || !M.validate(next) || !validateWorkspace(next) || next === state.working) return false;

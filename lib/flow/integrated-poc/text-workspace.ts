@@ -89,10 +89,11 @@ export interface TextWorkspaceModel {
   contextAt(state: TextWorkspaceState, docId: string, index: number): TextContext;
   insertionContext(state: TextWorkspaceState, docId: string, index: number, depth?: number): TextContext;
   insertionOptions(state: TextWorkspaceState, docId: string, lineId: string): TextInsertion[];
-  editText(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice; folderText?: boolean; taskSplit?: TextTaskSplitIntent; folderHold?: number[]; folderDeclare?: number[] }): TextWorkspaceState;
+  editText(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice; folderText?: boolean; taskSplit?: TextTaskSplitIntent; folderHold?: number[]; folderDeclare?: number[]; folderLink?: number[] }): TextWorkspaceState;
   /** folderHold: "- /name" lines still being typed stay text (an existing folder line still renames).
-   * folderDeclare: finished lines are judged even though their text did not change since. */
-  editTextResult(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice; folderText?: boolean; taskSplit?: TextTaskSplitIntent; folderHold?: number[]; folderDeclare?: number[] }): {
+   * folderDeclare: finished lines are judged even though their text did not change since.
+   * folderLink: like folderDeclare, but only a folder of exactly that name is linked; nothing is made. */
+  editTextResult(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice; folderText?: boolean; taskSplit?: TextTaskSplitIntent; folderHold?: number[]; folderDeclare?: number[]; folderLink?: number[] }): {
     state: TextWorkspaceState; reason: 'identity-ambiguous' | 'invalid-format' | 'progress-check-conflict' | 'blocked' | null;
     progressConflict?: TextProgressCheckConflict;
     normalizedText?: string;

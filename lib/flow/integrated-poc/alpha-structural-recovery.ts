@@ -2,7 +2,7 @@ import type { ProgramStorage } from './program-store';
 import { programIdentifier, programShape } from './program-data';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 import { canonicalJson, detached, parseAlphaJson } from './alpha-persistence/json';
-import { finishedFolderDeclarations } from './folder-line-hold';
+import { folderReplay, heldFolderLines } from './folder-line-hold';
 
 /** Off-document additions cannot be recovered from the source editor's raw text. */
 export type AlphaStructuralDraft = { documentId: string; before: TextWorkspaceState; next: TextWorkspaceState };
@@ -41,6 +41,9 @@ function folderStructuralTransition(documentId: string, before: TextWorkspaceSta
   const submittedLines = new Map(submitted.lines.map(line => [line.id, line]));
   const oldRows = new Map(M.rowMeta(before, documentId).map(row => [row.id, row]));
   const folderLines = new Set(M.rowMeta(next, documentId).filter(row => row.kind === 'scope' && row.scopeKind === 'folder').map(row => row.id));
+  // A "- /name" line still being typed beside a finished one is text the replay keeps held.
+  const held = new Set(heldFolderLines(before, next, documentId).map(index => submitted.lines[index].id));
+  for (const id of held) folderLines.add(id);
   for (const line of source.lines) {
     const incoming = submittedLines.get(line.id), row = oldRows.get(line.id);
     if (!incoming) return false;
@@ -50,7 +53,7 @@ function folderStructuralTransition(documentId: string, before: TextWorkspaceSta
   if (submitted.lines.some(line => !sourceIds.has(line.id) && line.text.trim() && !folderLines.has(line.id))) return false;
 
   // A line held as text while typed and declared when finished keeps its text; declare it again.
-  const replay = M.editTextResult(before, documentId, M.raw(submitted), { folderText: true, folderDeclare: finishedFolderDeclarations(before, next, documentId) });
+  const replay = M.editTextResult(before, documentId, M.raw(submitted), { folderText: true, ...folderReplay(before, next, documentId) });
   if (replay.reason !== null) return false;
   const replayDocs = [...replay.state.documents, ...replay.state.flows], nextDocs = [...next.documents, ...next.flows];
   if (replayDocs.length !== nextDocs.length || replay.state.folders.length !== next.folders.length) return false;

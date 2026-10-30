@@ -244,10 +244,11 @@ export function programDirectCheckboxChange(workspace: TextWorkspaceState, docId
   return next === workspace ? { kind: 'blocked' } as const : { kind: 'apply', next, target, percent } as const;
 }
 
-// B0: a new "- /name" line is text while it is typed and is judged once, by its whole name, when the
-// writer leaves it (Enter, another line, blur, a flush). Typing on such a caret line is held; a paste is not.
+// B0: a new "- /name" line is text while it is typed. An explicit finish on it (Enter, a bar action) links
+// the folder of that name or makes it; leaving it (another line, blur, a flush) only links a folder of
+// exactly that name. Typing and native undo on such a caret line are held; a paste is not.
 const FOLDER_LINE = /^ *- \/(?!.*<!--\s*flowme-folder)/;
-const HOLDING_INPUT = ['', 'insertText', 'insertCompositionText', 'insertReplacementText', 'deleteContentBackward', 'deleteContentForward', 'deleteWordBackward', 'deleteWordForward'];
+const HOLDING_INPUT = ['', 'historyUndo', 'historyRedo', 'insertText', 'insertCompositionText', 'insertReplacementText', 'deleteContentBackward', 'deleteContentForward', 'deleteWordBackward', 'deleteWordForward'];
 export function heldInput(raw: string, caret: number | undefined, inputType: string): number[] | undefined {
   if (caret === undefined || !HOLDING_INPUT.includes(inputType)) return undefined;
   const index = raw.slice(0, caret).split('\n').length - 1;
@@ -263,8 +264,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ReturnType<typeof nativeEditor.create> | null>(null);
   const draftRef = useRef<ReturnType<typeof createProgramTextDraft> | null>(null);
-  // The unlinked "- /name" line typed last, judged when the writer leaves it.
-  const heldFolderLineRef = useRef<string | null>(null);
+  // The unlinked "- /name" line typed last; `left` once leaving it found no folder of that name.
+  const heldFolderLineRef = useRef<{ id: string; left: boolean } | null>(null);
   const documentInputRef=useRef<ProgramDocumentInput|null>(null);
   const checkPendingRef=useRef<string|null>(null);
   const checkNotifyRef=useRef<((pending:boolean)=>void)|undefined>(undefined);
@@ -394,21 +395,30 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const textarea = textArea();
     if (!textarea) return;
     const index = textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1;
-    if (heldFolderLineRef.current && currentDoc()?.lines[index]?.id !== heldFolderLineRef.current) finishHeldFolderLine();
+    const held = heldFolderLineRef.current;
+    if (held) { if (currentDoc()?.lines[index]?.id === held.id) held.left = false; else finishHeldFolderLine(); }
     const lineId = textarea.selectionStart === textarea.selectionEnd ? currentDoc()?.lines[index]?.id ?? null : null;
     if (suggestionLineRef.current !== lineId) { suggestionLineRef.current = lineId; setSuggestionLineId(lineId); setDismissedSuggestion(''); }
     propsRef.current.onPosition?.({ start: textarea.selectionStart, end: textarea.selectionEnd, scrollTop: textarea.scrollTop }, currentDoc()?.lines[index]?.id ?? null);
     syncBarLine();
   }
-  /** B0: judge the held "- /name" line once, by its whole name, now that the writer left it. */
-  function finishHeldFolderLine() {
-    const id = heldFolderLineRef.current, controller = draftRef.current, area = textArea();
-    if (!id || !controller || !area || composingRef.current || propsRef.current.readOnly) return;
+  /** B0: judge the held "- /name" line by its whole name. Explicit (Enter or a bar action with the caret on
+   * it) links or makes the folder; otherwise only a folder of exactly that name is linked, once per leaving. */
+  function finishHeldFolderLine(explicit = false) {
+    const held = heldFolderLineRef.current, controller = draftRef.current, area = textArea();
+    if (!held || !controller || !area || composingRef.current || propsRef.current.readOnly) return;
     const state = controller.getState();
     if (state.invalid || area.value !== state.raw) return;
-    heldFolderLineRef.current = null;
-    const index = M.getDocument(state.working, propsRef.current.docId)?.lines.findIndex(line => line.id === id) ?? -1;
-    if (index < 0 || !controller.declareFolderLine(index)) return;
+    const docId = propsRef.current.docId, lines = M.getDocument(state.working, docId)?.lines ?? [];
+    const index = lines.findIndex(line => line.id === held.id);
+    if (index < 0 || !FOLDER_LINE.test(lines[index].text) || state.working.bindings.some(binding => binding.docId === docId && binding.lineId === held.id)) {
+      heldFolderLineRef.current = null; return;
+    }
+    const create = explicit && area.value.slice(0, area.selectionStart).split('\n').length - 1 === index;
+    if (!create && held.left) return;
+    const declared = controller.declareFolderLine(index, !create);
+    heldFolderLineRef.current = declared || create ? null : { id: held.id, left: true };
+    if (!declared) return;
     const visibleRaw = controller.getState().raw;
     if (visibleRaw !== area.value) editorRef.current?.setValue(visibleRaw, { preserveSelection: true });
     scheduleSave();
@@ -446,7 +456,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function runBar(action: WritingBarAction) {
     const target = barEditor();
     if (!target || inputLockedRef.current || propsRef.current.readOnly) return;
-    if (!propsRef.current.folderId) finishHeldFolderLine();
+    if (!propsRef.current.folderId) finishHeldFolderLine(true);
     if (action === 'menu') { if (propsRef.current.folderId) void openRegionInsertMenu(); else openCurrentInsertMenu(target.instance.getSelection().lineIndex); return; }
     if (action === 'enter') target.instance.enter(true);
     else if (action === 'task') {
@@ -938,6 +948,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         return next.reason === null && M.raw(M.getDocument(next.state, props.docId)) === raw
           && (propsRef.current.validateWorkspace?.(next.state) ?? true);
       },
+      beforeEnter: () => finishHeldFolderLine(true),
       onChange: (raw, input) => {
         if (inputLockedRef.current || propsRef.current.readOnly) { editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true }); return; }
         if (raw === controller.getState().raw) { historyTypeRef.current = ''; return; }
@@ -978,8 +989,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           }
           if (hold) {
             const line = currentDoc()?.lines[hold[0]];
-            if (heldFolderLineRef.current && heldFolderLineRef.current !== line?.id) finishHeldFolderLine();
-            if (line && !currentState().bindings.some(binding => binding.docId === propsRef.current.docId && binding.lineId === line.id)) heldFolderLineRef.current = line.id;
+            if (heldFolderLineRef.current && heldFolderLineRef.current.id !== line?.id) finishHeldFolderLine();
+            if (line && !currentState().bindings.some(binding => binding.docId === propsRef.current.docId && binding.lineId === line.id)) heldFolderLineRef.current = { id: line.id, left: false };
           }
           requestAuthoringSlash(beforeRaw,historyType||input?.inputType||'');
           scheduleSave();
@@ -1028,11 +1039,6 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     };
     host.addEventListener('compositionstart', compositionStart, true);
     host.addEventListener('compositionend', compositionEnd, true);
-    // List Enter reads the row: a folder line opens an indented line. Finish a held line before it.
-    const finishBeforeEnter = (event: KeyboardEvent) => {
-      if (event.key === 'Enter' && event.target === textarea && !event.isComposing && event.keyCode !== 229 && !composingRef.current) finishHeldFolderLine();
-    };
-    host.addEventListener('keydown', finishBeforeEnter, true);
     const preventLockedInput = (event: Event) => {
       controller.cancelPreparedRaw();
       const type = (event as InputEvent).inputType;
@@ -1053,6 +1059,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         }
       }
     };
+    const finishOnBlur = () => finishHeldFolderLine();
     const observeInput = (event: Event) => {
       const input=event as InputEvent;historyTypeRef.current=input.inputType||historyTypeRef.current;
     };
@@ -1065,7 +1072,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         textarea.scrollTop = position.scrollTop;
       }
       for (const event of ['select', 'scroll', 'keyup', 'click', 'blur']) textarea.addEventListener(event, rememberPosition);
-      textarea.addEventListener('blur', finishHeldFolderLine);
+      textarea.addEventListener('blur', finishOnBlur);
       textarea.addEventListener('beforeinput', preventLockedInput, true);
       textarea.addEventListener('input', observeInput, true);
     }
@@ -1081,11 +1088,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       alive = false; rememberPosition();
       propsRef.current.onRegisterConfirmedSave?.(null);
       host.removeEventListener('compositionstart', compositionStart, true); host.removeEventListener('compositionend', compositionEnd, true);
-      host.removeEventListener('keydown', finishBeforeEnter, true);
       window.removeEventListener('beforeunload', warnOnExit);
       if (timerRef.current) clearTimeout(timerRef.current);
       if (textarea) for (const event of ['select', 'scroll', 'keyup', 'click', 'blur']) textarea.removeEventListener(event, rememberPosition);
-      textarea?.removeEventListener('blur', finishHeldFolderLine);
+      textarea?.removeEventListener('blur', finishOnBlur);
       textarea?.removeEventListener('beforeinput', preventLockedInput, true);
       textarea?.removeEventListener('input', observeInput, true);
       checkPendingRef.current=null;
