@@ -12,6 +12,7 @@ import { programDateRange, programExecutionTasks, programShiftDate, programShift
 import { programOrderedExecutionRows, programTextExecutionKey, reorderProgramExecutionTimeline } from '@/lib/flow/integrated-poc/recurrence-order';
 import { programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
+import { programViewScope } from '@/lib/flow/integrated-poc/view-scope';
 import { ProgramGroupAddRow } from './ProgramGroupAddRow';
 import { mergeProgramTextWorkspace } from '@/lib/flow/integrated-poc/text-merge';
 import { flushProgramEditorCollection, prepareProgramDocumentAction, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
@@ -22,7 +23,7 @@ import { programErrorMessage, type ProgramMutate, type ProgramNavigate, type Pro
 import { emptyProgramRecurrencePresentation, programNavigationMatchesDocument, type ProgramSpaceNavigation } from '@/lib/flow/integrated-poc/navigation';
 import { ProgramDocumentProvenance } from './ProgramDocumentProvenance';
 import { ProgramPersonalAuthoring } from './ProgramPersonalAuthoring';
-import { documentHasPersonalAuthoring } from '@/lib/flow/integrated-poc/personal-authoring';
+import { documentHasPersonalAuthoring, documentRepeatSeries } from '@/lib/flow/integrated-poc/personal-authoring';
 import type { ProgramPmHostContext } from '@/lib/flow/integrated-poc/rea-pm/app-host';
 import { programTextProgressTransition } from '@/lib/flow/integrated-poc/program-text-progress-transition';
 import { programTextTransition } from '@/lib/flow/integrated-poc/program-text-transition';
@@ -85,6 +86,13 @@ export type ProgramSpaceProps = {
   onRegisterReviewSpace?: (port: ProgramReviewSpacePort | null) => void;
   onRegisterEditors?: (editors: (ProgramEditorFlush & AlphaStructuralEditorPort) | null) => void;
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
+  /** R8b: the host draws the main tabs (쓰기·오늘·분류) and chooses one through this port. The space's own
+   *  period state stays here; this is not onRegisterNavigation, so source opens keep their focus path. */
+  onRegisterMainTabs?: (port: { choose(tab: ProgramMainTab): Promise<boolean> } | null) => void;
+  /** Which main tab the space now shows, for the host's tabs. */
+  onMainTabChange?: (tab: ProgramMainTab) => void;
+  /** The host draws the main tabs, so the space's own tab row stays hidden. */
+  hostMainTabs?: boolean;
   /** Local view changes do not call mutate; the host must expose held authority. */
   canContinueWholeDocument?: () => boolean;
   /** Wait only the already-running private operation before an explicit source return. */
@@ -99,6 +107,9 @@ export type ProgramSpaceProps = {
   /** Optional whole-document links supplied by a local or account-owned browser host. */
   documentCollections?: { state: DocumentCollections; onChange: (next: DocumentCollections) => Promise<boolean>; initialWritingDocumentId?: string };
 };
+export type ProgramMainTab = 'documents' | 'today' | 'all';
+/** The main tab a period belongs to: week, month and date-less are under 오늘. */
+export const programMainTabOf = (period: ProgramPeriod): ProgramMainTab => period === 'documents' || period === 'all' ? period : 'today';
 type Detail = { kind: 'task'; id: string } | { kind: 'folder'; id: string } | { kind: 'connect'; docId: string; lineId: string | null; insertAfter: boolean } | null;
 type LibraryWritingHandoff = { epoch: number; documentId: string; folderId: string; focusOwner: Element | null };
 /** The list view a row's title opened its source from, and where that row sat on screen. */
@@ -157,7 +168,18 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // personal authoring, or after the ＋ menu asks for it; that ask is screen-only, never stored.
   const [authoringRequests, setAuthoringRequests] = useState<string[]>([]);
   const authoringBox = useRef<HTMLDivElement | null>(null), revealAuthoringBox = useRef(false);
-  function requestPersonalAuthoring(id: string) { revealAuthoringBox.current = true; setAuthoringRequests(previous => [...previous.filter(value => value !== id), id]); }
+  function requestPersonalAuthoring(id: string) {
+    // Under the host tabs the Flow·반복 box is a sheet the toolbar's 반복 opens (R8b); it stays mounted, so its input survives closing.
+    if (props.hostMainTabs) { const sheet = authoringSheet.current; if (sheet && !sheet.open) sheet.showModal(); return; }
+    revealAuthoringBox.current = true; setAuthoringRequests(previous => [...previous.filter(value => value !== id), id]);
+  }
+  const authoringSheet = useRef<HTMLDialogElement | null>(null);
+  /** "반복 2" when the document has live repeats, else "반복". */
+  function repeatLabel(id: string) {
+    const taskIds = M.rowMeta(space.text, id).flatMap(row => row.kind === 'task' ? [row.isReference ? row.taskId ?? '' : row.id] : []);
+    const count = documentRepeatSeries(space.personalAuthoring, id, taskIds).length;
+    return count ? `반복 ${count}` : '반복';
+  }
   useEffect(() => {
     if (!revealAuthoringBox.current) return; revealAuthoringBox.current = false;
     const box = authoringBox.current?.querySelector<HTMLDetailsElement>(':scope > details:last-of-type');
@@ -170,6 +192,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       || M.tasks(space.text).some(task => task.docId !== id && taskIds.includes(task.id));
   }
   const [date, setDate] = useState(today), [folderId, setFolderId] = useState(''), [query, setQuery] = useState('');
+  const [queryDraft, setQueryDraft] = useState(''), queryComposing = useRef(false);
+  useEffect(() => { if (!queryComposing.current) setQueryDraft(query); }, [query]);
   const [collectionId, setCollectionId] = useState(''), [quickDocumentId, setQuickDocumentId] = useState('');
   const collectionMode = props.documentCollections;
   const [selected, setSelected] = useState(() => initialProgramDocumentId(props, space));
@@ -181,6 +205,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [moving, setMoving] = useState<string | null>(null), [showArchived, setShowArchived] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const libraryToggle = useRef<HTMLButtonElement | null>(null);
+  // The host's writing title ▾ opens the same sheet; it never shares libraryToggle.
+  const titleToggle = useRef<HTMLButtonElement | null>(null);
   const noteFindMenu = useRef<HTMLDetailsElement | null>(null);
   const noteFindMenuSummary = useRef<HTMLElement | null>(null);
   const [noteQuickOpen, setNoteQuickOpen] = useState(false);
@@ -221,7 +247,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const documentMenu = useRef<HTMLDetailsElement | null>(null);
   const viewMenu = useRef<HTMLElement | null>(null);
   const writingRequest = useRef<string | null>(null);
-  const [writingFocus, setWritingFocus] = useState<{ id: string; actorId: string; focusOwner: Element | null } | null>(null);
+  const [writingFocus, setWritingFocus] = useState<{ id: string; actorId: string; focusOwner: Element | null; managedReturnFocus?: Element | null } | null>(null);
+  const writingFocusRef = useRef(writingFocus); writingFocusRef.current = writingFocus;
   useEffect(() => {
     setWritingNotice(current => current?.actorId === actorId && current.documentId === selected && period === 'documents' ? current : null);
   }, [actorId, selected, period]);
@@ -230,13 +257,18 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const frame = requestAnimationFrame(() => {
       const area = root.current?.querySelector<HTMLTextAreaElement>('[data-program-document]:not([hidden]) textarea');
       if (area && !area.readOnly && area.getClientRects().length && dataRef.current.activeActorId === writingFocus.actorId
-        && (document.activeElement === writingFocus.focusOwner || document.activeElement === document.body)) area.focus();
+        && (document.activeElement === writingFocus.focusOwner || document.activeElement === document.body
+          || !!writingFocus.managedReturnFocus && document.activeElement === writingFocus.managedReturnFocus)) area.focus();
       setWritingFocus(current => current === writingFocus ? null : current);
     });
     return () => cancelAnimationFrame(frame);
   }, [writingFocus, selected, actorId, period]);
-  function focusViewControl() { (viewMenu.current?.querySelector<HTMLElement>('[data-program-period][aria-current="page"]')
-    ?? viewMenu.current?.querySelector<HTMLElement>('[data-program-period="today"]'))?.focus({ preventScroll: true }); }
+  function focusViewControl() {
+    // With the host's tabs, its current tab is the view control.
+    const hosted = props.hostMainTabs ? root.current?.ownerDocument.querySelector<HTMLElement>('[data-main-tab][aria-current="page"]') : null;
+    (hosted ?? viewMenu.current?.querySelector<HTMLElement>('[data-program-period][aria-current="page"]')
+      ?? viewMenu.current?.querySelector<HTMLElement>('[data-program-period="today"]'))?.focus({ preventScroll: true });
+  }
   useEffect(() => {
     const closeOutside = (event: Event) => {
       const menu = documentMenu.current;
@@ -387,6 +419,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const focusBeforeClose = document.activeElement;
     const ownsFocus = panel.contains(focusBeforeClose);
     panel.close(); libraryReturn.current = null;
+    // ＋ 새 글 in the sheet: close() just put focus back on the sheet's opener.
+    // Hand that observed focus to this exact writing request, unless the user moved on.
+    const writing = writingFocusRef.current;
+    if (writing?.focusOwner && panel.contains(writing.focusOwner)
+      && (focusBeforeClose === writing.focusOwner || focusBeforeClose === document.body)) writing.managedReturnFocus = document.activeElement;
     const sourceReturn = pendingSourceFocus.current;
     // Switching today/find to writing removes the clicked result in the same
     // commit. Only that captured, now-detached owner may explain body focus.
@@ -476,6 +513,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setSourceRestore({ ...origin, opener });
     } finally { release(); }
   }
+  /** One way to change the main tab, for the space's own tabs and the host's: the tab a source was
+   *  opened from goes back there (R7); any other tab is an ordinary period change. */
+  function chooseMainTab(key: ProgramMainTab): Promise<boolean> {
+    return sourceOriginOpen && sourceOriginTab(sourceOrigin!) === key ? returnToSourceOrigin().then(() => true) : changePeriod(key, true);
+  }
+  const chooseMainTabRef = useRef(chooseMainTab); chooseMainTabRef.current = chooseMainTab;
+  useEffect(() => {
+    props.onRegisterMainTabs?.({ choose: tab => chooseMainTabRef.current(tab) });
+    return () => props.onRegisterMainTabs?.(null);
+  }, [actorId]);
+  useEffect(() => { props.onMainTabChange?.(programMainTabOf(period)); }, [period]);
   useEffect(() => {
     const origin = sourceRestore;
     if (!origin) return;
@@ -550,7 +598,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         || props.canContinueWholeDocument?.() === false || !window.matchMedia('(max-width:760px)').matches
         || selectedRef.current !== request.documentId || presentation.current.period !== 'documents'
         || presentation.current.folderId !== request.folderId) return;
-      const button = libraryToggle.current, host = root.current;
+      const button = props.hostMainTabs ? titleToggle.current : libraryToggle.current, host = root.current;
       const documentHost = Array.from(host?.querySelectorAll<HTMLElement>('[data-program-document]') ?? [])
         .find(element => element.dataset.programDocument === request.documentId);
       const editor = documentHost?.querySelector<HTMLElement>('section[aria-label="개인 문서 편집"]');
@@ -1277,14 +1325,27 @@ export function ProgramSpace(props: ProgramSpaceProps) {
 
   // Writing states share one title/action heading and one guarded finder.
   // Period views retain their existing entry position and search scope.
+  function findPointerDown(event: React.PointerEvent) {
+    if (libraryComposing.current) { event.preventDefault(); event.stopPropagation(); return; }
+    rememberFindFocus(); if (libraryReturn.current?.area) event.preventDefault();
+  }
   const findActions = <div className={styles.findActions}>
     {period === 'documents' && <button className={styles.newWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글</button>}
     <button ref={libraryToggle} className={styles.libraryToggle} aria-label="글 찾기 · 내 문서와 할 일" aria-expanded={libraryOpen} aria-controls="program-library"
-      onPointerDown={event => { if (libraryComposing.current) { event.preventDefault(); event.stopPropagation(); return; } rememberFindFocus(); if (libraryReturn.current?.area) event.preventDefault(); }}
+      onPointerDown={findPointerDown}
       onClick={openFindPanel}>글 찾기</button>
   </div>;
   const compactNoteToday = !!props.noteHeader && period === 'today';
-  const periodTitle = <h1>{period === 'today' && date !== today ? '하루' : period === 'all' && collectionMode ? '전체 할 일' : periods.find(([key]) => key === period)?.[1]}{folder ? ` · ${folder.title}` : ''}</h1>;
+  const viewScope = programViewScope({ period, date, today, folderTitle: folderId ? folderOptions.find(item => item.id === folderId)?.title ?? '선택한 분류' : null, query });
+  async function clearScope(kind: 'period' | 'folder' | 'query') {
+    if (kind === 'period') return changePeriod('today');
+    if (kind === 'folder') return changeFolder('');
+    setQuery('');
+  }
+  const documentTitleText = selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : '필요한 내용을 먼저 적으세요';
+  const periodTitle = <h1>{period === 'today' ? (date === today ? `오늘 · ${programCalendarDate(today, today)}` : programCalendarDate(date, today))
+    : period === 'all' ? (collectionMode ? '전체 할 일' : folder ? folder.title : '분류')
+    : `${periods.find(([key]) => key === period)?.[1]}${folder ? ` · ${folder.title}` : ''}`}</h1>;
 
   const guardOccurrenceDraft = (event: React.SyntheticEvent) => {
     const pending = Object.entries(recurrencePorts.current).filter(([, port]) => port?.hasPendingInput?.());
@@ -1297,16 +1358,20 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     onCompositionStartCapture={() => { libraryComposing.current = true; }} onCompositionEndCapture={() => { libraryComposing.current = false; }}
     onClickCapture={guardOccurrenceDraft} onKeyDownCapture={event => { if (!['Tab', 'Shift', 'Escape'].includes(event.key)) guardOccurrenceDraft(event); }}>
     <div className={styles.contextActions}>
-      <nav ref={viewMenu} className={styles.periods} aria-label="기본 이동">{mainPeriods.map(([key, label]) => <button key={key} data-program-period={key} aria-current={period === key || key === 'today' && ['week', 'month', 'undated'].includes(period) ? 'page' : undefined}
-        onClick={() => void (sourceOriginOpen && sourceOriginTab(sourceOrigin!) === key ? returnToSourceOrigin() : changePeriod(key, true))}>{key === 'all' && collectionMode ? '전체 할 일' : label}</button>)}</nav>
+      <nav ref={viewMenu} className={styles.periods} aria-label="기본 이동" hidden={!!props.hostMainTabs}>{mainPeriods.map(([key, label]) => <button key={key} data-program-period={key} aria-current={period === key || key === 'today' && ['week', 'month', 'undated'].includes(period) ? 'page' : undefined}
+        onClick={() => void chooseMainTab(key as ProgramMainTab)}>{key === 'all' && collectionMode ? '전체 할 일' : label}</button>)}</nav>
       {period !== 'documents' && !props.noteHeader && findActions}
     </div>
     <dialog ref={libraryDialog} id="program-library" className={styles.findDialog} aria-labelledby="program-find-title"
       onCancel={event => { event.preventDefault(); if (!libraryComposing.current) { cancelLibraryReveal(); setLibraryOpen(false); } }}>
-      <div className={styles.findHeading}><h2 id="program-find-title">글 찾기</h2><button type="button" onClick={() => { if (!libraryComposing.current) { cancelLibraryReveal(); setLibraryOpen(false); } }}>닫기</button></div>
+      <div className={styles.findHeading}><h2 id="program-find-title">{props.hostMainTabs ? '문서' : '글 찾기'}</h2><button type="button" onClick={() => { if (!libraryComposing.current) { cancelLibraryReveal(); setLibraryOpen(false); } }}>닫기</button></div>
+      {props.hostMainTabs && <button type="button" className={styles.sheetNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>＋ 새 글</button>}
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {libraryOpen && viewChangeNoticeContent}
-      <label className={styles.field}>내 문서·할 일 찾기<input autoFocus id="program-private-search" type="search" value={query} onChange={event => { setQuery(event.target.value); setTaskNotice(null); }} /></label>
+      <label className={styles.field}>내 문서·할 일 찾기<input autoFocus id="program-private-search" type="search" value={queryDraft}
+        onCompositionStart={() => { queryComposing.current = true; }}
+        onCompositionEnd={event => { queryComposing.current = false; setQuery(event.currentTarget.value); setTaskNotice(null); }}
+        onChange={event => { setQueryDraft(event.target.value); if (!queryComposing.current && !(event.nativeEvent as InputEvent).isComposing) { setQuery(event.target.value); setTaskNotice(null); } }} /></label>
       {query && <button type="button" onClick={() => setQuery('')}>검색 지우기</button>}
       {period !== 'documents' && <p className={styles.findScope}>현재 {periods.find(([key]) => key === period)?.[1]}{folder ? ` · ${folder.title}` : ''}에서 찾습니다. 닫으면 같은 보기로 돌아갑니다.</p>}
       {period !== 'documents' && query && <section aria-label="현재 보기의 할 일 검색 결과" className={styles.findTasks}>
@@ -1341,7 +1406,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       <div hidden={period !== 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         <div className={styles.docHeading}>{sourceOriginOpen && <button type="button" className={styles.sourceReturn}
-          aria-label={`${sourceOriginLabel} 목록으로 돌아가기`} onClick={() => void returnToSourceOrigin()}>← {sourceOriginLabel}</button>}<h1>{selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : '필요한 내용을 먼저 적으세요'}</h1>{(!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</div>
+          aria-label={`${sourceOriginLabel} 목록으로 돌아가기`} onClick={() => void returnToSourceOrigin()}>← {sourceOriginLabel}</button>}<h1>{props.hostMainTabs
+          ? <button ref={titleToggle} type="button" className={styles.titleButton} aria-haspopup="dialog" aria-expanded={libraryOpen} aria-controls="program-library"
+            aria-label={`${documentTitleText} · 문서 목록 열기`} onPointerDown={findPointerDown} onClick={openFindPanel}><span>{documentTitleText}</span><span aria-hidden="true"> ▾</span></button>
+          : documentTitleText}</h1>
+          {props.hostMainTabs ? selectedDocumentTools && <div className={styles.titleActions}>{selectedDocumentTools}</div>
+            : (!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</div>
         {props.noteHeader}
         <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
         {!selectedDoc && props.noteStatus}
@@ -1359,15 +1429,21 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {selectedCollection && !selectedCollection.documentIds.includes(selectedDoc.id) && <p role="status" className={styles.muted}>이 문서는 선택한 모음에 없습니다. 원문은 그대로 열려 있습니다.</p>}
           </>}
         </>}
-        {props.nativeAuthoringEnabled&&selectedDoc&&showsPersonalAuthoring(selectedDoc.id)&&!selectedTrashed&&!retentionSource&&<div ref={authoringBox}><ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openDocument(documentId,taskId);}}/></div>}
+        {props.nativeAuthoringEnabled&&selectedDoc&&!selectedTrashed&&!retentionSource&&(props.hostMainTabs
+          ? <dialog ref={authoringSheet} className={`${styles.findDialog} ${styles.authoringSheet}`} aria-labelledby="program-authoring-title" onCancel={event => { event.preventDefault(); authoringSheet.current?.close(); }}>
+            <div className={styles.findHeading}><h2 id="program-authoring-title">반복 · Flow</h2><button type="button" onClick={() => authoringSheet.current?.close()}>닫기</button></div>
+            <ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{authoringSheet.current?.close();void openDocument(documentId,taskId);}}/>
+          </dialog>
+          : showsPersonalAuthoring(selectedDoc.id)&&<div ref={authoringBox}><ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openDocument(documentId,taskId);}}/></div>)}
         {opened.filter(id => docs.some(doc => doc.id === id)).map(id => <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor
           authoringMode={!!props.nativeAuthoringEnabled} onOpenPersonalAuthoring={() => requestPersonalAuthoring(id)} hostContext={props.pmTextHost}
+          repeatLabel={props.hostMainTabs && props.nativeAuthoringEnabled && selected === id ? repeatLabel(id) : undefined}
           onRegisterInputCheckpoint={read => { inputCheckpointReaders.current[id] = read; }}
           onRegisterCaptureComplete={read => { captureReaders.current[id] = read; }}
           onRegisterExternalGuard={read => { externalReaders.current[id] = read; }}
           docId={id} workspace={space.text} active={selected === id && period === 'documents'} initialPosition={positions.current[id] ?? (space.position.documentId === id ? space.position : undefined)}
           noteStatus={selected === id ? props.noteStatus : undefined}
-          noteActions={selected === id ? <>{props.noteHeader && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}{selectedDocumentExample}</> : undefined}
+          noteActions={selected === id ? <>{props.noteHeader && !props.hostMainTabs && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}{selectedDocumentExample}</> : undefined}
           folderId={collectionMode ? '' : folderId} directWriting={!!collectionMode} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
           onContinueWholeDocument={stage => {
             // folderId controls every retained editor. Never unmount another pending region.
@@ -1462,7 +1538,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             } finally { classificationRequest.current = false; setClassificationCreating(false); }
           }}><label>분류 이름<input name="title" required maxLength={100} disabled={classificationCreating} /></label><button type="submit" disabled={preparingDocumentAction || classificationCreating}>{classificationCreating ? '만드는 중…' : '만들기'}</button></form></details></div>}
         {collectionMode && <p className={styles.muted}>모음과 관계없이 모든 문서의 같은 할 일을 날짜별로 봅니다.</p>}
-        {(folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { void changeFolder(''); setQuery(''); }}>필터 해제</button></div>}
+        {props.hostMainTabs ? viewScope.length > 0 && <div className={styles.scopeLine} role="group" aria-label="지금 보는 범위">
+          {viewScope.map(item => <span key={item.kind} className={styles.scopeChip}>{item.label}
+            <button type="button" aria-label={`${item.label} 조건 풀기`} onClick={() => void clearScope(item.kind)}>×</button></span>)}
+          <button type="button" className={styles.scopeAll} onClick={() => void changePeriod('today', true)}>전체로 보기</button></div>
+          : (folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { void changeFolder(''); setQuery(''); }}>필터 해제</button></div>}
         {range.from && range.to && range.to !== range.from && <p className={styles.muted}>{programCalendarDate(range.from, today)} ~ {programCalendarDate(range.to, today)}</p>}
         <details className={styles.quickDisclosure} data-collapsible id={compactNoteToday ? 'program-note-quick-task' : undefined}
           {...(compactNoteToday ? { open: noteQuickOpen, hidden: !noteQuickOpen, onToggle: (event: React.SyntheticEvent<HTMLDetailsElement>) => setNoteQuickOpen(event.currentTarget.open) } : {})}>

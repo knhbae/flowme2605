@@ -34,7 +34,11 @@ test('R4 waits stay as they were and become visible: the check keeps its busy gu
 test('"← 오늘" and the same tab return through the tab-change guard; the remembered origin dies with that source', () => {
   const nav = buttons.filter(button => attribute(button, 'data-program-period') === '{key}');
   assert.equal(nav.length, 1);
-  assert.match(attribute(nav[0], 'onClick'), /sourceOriginOpen && sourceOriginTab\(sourceOrigin!\) === key \? returnToSourceOrigin\(\) : changePeriod\(key, true\)/);
+  // R8b: the space's own tabs and the host's bottom tabs share one chooser, which keeps the R7 return.
+  assert.match(attribute(nav[0], 'onClick'), /chooseMainTab\(key as ProgramMainTab\)/);
+  const chooser = find((node): node is ts.FunctionDeclaration => ts.isFunctionDeclaration(node) && node.name?.text === 'chooseMainTab')[0].getText(tree);
+  assert.match(chooser, /sourceOriginOpen && sourceOriginTab\(sourceOrigin!\) === key \? returnToSourceOrigin\(\)\.then\(\(\) => true\) : changePeriod\(key, true\)/);
+  assert.match(source, /props\.onRegisterMainTabs\?\.\(\{ choose: tab => chooseMainTabRef\.current\(tab\) \}\);/);
   const back = buttons.filter(button => attribute(button, 'className') === '{styles.sourceReturn}');
   assert.equal(back.length, 1);
   assert.equal(attribute(back[0], 'onClick'), '{() => void returnToSourceOrigin()}');

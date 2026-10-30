@@ -279,3 +279,6 @@
   /* A warning in the bar is a button to its recovery box; it keeps the status width, not a 44px square. */
   .writingBar > button.barStatus { flex: 0 1 8.5em; width: auto; min-width: 0; padding: 0 4px; border: 0; background: transparent; font-size: 13px; color: #b45309; }
 }
+
+/* R8b: the toolbar opens the Flow·반복 sheet. */
+.toolbar > .repeatButton { white-space: nowrap; color: var(--flowme-b-primary-strong); }

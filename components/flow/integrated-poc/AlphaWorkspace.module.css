@@ -304,3 +304,18 @@
 .savedNotice { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0; padding: 4px 12px; border-left: 3px solid var(--flowme-action, #3548ce); background: var(--flowme-surface); font-size: 14px; }
 .savedNotice > span { flex: 1 1 auto; min-width: 0; }
 .savedNotice > button { min-height: 44px; }
+
+/* R8b: four bottom tabs (쓰기·오늘·분류·더보기); 더보기 opens the menu, so its own "…" button steps aside. */
+.page[data-alpha-frame="b"] .globalNavigation button { position: relative; }
+.page[data-alpha-frame="b"] .management > summary { display: none; }
+.navBadge { position: absolute; top: 6px; right: calc(50% - 22px); display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #f4c7a3; color: #4a1f05; font-size: 12px; font-weight: 800; line-height: 1; }
+@media (max-width: 700px) {
+  .page[data-alpha-frame="b"] .globalNavigation { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding-inline: 8px; }
+}
+
+/* R8b: in the space the screen title rows replace the fixed header bar on phones (the tabs stay at the bottom). */
+@media (max-width: 700px) {
+  .page[data-alpha-frame="b"][data-note-layout="true"] { padding-top: 8px; }
+  .page[data-alpha-frame="b"][data-note-layout="true"] > .header { height: 0; min-height: 0; padding: 0; border: 0; background: transparent; }
+  .page[data-alpha-frame="b"][data-note-layout="true"] > .header > :not(.globalNavigation) { display: none; }
+}
