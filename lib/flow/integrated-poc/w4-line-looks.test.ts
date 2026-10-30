@@ -24,6 +24,9 @@ test('the folder head: an outline triangle in the lane before the icon, the icon
   assert.match(vendor, /button\.textContent = folded \? '▸' : '▾';/);
   assert.doesNotMatch(vendor, /'⌄'/);
   assert.match(rule('.tle-fold-toggle'), /width: 44px; height: 44px;[^}]*color: var\(--flowme-b-muted\); font: 14px\/1 system-ui, sans-serif;/);
+  // On the name's first line, as the open icon is: centred in the 44px lane it dropped below the name.
+  assert.match(css, /\.tle-root:is\(\.tle-reading-view, \.tle-folded-view\) \.tle-fold-toggle \{ display: flex; align-items: flex-start; justify-content: center; line-height: var\(--tle-line\);/);
+  assert.match(css, /\.tle-root:is\(\.tle-reading-view, \.tle-folded-view\) \.tle-scope-open \{ display: flex; align-items: flex-start; justify-content: center; \}/);
   // Reading and folded views: the fold lane takes the open button's old place (anchor − 13px, as the open button
   // is placed), and the open button moves one 44px lane right; the name's 75px inset is unchanged.
   assert.match(css, /\.tle-root:is\(\.tle-reading-view, \.tle-folded-view\) \.tle-fold-anchor \{ left: calc\(clamp\(0px, var\(--tle-indent, 0px\), calc\(100% - 136px\)\) - 13px\); \}/);

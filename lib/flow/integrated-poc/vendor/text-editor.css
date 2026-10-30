@@ -247,7 +247,8 @@
 .tle-root:is(.tle-reading-view, .tle-folded-view) .tle-check-glyph { top: max(0px, calc((var(--tle-line) - 20px) / 2)); }
 .tle-root:is(.tle-reading-view, .tle-folded-view) .tle-scope-open { display: flex; align-items: flex-start; justify-content: center; }
 .tle-root:is(.tle-reading-view, .tle-folded-view) .tle-scope-open svg { display: block; margin-top: max(0px, calc((var(--tle-line) - 20px) / 2)); }
-.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-fold-toggle { line-height: var(--tle-line); text-align: center; }
+/* The triangle sits on the name's first line, as the open icon does; centring it in the 44px lane dropped it. */
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-fold-toggle { display: flex; align-items: flex-start; justify-content: center; line-height: var(--tle-line); text-align: center; }
 /* W4: reading and folded heads read [▾][folder icon] name: the fold lane takes the open button's old place and the
  * open button (icon centred, 12px before the name) moves one 44px lane right. Both stay 44px; the name does not move. */
 .tle-root:is(.tle-reading-view, .tle-folded-view) .tle-fold-anchor { left: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) - 13px); }
