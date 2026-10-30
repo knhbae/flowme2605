@@ -48,6 +48,8 @@ const FOLDER_PROBLEM_TEXT: Record<string, string> = {
   'invalid-parent': '하위 폴더의 들여쓰기와 상위 폴더를 확인해 주세요. 입력은 남아 있습니다.',
   'folder-limit': '폴더는 100개까지 만들 수 있습니다. 이 줄을 되돌리거나 쓰지 않는 폴더를 정리해 주세요. 입력은 남아 있습니다.',
   'folder-subfolder': '하위 폴더가 있어 이 폴더 줄은 옮기지 않았습니다. 이 줄을 되돌려 주세요. 입력은 남아 있습니다.',
+  // D11 A (folder grammar 4판): the words are the spec's.
+  'folder-indent': '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. ↶로 되돌리거나 분류 화면의 상위 폴더에서 옮겨 주세요.',
 };
 
 export function createProgramTextDraft(
