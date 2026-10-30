@@ -126,3 +126,11 @@ test('W4 review P2-2: a long parent shrinks to an ellipsis within 40% of the hea
   const name = rule('.tle-scope-place-name');
   for (const kept of ['min-width: 0;', 'overflow: hidden;', 'text-overflow: ellipsis;', 'white-space: nowrap;']) assert(name.includes(kept), kept);
 });
+
+test('wnext3: the reading progress pill sits on the first text line with the title, as the check box does', () => {
+  // Centred in the 44px lane it sat 10px below a title that had lost its chip (390: 298–322 against 287–313).
+  assert.match(css, /\.tle-root:is\(\.tle-reading-view, \.tle-folded-view\) \.tle-progress-hit \{ display: flex; align-items: flex-start; justify-content: center; \}/);
+  assert.match(css, /\.tle-root:is\(\.tle-reading-view, \.tle-folded-view\) \.tle-progress-hit > \.tle-progress-badge \{ margin-top: max\(0px, calc\(\(var\(--tle-line\) - 24px\) \/ 2\)\); \}/);
+  // Later than the folded view's display rule for check buttons, which it overrides at the same specificity.
+  assert(css.indexOf('.tle-progress-hit { display: flex;') > css.indexOf('.tle-root.tle-folded-view .tle-check-hit, .tle-root.tle-folded-view .tle-row-open { display: block; }'));
+});
