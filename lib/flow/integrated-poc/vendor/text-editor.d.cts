@@ -39,6 +39,8 @@ declare namespace editor {
     canApplyInput?: (value: string, intent: InputIntent) => boolean;
     canApplyTaskSplit?: (value: string, intent: InputIntent) => boolean;
     onInputRejected?: (intent: InputIntent) => void;
+    /** A real Enter, past the IME and modifier guards, runs this before the row is read. */
+    beforeEnter?: () => void;
     onChange?: (value: string, input?: { inputType: string; inputSplice?: { start: number; end: number; text: string }; taskSplit?: TextTaskSplitIntent }) => void;
     onAction?: (action: Action) => unknown;
   }

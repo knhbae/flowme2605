@@ -244,6 +244,16 @@ export function programDirectCheckboxChange(workspace: TextWorkspaceState, docId
   return next === workspace ? { kind: 'blocked' } as const : { kind: 'apply', next, target, percent } as const;
 }
 
+// B0: a new "- /name" line is text while it is typed. An explicit finish on it (Enter, a bar action) links
+// the folder of that name or makes it; leaving it (another line, blur, a flush) only links a folder of
+// exactly that name. Typing and native undo on such a caret line are held; a paste is not.
+const FOLDER_LINE = /^ *- \/(?!.*<!--\s*flowme-folder)/;
+const HOLDING_INPUT = ['', 'historyUndo', 'historyRedo', 'insertText', 'insertCompositionText', 'insertReplacementText', 'deleteContentBackward', 'deleteContentForward', 'deleteWordBackward', 'deleteWordForward'];
+export function heldInput(raw: string, caret: number | undefined, inputType: string): number[] | undefined {
+  if (caret === undefined || !HOLDING_INPUT.includes(inputType)) return undefined;
+  const index = raw.slice(0, caret).split('\n').length - 1;
+  return FOLDER_LINE.test(raw.split('\n')[index] ?? '') ? [index] : undefined;
+}
 /** A pending command is not a committed edit; every completion recomputes this. */
 export function programTextInputPending(state:Pick<ProgramTextDraftState,'dirty'|'invalid'|'raw'>,nativeRaw:string|undefined,composing:boolean,region:boolean,checking:boolean){
   return state.dirty||state.invalid||composing||region||checking||(nativeRaw!==undefined&&nativeRaw!==state.raw);
@@ -254,6 +264,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ReturnType<typeof nativeEditor.create> | null>(null);
   const draftRef = useRef<ReturnType<typeof createProgramTextDraft> | null>(null);
+  // The unlinked "- /name" line typed last; `left` once leaving it found no folder of that name.
+  const heldFolderLineRef = useRef<{ id: string; left: boolean } | null>(null);
   const documentInputRef=useRef<ProgramDocumentInput|null>(null);
   const checkPendingRef=useRef<string|null>(null);
   const checkNotifyRef=useRef<((pending:boolean)=>void)|undefined>(undefined);
@@ -383,10 +395,33 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const textarea = textArea();
     if (!textarea) return;
     const index = textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1;
+    const held = heldFolderLineRef.current;
+    if (held) { if (currentDoc()?.lines[index]?.id === held.id) held.left = false; else finishHeldFolderLine(); }
     const lineId = textarea.selectionStart === textarea.selectionEnd ? currentDoc()?.lines[index]?.id ?? null : null;
     if (suggestionLineRef.current !== lineId) { suggestionLineRef.current = lineId; setSuggestionLineId(lineId); setDismissedSuggestion(''); }
     propsRef.current.onPosition?.({ start: textarea.selectionStart, end: textarea.selectionEnd, scrollTop: textarea.scrollTop }, currentDoc()?.lines[index]?.id ?? null);
     syncBarLine();
+  }
+  /** B0: judge the held "- /name" line by its whole name. Explicit (Enter or a bar action with the caret on
+   * it) links or makes the folder; otherwise only a folder of exactly that name is linked, once per leaving. */
+  function finishHeldFolderLine(explicit = false) {
+    const held = heldFolderLineRef.current, controller = draftRef.current, area = textArea();
+    if (!held || !controller || !area || composingRef.current || propsRef.current.readOnly) return;
+    const state = controller.getState();
+    if (state.invalid || area.value !== state.raw) return;
+    const docId = propsRef.current.docId, lines = M.getDocument(state.working, docId)?.lines ?? [];
+    const index = lines.findIndex(line => line.id === held.id);
+    if (index < 0 || !FOLDER_LINE.test(lines[index].text) || state.working.bindings.some(binding => binding.docId === docId && binding.lineId === held.id)) {
+      heldFolderLineRef.current = null; return;
+    }
+    const create = explicit && area.value.slice(0, area.selectionStart).split('\n').length - 1 === index;
+    if (!create && held.left) return;
+    const declared = controller.declareFolderLine(index, !create);
+    heldFolderLineRef.current = declared || create ? null : { id: held.id, left: true };
+    if (!declared) return;
+    const visibleRaw = controller.getState().raw;
+    if (visibleRaw !== area.value) editorRef.current?.setValue(visibleRaw, { preserveSelection: true });
+    scheduleSave();
   }
   /** The editor the writing bar acts on: the body, or the focused folder region. */
   function barEditor() {
@@ -421,6 +456,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function runBar(action: WritingBarAction) {
     const target = barEditor();
     if (!target || inputLockedRef.current || propsRef.current.readOnly) return;
+    if (!propsRef.current.folderId) finishHeldFolderLine(true);
     if (action === 'menu') { if (propsRef.current.folderId) void openRegionInsertMenu(); else openCurrentInsertMenu(target.instance.getSelection().lineIndex); return; }
     if (action === 'enter') target.instance.enter(true);
     else if (action === 'task') {
@@ -597,10 +633,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // workspace updates keep the existing synchronization effect.
     return saved&&!!controller&&!programTextInputPending(controller.getState(),textArea()?.value,composingRef.current,regionPendingRef.current,!!checkPendingRef.current);
   }
-  async function saveNow() {
+  async function saveNow(finish = true) {
     if(currentChild()){setMessage('추가 중인 내용을 적용하거나 닫은 뒤 계속해 주세요. 초안은 남아 있습니다.');return false;}
     if(checkPendingRef.current)return false;
     if (composingRef.current) { setMessage('한글 입력을 마친 뒤 보기 범위를 바꿔 주세요.'); return false; }
+    // A flush finishes a held "- /name" line; the 450 ms background save does not.
+    if (finish) finishHeldFolderLine();
     const saved = await (regionPortRef.current ? regionPortRef.current.flush() : saveFullDraft());
     if (saved && !composingRef.current && !regionPendingRef.current && !draftRef.current?.getState().dirty) {
       setMessage(previous => previous === '한글 입력을 마친 뒤 보기 범위를 바꿔 주세요.' ? '' : previous);
@@ -687,7 +725,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function scheduleSave() {
     if (timerRef.current) clearTimeout(timerRef.current);
     // A pending commit may fail after newer input armed this timer.
-    timerRef.current = setTimeout(() => { if (!draftRef.current?.getState().error) void saveNow(); }, 450);
+    timerRef.current = setTimeout(() => { if (!draftRef.current?.getState().error) void saveNow(false); }, 450);
   }
   async function apply(next: TextWorkspaceState, label: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule']) {
     const before = currentState(), selected = writingSelection();
@@ -910,6 +948,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         return next.reason === null && M.raw(M.getDocument(next.state, props.docId)) === raw
           && (propsRef.current.validateWorkspace?.(next.state) ?? true);
       },
+      beforeEnter: () => finishHeldFolderLine(true),
       onChange: (raw, input) => {
         if (inputLockedRef.current || propsRef.current.readOnly) { editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true }); return; }
         if (raw === controller.getState().raw) { historyTypeRef.current = ''; return; }
@@ -921,6 +960,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         const restored = orderHistoryRef.current.resolve(controller.getState().working, raw, historyType);
         const beforeText = controller.getState().working;
         let accepted = false;
+        const hold = heldInput(raw, textArea()?.selectionStart, historyType || input?.inputType || '');
         if (pending) {
           accepted = pending.raw === raw && programSame(pending.before, controller.getState().working) && controller.apply(pending.next, '같은 구간 날짜순 정렬');
           if (accepted) orderHistoryRef.current.record(pending.before, pending.next);
@@ -928,7 +968,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         } else if (restored) accepted = controller.apply(restored, historyType === 'historyUndo' ? '날짜순 정렬 입력 취소' : '날짜순 정렬 다시 실행');
         else if ((historyType === 'historyUndo' || historyType === 'historyRedo') && orderHistoryRef.current.can(controller.getState().working, historyType)) controller.rejectRaw(raw);
         else if (input?.taskSplit && propsRef.current.authorizeTaskSplit?.(input.taskSplit.sourceLineId, controller.getState().working) !== true) controller.rejectRaw(raw);
-        else accepted = controller.updateRaw(raw, '', { inputType: historyType || input?.inputType || '', inputSplice: input?.inputSplice,compositionGeneration:compositionGeneration.current, ...(input?.taskSplit ? { taskSplit: input.taskSplit } : {}) });
+        else accepted = controller.updateRaw(raw, '', { inputType: historyType || input?.inputType || '', inputSplice: input?.inputSplice,compositionGeneration:compositionGeneration.current, ...(input?.taskSplit ? { taskSplit: input.taskSplit } : {}), folderHold: hold });
         if (restored && accepted) {
           const position = orderPositionsRef.current.slice().reverse().find(entry => programSame(M.getDocument(entry.state, props.docId), M.getDocument(restored, props.docId)));
           if (position) queueMicrotask(() => { const area = textArea(); if (area && area.value === raw) { area.setSelectionRange(position.selection.start, position.selection.end, position.selection.direction); area.scrollTop = position.scrollTop; rememberPosition(); } });
@@ -946,6 +986,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
             const direction = area.selectionDirection;
             editorRef.current?.setValue(visibleRaw, { preserveSelection: true });
             area.setSelectionRange(start, end, direction);
+          }
+          if (hold) {
+            const line = currentDoc()?.lines[hold[0]];
+            if (heldFolderLineRef.current && heldFolderLineRef.current.id !== line?.id) finishHeldFolderLine();
+            if (line && !currentState().bindings.some(binding => binding.docId === propsRef.current.docId && binding.lineId === line.id)) heldFolderLineRef.current = { id: line.id, left: false };
           }
           requestAuthoringSlash(beforeRaw,historyType||input?.inputType||'');
           scheduleSave();
@@ -1006,7 +1051,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         else if (type === 'deleteContentForward') { insert = ''; if (start === end) end = Math.min(textarea.value.length, end + 1); }
         if (insert !== null) {
           const raw=textarea.value.slice(0,start)+insert+textarea.value.slice(end);
-          if (!controller.prepareRaw(raw,{inputType:type??'',compositionGeneration:compositionGeneration.current,...(type==='insertFromPaste'?{inputSplice:{start,end,text:insert}}:{})})) {
+          if (!controller.prepareRaw(raw,{inputType:type??'',compositionGeneration:compositionGeneration.current,...(type==='insertFromPaste'?{inputSplice:{start,end,text:insert}}:{}),folderHold:heldInput(raw,start+insert.length,type??'')})) {
             event.preventDefault(); event.stopImmediatePropagation();
             const index = textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1;
             setMessage(programTextProtectionMessage(accessFor(currentDoc()?.lines[index]?.id ?? null)));
@@ -1014,6 +1059,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         }
       }
     };
+    const finishOnBlur = () => finishHeldFolderLine();
     const observeInput = (event: Event) => {
       const input=event as InputEvent;historyTypeRef.current=input.inputType||historyTypeRef.current;
     };
@@ -1026,6 +1072,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         textarea.scrollTop = position.scrollTop;
       }
       for (const event of ['select', 'scroll', 'keyup', 'click', 'blur']) textarea.addEventListener(event, rememberPosition);
+      textarea.addEventListener('blur', finishOnBlur);
       textarea.addEventListener('beforeinput', preventLockedInput, true);
       textarea.addEventListener('input', observeInput, true);
     }
@@ -1044,6 +1091,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       window.removeEventListener('beforeunload', warnOnExit);
       if (timerRef.current) clearTimeout(timerRef.current);
       if (textarea) for (const event of ['select', 'scroll', 'keyup', 'click', 'blur']) textarea.removeEventListener(event, rememberPosition);
+      textarea?.removeEventListener('blur', finishOnBlur);
       textarea?.removeEventListener('beforeinput', preventLockedInput, true);
       textarea?.removeEventListener('input', observeInput, true);
       checkPendingRef.current=null;
