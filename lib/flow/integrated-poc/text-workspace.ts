@@ -74,7 +74,7 @@ export interface TextEditorRowMeta {
   guideLevels: number[]; subtreeEndIndex: number; label: string;
   progressTargetId?: string; progressPercent?: number; progressDate?: string | null;
   progressTracked?: boolean; lastRecordedPercent?: number; scopeKind?: 'folder' | 'flow'; subtitle?: string;
-  scopeMismatch?: string; dateMismatch?: string;
+  scopeMismatch?: string; dateMismatch?: string; scopePlace?: string;
 }
 export interface TextWorkspaceModel {
   MAX_DEPTH: number;
@@ -162,6 +162,13 @@ export function projectTextEditorRows(state: TextWorkspaceState, rows: TextRow[]
       progressDate: progress?.date ?? null, progressTracked: !!progress, lastRecordedPercent: progress?.percent,
     });
     if (row.kind === 'scope') Object.assign(meta, { scopeKind: row.scopeKind, subtitle: row.scopeKind === 'flow' ? '개인 사본' : '폴더' });
+    // W4 (folder grammar F9): a folder line linked to a folder whose parent is not where the text puts the line
+    // (its enclosing folder line, or the top) names that parent, so two '회의' folders can be told apart.
+    const linked = row.kind === 'scope' && row.scopeKind === 'folder' ? state.folders.find(folder => folder.id === row.scopeId) : undefined;
+    if (linked?.parentId && linked.parentId !== (row.ancestorScopeId ?? null)) {
+      const place = state.folders.find(folder => folder.id === linked.parentId)?.title;
+      if (place) meta.scopePlace = place;
+    }
     if (row.scopeMismatch) {
       scopes ??= model.scopes(state);
       meta.scopeMismatch = scopes.find(scope => scope.id === row.scopeId)?.title ?? '';

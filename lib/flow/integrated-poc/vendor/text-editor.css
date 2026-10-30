@@ -109,6 +109,7 @@
 .tle-line-subcheck { color: var(--flowme-b-ink); }
 .tle-indent-guide { position: absolute; top: 0; width: 1px; height: 44px; background: var(--flowme-b-line); pointer-events: none; }
 .tle-scope-anchor, .tle-check-anchor { position: absolute; top: 0; width: 18px; height: 44px; pointer-events: none; }
+.tle-check-anchor { width: 20px; }
 .tle-check-anchor { left: clamp(0px, var(--tle-indent, 0px), calc(100% - 32px)); }
 .tle-scope-anchor { left: clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)); }
 .tle-fold-anchor { position: absolute; top: 0; left: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 31px); width: 44px; height: 44px; pointer-events: none; }
@@ -138,16 +139,16 @@
 .tle-check-glyph {
   position: absolute;
   display: block;
-  top: 13px;
+  top: 12px;
   left: 0;
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid var(--flowme-b-control);
-  border-radius: 5px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--flowme-b-control);
+  border-radius: 6px;
   background: #fff;
   color: #fff;
   text-align: center;
-  font: 13px/15px system-ui, sans-serif;
+  font: 13px/16px system-ui, sans-serif;
 }
 .tle-check-glyph[data-checked="true"] { border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); }
 .tle-controls { position: absolute; z-index: 3; inset: 0; overflow: hidden; pointer-events: none; }
@@ -177,7 +178,7 @@
 .tle-row-menu { right: 6px; font-size: 24px; background: transparent; border-color: transparent; }
 .tle-plus:hover { background: var(--flowme-b-selected); border-color: var(--flowme-b-primary-border); }
 .tle-row-menu:hover, .tle-fold-toggle:hover { background: var(--flowme-b-selected); }
-.tle-fold-toggle { width: 44px; height: 44px; border: 0; border-radius: 7px; background: transparent; color: var(--flowme-b-muted); font: 22px/1 system-ui, sans-serif; }
+.tle-fold-toggle { width: 44px; height: 44px; border: 0; border-radius: 7px; background: transparent; color: var(--flowme-b-muted); font: 14px/1 system-ui, sans-serif; }
 .tle-check-hit { width: 44px; height: 44px; border: 0; border-radius: 5px; background: transparent; }
 .tle-check-hit:hover { background: color-mix(in srgb, var(--flowme-b-primary) 12%, transparent); }
 .tle-progress-anchor { visibility: hidden; }
@@ -201,6 +202,7 @@
 .tle-scope-label { position: absolute; inset: 0 0 auto clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)); display: flex; align-items: baseline; gap: 14px; height: 44px; padding-left: 36px; overflow: hidden; white-space: nowrap; }
 .tle-root .tle-scope-label { padding-left: 88px; }
 .tle-scope-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 700; color: var(--flowme-b-primary-strong); }
+.tle-scope-place { flex-shrink: 0; margin-right: -8px; color: var(--flowme-b-muted); font-weight: 400; }
 .tle-scope-subtitle { flex-shrink: 0; color: var(--flowme-b-muted); font-size: 12px; }
 .tle-line-reference .tle-task-title { color: var(--flowme-b-primary); text-decoration: underline; text-decoration-color: var(--flowme-b-primary-border); text-underline-offset: 4px; }
 .tle-line[data-date-mismatch="true"] .tle-task-title { text-decoration-color: #c4a36e; }
@@ -242,12 +244,16 @@
 .tle-root.tle-folded-view .tle-line { min-height: 44px; }
 /* Paint on the first text line, not the centre of the 44px touch lane.
  * Only decoration moves; textarea/mirror metrics and control hit boxes stay put. */
-.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-check-glyph { top: max(0px, calc((var(--tle-line) - 18px) / 2)); }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-check-glyph { top: max(0px, calc((var(--tle-line) - 20px) / 2)); }
 .tle-root:is(.tle-reading-view, .tle-folded-view) .tle-scope-open { display: flex; align-items: flex-start; justify-content: center; }
 .tle-root:is(.tle-reading-view, .tle-folded-view) .tle-scope-open svg { display: block; margin-top: max(0px, calc((var(--tle-line) - 20px) / 2)); }
 .tle-root:is(.tle-reading-view, .tle-folded-view) .tle-fold-toggle { line-height: var(--tle-line); text-align: center; }
+/* W4: reading and folded heads read [▾][folder icon] name: the fold lane takes the open button's old place and the
+ * open button (icon centred, 12px before the name) moves one 44px lane right. Both stay 44px; the name does not move. */
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-fold-anchor { left: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) - 13px); }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-scope-anchor { left: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 44px); }
 .tle-root:not(.tle-reading-view):not(.tle-folded-view) :is(.tle-active-scope-icon, .tle-indent-guide, .tle-scope-anchor, .tle-check-anchor, .tle-fold-anchor, .tle-scope-label) { height: var(--tle-line); }
-.tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-check-glyph { top: calc((var(--tle-line) - 18px) / 2); }
+.tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-check-glyph { top: calc((var(--tle-line) - 20px) / 2); }
 .tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-active-progress { top: 0; }
 .tle-root:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-check-hit, .tle-row-open, .tle-fold-toggle) { display: none; }
 /* Inert meaning survives hidden native-edit actions; no RAW ruler or hit owner. */

@@ -35,7 +35,8 @@ test('no green literal is left in the editor body CSS', () => {
 
 test('the four low-contrast pairs now meet WCAG on white, through the navy tokens', () => {
   const white = '#ffffff';
-  assert.match(rule('.tle-check-glyph'), /border: 1\.5px solid var\(--flowme-b-control\)/);
+  // W4 made the box 20px with the today list's 2px border; the color pair is unchanged.
+  assert.match(rule('.tle-check-glyph'), /border: 2px solid var\(--flowme-b-control\)/);
   assert.match(css, /\.tle-line-complete \{ color: var\(--flowme-b-muted\); \}/);
   assert.match(css, /\.tle-line-property \{ color: var\(--flowme-b-muted\); \}/);
   assert.match(css, /\.tle-scope-subtitle \{ flex-shrink: 0; color: var\(--flowme-b-muted\); font-size: 12px; \}/);
@@ -48,7 +49,8 @@ test('the four low-contrast pairs now meet WCAG on white, through the navy token
 
 test('checks look like the R7 today rows: bordered box, navy fill with a white ✓, a pill for partial progress; geometry unchanged', () => {
   const box = rule('.tle-check-glyph');
-  for (const kept of ['top: 13px;', 'width: 18px;', 'height: 18px;', 'border-radius: 5px;', 'color: #fff;', 'font: 13px/15px system-ui, sans-serif;']) assert(box.includes(kept), kept);
+  // W4: 20px with 6px corners like the today list; centred on the same lane (13px → 12px from the top).
+  for (const kept of ['top: 12px;', 'width: 20px;', 'height: 20px;', 'border-radius: 6px;', 'color: #fff;', 'font: 13px/16px system-ui, sans-serif;']) assert(box.includes(kept), kept);
   assert.match(css, /\.tle-check-glyph\[data-checked="true"\] \{ border-color: var\(--flowme-b-primary\); background: var\(--flowme-b-primary\); \}/);
   const badge = css.slice(css.indexOf('.tle-progress-badge {'), css.indexOf('}', css.indexOf('.tle-progress-badge {')));
   assert(badge.includes('width: 42px; height: 24px;') && badge.includes('border: 1px solid #dfd2b8; border-radius: 12px; background: #fcf8ed;'));
@@ -56,6 +58,6 @@ test('checks look like the R7 today rows: bordered box, navy fill with a white �
   const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.module.css', import.meta.url), 'utf8');
   assert(space.includes('border: 1px solid #dfd2b8; border-radius: 12px; background: #fcf8ed; color: #785627;'));
   assert.match(css, /\.tle-progress-hit \{ color: #785627;/);
-  // Line ruler values are untouched.
-  assert(css.includes('top: calc((var(--tle-line) - 18px) / 2)') && css.includes('top: calc((var(--tle-line) - 24px) / 2)'));
+  // Line ruler values are untouched; the box stays centred on the line (W4: 20px).
+  assert(css.includes('top: calc((var(--tle-line) - 20px) / 2)') && css.includes('top: calc((var(--tle-line) - 24px) / 2)'));
 });
