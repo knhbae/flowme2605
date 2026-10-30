@@ -269,6 +269,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const draftRef = useRef<ReturnType<typeof createProgramTextDraft> | null>(null);
   // The unlinked "- /name" line typed last; `left` once leaving it found no folder of that name.
   const heldFolderLineRef = useRef<{ id: string; left: boolean } | null>(null);
+  // Linked folder lines an edit other than typing (a paste) renamed, by line ID, until they are put back.
+  const renamedFolderLinesRef = useRef(new Set<string>());
   const documentInputRef=useRef<ProgramDocumentInput|null>(null);
   const checkPendingRef=useRef<string|null>(null);
   const checkNotifyRef=useRef<((pending:boolean)=>void)|undefined>(undefined);
@@ -408,6 +410,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const index = textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1;
     const held = heldFolderLineRef.current;
     if (held) { if (currentDoc()?.lines[index]?.id === held.id) held.left = false; else finishHeldFolderLine(); }
+    finishRenamedFolderLines(false);
     const lineId = textarea.selectionStart === textarea.selectionEnd ? currentDoc()?.lines[index]?.id ?? null : null;
     if (suggestionLineRef.current !== lineId) { suggestionLineRef.current = lineId; setSuggestionLineId(lineId); setDismissedSuggestion(''); }
     propsRef.current.onPosition?.({ start: textarea.selectionStart, end: textarea.selectionEnd, scrollTop: textarea.scrollTop }, currentDoc()?.lines[index]?.id ?? null);
@@ -449,6 +452,36 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!declared) return;
     const visibleRaw = controller.getState().raw;
     if (visibleRaw !== area.value) editorRef.current?.setValue(visibleRaw, { preserveSelection: true });
+    scheduleSave();
+  }
+  /** N1 (QA3 block 2): linked folder lines a paste renamed go back to their folders' names together, each once
+   *  the caret is off it, or all of them on leaving the editor or on Enter. Only those lines change. */
+  function finishRenamedFolderLines(all: boolean) {
+    const pending = renamedFolderLinesRef.current, controller = draftRef.current, area = textArea();
+    if (!pending.size || !controller || !area || composingRef.current || propsRef.current.readOnly) return;
+    const state = controller.getState();
+    if (state.invalid || area.value !== state.raw) return;
+    const lines = M.getDocument(state.working, propsRef.current.docId)?.lines ?? [];
+    const caretLine = area.value.slice(0, area.selectionStart).split('\n').length - 1, indexes: number[] = [];
+    for (const id of [...pending]) {
+      const index = lines.findIndex(line => line.id === id);
+      if (index >= 0 && !all && index === caretLine) continue;
+      pending.delete(id);
+      if (index >= 0) indexes.push(index);
+    }
+    if (!indexes.length) return;
+    const { selectionStart, selectionEnd, selectionDirection } = area;
+    let raw = area.value, start = selectionStart, end = selectionEnd;
+    if (!controller.restoreFolderLineNames(indexes)) return;
+    // The caret is carried through each restored line, the last line first so each step reads the raw it changes.
+    const restored = controller.getState().raw, restoredLines = restored.split('\n');
+    for (const index of [...indexes].sort((a, b) => b - a)) {
+      const line = restoredLines[index], rows = raw.split('\n');
+      start = restoredLineOffset(raw, index, line, start); end = restoredLineOffset(raw, index, line, end);
+      rows[index] = line; raw = rows.join('\n');
+    }
+    editorRef.current?.setValue(restored, { selection: { start, end, direction: selectionDirection } });
+    const notice = controller.getState().folderNotice; if (notice) setMessage(notice);
     scheduleSave();
   }
   /** One ↶ right after a finished folder line moved puts the whole move back (D3 B). */
@@ -1001,7 +1034,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         return next.reason === null && M.raw(M.getDocument(next.state, props.docId)) === raw
           && (propsRef.current.validateWorkspace?.(next.state) ?? true);
       },
-      beforeEnter: () => finishHeldFolderLine(true),
+      beforeEnter: () => { finishHeldFolderLine(true); finishRenamedFolderLines(true); },
       onChange: (raw, input) => {
         if (inputLockedRef.current || propsRef.current.readOnly) { editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true }); return; }
         if (raw === controller.getState().raw) { historyTypeRef.current = ''; return; }
@@ -1046,11 +1079,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
             if (heldFolderLineRef.current && heldFolderLineRef.current.id !== line?.id) finishHeldFolderLine();
             if (line) heldFolderLineRef.current = { id: line.id, left: false };
           } else {
-            // A paste over a linked folder line's name is finished like typing: its name goes back.
-            const index = raw.slice(0, textArea()?.selectionStart ?? 0).split('\n').length - 1, line = currentDoc()?.lines[index];
-            if (line && FOLDER_LINE.test(line.text) && controller.getState().working.bindings.some(row => row.kind === 'scope' && row.docId === props.docId && row.lineId === line.id)) {
-              if (heldFolderLineRef.current && heldFolderLineRef.current.id !== line.id) finishHeldFolderLine();
-              heldFolderLineRef.current = { id: line.id, left: false };
+            // A paste over linked folder lines' names is finished like typing: every line it renamed goes back.
+            const was = new Map((M.getDocument(beforeText, props.docId)?.lines ?? []).map(line => [line.id, line.text]));
+            for (const line of M.getDocument(afterText, props.docId)?.lines ?? []) {
+              if (was.has(line.id) && was.get(line.id) !== line.text && FOLDER_LINE.test(line.text)
+                && afterText.bindings.some(row => row.kind === 'scope' && row.docId === props.docId && row.lineId === line.id)) renamedFolderLinesRef.current.add(line.id);
             }
           }
           requestAuthoringSlash(beforeRaw,historyType||input?.inputType||'');
@@ -1121,7 +1154,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         }
       }
     };
-    const finishOnBlur = () => finishHeldFolderLine();
+    const finishOnBlur = () => { finishHeldFolderLine(); finishRenamedFolderLines(true); };
     const observeInput = (event: Event) => {
       const input=event as InputEvent;historyTypeRef.current=input.inputType||historyTypeRef.current;
     };

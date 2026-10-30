@@ -170,7 +170,7 @@ test('the editor finishes the held line inside the Enter handler, keeps it held 
   const ime = keydown.indexOf('imeEnterCycle.keydown(event)'), guard = keydown.indexOf("if (event.key !== 'Enter' || event.ctrlKey"),
     hook = keydown.indexOf('config.beforeEnter()'), meta = keydown.indexOf('const meta = getRowMeta()[line.index];');
   assert(ime > 0 && guard > ime && hook > guard && meta > hook, `${ime} ${guard} ${hook} ${meta}`);
-  assert.match(editor, /beforeEnter: \(\) => finishHeldFolderLine\(true\),/);
+  assert.match(editor, /beforeEnter: \(\) => \{ finishHeldFolderLine\(true\); finishRenamedFolderLines\(true\); \},/);
   assert.doesNotMatch(editor, /addEventListener\('keydown', finishBeforeEnter/);
   assert.match(editor, /'historyUndo', 'historyRedo'/);
   assert.match(editor, /const hold = heldInput\(raw, textArea\(\)\?\.selectionStart, /);
@@ -178,7 +178,7 @@ test('the editor finishes the held line inside the Enter handler, keeps it held 
   assert.match(editor, /folderHold:heldInput\(raw,start\+insert\.length,/);
   assert.match(editor, /if \(!propsRef\.current\.folderId\) finishHeldFolderLine\(true\);\s+if \(action === 'menu'\)/);
   assert.match(editor, /textarea\.addEventListener\('blur', finishOnBlur\)/);
-  assert.match(editor, /const finishOnBlur = \(\) => finishHeldFolderLine\(\);/);
+  assert.match(editor, /const finishOnBlur = \(\) => \{ finishHeldFolderLine\(\); finishRenamedFolderLines\(true\); \};/);
   assert.match(editor, /async function saveNow\(finish = true\)[^]*?if \(finish\) finishHeldFolderLine\(\);/);
   assert.match(editor, /void saveNow\(false\)/);
   assert.match(editor, /controller\.declareFolderLine\(index, !create\)/);

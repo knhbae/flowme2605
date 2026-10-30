@@ -227,17 +227,26 @@ export function createProgramTextDraft(
     },
     /** N1: a linked folder line whose name was typed or pasted over is finished by putting that one line's
      * text back to its folder's name. Nothing is renamed or moved; the status row names the typed name. */
-    restoreFolderLineName(lineIndex: number) {
+    restoreFolderLineName(lineIndex: number) { return api.restoreFolderLineNames([lineIndex]); },
+    /** The same for several lines at once (a paste that renamed more than one), in one edit; only those lines change. */
+    restoreFolderLineNames(lineIndexes: number[]) {
       if (state.invalid) return false;
-      const line = M.getDocument(state.working, docId)?.lines[lineIndex], raws = state.raw.split('\n');
-      const binding = line && state.working.bindings.find(row => row.kind === 'scope' && row.docId === docId && row.lineId === line.id);
-      const folder = binding && binding.kind === 'scope' ? state.working.folders.find(entry => entry.id === binding.scopeId) : undefined;
-      if (!line || !folder || raws[lineIndex] !== line.text || !/^ *- \//.test(line.text)) return false;
-      const typed = line.text.replace(/^ *- \//, '').trim();
-      if (typed === folder.title) return false;
-      raws[lineIndex] = /^ */.exec(line.text)![0] + '- /' + folder.title;
-      if (!api.updateRaw(raws.join('\n'), '', { inputType: 'folderRestore' })) return false;
-      state = { ...state, folderNotice: `폴더 이름은 분류 화면에서 바꿀 수 있습니다(입력: ‘${typed}’)` }; report(); return true;
+      const lines = M.getDocument(state.working, docId)?.lines ?? [], raws = state.raw.split('\n'), typed: string[] = [];
+      let unfiled = false;
+      for (const index of lineIndexes) {
+        const line = lines[index];
+        const binding = line && state.working.bindings.find(row => row.kind === 'scope' && row.docId === docId && row.lineId === line.id);
+        const folder = binding && binding.kind === 'scope' ? state.working.folders.find(entry => entry.id === binding.scopeId) : undefined;
+        if (!line || !folder || raws[index] !== line.text || !/^ *- \//.test(line.text)) continue;
+        const name = line.text.replace(/^ *- \//, '').trim();
+        if (name === folder.title) continue;
+        raws[index] = /^ */.exec(line.text)![0] + '- /' + folder.title; typed.push(`‘${name}’`);
+        // 미분류 cannot be renamed in 분류 either.
+        if (folder.id === 'folder-unfiled') unfiled = true;
+      }
+      if (!typed.length || !api.updateRaw(raws.join('\n'), '', { inputType: 'folderRestore' })) return false;
+      state = { ...state, folderNotice: unfiled ? `미분류 폴더의 이름은 바꿀 수 없습니다(입력: ${typed.join(', ')})`
+        : `폴더 이름은 분류 화면에서 바꿀 수 있습니다(입력: ${typed.join(', ')})` }; report(); return true;
     },
     canUndoFolderMove: () => !!lastMove && !state.invalid && state.working === lastMove.after,
     /** One undo right after a folder line moved: the state before the move, with the line's name back. */
