@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {createProgramData,validateProgramData} from './program-data';
 import {programClone,type ProgramData,type ProgramTransition} from './contract';
 import {createTextAuthoringDocument} from './native-creator-vendor/text-authoring/parser';
-import {createNativeCreatorDocumentOwner} from './native-creator-document';
+import {createNativeCreatorDocumentOwner,readNativeCreatorDocument} from './native-creator-document';
 import {setProgramCreatorWorking,applyProgramCreatorAction} from './creator-workspace';
 import {applyProgramNativeCreatorOperation} from './creator-native-workspace';
 import {inspectProgramNativeCreatorHandoff,applyProgramNativeCreatorHandoff} from './creator-native-execution-adapter';
@@ -22,6 +22,20 @@ export function handoffNativeFixture(data:ProgramData,requestId='handoff'){
  const choices=Object.fromEntries(read.preview.rows.map(row=>[row.itemId,{source:'incoming' as const,date:'keep' as const,time:'keep' as const,children:'keep' as const}]));
  return nativeExecOk(applyProgramNativeCreatorHandoff(data,{actorId:data.activeActorId,requestId,preview:read.preview,choices},NATIVE_EXEC_NOW));
 }
+
+test('cleared anchor after handoff reuses last personal anchor, even when source header differs',()=>{
+ const f=nativeExecutionFixture('# 원본\n- 기준일: 2026-09-30\n- [ ] 다음날\n  - 상대 날짜: D+1');
+ const initial=inspectProgramNativeCreatorHandoff(f.data,{actorId:f.actorId,draftId:f.draftId,anchor:'2028-02-28'},NATIVE_EXEC_NOW);assert(initial.ok);
+ const choices=Object.fromEntries(initial.preview.rows.map(row=>[row.itemId,{source:'incoming' as const,date:'keep' as const,time:'keep' as const,children:'keep' as const}]));
+ const applied=applyProgramNativeCreatorHandoff(f.data,{actorId:f.actorId,requestId:'personal-anchor',preview:initial.preview,choices},NATIVE_EXEC_NOW);assert(applied.ok);
+ const before=JSON.stringify(applied.data),workspace=applied.data.spaces[f.actorId].creatorWorkspace!;
+ const lastAnchor=workspace.nativeExecutionSources![f.draftId].revisions.at(-1)!.anchor!;
+ const view=readNativeCreatorDocument(workspace.structureDrafts![f.draftId].nativeDocument!,{anchor:lastAnchor});assert(view.ok);
+ const cleared=inspectProgramNativeCreatorHandoff(applied.data,{actorId:f.actorId,draftId:f.draftId},NATIVE_EXEC_NOW);assert(cleared.ok);
+ assert.equal(lastAnchor,'2028-02-28');assert.equal(cleared.preview.rows[0].sourceDate,'2028-02-29');
+ assert.equal(view.projection.artifacts.calendar.rows[0].date,cleared.preview.rows[0].sourceDate);
+ assert.equal(JSON.stringify(applied.data),before);
+});
 test('NE01 genuine native context handoff preserves source IDs/resources/timezone with independent unchecked personal target',()=>{
  const f=nativeExecutionFixture(),before=programClone(f.data),result=handoffNativeFixture(f.data),space=result.data.spaces[f.actorId],owner=space.creatorWorkspace!.nativeExecutionSources![f.draftId];
  assert.equal(owner.revisions[0].nativeDocument.source.documentJson,f.source.documentJson);const selection=owner.revisions[0].nativeSelection;assert('versionId' in selection);assert.equal(selection.versionId,'actual-version');assert.equal(owner.revisions[0].rows.length,2);assert.equal(M.tasks(space.text).filter(t=>t.docId===result.result).length,1);

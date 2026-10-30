@@ -3,7 +3,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { listProgramSourcePaths } from './program-source-files.mjs';
+import { listProgramSourcePaths, isProgramTypecheckEntry } from './program-source-files.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 // Match the build/test recorder's Program source scope. This proves which
@@ -14,7 +14,7 @@ const started = new Date().toISOString(), before = sourceHashes();
 const config = ts.readConfigFile(resolve(root, 'tsconfig.json'), ts.sys.readFile);
 if (config.error) throw new Error(ts.flattenDiagnosticMessageText(config.error.messageText, '\n'));
 const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, root);
-const files = parsed.fileNames.filter(path => /[\\/]integrated-poc[\\/]/.test(path) && !path.includes(`${root}/output`));
+const files = parsed.fileNames.filter(path => isProgramTypecheckEntry(root, path));
 files.push(resolve(root, 'next-env.d.ts'));
 const program = ts.createProgram(files, { ...parsed.options, incremental: false, noEmit: true });
 const diagnostics = ts.getPreEmitDiagnostics(program);

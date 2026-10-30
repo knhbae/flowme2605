@@ -72,7 +72,7 @@ export function restoreProgramCreatorSavedRevision(data:ProgramData,input:{actor
     const current=own.working?.nativeDocument;
     const restored=current?restoreNativeCreatorDocument(current,{expectedOwner:current,requestId:`${input.requestId}:native`,source:p.entry.origin},now)
       :createNativeCreatorDocumentOwner({id:p.draftId,source:p.entry.origin},now);
-    if(!restored.ok)return programFailure(data,'unresolved');
+    if(!restored.ok)return programFailure(data,restored.reason==='history-capacity'||restored.reason==='document-capacity'?'limit':'unresolved');
     nativeDocument=restored.owner;
   }
   if(record.rawText===p.entry.rawText&&record.title===p.entry.title&&programSame(own.structureDrafts?.[p.draftId]?.structure??null,structure??null)

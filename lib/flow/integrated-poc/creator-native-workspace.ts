@@ -39,7 +39,7 @@ export function applyProgramNativeCreatorOperation(data:ProgramData,input:{actor
     if(!prepared.ok||!programSame(prepared.operation,input.operation))return programFailure(data,'conflict');
   }
   const applied=applyNativeCreatorDocumentOperation(working.nativeDocument,{expectedOwner:input.expectedOwner,requestId:input.requestId,operation:input.operation},now);
-  if(!applied.ok)return programFailure(data,applied.reason==='conflict'?'conflict':'unresolved');
+  if(!applied.ok)return programFailure(data,applied.reason==='conflict'?'conflict':applied.reason==='history-capacity'||applied.reason==='document-capacity'?'limit':'unresolved');
   if(!applied.changed)return programResult(data,data,input.draftId);
   const next:ProgramCreatorWorking={...programClone(working),nativeDocument:applied.owner,rawText:applied.owner.document.rawText};
   delete next.nativePendingRawText;

@@ -3,12 +3,22 @@
 <!-- alpha-transition-20260920:start -->
 ## 현재 격리 작업 — 실사용 알파 전환 (2026-09-20)
 
-기능형 통합 PoC 이후의 현재 실행 계획은 [실사용 알파 전환 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md)에서 관리한다. v4.1·개발1·개발2 요구 연결, 단계별 완료 조건, 결정 대기와 다음 M1 개발 묶음이 정본이다. 개발 DB 자원은 준비됐지만 실제 인증·서버 저장·다기기 동기화·알파 배포는 미구현이다.
+9/26 현재: Render를 M7-2 다기기 시험 경로로 선택하고 [배포 전 코드 준비·검증](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m7-2-personal-trial.md#926-현재--render-다기기-시험-경로-선택배포-전-코드-준비)을 마쳤다. 서비스·요금제·실제 URL·Auth 변경·발행/배포는 별도 승인 전 미실행이고 실제 기기/일상 사용과 M7-2 전체는 미완료다. 아래 9/24는 당시 판정 이력이다.
 
-현재는 M1 전에 [PR #203 머지 준비](./specs/2026-09-12-flowme-integrated-product-poc-program/merge-readiness-2026-09-20.md)를 진행한다. 아래 운영 release·9/7 정리 정보는 기존 이력이며, 새 main 머지·배포 승인으로 해석하지 않는다.
+9/24 최신: [제한 PC 사용 시작 판정과 다음 순서](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m7-2-personal-trial.md#924-현재--제한-pc-사용을-먼저-시작)가 현재 진입점이다. 복원 승인은 PC 시작 조건에서 분리했다. 다음은 다기기 접속 환경 준비이며 배포는 별도 승인이다. 아래는 이전 단계 이력이다.
+
+9/23 현재: **기존 콘텐츠 전체의 비공개 보존·열람 완료, 전체 편집·실행 연결은 미완료**. [전체 반입·판정·잔여](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m7-2-full-catalog.md): 002에 Flow177·Item957·구간371·Map26 및 현재 다른 판본2개를 원본 구조로 보존했다. 계정 r74→75 명령1건, 001·기존 제작 사본2개·개인 기록·공유 자료 불변. 표적70/70·통합2188/2188·npm2255/2255·빌드/타입 통과, 실제 브라우저34/34 및 독립 재검사37/37·다섯 해상도 확인. 반입 후 압축 백업1.67MB와 서버 preview 검증을 마쳤다. 다음은 반복·기간·표·Map 의미를 유지한 편집/개인 실행 사본 연결이며, 독립 사본·실제 복원·일상 사용·실기기와 M7-2 전체는 남는다. 공개·배포는 하지 않았다. 아래는 이전 단계 이력이다.
+
+9/23 최신: **M7-1 안전성·운영 준비 준비 목표 완료.** [현재 결과와 다음 결정](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m7-1-readiness.md)에서 강화 QA·수정·원본/QA 경계·D03/D04/D05·실기기/배포 절차를 확인한다. M7 전체 실사용/배포 완료나 실제 자료의 유일본 투입 승인으로 확대하지 않는다. 아래 M6는 직전 완료 이력이다.
+
+9/23 현재 **M6 개발계 목표 완료**. [M6 실행 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m6-preservation.md)에 이관·백업·복원·호환·QA 정리와 종료 판정을 기록했다. 다음은 M7 실사용 준비이며 미실행 강화 검사와 정책·기기·배포 gate는 잔여 M6-R01–08로 연결한다. 보고서 HTML 시각 검사는 미검증으로 유지하되 사용자 승인 대기 사유로 삼지 않는다. 아래 M5 문단은 이전 단계의 완료 이력이다.
+
+기능형 통합 PoC 이후의 현재 실행 계획은 [실사용 알파 전환 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md)에서 관리한다. v4.1·개발1·개발2의 요구 연결과 M0–M7 완료 조건을 유지한다. M1–M4에 이어 [M5 공개 탐색·공유·커뮤니티](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m5-social.md)의 개발계 구현·실제 두 계정/브라우저 검증과 QA 자료 정리를 완료했다. 다음은 M6 기존 자료 이관·전체 백업/복원·업데이트 호환이며 M7 실사용/배포와 D05 운영 정책은 후속이다.
+
+PR #203 코드 병합과 M1 로컬 계약 이후 [M2 실제 인증·개발 환경](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m2-auth.md)의 구현·실제 계정 권한/복구/만료 검증을 마쳤다. 개발 M2 완료와 서비스 전체 실사용 준비는 구분하며, 아래 운영 release·9/7 정리는 기존 이력이다.
 <!-- alpha-transition-20260920:end -->
 
-**Last Updated:** 2026-09-20 (9/7 main 정리와 격리 PoC/알파 원장 연결; main 머지·배포 미실행)
+**Last Updated:** 2026-09-26 (격리 알파 M7-2 Render 배포 전 코드 준비; 발행·배포 미실행)
 
 **Purpose:** Stable entry point for the current FlowMe stage, evidence boundary, and next owner decision.
 

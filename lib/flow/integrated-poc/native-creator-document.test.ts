@@ -8,7 +8,7 @@ import type {NativeCreatorDocumentOwner,NativeCreatorDocumentSource,TextAuthorin
 const NOW='2026-09-12T01:00:00.000Z',NEXT='2026-09-12T01:01:00.000Z';
 const RAW='# 원래 자료\n- 기준일: 2026-09-20\n## 준비\n- [ ] 첫 준비\n  - 날짜: 2026-09-20\n  - 시간: 09:00\n- [ ] 둘째 준비\n  - 상대 날짜: D-2';
 function source(document:TextAuthoringDocument,versionId='actual-save-1'):NativeCreatorDocumentSource{return{storageKey:'flow:text-authoring:drafts:v1',draftId:'native-draft',versionId,revisionId:document.revision.revisionId,documentJson:JSON.stringify(document)};}
-function savedSource(owner:NativeCreatorDocumentOwner){const source=owner.source;assert('versionId' in source);return source;}
+function savedSource(owner:NativeCreatorDocumentOwner){const source=owner.source;assert('versionId' in source&&source.storageKey==='flow:text-authoring:drafts:v1');return source;}
 function fixture(raw=RAW){const document=createTextAuthoringDocument(raw,{documentId:'native-document',ownership:'creator',now:NOW});const result=createNativeCreatorDocumentOwner({id:'private-native-owner',source:source(document),currentRecordUi:{activeStage:'structure',selectedItemId:document.parseResult.canonical.items[0].itemId,primaryArtifact:'todo'}},NOW);assert(result.ok);return result.owner;}
 function edit(owner:NativeCreatorDocumentOwner,operation:AuthoringCorrectionOperation,requestId='edit'){const result=applyNativeCreatorDocumentOperation(owner,{expectedOwner:owner,requestId,operation},NEXT);assert(result.ok);return result.owner;}
 const sorted=(value:any):any=>Array.isArray(value)?value.map(sorted):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,sorted(value[key])])):value;

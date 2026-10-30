@@ -6,6 +6,7 @@ import { applyProgramCopyVersion, applyProgramCopyKindChange, compareProgramCopy
 import { readProgramPublicCopyRecurrenceSource } from '@/lib/flow/integrated-poc/public-copy-recurrence';
 import { previewProgramCopyFieldResolution, type ProgramCopyFieldResolutionPreview, type ProgramCopyResolvableField } from '@/lib/flow/integrated-poc/private-space';
 import type { ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
+import type { AlphaSocialIntent } from '@/lib/flow/integrated-poc/alpha-social/contract';
 import { ProgramCopyProposal } from './ProgramCopyProposal';
 import { programRecurringScheduleLabel } from '@/lib/flow/integrated-poc/public-recurrence-contract';
 import { programOrdinaryScheduleLabel } from '@/lib/flow/integrated-poc/public-ordinary-time';
@@ -211,12 +212,12 @@ export function ProgramCopyInspector(props: ProgramCopyInspectorProps) {
     if (item) catalog.set(itemId, item);
   }
   const requestBase = () => ({ actorId, requestId: programId('copy-action'), expectedSpace: space });
-  async function save(label: string, build: (current: ProgramData) => ProgramTransition<string>, success: string, feedback: 'general' | 'source-fields' | 'schedule-resolution' = 'general') {
+  async function save(label: string, build: (current: ProgramData) => ProgramTransition<string>, success: string, alphaSocial: AlphaSocialIntent, feedback: 'general' | 'source-fields' | 'schedule-resolution' = 'general') {
     if (busyRef.current || locks.current || proposalPendingRef.current) return;
     if (scheduleRef.current && feedback !== 'schedule-resolution') return;
     busyRef.current = true; setBusy(true); setFeedbackTarget(feedback); setError(''); setMessage('');
     try {
-      const result = await props.mutate(label, build);
+      const result = await props.mutate(label, build, { alphaSocial });
       if (result.ok) { setMessage(result.changed === false ? '같은 상태입니다. 저장된 내용은 바뀌지 않았습니다.' : success); return true; }
       setError(programErrorMessage(result.reason)); return false;
     } catch { setError(programErrorMessage('storage-unavailable')); return false; }
@@ -242,7 +243,7 @@ export function ProgramCopyInspector(props: ProgramCopyInspectorProps) {
         {seriesDraft?.itemId === entry.item.id && <form aria-label={`${entry.item.title} 시작일`} onSubmit={async event => {
           event.preventDefault(); if (!draftRef.current || busyRef.current || locks.current) return;
           const draft = draftRef.current, input = { ...requestBase(), copyId, itemId: draft.itemId, start: draft.value || null };
-          if (await save('개인 반복 시작일 변경', current => setProgramCopySeriesStart(current, input), '개인 시작일을 저장했습니다. 지난 기록은 유지됩니다.')) updateSeriesDraft(null);
+          if (await save('개인 반복 시작일 변경', current => setProgramCopySeriesStart(current, input), '개인 시작일을 저장했습니다. 지난 기록은 유지됩니다.', { type: 'copy-series-start', copyId, itemId: input.itemId, start: input.start })) updateSeriesDraft(null);
         }}><fieldset disabled={busy || locked} className={styles.fields}>
           <label>개인 시작일<input type="date" autoFocus value={seriesDraft.value} onChange={event => updateSeriesDraft({ ...seriesDraft, value: event.target.value })} /></label>
           <div className={styles.actions}><button type="button" onClick={() => updateSeriesDraft({ ...seriesDraft, value: '' })}>미정으로</button><button type="submit">시작일 저장</button>
@@ -252,12 +253,12 @@ export function ProgramCopyInspector(props: ProgramCopyInspectorProps) {
           <option value="">문서 선택</option>{[...space.text.documents, ...space.text.flows].filter(doc => doc.id !== copy.documentId && !space.archivedDocumentIds.includes(doc.id) && !space.documentTrash?.[doc.id]).map(doc => <option key={doc.id} value={doc.id}>{doc.title}</option>)}
         </select></label><button type="button" disabled={!referenceDocuments[entry.item.id]} onClick={() => {
           const input = { ...requestBase(), copyId, itemId: entry.item.id, documentId: referenceDocuments[entry.item.id] };
-          void save('반복 문서 참조', current => linkProgramCopySeries(current, input), '문서에 같은 반복의 참조를 연결했습니다.');
+          void save('반복 문서 참조', current => linkProgramCopySeries(current, input), '문서에 같은 반복의 참조를 연결했습니다.', { type: 'copy-series-link', copyId, itemId: input.itemId, documentId: input.documentId });
         }}>문서에 참조 추가</button>
         {(copy.recurrence?.references ?? []).filter(ref => ref.itemId === entry.item.id).map(ref => <div className={styles.actions} key={ref.lineId}><span>{[...space.text.documents, ...space.text.flows].find(doc => doc.id === ref.documentId)?.title ?? '문서 없음'}</span>
           <button type="button" disabled={space.archivedDocumentIds.includes(ref.documentId) || !!space.documentTrash?.[ref.documentId]} onClick={() => {
             const input = { ...requestBase(), copyId, documentId: ref.documentId, lineId: ref.lineId };
-            void save('반복 문서 참조 해제', current => unlinkProgramCopySeries(current, input), '이 문서의 참조만 해제했습니다. 회차 기록은 유지됩니다.');
+            void save('반복 문서 참조 해제', current => unlinkProgramCopySeries(current, input), '이 문서의 참조만 해제했습니다. 회차 기록은 유지됩니다.', { type: 'copy-series-unlink', copyId, documentId: input.documentId, lineId: input.lineId });
           }}>이 참조 해제</button></div>)}
         </fieldset>
       </li>)}</ul>
@@ -277,7 +278,7 @@ export function ProgramCopyInspector(props: ProgramCopyInspectorProps) {
         {item.privateOverride && <small>{item.recurring ? '기준일을 따르지 않는 시작일 유지' : '직접 정한 날짜 유지'}{item.inferredOverride ? ' · 본문 변경 감지' : ''}</small>}
       </li>)}</ul><button disabled={busy} type="button" onClick={async () => {
         const input = { ...requestBase(), copyId, anchor: anchor || null };
-        if (await save('개인 Flow 기준일 변경', current => setProgramCopyAnchor(current, input), '기준일을 저장했습니다. 진행 기록은 그대로입니다.')) setAnchorPreview(false);
+        if (await save('개인 Flow 기준일 변경', current => setProgramCopyAnchor(current, input), '기준일을 저장했습니다. 진행 기록은 그대로입니다.', { type: 'copy-anchor', copyId, anchor: input.anchor })) setAnchorPreview(false);
       }}>이 기준일로 저장</button></div> : <p role="alert">{programErrorMessage(preview.reason)}</p>)}
     </section>
 
@@ -286,7 +287,7 @@ export function ProgramCopyInspector(props: ProgramCopyInspectorProps) {
         <span>{item.title}<small>{copy.includedItemIds.includes(item.id) ? '실행 목록에 포함' : copy.itemLines[item.id] ? '제외됨 · 기록 보관' : '아직 가져오지 않음'}</small></span>
         <button disabled={busy} type="button" onClick={() => {
           const included = !copy.includedItemIds.includes(item.id), input = { ...requestBase(), copyId, itemId: item.id, included };
-          void save(included ? '개인 Flow 항목 포함' : '개인 Flow 항목 제외', current => setProgramCopyInclusion(current, input), included ? '항목을 포함했습니다.' : '실행 목록에서 제외했습니다. 본문과 기록은 유지됩니다.');
+          void save(included ? '개인 Flow 항목 포함' : '개인 Flow 항목 제외', current => setProgramCopyInclusion(current, input), included ? '항목을 포함했습니다.' : '실행 목록에서 제외했습니다. 본문과 기록은 유지됩니다.', { type: 'copy-inclusion', copyId, itemId: item.id, included });
         }}>{copy.includedItemIds.includes(item.id) ? '제외' : '포함'}</button>
       </div></li>)}</ul>
     </section>
@@ -339,7 +340,7 @@ export function ProgramCopyInspector(props: ProgramCopyInspectorProps) {
         <div className={styles.actions}><button type="button" disabled={busy} onClick={() => { setFields([]); setSelectedItem(''); setFeedbackTarget('general'); setError(''); setMessage('개인 사본을 그대로 유지합니다.'); }}>그대로 유지</button>
           <button type="button" disabled={busy || fields.length === 0} onClick={async () => {
             const input = { ...requestBase(), copyId, versionId: target.id, expectedBaseVersionId: copy.baseVersionId, itemIds: [row.itemId], fields };
-            if (await save('공개 원문 선택 필드 반영', current => applyProgramCopyVersion(current, input), '선택한 변경을 반영했습니다. 상단 실행 취소로 되돌릴 수 있습니다.', 'source-fields')) setFields([]);
+            if (await save('공개 원문 선택 필드 반영', current => applyProgramCopyVersion(current, input), '선택한 변경을 반영했습니다. 상단 실행 취소로 되돌릴 수 있습니다.', { type: 'copy-update', copyId, versionId: input.versionId, expectedBaseVersionId: input.expectedBaseVersionId, itemIds: input.itemIds, fields: input.fields }, 'source-fields')) setFields([]);
           }}>선택한 변경 반영</button></div>
       </>}</div>}</> : <p role="alert">{programErrorMessage(comparison.reason)}</p>}
     </section>
@@ -350,13 +351,13 @@ export function ProgramCopyInspector(props: ProgramCopyInspectorProps) {
       onApply={() => { const draft = scheduleRef.current; if (!draft?.confirmed || !('field' in draft.preview) || busyRef.current || locks.current) return;
         const input = { actorId, requestId: draft.requestId, expectedSpace: draft.expectedSpace, copyId, versionId: draft.preview.toVersionId,
           expectedBaseVersionId: copy.baseVersionId, itemIds: [draft.preview.itemId], fields: [draft.preview.field], fieldResolution: { confirmed: true as const, at: draft.at, preview: draft.preview } };
-        void save('공개 원문 충돌 내용 수용', current => applyProgramCopyVersion(current, input), '선택한 새 내용을 반영했습니다. 다른 개인 내용과 기록은 유지했습니다.', 'schedule-resolution').then(saved => { if (saved) { updateScheduleDraft(null); setFields([]); } });
+        void save('공개 원문 충돌 내용 수용', current => applyProgramCopyVersion(current, input), '선택한 새 내용을 반영했습니다. 다른 개인 내용과 기록은 유지했습니다.', { type: 'copy-resolve', copyId, versionId: input.versionId, expectedBaseVersionId: input.expectedBaseVersionId, itemId: draft.preview.itemId, resolution: draft.preview.field }, 'schedule-resolution').then(saved => { if (saved) { updateScheduleDraft(null); setFields([]); } });
       }} />}
     {scheduleDraft && 'direction' in scheduleDraft.preview && <ProgramCopyKindReview preview={scheduleDraft.preview} confirmed={scheduleDraft.confirmed} disabled={busy || locked}
       onConfirm={confirmed => { if (scheduleRef.current && !busyRef.current && !locks.current) updateScheduleDraft({ ...scheduleRef.current, confirmed }); }} onCancel={cancelSchedule}
       onApply={() => { const draft = scheduleRef.current; if (!draft?.confirmed || !('direction' in draft.preview) || busyRef.current || locks.current) return;
         const input = { actorId, requestId: draft.requestId, expectedSpace: draft.expectedSpace, confirmed: true as const, at: draft.at, preview: draft.preview };
-        void save('공개 사본 형태 전환', current => applyProgramCopyKindChange(current, input), '형태를 전환했습니다. 이전 본문과 기록은 유지했으며 되돌리기로 복원할 수 있습니다.', 'schedule-resolution').then(saved => { if (saved) { updateScheduleDraft(null); setFields([]); } });
+        void save('공개 사본 형태 전환', current => applyProgramCopyKindChange(current, input), '형태를 전환했습니다. 이전 본문과 기록은 유지했으며 되돌리기로 복원할 수 있습니다.', { type: 'copy-kind', copyId, versionId: draft.preview.toVersionId, itemId: draft.preview.itemId }, 'schedule-resolution').then(saved => { if (saved) { updateScheduleDraft(null); setFields([]); } });
       }} />}
     {scheduleDraft && 'checks' in scheduleDraft.preview && <ProgramCopyCheckReview preview={scheduleDraft.preview} choices={scheduleDraft.checkChoices ?? {}} disabled={busy || locked}
       onChoose={(childId, choice) => { const draft = scheduleRef.current; if (!draft || !('checks' in draft.preview) || busyRef.current || locks.current) return;
@@ -366,14 +367,14 @@ export function ProgramCopyInspector(props: ProgramCopyInspectorProps) {
       onApply={() => { const draft = scheduleRef.current; if (!draft?.confirmed || !('checks' in draft.preview) || busyRef.current || locks.current) return;
         const input = { actorId, requestId: draft.requestId, expectedSpace: draft.expectedSpace, copyId, versionId: draft.preview.toVersionId, expectedBaseVersionId: copy.baseVersionId,
           itemIds: [draft.preview.itemId], fields: ['subchecks'] as ProgramCopyField[], checkResolution: { confirmed: true as const, at: draft.at, preview: draft.preview, choices: draft.checkChoices ?? {} } };
-        void save('하위 체크 복원', current => applyProgramCopyVersion(current, input), '선택한 문구로 체크를 복원했습니다. 이전 문구와 개인 기록은 남겼습니다.', 'schedule-resolution').then(saved => { if (saved) { updateScheduleDraft(null); setFields([]); } });
+        void save('하위 체크 복원', current => applyProgramCopyVersion(current, input), '선택한 문구로 체크를 복원했습니다. 이전 문구와 개인 기록은 남겼습니다.', { type: 'copy-resolve', copyId, versionId: input.versionId, expectedBaseVersionId: input.expectedBaseVersionId, itemId: draft.preview.itemId, resolution: 'subchecks', choices: input.checkResolution.choices }, 'schedule-resolution').then(saved => { if (saved) { updateScheduleDraft(null); setFields([]); } });
       }} />}
     {scheduleDraft && !('direction' in scheduleDraft.preview) && !('checks' in scheduleDraft.preview) && !('field' in scheduleDraft.preview) && <ProgramCopyScheduleReview preview={scheduleDraft.preview} confirmed={scheduleDraft.confirmed} disabled={busy || locked}
       onConfirm={confirmed => { if (scheduleRef.current && !busyRef.current && !locks.current) updateScheduleDraft({ ...scheduleRef.current, confirmed }); }} onCancel={cancelSchedule}
       onApply={() => { const draft = scheduleRef.current; if (!draft?.confirmed || 'direction' in draft.preview || 'checks' in draft.preview || 'field' in draft.preview || busyRef.current || locks.current) return;
         const input = { actorId, requestId: draft.requestId, expectedSpace: draft.expectedSpace, copyId, versionId: draft.preview.toVersionId,
           expectedBaseVersionId: copy.baseVersionId, itemIds: [draft.preview.itemId], fields: ['schedule'] as ProgramCopyField[], scheduleResolution: { confirmed: true as const, at: draft.at, preview: draft.preview } };
-        void save('개인 선택 보존·새 일정 수용', current => applyProgramCopyVersion(current, input), '새 일정을 수용했습니다. 이전 선택과 기록은 보관했으며 되돌리기로 복원할 수 있습니다.', 'schedule-resolution').then(saved => { if (saved) { updateScheduleDraft(null); setFields([]); } });
+        void save('개인 선택 보존·새 일정 수용', current => applyProgramCopyVersion(current, input), '새 일정을 수용했습니다. 이전 선택과 기록은 보관했으며 되돌리기로 복원할 수 있습니다.', { type: 'copy-resolve', copyId, versionId: input.versionId, expectedBaseVersionId: input.expectedBaseVersionId, itemId: draft.preview.itemId, resolution: 'schedule' }, 'schedule-resolution').then(saved => { if (saved) { updateScheduleDraft(null); setFields([]); } });
       }} />}
     {feedbackTarget === 'schedule-resolution' && <ProgramCopyFeedback busy={busy} error={error} message={message} />}
     {!!copy.checkResolutions?.entries.length && <details className={styles.section}><summary>체크 복원 선택 {copy.checkResolutions.entries.length}건</summary>

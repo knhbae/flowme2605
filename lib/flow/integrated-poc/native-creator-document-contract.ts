@@ -4,14 +4,21 @@ import type {AuthoringRecurrenceRule,AuthoringSourceUpdateCandidate,AuthoringSub
 
 /** Replaceable Program-only owner; not an original D2 storage schema. */
 export const NATIVE_CREATOR_DOCUMENT_VERSION=1 as const;
-export const NATIVE_CREATOR_DOCUMENT_JSON_LIMIT=2_000_000;
+/** Replaceable Program resource guard, measured as JSON UTF-16 code units, not
+ * UTF-8 bytes or a product quota. 4M permits the tested 100-edit document while
+ * owner/action/raw-text/account/backup guards remain independent and unchanged. */
+export const NATIVE_CREATOR_DOCUMENT_JSON_LIMIT=4_000_000;
 export const NATIVE_CREATOR_OWNER_JSON_LIMIT=16_000_000;
 export const NATIVE_CREATOR_ACTION_LIMIT=128;
 export type NativeCreatorDocumentSource={storageKey:'flow:text-authoring:drafts:v1';draftId:string;versionId:string;revisionId:string;documentJson:string};
 /** Recovery is never a saved version. Full original recovery/optional durable
  * comparison are retained, while the outer revision names the working source. */
 export type NativeCreatorRecoverySource={kind:'legacy-recovery';version:1;storageKey:'flow:text-authoring:drafts:v1';draftId:string;recoveryId:string;revisionId:string;recoveredAt:string;documentJson:string;recoveryJson:string;durableRecordJson:string|null};
-export type NativeCreatorDocumentProvenance=NativeCreatorDocumentSource|NativeCreatorRecoverySource;
+/** A new editable projection of existing Flow content, not a forged D2 save or
+ * imported personal workspace. contentJson contains only the source allowlist. */
+export type NativeCreatorCatalogContentSource={kind:'catalog-content';version:1;storageKey:'flow:catalog-content:v1';draftId:string;versionId:string;revisionId:string;sourceSlug:string;contentJson:string;documentJson:string};
+export type NativeCreatorDocumentProvenance=NativeCreatorDocumentSource|NativeCreatorRecoverySource|NativeCreatorCatalogContentSource;
+export const isNativeCreatorCatalogContentSource=(source:NativeCreatorDocumentProvenance):source is NativeCreatorCatalogContentSource=>'kind' in source&&source.kind==='catalog-content';
 export const isNativeCreatorRecoverySource=(source:NativeCreatorDocumentProvenance):source is NativeCreatorRecoverySource=>'kind' in source&&source.kind==='legacy-recovery';
 export const nativeCreatorSourceIdentity=(source:NativeCreatorDocumentProvenance)=>JSON.stringify([source.storageKey,source.draftId,isNativeCreatorRecoverySource(source)?'legacy-recovery':'saved-version',isNativeCreatorRecoverySource(source)?source.recoveryId:source.versionId]);
 export const nativeCreatorSourcePreviewIdentity=(source:NativeCreatorDocumentProvenance):{sourceVersionId:string|null;sourceRecoveryId?:string}=>isNativeCreatorRecoverySource(source)?{sourceVersionId:null,sourceRecoveryId:source.recoveryId}:{sourceVersionId:source.versionId};
@@ -36,7 +43,7 @@ export type NativeCreatorDocumentOwner={
  /** Full, genuine source check lists. No child identity is inferred from titles. */
  sourceSubchecks?:NativeCreatorSourceSubchecks;
 };
-export type NativeCreatorDocumentFailure='invalid'|'unsupported-codec'|'conflict'|'unsupported-operation'|'history-capacity'|'invalid-projection-options';
+export type NativeCreatorDocumentFailure='invalid'|'unsupported-codec'|'conflict'|'unsupported-operation'|'history-capacity'|'document-capacity'|'invalid-projection-options';
 export type NativeCreatorDocumentResult={ok:true;owner:NativeCreatorDocumentOwner;changed:boolean}|{ok:false;reason:NativeCreatorDocumentFailure};
 export type NativeCreatorDocumentRead={ok:true;document:TextAuthoringDocument;recordUi:NativeCreatorRecordUi;projection:AuthoringArtifactProjection}|{ok:false;reason:NativeCreatorDocumentFailure};
 export type {TextAuthoringDocument,AuthoringCorrectionOperation,BuildAuthoringArtifactProjectionOptions};

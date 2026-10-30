@@ -15,6 +15,28 @@ import type * as ComponentModule from './ProgramCommunity';
 
 const componentUrl = new URL('./ProgramCommunity.tsx', import.meta.url);
 const source = readFileSync(componentUrl, 'utf8'), require = createRequire(componentUrl);
+test('all seven composer entry buttons expose the same busy/media/lock guard before accepting a click', () => {
+  const ast = ts.createSourceFile('ProgramCommunity.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  let disabledExpression = '';
+  const entries: ts.JsxOpeningElement[] = [];
+  const visit = (node: ts.Node) => {
+    if (ts.isVariableDeclaration(node) && node.name.getText(ast) === 'draftEntryDisabled') disabledExpression = node.initializer!.getText(ast);
+    if (ts.isJsxOpeningElement(node) && node.tagName.getText(ast) === 'button') {
+      const click = node.attributes.properties.find(prop => ts.isJsxAttribute(prop) && prop.name.getText(ast) === 'onClick');
+      if (click && /\b(openDraft|startReply|startPostEdit)\(/.test(click.getText(ast))) entries.push(node);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(ast); assert.equal(entries.length, 7);
+  for (const entry of entries) {
+    const disabled = entry.attributes.properties.find(prop => ts.isJsxAttribute(prop) && prop.name.getText(ast) === 'disabled') as ts.JsxAttribute;
+    assert(disabled); assert.equal((disabled.initializer as ts.JsxExpression).expression!.getText(ast), 'draftEntryDisabled');
+  }
+  const evaluate = new Function('busy', 'readingMedia', 'locked', `return (${disabledExpression});`);
+  for (const busy of [false, true]) for (const media of [false, true]) for (const locked of [false, true]) {
+    assert.equal(evaluate(busy, media, locked), busy || media || locked);
+  }
+});
 const compiled = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022,
   module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true } });
 const loaded = { exports: {} as typeof ComponentModule };

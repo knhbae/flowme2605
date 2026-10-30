@@ -1,9 +1,10 @@
 import {isProgramCreatorDraftJson} from './creator-draft-provenance';
 import {readNativeCreatorRecoverySource} from './native-creator-recovery-source';
+import {projectCatalogContent} from './catalog-content';
 import {isNativeCreatorRecoverySource,nativeCreatorSourceIdentity,type NativeCreatorDocumentProvenance} from './native-creator-document-contract';
 import {createNativeOwnerReplayCache} from './native-owner-replay-cache';
 import {applyAuthoringOperation} from './native-creator-vendor/text-authoring/operations';
-import {buildAuthoringArtifactProjection} from './native-creator-vendor/text-authoring/artifact-projection';
+import {buildProgramAuthoringArtifactProjection} from './native-creator-projection';
 import {validateTextAuthoringDocument} from './native-creator-vendor/text-authoring/validation';
 import {stableAuthoringJson} from './native-creator-vendor/text-authoring/identity';
 import {isValidAuthoringDate} from './native-creator-vendor/text-authoring/recurrence';
@@ -24,6 +25,15 @@ const same=(a:unknown,b:unknown)=>stableAuthoringJson(a)===stableAuthoringJson(b
 const shape=(v:unknown,required:string[],optional:string[]=[]):v is Record<string,unknown>=>object(v)&&required.every(k=>Object.hasOwn(v,k))&&Object.keys(v).every(k=>required.includes(k)||optional.includes(k));
 const copy=<T,>(value:T):T=>structuredClone(value);
 const failure=(reason:Extract<NativeCreatorDocumentResult,{ok:false}>['reason']):NativeCreatorDocumentResult=>({ok:false,reason});
+
+/** Only generated candidates use this diagnostic. Untrusted stored documents
+ * still pass the full, fail-closed reader/owner replay boundary. */
+class NativeCreatorCapacityError extends Error {}
+function validateCandidateDocument(value:unknown):value is TextAuthoringDocument {
+ if(validateNativeCreatorDocument(value))return true;
+ if((JSON.stringify(value)?.length??0)>NATIVE_CREATOR_DOCUMENT_JSON_LIMIT)throw new NativeCreatorCapacityError();
+ return false;
+}
 
 /** Native DTO boundary: preserve saved canonical state, never reparse its raw. */
 export function validateNativeCreatorDocument(value:unknown):value is TextAuthoringDocument {
@@ -46,6 +56,19 @@ export function readNativeCreatorSavedDocument(source:unknown):TextAuthoringDocu
 /** Owner initialization/source comparison supports recovery; saved restore does not. */
 export function readNativeCreatorSourceDocument(source:unknown):TextAuthoringDocument|null {
  if(!isProgramCreatorDraftJson(source))return null;
+ if(object(source)&&source.kind==='catalog-content'){
+  try {
+   if(!shape(source,['kind','version','storageKey','draftId','versionId','revisionId','sourceSlug','contentJson','documentJson'])
+    ||source.version!==1||source.storageKey!=='flow:catalog-content:v1'||!id(source.draftId)||!id(source.versionId)||!id(source.revisionId)
+    ||typeof source.sourceSlug!=='string'||typeof source.contentJson!=='string'||source.contentJson.length>NATIVE_CREATOR_DOCUMENT_JSON_LIMIT
+    ||typeof source.documentJson!=='string'||source.documentJson.length>NATIVE_CREATOR_DOCUMENT_JSON_LIMIT)return null;
+   const projected=projectCatalogContent(JSON.parse(source.contentJson));
+   if(!projected.ok||projected.content.sourceSlug!==source.sourceSlug||projected.content.versionId!==source.versionId
+    ||source.draftId!==`catalog-content:${source.sourceSlug}`||projected.document.revision.revisionId!==source.revisionId)return null;
+   const document=JSON.parse(source.documentJson);
+   return validateNativeCreatorDocument(document)&&same(document,projected.document)?document:null;
+  }catch{return null;}
+ }
  if(object(source)&&source.kind==='legacy-recovery'){
   const recovery=readNativeCreatorRecoverySource(source);return recovery?JSON.parse(recovery.documentJson) as TextAuthoringDocument:null;
  }
@@ -76,7 +99,7 @@ type ReplayState={document:TextAuthoringDocument;recordUi:NativeCreatorRecordUi;
 type ReplayHistory={effectiveAbsences?:NativeCreatorEffectiveAbsences;sourceRecurrences?:NativeCreatorSourceRecurrences;sourceSubchecks?:NativeCreatorSourceSubchecks};
 function applyPayload(document:TextAuthoringDocument,recordUi:NativeCreatorRecordUi,payload:NativeCreatorActionPayload,at:string,original:NativeCreatorDocumentProvenance,prior?:NativeCreatorEffectiveAbsences,undo?:NativeCreatorEffectiveAbsences,hasLegacyApply=false,recurrences?:NativeCreatorSourceRecurrences,undoRecurrences?:NativeCreatorSourceRecurrences,subchecks?:NativeCreatorSourceSubchecks,undoSubchecks?:NativeCreatorSourceSubchecks):ReplayState|null {
  const unchanged=():ReplayState=>({document,recordUi,...(prior?{effectiveAbsences:copy(prior)}:{}),...(recurrences?{sourceRecurrences:copy(recurrences)}:{}),...(subchecks?{sourceSubchecks:copy(subchecks)}:{})});
- const finish=(next:TextAuthoringDocument,ui=recordUi,sourceRecurrences=updateNativeSourceRecurrences(document,next,recurrences,payload,undoRecurrences),sourceSubchecks=updateNativeSourceSubchecks(subchecks,payload,undoSubchecks)):ReplayState=>{const effectiveAbsences=nextNativeCreatorAbsences(document,next,prior,payload,undo),effective=applyNativeCreatorAbsences(next,effectiveAbsences);if(!validateNativeCreatorDocument(effective))throw Error('invalid-effective-document');return{document:effective,recordUi:ui,...(effectiveAbsences?{effectiveAbsences}:{}),...(sourceRecurrences?{sourceRecurrences}:{}),...(sourceSubchecks?{sourceSubchecks}:{})};};
+ const finish=(next:TextAuthoringDocument,ui=recordUi,sourceRecurrences=updateNativeSourceRecurrences(document,next,recurrences,payload,undoRecurrences),sourceSubchecks=updateNativeSourceSubchecks(subchecks,payload,undoSubchecks)):ReplayState=>{const effectiveAbsences=nextNativeCreatorAbsences(document,next,prior,payload,undo),effective=applyNativeCreatorAbsences(next,effectiveAbsences);if(!validateCandidateDocument(effective))throw Error('invalid-effective-document');return{document:effective,recordUi:ui,...(effectiveAbsences?{effectiveAbsences}:{}),...(sourceRecurrences?{sourceRecurrences}:{}),...(sourceSubchecks?{sourceSubchecks}:{})};};
  if(payload.kind==='source-stage'){
   if(!shape(payload,['kind','stageVersion','candidate'],['requestId','at'])||![1,2].includes(payload.stageVersion))return null;
   const originalDocument=readNativeCreatorSourceDocument(original);if(!originalDocument)return null;
@@ -86,7 +109,7 @@ function applyPayload(document:TextAuthoringDocument,recordUi:NativeCreatorRecor
  if(payload.kind==='source-absence-upgrade'){
   if(!shape(payload,['kind','upgradeVersion'],['requestId','at'])||payload.upgradeVersion!==1||document.sourceState?.status!=='current')return null;
   if(!hasLegacyApply)return unchanged();
-  const upgraded=replayNativeCreatorAbsenceUpgrade(document,prior);return validateNativeCreatorDocument(upgraded.document)?{...upgraded,recordUi,...(recurrences?{sourceRecurrences:copy(recurrences)}:{}),...(subchecks?{sourceSubchecks:copy(subchecks)}:{})}:null;
+  const upgraded=replayNativeCreatorAbsenceUpgrade(document,prior);return validateCandidateDocument(upgraded.document)?{...upgraded,recordUi,...(recurrences?{sourceRecurrences:copy(recurrences)}:{}),...(subchecks?{sourceSubchecks:copy(subchecks)}:{})}:null;
  }
  if(payload.kind==='restore'){
   const restored=readNativeCreatorSavedDocument(payload.source);if(!restored||payload.source.draftId!==original.draftId||payload.source.storageKey!==original.storageKey||restored.documentId!==document.documentId)return null;
@@ -106,20 +129,20 @@ function applyPayload(document:TextAuthoringDocument,recordUi:NativeCreatorRecor
    if(subchecks?.pending){const result=applyNativeSourceSubcheckResult(document,next,subchecks);next=result.document;sourceSubchecks=result.sourceSubchecks;}
    return finish(next,recordUi,sourceRecurrences,sourceSubchecks);
   }
-  const next=replayNativeSourceApply(document,at,payload.applyVersion);return next&&validateNativeCreatorDocument(next)&&next.documentId===document.documentId?finish(next):null;
+  const next=replayNativeSourceApply(document,at,payload.applyVersion);return next&&validateCandidateDocument(next)&&next.documentId===document.documentId?finish(next):null;
  }
  if(payload.kind==='source-decision'){
   if(!shape(payload,['kind','decisionVersion','changeId','decision'],['requestId','at'])||payload.decisionVersion!==1||!id(payload.changeId))return null;
   const recurrence=recurrences&&decideNativeSourceRecurrence(recurrences,payload,at);if(recurrence)return finish(document,recordUi,recurrence);
   const checks=subchecks&&decideNativeSourceSubchecks(subchecks,payload,at);if(checks)return finish(document,recordUi,recurrences,checks);
-  const next=replayNativeSourceDecision(document,payload,at);return next&&validateNativeCreatorDocument(next)&&next.documentId===document.documentId?finish(next):null;
+  const next=replayNativeSourceDecision(document,payload,at);return next&&validateCandidateDocument(next)&&next.documentId===document.documentId?finish(next):null;
  }
  if(payload.kind!=='operation'||!validOperation(payload.operation))return null;
  // Original operations retain undefined optional snapshot fields in memory. The
  // original repository's JSON transport omits those fields; use that same DTO
  // boundary, not a raw reparse or canonical regeneration.
  const next:unknown=JSON.parse(JSON.stringify(applyAuthoringOperation(document,payload.operation,{actorLane:'creator',now:at})));
- if(!validateNativeCreatorDocument(next)||next.documentId!==document.documentId)return null;
+ if(!validateCandidateDocument(next)||next.documentId!==document.documentId)return null;
  if(same(next,document))return unchanged();
  return finish(next);
 }
@@ -169,8 +192,9 @@ function commit(owner:NativeCreatorDocumentOwner,input:{expectedOwner:NativeCrea
   if(next.effectiveAbsences)after.effectiveAbsences=next.effectiveAbsences;else delete after.effectiveAbsences;
   if(next.sourceRecurrences)after.sourceRecurrences=next.sourceRecurrences;else delete after.sourceRecurrences;
   if(next.sourceSubchecks)after.sourceSubchecks=next.sourceSubchecks;else delete after.sourceSubchecks;
-  return validateNativeCreatorDocumentOwner(after)?{ok:true,owner:after,changed:true}:failure('invalid');
- }catch{return failure('invalid');}
+  if(validateNativeCreatorDocumentOwner(after))return{ok:true,owner:after,changed:true};
+  return failure(JSON.stringify(after).length>NATIVE_CREATOR_OWNER_JSON_LIMIT?'document-capacity':'invalid');
+ }catch(error){return failure(error instanceof NativeCreatorCapacityError?'document-capacity':'invalid');}
 }
 export function applyNativeCreatorDocumentOperation(owner:NativeCreatorDocumentOwner,input:{expectedOwner:NativeCreatorDocumentOwner;requestId:string;operation:AuthoringCorrectionOperation},now:string):NativeCreatorDocumentResult {
  if(input.operation?.type==='stage_source_update'&&validateNativeCreatorDocumentOwner(owner)&&requiresNativeCreatorAbsenceUpgrade(owner))return failure('unsupported-operation');
@@ -205,6 +229,6 @@ export function readNativeCreatorDocument(owner:NativeCreatorDocumentOwner,optio
    ||[options.finiteOccurrenceLimit,options.occurrenceLimit].some(n=>n!==undefined&&(!Number.isSafeInteger(n)||n<1||n>10000))
    ||[options.openEndedOccurrenceWeeks,options.recurrencePreviewWeeks].some(n=>n!==undefined&&(!Number.isSafeInteger(n)||n<1||n>520)))return{ok:false,reason:'invalid-projection-options'};
   const effective=applyNativeCreatorAbsences(owner.document,owner.effectiveAbsences,true),document=owner.sourceRecurrences?projectNativeSourceRecurrences(effective,owner.sourceRecurrences):effective,recordUi=copy(owner.recordUi);
-  return{ok:true,document,recordUi,projection:buildAuthoringArtifactProjection(document,{...(recordUi.primaryArtifact?{primaryArtifact:recordUi.primaryArtifact}:{}),...options})};
+  return{ok:true,document,recordUi,projection:buildProgramAuthoringArtifactProjection(document,{...(recordUi.primaryArtifact?{primaryArtifact:recordUi.primaryArtifact}:{}),...options})};
  }catch{return{ok:false,reason:'invalid'};}
 }

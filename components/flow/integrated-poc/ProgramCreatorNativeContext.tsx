@@ -2,7 +2,8 @@
 
 import React,{useEffect,useRef,useState} from 'react';
 import type {NativeCreatorDocumentOwner,NativeCreatorDocumentSource,AuthoringCorrectionOperation} from '../../../lib/flow/integrated-poc/native-creator-document-contract';
-import {isNativeCreatorRecoverySource} from '../../../lib/flow/integrated-poc/native-creator-document-contract';
+import {isNativeCreatorRecoverySource,isNativeCreatorCatalogContentSource} from '../../../lib/flow/integrated-poc/native-creator-document-contract';
+import {CatalogContentOriginal} from './CatalogContentOriginal';
 import {applyNativeCreatorDocumentOperation,restoreNativeCreatorDocument,readNativeCreatorSourceDocument,readNativeCreatorDocument,validateNativeCreatorDocumentOwner} from '../../../lib/flow/integrated-poc/native-creator-document';
 import {buildProgramNativeCreatorRawSyncOperation} from '../../../lib/flow/integrated-poc/creator-native-workspace';
 import type {AuthoringArtifactKind,AuthoringRecurrencePreviewSummary} from '../../../lib/flow/integrated-poc/native-creator-vendor/text-authoring/artifact-projection';
@@ -29,7 +30,7 @@ const roles:Record<CanonicalAuthoringItem['role'],string>={item:'할 일',resour
 const gates:Record<string,string>={required:'검토 필요',evidence_recorded:'근거 기록됨',personal_only:'개인 사용만'};
 const same=(a:unknown,b:unknown)=>stableAuthoringJson(a)===stableAuthoringJson(b);
 const itemSummary=(item:CanonicalAuthoringItem|undefined)=>item?[item.title,`${roles[item.role]} · ${item.included?'결과에 포함':'결과에서 제외'} · 순서 ${item.order+1} · 들여쓰기 ${item.nestingLevel}`,`${item.schedule?.raw??'날짜 미정'}${item.schedule?.time?` · ${item.schedule.time}`:''}`,item.detail??'',item.completion?.doneWhen??'',...item.properties.map(p=>`${p.label}: ${p.value}`),...item.resources.map(r=>`자료: ${r.label} ${r.url}`),...item.sources.map(r=>`출처: ${r.label} ${r.url}`),...item.guides.map(v=>`안내: ${v}`),...item.cautions.map(v=>`주의: ${v}`),...(item.subchecks??[]).map(v=>`하위 항목: ${v.title}`)].filter(Boolean).join('\n'):'해당 항목 없음';
-function errorMessage(reason:string){return ({'unsupported-operation':'현재 원문 구조에 이 변경을 적용할 수 없습니다. 입력은 유지했습니다.','history-capacity':'이 작업의 변경 이력 한도에 도달했습니다. 입력을 따로 보관해 주세요.','unsupported-codec':'이 저장본의 구조를 안전하게 읽지 못했습니다. 원본은 그대로 남아 있습니다.'} as Record<string,string>)[reason]??programErrorMessage(reason);}
+function errorMessage(reason:string){return ({'unsupported-operation':'현재 원문 구조에 이 변경을 적용할 수 없습니다. 입력은 유지했습니다.','history-capacity':'이 작업의 변경 이력 한도에 도달해 적용하지 않았습니다. 입력을 따로 복사해 보관해 주세요.','document-capacity':'문서 크기 한도를 넘어 적용하지 않았습니다. 입력을 따로 복사해 보관해 주세요. 기존 문서와 기록은 그대로 남아 있습니다.','unsupported-codec':'이 저장본의 구조를 안전하게 읽지 못했습니다. 원본은 그대로 남아 있습니다.'} as Record<string,string>)[reason]??programErrorMessage(reason);}
 
 export function ProgramCreatorNativeComparison({before,after}:{before:NativeCreatorDocumentOwner;after:NativeCreatorDocumentOwner}){
  const beforeItems=new Map(before.document.parseResult.canonical.items.map(item=>[item.itemId,item])),afterItems=new Map(after.document.parseResult.canonical.items.map(item=>[item.itemId,item]));
@@ -89,7 +90,7 @@ export function ProgramCreatorNativeContext({owner,onOperation,onRestore,onOpenS
   if(!result.ok){setMessage(errorMessage(result.reason));return;}if(!result.changed){setMessage(operation.type==='classify_issue'?'이미 결정했거나 이 원문에는 허용되지 않는 선택입니다. 원문과 판단은 바꾸지 않았습니다.':operation.type==='merge'?'날짜·완료 기준·속성이 다르거나 연결 위치가 모호해 합치지 않았습니다.':operation.type==='split'?'선택한 위치에서는 항목을 나눌 수 없습니다.':operation.type==='align_source_order'?'원문 블록을 안전하게 구분할 수 없어 순서를 바꾸지 않았습니다.':'현재 값과 같아 변경하지 않았습니다.');return;}
   const next:Preview={kind:'operation',request,after:result.owner};state.current.preview=next;setPreview(next);setMessage('');
  }
- function restore(){if(guarded()||rawChanged||!onRestore||isNativeCreatorRecoverySource(owner.source))return;if(state.current.dirty){setMessage('입력 중인 변경을 먼저 적용하거나 버려 주세요.');return;}const now=new Date().toISOString(),request={expectedOwner:owner,requestId:`native-restore-ui-${crypto.randomUUID()}`,source:owner.source,now};const result=restoreNativeCreatorDocument(owner,request,now);if(!result.ok){setMessage(errorMessage(result.reason));return;}if(!result.changed){setMessage('처음 가져온 저장본과 같습니다.');return;}const next:Preview={kind:'restore',request,after:result.owner};state.current.preview=next;setPreview(next);}
+ function restore(){if(guarded()||rawChanged||!onRestore||isNativeCreatorRecoverySource(owner.source)||isNativeCreatorCatalogContentSource(owner.source))return;if(state.current.dirty){setMessage('입력 중인 변경을 먼저 적용하거나 버려 주세요.');return;}const now=new Date().toISOString(),request={expectedOwner:owner,requestId:`native-restore-ui-${crypto.randomUUID()}`,source:owner.source,now};const result=restoreNativeCreatorDocument(owner,request,now);if(!result.ok){setMessage(errorMessage(result.reason));return;}if(!result.changed){setMessage('처음 가져온 저장본과 같습니다.');return;}const next:Preview={kind:'restore',request,after:result.owner};state.current.preview=next;setPreview(next);}
  function stageRaw(){if(guarded()||state.current.dirty||!rawChanged||pendingRawText===undefined)return;if(!prepareRawSyncOperation){setMessage('원문 변경과 검토 조건을 함께 비교할 연결을 기다리고 있습니다. 입력은 유지했습니다.');return;}const result=prepareRawSyncOperation(owner,pendingRawText);if(!result.ok){setMessage(errorMessage(result.reason));return;}if(result.operation.type!=='sync_working_text_from_input'||result.operation.rawText!==pendingRawText){setMessage('원문 변경의 연결 값이 일치하지 않습니다. 입력은 유지했습니다.');return;}stage(result.operation);}
  function discard(){if(state.current.pending||state.current.locks||state.current.composing)return;state.current.dirty=false;state.current.dirtyKind=null;state.current.preview=null;state.current.base=owner;state.current.title=item?.title??'';state.current.evidence='';state.current.patch=null;state.current.splitAt='';setPatch(null);setSplitAt('');setTitle(item?.title??'');setEvidence('');setPreview(null);setMessage('');}
  function changePatch(key:keyof AuthoringWorkingTextItemPatch,value:string){if(!item||readOnly||rawChanged||state.current.pending||state.current.locks||state.current.dirtyKind&&state.current.dirtyKind!=='inspector')return;if(!state.current.dirty)state.current.base=owner;const next={...(state.current.patch??nativeInspectorPatch(owner.document,item)),[key]:value};state.current.patch=next;state.current.dirty=true;state.current.dirtyKind='inspector';state.current.preview=null;setPatch(next);setPreview(null);setMessage('');}
@@ -171,7 +172,7 @@ export function ProgramCreatorNativeContext({owner,onOperation,onRestore,onOpenS
      </section>)}
     </>:<p>이 저장본에 별도 검토 항목은 없습니다.</p>}
    </details>
-   <details><summary>원문과 저장 출처</summary><p>{isNativeCreatorRecoverySource(owner.source)?<>기존 임시복구본 {owner.source.recoveryId}</>:<>기존 저장본 {owner.source.versionId}</>} · 원래 문서 {owner.document.documentId}</p><pre>{owner.document.rawText}</pre>{owner.document.sourceState&&<p>원본 비교 상태: {owner.document.sourceState.status==='current'?'현재 원본':owner.document.sourceState.status}</p>}{onRestore&&!isNativeCreatorRecoverySource(owner.source)&&<button disabled={disabled||state.current.dirty} onClick={restore}>처음 가져온 전체 저장본으로 복구 비교</button>}</details>
+   {isNativeCreatorCatalogContentSource(owner.source)?<CatalogContentOriginal source={owner.source}/>:<details><summary>원문과 저장 출처</summary><p>{isNativeCreatorRecoverySource(owner.source)?<>기존 임시복구본 {owner.source.recoveryId}</>:<>기존 저장본 {owner.source.versionId}</>} · 원래 문서 {owner.document.documentId}</p><pre>{owner.document.rawText}</pre>{owner.document.sourceState&&<p>원본 비교 상태: {owner.document.sourceState.status==='current'?'현재 원본':owner.document.sourceState.status}</p>}{onRestore&&!isNativeCreatorRecoverySource(owner.source)&&<button disabled={disabled||state.current.dirty} onClick={restore}>처음 가져온 전체 저장본으로 복구 비교</button>}</details>}
    {preview&&<><ProgramCreatorNativeComparison before={preview.request.expectedOwner} after={preview.after}/><div className={styles.actions}><button className={styles.primary} disabled={readOnly||busy} onClick={()=>void apply()}>비교한 구조 적용</button><button disabled={busy} onClick={()=>{state.current.preview=null;setPreview(null);}}>비교 닫고 계속 편집</button></div></>}
    {hasPending()&&<button disabled={busy||locked} onClick={discard}>미확정 구조 입력 버리기</button>}
   </>}
@@ -185,10 +186,10 @@ export function programNativeResultExpansion(summaries:AuthoringRecurrencePrevie
  return{finite,openEnded,canExpand:finite||openEnded,limited};
 }
 
-/** Read-only original D2 artifact projection. Never falls back to reparsed raw. */
-export function ProgramCreatorNativeResult({owner,onOpenItem,structure,draftId}:{owner:NativeCreatorDocumentOwner;today?:string;onOpenItem?:(itemId:string)=>void;structure?:ProgramCreatorStructureSidecar;draftId?:string}){
+/** Read-only Program projection v2 over pinned D2. Never reparses saved raw. */
+export function ProgramCreatorNativeResult({owner,anchor,onOpenItem,structure,draftId}:{owner:NativeCreatorDocumentOwner;anchor?:string;today?:string;onOpenItem?:(itemId:string)=>void;structure?:ProgramCreatorStructureSidecar;draftId?:string}){
  const [chosen,setChosen]=useState<AuthoringArtifactKind|null>(null),[finiteLimit,setFiniteLimit]=useState(30),[weeks,setWeeks]=useState(4);
- const read=readNativeCreatorDocument(owner,{finiteOccurrenceLimit:finiteLimit,openEndedOccurrenceWeeks:weeks});
+ const read=readNativeCreatorDocument(owner,{...(anchor?{anchor}:{}),finiteOccurrenceLimit:finiteLimit,openEndedOccurrenceWeeks:weeks});
  if(!read.ok)return <section className={styles.context} aria-label="복구한 제작 결과"><h2>복구한 제작 결과</h2><p role="alert">저장된 구조의 결과를 읽지 못했습니다. 원문을 다시 해석한 결과로 대신 표시하지 않습니다.</p></section>;
  const projection=read.projection,policy=draftId?programTemplateResultPolicy(structure,draftId,read.document,projection):null;
  const offered=policy?.artifacts??(['calendar','todo','sheet','memo'] as const);

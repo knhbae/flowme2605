@@ -63,6 +63,35 @@ test('actual document action closes the menu only after editor readiness and bef
   }
 });
 
+test('modal document actions establish the visible summary before child focus capture, only after a successful flush', async () => {
+  const actionNode = find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'openDocumentAction');
+  for (const readiness of ['ready', 'save-failed', 'selection-changed', 'recurrence-failed']) {
+    const calls: string[] = [], title = { value: '미제출 제목', defaultValue: '원래 제목' }, summary = {};
+    let activeElement: unknown = 'preparing-disabled-button';
+    const menu = { open: true, title, querySelector(selector: string) { assert.equal(selector, ':scope > summary'); return { focus(options: unknown) { assert.deepEqual(options, { preventScroll: true }); activeElement = summary; calls.push('summary-focus'); } }; } };
+    const preparing = { current: false };
+    const action = execute(`(${actionNode.getText(ast)})`, { selectedDoc: { id: 'doc' }, preparing, retentionSource: null,
+      lockInput: () => () => calls.push('release'), setPreparingDocumentAction(value: boolean) { if (value) activeElement = 'body'; }, setMessage() {},
+      flushRecurrenceEditors: async () => readiness !== 'recurrence-failed', prepareProgramDocumentAction: async () => readiness,
+      dirty: { current: {} }, saveRequests: { current: {} }, selectedRef: { current: 'doc' }, documentMenu: { current: menu } });
+    await action((id: string) => { assert.equal(id, 'doc'); assert.equal(menu.open, false); assert.equal(activeElement, summary); calls.push('modal-captures-summary'); }, { modalReturnFocus: true });
+    assert.deepEqual(calls, readiness === 'ready' ? ['summary-focus', 'modal-captures-summary', 'release'] : ['release']);
+    assert.equal(menu.open, readiness !== 'ready'); assert.equal(preparing.current, false);
+    assert.deepEqual(title, { value: '미제출 제목', defaultValue: '원래 제목' });
+  }
+});
+
+test('only publication and copy-inspector opt into a stable modal return target', () => {
+  const actions: string[] = [];
+  function visit(node: ts.Node) {
+    if (ts.isJsxAttribute(node) && node.name.getText(ast) === 'onClick' && node.initializer?.getText(ast).includes('modalReturnFocus: true')) actions.push(node.initializer.getText(ast));
+    ts.forEachChild(node, visit);
+  }
+  visit(ast); assert.equal(actions.length, 2);
+  assert(actions.some(action => action.includes('props.onPublishDocument!')));
+  assert(actions.some(action => action.includes('props.onInspectCopy!(copy.id)')));
+});
+
 test('legacy source action is scoped to the exact document binding and uses the guarded document navigation', async () => {
   const filter = find(node => ts.isCallExpression(node) && node.expression.getText(ast) === 'space.savedBindings.filter') as ts.CallExpression;
   const predicate = execute(filter.arguments[0].getText(ast), { selectedDoc: { id: 'selected-document' } });

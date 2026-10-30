@@ -25,21 +25,25 @@ function ReviewBody(props: ProgramProposalReviewProps) {
   const draft = useRef<ProgramProposalReviewDraft>(saved.current ?? { note: proposal.reviewNote, expectedProposalToken: programProposalReviewToken(data, proposal.id) ?? '' });
   const input = useRef<HTMLTextAreaElement>(null), composing = useRef(false), locks = useRef(0), busyRef = useRef(false), touched = useRef(false);
   const queue = useRef(Promise.resolve(true));
+  const saveFlights = useRef(0);
   const [note, setNote] = useState(draft.current.note), [error, setError] = useState(''), [busy, setBusy] = useState(false), [locked, setLocked] = useState(false), [, render] = useState(0);
   const current = () => ({ ...draft.current, note: input.current?.value ?? draft.current.note });
   const pending = () => composing.current || busyRef.current || (touched.current && !programSame(current(), saved.current));
   const readonly = () => { if (input.current && !composing.current) input.current.readOnly = locks.current > 0 || busyRef.current; };
   const mutate: ProgramMutate = async (...args) => { try { return await live.current.mutate(...args); } catch { return { ok: false, reason: 'storage-unavailable' }; } };
   const persist = (snapshot: ProgramProposalReviewDraft = current()) => {
+    saveFlights.current++;
     queue.current = queue.current.then(async () => {
-      if (composing.current) return false;
-      const expected = saved.current;
-      if (programSame(snapshot, expected)) return true;
-      const outcome = await mutate('검토 의견 초안 저장', latest => saveProgramProposalReviewDraft(latest, { actorId, proposalId: proposal.id, draft: snapshot, expected }), { history: false });
-      if (!outcome.ok) { setError(programErrorMessage(outcome.reason)); return false; }
-      saved.current = snapshot;
-      if (programSame(current(), snapshot)) touched.current = false;
-      render(value => value + 1); return true;
+      try {
+        if (composing.current) return false;
+        const expected = saved.current;
+        if (programSame(snapshot, expected)) return true;
+        const outcome = await mutate('검토 의견 초안 저장', latest => saveProgramProposalReviewDraft(latest, { actorId, proposalId: proposal.id, draft: snapshot, expected }), { history: false, alphaSocial: { type: 'review-save', proposalId: proposal.id, draft: snapshot, expected } });
+        if (!outcome.ok) { setError(programErrorMessage(outcome.reason)); return false; }
+        saved.current = snapshot;
+        if (programSame(current(), snapshot)) touched.current = false;
+        render(value => value + 1); return true;
+      } finally { saveFlights.current--; }
     });
     return queue.current;
   };
@@ -51,7 +55,14 @@ function ReviewBody(props: ProgramProposalReviewProps) {
   const flushRef = useRef(flush); flushRef.current = flush;
   useEffect(() => {
     onRegisterEditors?.({ flushAll: () => flushRef.current(), hasPendingInput: pending,
+      acceptConfirmedSocialDrafts: next => {
+        if (next.activeActorId !== actorId || composing.current || busyRef.current || locks.current || saveFlights.current) return false;
+        const value = current(), stored = readProgramProposalReviewDraft(next, actorId, proposal.id);
+        if (!stored || !programSame(value, stored) || programSame(saved.current, stored)) return false;
+        saved.current = { ...stored }; touched.current = false; setError(''); render(value => value + 1); return true;
+      },
       captureDrafts: () => pending() || saved.current ? [{ title: '개선 제안 검토 의견', raw: current().note }] : [],
+      captureSocialDrafts: () => pending() || saved.current ? [{ kind: 'review', value: { proposalId: proposal.id, draft: { ...current() } } }] : [],
       lockInput: () => { locks.current++; setLocked(true); readonly(); let released = false; return () => {
         if (released) return; released = true; locks.current--; setLocked(locks.current > 0); readonly();
       }; },
@@ -82,7 +93,7 @@ function ReviewBody(props: ProgramProposalReviewProps) {
     try {
       if (!await persist(snapshot)) return;
       const outcome = await mutate('개선 제안 검토', latest => submitProgramProposalReviewDraft(latest,
-        { actorId, proposalId: proposal.id, decision, expectedVersionId, draft: snapshot }, new Date().toISOString()));
+        { actorId, proposalId: proposal.id, decision, expectedVersionId, draft: snapshot }, new Date().toISOString()), { alphaSocial: { type: 'review-submit', proposalId: proposal.id, decision, expectedVersionId, draft: snapshot } });
       if (!outcome.ok) setError(programErrorMessage(outcome.reason));
       else { saved.current = null; touched.current = false; draft.current = { ...snapshot, expectedProposalToken: '' }; render(value => value + 1); }
     } finally { busyRef.current = false; setBusy(false); readonly(); }
@@ -103,7 +114,7 @@ function ReviewBody(props: ProgramProposalReviewProps) {
     try {
       await queue.current;
       const expected = saved.current;
-      const outcome = await mutate('검토 의견 초안 지우기', latest => discardProgramProposalReviewDraft(latest, { actorId, proposalId: proposal.id, expected }), { history: false });
+      const outcome = await mutate('검토 의견 초안 지우기', latest => discardProgramProposalReviewDraft(latest, { actorId, proposalId: proposal.id, expected }), { history: false, alphaSocial: { type: 'review-discard', proposalId: proposal.id, expected } });
       if (!outcome.ok) setError(programErrorMessage(outcome.reason));
       else { saved.current = null; touched.current = false; draft.current = { note: proposal.reviewNote, expectedProposalToken: token ?? '' }; setNote(draft.current.note); }
     } finally { busyRef.current = false; setBusy(false); readonly(); }

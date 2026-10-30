@@ -68,7 +68,7 @@ test('NSS02 keep preserves actual child IDs and rows; next candidate uses true a
  const accepted=apply(decide(c.owner,'use_incoming','c'),'apply-c');same(item(accepted).subchecks,c.document.parseResult.canonical.items[0].subchecks);assert(!item(accepted).subchecks!.some(check=>check.subcheckId===item(before).subchecks![0].subcheckId));
  assert(readNativeCreatorDocument(copy(accepted)).ok);assert.equal(accepted.source.documentJson,before.source.documentJson);
  const undo=operation(accepted,{type:'undo'},'undo-c');same(undo.document.parseResult.canonical,c.owner.document.parseResult.canonical);same(undo.sourceSubchecks,c.owner.sourceSubchecks&&decide(c.owner,'use_incoming','c').sourceSubchecks);
- assert('versionId' in before.source);const restored=restoreNativeCreatorDocument(accepted,{expectedOwner:accepted,requestId:'restore-a',source:before.source},NOW);assert(restored.ok);assert.equal(restored.owner.sourceSubchecks,undefined);same(item(restored.owner),item(before));
+ assert('versionId' in before.source&&before.source.storageKey==='flow:text-authoring:drafts:v1');const restored=restoreNativeCreatorDocument(accepted,{expectedOwner:accepted,requestId:'restore-a',source:before.source},NOW);assert(restored.ok);assert.equal(restored.owner.sourceSubchecks,undefined);same(item(restored.owner),item(before));
 });
 
 test('NSS03 additions/removal and duplicate titles never infer child identity; retained absence does not resurrect',()=>{
