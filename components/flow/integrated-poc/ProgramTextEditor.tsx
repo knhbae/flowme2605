@@ -33,7 +33,6 @@ import { ProgramProgressForm } from './ProgramProgressForm';
 import {ProgramWritingInline} from './ProgramWritingInline';
 import {prepareWritingChild} from '@/lib/flow/integrated-poc/writing-child-command';
 import {planWritingInsertion} from '@/lib/flow/integrated-poc/writing-insertion-command';
-import { revertRefusedLine } from '@/lib/flow/integrated-poc/reject-line';
 
 export { createProgramTextDraft } from '@/lib/flow/integrated-poc/program-text-draft';
 export type { ProgramTextCommitOptions, ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
@@ -412,11 +411,19 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (state.invalid || area.value !== state.raw) return;
     const docId = propsRef.current.docId, lines = M.getDocument(state.working, docId)?.lines ?? [];
     const index = lines.findIndex(line => line.id === held.id);
-    // A linked line still showing its folder's name has nothing left to finish (D3 B moves it otherwise).
+    // A linked line still showing its folder's name has nothing left to finish.
     const binding = state.working.bindings.find(row => row.docId === docId && row.lineId === held.id);
     const linked = binding?.kind === 'scope' ? state.working.folders.find(folder => folder.id === binding.scopeId) : undefined;
     if (index < 0 || !FOLDER_LINE.test(lines[index].text) || binding && (!linked || lines[index].text.replace(/^ *- \//, '').trim() === linked.title)) {
       heldFolderLineRef.current = null; return;
+    }
+    // N1: a linked line's typed name goes back to its folder's name, however it is finished; nothing moves.
+    if (binding) {
+      heldFolderLineRef.current = null;
+      if (!controller.restoreFolderLineName(index)) return;
+      editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true });
+      const notice = controller.getState().folderNotice; if (notice) setMessage(notice);
+      scheduleSave(); return;
     }
     const create = explicit && area.value.slice(0, area.selectionStart).split('\n').length - 1 === index;
     if (!create && held.left) return;
@@ -1009,6 +1016,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
             const line = currentDoc()?.lines[hold[0]];
             if (heldFolderLineRef.current && heldFolderLineRef.current.id !== line?.id) finishHeldFolderLine();
             if (line) heldFolderLineRef.current = { id: line.id, left: false };
+          } else {
+            // A paste over a linked folder line's name is finished like typing: its name goes back.
+            const index = raw.slice(0, textArea()?.selectionStart ?? 0).split('\n').length - 1, line = currentDoc()?.lines[index];
+            if (line && FOLDER_LINE.test(line.text) && controller.getState().working.bindings.some(row => row.kind === 'scope' && row.docId === props.docId && row.lineId === line.id)) {
+              if (heldFolderLineRef.current && heldFolderLineRef.current.id !== line.id) finishHeldFolderLine();
+              heldFolderLineRef.current = { id: line.id, left: false };
+            }
           }
           requestAuthoringSlash(beforeRaw,historyType||input?.inputType||'');
           scheduleSave();
@@ -1571,9 +1585,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // The words show the winner; the recovery boxes stay whichever wins, so no action is lost.
   const statusLabel = serverWins ? serverView!.label : editorStatus.label;
   const hasRecovery = !!serverView?.recovery || !!draft.error;
-  // A refused edit that names its line: shown with the reason's first sentence and a way to put it back.
-  const refused = draft.invalid && draft.problemLine !== undefined && !props.readOnly
-    ? revertRefusedLine(M.raw(M.getDocument(draft.working, props.docId)), draft.raw, draft.problemLine) : null;
+  // A refused edit that names its line: shown with the reason's first sentence (다시 저장 judges it again).
+  const refused = draft.invalid && draft.problemLine !== undefined && !props.readOnly;
   const refusedLine = (draft.problemLine ?? 0) + 1, refusedReason = draft.error.split(/(?<=\.)\s/)[0];
   // While typing, anything short of a warning is one quiet dot, a fast "저장됨" included.
   const quietStatus = !!serverView && typing && !statusWarn && !inputLocked;
@@ -1593,23 +1606,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     box.open = true;
     box.querySelector<HTMLElement>('summary')?.focus();
   }
-  /** Put the refused line back (its saved text, or no line when it was added) and judge the document again. */
-  function revertRefused() {
-    const controller = draftRef.current, area = textArea();
-    if (!controller || !area || composingRef.current || inputLockedRef.current || propsRef.current.readOnly) return;
-    const state = controller.getState();
-    if (!state.invalid || state.problemLine === undefined) return;
-    const back = revertRefusedLine(M.raw(M.getDocument(state.working, propsRef.current.docId)), state.raw, state.problemLine);
-    if (!back) return;
-    editorRef.current?.setValue(back.raw, { preserveSelection: true });
-    if (controller.updateRaw(back.raw, '', { inputType: 'revertLine' })) scheduleSave();
-  }
   /** The editor's own recovery box (다시 저장, 입력한 원문 받기, 저장본으로 되돌리기). A refused edit also keeps
-   * its line and the first sentence of its reason visible, with one tap to put that line back. */
+   * its line and the first sentence of its reason visible. */
   function editorRecovery(announce: boolean) {
     const label = props.readOnly ? '읽기 전용 · 복구' : inputLocked ? '입력 보호 · 복구' : '저장 확인 필요 · 복구';
-    return <>{refused && <p className={styles.refusedLine}><span>{refusedLine}번째 줄: {refusedReason}</span>
-      <button type="button" disabled={inputLocked || draft.saving || composing} onClick={revertRefused}>{refused.scope === 'line' ? '이 줄 되돌리기' : '바꾼 부분 되돌리기'}</button></p>}
+    return <>{refused && <p className={styles.refusedLine}><span>{refusedLine}번째 줄: {refusedReason}</span></p>}
     <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || composingRef.current || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;

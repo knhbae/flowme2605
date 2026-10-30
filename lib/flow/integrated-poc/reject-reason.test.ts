@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { createProgramTextDraft } from './program-text-draft';
-import { revertRefusedLine } from './reject-line';
 import { textWorkspaceModel as M, type TextScopeBinding, type TextWorkspaceState } from './text-workspace';
 
 // A refused edit used to say only "저장 확인 필요" while every later edit of the document was refused
 // too (S10·S15·S17). The model now names the refused line, the editor shows that line and its reason in
-// the status row, and one tap puts that line back so the next save can run.
+// the status row, and 다시 저장 judges the document again once the writer has fixed that line. A one-tap
+// "이 줄 되돌리기" is out of N1: it could not tell lines apart after edits elsewhere.
 const TYPED = 'doc-typed', OTHER = 'doc-other';
 function account(extraFolders = 0): TextWorkspaceState {
   let text = { version: 11, folders: [{ id: 'f', title: '합성', parentId: null }], documents: [
@@ -21,10 +21,10 @@ function account(extraFolders = 0): TextWorkspaceState {
 const folderId = (state: TextWorkspaceState, title: string) => state.folders.find(folder => folder.title === title)!.id;
 const edit = (state: TextWorkspaceState, raw: string) => M.editTextResult(state, TYPED, raw, { folderText: true });
 
-test('the model names the refused line: a rename onto a taken name, a foreign tag, the folder limit, a broken tag', () => {
+test('the model names the refused line: a name two folders share, a foreign tag, the folder limit, a broken tag', () => {
   const start = account();
-  // S10 under D3 B: renaming onto a name already in that place moves the line there, so the remaining
-  // name conflict is a declaration where two folders of that name share the place.
+  // S10: a linked line renames and moves nothing (N1), so the name conflict left is a declaration where
+  // two folders of that name share the place.
   const twice = account(); twice.folders.push({ id: 'dup-1', title: '중복', parentId: null }, { id: 'dup-2', title: '중복', parentId: null });
   const conflict = edit(twice, '첫 줄\n- /미팅\n- /중복');
   assert.deepEqual([conflict.reason, conflict.folderProblem, conflict.folderLine], ['invalid-format', 'name-conflict', 2], 'two of that name');
@@ -38,23 +38,15 @@ test('the model names the refused line: a rename onto a taken name, a foreign ta
   assert.deepEqual([broken.folderProblem, broken.folderLine], ['invalid-folder', 2], 'malformed tag');
 });
 
-test('putting the refused line back: its saved text, or no line when it was added; outside the edit, the edited part', () => {
-  assert.deepEqual(revertRefusedLine('a\n- /미팅\nc', 'a\n- /운동\nc', 1), { raw: 'a\n- /미팅\nc', scope: 'line' });
-  assert.deepEqual(revertRefusedLine('a\nc', 'a\n- /새 1\n- /새 2\nc', 2), { raw: 'a\n- /새 1\nc', scope: 'line' });
-  assert.deepEqual(revertRefusedLine('p\nq', 'p\nq\nr', 0), { raw: 'p\nq', scope: 'block' });
-  assert.equal(revertRefusedLine('a', 'a', 0), null, 'nothing to put back');
-});
-
-test('the draft keeps the refused line, puts it back on request, and checks again', () => {
+test('the draft keeps the refused line and its reason, and checks again once the writer fixed it', () => {
   const start = account(100 - account().folders.length), draft = createProgramTextDraft(start, TYPED, async () => true, () => {});
   assert.equal(draft.updateRaw('첫 줄 고침\n- /미팅\n- /새 폴더', '', { inputType: 'insertText' }), false);
   assert.equal(draft.getState().invalid, true);
   assert.equal(draft.getState().problemLine, 2);
   assert.match(draft.getState().error, /폴더는 100개까지/);
   assert.equal(draft.recheck(), false, 'still refused');
-  const back = revertRefusedLine(M.raw(M.getDocument(draft.getState().working, TYPED)), draft.getState().raw, draft.getState().problemLine!)!.raw;
-  assert.equal(back, '첫 줄 고침\n- /미팅');
-  assert(draft.updateRaw(back, '', { inputType: 'revertLine' }));
+  assert(draft.updateRaw('첫 줄 고침\n- /미팅', '', { inputType: 'deleteContentBackward' }), 'the writer removes the extra line');
+  assert.equal(draft.recheck(), true);
   assert.equal(draft.getState().invalid, false);
   assert.equal(draft.getState().problemLine, undefined);
   assert.equal(M.raw(M.getDocument(draft.getState().working, TYPED)), '첫 줄 고침\n- /미팅', 'the other line is kept');
@@ -62,9 +54,9 @@ test('the draft keeps the refused line, puts it back on request, and checks agai
   assert.equal(draft.getState().working.folders.find(folder => folder.id === binding?.scopeId)?.title, '미팅');
 });
 
-test('the status row shows the line and its reason with 이 줄 되돌리기, and 다시 저장 stays on', () => {
+test('the status row shows the line and its reason without a revert button, and 다시 저장 stays on', () => {
   const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
-  assert.match(editor, /\{refusedLine\}번째 줄: \{refusedReason\}/);
-  assert.match(editor, /onClick=\{revertRefused\}>\{refused\.scope === 'line' \? '이 줄 되돌리기' : '바꾼 부분 되돌리기'\}<\/button>/);
+  assert.match(editor, /<span>\{refusedLine\}번째 줄: \{refusedReason\}<\/span><\/p>\}/);
+  assert.doesNotMatch(editor, /이 줄 되돌리기|revertRefused|reject-line/);
   assert.match(editor, /disabled=\{!!props\.readOnly \|\| draft\.saving\} onClick=\{\(\) => \{ if \(draftRef\.current\?\.getState\(\)\.invalid\) draftRef\.current\.recheck\(\); void saveNow\(\); \}\}>다시 저장/);
 });

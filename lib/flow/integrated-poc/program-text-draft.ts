@@ -211,18 +211,24 @@ export function createProgramTextDraft(
     declareFolderLine(lineIndex: number, linkOnly = false) {
       if (state.invalid) return false;
       if (state.folderNotice) state = { ...state, folderNotice: undefined };
-      const lines = linkOnly ? { folderLink: [lineIndex] } : { folderDeclare: [lineIndex], folderMove: [lineIndex] };
+      const lines = linkOnly ? { folderLink: [lineIndex] } : { folderDeclare: [lineIndex] };
       const check = M.editTextResult(state.working, docId, state.raw, { folderText: true, ...lines });
       if (check.reason === null && check.state === state.working) return false;
-      // A linked line the model will not move (a subfolder below, the folder limit) keeps its folder and its
-      // typed name, as a line left unfinished does; the status row says why.
-      const lineId = M.getDocument(state.working, docId)?.lines[lineIndex]?.id;
-      if (check.reason !== null && check.folderLine === lineIndex && check.folderProblem
-        && state.working.bindings.some(row => row.kind === 'scope' && row.docId === docId && row.lineId === lineId)) {
-        state = { ...state, folderNotice: (FOLDER_PROBLEM_TEXT[check.folderProblem] ?? '').split(/(?<=\.)\s/)[0] || undefined };
-        report(); return false;
-      }
       return api.updateRaw(state.raw, '', { inputType: 'folderDeclare', ...lines });
+    },
+    /** N1: a linked folder line whose name was typed or pasted over is finished by putting that one line's
+     * text back to its folder's name. Nothing is renamed or moved; the status row names the typed name. */
+    restoreFolderLineName(lineIndex: number) {
+      if (state.invalid) return false;
+      const line = M.getDocument(state.working, docId)?.lines[lineIndex], raws = state.raw.split('\n');
+      const binding = line && state.working.bindings.find(row => row.kind === 'scope' && row.docId === docId && row.lineId === line.id);
+      const folder = binding && binding.kind === 'scope' ? state.working.folders.find(entry => entry.id === binding.scopeId) : undefined;
+      if (!line || !folder || raws[lineIndex] !== line.text || !/^ *- \//.test(line.text)) return false;
+      const typed = line.text.replace(/^ *- \//, '').trim();
+      if (typed === folder.title) return false;
+      raws[lineIndex] = /^ */.exec(line.text)![0] + '- /' + folder.title;
+      if (!api.updateRaw(raws.join('\n'), '', { inputType: 'folderRestore' })) return false;
+      state = { ...state, folderNotice: `폴더 이름은 분류 화면에서 바꿀 수 있습니다(입력: ‘${typed}’)` }; report(); return true;
     },
     canUndoFolderMove: () => !!lastMove && !state.invalid && state.working === lastMove.after,
     /** One undo right after a folder line moved: the state before the move, with the line's name back. */
