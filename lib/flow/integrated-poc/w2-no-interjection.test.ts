@@ -63,7 +63,8 @@ test('W2: the move notice and the last message sit under the body, which gives u
   // With N1 fix 3 the bar is fixed to the visible bottom and comes off first; the notices come off after it.
   assert(update.indexOf('bottom -= bar!.getBoundingClientRect().height + 4;') < update.indexOf('bottom -= notice'));
   assert.match(update, /const notice = noticeRef\.current;\s*if \(notice\?\.getClientRects\(\)\.length\) bottom -= notice\.getBoundingClientRect\(\)\.height;/);
-  assert(update.indexOf('bottom -= notice') < update.indexOf('programEditorVisibleHeight(host.getBoundingClientRect().top, bottom)'));
+  // The 17px fix measures the top from the page and caps the bottom (page-fit.test.ts); the notices still come first.
+  assert(update.indexOf('bottom -= notice') < update.indexOf('programEditorVisibleHeight(top, below === null ? bottom : '));
   // A longer message changes their height without a mutation the shell's observers see.
   assert(source.includes('if (noticeRef.current) observer.observe(noticeRef.current);'));
   assert(css.includes('.notices:empty { display: none; }'));

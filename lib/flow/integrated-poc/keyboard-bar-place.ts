@@ -32,3 +32,27 @@ export function programKeyboardRoom(view: View, visualBottom: number, barSpace: 
 export function programKeyboardBarCramped(bodyBottom: number, barTop: number): boolean {
   return bodyBottom > barTop + 1;
 }
+
+type FlowNode = { parentElement: FlowNode | null; nextElementSibling: FlowNode | null; getBoundingClientRect(): { top: number; bottom: number; height: number } };
+type FlowStyle = { display: string; position: string; marginTop: string; marginBottom: string; paddingBottom: string; borderBottomWidth: string };
+
+/** The page's height below the body, in flow (the 17px fix): what follows it inside each ancestor up to the root,
+ *  with its bottom margin and their bottom paddings and borders. A parent's own height is never read, so a
+ *  min-height stretch (the page's 100dvh) does not count and the body's height cannot feed back into it. Hidden,
+ *  fixed or absolute elements, and ones beside it rather than below it, are left out. */
+export function programFlowBelow<N extends FlowNode>(host: N, root: FlowNode, style: (node: FlowNode) => FlowStyle): number {
+  const px = (value: string) => parseFloat(value) || 0;
+  let below = 0;
+  for (let node: FlowNode = host; node !== root && node.parentElement; node = node.parentElement) {
+    const end = node.getBoundingClientRect().bottom;
+    below += px(style(node).marginBottom);
+    for (let next = node.nextElementSibling; next; next = next.nextElementSibling) {
+      const own = style(next), box = next.getBoundingClientRect();
+      if (own.display === 'none' || own.position === 'fixed' || own.position === 'absolute' || box.top < end - 1) continue;
+      below += box.height + px(own.marginTop) + px(own.marginBottom);
+    }
+    const parent = style(node.parentElement);
+    below += px(parent.paddingBottom) + px(parent.borderBottomWidth);
+  }
+  return below;
+}

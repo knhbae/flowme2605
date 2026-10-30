@@ -9,7 +9,7 @@ import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { readChildDrafts, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
 import { createWritingBarHold, folderBarLine, heldTargetVerdict, taskMarkerLock, toggleTaskLine, writingBarLine, writingBarTarget, type WritingBarAction, type WritingBarLine, type WritingBarTarget } from '@/lib/flow/integrated-poc/writing-bar';
-import { programKeyboardBarCramped, programKeyboardBarPlace, programKeyboardRoom, programVisibleBottom } from '@/lib/flow/integrated-poc/keyboard-bar-place';
+import { programFlowBelow, programKeyboardBarCramped, programKeyboardBarPlace, programKeyboardRoom, programVisibleBottom } from '@/lib/flow/integrated-poc/keyboard-bar-place';
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
 import { planProgramDateBlockOrder, type DateBlockOrderPlan, type DateOrderSelection } from '@/lib/flow/integrated-poc/date-block-order';
@@ -1448,7 +1448,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       // W2: the move notice and the last message sit between the body and the bar.
       const notice = noticeRef.current;
       if (notice?.getClientRects().length) bottom -= notice.getBoundingClientRect().height;
-      const height = programEditorVisibleHeight(host.getBoundingClientRect().top, bottom);
+      // The 17px fix: while no keyboard is up the page is no taller than the screen, so the body also leaves room
+      // for what the page lays out below it (the work pane's and the page's bottom paddings, the notices, fix 5's
+      // room), and is measured from the page's top: a page scrolled for a moment never makes it, and so the page,
+      // longer. A keyboard up keeps fix 5's room to scroll the body above the bar.
+      const keyboard = programVisibleBottom(view, visual, null) < view.innerHeight;
+      const below = keyboard ? null : programFlowBelow(host, host.ownerDocument.body, node => view.getComputedStyle(node as Element));
+      const top = host.getBoundingClientRect().top + (keyboard ? 0 : view.scrollY);
+      const height = programEditorVisibleHeight(top, below === null ? bottom : Math.min(bottom, view.innerHeight - below + 12));
       if (height !== null && host.style.getPropertyValue('--program-editor-visible-height') !== `${height}px`) {
         host.style.setProperty('--program-editor-visible-height', `${height}px`);
         // ResizeObserver ordering must not leave the caret at the previous height.
