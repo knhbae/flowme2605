@@ -45,7 +45,7 @@
 
 | 주제 | 어긋남 | 상태 |
 | --- | --- | --- |
-| 운영 배포 | main AGENTS.md "검사 통과 뒤 스스로", 9/21 기반 AGENTS.md "명시 승인 없이는 안 함", workspace AGENTS.md "검사 통과 뒤 스스로 판단", 위키 "명령마다 사용자 승인" | ★ 사용자 결정 대기 |
+| 운영 배포 | main AGENTS.md "검사 통과 뒤 스스로", 9/21 기반 AGENTS.md "명시 승인 없이는 안 함", workspace AGENTS.md "검사 통과 뒤 스스로 판단", 위키 "명령마다 사용자 승인" | 10/30 결정: 검사·QA 통과 뒤 총괄 판단, DB·권한은 따로 승인. 위키를 고침. 9/21 기반 사본은 낡음 |
 | 상태 정본 | AGENTS.md는 PROJECT_CONTROL·STATUS·ROADMAP을 가리킴, 실제로는 위키 | 5단계 때 AGENTS.md에 위키 추가 |
 | 코덱스 위임 | AGENTS.md `codex exec -s read-only`, 실제로는 총괄 스레드 `codex queue` | 5단계 때 한 줄 추가 |
 
