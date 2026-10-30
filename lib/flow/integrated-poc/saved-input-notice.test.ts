@@ -129,22 +129,71 @@ test('input an editor refused stays stored and announced after the editors are r
 
   const calls: string[] = [];
   const parkEditorInput = evaluate<() => void>(functionText('parkEditorInput'), { ...refs, mergeRecoveryDrafts, mergeStructuralRecoveryEntries, canonicalJson: JSON.stringify });
-  const replaceEditors = evaluate<() => void>(functionText('replaceEditors'), {
-    captureInput: () => { calls.push('capture'); return true; }, parkEditorInput: () => { calls.push('park'); parkEditorInput(); },
-    setPresentation: () => { calls.push('remount'); } });
-  replaceEditors();
-  assert.deepEqual(calls, ['capture', 'park', 'remount'], 'captured from the old editors, parked, then rebuilt');
+  const replaceEditors = evaluate<() => boolean>(functionText('replaceEditors'), {
+    captureInput: () => { calls.push('capture'); return true; }, canReleaseInput: () => { calls.push('release'); return true; },
+    parkEditorInput: () => { calls.push('park'); parkEditorInput(); }, setPresentation: () => { calls.push('remount'); } });
+  assert.equal(replaceEditors(), true);
+  assert.deepEqual(calls, ['capture', 'release', 'park', 'remount'], 'captured from the old editors, parked, then rebuilt');
   assert.equal(notice([refused], false), 1, 'still announced after the unmount clears the refusal');
   assert.equal(notice([other], false), 1, 'and after the new editors capture other input');
   assert.deepEqual(mergeRecoveryDrafts(refs.parkedDrafts.current, [other]), [refused, other], 'the next capture keeps it in the 복구함');
 
   // Every rebuild of the presentation-keyed editors parks first: replaceEditors, or openLatest's own hand-off.
   assert.equal(source.match(/setPresentation\(/g)?.length, 2);
-  for (const name of ['restoreCreator', 'restoreStructuralDraft']) assert(functionText(name).includes('replaceEditors();'), name);
-  assert(source.includes('await controller.current?.refresh(); replaceEditors();'), 'after a preservation save');
+  for (const name of ['restoreCreator', 'restoreStructuralDraft']) assert(functionText(name).includes('replaceEditors()'), name);
+  assert(source.includes('await controller.current?.refresh(); if (!replaceEditors())'), 'after a preservation save');
   const openLatest = functionText('openLatest');
   assert(openLatest.indexOf('parkEditorInput();') > 0 && openLatest.indexOf('parkEditorInput();') < openLatest.indexOf('setPresentation('));
   // It leaves only when it is resolved: a save whose confirmed text matches every stored draft, or the user clears.
   assert.match(functionText('clearDrafts'), /parkedDrafts\.current = \[\]/);
   assert.match(source, /saved\.value\.drafts\.every\(draft => draft\.documentId\s+&& !!M\.getDocument\(confirmed\.space\.text, draft\.documentId\)\s+&& M\.raw\(M\.getDocument\(confirmed\.space\.text, draft\.documentId\)\) === draft\.raw\)\) \{\s+const cleared = uiRecovery\.current\?\.clear\(saved\.value\);\s+if \(cleared\?\.ok\) \{ parkedDrafts\.current = \[\]; activeDrafts\.current = \[\]; setRecoveries\(null\); \}/);
+});
+
+// Codex re-review of 4a6d8e54 (P1): the swap ignored a failed last capture. With 100,001 characters typed
+// while a restore was in flight, the tab's recovery refused the input and the rebuild still replaced the
+// editor, so the new input was neither on screen nor stored. A failed hand-off now keeps the editors.
+test('a failed last capture keeps the editors, on every rebuild path, and says what the server already did', async () => {
+  for (const failing of ['capture', 'release']) {
+    const calls: string[] = [];
+    const replaceEditors = evaluate<() => boolean>(functionText('replaceEditors'), {
+      captureInput: () => { calls.push('capture'); return failing !== 'capture'; },
+      canReleaseInput: () => { calls.push('release'); return failing !== 'release'; },
+      parkEditorInput: () => { calls.push('park'); }, setPresentation: () => { calls.push('remount'); } });
+    assert.equal(replaceEditors(), false, failing);
+    assert(!calls.includes('park') && !calls.includes('remount'), `${failing}: nothing parked, editors not rebuilt`);
+  }
+  const keptEditorsNotice = evaluate<(done: string) => string>(declaration('keptEditorsNotice'), {});
+  const run = async (name: string, swapped: boolean, scope: Record<string, unknown>, ...args: unknown[]) => {
+    const seen: { message: string[]; destination: unknown[]; other: string[] } = { message: [], destination: [], other: [] };
+    const restore = evaluate<(...args: unknown[]) => Promise<void>>(functionText(name), { ...scope, keptEditorsNotice, replaceEditors: () => swapped,
+      setMessage: (m: string) => seen.message.push(m), setDestination: (d: unknown) => seen.destination.push(d),
+      setCreatorSeen: () => seen.other.push('seen'), setCreatorSelection: () => seen.other.push('selection'), detached: structuredClone });
+    await restore(...args);
+    return seen;
+  };
+  // 제작 작업본 복구: the server step succeeds, the hand-off fails.
+  const creator = { creatorRecoveries: { entries: [{ working: { draftId: 'creator-draft-a' }, auxiliaries: [] }] }, session: { userId: 'u' },
+    setProgramCreatorWorking: () => ({}), mutate: async () => ({ ok: true }) };
+  let seen = await run('restoreCreator', false, creator, 0);
+  assert.deepEqual(seen.destination, [], 'stays on the current screen');
+  assert.deepEqual(seen.other, []);
+  assert.equal(seen.message.at(-1), keptEditorsNotice('제작 작업본은 서버에 복구했습니다.'));
+  seen = await run('restoreCreator', true, creator, 0);
+  assert.deepEqual(seen.destination, [{ view: 'creator', id: 'creator-draft-a' }]);
+  // 보관한 복사 작업 복구: the same rule.
+  const live = { ownerId: 'u', busy: false, pending: null, draft: null, status: 'ready', envelope: { data: { activeActorId: 'u' } },
+    account: { ownerId: 'u', revision: 3, source: { actorId: 'u' }, space: { text: {} } } };
+  const store = { snapshot: () => live }, ref = <T,>(current: T) => ({ current });
+  const structural = { structuralRecoveries: { ownerId: 'u', entries: [{ documentId: 'doc', baseRevision: 3 }] }, session: { userId: 'u' },
+    controller: ref(store), sessionEpochRef: ref(1), disposed: ref(false), currentOwnerRef: ref('u'), storageErrorRef: ref(false),
+    externalRef: ref(false), preservationRef: ref(false), modalRef: ref(false), hasInput: () => false, clearConfirmedStructuralInput: () => {},
+    resolveAlphaStructuralRecovery: () => ({ status: 'ready', workspace: {} }), mutate: async () => ({ ok: true, result: 'doc' }) };
+  seen = await run('restoreStructuralDraft', false, structural, 0);
+  assert.deepEqual(seen.destination, []);
+  assert.equal(seen.message.at(-1), keptEditorsNotice('보관한 문서·폴더와 행은 서버에 복구했습니다.'));
+  seen = await run('restoreStructuralDraft', true, structural, 0);
+  assert.deepEqual(seen.destination, [{ view: 'space', id: 'doc' }]);
+  // After a preservation save: the screen stays and the notice says the server step is done.
+  assert(source.includes("await controller.current?.refresh(); if (!replaceEditors()) setMessage(keptEditorsNotice('서버 자료는 반영했습니다.'));"));
+  assert.match(keptEditorsNotice('X.'), /^X\. 지금 입력을 이 탭에 안전하게 보관하지 못해 화면은 그대로 두었습니다/);
 });

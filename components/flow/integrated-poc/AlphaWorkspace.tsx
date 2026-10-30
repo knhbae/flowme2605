@@ -287,10 +287,14 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     activeSocial.current = [];
   }
   /** Editors keyed by `presentation` restart from server text. Their input, including input an editor
-   * refused, must not live only as long as that editor: capture and park it before the swap. */
+   * refused, must not live only as long as that editor: capture and park it before the swap. When the
+   * last capture fails or cannot hold the input whole, the editors stay and this returns false. */
   function replaceEditors() {
-    captureInput(); parkEditorInput(); setPresentation(value => value + 1);
+    if (!captureInput() || !canReleaseInput()) return false;
+    parkEditorInput(); setPresentation(value => value + 1); return true;
   }
+  /** The server step is done; only the local hand-off failed, and the storage notice says why. */
+  const keptEditorsNotice = (done: string) => `${done} 지금 입력을 이 탭에 안전하게 보관하지 못해 화면은 그대로 두었습니다. 입력한 원문을 먼저 받아 두세요.`;
   function connectConfirmedReview(prior: AlphaSyncSnapshot | null, next: AlphaSyncSnapshot) {
     const pending = prior?.pending, receipt = next.lastReceipt, context = reviewContext.current;
     const submitted = pending?.kind === 'social' && pending.intent.type === 'participation-submit' ? pending.intent.draft : null;
@@ -921,7 +925,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       return { ok: true, data: next, changed: true, result: entry.documentId };
     });
     if (result.ok && store === controller.current && epoch === sessionEpochRef.current && currentOwnerRef.current === session.userId && !disposed.current) {
-      setDestination({ view: 'space', id: result.result }); replaceEditors(); setMessage('보관한 문서·폴더와 행을 복구했습니다.');
+      if (!replaceEditors()) { setMessage(keptEditorsNotice('보관한 문서·폴더와 행은 서버에 복구했습니다.')); return; }
+      setDestination({ view: 'space', id: result.result }); setMessage('보관한 문서·폴더와 행을 복구했습니다.');
     }
   }
   function clearStructuralDrafts() {
@@ -939,7 +944,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const result = await mutate('제작 작업본 복구', current => setProgramCreatorWorking(current, {
       actorId: session.userId, expectedWorking: current.spaces[session.userId].creatorWorkspace?.working ?? null, working,
     }, now), { history: false, alphaCreator: { type: 'working', now, working } });
-    if (result.ok) { setCreatorSeen(true); setCreatorSelection(working.draftId); setDestination({ view: 'creator', id: working.draftId }); replaceEditors();
+    if (result.ok && !replaceEditors()) setMessage(keptEditorsNotice('제작 작업본은 서버에 복구했습니다.'));
+    else if (result.ok) { setCreatorSeen(true); setCreatorSelection(working.draftId); setDestination({ view: 'creator', id: working.draftId });
       setMessage(entry.auxiliaries.length ? '제작 작업본을 복구했습니다. 별도로 보관한 비교·구조 입력은 아래 원문을 확인해 다시 적용해 주세요.' : '제작 작업본을 복구했습니다. 저장 판본과 개인 실행은 그대로입니다.'); }
     else setMessage('현재 제작 구조와 안전하게 합칠 수 없습니다. 보관 원문과 구조 자료는 유지했습니다. 현재 저장본을 확인해 주세요.');
   }
@@ -1317,7 +1323,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       <button type="button" aria-label="확인이 필요한 입력 안내 닫기" onClick={() => setSavedNoticeClosedAt(savedTotal)}>닫기</button></p>}
     {preservation && snapshot?.account && snapshot.references && <AlphaPreservationPanel key={session.userId} account={snapshot.account} references={snapshot.references}
       email={email} accessToken={session.accessToken} returnFocusTarget={preservationOpener.current} onClose={closePreservation} onSaved={async () => {
-        ownMutation.current++; try { await controller.current?.refresh(); replaceEditors(); } finally { ownMutation.current--; }
+        ownMutation.current++; try { await controller.current?.refresh(); if (!replaceEditors()) setMessage(keptEditorsNotice('서버 자료는 반영했습니다.')); } finally { ownMutation.current--; }
       }} />}
     {destination.view !== 'space' && inputProtectionFor(true)}
     {leave && <section className={styles.problem} aria-label="로그아웃 전 입력 확인"><p>저장하지 않은 입력을 이 탭에 보관한 뒤 로그아웃할 수 있습니다. 같은 계정으로 돌아와 복구하세요.</p>
