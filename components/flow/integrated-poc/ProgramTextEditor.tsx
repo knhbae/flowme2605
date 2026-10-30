@@ -1050,6 +1050,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       typingPickers:()=>!propsRef.current.authoringMode,
       plusOpensAuthoring:()=>!!propsRef.current.authoringMode,
       listEnterV2:()=>!!propsRef.current.authoringMode,
+      // W12: the empty-line '/' hint follows the writing tools, whose '/' opens the tool menu.
+      lineHints:()=>!!propsRef.current.authoringMode&&!propsRef.current.readOnly,
       getAddAnchor:index=>propsRef.current.authoringMode?{parentIndex:index,bottomIndex:index}:null,
       isCheckDisabled: checkActionsDisabled,
       canApplyIndent: (raw, details) => {

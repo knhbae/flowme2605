@@ -220,6 +220,9 @@
 }
 .tle-root[data-mode="live"].tle-composing .tle-line-composition { visibility: hidden; }
 .tle-plus[hidden], .tle-row-menu[hidden], .tle-fold-toggle[hidden], .tle-check-hit[hidden], .tle-row-open[hidden] { display: none !important; }
+/* W12: the empty-line hint: muted, inert, on the caret's line a few pixels right of the caret so neither covers the other. */
+.tle-line-hint { position: absolute; height: var(--tle-line); margin-left: 4px; line-height: var(--tle-line); color: var(--flowme-b-muted); font-size: var(--tle-font); white-space: nowrap; pointer-events: none; user-select: none; -webkit-user-select: none; }
+.tle-line-hint[hidden] { display: none; }
 /* Reading owns formatted wrapping and height; native editing keeps the RAW
  * ruler above. The same textarea stays focusable and retains native Undo. */
 .tle-root.tle-reading-view .tle-textarea { opacity: 0; pointer-events: none; }

@@ -22,6 +22,8 @@ declare namespace editor {
     getCheckAction?: (lineIndex: number, meta: TextEditorRowMeta) => 'toggle' | 'progress-open' | 'reference-open';
     getRowMeta?: () => TextEditorRowMeta[] | Record<number, TextEditorRowMeta>;
     isActionDisabled?: () => boolean;
+    /** W12: show the muted '/ 메뉴' or '/ 폴더' hint on an empty line after a 0.4s pause. Off when absent. */
+    lineHints?: () => boolean;
     /** The row metadata may not match the text, so progress marks stay RAW. Defaults to isActionDisabled. */
     isPaintDisabled?: () => boolean;
     /** Compatibility alias: true turns lineBreakEnter and plusOpensAuthoring on and typingPickers off. */
