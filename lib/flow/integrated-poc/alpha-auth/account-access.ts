@@ -94,7 +94,10 @@ export function createAlphaAppWritingAccountReader(config:AlphaAuthConfig,identi
   const account:unknown=result.account,owner=identity.userId;
   if(isAlphaReaEditAccount(account,owner))return{ok:true as const,kind:'rea' as const,documents:alphaWritingDocuments(account.space)};
   const memo=inspectMemoCohort(account,owner,alphaReaOwnerReferences(owner));
-  if(memo.ok)return{ok:true as const,kind:'memo' as const,documents:alphaWritingDocuments(memo.projected.space)};
+  // N1 fix 4: only an account already in the ordered v2 store is the memo cohort. A v11 account holding only
+  // memos (a new user's first lines) stays on the main workspace: its first memo edit would move it to v2, and
+  // the main workspace could not open it again. The writing route reads this same answer.
+  if(memo.ok&&memo.origin==='v2')return{ok:true as const,kind:'memo' as const,documents:alphaWritingDocuments(memo.projected.space)};
   return isAccountForOwner(account,owner,result.references)?{ok:true as const,kind:'legacy' as const}:{ok:false as const,reason:'invalid' as const};
  }};
 }
