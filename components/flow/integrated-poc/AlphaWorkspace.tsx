@@ -47,6 +47,7 @@ import { createAlphaCommunityMediaPort } from '@/lib/flow/integrated-poc/alpha-s
 import { createAlphaCreatorRecovery, type AlphaCreatorRecoveryEntry, type AlphaCreatorRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-creator-recovery';
 import { setProgramCreatorWorking } from '@/lib/flow/integrated-poc/creator-workspace';
 import { canonicalJson, detached } from '@/lib/flow/integrated-poc/alpha-persistence/json';
+import { announcedRecoveries, recoveryDraftIdentity } from '@/lib/flow/integrated-poc/saved-input-notice';
 import { confirmedAlphaPrivateTextSave } from '@/lib/flow/integrated-poc/alpha-private-save-ack';
 import { createAlphaDocumentCollections } from '@/lib/flow/integrated-poc/alpha-document-collections';
 import type { DocumentCollections } from '@/lib/flow/integrated-poc/document-collections';
@@ -143,6 +144,10 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const mainTabs = useRef<{ choose(tab: ProgramMainTab): Promise<boolean> } | null>(null);
   const [mainTab, setMainTab] = useState<ProgramMainTab>('documents');
   const [savedNoticeClosedAt, setSavedNoticeClosedAt] = useState<number | null>(null);
+  // The last mutation failed; captured input counts as saved input until one succeeds.
+  const [saveFailed, setSaveFailed] = useState(false);
+  // A document editor refused input locally (no mutation ran) or failed to save it; counts until it clears.
+  const [editorInputFailed, setEditorInputFailed] = useState(false);
   const preservationReturn = useRef<{ ownerId: string; controller: Controller | null; opener: HTMLElement | null } | null>(null);
   const modalRef = useRef(false); modalRef.current = !!publisher || !!inspector;
   const inspectorDialog = useRef<HTMLDialogElement | null>(null);
@@ -154,11 +159,6 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const reviewAnnouncementGeneration = useRef(0);
   const [recoveries, setRecoveries] = useState<AlphaUiRecoveryRecord | null>(null), [storageError, setStorageError] = useState(false);
   const [structuralRecoveries, setStructuralRecoveries] = useState<AlphaStructuralRecoveryRecord | null>(null);
-  // R8a: all saved input, counted for the 복구함 badge and the notice. When some goes away, lower the
-  // closed-at mark so the next newly saved input shows the notice again.
-  const savedTotal = (recoveries?.drafts.length ?? 0) + (structuralRecoveries?.entries.length ?? 0)
-    + (creatorRecoveries?.entries.length ?? 0) + (socialRecoveries?.entries.length ?? 0);
-  useEffect(() => { setSavedNoticeClosedAt(at => at !== null && savedTotal < at ? savedTotal : at); }, [savedTotal]);
   const structuralRecovery = useRef<ReturnType<typeof createAlphaStructuralRecovery> | null>(null);
   const parkedStructural = useRef<AlphaStructuralRecoveryEntry[]>([]), activeStructural = useRef<AlphaStructuralRecoveryEntry[]>([]);
   const [external, setExternal] = useState(false), [presentation, setPresentation] = useState(0), [leave, setLeave] = useState(false);
@@ -278,6 +278,25 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (!saved.ok) { setStorageError(true); return false; }
     setRecoveries(saved.value); return structuralSaved;
   }
+  /** Input captured from editors that are about to go away is left behind: it stays in the tab's
+   * recovery and is announced until a save matches it or the user clears it. */
+  function parkEditorInput() {
+    parkedDrafts.current = mergeRecoveryDrafts(parkedDrafts.current, activeDrafts.current);
+    parkedStructural.current = mergeStructuralRecoveryEntries(parkedStructural.current, activeStructural.current);
+    if (activeCreator.current && !parkedCreator.current.some(e => canonicalJson(e) === canonicalJson(activeCreator.current))) parkedCreator.current.push(activeCreator.current);
+    activeCreator.current = null;
+    parkedSocial.current = [...parkedSocial.current, ...activeSocial.current].filter((entry, index, list) => list.findIndex(other => canonicalJson(other) === canonicalJson(entry)) === index);
+    activeSocial.current = [];
+  }
+  /** Editors keyed by `presentation` restart from server text. Their input, including input an editor
+   * refused, must not live only as long as that editor: capture and park it before the swap. When the
+   * last capture fails or cannot hold the input whole, the editors stay and this returns false. */
+  function replaceEditors() {
+    if (!captureInput() || !canReleaseInput()) return false;
+    parkEditorInput(); setPresentation(value => value + 1); return true;
+  }
+  /** The server step is done; only the local hand-off failed, and the storage notice says why. */
+  const keptEditorsNotice = (done: string) => `${done} 지금 입력을 이 탭에 안전하게 보관하지 못해 화면은 그대로 두었습니다. 입력한 원문을 먼저 받아 두세요.`;
   function connectConfirmedReview(prior: AlphaSyncSnapshot | null, next: AlphaSyncSnapshot) {
     const pending = prior?.pending, receipt = next.lastReceipt, context = reviewContext.current;
     const submitted = pending?.kind === 'social' && pending.intent.type === 'participation-submit' ? pending.intent.draft : null;
@@ -648,6 +667,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       if (disposed.current || controller.current !== store || currentOwnerRef.current !== owner
         || sessionEpochRef.current !== epoch) return outcome;
       if (!outcome.ok) {
+        if (outcome.reason !== 'busy') setSaveFailed(true);
         // A blocked click may resume after the original request settles.
         // Do not reintroduce its temporary wait notice after the final snapshot.
         if (outcome.reason !== 'busy' && !reviewOwnsMessage) {
@@ -660,6 +680,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         else if (outcome.reason === 'busy' && !reviewOwnsMessage && controller.current?.snapshot().busy) setMessage(PROGRAM_BUSY_NOTICE);
       }
       else {
+        setSaveFailed(false);
         if (!reviewOwnsMessage) setMessage('');
         // Drop only input that exactly matches confirmed server text. A newer keystroke stays protected.
         const saved = uiRecovery.current?.read(), confirmed = store.snapshot().account;
@@ -866,12 +887,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       if (!input) { setMessage('입력 상태를 확인하지 못했습니다. 현재 편집기를 유지합니다.'); return; }
       const before = store.snapshot();
       if (before.busy || before.pending) return;
-      parkedDrafts.current = mergeRecoveryDrafts(parkedDrafts.current, activeDrafts.current);
-      parkedStructural.current = mergeStructuralRecoveryEntries(parkedStructural.current, activeStructural.current);
-      if (activeCreator.current && !parkedCreator.current.some(e => canonicalJson(e) === canonicalJson(activeCreator.current))) parkedCreator.current.push(activeCreator.current);
-      activeCreator.current = null;
-      parkedSocial.current = [...parkedSocial.current, ...activeSocial.current].filter((entry, index, list) => list.findIndex(other => canonicalJson(other) === canonicalJson(entry)) === index);
-      activeSocial.current = [];
+      parkEditorInput();
       const refreshed = before.draft ? await store.discardConflict() : await store.refresh();
       if (!sameOwner()) return;
       // Composition may defer the lock. Re-capture and compare every current owner,
@@ -929,7 +945,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       return { ok: true, data: next, changed: true, result: entry.documentId };
     });
     if (result.ok && store === controller.current && epoch === sessionEpochRef.current && currentOwnerRef.current === session.userId && !disposed.current) {
-      setDestination({ view: 'space', id: result.result }); setPresentation(value => value + 1); setMessage('보관한 문서·폴더와 행을 복구했습니다.');
+      if (!replaceEditors()) { setMessage(keptEditorsNotice('보관한 문서·폴더와 행은 서버에 복구했습니다.')); return; }
+      setDestination({ view: 'space', id: result.result }); setMessage('보관한 문서·폴더와 행을 복구했습니다.');
     }
   }
   function clearStructuralDrafts() {
@@ -947,7 +964,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const result = await mutate('제작 작업본 복구', current => setProgramCreatorWorking(current, {
       actorId: session.userId, expectedWorking: current.spaces[session.userId].creatorWorkspace?.working ?? null, working,
     }, now), { history: false, alphaCreator: { type: 'working', now, working } });
-    if (result.ok) { setCreatorSeen(true); setCreatorSelection(working.draftId); setDestination({ view: 'creator', id: working.draftId }); setPresentation(n => n + 1);
+    if (result.ok && !replaceEditors()) setMessage(keptEditorsNotice('제작 작업본은 서버에 복구했습니다.'));
+    else if (result.ok) { setCreatorSeen(true); setCreatorSelection(working.draftId); setDestination({ view: 'creator', id: working.draftId });
       setMessage(entry.auxiliaries.length ? '제작 작업본을 복구했습니다. 별도로 보관한 비교·구조 입력은 아래 원문을 확인해 다시 적용해 주세요.' : '제작 작업본을 복구했습니다. 저장 판본과 개인 실행은 그대로입니다.'); }
     else setMessage('현재 제작 구조와 안전하게 합칠 수 없습니다. 보관 원문과 구조 자료는 유지했습니다. 현재 저장본을 확인해 주세요.');
   }
@@ -1117,6 +1135,21 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     || (snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending
     || external || snapshot?.status === 'conflict'
     || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft);
+  // R8a: saved input. The 복구함 always lists and counts everything stored (storedTotal). The notice and
+  // badges count only input that needs attention (savedTotal): every input is still captured to the tab,
+  // but the capture of input the editors are saving normally counts only once it is at risk: protection,
+  // a local refusal, a failed or unknown save, an ended session or broken storage. Otherwise ordinary
+  // typing showed a saved input from the first key until the save. When some goes away, lower the
+  // closed-at mark so the next newly saved input shows the notice again.
+  const inputAtRisk = needsInputProtection || unavailable || saveFailed || editorInputFailed
+    || ['signed-out', 'recovery-required', 'checking-result'].includes(snapshot?.status ?? '');
+  const storedTotal = (recoveries?.drafts.length ?? 0) + (structuralRecoveries?.entries.length ?? 0)
+    + (creatorRecoveries?.entries.length ?? 0) + (socialRecoveries?.entries.length ?? 0);
+  const savedTotal = announcedRecoveries(recoveries?.drafts, parkedDrafts.current, activeDrafts.current, inputAtRisk, recoveryDraftIdentity)
+    + announcedRecoveries(structuralRecoveries?.entries, parkedStructural.current, activeStructural.current, inputAtRisk)
+    + announcedRecoveries(creatorRecoveries?.entries, parkedCreator.current, activeCreator.current ? [activeCreator.current] : [], inputAtRisk)
+    + announcedRecoveries(socialRecoveries?.entries, parkedSocial.current, activeSocial.current, inputAtRisk);
+  useEffect(() => { setSavedNoticeClosedAt(at => at !== null && savedTotal < at ? savedTotal : at); }, [savedTotal]);
   // `announce` is off where the note editor's one status slot already announces this state.
   const inputProtectionFor = (announce: boolean) => <>
     {storageError && <p className={styles.problem} role={announce ? 'alert' : undefined}>브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
@@ -1244,7 +1277,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           <button type="button" key={tab} data-main-tab={tab} aria-current={destination.view === 'space' && mainTab === tab ? 'page' : undefined} onClick={() => void chooseMainTab(tab)}>
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" d={path}/></svg><span>{label}</span></button>)}
         <button type="button" data-main-tab="more" aria-current={['discover', 'flow', 'community', 'activity', 'legacy', 'creator'].includes(destination.view) ? 'page' : undefined}
-          aria-label={`더보기${savedTotal ? ` · 보관한 입력 ${savedTotal}개` : ''}`} onPointerDown={event => { event.preventDefault(); }} onClick={toggleMoreMenu}>
+          aria-label={`더보기${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`} onPointerDown={event => { event.preventDefault(); }} onClick={toggleMoreMenu}>
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M5 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg><span>더보기</span>
           {savedTotal > 0 && <span className={styles.navBadge} aria-hidden="true">{savedTotal}</span>}</button>
       </nav>}
@@ -1262,7 +1295,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         (document.querySelector<HTMLElement>('[data-main-tab="more"]') ?? event.currentTarget.querySelector('summary'))?.focus({ preventScroll: true });
       }} onBlur={event => {
         if (!preservationRef.current && event.relatedTarget && !event.currentTarget.contains(event.relatedTarget as Node)) event.currentTarget.open = false;
-      }}><summary aria-current={['activity', 'legacy'].includes(destination.view) ? 'page' : undefined} aria-label={`${destination.view === 'activity' ? '보조 메뉴 · 현재 위치: 내 활동' : destination.view === 'legacy' ? '보조 메뉴 · 현재 위치: 개인 Flow 상세' : '보조 메뉴 · 내 활동, 계정·자료 관리'}${savedTotal ? ` · 보관한 입력 ${savedTotal}개` : ''}`}><span className={styles.auxiliaryLabel}>{destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : '더보기'}</span>{savedTotal > 0 && <span className={styles.menuBadge} aria-hidden="true">{savedTotal}</span>}</summary><div className={styles.managementBody}>
+      }}><summary aria-current={['activity', 'legacy'].includes(destination.view) ? 'page' : undefined} aria-label={`${destination.view === 'activity' ? '보조 메뉴 · 현재 위치: 내 활동' : destination.view === 'legacy' ? '보조 메뉴 · 현재 위치: 개인 Flow 상세' : '보조 메뉴 · 내 활동, 계정·자료 관리'}${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`}><span className={styles.auxiliaryLabel}>{destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : '더보기'}</span>{savedTotal > 0 && <span className={styles.menuBadge} aria-hidden="true">{savedTotal}</span>}</summary><div className={styles.managementBody}>
         <h2>더보기</h2>
         {!unavailable && <section className={styles.menuGroup} aria-label="둘러보기"><h3>둘러보기</h3>
           <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}>경험·질문·지식</button>
@@ -1276,9 +1309,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
             {data.spaces[session.userId].savedBindings.length > 0 && <button type="button" aria-current={destination.view === 'legacy' ? 'page' : undefined} onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>}</div>
         </section>}
         <section className={styles.menuGroup} aria-label="자료"><h3>자료</h3>
-          <details ref={recoveryBox} className={styles.recoveryBox} open={!!savedTotal && (unavailable || external || snapshot?.status === 'conflict')}>
-            <summary>복구함{savedTotal ? ` (${savedTotal})` : ''}</summary>
-            {savedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <p>보관한 입력이 없습니다.</p>}
+          <details ref={recoveryBox} className={styles.recoveryBox} open={!!storedTotal && (unavailable || external || snapshot?.status === 'conflict')}>
+            <summary>복구함{storedTotal ? ` (${storedTotal})` : ''}</summary>
+            {storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <p>보관한 입력이 없습니다.</p>}
           </details>
           <div className={styles.managementActions}>
           <button type="button" disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} onClick={event => {
@@ -1305,12 +1338,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         </section>
         </div></details>
     </section>
-    {savedNoticeShown && <p className={styles.savedNotice} role="status"><span>보관한 입력 {savedTotal}개</span>
+    {savedNoticeShown && <p className={styles.savedNotice} role="status"><span>확인이 필요한 입력 {savedTotal}개</span>
       <button type="button" onClick={openRecoveryBox}>복구함 열기</button>
-      <button type="button" aria-label="보관한 입력 안내 닫기" onClick={() => setSavedNoticeClosedAt(savedTotal)}>닫기</button></p>}
+      <button type="button" aria-label="확인이 필요한 입력 안내 닫기" onClick={() => setSavedNoticeClosedAt(savedTotal)}>닫기</button></p>}
     {preservation && snapshot?.account && snapshot.references && <AlphaPreservationPanel key={session.userId} account={snapshot.account} references={snapshot.references}
       email={email} accessToken={session.accessToken} returnFocusTarget={preservationOpener.current} onClose={closePreservation} onSaved={async () => {
-        ownMutation.current++; try { await controller.current?.refresh(); setPresentation(value => value + 1); } finally { ownMutation.current--; }
+        ownMutation.current++; try { await controller.current?.refresh(); if (!replaceEditors()) setMessage(keptEditorsNotice('서버 자료는 반영했습니다.')); } finally { ownMutation.current--; }
       }} />}
     {destination.view !== 'space' && inputProtectionFor(true)}
     {leave && <section className={styles.problem} aria-label="로그아웃 전 입력 확인"><p>저장하지 않은 입력을 이 탭에 보관한 뒤 로그아웃할 수 있습니다. 같은 계정으로 돌아와 복구하세요.</p>
@@ -1336,7 +1369,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           return !disposed.current && !externalRef.current && !!authority && !authority.pending && !authority.busy && authority.status !== 'conflict';
         }}
         selectedDocumentId={destination.view === 'space' ? destination.id : undefined} onUndo={() => history('undo')} onRedo={() => history('redo')}
-        onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }}
+        onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} onInputFailureChange={setEditorInputFailed}
         onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></ProgramServerStatusContext.Provider></div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} storageScope="account"
         selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined}

@@ -98,6 +98,8 @@ export interface ProgramTextEditorProps {
   onOpenTaskOrigin?: (documentId: string, lineId: string) => void;
   onConnectFlow?: (docId: string, lineId: string | null, insertAfter: boolean) => void;
   onDirtyChange?: (dirty: boolean) => void;
+  /** The input was refused here (kept, not saved) or its save failed; false once it saves or is reverted. */
+  onInputFailureChange?: (failed: boolean) => void;
   onRegisterSave?: (save: (() => Promise<boolean>) | null, status?: (() => ProgramTextSaveStatus) | null) => void;
   onRegisterSourceFocus?: (focus: ProgramSourceFocus | null) => void;
   onRegisterInputLock?: (lock: ((locked: boolean) => void) | null) => void;
@@ -703,6 +705,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     }
     return focused;
   };
+  // A local refusal never reaches the server, so the host learns of it only here.
+  const inputFailed = draft.invalid || !!draft.error;
+  useEffect(() => { propsRef.current.onInputFailureChange?.(inputFailed); }, [inputFailed]);
+  useEffect(() => () => propsRef.current.onInputFailureChange?.(false), []);
   useEffect(() => {
     propsRef.current.onRegisterSave?.(saveNow, () => ({ composing: composingRef.current, saving: !!checkPendingRef.current || !!draftRef.current?.getState().saving, failed: !!draftRef.current?.getState().error }));
     propsRef.current.onRegisterSourceFocus?.(focusSourceRow);
