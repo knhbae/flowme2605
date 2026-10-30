@@ -1311,8 +1311,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     return folderOptions.find(item => item.id === actualFolderId)?.title ?? task.folder;
   };
 
-  const selectedDocumentExample = selectedDoc && programDocumentContentLock(space, selectedDoc.id) === 'active' && !M.raw(selectedDoc).trim()
-    && <details className={styles.example}><summary>빈 문서에서 시작할 작성 예시</summary><pre>{PROGRAM_EMPTY_EXAMPLE}</pre><button disabled={preparingDocumentAction} onClick={() => { void applyWritingExample(); }}>이 예시를 문서에 넣기</button></details>;
+  // W6: the writing example is offered in the empty document's ＋ menu, not in the editor's 도구.
+  const writingExampleReady = !!selectedDoc && programDocumentContentLock(space, selectedDoc.id) === 'active' && !M.raw(selectedDoc).trim();
   const selectedDocumentTools = selectedDoc && !retentionSource && !selectedTrashed && <details key={selectedDoc.id} ref={documentMenu} onToggle={event => {
             const title = event.currentTarget.querySelector<HTMLInputElement>('input[name="title"]');
             if (!event.currentTarget.open && (!title || title.value === title.defaultValue)) formExpected.current = null;
@@ -1456,7 +1456,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onRegisterExternalGuard={read => { externalReaders.current[id] = read; }}
           docId={id} workspace={space.text} active={selected === id && period === 'documents'} initialPosition={positions.current[id] ?? (space.position.documentId === id ? space.position : undefined)}
           noteStatus={selected === id ? props.noteStatus : undefined}
-          noteActions={selected === id ? <>{props.noteHeader && !props.hostMainTabs && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}{selectedDocumentExample}</> : undefined}
+          noteActions={selected === id ? <>{props.noteHeader && !props.hostMainTabs && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}</> : undefined}
+          onWritingExample={selected === id && writingExampleReady ? () => { void applyWritingExample(); } : undefined}
           folderId={collectionMode ? '' : folderId} directWriting={!!collectionMode} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
           onContinueWholeDocument={stage => {
             // folderId controls every retained editor. Never unmount another pending region.

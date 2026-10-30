@@ -73,7 +73,7 @@
 .folderPreview small { color: var(--flowme-b-muted); white-space: pre-wrap; }
 .contextHint { color: var(--muted, var(--flowme-b-muted)); font-size: .875rem; line-height: 1.5; overflow-wrap: anywhere; }
 .contextHint small { display: block; font-size: inherit; }
-.directWriting :global(.tle-textarea::placeholder) { color: var(--flowme-b-muted); -webkit-text-fill-color: var(--flowme-b-muted); opacity: 1; }
+.host :global(.tle-textarea::placeholder), .directWriting :global(.tle-textarea::placeholder) { color: var(--flowme-b-muted); -webkit-text-fill-color: var(--flowme-b-muted); opacity: 1; }
 /* Shared textarea/mirror padding keeps native caret and presentation aligned.
    The current-line menu retains insert/date/move actions in one 44px lane. */
 @media (max-width: 600px) {
@@ -309,6 +309,17 @@
 @media (max-width: 760px) {
   .dialog[open] { top: auto; bottom: var(--writing-dialog-bottom, 0px); left: var(--writing-view-left, 0px); width: var(--writing-view-width, 100vw); max-width: none; max-height: min(85dvh, calc(var(--writing-view-height, 100dvh) - 48px)); border-width: 1px 0 0; border-radius: 16px 16px 0 0; padding-bottom: calc(16px + env(safe-area-inset-bottom)); box-shadow: 0 -8px 32px var(--flowme-b-shadow); }
 }
+
+/* W6: the PC toolbar in groups with dividers; phones carry the bar actions in the keyboard bar instead. */
+.toolbarSep { flex: 0 0 auto; width: 1px; align-self: stretch; margin: 10px 4px; background: var(--flowme-b-line); }
+@media (max-width: 700px) {
+  .toolbarSep { display: none; }
+}
+@media (min-width: 701px) {
+  .toolbar > .editorTools { order: 0; margin-left: 0; }
+  .toolbar > .statusSlot { margin-left: auto; }
+}
+.editorTools > summary { font-size: 14px; }
 
 /* R8b: the toolbar opens the Flow·반복 sheet. */
 .toolbar > .repeatButton { white-space: nowrap; color: var(--flowme-b-primary-strong); }

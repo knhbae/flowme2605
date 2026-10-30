@@ -117,7 +117,7 @@ test('"/" alone on a region line opens the menu once; paste, composition, and a 
 
 test('the toolbar ＋ and the writing bar ＋ stay usable in a folder view and route to the region menu', () => {
   assert.match(editorSource, /hidden=\{props\.directWriting && !props\.noteStatus\}[^\n]*\n\s*onClick=\{\(\) => \{ if \(props\.folderId\) \{ void openRegionInsertMenu\(\); return; \}/);
-  assert.match(editorSource, /barButton\('menu', '＋', '추가 메뉴', '\/', false\)/);
+  assert.match(editorSource, /barButton\('menu', <BarIcon name="menu" \/>, '추가 메뉴', '\/', false\)/);
   assert.match(editorSource, /if \(action === 'menu'\) \{ if \(propsRef\.current\.folderId\) void openRegionInsertMenu\(\); else openCurrentInsertMenu/);
   assert.match(editorSource, /onInsertMenu=\{props\.authoringMode \? \(\) => \{ void openRegionInsertMenu\(\); \} : undefined\}/);
   // insertNative never writes the hidden body editor in a folder view.

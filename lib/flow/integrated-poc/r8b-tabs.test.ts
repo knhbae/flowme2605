@@ -70,7 +70,8 @@ test('title rows: the writing title opens the document sheet, ⋯ keeps document
   assert(space.includes('onPointerDown={findPointerDown} onClick={openFindPanel}'));
   assert(space.includes('{props.hostMainTabs ? selectedDocumentTools && <div className={styles.titleActions}>{selectedDocumentTools}</div>'));
   // The editor's "…" no longer carries 새 글·글 찾기·글 작업 under the host tabs; the sheet starts with ＋ 새 글.
-  assert(space.includes('{props.noteHeader && !props.hostMainTabs && <>{period === \'documents\' && findActions}{selectedDocumentTools}</>}{selectedDocumentExample}'));
+  // W6: the writing example moved from the editor's 도구 to the empty document's ＋ menu.
+  assert(space.includes('{props.noteHeader && !props.hostMainTabs && <>{period === \'documents\' && findActions}{selectedDocumentTools}</>}</> : undefined}'));
   assert(space.includes('{props.hostMainTabs && <button type="button" className={styles.sheetNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>＋ 새 글</button>}'));
   assert(space.includes("period === 'today' ? (date === today ? `오늘 · ${programCalendarDate(today, today)}` : programCalendarDate(date, today))"));
   assert(space.includes("period === 'all' ? (collectionMode ? '전체 할 일' : folder ? folder.title : '분류')"));
@@ -80,7 +81,7 @@ test('title rows: the writing title opens the document sheet, ⋯ keeps document
 
 test('toolbar: ↶ ↷ and 반복 N; the Flow·반복 box is a sheet that stays mounted, and the "…" keeps editing tools', () => {
   const editor = read('ProgramTextEditor.tsx');
-  assert(editor.includes("{props.authoringMode && <button type=\"button\" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId} title=\"다시 실행\" aria-label=\"다시 실행\""));
+  assert(editor.includes("{props.authoringMode && <button type=\"button\" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId} title=\"입력 다시 하기 · Ctrl+Y\" aria-label=\"입력 다시 하기\""));
   assert(editor.includes('{props.repeatLabel && props.onOpenPersonalAuthoring && <button type="button" className={styles.repeatButton} aria-haspopup="dialog" onClick={() => props.onOpenPersonalAuthoring?.()}>{props.repeatLabel}</button>}'));
   assert(editor.includes('{!props.authoringMode && (props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" hidden={!!props.folderId}'));
   assert(space.includes('if (props.hostMainTabs) { const sheet = authoringSheet.current; if (sheet && !sheet.open) sheet.showModal(); return; }'));

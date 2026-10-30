@@ -113,6 +113,8 @@ export interface ProgramTextEditorProps {
   onRegisterConfirmedSave?: (accept: ((before: TextWorkspaceState, next: TextWorkspaceState, ack?:OwnedWritingAck) => boolean) | null) => void;
   onUndo?: () => void | Promise<void>;
   onRedo?: () => void | Promise<void>;
+  /** W6: puts the writing example into an empty document (offered in its ＋ menu). */
+  onWritingExample?: () => void;
   readOnly?: boolean;
   /** Retained editors keep their input/history, but not an open navigation menu. */
   active?: boolean;
@@ -161,6 +163,14 @@ export function trapProgramDialogTab(
 
 const FOLDER_STRUCTURE_LOCK = '분류 보기에서는 저장된 줄의 종류와 들여쓰기를 바꿀 수 없습니다. ‘전체 문서 보기’에서 바꿔 주세요.';
 const REGION_OUTSIDE = '이 자리는 지금 보는 분류 영역 밖이라 여기서 넣지 않았습니다. 원문은 그대로입니다. 전체 문서에서 추가해 주세요.';
+/** W6: an empty document's hint; the first character (a composing one too) takes it away. */
+const EMPTY_DOCUMENT_HINT = '여기에 적으세요.\n할 일은 ☐ 단추나 - [ ] 로, 메뉴는 / 로 엽니다.';
+/** W6: bar icons drawn to read as what they do: indenting is not moving, and ↳ is not ↶. */
+function BarIcon({ name }: { name: WritingBarAction }) {
+  const path = { task: 'M5 5h14v14H5z', outdent: 'M4 5v14M20 12H9m4-4-4 4 4 4', indent: 'M20 5v14M4 12h11m-4-4 4 4-4 4',
+    enter: 'M7 5v7a3 3 0 0 0 3 3h9m-4-4 4 4-4 4', menu: 'M12 5v14M5 12h14' }[name];
+  return <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d={path} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
 const BAR_COMPOSING_NOTICE = '입력 중인 글자가 아직 끝나지 않아 실행하지 않았습니다. 글자를 마친 뒤 다시 눌러 주세요.';
 
 function today() {
@@ -648,6 +658,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (index !== undefined && selection?.lineIndex !== index) editorRef.current?.focus(index);
     editorRef.current?.indent(outdent);
   }
+  const toolsRef = useRef<HTMLDetailsElement>(null);
+  // W6: the 도구 menu closes on a press outside it and when the document or screen changes, not only on its items.
+  useEffect(() => {
+    const menu = toolsRef.current; if (!menu) return;
+    const owner = menu.ownerDocument;
+    const outside = (event: Event) => { if (menu.open && !(event.target instanceof Node && menu.contains(event.target))) menu.open = false; };
+    owner.addEventListener('pointerdown', outside, true);
+    return () => { owner.removeEventListener('pointerdown', outside, true); menu.open = false; };
+  }, [props.docId, props.active]);
   function closeEditorTools(button: HTMLButtonElement) {
     const menu = button.closest('details');
     if (menu) { menu.open = false; menu.querySelector('summary')?.focus(); }
@@ -1228,7 +1247,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   useEffect(() => {
     const textarea = textArea(); if (textarea) {
       textarea.readOnly = inputLockedRef.current || !!props.readOnly;
-      textarea.placeholder = props.directWriting && !props.readOnly ? '여기에 바로 적으세요' : '';
+      textarea.placeholder = props.readOnly ? '' : props.directWriting ? '여기에 바로 적으세요' : EMPTY_DOCUMENT_HINT;
     }
     editorRef.current?.refresh();
   }, [props.readOnly, props.directWriting, props.docId]);
@@ -1678,7 +1697,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <section className={styles.recoveryGroup} aria-label="이 기기의 입력"><h4>이 기기의 입력</h4>{own}</section></> : own}
       </div></details></>;
   }
-  function barButton(action: WritingBarAction, icon: string, label: string, keys: string, off: boolean, className?: string, describedBy?: string) {
+  function barButton(action: WritingBarAction, icon: React.ReactNode, label: string, keys: string, off: boolean, className?: string, describedBy?: string) {
     return <button key={action} type="button" className={className} data-bar-action={action} data-held={heldBar === action ? 'true' : undefined}
       aria-label={label} aria-describedby={describedBy} title={`${label} · ${keys}`} disabled={barOff || off}
       onPointerDown={event => { event.preventDefault(); }} onClick={() => { pressBar(action); }}>{icon}</button>;
@@ -1686,13 +1705,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function barButtons(place: 'toolbar' | 'bar') {
     const className = place === 'toolbar' ? styles.toolbarBarButton : undefined, locked = barLine.markerLock, moved = barLine.structureLock;
     return <>
-      {barButton('task', '☐', barLine.isTask ? '일반 줄로 바꾸기' : '할 일로 바꾸기', '- [ ]', !!locked, className, locked ? barLockId + place : undefined)}
+      {barButton('task', <BarIcon name="task" />, barLine.isTask ? '일반 줄로 바꾸기' : '할 일로 바꾸기', '- [ ]', !!locked, className, locked ? barLockId + place : undefined)}
       {locked && <span id={barLockId + place} hidden>{barLine.markerLock}</span>}
       {moved && <span id={barLockId + place + 'move'} hidden>{moved}</span>}
-      {barButton('outdent', '←', '내어쓰기', 'Shift+Tab', !barLine.canOutdent, className, moved ? barLockId + place + 'move' : undefined)}
-      {barButton('indent', '→', '들여쓰기', 'Tab', !barLine.canIndent, className, moved ? barLockId + place + 'move' : undefined)}
-      {barButton('enter', '↵', '할 일 아래 메모 줄', 'Shift+Enter', false, className)}
-      {place === 'bar' && barButton('menu', '＋', '추가 메뉴', '/', false)}
+      {barButton('outdent', <BarIcon name="outdent" />, '내어쓰기', 'Shift+Tab', !barLine.canOutdent, className, moved ? barLockId + place + 'move' : undefined)}
+      {barButton('indent', <BarIcon name="indent" />, '들여쓰기', 'Tab', !barLine.canIndent, className, moved ? barLockId + place + 'move' : undefined)}
+      {barButton('enter', <BarIcon name="enter" />, '할 일 아래 메모 줄', 'Shift+Enter', false, className)}
+      {place === 'bar' && barButton('menu', <BarIcon name="menu" />, '추가 메뉴', '/', false)}
     </>;
   }
   /** W2: the move notice and the last message sit under the body (right above the keyboard bar while typing on
@@ -1714,21 +1733,24 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       {mode === 'text' && <button type="button" onClick={event => returnToDocumentMode(event.currentTarget)}>문서로 돌아가기</button>}
       <button type="button" hidden={props.directWriting && !props.noteStatus} disabled={props.folderId ? inputLocked || !!props.readOnly || draft.invalid || composing || checkPending : insertionDisabled}
         onClick={() => { if (props.folderId) { void openRegionInsertMenu(); return; } const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}>＋ 추가</button>
+      {/* W6: [＋ 추가] | [☐ ⇤ ⇥ ↳] | [↶ ↷] [반복] [도구]; ↶ never sits next to ↳. */}
+      {props.authoringMode && <span className={styles.toolbarSep} aria-hidden="true" />}
       {props.authoringMode && barButtons('toolbar')}
-      <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기'} aria-label="입력 되돌리기" onClick={() => { if (undoFolderMove()) return; if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if(props.authoringMode&&!props.folderId)editorRef.current?.undo(); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
-      {props.authoringMode && <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId} title="다시 실행" aria-label="다시 실행"
+      {props.authoringMode && <span className={styles.toolbarSep} aria-hidden="true" />}
+      <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기 · Ctrl+Z'} aria-label="입력 되돌리기" onClick={() => { if (undoFolderMove()) return; if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if(props.authoringMode&&!props.folderId)editorRef.current?.undo(); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
+      {props.authoringMode && <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId} title="입력 다시 하기 · Ctrl+Y" aria-label="입력 다시 하기"
         onClick={() => { if (orderHistoryRef.current.hasEntries() || props.authoringMode) nativeHistory('historyRedo'); else if (props.onRedo && !draft.dirty) void props.onRedo(); }}>↷</button>}
       {props.repeatLabel && props.onOpenPersonalAuthoring && <button type="button" className={styles.repeatButton} aria-haspopup="dialog" onClick={() => props.onOpenPersonalAuthoring?.()}>{props.repeatLabel}</button>}
-      <details className={styles.editorTools} data-editor-tools onKeyDown={event => {
+      <details ref={toolsRef} className={styles.editorTools} data-editor-tools onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; event.currentTarget.querySelector('summary')?.focus();
       }}>
-        <summary aria-label="편집 도구" title="편집 도구"><span aria-hidden="true">…</span></summary>
+        <summary aria-label="편집 도구" title="편집 도구">도구</summary>
         <div className={styles.editorToolActions}>
           {props.noteActions}
           <button type="button" aria-pressed={mode === 'text'} disabled={inputLocked || composing} onClick={event => { if (composingRef.current || inputLockedRef.current) return; closeEditorTools(event.currentTarget); setMode(mode === 'text' ? 'live' : 'text'); }}>원문 {mode === 'text' ? '닫기' : '보기'}</button>
           <button type="button" hidden={!!props.folderId} disabled={disabled || composing} onClick={event => { closeEditorTools(event.currentTarget); void copyFolderText(); }}>문서 TXT 복사</button>
-          {props.directWriting && <button type="button" disabled={insertionDisabled} onClick={event => { closeEditorTools(event.currentTarget); const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}>현재 줄에 추가</button>}
+          {props.directWriting && !props.noteStatus && <button type="button" disabled={insertionDisabled} onClick={event => { closeEditorTools(event.currentTarget); const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}>현재 줄에 추가</button>}
           <button type="button" hidden={!!props.folderId} disabled={disabled || draft.dirty} onClick={event => { closeEditorTools(event.currentTarget); previewOrder(); }}>날짜순 정렬</button>
           {!props.authoringMode && (props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" hidden={!!props.folderId} disabled={disabled || draft.dirty} aria-label="다시 실행" onClick={event => { closeEditorTools(event.currentTarget); if (orderHistoryRef.current.hasEntries()) nativeHistory('historyRedo'); else void props.onRedo?.(); }}>다시 실행</button>}
         </div>
@@ -1794,6 +1816,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           {(note => note && <small>{note}</small>)(place?.ok?programLayoutPlaceNote(kind,place):'여기에는 넣을 수 없음')}</button>;})}
         {props.authoringMode&&props.onOpenPersonalAuthoring&&<button type="button" onClick={()=>{closePanel();props.onOpenPersonalAuthoring?.();}}>반복·Flow 만들기</button>}
         {!currentDoc()?.lines.length && <><button type="button" disabled={insertionDisabled} onClick={() => insertNative(0, '- [ ] ', 6)}>할 일</button><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(); }}>일반 글</button></>}
+        {props.onWritingExample && <button type="button" disabled={insertionDisabled} onClick={() => { closePanel(); props.onWritingExample?.(); }}>작성 예시 넣기<small>할 일·하위 할 일·메모가 든 예시</small></button>}
         </section>
         <details className={styles.menuGroup} aria-label="연결·구획"><summary>연결·구획</summary><div className={styles.choices}>
         <button type="button" onClick={insertDateSection}>날짜 구획 · 문서 끝에</button>
