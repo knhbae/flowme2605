@@ -91,10 +91,12 @@ function mergeStructuralRecoveryEntries(parked: readonly AlphaStructuralRecovery
 
 type AlphaWorkspaceProps = {
   config: AlphaAuthConfig; session: VerifiedAlphaSession; email: string; onSignOut: () => Promise<void>; pmWriting?:'v11-pm/1';nativeAuthoringEnabled?:boolean;
+  /** Egress probe for the automatic reads (server v2 read functions). Off unless the deployment opts in. */
+  readProbe?: boolean;
 };
-export function AlphaWorkspace({ config, session, email, onSignOut, pmWriting, nativeAuthoringEnabled }: AlphaWorkspaceProps) {
+export function AlphaWorkspace({ config, session, email, onSignOut, pmWriting, nativeAuthoringEnabled, readProbe }: AlphaWorkspaceProps) {
   // Do not forward unknown JS props into the test-only injection seam.
-  return <AlphaWorkspaceBody key={session.userId} config={config} session={session} email={email} onSignOut={onSignOut} pmWriting={pmWriting==='v11-pm/1'?'v11-pm/1':undefined} nativeAuthoringEnabled={nativeAuthoringEnabled} />;
+  return <AlphaWorkspaceBody key={session.userId} config={config} session={session} email={email} onSignOut={onSignOut} pmWriting={pmWriting==='v11-pm/1'?'v11-pm/1':undefined} nativeAuthoringEnabled={nativeAuthoringEnabled} readProbe={readProbe === true} />;
 }
 /** Opt-in native legacy writer. The default entry and synthetic PM seam remain separate. */
 export function AlphaWorkspaceLegacyWriting(props:AlphaWorkspaceProps&{transport:AlphaLegacyWritingTransport}){
@@ -106,7 +108,7 @@ export function AlphaWorkspaceSyntheticFixture(props: AlphaWorkspaceProps & { ru
   if (!isSyntheticAlphaWorkspaceInput(props.runtime, props.config, props.session)) return <p role="alert">합성 Alpha 실행 설정을 확인해 주세요.</p>;
   return <AlphaWorkspaceBody key={props.session.userId} {...props} syntheticRuntime={props.runtime} />;
 }
-function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntime,legacyTransport,pmWriting,nativeAuthoringEnabled }: AlphaWorkspaceProps & { syntheticRuntime?: SyntheticAlphaWorkspaceRuntime;legacyTransport?:AlphaLegacyWritingTransport }) {
+function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntime,legacyTransport,pmWriting,nativeAuthoringEnabled,readProbe }: AlphaWorkspaceProps & { syntheticRuntime?: SyntheticAlphaWorkspaceRuntime;legacyTransport?:AlphaLegacyWritingTransport }) {
   const request = legacyTransport?.request ?? syntheticRuntime?.request ?? fetch;
   const sessionEpoch = useMemo(() => ({}), [session.userId, session.accessToken]);
   const sessionEpochRef = useRef(sessionEpoch); sessionEpochRef.current = sessionEpoch;
@@ -471,7 +473,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   useEffect(() => {
     const store = controller.current; if (!store) return;
     captureInput();
-    store.bindSession(session.userId, legacyTransport?createAlphaLegacyWritingRepository(config,session,legacyTransport):createAlphaHttpRepository(config, session, request, { social: true }));
+    store.bindSession(session.userId, legacyTransport?createAlphaLegacyWritingRepository(config,session,legacyTransport):createAlphaHttpRepository(config, session, request, { social: true, readProbe: readProbe === true && !syntheticRuntime }));
     if (store.snapshot().pending) void store.resolvePending(false); else startAutomaticRead(store);
   }, [config, session.userId, session.accessToken, request]);
   useEffect(() => {
@@ -568,7 +570,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       eligible: !!before.account && !!before.envelope && before.ownerId === currentOwnerRef.current
         && before.account.ownerId === currentOwnerRef.current && !before.pending && !before.draft
         && ['ready', 'saved', 'same-location', 'cancelled'].includes(before.status),
-      promise: store.refresh().catch(() => false) };
+      // Probe first: an unchanged server snapshot costs two tokens instead of the whole account (egress).
+      promise: store.refreshIfChanged().catch(() => false) };
     automaticRead.current = read;
     void read.promise.then(() => { if (automaticRead.current === read) automaticRead.current = null; });
   }
