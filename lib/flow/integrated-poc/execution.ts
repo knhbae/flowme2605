@@ -1,6 +1,6 @@
 import { programClone, programFailure, programResult, type ProgramData, type ProgramPrivateSpace, type ProgramTransition } from './contract';
 import { programDate, validateProgramData } from './program-data';
-import { textWorkspaceModel as M, type TextTask } from './text-workspace';
+import { textWorkspaceModel as M, type TextProgress, type TextTask, type TextWorkspaceState } from './text-workspace';
 import { programSame } from './controller';
 import { programLegacyTaskQualityHold } from './legacy-map-review';
 import { programLegacyPlanExcludedTargets } from './program-legacy-plan-target';
@@ -70,6 +70,28 @@ export function programExecutionTasks(space: ProgramPrivateSpace, input: { perio
   });
 }
 /** All gestures and non-drag order controls call this single transition. Source rows stay unchanged. */
+export interface ProgramTaskProgress { latest: TextProgress | null; current: number | null }
+/**
+ * Progress for list rows, read once per text. M.latestProgress and M.currentProgress each check the
+ * whole workspace again, and a row asks both, so a 78-row list took over a second per render.
+ * Same values as those two calls; an id outside M.tasks still asks them directly.
+ */
+export function programTaskProgress(text: TextWorkspaceState): (taskId: string) => ProgramTaskProgress {
+  const table = new Map<string, ProgramTaskProgress>(), tasks = M.tasks(text);
+  if (tasks.length) {
+    // A valid text holds one record per task and date, so the latest date is the last in the history.
+    const latest = new Map<string, TextProgress>();
+    for (const record of text.progressRecords) {
+      const previous = latest.get(record.taskId);
+      if (!previous || record.date > previous.date) latest.set(record.taskId, { date: record.date, percent: record.percent });
+    }
+    for (const task of tasks) {
+      const record = latest.get(task.id) ?? null;
+      table.set(task.id, { latest: record, current: task.inputPercent !== undefined ? task.inputPercent : record ? record.percent : task.done ? 100 : 0 });
+    }
+  }
+  return taskId => table.get(taskId) ?? { latest: M.latestProgress(text, taskId), current: M.currentProgress(text, taskId) };
+}
 export function reorderProgramTimeline(data: ProgramData, input: { actorId: string; taskId: string; beforeTaskId: string | null; expectedIds: string[] }): ProgramTransition<string> {
   const space = data.spaces[input.actorId]; if (!space) return programFailure(data, 'forbidden');
   const tasks = programExecutionTasks(space), task = tasks.find(row => row.id === input.taskId);

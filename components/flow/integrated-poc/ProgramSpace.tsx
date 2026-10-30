@@ -8,7 +8,7 @@ import { programDate } from '@/lib/flow/integrated-poc/program-data';
 import { programFolderCopyAccessProblem } from '@/lib/flow/integrated-poc/folder-copy';
 import { completingInSession, finishCompleting, type CompletingTasks } from '@/lib/flow/integrated-poc/automatic-read-wait';
 import { addProgramQuickTask, archiveProgramDocument, completeProgramTask, createProgramDocument, createProgramFolder, deleteProgramFolder, linkProgramTask, moveProgramFolder, recordProgramTaskProgress, renameProgramDocument, renameProgramFolder, setProgramDocumentFolder, updateProgramTask } from '@/lib/flow/integrated-poc/private-space';
-import { programDateRange, programExecutionTasks, programShiftDate, programShiftMonth, type ProgramPeriod } from '@/lib/flow/integrated-poc/execution';
+import { programDateRange, programExecutionTasks, programShiftDate, programShiftMonth, programTaskProgress, type ProgramPeriod } from '@/lib/flow/integrated-poc/execution';
 import { programOrderedExecutionRows, programTextExecutionKey, reorderProgramExecutionTimeline } from '@/lib/flow/integrated-poc/recurrence-order';
 import { programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
@@ -334,6 +334,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const hideDayHeadings = !!props.noteHeader && period === 'today' && date === today
     && executionList.every(item => item.kind !== 'row' || item.group === 'on-date');
   const allTasks = useMemo(() => programExecutionTasks(space), [space]);
+  const taskProgress = useMemo(() => programTaskProgress(space.text), [space.text]);
   const detailTask = detail?.kind === 'task' ? allTasks.find(task => task.id === detail.id) : null;
   const detailLinkedMemos = detailTask ? space.text.bindings.flatMap(binding => {
     if (binding.kind !== 'task' || binding.taskId !== detailTask.id) return [];
@@ -1508,7 +1509,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} /></li>;
           const task = entry.task;
           const origin = readProgramTaskOrigin(data, task);
-          const progress = M.latestProgress(space.text, task.id), value = M.currentProgress(space.text, task.id) ?? (task.done ? 100 : 0);
+          const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
           const meta = programExecutionRowMeta({ date: task.date, done: value === 100, progress: progress?.date ? { date: progress.date, percent: progress.percent } : null, today, dated: item.dated });
           return <li key={entry.key} className={styles.task} data-task-id={task.id} data-done={value === 100 || undefined} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
