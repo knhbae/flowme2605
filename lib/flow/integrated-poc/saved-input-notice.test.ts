@@ -62,3 +62,46 @@ test('the shell counts all four kinds this way and marks input at risk from prot
   assert.match(source, /else \{\s+setSaveFailed\(false\);/);
   assert.match(source, /onInput=\{\(\) => \{ queueMicrotask\(captureInput\); \}\}/);
 });
+
+// Codex review F2: the 복구함 is not the notice. It lists and counts everything stored, while only the
+// notice and badges leave out input that is being saved normally, under a label of their own.
+test('the 복구함 lists and counts every stored entry even while the notice counts none', () => {
+  const scope = { recoveries: { drafts: [typed] }, structuralRecoveries: null, creatorRecoveries: { entries: [{ id: 'c' }] }, socialRecoveries: null };
+  assert.equal(evaluate<number>(declaration('storedTotal'), scope), 2);
+  assert.equal(count({ parked: [], active: [typed], atRisk: false }), 0);
+  assert(source.includes("<summary>복구함{storedTotal ? ` (${storedTotal})` : ''}</summary>"));
+  assert(source.includes('{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <p>보관한 입력이 없습니다.</p>}'));
+  assert(source.includes('open={!!storedTotal && (unavailable || external'));
+  // The notice and the 더보기 badge name use their own label, so two different numbers never share "보관한 입력".
+  assert(source.includes('<span>확인이 필요한 입력 {savedTotal}개</span>'));
+  assert(!/보관한 입력 \$?\{savedTotal\}/.test(source));
+});
+
+// Codex review F1: an editor can refuse input locally and keep it without any mutation, so saveFailed
+// never turns on. That refusal must reach the shell's risk test.
+test('a local refusal in a document editor counts the kept input as at risk', async () => {
+  const { createProgramTextDraft } = await import('./program-text-draft');
+  const { textWorkspaceModel: M } = await import('./text-workspace');
+  let workspace = M.addDocument({ version: 11, documents: [], folders: [{ id: 'folder-unfiled', title: '미분류', parentId: null }], flows: [], bindings: [], taskScopes: {}, itemScopes: {}, progressRecords: [] } as never, { title: '거절 확인' });
+  const docId = M.getDocument(workspace, workspace.documents[0].id)!.id;
+  workspace = M.editText(workspace, docId, '- /회의\n  - [ ] 안건', { folderText: true });
+  const draft = createProgramTextDraft(workspace, docId, async () => true, () => {});
+  // Clearing a folder name leaves "- /": the model refuses it and the draft keeps the raw.
+  assert.equal(draft.updateRaw('- /\n  - [ ] 안건'), false);
+  const state = draft.getState();
+  const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
+  const failed = editor.match(/const inputFailed = ([^;]+);/)![1];
+  assert.equal(evaluate<boolean>(failed, { draft: state }), true, 'the editor reports this state as failed');
+  assert.match(editor, /useEffect\(\(\) => \{ propsRef\.current\.onInputFailureChange\?\.\(inputFailed\); \}, \[inputFailed\]\);/);
+  assert.match(editor, /useEffect\(\(\) => \(\) => propsRef\.current\.onInputFailureChange\?\.\(false\), \[\]\);/);
+  const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
+  assert(space.includes('onInputFailureChange={failed => inputFailureChanged(id, failed)}'));
+  assert(space.includes('props.onInputFailureChange?.(Object.values(inputFailures.current).some(Boolean));'));
+  assert(source.includes('onInputFailureChange={setEditorInputFailed}'));
+  const risk = declaration('inputAtRisk');
+  const atRisk = evaluate<boolean>(risk, { needsInputProtection: false, unavailable: false, saveFailed: false, editorInputFailed: true, snapshot: { status: 'ready' } });
+  assert.equal(atRisk, true);
+  assert.equal(count({ parked: [], active: [typed], atRisk }), 1, 'the kept input is announced');
+  // Once the input saves or is reverted the editor reports false and normal typing is quiet again.
+  assert.equal(evaluate<boolean>(failed, { draft: { invalid: false, error: '' } }), false);
+});

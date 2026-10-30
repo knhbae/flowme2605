@@ -144,6 +144,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const [savedNoticeClosedAt, setSavedNoticeClosedAt] = useState<number | null>(null);
   // The last mutation failed; captured input counts as saved input until one succeeds.
   const [saveFailed, setSaveFailed] = useState(false);
+  // A document editor refused input locally (no mutation ran) or failed to save it; counts until it clears.
+  const [editorInputFailed, setEditorInputFailed] = useState(false);
   const preservationReturn = useRef<{ ownerId: string; controller: Controller | null; opener: HTMLElement | null } | null>(null);
   const modalRef = useRef(false); modalRef.current = !!publisher || !!inspector;
   const inspectorDialog = useRef<HTMLDialogElement | null>(null);
@@ -1097,13 +1099,16 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     || (snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending
     || external || snapshot?.status === 'conflict'
     || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft);
-  // R8a: saved input, counted for the 복구함 badge and the notice. Every input is still captured to the
-  // tab, but the capture of input the editors are saving normally counts only once it is at risk:
-  // protection, a failed or unknown save, an ended session or broken storage. Otherwise ordinary typing
-  // showed "보관한 입력 1개" from the first key until the save. When some goes away, lower the closed-at
-  // mark so the next newly saved input shows the notice again.
-  const inputAtRisk = needsInputProtection || unavailable || saveFailed
+  // R8a: saved input. The 복구함 always lists and counts everything stored (storedTotal). The notice and
+  // badges count only input that needs attention (savedTotal): every input is still captured to the tab,
+  // but the capture of input the editors are saving normally counts only once it is at risk: protection,
+  // a local refusal, a failed or unknown save, an ended session or broken storage. Otherwise ordinary
+  // typing showed a saved input from the first key until the save. When some goes away, lower the
+  // closed-at mark so the next newly saved input shows the notice again.
+  const inputAtRisk = needsInputProtection || unavailable || saveFailed || editorInputFailed
     || ['signed-out', 'recovery-required', 'checking-result'].includes(snapshot?.status ?? '');
+  const storedTotal = (recoveries?.drafts.length ?? 0) + (structuralRecoveries?.entries.length ?? 0)
+    + (creatorRecoveries?.entries.length ?? 0) + (socialRecoveries?.entries.length ?? 0);
   const savedTotal = announcedRecoveries(recoveries?.drafts, parkedDrafts.current, activeDrafts.current, inputAtRisk, recoveryDraftIdentity)
     + announcedRecoveries(structuralRecoveries?.entries, parkedStructural.current, activeStructural.current, inputAtRisk)
     + announcedRecoveries(creatorRecoveries?.entries, parkedCreator.current, activeCreator.current ? [activeCreator.current] : [], inputAtRisk)
@@ -1236,7 +1241,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           <button type="button" key={tab} data-main-tab={tab} aria-current={destination.view === 'space' && mainTab === tab ? 'page' : undefined} onClick={() => void chooseMainTab(tab)}>
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" d={path}/></svg><span>{label}</span></button>)}
         <button type="button" data-main-tab="more" aria-current={['discover', 'flow', 'community', 'activity', 'legacy', 'creator'].includes(destination.view) ? 'page' : undefined}
-          aria-label={`더보기${savedTotal ? ` · 보관한 입력 ${savedTotal}개` : ''}`} onPointerDown={event => { event.preventDefault(); }} onClick={toggleMoreMenu}>
+          aria-label={`더보기${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`} onPointerDown={event => { event.preventDefault(); }} onClick={toggleMoreMenu}>
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M5 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg><span>더보기</span>
           {savedTotal > 0 && <span className={styles.navBadge} aria-hidden="true">{savedTotal}</span>}</button>
       </nav>}
@@ -1254,7 +1259,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         (document.querySelector<HTMLElement>('[data-main-tab="more"]') ?? event.currentTarget.querySelector('summary'))?.focus({ preventScroll: true });
       }} onBlur={event => {
         if (!preservationRef.current && event.relatedTarget && !event.currentTarget.contains(event.relatedTarget as Node)) event.currentTarget.open = false;
-      }}><summary aria-current={['activity', 'legacy'].includes(destination.view) ? 'page' : undefined} aria-label={`${destination.view === 'activity' ? '보조 메뉴 · 현재 위치: 내 활동' : destination.view === 'legacy' ? '보조 메뉴 · 현재 위치: 개인 Flow 상세' : '보조 메뉴 · 내 활동, 계정·자료 관리'}${savedTotal ? ` · 보관한 입력 ${savedTotal}개` : ''}`}><span className={styles.auxiliaryLabel}>{destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : '더보기'}</span>{savedTotal > 0 && <span className={styles.menuBadge} aria-hidden="true">{savedTotal}</span>}</summary><div className={styles.managementBody}>
+      }}><summary aria-current={['activity', 'legacy'].includes(destination.view) ? 'page' : undefined} aria-label={`${destination.view === 'activity' ? '보조 메뉴 · 현재 위치: 내 활동' : destination.view === 'legacy' ? '보조 메뉴 · 현재 위치: 개인 Flow 상세' : '보조 메뉴 · 내 활동, 계정·자료 관리'}${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`}><span className={styles.auxiliaryLabel}>{destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : '더보기'}</span>{savedTotal > 0 && <span className={styles.menuBadge} aria-hidden="true">{savedTotal}</span>}</summary><div className={styles.managementBody}>
         <h2>더보기</h2>
         {!unavailable && <section className={styles.menuGroup} aria-label="둘러보기"><h3>둘러보기</h3>
           <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}>경험·질문·지식</button>
@@ -1268,9 +1273,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
             {data.spaces[session.userId].savedBindings.length > 0 && <button type="button" aria-current={destination.view === 'legacy' ? 'page' : undefined} onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>}</div>
         </section>}
         <section className={styles.menuGroup} aria-label="자료"><h3>자료</h3>
-          <details ref={recoveryBox} className={styles.recoveryBox} open={!!savedTotal && (unavailable || external || snapshot?.status === 'conflict')}>
-            <summary>복구함{savedTotal ? ` (${savedTotal})` : ''}</summary>
-            {savedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <p>보관한 입력이 없습니다.</p>}
+          <details ref={recoveryBox} className={styles.recoveryBox} open={!!storedTotal && (unavailable || external || snapshot?.status === 'conflict')}>
+            <summary>복구함{storedTotal ? ` (${storedTotal})` : ''}</summary>
+            {storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <p>보관한 입력이 없습니다.</p>}
           </details>
           <div className={styles.managementActions}>
           <button type="button" disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} onClick={event => {
@@ -1297,9 +1302,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         </section>
         </div></details>
     </section>
-    {savedNoticeShown && <p className={styles.savedNotice} role="status"><span>보관한 입력 {savedTotal}개</span>
+    {savedNoticeShown && <p className={styles.savedNotice} role="status"><span>확인이 필요한 입력 {savedTotal}개</span>
       <button type="button" onClick={openRecoveryBox}>복구함 열기</button>
-      <button type="button" aria-label="보관한 입력 안내 닫기" onClick={() => setSavedNoticeClosedAt(savedTotal)}>닫기</button></p>}
+      <button type="button" aria-label="확인이 필요한 입력 안내 닫기" onClick={() => setSavedNoticeClosedAt(savedTotal)}>닫기</button></p>}
     {preservation && snapshot?.account && snapshot.references && <AlphaPreservationPanel key={session.userId} account={snapshot.account} references={snapshot.references}
       email={email} accessToken={session.accessToken} returnFocusTarget={preservationOpener.current} onClose={closePreservation} onSaved={async () => {
         ownMutation.current++; try { await controller.current?.refresh(); setPresentation(value => value + 1); } finally { ownMutation.current--; }
@@ -1328,7 +1333,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           return !disposed.current && !externalRef.current && !!authority && !authority.pending && !authority.busy && authority.status !== 'conflict';
         }}
         selectedDocumentId={destination.view === 'space' ? destination.id : undefined} onUndo={() => history('undo')} onRedo={() => history('redo')}
-        onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }}
+        onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} onInputFailureChange={setEditorInputFailed}
         onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></ProgramServerStatusContext.Provider></div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} storageScope="account"
         selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined}

@@ -54,7 +54,7 @@ test('the four kinds of saved input show only in the 복구함, each with its ow
   assert(!source.includes('personalRecovery'));
   // The badge counts them on the "…" button and in its name.
   assert(source.includes('{savedTotal > 0 && <span className={styles.menuBadge} aria-hidden="true">{savedTotal}</span>}'));
-  assert(source.includes("${savedTotal ? ` · 보관한 입력 ${savedTotal}개` : ''}"));
+  assert(source.includes("${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}"));
 });
 
 test('the notice shows for saved input on opening and for each newly saved one, until closed; nothing is deleted', () => {
@@ -70,7 +70,7 @@ test('the notice shows for saved input on opening and for each newly saved one, 
   closedAt = 2; change(0); assert.equal(isShown(), false);
   change(1); assert.equal(isShown(), true);            // after discarding everything, the next one shows again
   // Closing the line only marks it closed; discarding stays with the 복구함's own buttons.
-  assert(source.includes('aria-label="보관한 입력 안내 닫기" onClick={() => setSavedNoticeClosedAt(savedTotal)}'));
+  assert(source.includes('aria-label="확인이 필요한 입력 안내 닫기" onClick={() => setSavedNoticeClosedAt(savedTotal)}'));
 });
 
 test('복구함 열기 opens the menu and the box and puts focus on it', () => {

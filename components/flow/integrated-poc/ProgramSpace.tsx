@@ -85,6 +85,8 @@ export type ProgramSpaceProps = {
   onStartReview?: (documentId: string) => Promise<void>;
   onRegisterReviewSpace?: (port: ProgramReviewSpacePort | null) => void;
   onRegisterEditors?: (editors: (ProgramEditorFlush & AlphaStructuralEditorPort) | null) => void;
+  /** Some document editor holds input it refused or failed to save. */
+  onInputFailureChange?: (failed: boolean) => void;
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
   /** R8b: the host draws the main tabs (쓰기·오늘·분류) and chooses one through this port. The space's own
    *  period state stays here; this is not onRegisterNavigation, so source opens keep their focus path. */
@@ -223,6 +225,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const documentRouteOpening = useRef<Promise<void>>(Promise.resolve());
   const saveRequests = useRef<Record<string, (() => Promise<boolean>) | null>>({});
   const saveStatusReaders = useRef<Record<string, (() => ProgramTextSaveStatus) | null>>({});
+  const inputFailures = useRef<Record<string, boolean>>({});
+  const inputFailureChanged = (id: string, failed: boolean) => {
+    if (!!inputFailures.current[id] === failed) return;
+    inputFailures.current[id] = failed;
+    props.onInputFailureChange?.(Object.values(inputFailures.current).some(Boolean));
+  };
   const recurrencePorts = useRef<Record<string, ProgramEditorFlush | null>>({});
   // A flush may await an already-running local save. Only successfully persisted
   // editor commits can advance this chain; render props or arbitrary snapshots cannot.
@@ -1498,7 +1506,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             if (sourceFocus?.documentId === id && sourceFocus.isCurrent()) return;
             positions.current[id] = { ...position, documentId: id, lineId };
           }}
-          onDirtyChange={value => { editorDirtyChanged(id, actorId, value); }} onUndo={props.onUndo} onRedo={props.onRedo}
+          onDirtyChange={value => { editorDirtyChanged(id, actorId, value); }} onInputFailureChange={failed => inputFailureChanged(id, failed)} onUndo={props.onUndo} onRedo={props.onRedo}
           onRegisterSave={(save, status) => { saveRequests.current[id] = save; saveStatusReaders.current[id] = status ?? null; }}
           onRegisterSourceFocus={focus => registerSourceFocus(id, focus)}
           onRegisterDraft={read => { draftReaders.current[id] = read; }}
