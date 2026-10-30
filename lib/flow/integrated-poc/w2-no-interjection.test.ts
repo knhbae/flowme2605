@@ -53,7 +53,10 @@ test('W2: the move notice and the last message sit under the body, which gives u
   assert.equal(notices.match(/<button /g)?.length, 3);
   assert.equal(notices.match(/onPointerDown=\{event => \{ event\.preventDefault\(\); \}\}/g)?.length, 3);
   // The body's visible height ends above them, like it ends above the keyboard bar.
-  const update = source.slice(source.indexOf('const update = () => {\n      frame = 0;\n      let bottom'), source.indexOf('const schedule = () => { if (!frame)'));
+  const update = source.slice(source.indexOf('const update = () => {\n      frame = 0;'), source.indexOf('const schedule = () => { if (!frame)'));
+  assert(update.length > 0);
+  // With N1 fix 3 the bar is fixed to the visible bottom and comes off first; the notices come off after it.
+  assert(update.indexOf('bottom -= bar!.getBoundingClientRect().height + 4;') < update.indexOf('bottom -= notice'));
   assert.match(update, /const notice = noticeRef\.current;\s*if \(notice\?\.getClientRects\(\)\.length\) bottom -= notice\.getBoundingClientRect\(\)\.height;/);
   assert(update.indexOf('bottom -= notice') < update.indexOf('programEditorVisibleHeight(host.getBoundingClientRect().top, bottom)'));
   // A longer message changes their height without a mutation the shell's observers see.
