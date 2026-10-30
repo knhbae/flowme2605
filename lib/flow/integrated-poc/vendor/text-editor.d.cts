@@ -48,7 +48,8 @@ declare namespace editor {
     getValue(): string;
     getText(): string;
     getSelection(): Selection;
-    setValue(value: string, settings?: { preserveSelection?: boolean }): boolean;
+    /** selection: an explicit caret for the new value (it wins over preserveSelection). */
+    setValue(value: string, settings?: { preserveSelection?: boolean; selection?: { start: number; end: number; direction?: Selection['direction'] } }): boolean;
     setText(value: string, settings?: { preserveSelection?: boolean }): boolean;
     focus(lineIndex?: number): boolean;
     focusControl(lineIndex: number): boolean;

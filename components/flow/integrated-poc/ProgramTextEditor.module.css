@@ -136,6 +136,8 @@
 .saveFeedback { flex: 1 1 0; min-width: 0; max-width: 120px; margin-left: auto; font-size: 12px; }
 .editor .saveFeedback > summary { display: flex; align-items: center; min-height: 48px; box-sizing: border-box; padding: 6px; font-size: 12px; line-height: 18px; white-space: normal; word-break: keep-all; color: #833817; cursor: pointer; list-style: none; }
 .saveFeedback > summary::-webkit-details-marker { display: none; }
+/* A refused edit: its line and reason stay visible on a row of their own, with 이 줄 되돌리기. */
+.refusedLine { flex: 1 0 100%; order: 6; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; padding: 4px 8px; border-radius: 6px; background: #fff4e9; color: #833817; font-size: 13px; line-height: 20px; }
 .saveFeedback > summary:focus-visible { outline: 2px solid var(--flowme-b-primary); outline-offset: 2px; }
 .saveFeedback > .error { position: absolute; z-index: 60; top: calc(100% + 4px); left: 0; right: 0; box-sizing: border-box; max-height: min(52dvh, 420px); overflow: auto; overscroll-behavior: contain; border: 1px solid #efd8c2; border-radius: 8px; box-shadow: 0 8px 24px var(--flowme-b-shadow); }
 /* Reading prose shares the native gutter. Preserve RAW/caret metrics. */

@@ -75,12 +75,15 @@ test('one character or one syllable at a time ends like the word case, refused a
   }
 });
 
-test('an existing folder line still renames as it is typed, and an empty name on it is still refused', () => {
+// D3 B: a linked folder line keeps its folder and name while typed (folder-rename-move.test.ts has the rest).
+test('a linked folder line renames nothing while typed, even emptied; emptied by a paste it is still refused', () => {
   const start = account(), id = existing(start);
-  const renamed = M.editTextResult(start, OTHER, '- /운동일지\n  - [ ] 달리기', { folderText: true, folderHold: [0] });
-  assert.equal(renamed.reason, null);
-  assert.equal(renamed.state.folders.find(folder => folder.id === id)?.title, '운동일지');
-  const emptied = M.editTextResult(start, OTHER, '- /\n  - [ ] 달리기', { folderText: true, folderHold: [0] });
+  const typed = M.editTextResult(start, OTHER, '- /운동일지\n  - [ ] 달리기', { folderText: true, folderHold: [0] });
+  assert.equal(typed.reason, null);
+  assert.equal(typed.state.folders.find(folder => folder.id === id)?.title, '운동');
+  const heldEmpty = M.editTextResult(start, OTHER, '- /\n  - [ ] 달리기', { folderText: true, folderHold: [0] });
+  assert.equal(heldEmpty.reason, null, 'an empty name while typed is no error yet');
+  const emptied = M.editTextResult(start, OTHER, '- /\n  - [ ] 달리기', { folderText: true });
   assert.equal(emptied.reason, 'invalid-format');
 });
 

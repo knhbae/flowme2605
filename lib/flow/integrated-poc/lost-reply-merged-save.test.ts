@@ -83,3 +83,44 @@ test('the exact confirmation without a newer base still works as before', async 
   assert.equal(draft.acceptConfirmedSave(T0, sent[0]), true);
   assert.equal(draft.getState().dirty, false);
 });
+
+test('a retry refused while waiting does not hide the merged request either', async () => {
+  const { draft, sent, T1, T2, A, B, replyNext } = await lostReply();
+  assert.equal(draft.updateRaw('첫 줄\n이어 쓴 줄\n기다리며 쓴 줄'), true);
+  assert.equal(await draft.save(), false, 'the automatic retry is refused at once: a result is still pending');
+  assert.equal(sent.length, 2);
+  assert.equal(draft.acceptConfirmedSave(T1, T2), true, 'the first request, merged onto the newer base, is accepted');
+  const state = draft.getState();
+  assert.equal(state.committed, T2); assert.equal(state.dirty, true); assert.equal(state.error, '');
+  assert.equal(raw(state.working, A), '첫 줄\n이어 쓴 줄\n기다리며 쓴 줄');
+  replyNext(true);
+  assert.equal(await draft.save(), true);
+  assert.equal(sent.length, 3); assert.equal(sent[2].expected, T2);
+  assert.equal(raw(sent[2].next, B), '다른 문서\n원격 줄');
+});
+
+test('eleven retries refused before sending do not hide the merged request either (Codex N1 F1)', async () => {
+  const { T0, A, B } = workspace();
+  const sent: { next: TextWorkspaceState; expected: TextWorkspaceState }[] = [];
+  let pending = false, open = false;
+  const draft = createProgramTextDraft(T0, A, async (next, _label, options) => {
+    if (open) { sent.push({ next, expected: options!.expectedWorkspace! }); return true; }
+    if (pending) { options?.onNotSent?.(); return false; }
+    sent.push({ next, expected: options!.expectedWorkspace! }); pending = true; return false;
+  }, () => {});
+  assert.equal(draft.updateRaw('첫 줄\n이어 쓴 줄'), true);
+  assert.equal(await draft.save(), false);
+  const T1 = M.editText(T0, B, '다른 문서\n원격 줄'), T2 = mergeProgramTextWorkspace(T0, sent[0].next, T1)!;
+  for (let i = 0; i < 11; i++) {
+    assert.equal(draft.updateRaw(`첫 줄\n이어 쓴 줄\n기다리며 쓴 줄${'!'.repeat(i)}`), true);
+    assert.equal(await draft.save(), false);
+  }
+  assert.equal(sent.length, 1, 'only the first request was sent');
+  assert.equal(draft.acceptConfirmedSave(T1, T2), true);
+  assert.equal(draft.getState().committed, T2); assert.equal(draft.getState().error, '');
+  open = true;
+  assert.equal(await draft.save(), true);
+  assert.equal(sent.length, 2); assert.equal(sent[1].expected, T2);
+  assert.equal(raw(sent[1].next, B), '다른 문서\n원격 줄');
+  assert.equal(raw(sent[1].next, A), '첫 줄\n이어 쓴 줄\n기다리며 쓴 줄!!!!!!!!!!');
+});

@@ -16,6 +16,7 @@ import { applyProgramLinePermutation, createProgramPermutationHistory } from '@/
 import { programSame } from '@/lib/flow/integrated-poc/controller';
 import { readProgramFolderCopyPreview, isProgramFolderCopyPreviewCurrent, copyProgramFolderOccurrence, type ProgramFolderCopyPreview } from '@/lib/flow/integrated-poc/folder-copy';
 import { createAlphaStructuralDraft, type AlphaStructuralDraft } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
+import { restoredLineOffset } from '@/lib/flow/integrated-poc/folder-line-hold';
 import { createProgramTextDraft, type ProgramTextCommit, type ProgramTextCommitOptions, type ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
 import {createProgramDocumentInput,type ProgramDocumentInput} from '@/lib/flow/integrated-poc/program-document-input';
 import type { ProgramReferenceAccess } from '@/lib/flow/integrated-poc/reference-execution-guard';
@@ -413,17 +414,43 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (state.invalid || area.value !== state.raw) return;
     const docId = propsRef.current.docId, lines = M.getDocument(state.working, docId)?.lines ?? [];
     const index = lines.findIndex(line => line.id === held.id);
-    if (index < 0 || !FOLDER_LINE.test(lines[index].text) || state.working.bindings.some(binding => binding.docId === docId && binding.lineId === held.id)) {
+    // A linked line still showing its folder's name has nothing left to finish.
+    const binding = state.working.bindings.find(row => row.docId === docId && row.lineId === held.id);
+    const linked = binding?.kind === 'scope' ? state.working.folders.find(folder => folder.id === binding.scopeId) : undefined;
+    if (index < 0 || !FOLDER_LINE.test(lines[index].text) || binding && (!linked || lines[index].text.replace(/^ *- \//, '').trim() === linked.title)) {
       heldFolderLineRef.current = null; return;
+    }
+    // N1: a linked line's typed name goes back to its folder's name, however it is finished; nothing moves.
+    if (binding) {
+      heldFolderLineRef.current = null;
+      const beforeRaw = area.value, { selectionStart, selectionEnd, selectionDirection } = area;
+      if (!controller.restoreFolderLineName(index)) return;
+      // The caret keeps its place on the shorter or longer name, so the Enter that finished the line opens
+      // the next line instead of splitting the one below.
+      const restored = controller.getState().raw, line = restored.split('\n')[index];
+      editorRef.current?.setValue(restored, { selection: { start: restoredLineOffset(beforeRaw, index, line, selectionStart),
+        end: restoredLineOffset(beforeRaw, index, line, selectionEnd), direction: selectionDirection } });
+      const notice = controller.getState().folderNotice; if (notice) setMessage(notice);
+      scheduleSave(); return;
     }
     const create = explicit && area.value.slice(0, area.selectionStart).split('\n').length - 1 === index;
     if (!create && held.left) return;
     const declared = controller.declareFolderLine(index, !create);
     heldFolderLineRef.current = declared || create ? null : { id: held.id, left: true };
+    const notice = controller.getState().folderNotice; if (notice) setMessage(notice);
     if (!declared) return;
     const visibleRaw = controller.getState().raw;
     if (visibleRaw !== area.value) editorRef.current?.setValue(visibleRaw, { preserveSelection: true });
     scheduleSave();
+  }
+  /** One ↶ right after a finished folder line moved puts the whole move back (D3 B). */
+  function undoFolderMove() {
+    const controller = draftRef.current;
+    if (!controller || composingRef.current || inputLockedRef.current || propsRef.current.readOnly || !controller.canUndoFolderMove()) return false;
+    if (!controller.undoFolderMove()) return false;
+    editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true });
+    const notice = controller.getState().folderNotice; if (notice) setMessage(notice);
+    scheduleSave(); return true;
   }
   /** The editor the writing bar acts on: the body, or the focused folder region. */
   function barEditor() {
@@ -926,7 +953,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     propsRef.current.onRegisterConfirmedSave?.((before, next, ack) => {
       if (!alive || composingRef.current || inputLockedRef.current || textArea()?.value !== controller.getState().raw) return false;
       // Confirmation updates state only; preserve the native textarea and its selection/history.
-      return controller.acceptConfirmedSave(before, next, ack);
+      const accepted = controller.acceptConfirmedSave(before, next, ack);
+      // Input typed while the result was unknown (its own save was refused then) is saved now.
+      if (accepted && !ack && controller.getState().dirty && !controller.getState().saving) scheduleSave();
+      return accepted;
     });
     orderHistoryRef.current = createProgramPermutationHistory(props.docId); orderPositionsRef.current = []; orderEpochRef.current++; pendingOrderRef.current = null;
     movingRef.current = null; setMoving(null); setPanel(null);
@@ -980,6 +1010,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           if (position) queueMicrotask(() => { const area = textArea(); if (area && area.value === raw) { area.setSelectionRange(position.selection.start, position.selection.end, position.selection.direction); area.scrollTop = position.scrollTop; rememberPosition(); } });
         }
         if (accepted) {
+          { const notice = controller.getState().folderNotice; if (notice) setMessage(notice); }
           const afterText = controller.getState().working;
           const renamed = new Set(beforeText.folders.filter(folder => afterText.folders.some(next => next.id === folder.id && next.title !== folder.title)).map(folder => folder.id));
           if (afterText.bindings.some(binding => binding.kind === 'scope' && binding.docId !== props.docId && renamed.has(binding.scopeId))) {
@@ -996,7 +1027,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           if (hold) {
             const line = currentDoc()?.lines[hold[0]];
             if (heldFolderLineRef.current && heldFolderLineRef.current.id !== line?.id) finishHeldFolderLine();
-            if (line && !currentState().bindings.some(binding => binding.docId === propsRef.current.docId && binding.lineId === line.id)) heldFolderLineRef.current = { id: line.id, left: false };
+            if (line) heldFolderLineRef.current = { id: line.id, left: false };
+          } else {
+            // A paste over a linked folder line's name is finished like typing: its name goes back.
+            const index = raw.slice(0, textArea()?.selectionStart ?? 0).split('\n').length - 1, line = currentDoc()?.lines[index];
+            if (line && FOLDER_LINE.test(line.text) && controller.getState().working.bindings.some(row => row.kind === 'scope' && row.docId === props.docId && row.lineId === line.id)) {
+              if (heldFolderLineRef.current && heldFolderLineRef.current.id !== line.id) finishHeldFolderLine();
+              heldFolderLineRef.current = { id: line.id, left: false };
+            }
           }
           requestAuthoringSlash(beforeRaw,historyType||input?.inputType||'');
           scheduleSave();
@@ -1048,6 +1086,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const preventLockedInput = (event: Event) => {
       controller.cancelPreparedRaw();
       const type = (event as InputEvent).inputType;
+      if (type === 'historyUndo' && undoFolderMove()) { event.preventDefault(); event.stopImmediatePropagation(); return; }
       if ((inputLockedRef.current || (controller.getState().saving && (type === 'historyUndo' || type === 'historyRedo'))) && !composingRef.current) { event.preventDefault(); event.stopImmediatePropagation(); }
       if (!event.defaultPrevented && !composingRef.current && textarea && propsRef.current.validateWorkspace && !type?.startsWith('history')) {
         let start = textarea.selectionStart, end = textarea.selectionEnd, insert: string | null = null;
@@ -1558,6 +1597,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // The words show the winner; the recovery boxes stay whichever wins, so no action is lost.
   const statusLabel = serverWins ? serverView!.label : editorStatus.label;
   const hasRecovery = !!serverView?.recovery || !!draft.error;
+  // A refused edit that names its line: shown with the reason's first sentence (다시 저장 judges it again).
+  const refused = draft.invalid && draft.problemLine !== undefined && !props.readOnly;
+  const refusedLine = (draft.problemLine ?? 0) + 1, refusedReason = draft.error.split(/(?<=\.)\s/)[0];
   // While typing, anything short of a warning is one quiet dot, a fast "저장됨" included.
   const quietStatus = !!serverView && typing && !statusWarn && !inputLocked;
   // The bar's slot is the same status, short; the toolbar slot holds the one live announcement.
@@ -1576,19 +1618,21 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     box.open = true;
     box.querySelector<HTMLElement>('summary')?.focus();
   }
-  /** The editor's own recovery box (다시 저장, 입력한 원문 받기, 저장본으로 되돌리기). */
+  /** The editor's own recovery box (다시 저장, 입력한 원문 받기, 저장본으로 되돌리기). A refused edit also keeps
+   * its line and the first sentence of its reason visible. */
   function editorRecovery(announce: boolean) {
     const label = props.readOnly ? '읽기 전용 · 복구' : inputLocked ? '입력 보호 · 복구' : '저장 확인 필요 · 복구';
-    return <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
+    return <>{refused && <p className={styles.refusedLine}><span>{refusedLine}번째 줄: {refusedReason}</span></p>}
+    <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || composingRef.current || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
         event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
       }}><summary title={props.readOnly ? props.disabledReason || '읽기 전용' : draft.error}>{announce ? <span role="alert">{label}</span> : <span>{label}</span>}</summary><div className={styles.error}><p>{draft.error}</p><div>
       {progressConflict && <button type="button" onClick={showProgressConflict}>진행 조절 보기</button>}
-      <button type="button" disabled={!!props.readOnly || draft.invalid || draft.saving} onClick={() => { void saveNow(); }}>다시 저장</button>
+      <button type="button" disabled={!!props.readOnly || draft.saving} onClick={() => { if (draftRef.current?.getState().invalid) draftRef.current.recheck(); void saveNow(); }}>다시 저장</button>
       <button type="button" onClick={downloadDraft}>입력한 원문 받기</button>
       <button type="button" disabled={inputLocked || draft.saving} onClick={() => { if (draftRef.current?.discard(propsRef.current.workspace)) { orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++; editorRef.current?.setValue(draftRef.current.getState().raw, { preserveSelection: true }); } }}>저장본으로 되돌리기</button>
-      </div></div></details>;
+      </div></div></details></>;
   }
   function barButton(action: WritingBarAction, icon: string, label: string, keys: string, off: boolean, className?: string, describedBy?: string) {
     return <button key={action} type="button" className={className} data-bar-action={action} data-held={heldBar === action ? 'true' : undefined}
@@ -1619,7 +1663,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       <button type="button" hidden={props.directWriting && !props.noteStatus} disabled={props.folderId ? inputLocked || !!props.readOnly || draft.invalid || composing || checkPending : insertionDisabled}
         onClick={() => { if (props.folderId) { void openRegionInsertMenu(); return; } const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}>＋ 추가</button>
       {props.authoringMode && barButtons('toolbar')}
-      <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기'} aria-label="입력 되돌리기" onClick={() => { if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if(props.authoringMode&&!props.folderId)editorRef.current?.undo(); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
+      <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기'} aria-label="입력 되돌리기" onClick={() => { if (undoFolderMove()) return; if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if(props.authoringMode&&!props.folderId)editorRef.current?.undo(); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
       {props.authoringMode && <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId} title="다시 실행" aria-label="다시 실행"
         onClick={() => { if (orderHistoryRef.current.hasEntries() || props.authoringMode) nativeHistory('historyRedo'); else if (props.onRedo && !draft.dirty) void props.onRedo(); }}>↷</button>}
       {props.repeatLabel && props.onOpenPersonalAuthoring && <button type="button" className={styles.repeatButton} aria-haspopup="dialog" onClick={() => props.onOpenPersonalAuthoring?.()}>{props.repeatLabel}</button>}

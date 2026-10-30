@@ -89,15 +89,20 @@ export interface TextWorkspaceModel {
   contextAt(state: TextWorkspaceState, docId: string, index: number): TextContext;
   insertionContext(state: TextWorkspaceState, docId: string, index: number, depth?: number): TextContext;
   insertionOptions(state: TextWorkspaceState, docId: string, lineId: string): TextInsertion[];
-  editText(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice; folderText?: boolean; taskSplit?: TextTaskSplitIntent; folderHold?: number[]; folderDeclare?: number[]; folderLink?: number[] }): TextWorkspaceState;
+  editText(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice; folderText?: boolean; taskSplit?: TextTaskSplitIntent; folderHold?: number[]; folderDeclare?: number[]; folderLink?: number[]; folderMove?: number[] }): TextWorkspaceState;
   /** folderHold: "- /name" lines still being typed stay text (an existing folder line still renames).
    * folderDeclare: finished lines are judged even though their text did not change since.
-   * folderLink: like folderDeclare, but only a folder of exactly that name is linked; nothing is made. */
-  editTextResult(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice; folderText?: boolean; taskSplit?: TextTaskSplitIntent; folderHold?: number[]; folderDeclare?: number[]; folderLink?: number[] }): {
+   * folderLink: like folderDeclare, but only a folder of exactly that name is linked; nothing is made.
+   * folderMove: a finished linked line with a new name moves to that folder (D3 B). */
+  editTextResult(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice; folderText?: boolean; taskSplit?: TextTaskSplitIntent; folderHold?: number[]; folderDeclare?: number[]; folderLink?: number[]; folderMove?: number[] }): {
     state: TextWorkspaceState; reason: 'identity-ambiguous' | 'invalid-format' | 'progress-check-conflict' | 'blocked' | null;
     progressConflict?: TextProgressCheckConflict;
     normalizedText?: string;
-    folderProblem?: 'name-conflict' | 'unknown-id' | 'identity-mismatch' | 'invalid-parent' | 'invalid-folder';
+    folderProblem?: 'name-conflict' | 'unknown-id' | 'identity-mismatch' | 'invalid-parent' | 'invalid-folder' | 'folder-limit' | 'folder-subfolder';
+    /** The line (index in the given text) a folder problem was found on. */
+    folderLine?: number;
+    /** A finished linked line moved to the folder of its new name, or renamed its folder used nowhere else. */
+    folderMoved?: { title: string; renamed: boolean };
   };
   exportFolderText(state: TextWorkspaceState, docId: string): string | null;
   addDocument(state: TextWorkspaceState, input: { title: string; folder?: string; folderId?: string }): TextWorkspaceState;
