@@ -19,7 +19,8 @@
 
 | 찾는 것 | 지금 있는 곳 | 현재성 |
 | --- | --- | --- |
-| 원칙 | repo `agent.md`(8/06), `docs/PRODUCT_PRINCIPLES.md`(5/24) | 낡음: export-first, 계정·소셜 금지가 Alpha와 맞지 않음 → 진행판 7f |
+| 제품 맥락 한 장 | [product.md](product.md) | 최신(10/30). 원칙 정본화(7f) 초안 포함 |
+| 원칙 | repo `agent.md`(8/06), `docs/PRODUCT_PRINCIPLES.md`(5/24) | 낡음: export-first, 계정·소셜 금지가 Alpha와 맞지 않음 → [product.md](product.md) 7절 초안으로 7f에서 개정 |
 | 결정 | repo `docs/DECISIONS.md`(10/26) + 이 위키 결정 기록 | 둘로 나뉨 |
 | 서비스 구조 | repo `docs/SERVICE_STRUCTURE.md`(8/20) | 낡음: `/alpha` 없음 |
 | 요구·누락 기능 | `planning/requirements-review-20261029/`, `planning/feature-gap-20261030/` | 최신 |

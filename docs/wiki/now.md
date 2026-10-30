@@ -57,4 +57,4 @@
 6. 하위 항목 초안은 확정 전에 새로고침하면 사라진다. N1 R5에서 고쳤다.
 7. 화면이 보이는 채로 방치하면 20초마다 계정 전체를 읽는다. N1 유휴 중지로 고친다(리뷰 중).
 
-[진행판](backlog.md) · [아이디어·피드백](ideas.md) · [문서 지도](docs.md) · [용어집](glossary.md) · [담당표](owners.md) · [결정 기록](decision-log.md) · [위키 사용법](README.md)
+[진행판](backlog.md) · [아이디어·피드백](ideas.md) · [문서 지도](docs.md) · [용어집](glossary.md) · [제품 맥락](product.md) · [담당표](owners.md) · [결정 기록](decision-log.md) · [위키 사용법](README.md)
