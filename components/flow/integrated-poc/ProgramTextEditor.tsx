@@ -16,8 +16,8 @@ import { applyProgramLinePermutation, createProgramPermutationHistory } from '@/
 import { programSame } from '@/lib/flow/integrated-poc/controller';
 import { readProgramFolderCopyPreview, isProgramFolderCopyPreviewCurrent, copyProgramFolderOccurrence, type ProgramFolderCopyPreview } from '@/lib/flow/integrated-poc/folder-copy';
 import { createAlphaStructuralDraft, type AlphaStructuralDraft } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
-import { restoredLineOffset } from '@/lib/flow/integrated-poc/folder-line-hold';
-import { createProgramTextDraft, type ProgramTextCommit, type ProgramTextCommitOptions, type ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
+import { indentTouchesLinkedFolder, restoredLineOffset } from '@/lib/flow/integrated-poc/folder-line-hold';
+import { createProgramTextDraft, FOLDER_INDENT_NOTICE, type ProgramTextCommit, type ProgramTextCommitOptions, type ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
 import {createProgramDocumentInput,type ProgramDocumentInput} from '@/lib/flow/integrated-poc/program-document-input';
 import type { ProgramReferenceAccess } from '@/lib/flow/integrated-poc/reference-execution-guard';
 import { linkProgramFolder, programFolderLineTitle, programFolderLinkProblem, programFolderLinkProblems } from '@/lib/flow/integrated-poc/folder-link-slot';
@@ -269,6 +269,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const draftRef = useRef<ReturnType<typeof createProgramTextDraft> | null>(null);
   // The unlinked "- /name" line typed last; `left` once leaving it found no folder of that name.
   const heldFolderLineRef = useRef<{ id: string; left: boolean } | null>(null);
+  // Linked folder lines an edit other than typing (a paste) renamed, by line ID, until they are put back.
+  const renamedFolderLinesRef = useRef(new Set<string>());
   const documentInputRef=useRef<ProgramDocumentInput|null>(null);
   const checkPendingRef=useRef<string|null>(null);
   const checkNotifyRef=useRef<((pending:boolean)=>void)|undefined>(undefined);
@@ -316,6 +318,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [progressRecordDate, setProgressRecordDate] = useState<string | null>(null);
   const [folderName, setFolderName] = useState('');
   const [message, setMessage] = useState('');
+  // Set while the native editor's Tab just skipped a folder-line indent, so the key keeps focus here.
+  const folderIndentSkipped = useRef(false);
   const [composing, setComposing] = useState(false);
   const disabled = inputLocked || !!props.readOnly || draft.invalid || draft.saving;
   const insertionDisabled=inputLocked||!!props.readOnly||draft.invalid||composing||regionPending||checkPending;
@@ -340,7 +344,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const compositionAnchorRef = useRef<{ area: HTMLTextAreaElement; offset: number } | null>(null);
   // One retry chain at a time for the current held press, capped by elapsed time.
   const barRetry = useRef<{ frame: number; serial: number; since: number } | null>(null);
-  useEffect(() => { releaseHeldBar(); }, [composing, draft.saving, inputLocked, props.readOnly, regionPending]);
+  useEffect(() => {
+    // A press held through a composition is released after the compositionend event has finished. The editor
+    // hears compositionend in the capture phase, before the native editor does, so releasing here would find the
+    // native editor still composing and every bar action (indent, outdent, task, enter) would be refused and lost.
+    if (!composing && barHold.held()) { const timer = setTimeout(releaseHeldBar, 0); return () => clearTimeout(timer); }
+    releaseHeldBar();
+  }, [composing, draft.saving, inputLocked, props.readOnly, regionPending]);
   // Other typing or leaving the editor cancels a held press; the composition's own input does not,
   // including a final insertText some keyboards send right after compositionend.
   useEffect(() => {
@@ -400,6 +410,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const index = textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1;
     const held = heldFolderLineRef.current;
     if (held) { if (currentDoc()?.lines[index]?.id === held.id) held.left = false; else finishHeldFolderLine(); }
+    finishRenamedFolderLines(false);
     const lineId = textarea.selectionStart === textarea.selectionEnd ? currentDoc()?.lines[index]?.id ?? null : null;
     if (suggestionLineRef.current !== lineId) { suggestionLineRef.current = lineId; setSuggestionLineId(lineId); setDismissedSuggestion(''); }
     propsRef.current.onPosition?.({ start: textarea.selectionStart, end: textarea.selectionEnd, scrollTop: textarea.scrollTop }, currentDoc()?.lines[index]?.id ?? null);
@@ -441,6 +452,36 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!declared) return;
     const visibleRaw = controller.getState().raw;
     if (visibleRaw !== area.value) editorRef.current?.setValue(visibleRaw, { preserveSelection: true });
+    scheduleSave();
+  }
+  /** N1 (QA3 block 2): linked folder lines a paste renamed go back to their folders' names together, each once
+   *  the caret is off it, or all of them on leaving the editor or on Enter. Only those lines change. */
+  function finishRenamedFolderLines(all: boolean) {
+    const pending = renamedFolderLinesRef.current, controller = draftRef.current, area = textArea();
+    if (!pending.size || !controller || !area || composingRef.current || propsRef.current.readOnly) return;
+    const state = controller.getState();
+    if (state.invalid || area.value !== state.raw) return;
+    const lines = M.getDocument(state.working, propsRef.current.docId)?.lines ?? [];
+    const caretLine = area.value.slice(0, area.selectionStart).split('\n').length - 1, indexes: number[] = [];
+    for (const id of [...pending]) {
+      const index = lines.findIndex(line => line.id === id);
+      if (index >= 0 && !all && index === caretLine) continue;
+      pending.delete(id);
+      if (index >= 0) indexes.push(index);
+    }
+    if (!indexes.length) return;
+    const { selectionStart, selectionEnd, selectionDirection } = area;
+    let raw = area.value, start = selectionStart, end = selectionEnd;
+    if (!controller.restoreFolderLineNames(indexes)) return;
+    // The caret is carried through each restored line, the last line first so each step reads the raw it changes.
+    const restored = controller.getState().raw, restoredLines = restored.split('\n');
+    for (const index of [...indexes].sort((a, b) => b - a)) {
+      const line = restoredLines[index], rows = raw.split('\n');
+      start = restoredLineOffset(raw, index, line, start); end = restoredLineOffset(raw, index, line, end);
+      rows[index] = line; raw = rows.join('\n');
+    }
+    editorRef.current?.setValue(restored, { selection: { start, end, direction: selectionDirection } });
+    const notice = controller.getState().folderNotice; if (notice) setMessage(notice);
     scheduleSave();
   }
   /** One ↶ right after a finished folder line moved puts the whole move back (D3 B). */
@@ -974,7 +1015,16 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       listEnterV2:()=>!!propsRef.current.authoringMode,
       getAddAnchor:index=>propsRef.current.authoringMode?{parentIndex:index,bottomIndex:index}:null,
       isCheckDisabled: checkActionsDisabled,
-      canApplyIndent: raw => !actionsDisabled() && M.raw(M.getDocument(M.editText(controller.getState().working, props.docId, raw, { progressDate: today() }), props.docId)) === raw,
+      canApplyIndent: (raw, details) => {
+        if (actionsDisabled()) return false;
+        // D11 (d): ⇤·⇥ never moves a linked folder line, alone or with other selected lines: the whole action is
+        // skipped and the reason shows. The bar, Tab and a press held through a composition all come here.
+        const state = controller.getState();
+        if (state.raw === textArea()?.value && indentTouchesLinkedFolder(state.working, props.docId, details.startLine, details.endLine)) {
+          folderIndentSkipped.current = true; setMessage(FOLDER_INDENT_NOTICE); return false;
+        }
+        return M.raw(M.getDocument(M.editText(state.working, props.docId, raw, { progressDate: today() }), props.docId)) === raw;
+      },
       canApplyTaskSplit: (raw, intent) => {
         if (!intent.taskSplit) return true;
         const before = controller.getState().working;
@@ -984,7 +1034,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         return next.reason === null && M.raw(M.getDocument(next.state, props.docId)) === raw
           && (propsRef.current.validateWorkspace?.(next.state) ?? true);
       },
-      beforeEnter: () => finishHeldFolderLine(true),
+      beforeEnter: () => { finishHeldFolderLine(true); finishRenamedFolderLines(true); },
       onChange: (raw, input) => {
         if (inputLockedRef.current || propsRef.current.readOnly) { editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true }); return; }
         if (raw === controller.getState().raw) { historyTypeRef.current = ''; return; }
@@ -1029,11 +1079,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
             if (heldFolderLineRef.current && heldFolderLineRef.current.id !== line?.id) finishHeldFolderLine();
             if (line) heldFolderLineRef.current = { id: line.id, left: false };
           } else {
-            // A paste over a linked folder line's name is finished like typing: its name goes back.
-            const index = raw.slice(0, textArea()?.selectionStart ?? 0).split('\n').length - 1, line = currentDoc()?.lines[index];
-            if (line && FOLDER_LINE.test(line.text) && controller.getState().working.bindings.some(row => row.kind === 'scope' && row.docId === props.docId && row.lineId === line.id)) {
-              if (heldFolderLineRef.current && heldFolderLineRef.current.id !== line.id) finishHeldFolderLine();
-              heldFolderLineRef.current = { id: line.id, left: false };
+            // A paste over linked folder lines' names is finished like typing: every line it renamed goes back.
+            const was = new Map((M.getDocument(beforeText, props.docId)?.lines ?? []).map(line => [line.id, line.text]));
+            for (const line of M.getDocument(afterText, props.docId)?.lines ?? []) {
+              if (was.has(line.id) && was.get(line.id) !== line.text && FOLDER_LINE.test(line.text)
+                && afterText.bindings.some(row => row.kind === 'scope' && row.docId === props.docId && row.lineId === line.id)) renamedFolderLinesRef.current.add(line.id);
             }
           }
           requestAuthoringSlash(beforeRaw,historyType||input?.inputType||'');
@@ -1104,7 +1154,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         }
       }
     };
-    const finishOnBlur = () => finishHeldFolderLine();
+    const finishOnBlur = () => { finishHeldFolderLine(); finishRenamedFolderLines(true); };
     const observeInput = (event: Event) => {
       const input=event as InputEvent;historyTypeRef.current=input.inputType||historyTypeRef.current;
     };
@@ -1653,7 +1703,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   const writingBar = <div ref={barRef} className={styles.writingBar} role="toolbar" aria-label="쓰기 도구" data-editor-tools>
       {barButtons('bar')}{barStatusSlot()}</div>;
-  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInput={serverView ? markTyping : undefined} onKeyDownCapture={event => {
+  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInput={serverView ? markTyping : undefined}
+    onKeyDown={event => { if (event.key === 'Tab' && folderIndentSkipped.current) event.preventDefault(); folderIndentSkipped.current = false; }} onKeyDownCapture={event => {
+    if (event.key === 'Tab') folderIndentSkipped.current = false;
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
     else if (event.key === 'Escape' && suggestion && !event.nativeEvent?.isComposing && !composingRef.current) { event.preventDefault(); event.stopPropagation(); setDismissedSuggestion(suggestionKey); }

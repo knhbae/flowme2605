@@ -112,7 +112,7 @@ test('putting one line back leaves another line left with a different name as it
 test('the editor finishes a linked line by putting its name back, also after a paste', () => {
   const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
   assert.match(editor, /if \(binding\) \{\r?\n *heldFolderLineRef\.current = null;\r?\n.*\r?\n *if \(!controller\.restoreFolderLineName\(index\)\) return;/);
-  assert.match(editor, /\/\/ A paste over a linked folder line's name is finished like typing: its name goes back\./);
+  assert.match(editor, /\/\/ A paste over linked folder lines' names is finished like typing: every line it renamed goes back\./);
   assert.doesNotMatch(editor, /folderMove/);
   assert.match(editor, /editorRef\.current\?\.setValue\(restored, \{ selection: \{ start: restoredLineOffset\(beforeRaw, index, line, selectionStart\),/);
 });

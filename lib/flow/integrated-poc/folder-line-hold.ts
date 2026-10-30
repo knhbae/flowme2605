@@ -6,6 +6,13 @@ const FOLDER_LINE = /^ *- \/(?!.*<!--\s*flowme-folder)/;
 /** Where a caret goes when line `index` of `raw` is replaced by `line` (a folder line's name put back):
  * before the line it stays, after it moves by the length change, and inside the name (past "- /") it goes
  * to the new line's end, so an Enter that finished the line opens the next line. */
+/** Whether an indent over lines `startLine`..`endLine` of the document would move a linked folder line. */
+export function indentTouchesLinkedFolder(state: TextWorkspaceState, documentId: string, startLine: number, endLine: number): boolean {
+  const lines = M.getDocument(state, documentId)?.lines ?? [];
+  return lines.slice(Math.max(0, startLine), endLine + 1).some(line => state.bindings.some(binding => binding.kind === 'scope'
+    && binding.docId === documentId && binding.lineId === line.id && state.folders.some(folder => folder.id === binding.scopeId)));
+}
+
 export function restoredLineOffset(raw: string, index: number, line: string, offset: number): number {
   const lines = raw.split('\n'), old = lines[index] ?? '', start = lines.slice(0, index).join('\n').length + (index ? 1 : 0);
   if (offset < start) return offset;

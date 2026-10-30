@@ -41,6 +41,9 @@ export interface ProgramTextDraftState {
 }
 
 /** Serializes draft commits while preserving newer typing and rejected raw input. */
+/** D11 (d): ⇤·⇥ on a linked folder line changes nothing and says why (D11 A's words, without the undo hint). */
+export const FOLDER_INDENT_NOTICE = '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. 분류 화면의 상위 폴더에서 옮겨 주세요.';
+
 const FOLDER_PROBLEM_TEXT: Record<string, string> = {
   'name-conflict': '같은 위치에 이름이 겹치는 폴더가 있습니다. 다른 이름을 입력해 주세요. 입력은 남아 있습니다.',
   'unknown-id': '현재 작업 공간에 없는 폴더 연결입니다. 연결 정보를 지우고 폴더 이름만 입력해 주세요. 입력은 남아 있습니다.',
@@ -48,6 +51,8 @@ const FOLDER_PROBLEM_TEXT: Record<string, string> = {
   'invalid-parent': '하위 폴더의 들여쓰기와 상위 폴더를 확인해 주세요. 입력은 남아 있습니다.',
   'folder-limit': '폴더는 100개까지 만들 수 있습니다. 이 줄을 되돌리거나 쓰지 않는 폴더를 정리해 주세요. 입력은 남아 있습니다.',
   'folder-subfolder': '하위 폴더가 있어 이 폴더 줄은 옮기지 않았습니다. 이 줄을 되돌려 주세요. 입력은 남아 있습니다.',
+  // D11 A (folder grammar 4판): the words are the spec's.
+  'folder-indent': '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. ↶로 되돌리거나 분류 화면의 상위 폴더에서 옮겨 주세요.',
 };
 
 export function createProgramTextDraft(
@@ -222,17 +227,26 @@ export function createProgramTextDraft(
     },
     /** N1: a linked folder line whose name was typed or pasted over is finished by putting that one line's
      * text back to its folder's name. Nothing is renamed or moved; the status row names the typed name. */
-    restoreFolderLineName(lineIndex: number) {
+    restoreFolderLineName(lineIndex: number) { return api.restoreFolderLineNames([lineIndex]); },
+    /** The same for several lines at once (a paste that renamed more than one), in one edit; only those lines change. */
+    restoreFolderLineNames(lineIndexes: number[]) {
       if (state.invalid) return false;
-      const line = M.getDocument(state.working, docId)?.lines[lineIndex], raws = state.raw.split('\n');
-      const binding = line && state.working.bindings.find(row => row.kind === 'scope' && row.docId === docId && row.lineId === line.id);
-      const folder = binding && binding.kind === 'scope' ? state.working.folders.find(entry => entry.id === binding.scopeId) : undefined;
-      if (!line || !folder || raws[lineIndex] !== line.text || !/^ *- \//.test(line.text)) return false;
-      const typed = line.text.replace(/^ *- \//, '').trim();
-      if (typed === folder.title) return false;
-      raws[lineIndex] = /^ */.exec(line.text)![0] + '- /' + folder.title;
-      if (!api.updateRaw(raws.join('\n'), '', { inputType: 'folderRestore' })) return false;
-      state = { ...state, folderNotice: `폴더 이름은 분류 화면에서 바꿀 수 있습니다(입력: ‘${typed}’)` }; report(); return true;
+      const lines = M.getDocument(state.working, docId)?.lines ?? [], raws = state.raw.split('\n'), typed: string[] = [];
+      let unfiled = false;
+      for (const index of lineIndexes) {
+        const line = lines[index];
+        const binding = line && state.working.bindings.find(row => row.kind === 'scope' && row.docId === docId && row.lineId === line.id);
+        const folder = binding && binding.kind === 'scope' ? state.working.folders.find(entry => entry.id === binding.scopeId) : undefined;
+        if (!line || !folder || raws[index] !== line.text || !/^ *- \//.test(line.text)) continue;
+        const name = line.text.replace(/^ *- \//, '').trim();
+        if (name === folder.title) continue;
+        raws[index] = /^ */.exec(line.text)![0] + '- /' + folder.title; typed.push(`‘${name}’`);
+        // 미분류 cannot be renamed in 분류 either.
+        if (folder.id === 'folder-unfiled') unfiled = true;
+      }
+      if (!typed.length || !api.updateRaw(raws.join('\n'), '', { inputType: 'folderRestore' })) return false;
+      state = { ...state, folderNotice: unfiled ? `미분류 폴더의 이름은 바꿀 수 없습니다(입력: ${typed.join(', ')})`
+        : `폴더 이름은 분류 화면에서 바꿀 수 있습니다(입력: ${typed.join(', ')})` }; report(); return true;
     },
     canUndoFolderMove: () => !!lastMove && !state.invalid && state.working === lastMove.after,
     /** One undo right after a folder line moved: the state before the move, with the line's name back. */
