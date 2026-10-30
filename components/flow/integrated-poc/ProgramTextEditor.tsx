@@ -391,7 +391,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const currentRow = (lineId: string | null) => {const state=currentState();return(documentInputRef.current?.rows(state)??M.rowMeta(state,propsRef.current.docId)).find(row=>row.id===lineId);};
   const accessFor = (lineId: string | null) => { const row = currentRow(lineId), target = row?.progressTargetId ?? row?.taskId; return target ? propsRef.current.taskAccess?.(target,currentState()) : undefined; };
   const textArea = () => hostRef.current?.querySelector<HTMLTextAreaElement>('textarea') ?? null;
-  const actionsDisabled = () => !!checkPendingRef.current || inputLockedRef.current || !!propsRef.current.readOnly || !!draftRef.current?.getState().invalid || !!draftRef.current?.getState().saving;
+  // A save in flight only blocks actions: the row metadata still matches the text, so the vendor keeps painting.
+  const paintDisabled = () => !!checkPendingRef.current || inputLockedRef.current || !!propsRef.current.readOnly || !!draftRef.current?.getState().invalid;
+  const actionsDisabled = () => paintDisabled() || !!draftRef.current?.getState().saving;
 
   const checkActionsDisabled = (lineIndex?:number) => {
     const controller=draftRef.current,state=controller?.getState();
@@ -1041,6 +1043,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         meta.progressTargetId ? propsRef.current.taskAccess?.(meta.progressTargetId,currentState()) : undefined, today()),
       getRowMeta: () => documentInput.paint(controller.getState().working)??textEditorRows(controller.getState().working, props.docId),
       isActionDisabled: actionsDisabled,
+      isPaintDisabled: paintDisabled,
       // Enter keeps the list rules; with the writing tools on, ＋ opens their menu, typed pickers stay off,
       // and list Enter v2 applies (one flag, so turning it off restores the R3 Enter).
       lineBreakEnter:()=>false,
