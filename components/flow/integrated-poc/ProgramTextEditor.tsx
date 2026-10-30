@@ -160,6 +160,7 @@ export function trapProgramDialogTab(
 
 const FOLDER_STRUCTURE_LOCK = '분류 보기에서는 저장된 줄의 종류와 들여쓰기를 바꿀 수 없습니다. ‘전체 문서 보기’에서 바꿔 주세요.';
 const REGION_OUTSIDE = '이 자리는 지금 보는 분류 영역 밖이라 여기서 넣지 않았습니다. 원문은 그대로입니다. 전체 문서에서 추가해 주세요.';
+const BAR_COMPOSING_NOTICE = '입력 중인 글자가 아직 끝나지 않아 실행하지 않았습니다. 글자를 마친 뒤 다시 눌러 주세요.';
 
 function today() {
   const now = new Date();
@@ -345,6 +346,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const compositionAnchorRef = useRef<{ area: HTMLTextAreaElement; offset: number } | null>(null);
   // One retry chain at a time for the current held press, capped by elapsed time.
   const barRetry = useRef<{ frame: number; serial: number; since: number } | null>(null);
+  const holdLimit = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (holdLimit.current) clearTimeout(holdLimit.current); }, []);
   useEffect(() => {
     // A press held through a composition is released after the compositionend event has finished. The editor
     // hears compositionend in the capture phase, before the native editor does, so releasing here would find the
@@ -549,7 +552,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     stopBarRetry();
     const run = barHold.press(action, busy, area ? writingBarTarget(area, area.value, area.selectionStart, settled) : null);
     setHeldBar(barHold.held());
-    if (run) runBar(run);
+    if (run) { runBar(run); return; }
+    // N1 fix 3: a keyboard that keeps the whole word composing (Samsung 천지인) may end the composition only at
+    // the next space or character. A press held for a composition waits one second, then lets go and says why.
+    // It never commits, blurs or rewrites the composing text.
+    if (!composingRef.current) return;
+    const serial = barHold.serial();
+    if (holdLimit.current) clearTimeout(holdLimit.current);
+    holdLimit.current = setTimeout(() => {
+      holdLimit.current = null;
+      if (barHold.held() && barHold.serial() === serial && composingRef.current) { barHold.cancel(); setHeldBar(null); setMessage(BAR_COMPOSING_NOTICE); }
+    }, 1000);
   }
   function stopBarRetry() { if (barRetry.current) { cancelAnimationFrame(barRetry.current.frame); barRetry.current = null; } }
   /** Run a held press once input settles, only where it was aimed. The press is taken only when its
@@ -800,7 +813,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function scheduleSave() {
     if (timerRef.current) clearTimeout(timerRef.current);
     // A pending commit may fail after newer input armed this timer.
-    timerRef.current = setTimeout(() => { if (!draftRef.current?.getState().error) void saveNow(false); }, 450);
+    // A keyboard may keep a word composing for long (Samsung 천지인); the background save waits for it without
+    // a notice. The "한글 입력을 마친 뒤" notice is for a flush the user asked for, such as changing the view.
+    timerRef.current = setTimeout(() => {
+      if (composingRef.current) { scheduleSave(); return; }
+      if (!draftRef.current?.getState().error) void saveNow(false);
+    }, 450);
   }
   async function apply(next: TextWorkspaceState, label: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule']) {
     const before = currentState(), selected = writingSelection();
