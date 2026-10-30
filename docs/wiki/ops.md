@@ -16,6 +16,8 @@
 
 appRoot가 `revision4/candidate`가 아니라 `revision4/followup-c37dbcab/candidate`인 점에 주의한다. 기준은 supervisor의 `manifest.json`이다.
 
+> 10/30: 운영은 R4h다. 공개 주소에서는 `/alpha`와 그 아래, 로그인 콜백, Alpha API, 정적 파일, `/my`만 열리고 나머지는 404다(경로 차단). 그 전까지는 예전 화면과 예전 쓰기 API가 공개돼 있었다.
+
 ## 2. 실행 구조
 
 ```

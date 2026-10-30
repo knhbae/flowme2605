@@ -19,6 +19,8 @@
 | `POST /api/alpha/preservation` | 백업·복원·가져오기 |
 | `GET /api/alpha/health` | 설정 준비 여부만 200/503 |
 
+> 10/30: 운영은 R4h다. 공개 주소에서는 `/alpha`와 그 아래, 로그인 콜백, Alpha API, 정적 파일, `/my`만 열리고 나머지는 404다(경로 차단). 그 전까지는 예전 화면과 예전 쓰기 API가 공개돼 있었다.
+
 ## 2. 코드 지도
 
 화면 (`components/flow/integrated-poc/`)
