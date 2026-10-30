@@ -1,8 +1,10 @@
 /** Which paths the public Alpha host serves. The tunnel forwards every path to this app,
- * so legacy and lab routes stay closed here; only the Alpha app and its assets are open. */
+ * so legacy and lab routes stay closed here; only the Alpha app and its assets are open.
+ * `/my` alone stays open: the sign-in screen links to the old local PoC there, whose data
+ * lives only in the browser. Nothing under `/my/` and no other legacy page is opened. */
 export type AlphaRouteDecision = 'allow' | 'home' | 'block';
 
-const ALPHA_EXACT = new Set(['/alpha', '/icon.svg', '/favicon.ico']);
+const ALPHA_EXACT = new Set(['/alpha', '/my', '/icon.svg', '/favicon.ico']);
 const ALPHA_PREFIXES = ['/alpha/', '/auth/', '/api/alpha/', '/_next/static/'] as const;
 
 export function alphaRouteDecision(pathname: string): AlphaRouteDecision {

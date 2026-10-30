@@ -5,7 +5,8 @@ const notFound = () => new NextResponse('Not Found', { status: 404,
   headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
 
 // R4h: the public tunnel sends every path on the Alpha host here. Legacy pages and the
-// unauthenticated /api/content-flow-review writer stay in the build but answer 404.
+// unauthenticated /api/content-flow-review writer stay in the build but answer 404;
+// only the old local PoC at /my stays open (alpha-route-guard.ts).
 export function middleware(request: NextRequest): NextResponse {
   const decision = alphaRouteDecision(request.nextUrl.pathname);
   if (decision === 'allow') return NextResponse.next();

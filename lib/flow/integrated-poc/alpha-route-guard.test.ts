@@ -12,13 +12,20 @@ test('Alpha paths and their assets stay open', () => {
     assert.equal(alphaRouteDecision(path), 'allow', path);
 });
 
+test('the old local PoC screen stays reachable from the sign-in link, but nothing under it', () => {
+  // The sign-in screen links to /my?personalWorkspacePoc=v1; the query is not part of the pathname.
+  assert.equal(alphaRouteDecision('/my'), 'allow');
+  for (const path of ['/my/', '/my/x', '/MY', '/my.json', '/myflows'])
+    assert.equal(alphaRouteDecision(path), 'block', path);
+});
+
 test('the root goes to /alpha', () => assert.equal(alphaRouteDecision('/'), 'home'));
 
 test('legacy pages, lab pages and the unauthenticated review writer are closed', () => {
-  for (const path of ['/my', '/flows', '/flows/new', '/flows/x/edit', '/calendar', '/f/passport', '/u/creator', '/flow-maps/m',
+  for (const path of ['/flows', '/flows/new', '/flows/x/edit', '/calendar', '/f/passport', '/u/creator', '/flow-maps/m',
     '/flow-maps/m/creator', '/flow-lab', '/flow-lab/p22-observation', '/ia-compare', '/restart/moving-d30', '/creators',
     '/content-flows', '/api/content-flow-review', '/api/alpha', '/api/alphax/account', '/alphabet', '/auth', '/_next/image',
-    '/_next/data/x.json', '/robots.txt', '/my/', '/MY', '/Alpha'])
+    '/_next/data/x.json', '/robots.txt', '/Alpha'])
     assert.equal(alphaRouteDecision(path), 'block', path);
 });
 
