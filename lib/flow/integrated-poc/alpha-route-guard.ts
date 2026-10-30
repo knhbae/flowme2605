@@ -11,3 +11,12 @@ export function alphaRouteDecision(pathname: string): AlphaRouteDecision {
   if (pathname === '/') return 'home';
   return ALPHA_EXACT.has(pathname) || ALPHA_PREFIXES.some(prefix => pathname.startsWith(prefix)) ? 'allow' : 'block';
 }
+
+/** Where `/` sends the browser. Next builds request URLs from its own listen address (127.0.0.1:3105
+ * behind the tunnel), so the public origin comes from the forwarded Host and protocol instead.
+ * Returns null for a missing or malformed Host. */
+export function alphaHomeLocation(host: string | null, forwardedProto: string | null, listenProtocol: string): string | null {
+  if (!host || !/^[a-z0-9.-]+(:\d{1,5})?$/i.test(host)) return null;
+  const protocol = forwardedProto === 'https' ? 'https' : listenProtocol === 'https:' ? 'https' : 'http';
+  return `${protocol}://${host}/alpha`;
+}
