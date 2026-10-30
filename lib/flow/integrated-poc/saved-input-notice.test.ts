@@ -15,6 +15,13 @@ function declaration(name: string) {
   assert.equal(found.length, 1, name);
   return found[0];
 }
+function functionText(name: string) {
+  const found: string[] = [];
+  const visit = (node: ts.Node) => { if (ts.isFunctionDeclaration(node) && node.name?.getText(tree) === name) found.push(node.getText(tree)); ts.forEachChild(node, visit); };
+  visit(tree);
+  assert.equal(found.length, 1, name);
+  return found[0];
+}
 function evaluate<T>(expression: string, scope: Record<string, unknown>): T {
   const code = ts.transpileModule('const extracted = (' + expression + ');', { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
   return new Function(...Object.keys(scope), code + '\nreturn extracted;')(...Object.values(scope)) as T;
@@ -104,4 +111,40 @@ test('a local refusal in a document editor counts the kept input as at risk', as
   assert.equal(count({ parked: [], active: [typed], atRisk }), 1, 'the kept input is announced');
   // Once the input saves or is reverted the editor reports false and normal typing is quiet again.
   assert.equal(evaluate<boolean>(failed, { draft: { invalid: false, error: '' } }), false);
+});
+
+// Codex re-review P2: '제작 작업본으로 복구' rebuilt the editors while a document still held input it had
+// refused. The old editor's unmount cleared the refusal, and its input stayed only as a stale live capture,
+// so the notice dropped it and the next capture of any other input dropped it from the 복구함 too.
+test('input an editor refused stays stored and announced after the editors are replaced', () => {
+  const refused = { documentId: 'doc', title: '작성 중 문서', raw: '- /\n  - [ ] 안건' };
+  const other = { documentId: 'doc-2', title: '다른 문서', raw: '새 글' };
+  const mergeRecoveryDrafts = evaluate<(parked: typeof typed[], active: typeof typed[]) => typeof typed[]>(functionText('mergeRecoveryDrafts'), {});
+  const mergeStructuralRecoveryEntries = (parked: unknown[], active: unknown[]) => [...parked, ...active];
+  const refs = { parkedDrafts: { current: [] as typeof typed[] }, activeDrafts: { current: [refused] }, parkedStructural: { current: [] }, activeStructural: { current: [] },
+    parkedCreator: { current: [] }, activeCreator: { current: null }, parkedSocial: { current: [] }, activeSocial: { current: [] } };
+  const notice = (active: typeof typed[], atRisk: boolean) => announcedRecoveries([refused], refs.parkedDrafts.current, active, atRisk, recoveryDraftIdentity);
+  assert.equal(notice([refused], true), 1, 'announced while the editor reports the refusal');
+  assert.equal(notice([refused], false), 0, 'before: once the editor is gone the stale capture looks like normal saving');
+
+  const calls: string[] = [];
+  const parkEditorInput = evaluate<() => void>(functionText('parkEditorInput'), { ...refs, mergeRecoveryDrafts, mergeStructuralRecoveryEntries, canonicalJson: JSON.stringify });
+  const replaceEditors = evaluate<() => void>(functionText('replaceEditors'), {
+    captureInput: () => { calls.push('capture'); return true; }, parkEditorInput: () => { calls.push('park'); parkEditorInput(); },
+    setPresentation: () => { calls.push('remount'); } });
+  replaceEditors();
+  assert.deepEqual(calls, ['capture', 'park', 'remount'], 'captured from the old editors, parked, then rebuilt');
+  assert.equal(notice([refused], false), 1, 'still announced after the unmount clears the refusal');
+  assert.equal(notice([other], false), 1, 'and after the new editors capture other input');
+  assert.deepEqual(mergeRecoveryDrafts(refs.parkedDrafts.current, [other]), [refused, other], 'the next capture keeps it in the 복구함');
+
+  // Every rebuild of the presentation-keyed editors parks first: replaceEditors, or openLatest's own hand-off.
+  assert.equal(source.match(/setPresentation\(/g)?.length, 2);
+  for (const name of ['restoreCreator', 'restoreStructuralDraft']) assert(functionText(name).includes('replaceEditors();'), name);
+  assert(source.includes('await controller.current?.refresh(); replaceEditors();'), 'after a preservation save');
+  const openLatest = functionText('openLatest');
+  assert(openLatest.indexOf('parkEditorInput();') > 0 && openLatest.indexOf('parkEditorInput();') < openLatest.indexOf('setPresentation('));
+  // It leaves only when it is resolved: a save whose confirmed text matches every stored draft, or the user clears.
+  assert.match(functionText('clearDrafts'), /parkedDrafts\.current = \[\]/);
+  assert.match(source, /saved\.value\.drafts\.every\(draft => draft\.documentId\s+&& !!M\.getDocument\(confirmed\.space\.text, draft\.documentId\)\s+&& M\.raw\(M\.getDocument\(confirmed\.space\.text, draft\.documentId\)\) === draft\.raw\)\) \{\s+const cleared = uiRecovery\.current\?\.clear\(saved\.value\);\s+if \(cleared\?\.ok\) \{ parkedDrafts\.current = \[\]; activeDrafts\.current = \[\]; setRecoveries\(null\); \}/);
 });

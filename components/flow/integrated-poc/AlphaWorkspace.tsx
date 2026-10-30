@@ -276,6 +276,21 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (!saved.ok) { setStorageError(true); return false; }
     setRecoveries(saved.value); return structuralSaved;
   }
+  /** Input captured from editors that are about to go away is left behind: it stays in the tab's
+   * recovery and is announced until a save matches it or the user clears it. */
+  function parkEditorInput() {
+    parkedDrafts.current = mergeRecoveryDrafts(parkedDrafts.current, activeDrafts.current);
+    parkedStructural.current = mergeStructuralRecoveryEntries(parkedStructural.current, activeStructural.current);
+    if (activeCreator.current && !parkedCreator.current.some(e => canonicalJson(e) === canonicalJson(activeCreator.current))) parkedCreator.current.push(activeCreator.current);
+    activeCreator.current = null;
+    parkedSocial.current = [...parkedSocial.current, ...activeSocial.current].filter((entry, index, list) => list.findIndex(other => canonicalJson(other) === canonicalJson(entry)) === index);
+    activeSocial.current = [];
+  }
+  /** Editors keyed by `presentation` restart from server text. Their input, including input an editor
+   * refused, must not live only as long as that editor: capture and park it before the swap. */
+  function replaceEditors() {
+    captureInput(); parkEditorInput(); setPresentation(value => value + 1);
+  }
   function connectConfirmedReview(prior: AlphaSyncSnapshot | null, next: AlphaSyncSnapshot) {
     const pending = prior?.pending, receipt = next.lastReceipt, context = reviewContext.current;
     const submitted = pending?.kind === 'social' && pending.intent.type === 'participation-submit' ? pending.intent.draft : null;
@@ -848,12 +863,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       if (!input) { setMessage('입력 상태를 확인하지 못했습니다. 현재 편집기를 유지합니다.'); return; }
       const before = store.snapshot();
       if (before.busy || before.pending) return;
-      parkedDrafts.current = mergeRecoveryDrafts(parkedDrafts.current, activeDrafts.current);
-      parkedStructural.current = mergeStructuralRecoveryEntries(parkedStructural.current, activeStructural.current);
-      if (activeCreator.current && !parkedCreator.current.some(e => canonicalJson(e) === canonicalJson(activeCreator.current))) parkedCreator.current.push(activeCreator.current);
-      activeCreator.current = null;
-      parkedSocial.current = [...parkedSocial.current, ...activeSocial.current].filter((entry, index, list) => list.findIndex(other => canonicalJson(other) === canonicalJson(entry)) === index);
-      activeSocial.current = [];
+      parkEditorInput();
       const refreshed = before.draft ? await store.discardConflict() : await store.refresh();
       if (!sameOwner()) return;
       // Composition may defer the lock. Re-capture and compare every current owner,
@@ -911,7 +921,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       return { ok: true, data: next, changed: true, result: entry.documentId };
     });
     if (result.ok && store === controller.current && epoch === sessionEpochRef.current && currentOwnerRef.current === session.userId && !disposed.current) {
-      setDestination({ view: 'space', id: result.result }); setPresentation(value => value + 1); setMessage('보관한 문서·폴더와 행을 복구했습니다.');
+      setDestination({ view: 'space', id: result.result }); replaceEditors(); setMessage('보관한 문서·폴더와 행을 복구했습니다.');
     }
   }
   function clearStructuralDrafts() {
@@ -929,7 +939,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const result = await mutate('제작 작업본 복구', current => setProgramCreatorWorking(current, {
       actorId: session.userId, expectedWorking: current.spaces[session.userId].creatorWorkspace?.working ?? null, working,
     }, now), { history: false, alphaCreator: { type: 'working', now, working } });
-    if (result.ok) { setCreatorSeen(true); setCreatorSelection(working.draftId); setDestination({ view: 'creator', id: working.draftId }); setPresentation(n => n + 1);
+    if (result.ok) { setCreatorSeen(true); setCreatorSelection(working.draftId); setDestination({ view: 'creator', id: working.draftId }); replaceEditors();
       setMessage(entry.auxiliaries.length ? '제작 작업본을 복구했습니다. 별도로 보관한 비교·구조 입력은 아래 원문을 확인해 다시 적용해 주세요.' : '제작 작업본을 복구했습니다. 저장 판본과 개인 실행은 그대로입니다.'); }
     else setMessage('현재 제작 구조와 안전하게 합칠 수 없습니다. 보관 원문과 구조 자료는 유지했습니다. 현재 저장본을 확인해 주세요.');
   }
@@ -1307,7 +1317,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       <button type="button" aria-label="확인이 필요한 입력 안내 닫기" onClick={() => setSavedNoticeClosedAt(savedTotal)}>닫기</button></p>}
     {preservation && snapshot?.account && snapshot.references && <AlphaPreservationPanel key={session.userId} account={snapshot.account} references={snapshot.references}
       email={email} accessToken={session.accessToken} returnFocusTarget={preservationOpener.current} onClose={closePreservation} onSaved={async () => {
-        ownMutation.current++; try { await controller.current?.refresh(); setPresentation(value => value + 1); } finally { ownMutation.current--; }
+        ownMutation.current++; try { await controller.current?.refresh(); replaceEditors(); } finally { ownMutation.current--; }
       }} />}
     {destination.view !== 'space' && inputProtectionFor(true)}
     {leave && <section className={styles.problem} aria-label="로그아웃 전 입력 확인"><p>저장하지 않은 입력을 이 탭에 보관한 뒤 로그아웃할 수 있습니다. 같은 계정으로 돌아와 복구하세요.</p>
