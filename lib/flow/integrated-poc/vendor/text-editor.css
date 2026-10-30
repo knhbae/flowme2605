@@ -127,7 +127,8 @@
   color: var(--flowme-b-ink);
   font-weight: 700;
 }
-.tle-property-date-label { color: var(--flowme-b-muted); font-weight: 400; }
+/* W3 follow-up: from the owning task's title (measured), falling back to the line's own indent. */
+.tle-property-date-label { left: var(--tle-label-inset, var(--tle-indent, 0px)); color: var(--flowme-b-muted); font-weight: 400; }
 /* W3: a heading without its #s, bold; a memo without '- 메모:' (kept in the flow, transparent), muted with a 2px rail. */
 /* The heading title wraps over the RAW box it replaces: the same advances (a stroke stands in for bold, which is
  * wider), the RAW indent as a first-line indent, no ellipsis. As the line's suffix it never needs more lines than

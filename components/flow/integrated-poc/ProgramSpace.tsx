@@ -75,6 +75,9 @@ export type ProgramSpaceProps = {
   capabilities?: ProgramSpaceCapabilities;
   /** Presentation slots only: authority and recovery remain owned by the host. */
   noteHeader?: React.ReactNode;
+  /** W11: the note header shows a notice line (saved input or the development notice); the new-document line
+   *  then stays for screen readers only, so one notice line shows around the title. */
+  noteNoticeShown?: boolean;
   noteStatus?: React.ReactNode;
   selectedDocumentId?: string; onUndo: () => Promise<void>; onRedo: () => Promise<void>;
   outputReturn?: ProgramDestination;
@@ -1423,7 +1426,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           {props.hostMainTabs ? selectedDocumentTools && <div className={styles.titleActions}>{selectedDocumentTools}</div>
             : (!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</div>
         {props.noteHeader}
-        <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
+        <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice data-quiet={props.noteNoticeShown ? 'true' : undefined}>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
         {!selectedDoc && props.noteStatus}
         {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>
           {/* A new account starts here with no document; the title row keeps only a document's tools, so the

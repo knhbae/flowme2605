@@ -280,6 +280,8 @@
 /* The publication notice shows once per tab with a 확인 button; the header badge reopens it at any time. */
 .devNotice { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .devNotice > .notice { flex: 1 1 auto; min-width: 0; }
+/* W11: closed, the notice is one line (the full text opens below it); it shares the line with 확인. */
+.devNotice > .notice:not([open]) > summary { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .devNotice > button { flex: 0 0 auto; min-width: 48px; min-height: 48px; }
 .page[data-alpha-frame="b"] .header .development { position: relative; padding: 0; }
 .page[data-alpha-frame="b"] .header .development > summary { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 7px; list-style: none; cursor: pointer; }

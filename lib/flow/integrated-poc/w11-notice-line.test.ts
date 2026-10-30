@@ -1,0 +1,45 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { readFileSync } from 'node:fs';
+
+// W11 (writing W0 items 22·04): around the title one notice line at most, by priority saved input > the
+// development notice > the new-document notice. The saved-input notice stays (it is about kept input; the 더보기
+// badge alone is too quiet) and moves into the note chrome's one slot. Plus the W3 follow-up: a date or time
+// label starts at its task's title, as the W0 mockup draws it, not at the left edge.
+const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+const host = read('../../../components/flow/integrated-poc/AlphaWorkspace.tsx');
+const space = read('../../../components/flow/integrated-poc/ProgramSpace.tsx');
+const spaceCss = read('../../../components/flow/integrated-poc/ProgramSpace.module.css');
+const hostCss = read('../../../components/flow/integrated-poc/AlphaWorkspace.module.css');
+const vendor = read('./vendor/text-editor.cjs');
+const editorCss = read('./vendor/text-editor.css');
+
+test('one slot under the title: saved input first, then the development notice; the new-document line goes quiet', () => {
+  assert.match(host, /const noteNotice = savedNotice \|\| publicNotice, noteNoticeShown = !!savedNotice \|\| !devNoticeSeen;/);
+  assert.match(host, /noteHeader=\{usesNoteChrome \? noteNotice : undefined\} noteNoticeShown=\{usesNoteChrome && noteNoticeShown\}/);
+  // Outside the note chrome both keep their old places; inside it, nothing above the work pane.
+  assert.match(host, /\{!usesNoteChrome && savedNotice\}/);
+  assert.match(host, /\{!usesNoteChrome && publicNotice\}/);
+  assert.equal(host.match(/className=\{styles\.savedNotice\}/g)?.length, 1);
+  // The saved-input notice itself is unchanged: count, 복구함 열기, 닫기.
+  assert.match(host, /const savedNotice = savedNoticeShown && <p className=\{styles\.savedNotice\} role="status"><span>확인이 필요한 입력 \{savedTotal\}개<\/span>\s*<button type="button" onClick=\{openRecoveryBox\}>복구함 열기<\/button>/);
+  assert.match(space, /data-writing-entry-notice data-quiet=\{props\.noteNoticeShown \? 'true' : undefined\}/);
+  const quiet = spaceCss.slice(spaceCss.indexOf('.writingEntryNotice[data-quiet="true"] {'));
+  for (const kept of ['position: absolute;', 'width: 1px;', 'height: 1px;', 'overflow: hidden;', 'clip-path: inset(50%);']) assert(quiet.slice(0, quiet.indexOf('}')).includes(kept), kept);
+});
+
+test('the development notice, closed, is one line beside 확인', () => {
+  assert.match(hostCss, /\.devNotice > \.notice:not\(\[open\]\) > summary \{ overflow: hidden; white-space: nowrap; text-overflow: ellipsis; \}/);
+  assert.match(hostCss, /\.devNotice \{ display: flex; align-items: center; gap: 8px; min-width: 0; \}/);
+});
+
+test('W3 follow-up: a date or time label starts at its task title, measured after the reading insets', () => {
+  const geometry = vendor.slice(vendor.indexOf('function syncGeometry('), vendor.indexOf('// Everything below measures the final layout.'));
+  assert(geometry.indexOf('applyReadingTaskInset') < geometry.indexOf('syncPropertyLabelInset'));
+  const sync = vendor.slice(vendor.indexOf('function syncPropertyLabelInset('), vendor.indexOf('function applyPropertyLabelInset('));
+  assert.match(sync, /const owner = row\.dataset\.checkOwner === undefined \? null : rows\[Number\(row\.dataset\.checkOwner\)\];/);
+  assert.match(sync, /owner\.querySelector\('\.tle-task-title, \.tle-task-title-complete'\)/);
+  // A RAW owner (the caret's row, or composing) is measured on its text, so the label does not jump.
+  assert.match(sync, /const text = owner\.firstChild\.textContent \|\| '', task = TASK\.exec\(text\);/);
+  assert.match(editorCss.replace(/\r\n/g, '\n'), /\.tle-property-date-label \{ left: var\(--tle-label-inset, var\(--tle-indent, 0px\)\); color: var\(--flowme-b-muted\); font-weight: 400; \}/);
+});
