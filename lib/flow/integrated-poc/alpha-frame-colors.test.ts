@@ -45,6 +45,40 @@ test('no green or warm-paper literal is left in the editor frame, the dialogs an
   assert(editor.includes('.editor button:focus-visible, .editor input:focus-visible { outline: 2px solid var(--flowme-b-primary); outline-offset: 2px; }'));
 });
 
+// W9a (items 30·31): the publisher, the conflict review and the recurrence surfaces reached from writing.
+// Their greens and warm grays move to the navy tokens; progress, late, warning and error get meaning tokens
+// with the values already in use, and these modules use the warning and error ones.
+const W9A = ['ProgramPublisher', 'AlphaConflictReview', 'ProgramRecurrence'].map(name => `${name}.module.css`);
+const MEANING = ['progress-ink', 'progress-bg', 'progress-border', 'late-ink', 'warning-ink', 'warning-bg', 'warning-border', 'error-ink', 'error-bg', 'error-border'];
+
+test('no green or warm literal is left in the publisher, conflict review and recurrence; meaning colors are tokens', () => {
+  for (const name of W9A) {
+    const css = read(name), literals = [...css.matchAll(/#([0-9a-fA-F]{3,8})\b/g)].map(match => `#${match[1].toLowerCase()}`);
+    assert.deepEqual(literals.filter(value => greenish(rgb(value))), [], name);
+    assert.deepEqual([...new Set(literals)], ['#fff'], `${name}: only white is left as a literal`);
+    assert.deepEqual([...css.matchAll(/rgba?\(/g)], [], name);
+  }
+  for (const name of MEANING) assert(token(name), name);
+  assert(read('ProgramPublisher.module.css').includes('.error{background:var(--flowme-b-error-bg);border-left:3px solid var(--flowme-b-error-border);color:var(--flowme-b-error-ink);'));
+  assert(read('ProgramPublisher.module.css').includes('.warning{margin:16px 26px;padding:14px;border-radius:8px;background:var(--flowme-b-warning-bg);color:var(--flowme-b-warning-ink)}'));
+  const recurrence = read('ProgramRecurrence.module.css');
+  assert(recurrence.includes('.error { color: var(--flowme-b-error-ink); }'));
+  assert(recurrence.includes('border: 1px solid var(--flowme-b-control); border-radius: 7px;'), 'the recurrence fields keep a 3:1 boundary');
+});
+
+test('W9a contrast: changed text is 4.5:1 on its surfaces, field boundaries and focus rings 3:1', () => {
+  const white = '#ffffff';
+  const text: [string, string[]][] = [['ink', ['surface', 'surface-subtle', 'selected']], ['muted', ['surface', 'surface-subtle']],
+    ['primary-strong', ['surface', 'selected']], ['primary', ['surface']], ['error-ink', ['error-bg', 'surface']], ['warning-ink', ['warning-bg']],
+    ['progress-ink', ['progress-bg']], ['late-ink', ['surface']]];
+  const value = (name: string) => name === 'surface' ? white : token(name);
+  for (const [ink, surfaces] of text) for (const surface of surfaces) assert(contrast(value(ink), value(surface)) >= 4.5, `${ink} on ${surface}`);
+  assert(contrast(white, token('primary')) >= 4.5, 'the primary button label');
+  assert(contrast(token('control'), white) >= 3, 'field boundaries');
+  assert(contrast(token('primary'), white) >= 3, 'focus rings');
+  assert(contrast(token('error-border'), token('error-bg')) >= 3, 'the error stripe');
+});
+
 test('every Alpha dialog backdrop is the one scrim, still defined where ::backdrop does not inherit', () => {
   const rules = modules.flatMap(name => [...read(name).matchAll(/([.\w:-]+)::backdrop\s*\{([^}]*)\}/g)].map(match => ({ name, selector: match[1], body: match[2].trim() })));
   // ProgramApp is the /my PoC; its backdrop is already navy and outside Alpha.

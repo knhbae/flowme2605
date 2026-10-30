@@ -1,38 +1,38 @@
-.surface { margin: 1rem 0; padding: 1rem; border: 1px solid #dedbd3; border-radius: 12px; background: #fff; color: #242922; }
+.surface { margin: 1rem 0; padding: 1rem; border: 1px solid var(--flowme-b-line); border-radius: 12px; background: #fff; color: var(--flowme-b-ink); }
 .surface h2 { margin: 0 0 .65rem; font-size: 1rem; }
 .surface p { font-size: .85rem; line-height: 1.5; }
 .controls { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
-.surface button, .surface select, .surface input { font: inherit; padding: .5rem .65rem; border: 1px solid #d1d7ce; border-radius: 7px; background: #fff; color: inherit; min-height: 40px; max-width: 100%; }
+.surface button, .surface select, .surface input { font: inherit; padding: .5rem .65rem; border: 1px solid var(--flowme-b-control); border-radius: 7px; background: #fff; color: inherit; min-height: 40px; max-width: 100%; }
 .surface button:disabled { opacity: .5; }
-.surface button:focus-visible, .surface input:focus-visible, .surface select:focus-visible { outline: 2px solid #31583d; outline-offset: 2px; }
+.surface button:focus-visible, .surface input:focus-visible, .surface select:focus-visible { outline: 2px solid var(--flowme-b-primary); outline-offset: 2px; }
 .rows { list-style: none; margin: .75rem 0; padding: 0; }
-.row { padding: .65rem 0; border-top: 1px solid #eee; }
+.row { padding: .65rem 0; border-top: 1px solid var(--flowme-b-line); }
 .title { display: block; text-align: left; overflow-wrap: anywhere; }
-.meta { color: #667062; margin: .35rem 0; }
-.detail { padding: .8rem; background: #f7f8f4; border-radius: 8px; margin-top: .5rem; }
-.error { color: #9a322b; }
-.recovery { margin-block: 1rem; padding: .75rem; border: 1px solid #d9c7a8; border-radius: 8px; background: #fffcf6; }
+.meta { color: var(--flowme-b-muted); margin: .35rem 0; }
+.detail { padding: .8rem; background: var(--flowme-b-surface-subtle); border-radius: 8px; margin-top: .5rem; }
+.error { color: var(--flowme-b-error-ink); }
+.recovery { margin-block: 1rem; padding: .75rem; border: 1px solid var(--flowme-b-warning-border); border-radius: 8px; background: var(--flowme-b-warning-bg); }
 .recovery ul { padding-left: 1.2rem; }
 .recovery li { margin-block: .5rem; overflow-wrap: anywhere; }
 .recovery li button { margin-left: .5rem; }
 .comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
 .comparison pre { max-height: 18rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .75rem; }
 .changes { margin-block: .5rem 1rem; }
-.changes > div { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) minmax(0, 1fr); gap: .5rem; padding-block: .6rem; border-bottom: 1px solid #dedbd3; }
+.changes > div { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) minmax(0, 1fr); gap: .5rem; padding-block: .6rem; border-bottom: 1px solid var(--flowme-b-line); }
 .changes dt { font-weight: 600; }
 .changes dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
-.changes dd span { display: block; font-size: .75rem; color: #667062; margin-bottom: .25rem; }
+.changes dd span { display: block; font-size: .75rem; color: var(--flowme-b-muted); margin-bottom: .25rem; }
 .sourceDetails summary { cursor: pointer; padding-block: .65rem; }
 .recovery h3, .recovery h4 { margin-block: .4rem; font-size: .95rem; }
 .surface input[type='checkbox'] { width: 1.1rem; height: 1.1rem; min-height: 0; padding: 0; margin-right: .3rem; vertical-align: middle; }
-.plan { margin-top: 1rem; padding-top: .75rem; border-top: 1px solid #d1d7ce; min-width: 0; }
+.plan { margin-top: 1rem; padding-top: .75rem; border-top: 1px solid var(--flowme-b-line); min-width: 0; }
 .plan h4 { font-size: 1rem; margin: 0 0 .5rem; }
 .plan fieldset { display: flex; flex-wrap: wrap; gap: .5rem 1rem; border: 0; padding: 0; margin: .5rem 0; min-width: 0; }
 .plan fieldset label { display: flex; align-items: center; min-height: 44px; gap: .4rem; }
 .plan input[type='radio'] { width: 1.1rem; height: 1.1rem; min-height: 0; margin: 0; padding: 0; }
 .plan > label { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-block: .75rem; }
 .plan button, .plan input[type='date'] { min-height: 44px; }
-.planPreview { margin-block: .75rem; padding: .75rem; border-left: 3px solid #31583d; background: #fff; overflow-wrap: anywhere; }
+.planPreview { margin-block: .75rem; padding: .75rem; border-left: 3px solid var(--flowme-b-primary); background: #fff; overflow-wrap: anywhere; }
 .planPreview ul { display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; padding-left: 1.2rem; }
 .planRecovery summary { cursor: pointer; min-height: 44px; padding-block: .7rem; box-sizing: border-box; overflow-wrap: anywhere; }
 .planRecovery button { min-height: 44px; white-space: normal; }
