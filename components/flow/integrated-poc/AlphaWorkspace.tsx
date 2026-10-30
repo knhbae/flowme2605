@@ -21,6 +21,7 @@ import type { ProgramProposalReviewDraft } from '@/lib/flow/integrated-poc/revie
 import { programInputBoundaryCurrent, readProgramInputBoundary, programInputCanRelease, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
 import { type ProgramDestination, type ProgramMutate, programErrorMessage, PROGRAM_BUSY_NOTICE, PROGRAM_QUEUED_NOTICE, PROGRAM_SOURCE_QUEUED_NOTICE } from '@/lib/flow/integrated-poc/ui-contract';
 import { automaticReadToAwait, queueTap, sourceReturnWait, unqueueTap, type QueuedTaps } from '@/lib/flow/integrated-poc/automatic-read-wait';
+import { AUTOMATIC_READ_INPUT_EVENTS, automaticReadSchedule } from '@/lib/flow/integrated-poc/automatic-read-idle';
 import { pendingResultUnknown } from '@/lib/flow/integrated-poc/save-status';
 import { programServerStatus } from '@/lib/flow/integrated-poc/program-status';
 import { ProgramServerStatusContext, type ProgramServerStatusView } from './program-status-context';
@@ -568,16 +569,21 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   }, [preservation, snapshot?.busy, snapshot?.pending, snapshot?.ownerId, snapshot?.account, snapshot?.references, session.userId]);
   useEffect(() => {
     const refresh = refreshAutomatically;
+    // A screen left without input stops the interval read after ten minutes (egress).
+    const reads = automaticReadSchedule(Date.now, refresh);
     const beforeUnload = (event: BeforeUnloadEvent) => {
       captureInput();
       if (hasInput() || controller.current?.snapshot().pending) { event.preventDefault(); event.returnValue = ''; }
     };
-    const visibility = () => { captureInput(); refresh(); };
-    window.addEventListener('focus', refresh); window.addEventListener('online', refresh);
+    const visibility = () => { captureInput(); if (document.visibilityState === 'visible') reads.returned(); else refresh(); };
+    const input = { capture: true, passive: true };
+    window.addEventListener('focus', reads.returned); window.addEventListener('online', refresh);
     document.addEventListener('visibilitychange', visibility); window.addEventListener('beforeunload', beforeUnload);
-    const timer = window.setInterval(refresh, POLL_MS);
-    return () => { clearInterval(timer); window.removeEventListener('focus', refresh); window.removeEventListener('online', refresh);
-      document.removeEventListener('visibilitychange', visibility); window.removeEventListener('beforeunload', beforeUnload); };
+    for (const type of AUTOMATIC_READ_INPUT_EVENTS) window.addEventListener(type, reads.input, input);
+    const timer = window.setInterval(reads.interval, POLL_MS);
+    return () => { clearInterval(timer); window.removeEventListener('focus', reads.returned); window.removeEventListener('online', refresh);
+      document.removeEventListener('visibilitychange', visibility); window.removeEventListener('beforeunload', beforeUnload);
+      for (const type of AUTOMATIC_READ_INPUT_EVENTS) window.removeEventListener(type, reads.input, input); };
   }, []);
   const performMutation: ProgramMutate = async (label, build, options) => {
     const store = controller.current, owner = currentOwnerRef.current, epoch = sessionEpochRef.current;
