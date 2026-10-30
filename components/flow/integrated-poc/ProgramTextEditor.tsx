@@ -340,7 +340,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const compositionAnchorRef = useRef<{ area: HTMLTextAreaElement; offset: number } | null>(null);
   // One retry chain at a time for the current held press, capped by elapsed time.
   const barRetry = useRef<{ frame: number; serial: number; since: number } | null>(null);
-  useEffect(() => { releaseHeldBar(); }, [composing, draft.saving, inputLocked, props.readOnly, regionPending]);
+  useEffect(() => {
+    // A press held through a composition is released after the compositionend event has finished. The editor
+    // hears compositionend in the capture phase, before the native editor does, so releasing here would find the
+    // native editor still composing and every bar action (indent, outdent, task, enter) would be refused and lost.
+    if (!composing && barHold.held()) { const timer = setTimeout(releaseHeldBar, 0); return () => clearTimeout(timer); }
+    releaseHeldBar();
+  }, [composing, draft.saving, inputLocked, props.readOnly, regionPending]);
   // Other typing or leaving the editor cancels a held press; the composition's own input does not,
   // including a final insertText some keyboards send right after compositionend.
   useEffect(() => {
