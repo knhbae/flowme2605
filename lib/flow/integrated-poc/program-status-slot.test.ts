@@ -41,13 +41,14 @@ function slot(state: { server?: Partial<NonNullable<Server>> | null; storageErro
     retryableNativeHandoff: null, retryableRejectedSocialDraft: null, ...state.server } as NonNullable<Server>;
   const server = programServerStatus({ snapshot, storageError: !!state.storageError, external: false, participationRecovery: false });
   const serverRecovery = state.serverRecovery ? h('details', { 'data-test': 'server-recovery' }, h('summary', null, h('span', null, '다시 확인'))) : null;
-  const serverView = { ...server, recovery: serverRecovery, extras: null };
+  const serverBody = state.serverRecovery ? h('section', { 'data-test': 'server-body' }, h('button', null, '다시 확인')) : null;
+  const serverView = { ...server, recovery: serverRecovery, recoveryBody: serverBody, extras: null };
   const editorStatus = programEditorStatus({ readOnly: false, error: !!state.error, locked: false, saving: false, checking: false, pending: false });
   const serverWins = serverStatusWins(serverView, editorStatus), statusWarn = (serverWins ? serverView.level : editorStatus.level) <= 4;
   const statusLabel = serverWins ? serverView.label : editorStatus.label, hasRecovery = !!serverView.recovery || !!state.error;
   const quietStatus = !!state.typing && !statusWarn;
   const scope = { serverView, styles, statusWarn, hasRecovery, statusLabel, quietStatus, draft: { error: state.error ? '저장하지 못했습니다' : '' },
-    editorRecovery: (announce: boolean) => h('details', { 'data-test': 'editor-recovery', announce }, h('summary', null, '다시 저장 · 입력한 원문 받기')),
+    editorRecovery: (announce: boolean, inner?: unknown) => h('details', { 'data-test': 'editor-recovery', announce }, h('summary', null, '다시 저장 · 입력한 원문 받기'), inner ?? null),
     props: { noteStatus: 'host line' }, editorStatus };
   const nodes = all(run(slotExpression, scope));
   const barStatus = quietStatus ? '●' : statusWarn ? `⚠ ${statusLabel}` : statusLabel;
@@ -63,7 +64,8 @@ function slot(state: { server?: Partial<NonNullable<Server>> | null; storageErro
 test('F1: the server\'s 다시 확인 stays when the editor\'s save error wins, and the editor\'s box stays when the server wins', () => {
   // Unsaved locally (3) while the server cannot tell whether the last request landed (4).
   const unknown = slot({ server: { pending: {} as never, busy: false }, serverRecovery: true, error: true });
-  assert.deepEqual(unknown.recoveries, ['server-recovery', 'editor-recovery']);
+  // W2: one box, with the server's 다시 확인 inside the editor's.
+  assert.deepEqual(unknown.recoveries, ['editor-recovery', 'server-body']);
   assert.deepEqual(unknown.live, ['alert:저장 확인 필요:srOnly']);
   // The other way round: a recovery-required server (1) wins the words; the editor's actions remain.
   const required = slot({ server: { status: 'recovery-required' }, error: true });

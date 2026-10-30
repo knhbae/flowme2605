@@ -282,5 +282,17 @@
   .writingBar > button.barStatus { flex: 0 1 8.5em; width: auto; min-width: 0; padding: 0 4px; border: 0; background: transparent; font-size: 13px; color: #b45309; }
 }
 
+/* W2: the move notice and the last message, under the body. The body's height ends above them. */
+.notices { display: grid; gap: 4px; padding: 4px 8px 0; }
+.notices:empty { display: none; }
+.notices > .moveNotice { border-radius: 8px; }
+.notices > .message { display: flex; align-items: center; gap: 4px; margin: 0; padding: 0 0 0 12px; border-radius: 8px; background: var(--flowme-b-surface-subtle, #f4f6fb); line-height: 20px; }
+.notices > .message > span { flex: 1; min-width: 0; padding-block: 4px; overflow-wrap: anywhere; }
+.editor .notices > .message > button { flex: 0 0 44px; border-color: transparent; background: transparent; color: var(--flowme-b-muted); padding: 0; }
+/* W2: one recovery box. With the host's recovery too, each side is a group with its own actions. */
+.recoveryActions { display: flex; flex-wrap: wrap; gap: 6px; }
+.recoveryGroup > h4 { margin: 0 0 6px; font-size: 13px; font-weight: 650; }
+.recoveryGroup + .recoveryGroup { margin-top: 10px; padding-top: 10px; border-top: 1px solid #efd8c2; }
+
 /* R8b: the toolbar opens the Flow·반복 sheet. */
 .toolbar > .repeatButton { white-space: nowrap; color: var(--flowme-b-primary-strong); }
