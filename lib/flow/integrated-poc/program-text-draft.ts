@@ -32,6 +32,8 @@ export interface ProgramTextDraftState {
   progressConflict?: TextProgressCheckConflict;
   /** The refused line (index in raw) when the model named one; shown with the reason, and put back on request. */
   problemLine?: number;
+  /** One line about a finished folder line: moved to a folder, its folder renamed, or the move put back. */
+  folderNotice?: string;
 }
 
 /** Serializes draft commits while preserving newer typing and rejected raw input. */
@@ -54,13 +56,13 @@ export function createProgramTextDraft(
   let submitted: { before: TextWorkspaceState; next: TextWorkspaceState; generation: number; allowBasicChecks: boolean } | null = null;
   const pasteHistory: { before: TextWorkspaceState; after: TextWorkspaceState }[] = [];
   const report = () => notify({ ...state });
-  type Input = { inputType: string; inputSplice?: TextInputSplice; taskSplit?: TextTaskSplitIntent; compositionGeneration?: number; folderHold?: number[]; folderDeclare?: number[]; folderLink?: number[] };
-  const signature=(input?:Input)=>JSON.stringify(input?{inputType:input.inputType,inputSplice:input.inputSplice,taskSplit:input.taskSplit,compositionGeneration:input.compositionGeneration,folderHold:input.folderHold,folderDeclare:input.folderDeclare,folderLink:input.folderLink}:null);
+  type Input = { inputType: string; inputSplice?: TextInputSplice; taskSplit?: TextTaskSplitIntent; compositionGeneration?: number; folderHold?: number[]; folderDeclare?: number[]; folderLink?: number[]; folderMove?: number[] };
+  const signature=(input?:Input)=>JSON.stringify(input?{inputType:input.inputType,inputSplice:input.inputSplice,taskSplit:input.taskSplit,compositionGeneration:input.compositionGeneration,folderHold:input.folderHold,folderDeclare:input.folderDeclare,folderLink:input.folderLink,folderMove:input.folderMove}:null);
   function deriveRaw(raw:string,input?:Input){
       const baseRaw = M.raw(M.getDocument(state.committed, docId));
       const before = state.working;
       const committedLines = M.getDocument(state.committed, docId)?.lines ?? [];
-      const canRestoreCommitted = !input?.folderDeclare && !input?.folderLink && raw === baseRaw && programSame({ ...before,
+      const canRestoreCommitted = !input?.folderDeclare && !input?.folderLink && !input?.folderMove && raw === baseRaw && programSame({ ...before,
         documents: before.documents.map(doc => doc.id === docId ? { ...doc, lines: committedLines } : doc),
         flows: before.flows.map(doc => doc.id === docId ? { ...doc, lines: committedLines } : doc),
       }, state.committed);
@@ -79,9 +81,14 @@ export function createProgramTextDraft(
         : canRestoreCommitted ? { state: state.committed, reason: null }
           : proof ? { state: proof.next.workspace, reason: null }
           : M.editTextResult(before, docId, raw, { folderText: true, ...(input?.inputSplice ? { inputSplice: input.inputSplice } : {}), ...(input?.taskSplit ? { taskSplit: input.taskSplit } : {}),
-            ...(input?.folderHold ? { folderHold: input.folderHold } : {}), ...(input?.folderDeclare ? { folderDeclare: input.folderDeclare } : {}), ...(input?.folderLink ? { folderLink: input.folderLink } : {}) });
+            ...(input?.folderHold ? { folderHold: input.folderHold } : {}), ...(input?.folderDeclare ? { folderDeclare: input.folderDeclare } : {}), ...(input?.folderLink ? { folderLink: input.folderLink } : {}), ...(input?.folderMove ? { folderMove: input.folderMove } : {}) });
       return {baseRaw,before,proof,edit};
   }
+  const blankless = (text: TextWorkspaceState) => M.raw(M.getDocument(text, docId)).split('\n').filter(line => line.trim()).join('\n');
+  const onlyBlankLinesAdded = (from: TextWorkspaceState, to: TextWorkspaceState) => blankless(from) === blankless(to)
+    && programSame({ ...from, documents: [], flows: [] }, { ...to, documents: [], flows: [] });
+  // The last finished folder line move, for one undo right after it (D3 B).
+  let lastMove: { before: TextWorkspaceState; after: TextWorkspaceState } | null = null;
   let prepared: {state:ProgramTextDraftState;raw:string;signature:string;ownerRevision:number|undefined;context:unknown;value:ReturnType<typeof deriveRaw>}|null=null;
   const basicCheckReady=()=>!state.invalid&&(!state.saving||submitted?.allowBasicChecks===true);
   const api = {
@@ -153,6 +160,7 @@ export function createProgramTextDraft(
         dirty: state.saving || acceptedRaw !== baseRaw || next !== state.committed,
         progressConflict: !protectedChange && invalid && edit.reason === 'progress-check-conflict' ? edit.progressConflict : undefined,
         problemLine: !protectedChange && invalid ? edit.folderLine : undefined,
+        folderNotice: !invalid && edit.folderMoved ? edit.folderMoved.renamed ? `폴더 이름을 ‘${edit.folderMoved.title}’로 바꿨습니다` : `‘${edit.folderMoved.title}’ 폴더로 옮겼습니다` : undefined,
         error: protectedChange ? '보관·휴지통·복구 문서나 반복 규칙·보류 항목의 원문 표시는 여기서 바꿀 수 없습니다. 해당 줄을 원래대로 되돌리면 일반 할 일과 메모를 계속 편집할 수 있습니다. 입력은 보관 중입니다.'
           : !invalid ? '' : folderError || (edit.reason === 'identity-ambiguous'
             ? '여러 줄의 변경을 기존 항목과 연결하지 못해 반영하지 않았습니다. 제목 수정과 줄 이동은 나누고, 여러 제목은 한 줄씩 수정해 저장해 주세요. 입력은 그대로 남아 있습니다.'
@@ -161,6 +169,9 @@ export function createProgramTextDraft(
               : edit.reason === 'progress-check-conflict'
                 ? '진행 기록과 다른 체크 표시로 바꿀 수 없습니다. 체크 표시를 되돌린 뒤 ‘진행 조절’에서 변경해 주세요. 입력은 남아 있습니다.'
               : '입력을 안전하게 반영하지 못했습니다. 변경을 나눠서 다시 시도해 주세요. 입력은 그대로 남아 있습니다.') };
+      // The Enter that finished the line only adds an empty line; the move stays the one thing ↶ puts back.
+      if (!invalid) lastMove = edit.folderMoved ? { before, after: state.working }
+        : lastMove && lastMove.after === before && onlyBlankLinesAdded(lastMove.after, state.working) ? { ...lastMove, after: state.working } : null;
       label = '문서 편집'; groupId = `text:${docId}`; report();
       return !invalid;
     },
@@ -169,10 +180,29 @@ export function createProgramTextDraft(
      * False when there is nothing to do, or when the judgement refused it (the error keeps the input). */
     declareFolderLine(lineIndex: number, linkOnly = false) {
       if (state.invalid) return false;
-      const lines = linkOnly ? { folderLink: [lineIndex] } : { folderDeclare: [lineIndex] };
+      const lines = linkOnly ? { folderLink: [lineIndex] } : { folderDeclare: [lineIndex], folderMove: [lineIndex] };
       const check = M.editTextResult(state.working, docId, state.raw, { folderText: true, ...lines });
       if (check.reason === null && check.state === state.working) return false;
       return api.updateRaw(state.raw, '', { inputType: 'folderDeclare', ...lines });
+    },
+    canUndoFolderMove: () => !!lastMove && !state.invalid && state.working === lastMove.after,
+    /** One undo right after a folder line moved: the state before the move, with the line's name back. */
+    undoFolderMove() {
+      if (!api.canUndoFolderMove()) return false;
+      const before = lastMove!.before; lastMove = null;
+      const doc = M.getDocument(before, docId); if (!doc) return false;
+      const raw = doc.lines.map(line => {
+        const binding = before.bindings.find(row => row.kind === 'scope' && row.docId === docId && row.lineId === line.id);
+        const folder = binding && binding.kind === 'scope' ? before.folders.find(entry => entry.id === binding.scopeId) : undefined;
+        return folder && /^ *- \//.test(line.text) ? /^ */.exec(line.text)![0] + '- /' + folder.title : line.text;
+      }).join('\n');
+      const restored = M.editTextResult(before, docId, raw, { folderText: true });
+      if (restored.reason !== null || !validateWorkspace(restored.state)) return false;
+      inputGeneration++; prepared = null; privateTaskSchedule = undefined;
+      const working = documentInput?.install(restored.state) ?? restored.state;
+      state = { ...state, working, raw: M.raw(M.getDocument(working, docId)), dirty: true, invalid: false, error: '',
+        progressConflict: undefined, problemLine: undefined, folderNotice: '폴더 옮김을 되돌렸습니다' };
+      label = '폴더 옮김 되돌리기'; groupId = `text:${docId}`; report(); return true;
     },
     apply(next: TextWorkspaceState, nextLabel: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule']) {
       if (state.invalid || state.saving || !M.validate(next) || !validateWorkspace(next) || next === state.working) return false;

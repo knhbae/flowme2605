@@ -23,8 +23,11 @@ const edit = (state: TextWorkspaceState, raw: string) => M.editTextResult(state,
 
 test('the model names the refused line: a rename onto a taken name, a foreign tag, the folder limit, a broken tag', () => {
   const start = account();
-  const renamed = edit(start, '첫 줄\n- /운동');
-  assert.deepEqual([renamed.reason, renamed.folderProblem, renamed.folderLine], ['invalid-format', 'name-conflict', 1], 'S10');
+  // S10 under D3 B: renaming onto a name already in that place moves the line there, so the remaining
+  // name conflict is a declaration where two folders of that name share the place.
+  const twice = account(); twice.folders.push({ id: 'dup-1', title: '중복', parentId: null }, { id: 'dup-2', title: '중복', parentId: null });
+  const conflict = edit(twice, '첫 줄\n- /미팅\n- /중복');
+  assert.deepEqual([conflict.reason, conflict.folderProblem, conflict.folderLine], ['invalid-format', 'name-conflict', 2], 'two of that name');
   const tagged = edit(start, `첫 줄\n- /미팅\n- /자식 <!-- flowme-folder:v1 id=${folderId(start, '자식')} -->`);
   assert.deepEqual([tagged.folderProblem, tagged.folderLine], ['identity-mismatch', 2], 'S15');
   const full = account(100 - account().folders.length);
@@ -43,11 +46,11 @@ test('putting the refused line back: its saved text, or no line when it was adde
 });
 
 test('the draft keeps the refused line, puts it back on request, and checks again', () => {
-  const start = account(), draft = createProgramTextDraft(start, TYPED, async () => true, () => {});
-  assert.equal(draft.updateRaw('첫 줄 고침\n- /운동', '', { inputType: 'insertText' }), false);
+  const start = account(100 - account().folders.length), draft = createProgramTextDraft(start, TYPED, async () => true, () => {});
+  assert.equal(draft.updateRaw('첫 줄 고침\n- /미팅\n- /새 폴더', '', { inputType: 'insertText' }), false);
   assert.equal(draft.getState().invalid, true);
-  assert.equal(draft.getState().problemLine, 1);
-  assert.match(draft.getState().error, /같은 위치에 이름이 겹치는 폴더/);
+  assert.equal(draft.getState().problemLine, 2);
+  assert.match(draft.getState().error, /폴더는 100개까지/);
   assert.equal(draft.recheck(), false, 'still refused');
   const back = revertRefusedLine(M.raw(M.getDocument(draft.getState().working, TYPED)), draft.getState().raw, draft.getState().problemLine!)!.raw;
   assert.equal(back, '첫 줄 고침\n- /미팅');
