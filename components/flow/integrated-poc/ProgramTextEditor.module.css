@@ -42,7 +42,6 @@
 .dialog summary { padding: 12px 0; min-height: 44px; box-sizing: border-box; cursor: pointer; }
 .choices button { min-height: 48px; text-align: left; display: flex; gap: 8px; align-items: center; justify-content: space-between; white-space: normal; overflow-wrap: anywhere; }
 .choices small { flex-shrink: 0; }
-.menuTarget { margin: 0; font-size: 14px; font-weight: 650; word-break: keep-all; overflow-wrap: anywhere; }
 .registeredNotice { word-break: keep-all; overflow-wrap: anywhere; }
 .menuSection { display: grid; gap: 8px; padding-block: 8px; border-top: 1px solid var(--flowme-b-line); }
 .menuSection h4 { margin: 0; font-size: 13px; font-weight: 650; color: var(--flowme-b-muted); }
@@ -293,6 +292,14 @@
 .recoveryActions { display: flex; flex-wrap: wrap; gap: 6px; }
 .recoveryGroup > h4 { margin: 0 0 6px; font-size: 13px; font-weight: 650; }
 .recoveryGroup + .recoveryGroup { margin-top: 10px; padding-top: 10px; border-top: 1px solid #efd8c2; }
+
+/* W5: a writing dialog's head is one line; the full text is its title. On a phone the dialogs are sheets from
+   the bottom like the document sheet, and the script keeps their bottom on the visual viewport's bottom
+   (above the keyboard). Wider screens keep the box near the top. */
+.dialog header h3 { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+@media (max-width: 760px) {
+  .dialog[open] { top: auto; bottom: var(--writing-dialog-bottom, 0px); left: var(--writing-view-left, 0px); width: var(--writing-view-width, 100vw); max-width: none; max-height: min(85dvh, calc(var(--writing-view-height, 100dvh) - 48px)); border-width: 1px 0 0; border-radius: 16px 16px 0 0; padding-bottom: calc(16px + env(safe-area-inset-bottom)); box-shadow: 0 -8px 32px var(--flowme-b-shadow); }
+}
 
 /* R8b: the toolbar opens the Flow·반복 sheet. */
 .toolbar > .repeatButton { white-space: nowrap; color: var(--flowme-b-primary-strong); }
