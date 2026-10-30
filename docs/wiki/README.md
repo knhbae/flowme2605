@@ -12,6 +12,7 @@ FlowMe가 지금 어디까지 왔는지를 한곳에 모은다. 폰에서는 [�
 | [decision-log.md](decision-log.md) | 사용자 결정과 진행 결정 | 추가만 |
 | [ideas.md](ideas.md) | 남은 피드백·아이디어 선반 | 덮어씀 |
 | [docs.md](docs.md) | 문서 지도: 무엇을 어디서 찾나, 어긋나는 규칙 | 덮어씀 |
+| [glossary.md](glossary.md) | 용어집: R·S·W·FC·C·P 라벨, 별칭, 같은 이름 다른 뜻 | 덮어씀 |
 | `tasks/` | 과제별 후보 결과와 로그 | 결과표는 갱신, 로그는 추가만 |
 
 ## 갱신 규약

@@ -39,7 +39,7 @@
 | 배포·롤백 절차 | 회차별 원장 `D:/flowme-alpha-today-classification-20261029-01a168e3/revision4/operations/` | 회차마다 복사됨. 런북에 한 번 정리 |
 | Supabase 함수·테이블·마이그레이션 | #218 브랜치(M2~M7.2), 실제 DB | main에 없음. 자료 구조 문서 없음 → 작성 중 |
 | 계정 자료 형식(문서, 제작 도구 데이터) | 코드 `lib/flow/integrated-poc/`와 실제 DB | 문서 없음. egress 진단에서 크기 내역만 확인 |
-| 라벨 뜻(R·S·W·FC·C·P·M) | 없음 | 용어집 작성 중 |
+| 라벨 뜻(R·S·W·FC·C·P·M) | [glossary.md](glossary.md) | 최신(10/30) |
 
 ## 규칙이 어긋나는 곳
 
