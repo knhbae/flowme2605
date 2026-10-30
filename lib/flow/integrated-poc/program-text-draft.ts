@@ -30,6 +30,8 @@ export interface ProgramTextDraftState {
   invalid: boolean;
   error: string;
   progressConflict?: TextProgressCheckConflict;
+  /** The refused line (index in raw) when the model named one; shown with the reason, and put back on request. */
+  problemLine?: number;
 }
 
 /** Serializes draft commits while preserving newer typing and rejected raw input. */
@@ -103,6 +105,8 @@ export function createProgramTextDraft(
       label='할 일 체크 변경';groupId=`text:${docId}`;report();return true;
     },
     cancelPreparedRaw(){prepared=null;},
+    /** Judge the refused raw again (a folder freed elsewhere, say). True once it is accepted. */
+    recheck() { return state.invalid ? api.updateRaw(state.raw, '', { inputType: 'recheck' }) : true; },
     prepareRaw(raw:string,input?:Input,exactCommand=false){
       const value=deriveRaw(raw,input);
       if(exactCommand&&(value.edit.reason!==null||M.raw(M.getDocument(value.edit.state,docId))!==raw)
@@ -118,7 +122,7 @@ export function createProgramTextDraft(
     rejectRaw(raw: string) {
       privateTaskSchedule = undefined;
       inputGeneration++;
-      state = { ...state, raw, invalid: true, dirty: true, progressConflict: undefined, error: '문서 문맥이 바뀌어 순서를 반영하지 않았습니다. 입력은 남아 있습니다.' }; report();
+      state = { ...state, raw, invalid: true, dirty: true, progressConflict: undefined, problemLine: undefined, error: '문서 문맥이 바뀌어 순서를 반영하지 않았습니다. 입력은 남아 있습니다.' }; report();
     },
     updateRaw(raw: string, progressDate = '', input?: Input) {
       privateTaskSchedule = undefined;
@@ -135,6 +139,7 @@ export function createProgramTextDraft(
         'unknown-id': '현재 작업 공간에 없는 폴더 연결입니다. 연결 정보를 지우고 폴더 이름만 입력해 주세요. 입력은 남아 있습니다.',
         'identity-mismatch': 'TXT의 폴더 연결이 현재 폴더와 맞지 않습니다. 변경한 연결 정보를 되돌려 주세요. 입력은 남아 있습니다.',
         'invalid-parent': '하위 폴더의 들여쓰기와 상위 폴더를 확인해 주세요. 입력은 남아 있습니다.',
+        'folder-limit': '폴더는 100개까지 만들 수 있습니다. 이 줄을 되돌리거나 쓰지 않는 폴더를 정리해 주세요. 입력은 남아 있습니다.',
       } as Record<string, string>)[edit.folderProblem] ?? '폴더 이름과 연결 정보를 확인해 주세요. 입력은 남아 있습니다.' : '';
       const protectedChange = !admitted && !validateWorkspace(next);
       let invalid = protectedChange || M.raw(M.getDocument(next, docId)) !== acceptedRaw;
@@ -147,6 +152,7 @@ export function createProgramTextDraft(
       state = { ...state, raw: invalid ? raw : acceptedRaw, working: invalid ? state.working : working, invalid,
         dirty: state.saving || acceptedRaw !== baseRaw || next !== state.committed,
         progressConflict: !protectedChange && invalid && edit.reason === 'progress-check-conflict' ? edit.progressConflict : undefined,
+        problemLine: !protectedChange && invalid ? edit.folderLine : undefined,
         error: protectedChange ? '보관·휴지통·복구 문서나 반복 규칙·보류 항목의 원문 표시는 여기서 바꿀 수 없습니다. 해당 줄을 원래대로 되돌리면 일반 할 일과 메모를 계속 편집할 수 있습니다. 입력은 보관 중입니다.'
           : !invalid ? '' : folderError || (edit.reason === 'identity-ambiguous'
             ? '여러 줄의 변경을 기존 항목과 연결하지 못해 반영하지 않았습니다. 제목 수정과 줄 이동은 나누고, 여러 제목은 한 줄씩 수정해 저장해 주세요. 입력은 그대로 남아 있습니다.'

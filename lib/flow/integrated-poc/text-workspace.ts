@@ -97,7 +97,9 @@ export interface TextWorkspaceModel {
     state: TextWorkspaceState; reason: 'identity-ambiguous' | 'invalid-format' | 'progress-check-conflict' | 'blocked' | null;
     progressConflict?: TextProgressCheckConflict;
     normalizedText?: string;
-    folderProblem?: 'name-conflict' | 'unknown-id' | 'identity-mismatch' | 'invalid-parent' | 'invalid-folder';
+    folderProblem?: 'name-conflict' | 'unknown-id' | 'identity-mismatch' | 'invalid-parent' | 'invalid-folder' | 'folder-limit';
+    /** The line (index in the given text) a folder problem was found on. */
+    folderLine?: number;
   };
   exportFolderText(state: TextWorkspaceState, docId: string): string | null;
   addDocument(state: TextWorkspaceState, input: { title: string; folder?: string; folderId?: string }): TextWorkspaceState;

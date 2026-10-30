@@ -33,6 +33,7 @@ import { ProgramProgressForm } from './ProgramProgressForm';
 import {ProgramWritingInline} from './ProgramWritingInline';
 import {prepareWritingChild} from '@/lib/flow/integrated-poc/writing-child-command';
 import {planWritingInsertion} from '@/lib/flow/integrated-poc/writing-insertion-command';
+import { revertRefusedLine } from '@/lib/flow/integrated-poc/reject-line';
 
 export { createProgramTextDraft } from '@/lib/flow/integrated-poc/program-text-draft';
 export type { ProgramTextCommitOptions, ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
@@ -1552,6 +1553,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // The words show the winner; the recovery boxes stay whichever wins, so no action is lost.
   const statusLabel = serverWins ? serverView!.label : editorStatus.label;
   const hasRecovery = !!serverView?.recovery || !!draft.error;
+  // A refused edit that names its line: shown with the reason's first sentence and a way to put it back.
+  const refused = draft.invalid && draft.problemLine !== undefined && !props.readOnly
+    ? revertRefusedLine(M.raw(M.getDocument(draft.working, props.docId)), draft.raw, draft.problemLine) : null;
+  const refusedLine = (draft.problemLine ?? 0) + 1, refusedReason = draft.error.split(/(?<=\.)\s/)[0];
   // While typing, anything short of a warning is one quiet dot, a fast "저장됨" included.
   const quietStatus = !!serverView && typing && !statusWarn && !inputLocked;
   // The bar's slot is the same status, short; the toolbar slot holds the one live announcement.
@@ -1570,19 +1575,33 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     box.open = true;
     box.querySelector<HTMLElement>('summary')?.focus();
   }
-  /** The editor's own recovery box (다시 저장, 입력한 원문 받기, 저장본으로 되돌리기). */
+  /** Put the refused line back (its saved text, or no line when it was added) and judge the document again. */
+  function revertRefused() {
+    const controller = draftRef.current, area = textArea();
+    if (!controller || !area || composingRef.current || inputLockedRef.current || propsRef.current.readOnly) return;
+    const state = controller.getState();
+    if (!state.invalid || state.problemLine === undefined) return;
+    const back = revertRefusedLine(M.raw(M.getDocument(state.working, propsRef.current.docId)), state.raw, state.problemLine);
+    if (!back) return;
+    editorRef.current?.setValue(back.raw, { preserveSelection: true });
+    if (controller.updateRaw(back.raw, '', { inputType: 'revertLine' })) scheduleSave();
+  }
+  /** The editor's own recovery box (다시 저장, 입력한 원문 받기, 저장본으로 되돌리기). A refused edit also keeps
+   * its line and the first sentence of its reason visible, with one tap to put that line back. */
   function editorRecovery(announce: boolean) {
     const label = props.readOnly ? '읽기 전용 · 복구' : inputLocked ? '입력 보호 · 복구' : '저장 확인 필요 · 복구';
-    return <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
+    return <>{refused && <p className={styles.refusedLine}><span>{refusedLine}번째 줄: {refusedReason}</span>
+      <button type="button" disabled={inputLocked || draft.saving || composing} onClick={revertRefused}>{refused.scope === 'line' ? '이 줄 되돌리기' : '바꾼 부분 되돌리기'}</button></p>}
+    <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || composingRef.current || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
         event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
       }}><summary title={props.readOnly ? props.disabledReason || '읽기 전용' : draft.error}>{announce ? <span role="alert">{label}</span> : <span>{label}</span>}</summary><div className={styles.error}><p>{draft.error}</p><div>
       {progressConflict && <button type="button" onClick={showProgressConflict}>진행 조절 보기</button>}
-      <button type="button" disabled={!!props.readOnly || draft.invalid || draft.saving} onClick={() => { void saveNow(); }}>다시 저장</button>
+      <button type="button" disabled={!!props.readOnly || draft.saving} onClick={() => { if (draftRef.current?.getState().invalid) draftRef.current.recheck(); void saveNow(); }}>다시 저장</button>
       <button type="button" onClick={downloadDraft}>입력한 원문 받기</button>
       <button type="button" disabled={inputLocked || draft.saving} onClick={() => { if (draftRef.current?.discard(propsRef.current.workspace)) { orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++; editorRef.current?.setValue(draftRef.current.getState().raw, { preserveSelection: true }); } }}>저장본으로 되돌리기</button>
-      </div></div></details>;
+      </div></div></details></>;
   }
   function barButton(action: WritingBarAction, icon: string, label: string, keys: string, off: boolean, className?: string, describedBy?: string) {
     return <button key={action} type="button" className={className} data-bar-action={action} data-held={heldBar === action ? 'true' : undefined}
