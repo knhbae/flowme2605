@@ -28,10 +28,12 @@ test('the bar\'s bottom is the visual viewport\'s bottom: an open keyboard, a pa
   assert.deepEqual([zoomed['--writing-bar-left'], zoomed['--writing-bar-width']], ['40px', '300px']);
 });
 
-test('less than a line between the body\'s top and the bar is cramped', () => {
-  assert.equal(programKeyboardBarCramped(192, 201), true);
-  assert.equal(programKeyboardBarCramped(192, 238), false);
-  assert.equal(programKeyboardBarCramped(192, 331), false);
+// N1 fix 5: cramped is the body reaching under the bar (held at its minimum height), not one line of room.
+test('the body reaching under the bar is cramped', () => {
+  assert.equal(programKeyboardBarCramped(276, 201), true);   // 260 visible: body 192..276, bar from 201
+  assert.equal(programKeyboardBarCramped(232, 211), true);   // body 148..232 (84 minimum), bar from 211: 63px of room, still under
+  assert.equal(programKeyboardBarCramped(207, 211), false);
+  assert.equal(programKeyboardBarCramped(290, 331), false);
 });
 
 test('the editor fixes the bar there, ends the body above it, and brings the body up only on resize or focus', () => {
@@ -39,7 +41,7 @@ test('the editor fixes the bar there, ends the body above it, and brings the bod
   assert.match(update, /let bottom = programVisibleBottom\(view, visual, navTop\);/);
   assert.match(update, /for \(const \[name, value\] of Object\.entries\(programKeyboardBarPlace\(view, visual, bottom\)\)\) bar\.style\.setProperty\(name, value\);/);
   assert(update.indexOf('programKeyboardBarPlace') < update.indexOf('if (barShown) bottom -= bar!.getBoundingClientRect().height + 4;'));
-  assert.match(update, /if \(view\.performance\.now\(\) < nudgeUntil && barShown && programKeyboardBarCramped\(host\.getBoundingClientRect\(\)\.top, bar!\.getBoundingClientRect\(\)\.top\)\) \{\s*nudgeUntil = 0; host\.scrollIntoView\(\{ block: 'start' \}\);/);
+  assert.match(update, /if \(view\.performance\.now\(\) < nudgeUntil && barShown && programKeyboardBarCramped\(host\.getBoundingClientRect\(\)\.bottom, bar!\.getBoundingClientRect\(\)\.top\)\) \{\s*nudgeUntil = 0; host\.scrollIntoView\(\{ block: 'start' \}\);/);
   assert(editor.includes('const scheduleNudge = () => { nudgeUntil = view.performance.now() + 600; schedule(); };'));
   // A scroll never pulls the body back: only the keyboard opening or focus entering does.
   assert(editor.includes("visual?.addEventListener('resize', scheduleNudge); visual?.addEventListener('scroll', schedule);"));

@@ -234,6 +234,9 @@
 /* Writing model A (S3): the same actions as a mobile keyboard bar under the body and in the wide
    toolbar. Buttons stay solid during composition and saves; a held press looks pressed until it runs. */
 .writingBar { display: none; }
+/* N1 fix 5: room under the body while writing on a phone (its height comes from the script), so the page can
+   scroll the body and its last line above the fixed bar. */
+.keyboardRoom { display: none; }
 .toolbarBarButton { font-size: 18px; line-height: 1; }
 .editor button[data-held="true"] { background: var(--flowme-b-selected); box-shadow: inset 0 0 0 2px var(--flowme-b-primary); }
 @media (max-width: 700px) {
@@ -247,6 +250,7 @@
   .editor:has(.host textarea:focus, [data-folder-region] textarea:focus, .writingBar :focus) .writingBar {
     position: fixed; z-index: 40; left: var(--writing-bar-left, 0px); bottom: var(--writing-bar-bottom, 0px); width: var(--writing-bar-width, 100%); margin: 0;
   }
+  .editor:has(.host textarea:focus, .writingBar :focus) .keyboardRoom { display: block; }
   .writingBar > button { flex: 0 0 44px; width: 44px; min-width: 44px; height: 44px; min-height: 44px; padding: 0; font-size: 18px; line-height: 1; }
   .barStatus { flex: 0 1 8.5em; min-width: 0; margin-left: auto; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: right; font-size: 13px; color: var(--flowme-b-muted); }
   .barStatus[data-warn="true"] { color: #b45309; }

@@ -18,8 +18,17 @@ export function programKeyboardBarPlace(view: View, visual: Visual | null | unde
   };
 }
 
-/** Less than one line (the textarea's 20px top padding and a 26px line) between the body's top and the bar:
- *  what is being typed would sit under the bar. */
-export function programKeyboardBarCramped(bodyTop: number, barTop: number): boolean {
-  return barTop - bodyTop < 46;
+/** N1 fix 5: room under the body while writing on a phone, so the page can scroll the body (and its last line)
+ *  above the fixed bar. With a keyboard up (the visual viewport ends above the screen's bottom) it is a whole
+ *  screen, so the scroll range does not change as the page scrolls; without one it is the bar's height. */
+export function programKeyboardRoom(view: View, visualBottom: number, barSpace: number): number {
+  if (barSpace <= 0) return 0;
+  return visualBottom < view.innerHeight ? view.innerHeight : barSpace;
+}
+
+/** The body reaches under the bar (N1 fix 5): the text above left less room than the body's minimum height (its
+ *  textarea padding), so its height could not end above the bar and the line at its end sits under the bar.
+ *  Room for one line above the bar (fix 3's rule) was not enough: the body is taller than one line. */
+export function programKeyboardBarCramped(bodyBottom: number, barTop: number): boolean {
+  return bodyBottom > barTop + 1;
 }

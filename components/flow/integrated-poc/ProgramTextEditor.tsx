@@ -9,7 +9,7 @@ import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { readChildDrafts, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
 import { createWritingBarHold, folderBarLine, heldTargetVerdict, taskMarkerLock, toggleTaskLine, writingBarLine, writingBarTarget, type WritingBarAction, type WritingBarLine, type WritingBarTarget } from '@/lib/flow/integrated-poc/writing-bar';
-import { programKeyboardBarCramped, programKeyboardBarPlace, programVisibleBottom } from '@/lib/flow/integrated-poc/keyboard-bar-place';
+import { programKeyboardBarCramped, programKeyboardBarPlace, programKeyboardRoom, programVisibleBottom } from '@/lib/flow/integrated-poc/keyboard-bar-place';
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
 import { planProgramDateBlockOrder, type DateBlockOrderPlan, type DateOrderSelection } from '@/lib/flow/integrated-poc/date-block-order';
@@ -329,7 +329,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // a press then is held, shown pressed, and runs once when input settles.
   const [barLine, setBarLine] = useState<WritingBarLine>({ canOutdent: false, canIndent: false, isTask: false, markerLock: null });
   const [barHold] = useState(() => createWritingBarHold<WritingBarTarget>()), [heldBar, setHeldBar] = useState<WritingBarAction | null>(null);
-  const barRef = useRef<HTMLDivElement>(null), barLockId = useId();
+  const barRef = useRef<HTMLDivElement>(null), barLockId = useId(), roomRef = useRef<HTMLDivElement>(null);
   // R6b: with the host's status (Alpha note), one slot shows one status. Only the open document's
   // editor gets noteStatus, so only it takes the host's status; without a host nothing changes.
   const hostStatus = useContext(ProgramServerStatusContext), serverView = props.noteStatus ? hostStatus : null;
@@ -1309,6 +1309,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       const bar = barRef.current;
       if (bar) for (const [name, value] of Object.entries(programKeyboardBarPlace(view, visual, bottom))) bar.style.setProperty(name, value);
       const barShown = !!bar?.getClientRects().length;
+      // N1 fix 5: room under the body so the page can scroll the body, and its last line, above the bar.
+      const room = roomRef.current;
+      if (room) { const height = `${programKeyboardRoom(view, programVisibleBottom(view, visual, null), barShown ? bar!.getBoundingClientRect().height + 4 : 0)}px`; if (room.style.height !== height) room.style.height = height; }
       if (barShown) bottom -= bar!.getBoundingClientRect().height + 4;
       if (!host.getClientRects().length) { fitFolderRegion(host.closest('section'), barShown, bottom); return; }
       const height = programEditorVisibleHeight(host.getBoundingClientRect().top, bottom);
@@ -1321,7 +1324,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       // With the page at its top, the text above the body can leave no line above the bar. Shortly after the
       // keyboard opens or the body takes focus (the rows above settle a frame or two later), bring the body up
       // once; a later scroll by the user is never pulled back.
-      if (view.performance.now() < nudgeUntil && barShown && programKeyboardBarCramped(host.getBoundingClientRect().top, bar!.getBoundingClientRect().top)) {
+      if (view.performance.now() < nudgeUntil && barShown && programKeyboardBarCramped(host.getBoundingClientRect().bottom, bar!.getBoundingClientRect().top)) {
         nudgeUntil = 0; host.scrollIntoView({ block: 'start' });
       }
     };
@@ -1792,6 +1795,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       onRegister={port => { regionPortRef.current = port; }}
       onPending={(pending, composing) => { regionPendingRef.current = pending; composingRef.current = composing; setRegionPending(pending); propsRef.current.onDirtyChange?.(pending || !!draftRef.current?.getState().dirty); if (!composing) queueMicrotask(releaseHeldBar); }} />}
     {props.authoringMode && !folderView && writingBar}
+    {props.authoringMode && !folderView && <div ref={roomRef} className={styles.keyboardRoom} aria-hidden="true" />}
     {panel && <dialog ref={dialogRef} className={styles.dialog} aria-label={title} onCompositionStartCapture={()=>{panelComposingRef.current=true;}} onCompositionEndCapture={()=>{panelComposingRef.current=false;}} onKeyDown={event => { trapProgramDialogTab(event.currentTarget, event); }} onCancel={event => { event.preventDefault(); closePanel(); cancelMove(); }}>
       <header><h3>{title}</h3><button type="button" aria-label="닫기" onClick={closePanel}>×</button></header>
       <div className={styles.dialogBody}>
