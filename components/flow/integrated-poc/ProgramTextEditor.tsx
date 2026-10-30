@@ -422,10 +422,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!create && held.left) return;
     const declared = controller.declareFolderLine(index, !create);
     heldFolderLineRef.current = declared || create ? null : { id: held.id, left: true };
+    const notice = controller.getState().folderNotice; if (notice) setMessage(notice);
     if (!declared) return;
     const visibleRaw = controller.getState().raw;
     if (visibleRaw !== area.value) editorRef.current?.setValue(visibleRaw, { preserveSelection: true });
-    const notice = controller.getState().folderNotice; if (notice) setMessage(notice);
     scheduleSave();
   }
   /** One ↶ right after a finished folder line moved puts the whole move back (D3 B). */

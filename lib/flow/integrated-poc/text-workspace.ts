@@ -98,7 +98,7 @@ export interface TextWorkspaceModel {
     state: TextWorkspaceState; reason: 'identity-ambiguous' | 'invalid-format' | 'progress-check-conflict' | 'blocked' | null;
     progressConflict?: TextProgressCheckConflict;
     normalizedText?: string;
-    folderProblem?: 'name-conflict' | 'unknown-id' | 'identity-mismatch' | 'invalid-parent' | 'invalid-folder' | 'folder-limit';
+    folderProblem?: 'name-conflict' | 'unknown-id' | 'identity-mismatch' | 'invalid-parent' | 'invalid-folder' | 'folder-limit' | 'folder-subfolder';
     /** The line (index in the given text) a folder problem was found on. */
     folderLine?: number;
     /** A finished linked line moved to the folder of its new name, or renamed its folder used nowhere else. */

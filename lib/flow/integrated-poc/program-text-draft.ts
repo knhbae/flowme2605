@@ -37,6 +37,15 @@ export interface ProgramTextDraftState {
 }
 
 /** Serializes draft commits while preserving newer typing and rejected raw input. */
+const FOLDER_PROBLEM_TEXT: Record<string, string> = {
+  'name-conflict': '같은 위치에 이름이 겹치는 폴더가 있습니다. 다른 이름을 입력해 주세요. 입력은 남아 있습니다.',
+  'unknown-id': '현재 작업 공간에 없는 폴더 연결입니다. 연결 정보를 지우고 폴더 이름만 입력해 주세요. 입력은 남아 있습니다.',
+  'identity-mismatch': 'TXT의 폴더 연결이 현재 폴더와 맞지 않습니다. 변경한 연결 정보를 되돌려 주세요. 입력은 남아 있습니다.',
+  'invalid-parent': '하위 폴더의 들여쓰기와 상위 폴더를 확인해 주세요. 입력은 남아 있습니다.',
+  'folder-limit': '폴더는 100개까지 만들 수 있습니다. 이 줄을 되돌리거나 쓰지 않는 폴더를 정리해 주세요. 입력은 남아 있습니다.',
+  'folder-subfolder': '하위 폴더가 있어 이 폴더 줄은 옮기지 않았습니다. 이 줄을 되돌려 주세요. 입력은 남아 있습니다.',
+};
+
 export function createProgramTextDraft(
   workspace: TextWorkspaceState,
   docId: string,
@@ -141,13 +150,7 @@ export function createProgramTextDraft(
       const {baseRaw,before,proof,edit}=value;
       const next = edit.state;
       const acceptedRaw = edit.normalizedText ?? raw;
-      const folderError = edit.folderProblem ? ({
-        'name-conflict': '같은 위치에 이름이 겹치는 폴더가 있습니다. 다른 이름을 입력해 주세요. 입력은 남아 있습니다.',
-        'unknown-id': '현재 작업 공간에 없는 폴더 연결입니다. 연결 정보를 지우고 폴더 이름만 입력해 주세요. 입력은 남아 있습니다.',
-        'identity-mismatch': 'TXT의 폴더 연결이 현재 폴더와 맞지 않습니다. 변경한 연결 정보를 되돌려 주세요. 입력은 남아 있습니다.',
-        'invalid-parent': '하위 폴더의 들여쓰기와 상위 폴더를 확인해 주세요. 입력은 남아 있습니다.',
-        'folder-limit': '폴더는 100개까지 만들 수 있습니다. 이 줄을 되돌리거나 쓰지 않는 폴더를 정리해 주세요. 입력은 남아 있습니다.',
-      } as Record<string, string>)[edit.folderProblem] ?? '폴더 이름과 연결 정보를 확인해 주세요. 입력은 남아 있습니다.' : '';
+      const folderError = edit.folderProblem ? FOLDER_PROBLEM_TEXT[edit.folderProblem] ?? '폴더 이름과 연결 정보를 확인해 주세요. 입력은 남아 있습니다.' : '';
       const protectedChange = !admitted && !validateWorkspace(next);
       let invalid = protectedChange || M.raw(M.getDocument(next, docId)) !== acceptedRaw;
       let working=next;
@@ -180,9 +183,18 @@ export function createProgramTextDraft(
      * False when there is nothing to do, or when the judgement refused it (the error keeps the input). */
     declareFolderLine(lineIndex: number, linkOnly = false) {
       if (state.invalid) return false;
+      if (state.folderNotice) state = { ...state, folderNotice: undefined };
       const lines = linkOnly ? { folderLink: [lineIndex] } : { folderDeclare: [lineIndex], folderMove: [lineIndex] };
       const check = M.editTextResult(state.working, docId, state.raw, { folderText: true, ...lines });
       if (check.reason === null && check.state === state.working) return false;
+      // A linked line the model will not move (a subfolder below, the folder limit) keeps its folder and its
+      // typed name, as a line left unfinished does; the status row says why.
+      const lineId = M.getDocument(state.working, docId)?.lines[lineIndex]?.id;
+      if (check.reason !== null && check.folderLine === lineIndex && check.folderProblem
+        && state.working.bindings.some(row => row.kind === 'scope' && row.docId === docId && row.lineId === lineId)) {
+        state = { ...state, folderNotice: (FOLDER_PROBLEM_TEXT[check.folderProblem] ?? '').split(/(?<=\.)\s/)[0] || undefined };
+        report(); return false;
+      }
       return api.updateRaw(state.raw, '', { inputType: 'folderDeclare', ...lines });
     },
     canUndoFolderMove: () => !!lastMove && !state.invalid && state.working === lastMove.after,

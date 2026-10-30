@@ -117,9 +117,23 @@ test('finished with Enter, the new empty line does not end the one undo; any oth
   assert.equal(other.canUndoFolderMove(), false, 'typed text after the move: ↶ is the ordinary undo');
 });
 
+test('a folder line with a subfolder below is not moved yet; it keeps its folder and the status row says why', () => {
+  const start = M.editTextResult(account(), TYPED, '첫 줄\n- /회의\n  - /하위\n  - [ ] 안건', { folderText: true }).state;
+  const draft = createProgramTextDraft(start, TYPED, async () => true, () => {});
+  assert(draft.updateRaw('첫 줄\n- /주간회의\n  - /하위\n  - [ ] 안건', '', { inputType: 'insertText', folderHold: [1] }));
+  const typed = draft.getState().working;
+  assert.equal(draft.declareFolderLine(1), false);
+  assert.equal(draft.getState().folderNotice, '하위 폴더가 있어 이 폴더 줄은 옮기지 않았습니다.');
+  assert.equal(draft.getState().invalid, false, 'nothing blocks the next save');
+  assert.equal(draft.getState().working, typed, 'nothing moved or renamed');
+  assert.equal(scope(draft.getState().working, TYPED, 1)?.title, '회의');
+  const pasted = M.editTextResult(start, TYPED, '첫 줄\n- /주간회의\n  - /하위\n  - [ ] 안건', { folderText: true });
+  assert.deepEqual([pasted.folderProblem, pasted.folderLine], ['folder-subfolder', 1], 'a paste is refused on that line with the same reason');
+});
+
 test('the editor shows the move in the status row and lets ↶ and Ctrl+Z put it back first', () => {
   const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
   assert.match(editor, /aria-label="입력 되돌리기" onClick=\{\(\) => \{ if \(undoFolderMove\(\)\) return;/);
   assert.match(editor, /if \(type === 'historyUndo' && undoFolderMove\(\)\) \{ event\.preventDefault\(\); event\.stopImmediatePropagation\(\); return; \}/);
-  assert.match(editor, /const notice = controller\.getState\(\)\.folderNotice; if \(notice\) setMessage\(notice\);/);
+  assert.match(editor, /const notice = controller\.getState\(\)\.folderNotice; if \(notice\) setMessage\(notice\);\r?\n *if \(!declared\) return;/, 'a finish that could not move says why too');
 });
