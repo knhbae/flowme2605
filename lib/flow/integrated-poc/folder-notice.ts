@@ -1,4 +1,4 @@
-import { textEditorRows, type TextScopeBinding, type TextWorkspaceState } from './text-workspace';
+import { textEditorRows, textWorkspaceModel as M, type TextScopeBinding, type TextWorkspaceState } from './text-workspace';
 
 /** W15 · D3 B notice words (folder picker v3 2-2, folder grammar 4th edition 3.2). Pure: the editor shows them. */
 
@@ -74,6 +74,33 @@ export function programFolderCreatedNotice(before: TextWorkspaceState, after: Te
 export function programFolderRenamedEverywhere(state: TextWorkspaceState, folderId: string, oldName: string): string {
   const name = state.folders.find(folder => folder.id === folderId)?.title ?? '';
   return `‘${oldName}’${eul(oldName)} 모든 문서에서 ‘${name}’${ro(name)} 바꿨습니다 · ${programFolderUsers(state, folderId).size}곳`;
+}
+
+/** Every line linked to a folder, by document and line, with its text: what [모든 문서에 적용] left behind. */
+export function programFolderLines(state: TextWorkspaceState, folderId: string): Record<string, string> {
+  const lines: Record<string, string> = {};
+  for (const row of state.bindings) {
+    if (row.kind !== 'scope' || row.scopeId !== folderId) continue;
+    const line = M.getDocument(state, row.docId)?.lines.find(entry => entry.id === row.lineId);
+    if (line) lines[`${row.docId}/${row.lineId}`] = line.text;
+  }
+  return lines;
+}
+
+/** Its 되돌리기 (W15 review P1-2): the folder named back in every document, only while the folder and its lines are
+ *  as the rename left them. A line typed over or newly linked since, another name, or the old name taken in the
+ *  place refuses it with the reason; a later edit is never written over. */
+export function programFolderRenameBack(state: TextWorkspaceState, folderId: string, oldTitle: string, title: string, lines: Record<string, string>):
+  { ok: true; next: TextWorkspaceState } | { ok: false; reason: string } {
+  const folder = state.folders.find(entry => entry.id === folderId);
+  if (!folder || folder.title !== title) return { ok: false, reason: '폴더 이름이 그 사이에 바뀌어 되돌리지 않았습니다.' };
+  if (state.folders.some(entry => entry.id !== folderId && (entry.parentId ?? null) === (folder.parentId ?? null) && entry.title === oldTitle))
+    return { ok: false, reason: `같은 자리에 ‘${oldTitle}’${iga(oldTitle)} 생겨 되돌리지 않았습니다 · 분류 화면에서 정리할 수 있습니다` };
+  const now = programFolderLines(state, folderId), keys = Object.keys(lines);
+  if (Object.keys(now).length !== keys.length || keys.some(key => now[key] !== lines[key]))
+    return { ok: false, reason: '그 사이 다른 곳에서 이 폴더의 줄이 바뀌어 되돌리지 않았습니다 · 분류 화면에서 이름을 바꿀 수 있습니다' };
+  const next = M.renameScope(state, folderId, oldTitle);
+  return next === state ? { ok: false, reason: '폴더 이름을 되돌리지 못했습니다.' } : { ok: true, next };
 }
 
 /** The words when a typed name went back: left without Enter (b), already off its folder (c), two folders of

@@ -1,14 +1,15 @@
 /** W15 notice row rules (folder picker v3 2-1), kept apart from the component so they run without the DOM. */
 export type ProgramNoticeTone = 'info' | 'choose' | 'warn';
 export interface ProgramNoticeAction { label: string; run: () => void }
-export type ProgramNoticeLife = { tone: ProgramNoticeTone; shownAt: number; leftBlockAt: number | null; held: boolean };
+export type ProgramNoticeLife = { tone: ProgramNoticeTone; shownAt: number; leftBlockAt: number | null; held: boolean; waiting?: boolean };
 export const PROGRAM_NOTICE_MS = 6000;
 
 /** When a notice ends (ms since epoch), or null while it stays. An info notice lasts 6s from showing; a choice
  *  notice stays while the caret is in its block and lasts 6s after it leaves; a warning stays until closed.
- *  A press held on it, or focus inside it, keeps any notice. */
+ *  A press held on it, or focus inside it, keeps any notice; so does waiting behind another (its time starts
+ *  once it shows, W15 review P2). */
 export function programNoticeEndsAt(life: ProgramNoticeLife): number | null {
-  if (life.held || life.tone === 'warn') return null;
+  if (life.held || life.waiting || life.tone === 'warn') return null;
   if (life.tone === 'choose') return life.leftBlockAt === null ? null : life.leftBlockAt + PROGRAM_NOTICE_MS;
   return life.shownAt + PROGRAM_NOTICE_MS;
 }

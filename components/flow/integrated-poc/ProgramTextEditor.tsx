@@ -29,7 +29,7 @@ import { programWritingDialogPlace } from '@/lib/flow/integrated-poc/writing-dia
 import { revealProgramEditorLine } from './editor-reveal';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
 import { programNoticeEndsAt, programNoticeOrder, type ProgramNoticeAction, type ProgramNoticeTone } from '@/lib/flow/integrated-poc/program-notice';
-import { programFolderCreatedNotice, programFolderKeptText, programFolderMoveNotice, programFolderRenamedEverywhere } from '@/lib/flow/integrated-poc/folder-notice';
+import { programFolderCreatedNotice, programFolderKeptText, programFolderLines, programFolderMoveNotice, programFolderRenameBack, programFolderRenamedEverywhere } from '@/lib/flow/integrated-poc/folder-notice';
 import { programFolderCreationLocation, programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
 import { ProgramFolderRegionEditor, programRegionError, type ProgramFolderRegionPort, type ProgramFolderRegionSnapshot } from './ProgramFolderRegionEditor';
 import regionStyles from './ProgramFolderRegionEditor.module.css';
@@ -291,6 +291,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   type FolderNotice = { text: string; tone: ProgramNoticeTone; actions?: ProgramNoticeAction[]; lineId?: string; shownAt: number; leftBlockAt: number | null };
   const [folderNotice, setFolderNotice] = useState<FolderNotice | null>(null);
   const [noticeHeld, setNoticeHeld] = useState(false);
+  // W15 review P1-4: a notice button pressed during a composition runs once it has ended, like a held bar press,
+  // so the model changes only when the native editor can take the new text.
+  const heldNoticeAction = useRef<(() => void) | null>(null);
+  const whenComposed = (run: () => void) => () => { if (composingRef.current) { heldNoticeAction.current = run; return; } run(); };
   // Linked folder lines an edit other than typing (a paste) renamed, by line ID, until they are put back.
   const renamedFolderLinesRef = useRef(new Set<string>());
   const documentInputRef=useRef<ProgramDocumentInput|null>(null);
@@ -372,6 +376,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!composing && barHold.held()) { const timer = setTimeout(releaseHeldBar, 0); return () => clearTimeout(timer); }
     releaseHeldBar();
   }, [composing, draft.saving, inputLocked, props.readOnly, regionPending]);
+  // The same for a notice button: after compositionend has finished, so the composed text is in the model first.
+  useEffect(() => {
+    if (composing || !heldNoticeAction.current) return;
+    const timer = setTimeout(() => { if (composingRef.current) return; const run = heldNoticeAction.current; heldNoticeAction.current = null; run?.(); }, 0);
+    return () => clearTimeout(timer);
+  }, [composing]);
   // Other typing or leaving the editor cancels a held press; the composition's own input does not,
   // including a final insertText some keyboards send right after compositionend.
   useEffect(() => {
@@ -468,10 +478,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       const finishedHere = explicit && area.value.slice(0, area.selectionStart).split('\n').length - 1 === index;
       let why: 'left' | 'off' | 'name-conflict' | 'refused' = finishedHere ? held.offAtStart ? 'off' : 'refused' : 'left';
       if (finishedHere && !held.offAtStart && linked && linked.id !== 'folder-unfiled') {
-        const moved = controller.moveFolderLine(index);
+        const previous = controller.getState(), moved = controller.moveFolderLine(index);
         if (moved.ok) {
           const after = controller.getState();
-          if (after.raw !== area.value) editorRef.current?.setValue(after.raw, { preserveSelection: true });
+          if (after.raw !== area.value && !shown(after.raw)) { controller.restoreState(previous); return; }
           showFolderMove(moved.before, after.working, lines[index].id, moved.fromId, linked.title);
           scheduleSave(); return;
         }
@@ -535,8 +545,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function undoFolderMove() {
     const controller = draftRef.current;
     if (!controller || composingRef.current || inputLockedRef.current || propsRef.current.readOnly || !controller.canUndoFolderMove()) return false;
+    const previous = controller.getState();
     if (!controller.undoFolderMove()) return false;
-    editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true });
+    if (!shown(controller.getState().raw)) { controller.restoreState(previous); return false; }
     const notice = controller.getState().folderNotice; if (notice) showFolderNotice(notice, 'info');
     scheduleSave(); return true;
   }
@@ -555,8 +566,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function showFolderMove(before: TextWorkspaceState, after: TextWorkspaceState, lineId: string, fromId: string, oldTitle: string) {
     const notice = programFolderMoveNotice(before, after, propsRef.current.docId, lineId, fromId);
     const title = M.getDocument(after, propsRef.current.docId)?.lines.find(line => line.id === lineId)?.text.replace(/^ *- \//, '').trim() ?? '';
-    const undo: ProgramNoticeAction = { label: '되돌리기', run: () => { if (undoFolderMove()) setFolderNotice(null); } };
-    const everywhere: ProgramNoticeAction = { label: '모든 문서에 적용', run: () => { void renameEverywhere(before, fromId, title, oldTitle); } };
+    // Only right after the move: an edit since (a held press's composition too) leaves it, and says so.
+    const undo: ProgramNoticeAction = { label: '되돌리기', run: whenComposed(() => { if (undoFolderMove()) setFolderNotice(null);
+      else showFolderNotice('그 뒤에 다른 편집이 있어 폴더 옮김을 되돌리지 않았습니다 · 분류 화면에서 정리할 수 있습니다', 'warn'); }) };
+    const everywhere: ProgramNoticeAction = { label: '모든 문서에 적용', run: whenComposed(() => { void renameEverywhere(before, fromId, title, oldTitle); }) };
     showFolderNotice(notice.text, notice.tone, lineId, notice.kind === 'moved' ? [everywhere, undo] : [undo]);
   }
   /** [모든 문서에 적용], right after the move only: the move is replaced by renaming the folder in every document
@@ -566,16 +579,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!controller || !controller.canUndoFolderMove() || composingRef.current) { showFolderNotice('다른 편집이 있어 모든 문서에 적용하지 않았습니다. 분류 화면에서 이름을 바꿀 수 있습니다.', 'warn'); return; }
     const next = M.renameScope(before, fromId, title);
     if (next === before || !(await apply(next, '폴더 이름 바꾸기'))) return;
-    const back: ProgramNoticeAction = { label: '되돌리기', run: () => { void renameBack(fromId, oldTitle, title); } };
+    // The folder's lines as the rename left them: its 되돌리기 undoes only that (W15 review P1-2).
+    const lines = programFolderLines(next, fromId);
+    const back: ProgramNoticeAction = { label: '되돌리기', run: whenComposed(() => { void renameBack(fromId, oldTitle, title, lines); }) };
     showFolderNotice(programFolderRenamedEverywhere(next, fromId, oldTitle), 'info', undefined, [back]);
   }
-  /** Its 되돌리기: a new change naming the folder back everywhere, unless that name is taken there by now. */
-  async function renameBack(fromId: string, oldTitle: string, title: string) {
-    const state = currentState(), folder = state.folders.find(entry => entry.id === fromId);
-    if (!folder || folder.title !== title || state.folders.some(entry => entry.id !== fromId && entry.parentId === folder.parentId && entry.title === oldTitle)) {
-      showFolderNotice('폴더 이름이 그 사이에 바뀌어 되돌리지 않았습니다.', 'warn'); return;
-    }
-    if (await apply(M.renameScope(state, fromId, oldTitle), '폴더 이름 되돌리기')) setFolderNotice(null);
+  /** Its 되돌리기: a new change naming the folder back everywhere. Anything changed there since (a line typed over
+   *  or newly linked in any document, another name, the old name taken) refuses it with the reason instead. */
+  async function renameBack(fromId: string, oldTitle: string, title: string, lines: Record<string, string>) {
+    const back = programFolderRenameBack(currentState(), fromId, oldTitle, title, lines);
+    if (!back.ok) { showFolderNotice(back.reason, 'warn'); return; }
+    if (await apply(back.next, '폴더 이름 되돌리기')) setFolderNotice(null);
   }
   /** The editor the writing bar acts on: the body, or the focused folder region. */
   function barEditor() {
@@ -909,12 +923,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (!draftRef.current?.getState().error) void saveNow(false);
     }, 450);
   }
+  /** Puts the model's text on the screen; false when the native editor refused it (a composition began). */
+  const shown = (raw: string) => !editorRef.current || editorRef.current.setValue(raw, { preserveSelection: true }) !== false;
   async function apply(next: TextWorkspaceState, label: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule']) {
-    const before = currentState(), selected = writingSelection();
-    if (actionsDisabled() || !draftRef.current?.apply(next, label, schedule)) { setMessage('이 변경은 적용할 수 없습니다. 현재 내용은 유지했습니다.'); return false; }
+    const before = currentState(), selected = writingSelection(), previous = draftRef.current?.getState();
+    // W15 review P1-4: never change the model during a composition (the screen would refuse the text), and if
+    // the screen refuses it anyway, put the model back so both agree.
+    if (composingRef.current) { setMessage('한글 입력을 마친 뒤 다시 눌러 주세요. 현재 내용은 유지했습니다.'); return false; }
+    if (actionsDisabled() || !previous || !draftRef.current?.apply(next, label, schedule)) { setMessage('이 변경은 적용할 수 없습니다. 현재 내용은 유지했습니다.'); return false; }
     cancelMove();
+    if (!shown(draftRef.current.getState().raw)) { draftRef.current.restoreState(previous); setMessage('화면에 반영하지 못해 적용하지 않았습니다. 현재 내용은 유지했습니다.'); return false; }
     orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++;
-    editorRef.current?.setValue(draftRef.current.getState().raw, { preserveSelection: true });
     const returned = selected && programTextSelectionAfterChange(before, next, propsRef.current.docId, selected);
     if (returned) {
       restoreWritingSelection(returned);
@@ -1335,13 +1354,22 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }, [props.readOnly, props.directWriting, props.docId]);
   useEffect(() => { editorRef.current?.setMode(mode); }, [mode, props.docId]);
   // W15: an info notice ends 6s after it shows, a choice 6s after the caret leaves its block; held, neither.
+  // Waiting behind the move notice or a message, it has not shown yet (review P2): its time starts once it shows.
+  const folderWaiting = !!folderNotice && (!!moving || !!message && !panel);
+  const folderWaitedRef = useRef(false);
+  const restartFolderNotice = () => setFolderNotice(current => current && { ...current, shownAt: Date.now(), leftBlockAt: current.leftBlockAt === null ? null : Date.now() });
+  useEffect(() => {
+    if (folderWaiting) { folderWaitedRef.current = true; return; }
+    if (!folderWaitedRef.current) return;
+    folderWaitedRef.current = false; restartFolderNotice();
+  }, [folderWaiting]);
   useEffect(() => {
     if (!folderNotice) return;
-    const ends = programNoticeEndsAt({ tone: folderNotice.tone, shownAt: folderNotice.shownAt, leftBlockAt: folderNotice.leftBlockAt, held: noticeHeld });
+    const ends = programNoticeEndsAt({ tone: folderNotice.tone, shownAt: folderNotice.shownAt, leftBlockAt: folderNotice.leftBlockAt, held: noticeHeld, waiting: folderWaiting });
     if (ends === null) return;
     const timer = window.setTimeout(() => setFolderNotice(current => current === folderNotice ? null : current), Math.max(0, ends - Date.now()));
     return () => window.clearTimeout(timer);
-  }, [folderNotice, noticeHeld]);
+  }, [folderNotice, noticeHeld, folderWaiting]);
   useEffect(() => {
     if (props.active !== false) return;
     const tools = hostRef.current?.closest('section')?.querySelector<HTMLDetailsElement>('[data-editor-tools]');
@@ -1815,8 +1843,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     ...(message && !panel ? [{ tone: 'warn' as const, text: message, closeLabel: '안내 닫기', close: () => setMessage('') }] : []),
     ...(folderNotice ? [{ tone: folderNotice.tone, text: folderNotice.text, actions: folderNotice.actions, closeLabel: '알림 닫기', close: () => setFolderNotice(null) }] : []),
   ]);
-  const releaseNotice = () => { if (!noticeHeld) return; setNoticeHeld(false);
-    setFolderNotice(current => current && { ...current, shownAt: Date.now(), leftBlockAt: current.leftBlockAt === null ? null : Date.now() }); };
+  const releaseNotice = () => { if (!noticeHeld) return; setNoticeHeld(false); restartFolderNotice(); };
   const notices = <div ref={noticeRef} className={styles.notices} onPointerDown={() => setNoticeHeld(true)} onPointerUp={releaseNotice} onPointerLeave={releaseNotice}
     onFocus={() => setNoticeHeld(true)} onBlur={releaseNotice}>
     {noticeViews[0] && <ProgramNoticeRow notice={{ ...noticeViews[0], more: noticeViews.length - 1 }} onClose={noticeViews[0].close} />}

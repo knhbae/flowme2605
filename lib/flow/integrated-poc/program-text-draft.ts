@@ -134,7 +134,7 @@ export function createProgramTextDraft(
   const onlyBlankLinesAdded = (from: TextWorkspaceState, to: TextWorkspaceState) => blankless(from) === blankless(to)
     && programSame({ ...from, documents: [], flows: [] }, { ...to, documents: [], flows: [] });
   // The last finished folder line move, for one undo right after it (D3 B).
-  let lastMove: { before: TextWorkspaceState; after: TextWorkspaceState } | null = null;
+  let lastMove: { before: TextWorkspaceState; after: TextWorkspaceState; lineIds: string[] } | null = null;
   let prepared: {state:ProgramTextDraftState;raw:string;signature:string;ownerRevision:number|undefined;context:unknown;value:ReturnType<typeof deriveRaw>}|null=null;
   const basicCheckReady=()=>!state.invalid&&(!state.saving||submitted?.allowBasicChecks===true);
   const api = {
@@ -210,7 +210,7 @@ export function createProgramTextDraft(
                 ? '진행 기록과 다른 체크 표시로 바꿀 수 없습니다. 체크 표시를 되돌린 뒤 ‘진행 조절’에서 변경해 주세요. 입력은 남아 있습니다.'
               : '입력을 안전하게 반영하지 못했습니다. 변경을 나눠서 다시 시도해 주세요. 입력은 그대로 남아 있습니다.') };
       // The Enter that finished the line only adds an empty line; the move stays the one thing ↶ puts back.
-      if (!invalid) lastMove = edit.folderMoved ? { before, after: state.working }
+      if (!invalid) lastMove = edit.folderMoved ? { before, after: state.working, lineIds: (input?.folderMove ?? []).map(index => M.getDocument(before, docId)?.lines[index]?.id).filter((id): id is string => !!id) }
         : lastMove && lastMove.after === before && onlyBlankLinesAdded(lastMove.after, state.working) ? { ...lastMove, after: state.working } : null;
       label = '문서 편집'; groupId = `text:${docId}`; report();
       return !invalid;
@@ -269,12 +269,14 @@ export function createProgramTextDraft(
         : `폴더 이름은 Enter로 마칠 때만 바뀝니다 · ${kept.length === 1 ? `‘${kept[0]}’${ro(kept[0])}` : '원래 이름으로'} 두었습니다(입력: ${typed.join(', ')})` }; report(); return true;
     },
     canUndoFolderMove: () => !!lastMove && !state.invalid && state.working === lastMove.after,
-    /** One undo right after a folder line moved: the state before the move, with the line's name back. */
+    /** One undo right after a folder line moved: the state before the move, with that line's name back. Only the
+     *  moved line changes; another line typed over and left keeps its text (W15 review P1-1, D3 B F4). */
     undoFolderMove() {
       if (!api.canUndoFolderMove()) return false;
-      const before = lastMove!.before; lastMove = null;
+      const { before, lineIds } = lastMove!; lastMove = null;
       const doc = M.getDocument(before, docId); if (!doc) return false;
       const raw = doc.lines.map(line => {
+        if (!lineIds.includes(line.id)) return line.text;
         const binding = before.bindings.find(row => row.kind === 'scope' && row.docId === docId && row.lineId === line.id);
         const folder = binding && binding.kind === 'scope' ? before.folders.find(entry => entry.id === binding.scopeId) : undefined;
         return folder && /^ *- \//.test(line.text) ? /^ */.exec(line.text)![0] + '- /' + folder.title : line.text;
@@ -293,6 +295,14 @@ export function createProgramTextDraft(
       const working=documentInput?.install(next)??next;
       state = { ...state, working, raw: M.raw(M.getDocument(working, docId)), dirty: true, error: '', progressConflict: undefined };
       label = nextLabel; groupId = undefined; privateTaskSchedule = schedule; report(); return true;
+    },
+    /** W15 review P1-4: the screen refused the text of a change just made (apply, a folder move or its undo), so
+     *  put back the state from right before it; the model and the screen agree again and nothing is saved. */
+    restoreState(previous: ProgramTextDraftState) {
+      if (state.saving || previous.saving) return false;
+      inputGeneration++; prepared = null; privateTaskSchedule = undefined;
+      const working = documentInput?.install(previous.working) ?? previous.working;
+      state = { ...previous, working }; report(); return true;
     },
     synchronize(next: TextWorkspaceState) {
       if (state.dirty || state.saving || state.committed === next || programSame(state.committed, next)) return false;

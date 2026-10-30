@@ -118,7 +118,7 @@ test('putting one line back leaves another line left with a different name as it
 
 test('the editor moves a linked line only on Enter (D3 B); left, already off or refused it puts the name back, also after a paste', () => {
   const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
-  assert.match(editor, /if \(finishedHere && !held\.offAtStart && linked && linked\.id !== 'folder-unfiled'\) \{\s*const moved = controller\.moveFolderLine\(index\);/);
+  assert.match(editor, /if \(finishedHere && !held\.offAtStart && linked && linked\.id !== 'folder-unfiled'\) \{\s*const previous = controller\.getState\(\), moved = controller\.moveFolderLine\(index\);/);
   assert.match(editor, /if \(!controller\.restoreFolderLineName\(index\)\) return;/);
   assert.match(editor, /\/\/ A paste over linked folder lines' names is finished like typing: every line it renamed goes back\./);
   assert.match(editor, /editorRef\.current\?\.setValue\(restored, \{ selection: \{ start: restoredLineOffset\(beforeRaw, index, line, selectionStart\),/);
