@@ -1267,6 +1267,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const serverStatusView: ProgramServerStatusView | null = usesNoteChrome ? {
     ...programServerStatus({ snapshot, storageError, external, participationRecovery: !!localParticipationRecovery }),
     recovery: destination.view === 'space' && needsInputProtection ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,
+    recoveryBody: destination.view === 'space' && needsInputProtection ? <div className={styles.inputRecoveryGroup}>{inputProtectionFor(false)}</div> : null,
     extras: destination.view === 'space' && message && !participationMessage
       ? <div className={styles.statusRow}>{serverStatusExtras}</div> : null,
   } : null;

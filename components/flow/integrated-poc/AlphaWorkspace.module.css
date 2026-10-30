@@ -170,11 +170,13 @@
 .inputRecovery > summary::-webkit-details-marker { display: none; }
 .inputRecovery[open] > summary { background: #fff4e9; border-radius: 6px; }
 .inputRecoveryBody { position: absolute; z-index: 70; top: calc(100% + 4px); left: 0; right: 0; box-sizing: border-box; max-height: min(52dvh, 420px); overflow: auto; overscroll-behavior: contain; padding: 12px; border: 1px solid var(--flowme-control-border); border-radius: 10px; color: var(--flowme-text); background: var(--flowme-surface); box-shadow: 0 8px 24px var(--flowme-b-shadow); }
-.inputRecoveryBody .problem { margin: 0 0 8px; padding: 10px; }
-.inputRecoveryBody section { margin-block: 8px; }
-.inputRecoveryBody h2 { font-size: 16px; font-weight: 650; margin-bottom: 8px; }
-.inputRecoveryBody textarea { display: block; width: 100%; min-width: 0; min-height: 100px; max-height: 240px; padding: 10px; font: inherit; font-size: 16px; border: 1px solid var(--flowme-control-border); border-radius: 8px; }
-.inputRecoveryBody button { margin: 4px 8px 4px 0; }
+/* W2: inside the editor's one recovery box, the same content as a group. */
+.inputRecoveryGroup { color: var(--flowme-text); }
+:is(.inputRecoveryBody, .inputRecoveryGroup) .problem { margin: 0 0 8px; padding: 10px; }
+:is(.inputRecoveryBody, .inputRecoveryGroup) section { margin-block: 8px; }
+:is(.inputRecoveryBody, .inputRecoveryGroup) h2 { font-size: 16px; font-weight: 650; margin-bottom: 8px; }
+:is(.inputRecoveryBody, .inputRecoveryGroup) textarea { display: block; width: 100%; min-width: 0; min-height: 100px; max-height: 240px; padding: 10px; font: inherit; font-size: 16px; border: 1px solid var(--flowme-control-border); border-radius: 8px; }
+:is(.inputRecoveryBody, .inputRecoveryGroup) button { margin: 4px 8px 4px 0; }
 .statusRow > .feedbackMessage { flex: 1 1 0; min-width: 44px; margin: 0; padding: 0; color: var(--flowme-text-secondary); font-size: 12px; line-height: 20px; }
 .page .feedbackMessage > summary { display: flex; align-items: center; min-height: 44px; box-sizing: border-box; font-size: 12px; line-height: 20px; cursor: pointer; list-style: none; }
 .feedbackMessage > summary::-webkit-details-marker { display: none; }
