@@ -363,6 +363,8 @@
 .space .titleActions > details > summary { display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; list-style: none; }
 .space .titleActions > details > div { right: 0; left: auto; }
 .space .sheetNewWriting { width: 100%; min-height: 48px; margin: 0 0 12px; border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); color: #fff; font-weight: 700; }
+/* N1 fix 3: the empty first screen's own start, styled like the sheet's ＋ 새 글. */
+.space .emptyNewWriting { min-height: 48px; padding-inline: 20px; border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); color: #fff; font-weight: 700; }
 @media (max-width: 760px) { .space .findDialog { max-height: 85dvh; } }
 
 /* R8b: the Flow·반복 box opens as a sheet from the toolbar's 반복 button. */
