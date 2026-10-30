@@ -62,7 +62,8 @@ test('S3 re-review: a range selected after the hold, or the caret moved back ove
 
 function holdHarness(options: { folder?: boolean } = {}) {
   const area = { value: '- [ ] 장보기\n- [ ] 빨래', selectionStart: 3, selectionEnd: 3, readOnly: false, isConnected: true };
-  const state = { saving: true, composing: false, editable: true, active: area as unknown, frames: new Map<number, () => void>(), runs: [] as string[], clock: 0, cancelled: [] as number[] };
+  const state = { saving: true, composing: false, editable: true, active: area as unknown, frames: new Map<number, () => void>(), runs: [] as string[], clock: 0, cancelled: [] as number[],
+    timers: [] as (() => void)[], messages: [] as string[] };
   let frameId = 0;
   const barHold = createWritingBarHold<WritingBarTarget>();
   const editor = () => state.editable ? { instance: {}, area } : null;
@@ -76,6 +77,8 @@ function holdHarness(options: { folder?: boolean } = {}) {
     requestAnimationFrame: (callback: () => void) => { state.frames.set(++frameId, callback); return frameId; },
     cancelAnimationFrame: (id: number) => { state.cancelled.push(id); state.frames.delete(id); },
     barRetry: { current: null as unknown }, compositionAnchorRef: { current: null as unknown },
+    holdLimit: { current: null as unknown }, setTimeout: (callback: () => void) => state.timers.push(callback), clearTimeout: () => {},
+    setMessage: (text: string) => state.messages.push(text), BAR_COMPOSING_NOTICE: 'BAR_COMPOSING_NOTICE',
   };
   const stopBarRetry = evaluate<() => void>(fn('stopBarRetry'), scope);
   const release = evaluate<() => void>(fn('releaseHeldBar'), { ...scope, stopBarRetry });
@@ -120,6 +123,26 @@ test('real press and release: a press held during a save runs on its line once; 
   h.state.composing = false; h.area.value = '- [ ] 장보기 가';
   h.state.saving = false; h.release();
   assert.deepEqual(h.state.runs, ['enter']);
+});
+
+// N1 fix 3 (Samsung 천지인): a keyboard that keeps the word composing may never end it on its own.
+test('a press held through a composition that does not end lets go after one second, with a notice and no edit', () => {
+  let h = holdHarness();
+  h.state.saving = false; h.state.composing = true;
+  h.press('indent');
+  assert.deepEqual([h.barHold.held(), h.state.timers.length], ['indent', 1]);
+  h.state.timers[0]();
+  assert.deepEqual([h.barHold.held(), h.state.runs, h.state.messages], [null, [], ['BAR_COMPOSING_NOTICE']]);
+  // The composition ending within the second runs the press as before; the late timer then does nothing.
+  h = holdHarness();
+  h.state.saving = false; h.state.composing = true;
+  h.press('indent');
+  h.state.composing = false; h.release();
+  h.state.timers[0]();
+  assert.deepEqual([h.state.runs, h.state.messages], [['indent'], []]);
+  // A press held only for a save sets no limit.
+  h = holdHarness(); h.press('indent');
+  assert.equal(h.state.timers.length, 0);
 });
 
 test('folder region right after its save: the held press waits for the region to be editable, then runs once', () => {

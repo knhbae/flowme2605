@@ -9,6 +9,7 @@ import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { readChildDrafts, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
 import { createWritingBarHold, folderBarLine, heldTargetVerdict, taskMarkerLock, toggleTaskLine, writingBarLine, writingBarTarget, type WritingBarAction, type WritingBarLine, type WritingBarTarget } from '@/lib/flow/integrated-poc/writing-bar';
+import { programKeyboardBarCramped, programKeyboardBarPlace, programVisibleBottom } from '@/lib/flow/integrated-poc/keyboard-bar-place';
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
 import { planProgramDateBlockOrder, type DateBlockOrderPlan, type DateOrderSelection } from '@/lib/flow/integrated-poc/date-block-order';
@@ -159,6 +160,7 @@ export function trapProgramDialogTab(
 
 const FOLDER_STRUCTURE_LOCK = '분류 보기에서는 저장된 줄의 종류와 들여쓰기를 바꿀 수 없습니다. ‘전체 문서 보기’에서 바꿔 주세요.';
 const REGION_OUTSIDE = '이 자리는 지금 보는 분류 영역 밖이라 여기서 넣지 않았습니다. 원문은 그대로입니다. 전체 문서에서 추가해 주세요.';
+const BAR_COMPOSING_NOTICE = '입력 중인 글자가 아직 끝나지 않아 실행하지 않았습니다. 글자를 마친 뒤 다시 눌러 주세요.';
 
 function today() {
   const now = new Date();
@@ -344,6 +346,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const compositionAnchorRef = useRef<{ area: HTMLTextAreaElement; offset: number } | null>(null);
   // One retry chain at a time for the current held press, capped by elapsed time.
   const barRetry = useRef<{ frame: number; serial: number; since: number } | null>(null);
+  const holdLimit = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (holdLimit.current) clearTimeout(holdLimit.current); }, []);
   useEffect(() => {
     // A press held through a composition is released after the compositionend event has finished. The editor
     // hears compositionend in the capture phase, before the native editor does, so releasing here would find the
@@ -548,7 +552,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     stopBarRetry();
     const run = barHold.press(action, busy, area ? writingBarTarget(area, area.value, area.selectionStart, settled) : null);
     setHeldBar(barHold.held());
-    if (run) runBar(run);
+    if (run) { runBar(run); return; }
+    // N1 fix 3: a keyboard that keeps the whole word composing (Samsung 천지인) may end the composition only at
+    // the next space or character. A press held for a composition waits one second, then lets go and says why.
+    // It never commits, blurs or rewrites the composing text.
+    if (!composingRef.current) return;
+    const serial = barHold.serial();
+    if (holdLimit.current) clearTimeout(holdLimit.current);
+    holdLimit.current = setTimeout(() => {
+      holdLimit.current = null;
+      if (barHold.held() && barHold.serial() === serial && composingRef.current) { barHold.cancel(); setHeldBar(null); setMessage(BAR_COMPOSING_NOTICE); }
+    }, 1000);
   }
   function stopBarRetry() { if (barRetry.current) { cancelAnimationFrame(barRetry.current.frame); barRetry.current = null; } }
   /** Run a held press once input settles, only where it was aimed. The press is taken only when its
@@ -799,7 +813,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function scheduleSave() {
     if (timerRef.current) clearTimeout(timerRef.current);
     // A pending commit may fail after newer input armed this timer.
-    timerRef.current = setTimeout(() => { if (!draftRef.current?.getState().error) void saveNow(false); }, 450);
+    // A keyboard may keep a word composing for long (Samsung 천지인); the background save waits for it without
+    // a notice. The "한글 입력을 마친 뒤" notice is for a flush the user asked for, such as changing the view.
+    timerRef.current = setTimeout(() => {
+      if (composingRef.current) { scheduleSave(); return; }
+      if (!draftRef.current?.getState().error) void saveNow(false);
+    }, 450);
   }
   async function apply(next: TextWorkspaceState, label: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule']) {
     const before = currentState(), selected = writingSelection();
@@ -1279,14 +1298,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const view = host.ownerDocument.defaultView;
     if (!view) return;
     const visual = view.visualViewport;
-    let frame = 0;
+    let frame = 0, nudgeUntil = 0;
     const update = () => {
       frame = 0;
-      let bottom = Math.min(view.innerHeight, visual ? visual.offsetTop + visual.height : view.innerHeight);
       const nav = shell.querySelector<HTMLElement>('nav[aria-label="기본 이동"], nav[aria-label="주요 메뉴"]');
-      if (nav?.getClientRects().length && view.getComputedStyle(nav).position === 'fixed') bottom = Math.min(bottom, nav.getBoundingClientRect().top);
-      // The mobile writing bar sits right under the body (or the folder region being edited), so that ends above it.
-      const bar = barRef.current, barShown = !!bar?.getClientRects().length;
+      const navTop = nav?.getClientRects().length && view.getComputedStyle(nav).position === 'fixed' ? nav.getBoundingClientRect().top : null;
+      let bottom = programVisibleBottom(view, visual, navTop);
+      // N1 fix 3: the mobile writing bar is fixed to that visible bottom (CSS), right above the keyboard however
+      // it shrinks or pans the view; the body (or the folder region being edited) ends above it.
+      const bar = barRef.current;
+      if (bar) for (const [name, value] of Object.entries(programKeyboardBarPlace(view, visual, bottom))) bar.style.setProperty(name, value);
+      const barShown = !!bar?.getClientRects().length;
       if (barShown) bottom -= bar!.getBoundingClientRect().height + 4;
       if (!host.getClientRects().length) { fitFolderRegion(host.closest('section'), barShown, bottom); return; }
       const height = programEditorVisibleHeight(host.getBoundingClientRect().top, bottom);
@@ -1296,8 +1318,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         // Reuse its guarded reveal path without changing input or focus ownership.
         editorRef.current?.refreshViewport();
       }
+      // With the page at its top, the text above the body can leave no line above the bar. Shortly after the
+      // keyboard opens or the body takes focus (the rows above settle a frame or two later), bring the body up
+      // once; a later scroll by the user is never pulled back.
+      if (view.performance.now() < nudgeUntil && barShown && programKeyboardBarCramped(host.getBoundingClientRect().top, bar!.getBoundingClientRect().top)) {
+        nudgeUntil = 0; host.scrollIntoView({ block: 'start' });
+      }
     };
     const schedule = () => { if (!frame) frame = view.requestAnimationFrame(update); };
+    const scheduleNudge = () => { nudgeUntil = view.performance.now() + 600; schedule(); };
     const observer = new ResizeObserver(schedule);
     observer.observe(shell); observer.observe(host);
     // Hidden retained editors and sibling notices can change top without changing
@@ -1305,15 +1334,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const mutation = new MutationObserver(schedule);
     mutation.observe(shell, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'open', 'data-writing-keyboard'] });
     view.addEventListener('resize', schedule); view.addEventListener('scroll', schedule, { passive: true });
-    visual?.addEventListener('resize', schedule); visual?.addEventListener('scroll', schedule);
+    visual?.addEventListener('resize', scheduleNudge); visual?.addEventListener('scroll', schedule);
     // The writing bar shows while the body has focus (CSS), which no observer above sees.
     const editorRoot = host.closest('section');
-    editorRoot?.addEventListener('focusin', schedule); editorRoot?.addEventListener('focusout', schedule);
+    editorRoot?.addEventListener('focusin', scheduleNudge); editorRoot?.addEventListener('focusout', schedule);
     schedule();
     return () => { observer.disconnect(); mutation.disconnect(); view.cancelAnimationFrame(frame);
       view.removeEventListener('resize', schedule); view.removeEventListener('scroll', schedule);
-      visual?.removeEventListener('resize', schedule); visual?.removeEventListener('scroll', schedule);
-      editorRoot?.removeEventListener('focusin', schedule); editorRoot?.removeEventListener('focusout', schedule); };
+      visual?.removeEventListener('resize', scheduleNudge); visual?.removeEventListener('scroll', schedule);
+      editorRoot?.removeEventListener('focusin', scheduleNudge); editorRoot?.removeEventListener('focusout', schedule); };
   }, []);
 
   const row = panel ? currentRow(panel.lineId) : undefined;

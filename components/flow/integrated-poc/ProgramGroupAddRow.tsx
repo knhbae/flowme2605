@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { createGroupAddEntry, type GroupAddAction } from '@/lib/flow/integrated-poc/group-add-entry';
+import { createPressAwareClose } from '@/lib/flow/integrated-poc/press-aware-close';
 import styles from './ProgramSpace.module.css';
 
 /** The input line a day heading's "＋" opens at the top of that day. Saving goes through the
@@ -10,20 +11,17 @@ export function ProgramGroupAddRow(props: { date: string; dayLabel: string; inpu
   onAdd: (title: string, time: string) => Promise<boolean>; onClose: () => void }) {
   const [entry] = useState(createGroupAddEntry);
   const [time, setTime] = useState<string | null>(null), [saving, setSaving] = useState(false);
-  const mounted = useRef(true), pressing = useRef(false);
+  const mounted = useRef(true), formRef = useRef<HTMLFormElement>(null), focusCount = useRef(0);
   // A press elsewhere blurs the empty line before the press ends. Closing it then removes this row while the
   // pointer is down, the rows below can move under it, and the press's click lands elsewhere (a new row's 원문
-  // lost its first press). A blur close waits for the press to end and for its click, then runs.
-  useEffect(() => {
-    const down = () => { pressing.current = true; }, up = () => { pressing.current = false; };
-    window.addEventListener('pointerdown', down, true); window.addEventListener('pointerup', up, true); window.addEventListener('pointercancel', up, true);
-    return () => { window.removeEventListener('pointerdown', down, true); window.removeEventListener('pointerup', up, true); window.removeEventListener('pointercancel', up, true); };
-  }, []);
+  // lost its first press). A blur close waits for the press to end and for its click, then runs only if the
+  // line was not focused again meanwhile (the same day's ＋ pressed again focuses it).
+  const blurClose = useRef<ReturnType<typeof createPressAwareClose> | null>(null);
+  useEffect(() => { const closer = createPressAwareClose(window); blurClose.current = closer; return closer.attach(); }, []);
   function closeAfterPress() {
-    const close = () => setTimeout(() => { if (mounted.current) props.onClose(); }, 0);
-    if (!pressing.current) { close(); return; }
-    const done = () => { window.removeEventListener('pointerup', done, true); window.removeEventListener('pointercancel', done, true); close(); };
-    window.addEventListener('pointerup', done, true); window.addEventListener('pointercancel', done, true);
+    const at = focusCount.current;
+    blurClose.current?.request(() => mounted.current && focusCount.current === at && !formRef.current?.contains(document.activeElement)
+      && !props.inputRef.current?.value.trim(), props.onClose);
   }
   useEffect(() => {
     mounted.current = true;
@@ -47,7 +45,7 @@ export function ProgramGroupAddRow(props: { date: string; dayLabel: string; inpu
   }
   const [month, day] = props.date.slice(5).split('-').map(Number);
   return <li className={styles.groupAdd}>
-    <form onSubmit={event => { event.preventDefault(); void act(entry.submit(props.inputRef.current?.value ?? '')); }}
+    <form ref={formRef} onFocus={() => { focusCount.current++; }} onSubmit={event => { event.preventDefault(); void act(entry.submit(props.inputRef.current?.value ?? '')); }}
       onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) void act(entry.leave(props.inputRef.current?.value ?? ''), true); }}>
       <input ref={props.inputRef} name="title" aria-label={`${props.dayLabel}에 추가할 할 일`} placeholder="할 일" maxLength={500} autoComplete="off" enterKeyHint="done"
         onInput={() => entry.edited()} onCompositionStart={() => entry.compositionStart()} onCompositionEnd={() => entry.compositionEnd()}
