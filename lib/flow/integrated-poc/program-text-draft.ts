@@ -3,6 +3,7 @@ import type {ProgramDocumentInput} from './program-document-input';
 import { textWorkspaceModel as M, type TextInputSplice, type TextTaskSplitIntent, type TextProgressCheckConflict, type TextWorkspaceState } from './text-workspace';
 import { programSame } from './controller';
 import { programClone } from './contract';
+import { mergeProgramTextWorkspace } from './text-merge';
 import type { ProgramPrivateMutationObserver } from './ui-contract';
 
 export type ProgramTaskProgressEdit = { taskId: string; date: string; percent: number; correctionAsOfDate?: string };
@@ -67,6 +68,28 @@ export function createProgramTextDraft(
   const report = () => notify({ ...state });
   type Input = { inputType: string; inputSplice?: TextInputSplice; taskSplit?: TextTaskSplitIntent; compositionGeneration?: number; folderHold?: number[]; folderDeclare?: number[]; folderLink?: number[]; folderMove?: number[] };
   const signature=(input?:Input)=>JSON.stringify(input?{inputType:input.inputType,inputSplice:input.inputSplice,taskSplit:input.taskSplit,compositionGeneration:input.compositionGeneration,folderHold:input.folderHold,folderDeclare:input.folderDeclare,folderLink:input.folderLink,folderMove:input.folderMove}:null);
+  /** A save whose reply was lost, confirmed later on a newer base: another device saved a different
+   * document, the host took that as its base, and the submitted input was merged onto it per document.
+   * Accept only when the confirmed text is exactly that merge of this submission; newer input moves
+   * onto the confirmed text by the same merge. Anything else stays unconfirmed (and protected). */
+  function acceptMergedSave(attempt: NonNullable<typeof submitted>, before: TextWorkspaceState, next: TextWorkspaceState) {
+    if (state.saving || !programSame(state.committed, attempt.before) || programSame(attempt.before, before)) return false;
+    const merged = mergeProgramTextWorkspace(attempt.before, attempt.next, before);
+    if (!merged || !programSame(merged, next) || !M.validate(next) || !validateWorkspace(next) || !M.getDocument(next, docId)) return false;
+    const unchangedInput = inputGeneration === attempt.generation && programSame(state.working, attempt.next)
+      && state.raw === M.raw(M.getDocument(attempt.next, docId));
+    if (unchangedInput) {
+      const working = documentInput?.install(next) ?? next;
+      state = { ...state, committed: working, working, raw: M.raw(M.getDocument(working, docId)), dirty: false, error: '', progressConflict: undefined };
+      submitted = null; report(); return true;
+    }
+    if (inputGeneration <= attempt.generation) return false;
+    const moved = mergeProgramTextWorkspace(attempt.next, state.working, next);
+    if (!moved || !validateWorkspace(moved) || !M.getDocument(moved, docId) || M.raw(M.getDocument(moved, docId)) !== state.raw) return false;
+    const working = documentInput?.install(moved) ?? moved;
+    state = { ...state, committed: next, working, error: '', progressConflict: undefined };
+    submitted = null; report(); return true;
+  }
   function deriveRaw(raw:string,input?:Input){
       const baseRaw = M.raw(M.getDocument(state.committed, docId));
       const before = state.working;
@@ -243,8 +266,9 @@ export function createProgramTextDraft(
           state={...state,committed:attempt.next};report();return true;
         }finally{noteWritingPhase('ack-draft-accept',started,ack.identity);}
       }
-      if (!attempt || !state.dirty || state.invalid || !programSame(state.committed, before)
-        || !programSame(attempt.before, before) || !programSame(attempt.next, next)) return false;
+      if (!attempt || !state.dirty || state.invalid) return false;
+      if (!programSame(state.committed, before) || !programSame(attempt.before, before) || !programSame(attempt.next, next))
+        return acceptMergedSave(attempt, before, next);
       const unchangedInput = inputGeneration === attempt.generation && programSame(state.working, next)
         && state.raw === M.raw(M.getDocument(next, docId));
       if (!state.saving && unchangedInput) {
