@@ -242,6 +242,11 @@
     display: flex; align-items: center; gap: 4px; min-height: 44px; margin-top: 4px; padding: 0 8px; box-sizing: border-box;
     border-top: 1px solid var(--flowme-b-line); background: #fff;
   }
+  /* N1 fix 3: the bar is fixed to the visible bottom the script sets from the visual viewport, so a keyboard
+     that shrinks or pans the view never covers it; the body's height ends above it. */
+  .editor:has(.host textarea:focus, [data-folder-region] textarea:focus, .writingBar :focus) .writingBar {
+    position: fixed; z-index: 40; left: var(--writing-bar-left, 0px); bottom: var(--writing-bar-bottom, 0px); width: var(--writing-bar-width, 100%); margin: 0;
+  }
   .writingBar > button { flex: 0 0 44px; width: 44px; min-width: 44px; height: 44px; min-height: 44px; padding: 0; font-size: 18px; line-height: 1; }
   .barStatus { flex: 0 1 8.5em; min-width: 0; margin-left: auto; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: right; font-size: 13px; color: var(--flowme-b-muted); }
   .barStatus[data-warn="true"] { color: #b45309; }

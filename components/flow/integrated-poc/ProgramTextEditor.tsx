@@ -9,6 +9,7 @@ import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { readChildDrafts, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
 import { createWritingBarHold, folderBarLine, heldTargetVerdict, taskMarkerLock, toggleTaskLine, writingBarLine, writingBarTarget, type WritingBarAction, type WritingBarLine, type WritingBarTarget } from '@/lib/flow/integrated-poc/writing-bar';
+import { programKeyboardBarCramped, programKeyboardBarPlace, programVisibleBottom } from '@/lib/flow/integrated-poc/keyboard-bar-place';
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
 import { planProgramDateBlockOrder, type DateBlockOrderPlan, type DateOrderSelection } from '@/lib/flow/integrated-poc/date-block-order';
@@ -1279,14 +1280,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const view = host.ownerDocument.defaultView;
     if (!view) return;
     const visual = view.visualViewport;
-    let frame = 0;
+    let frame = 0, nudgeUntil = 0;
     const update = () => {
       frame = 0;
-      let bottom = Math.min(view.innerHeight, visual ? visual.offsetTop + visual.height : view.innerHeight);
       const nav = shell.querySelector<HTMLElement>('nav[aria-label="기본 이동"], nav[aria-label="주요 메뉴"]');
-      if (nav?.getClientRects().length && view.getComputedStyle(nav).position === 'fixed') bottom = Math.min(bottom, nav.getBoundingClientRect().top);
-      // The mobile writing bar sits right under the body (or the folder region being edited), so that ends above it.
-      const bar = barRef.current, barShown = !!bar?.getClientRects().length;
+      const navTop = nav?.getClientRects().length && view.getComputedStyle(nav).position === 'fixed' ? nav.getBoundingClientRect().top : null;
+      let bottom = programVisibleBottom(view, visual, navTop);
+      // N1 fix 3: the mobile writing bar is fixed to that visible bottom (CSS), right above the keyboard however
+      // it shrinks or pans the view; the body (or the folder region being edited) ends above it.
+      const bar = barRef.current;
+      if (bar) for (const [name, value] of Object.entries(programKeyboardBarPlace(view, visual, bottom))) bar.style.setProperty(name, value);
+      const barShown = !!bar?.getClientRects().length;
       if (barShown) bottom -= bar!.getBoundingClientRect().height + 4;
       if (!host.getClientRects().length) { fitFolderRegion(host.closest('section'), barShown, bottom); return; }
       const height = programEditorVisibleHeight(host.getBoundingClientRect().top, bottom);
@@ -1296,8 +1300,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         // Reuse its guarded reveal path without changing input or focus ownership.
         editorRef.current?.refreshViewport();
       }
+      // With the page at its top, the text above the body can leave no line above the bar. Shortly after the
+      // keyboard opens or the body takes focus (the rows above settle a frame or two later), bring the body up
+      // once; a later scroll by the user is never pulled back.
+      if (view.performance.now() < nudgeUntil && barShown && programKeyboardBarCramped(host.getBoundingClientRect().top, bar!.getBoundingClientRect().top)) {
+        nudgeUntil = 0; host.scrollIntoView({ block: 'start' });
+      }
     };
     const schedule = () => { if (!frame) frame = view.requestAnimationFrame(update); };
+    const scheduleNudge = () => { nudgeUntil = view.performance.now() + 600; schedule(); };
     const observer = new ResizeObserver(schedule);
     observer.observe(shell); observer.observe(host);
     // Hidden retained editors and sibling notices can change top without changing
@@ -1305,15 +1316,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const mutation = new MutationObserver(schedule);
     mutation.observe(shell, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'open', 'data-writing-keyboard'] });
     view.addEventListener('resize', schedule); view.addEventListener('scroll', schedule, { passive: true });
-    visual?.addEventListener('resize', schedule); visual?.addEventListener('scroll', schedule);
+    visual?.addEventListener('resize', scheduleNudge); visual?.addEventListener('scroll', schedule);
     // The writing bar shows while the body has focus (CSS), which no observer above sees.
     const editorRoot = host.closest('section');
-    editorRoot?.addEventListener('focusin', schedule); editorRoot?.addEventListener('focusout', schedule);
+    editorRoot?.addEventListener('focusin', scheduleNudge); editorRoot?.addEventListener('focusout', schedule);
     schedule();
     return () => { observer.disconnect(); mutation.disconnect(); view.cancelAnimationFrame(frame);
       view.removeEventListener('resize', schedule); view.removeEventListener('scroll', schedule);
-      visual?.removeEventListener('resize', schedule); visual?.removeEventListener('scroll', schedule);
-      editorRoot?.removeEventListener('focusin', schedule); editorRoot?.removeEventListener('focusout', schedule); };
+      visual?.removeEventListener('resize', scheduleNudge); visual?.removeEventListener('scroll', schedule);
+      editorRoot?.removeEventListener('focusin', scheduleNudge); editorRoot?.removeEventListener('focusout', schedule); };
   }, []);
 
   const row = panel ? currentRow(panel.lineId) : undefined;
