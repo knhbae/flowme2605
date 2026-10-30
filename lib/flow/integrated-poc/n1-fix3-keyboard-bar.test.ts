@@ -41,7 +41,8 @@ test('the editor fixes the bar there, ends the body above it, and brings the bod
   assert.match(update, /let bottom = programVisibleBottom\(view, visual, navTop\);/);
   assert.match(update, /for \(const \[name, value\] of Object\.entries\(programKeyboardBarPlace\(view, visual, bottom\)\)\) bar\.style\.setProperty\(name, value\);/);
   assert(update.indexOf('programKeyboardBarPlace') < update.indexOf('if (barShown) bottom -= bar!.getBoundingClientRect().height + 4;'));
-  assert.match(update, /if \(view\.performance\.now\(\) < nudgeUntil && barShown && programKeyboardBarCramped\(host\.getBoundingClientRect\(\)\.bottom, bar!\.getBoundingClientRect\(\)\.top\)\) \{\s*nudgeUntil = 0; host\.scrollIntoView\(\{ block: 'start' \}\);/);
+  // W line: the end checked is the body's or the notices' under it, and the nudge repeats inside its window.
+  assert.match(update, /if \(view\.performance\.now\(\) < nudgeUntil && barShown && programKeyboardBarCramped\(end, bar!\.getBoundingClientRect\(\)\.top\)\) host\.scrollIntoView\(\{ block: 'start' \}\);/);
   assert(editor.includes('const scheduleNudge = () => { nudgeUntil = view.performance.now() + 600; schedule(); };'));
   // A scroll never pulls the body back: only the keyboard opening or focus entering does.
   assert(editor.includes("visual?.addEventListener('resize', scheduleNudge); visual?.addEventListener('scroll', schedule);"));

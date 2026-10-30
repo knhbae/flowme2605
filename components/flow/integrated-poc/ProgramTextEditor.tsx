@@ -1338,11 +1338,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         editorRef.current?.refreshViewport();
       }
       // With the page at its top, the text above the body can leave no line above the bar. Shortly after the
-      // keyboard opens or the body takes focus (the rows above settle a frame or two later), bring the body up
-      // once; a later scroll by the user is never pulled back.
-      if (view.performance.now() < nudgeUntil && barShown && programKeyboardBarCramped(host.getBoundingClientRect().bottom, bar!.getBoundingClientRect().top)) {
-        nudgeUntil = 0; host.scrollIntoView({ block: 'start' });
-      }
+      // keyboard opens or the body takes focus (the rows above settle a frame or two later), bring the body up,
+      // and again within that window whenever it is cramped: the header that comes with the keyboard can arrive
+      // after the first nudge. A later scroll by the user is never pulled back. W2's notices under the body count.
+      const end = Math.max(host.getBoundingClientRect().bottom, notice?.getClientRects().length ? notice.getBoundingClientRect().bottom : 0);
+      if (view.performance.now() < nudgeUntil && barShown && programKeyboardBarCramped(end, bar!.getBoundingClientRect().top)) host.scrollIntoView({ block: 'start' });
     };
     const schedule = () => { if (!frame) frame = view.requestAnimationFrame(update); };
     const scheduleNudge = () => { nudgeUntil = view.performance.now() + 600; schedule(); };
