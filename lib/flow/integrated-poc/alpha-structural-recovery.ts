@@ -2,6 +2,7 @@ import type { ProgramStorage } from './program-store';
 import { programIdentifier, programShape } from './program-data';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 import { canonicalJson, detached, parseAlphaJson } from './alpha-persistence/json';
+import { finishedFolderDeclarations } from './folder-line-hold';
 
 /** Off-document additions cannot be recovered from the source editor's raw text. */
 export type AlphaStructuralDraft = { documentId: string; before: TextWorkspaceState; next: TextWorkspaceState };
@@ -48,7 +49,8 @@ function folderStructuralTransition(documentId: string, before: TextWorkspaceSta
   }
   if (submitted.lines.some(line => !sourceIds.has(line.id) && line.text.trim() && !folderLines.has(line.id))) return false;
 
-  const replay = M.editTextResult(before, documentId, M.raw(submitted), { folderText: true });
+  // A line held as text while typed and declared when finished keeps its text; declare it again.
+  const replay = M.editTextResult(before, documentId, M.raw(submitted), { folderText: true, folderDeclare: finishedFolderDeclarations(before, next, documentId) });
   if (replay.reason !== null) return false;
   const replayDocs = [...replay.state.documents, ...replay.state.flows], nextDocs = [...next.documents, ...next.flows];
   if (replayDocs.length !== nextDocs.length || replay.state.folders.length !== next.folders.length) return false;

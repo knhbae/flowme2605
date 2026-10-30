@@ -1,5 +1,6 @@
 import {textWorkspaceModel as M,type TextWorkspaceState} from './text-workspace';
 import {canonicalJson} from './alpha-persistence/json';
+import {finishedFolderDeclarations} from './folder-line-hold';
 import type {ProgramData} from './contract';
 import type {AlphaCommand,AlphaReceipt} from './alpha-persistence/contract';
 import type {WritingIdentity} from './writing-compute';
@@ -87,7 +88,7 @@ export function privateTextChangeIsolatedToDocument(before: TextWorkspaceState, 
         titles++;
       }
       if (!titles) return false;
-      const replay = M.editTextResult(before, documentId, M.raw(submitted), { folderText: true });
+      const replay = M.editTextResult(before, documentId, M.raw(submitted), { folderText: true, folderDeclare: finishedFolderDeclarations(before, next, documentId) });
       return replay.reason === null && canonicalJson(replay.state) === canonicalJson(next);
     }
     if (changed.length === 1 && changed[0] !== documentId) return false;

@@ -52,13 +52,13 @@ export function createProgramTextDraft(
   let submitted: { before: TextWorkspaceState; next: TextWorkspaceState; generation: number; allowBasicChecks: boolean } | null = null;
   const pasteHistory: { before: TextWorkspaceState; after: TextWorkspaceState }[] = [];
   const report = () => notify({ ...state });
-  type Input = { inputType: string; inputSplice?: TextInputSplice; taskSplit?: TextTaskSplitIntent; compositionGeneration?: number };
-  const signature=(input?:Input)=>JSON.stringify(input?{inputType:input.inputType,inputSplice:input.inputSplice,taskSplit:input.taskSplit,compositionGeneration:input.compositionGeneration}:null);
+  type Input = { inputType: string; inputSplice?: TextInputSplice; taskSplit?: TextTaskSplitIntent; compositionGeneration?: number; folderHold?: number[]; folderDeclare?: number[] };
+  const signature=(input?:Input)=>JSON.stringify(input?{inputType:input.inputType,inputSplice:input.inputSplice,taskSplit:input.taskSplit,compositionGeneration:input.compositionGeneration,folderHold:input.folderHold,folderDeclare:input.folderDeclare}:null);
   function deriveRaw(raw:string,input?:Input){
       const baseRaw = M.raw(M.getDocument(state.committed, docId));
       const before = state.working;
       const committedLines = M.getDocument(state.committed, docId)?.lines ?? [];
-      const canRestoreCommitted = raw === baseRaw && programSame({ ...before,
+      const canRestoreCommitted = !input?.folderDeclare && raw === baseRaw && programSame({ ...before,
         documents: before.documents.map(doc => doc.id === docId ? { ...doc, lines: committedLines } : doc),
         flows: before.flows.map(doc => doc.id === docId ? { ...doc, lines: committedLines } : doc),
       }, state.committed);
@@ -76,7 +76,8 @@ export function createProgramTextDraft(
         ? programSame(before, historyFrom) ? { state: historyTo!, reason: null } : { state: before, reason: 'identity-ambiguous' }
         : canRestoreCommitted ? { state: state.committed, reason: null }
           : proof ? { state: proof.next.workspace, reason: null }
-          : M.editTextResult(before, docId, raw, { folderText: true, ...(input?.inputSplice ? { inputSplice: input.inputSplice } : {}), ...(input?.taskSplit ? { taskSplit: input.taskSplit } : {}) });
+          : M.editTextResult(before, docId, raw, { folderText: true, ...(input?.inputSplice ? { inputSplice: input.inputSplice } : {}), ...(input?.taskSplit ? { taskSplit: input.taskSplit } : {}),
+            ...(input?.folderHold ? { folderHold: input.folderHold } : {}), ...(input?.folderDeclare ? { folderDeclare: input.folderDeclare } : {}) });
       return {baseRaw,before,proof,edit};
   }
   let prepared: {state:ProgramTextDraftState;raw:string;signature:string;ownerRevision:number|undefined;context:unknown;value:ReturnType<typeof deriveRaw>}|null=null;
@@ -156,6 +157,14 @@ export function createProgramTextDraft(
               : '입력을 안전하게 반영하지 못했습니다. 변경을 나눠서 다시 시도해 주세요. 입력은 그대로 남아 있습니다.') };
       label = '문서 편집'; groupId = `text:${docId}`; report();
       return !invalid;
+    },
+    /** A typed "- /name" line was kept as text (folderHold); judge it once now that it is finished.
+     * False when there is nothing to declare, or when the judgement refused it (the error keeps the input). */
+    declareFolderLine(lineIndex: number) {
+      if (state.invalid) return false;
+      const check = M.editTextResult(state.working, docId, state.raw, { folderText: true, folderDeclare: [lineIndex] });
+      if (check.reason === null && check.state === state.working) return false;
+      return api.updateRaw(state.raw, '', { inputType: 'folderDeclare', folderDeclare: [lineIndex] });
     },
     apply(next: TextWorkspaceState, nextLabel: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule']) {
       if (state.invalid || state.saving || !M.validate(next) || !validateWorkspace(next) || next === state.working) return false;
