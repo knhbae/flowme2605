@@ -16,8 +16,8 @@ import { applyProgramLinePermutation, createProgramPermutationHistory } from '@/
 import { programSame } from '@/lib/flow/integrated-poc/controller';
 import { readProgramFolderCopyPreview, isProgramFolderCopyPreviewCurrent, copyProgramFolderOccurrence, type ProgramFolderCopyPreview } from '@/lib/flow/integrated-poc/folder-copy';
 import { createAlphaStructuralDraft, type AlphaStructuralDraft } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
-import { restoredLineOffset } from '@/lib/flow/integrated-poc/folder-line-hold';
-import { createProgramTextDraft, type ProgramTextCommit, type ProgramTextCommitOptions, type ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
+import { indentTouchesLinkedFolder, restoredLineOffset } from '@/lib/flow/integrated-poc/folder-line-hold';
+import { createProgramTextDraft, FOLDER_INDENT_NOTICE, type ProgramTextCommit, type ProgramTextCommitOptions, type ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
 import {createProgramDocumentInput,type ProgramDocumentInput} from '@/lib/flow/integrated-poc/program-document-input';
 import type { ProgramReferenceAccess } from '@/lib/flow/integrated-poc/reference-execution-guard';
 import { linkProgramFolder, programFolderLineTitle, programFolderLinkProblem, programFolderLinkProblems } from '@/lib/flow/integrated-poc/folder-link-slot';
@@ -316,6 +316,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [progressRecordDate, setProgressRecordDate] = useState<string | null>(null);
   const [folderName, setFolderName] = useState('');
   const [message, setMessage] = useState('');
+  // Set while the native editor's Tab just skipped a folder-line indent, so the key keeps focus here.
+  const folderIndentSkipped = useRef(false);
   const [composing, setComposing] = useState(false);
   const disabled = inputLocked || !!props.readOnly || draft.invalid || draft.saving;
   const insertionDisabled=inputLocked||!!props.readOnly||draft.invalid||composing||regionPending||checkPending;
@@ -980,7 +982,16 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       listEnterV2:()=>!!propsRef.current.authoringMode,
       getAddAnchor:index=>propsRef.current.authoringMode?{parentIndex:index,bottomIndex:index}:null,
       isCheckDisabled: checkActionsDisabled,
-      canApplyIndent: raw => !actionsDisabled() && M.raw(M.getDocument(M.editText(controller.getState().working, props.docId, raw, { progressDate: today() }), props.docId)) === raw,
+      canApplyIndent: (raw, details) => {
+        if (actionsDisabled()) return false;
+        // D11 (d): ⇤·⇥ never moves a linked folder line, alone or with other selected lines: the whole action is
+        // skipped and the reason shows. The bar, Tab and a press held through a composition all come here.
+        const state = controller.getState();
+        if (state.raw === textArea()?.value && indentTouchesLinkedFolder(state.working, props.docId, details.startLine, details.endLine)) {
+          folderIndentSkipped.current = true; setMessage(FOLDER_INDENT_NOTICE); return false;
+        }
+        return M.raw(M.getDocument(M.editText(state.working, props.docId, raw, { progressDate: today() }), props.docId)) === raw;
+      },
       canApplyTaskSplit: (raw, intent) => {
         if (!intent.taskSplit) return true;
         const before = controller.getState().working;
@@ -1659,7 +1670,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   const writingBar = <div ref={barRef} className={styles.writingBar} role="toolbar" aria-label="쓰기 도구" data-editor-tools>
       {barButtons('bar')}{barStatusSlot()}</div>;
-  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInput={serverView ? markTyping : undefined} onKeyDownCapture={event => {
+  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInput={serverView ? markTyping : undefined}
+    onKeyDown={event => { if (event.key === 'Tab' && folderIndentSkipped.current) event.preventDefault(); folderIndentSkipped.current = false; }} onKeyDownCapture={event => {
+    if (event.key === 'Tab') folderIndentSkipped.current = false;
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
     else if (event.key === 'Escape' && suggestion && !event.nativeEvent?.isComposing && !composingRef.current) { event.preventDefault(); event.stopPropagation(); setDismissedSuggestion(suggestionKey); }
