@@ -78,6 +78,15 @@
   --flowme-b-nav-active: #303e58;
   --flowme-b-nav-hover: #25334a;
   --flowme-b-nav-muted: #53627a;
+  /* One scrim behind every Alpha dialog and one shadow under raised panels (R9b-2). */
+  --flowme-b-scrim: rgb(24 34 53 / .4);
+  --flowme-b-shadow: rgb(24 34 53 / .14);
+}
+
+/* Older engines (about Chrome 122 and Safari 17.4 and before) do not let ::backdrop inherit the
+   document's custom properties; defined here too, the scrim stays visible there. */
+::backdrop {
+  --flowme-b-scrim: rgb(24 34 53 / .4);
 }
 
 body {
