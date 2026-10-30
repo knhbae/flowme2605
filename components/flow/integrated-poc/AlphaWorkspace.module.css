@@ -268,8 +268,9 @@
 
 /* Note layouts lay the "…" menu over the right end of the tab row instead of giving it a line.
    Only when the space follows directly: a panel, recovery, or notice in between turns this off
-   and "…" keeps its own row. The space's tab row reserves the 56px (ProgramSpace.module.css). */
-.page[data-note-layout="true"] .workPane:has(> .sync + div > section[data-note-layout="true"]:first-child) > .sync { height: 0; margin-bottom: 0; align-items: flex-start; }
+   and "…" keeps its own row. The space's tab row reserves the 56px (ProgramSpace.module.css).
+   The emptied row draws no border lines either. */
+.page[data-note-layout="true"] .workPane:has(> .sync + div > section[data-note-layout="true"]:first-child) > .sync { height: 0; margin-bottom: 0; align-items: flex-start; border-block: 0; }
 /* The space section is positioned and comes later, so its tab row painted over the "…" and took the tap.
    The summary gets a layer of its own; the open menu body keeps z-index 60 in the page. */
 .page[data-note-layout="true"] .sync > .management > summary { position: relative; z-index: 1; }
@@ -291,7 +292,9 @@
 .statusSlot > p[data-save-state] { min-width: 0; margin: 0; font-size: 13px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .statusSlot > p:is([data-save-state="ready"], [data-save-state="saved"], [data-save-state="same-location"]) { color: var(--flowme-text-secondary); font-weight: 400; }
 .statusSlot .inputRecoveryBody { right: auto; width: min(420px, calc(100vw - 32px)); }
-@media (max-width: 760px) { .statusSlot .inputRecoveryBody { right: 0; width: auto; } }
+/* W1: on narrow screens the box opens across the editor toolbar (positioned), not the status text,
+   which folded it to about 110px. */
+@media (max-width: 760px) { .statusSlot { position: static; } .statusSlot .inputRecoveryBody { right: 0; width: auto; } }
 
 /* R8a: the "…" menu in groups, one 복구함 with a count badge, and a one-line notice for saved input. */
 .menuGroup { display: grid; gap: 8px; padding-top: 8px; border-top: 1px solid var(--flowme-border); }
@@ -318,4 +321,10 @@
   .page[data-alpha-frame="b"][data-note-layout="true"] { padding-top: 8px; }
   .page[data-alpha-frame="b"][data-note-layout="true"] > .header { height: 0; min-height: 0; padding: 0; border: 0; background: transparent; }
   .page[data-alpha-frame="b"][data-note-layout="true"] > .header > :not(.globalNavigation) { display: none; }
+}
+
+/* W1: on phones the note screens (쓰기·오늘·분류) drop the card frame, keeping 12px at each side.
+   The body column grows from 256px to about 298px at 390px. PC keeps the frame. */
+@media (max-width: 700px) {
+  .page[data-alpha-frame="b"][data-note-layout="true"] .workPane { width: 100%; margin: 0; padding-inline: 12px; border: 0; border-radius: 0; }
 }

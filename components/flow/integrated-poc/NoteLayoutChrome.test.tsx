@@ -12,7 +12,7 @@ test('a closed authoring box is one bottom-ruled row',()=>{
 
 test('"…" lies over the tab row only when the space directly follows it',()=>{
  const alpha=css('AlphaWorkspace'),space=css('ProgramSpace');
- const overlay='.page[data-note-layout="true"] .workPane:has(> .sync + div > section[data-note-layout="true"]:first-child) > .sync { height: 0; margin-bottom: 0; align-items: flex-start; }';
+ const overlay='.page[data-note-layout="true"] .workPane:has(> .sync + div > section[data-note-layout="true"]:first-child) > .sync { height: 0; margin-bottom: 0; align-items: flex-start; border-block: 0; }';
  assert(alpha.includes(overlay));
  // Later than every rule that gives .sync its own bottom margin, so a keyboard or short viewport cannot restore the line.
  assert(alpha.lastIndexOf('.sync { margin-bottom: 8px; }')<alpha.indexOf(overlay));
