@@ -165,8 +165,9 @@ export function projectTextEditorRows(state: TextWorkspaceState, rows: TextRow[]
     // W4 (folder grammar F9): a folder line linked to a folder whose parent is not where the text puts the line
     // (its enclosing folder line, or the top) names that parent, so two '회의' folders can be told apart.
     const linked = row.kind === 'scope' && row.scopeKind === 'folder' ? state.folders.find(folder => folder.id === row.scopeId) : undefined;
-    if (linked?.parentId && linked.parentId !== (row.ancestorScopeId ?? null)) {
-      const place = state.folders.find(folder => folder.id === linked.parentId)?.title;
+    // A top-level folder linked under another folder line reads '최상위', the folder screens' word for the top.
+    if (linked && linked.parentId !== (row.ancestorScopeId ?? null)) {
+      const place = linked.parentId ? state.folders.find(folder => folder.id === linked.parentId)?.title : '최상위';
       if (place) meta.scopePlace = place;
     }
     if (row.scopeMismatch) {

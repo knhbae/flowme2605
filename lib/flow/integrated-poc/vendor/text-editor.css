@@ -202,7 +202,9 @@
 .tle-scope-label { position: absolute; inset: 0 0 auto clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)); display: flex; align-items: baseline; gap: 14px; height: 44px; padding-left: 36px; overflow: hidden; white-space: nowrap; }
 .tle-root .tle-scope-label { padding-left: 88px; }
 .tle-scope-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 700; color: var(--flowme-b-primary-strong); }
-.tle-scope-place { flex-shrink: 0; margin-right: -8px; color: var(--flowme-b-muted); font-weight: 400; }
+/* The parent shrinks to an ellipsis, never past 40% of the head, so the '›' and the folder's own name keep the rest. */
+.tle-scope-place { display: inline-flex; flex: 0 1 auto; min-width: 0; max-width: 40%; margin-right: -8px; color: var(--flowme-b-muted); font-weight: 400; white-space: pre; }
+.tle-scope-place-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tle-scope-subtitle { flex-shrink: 0; color: var(--flowme-b-muted); font-size: 12px; }
 .tle-line-reference .tle-task-title { color: var(--flowme-b-primary); text-decoration: underline; text-decoration-color: var(--flowme-b-primary-border); text-underline-offset: 4px; }
 .tle-line[data-date-mismatch="true"] .tle-task-title { text-decoration-color: #c4a36e; }

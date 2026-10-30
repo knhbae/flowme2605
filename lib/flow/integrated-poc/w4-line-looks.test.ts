@@ -55,6 +55,41 @@ test('a task with its own date line shows the date there only: no 예정일 chip
   assert.equal(ownsDateLine(0, ['- [ ] 안건', '  - [ ] 하위', '    - 날짜: 2026-10-31'], [task, sub, prop(2)]), false);
   assert.equal(ownsDateLine(1, ['- [ ] 안건', '  - [ ] 하위', '    - 날짜: 2026-10-31'], [task, sub, prop(2)]), true);
   assert.match(vendor, /safeMeta\.dateMismatch && !ownsDateLine\(index, lines, metadata\)\) addRowButton\('task-date', index, row, safeMeta\);/);
+  // W4 review P2-1: when the date chip is skipped, a task also outside its folder gets the origin check next; that
+  // button must not draw the date ('예정일 10/31') either: it shows '소속' and is named for the origin only.
+  assert.match(vendor, /else if \(\(safeMeta\.kind === 'task' \|\| safeMeta\.isCanonical === true\) && safeMeta\.scopeMismatch\) addRowButton\('task-origin', index, row, safeMeta\);/);
+  const button = slice('function addRowButton(', 'function addFoldButton(');
+  assert.match(button, /const dateText = type !== 'task-origin' && typeof meta\.dateMismatch === 'string' \? meta\.dateMismatch\.trim\(\) : '';/);
+  assert.match(button, /\} else if \(type === 'task-origin'\) \{\s*button\.classList\.add\('tle-date-open'\);\s*button\.append\(makeSpan\('tle-row-date', '소속'\)\);/);
+});
+
+test('W4 review P2-1, run: the origin check reads 소속 with no date; the date chip still reads 예정일', () => {
+  // The vendor's real addRowButton on a minimal element stub (no layout; only what the button is made of).
+  class Element {
+    className = ''; textContent = ''; title = ''; dataset: Record<string, string> = {}; children: Element[] = []; attrs: Record<string, string> = {};
+    get classList() { return { add: (...names: string[]) => { this.className = [...new Set([...this.className.split(' ').filter(Boolean), ...names])].join(' '); } }; }
+    append(...nodes: Element[]) { this.children.push(...nodes); }
+    setAttribute(name: string, value: string) { this.attrs[name] = value; }
+    getAttribute(name: string) { return this.attrs[name] ?? null; }
+    addEventListener() {}
+  }
+  const made: Element[] = [];
+  const addRowButton = new Function('doc', 'config', 'made', `const rowButtons = [];
+    ${slice('function makeSpan(', 'function timeLabel(')}
+    function icon(kind) { const e = doc.createElement('svg'); e.textContent = ''; return e; }
+    function gestureHandle() {} function action() {} function rangeOfLine() { return { text: '' }; }
+    function appendRowControl(row, button) { made.push(button); }
+    ${slice('function addRowButton(', 'function addFoldButton(')}; return addRowButton;`)({ createElement: () => new Element() }, {}, made) as
+    (type: string, index: number, row: Element, meta: Record<string, unknown>) => void;
+  const meta = { label: '안건 정리', dateMismatch: '10.31', scopeMismatch: '회사' };
+  addRowButton('task-origin', 2, new Element(), meta);
+  addRowButton('task-date', 2, new Element(), meta);
+  const [origin, date] = made, texts = (button: Element) => button.children.map(child => child.textContent);
+  assert.deepEqual(texts(origin), ['소속']);
+  assert(!origin.className.includes('tle-scheduled-date-open'), origin.className);
+  assert.equal(origin.getAttribute('aria-label'), '할 일 소속 확인: 안건 정리, 실제 소속 회사');
+  assert.deepEqual(texts(date), ['예정일', '10/31']);
+  assert(date.className.includes('tle-scheduled-date-open'));
 });
 
 test('check boxes are 20px with the today list\'s 2px border and 6px corners, centred on the line', () => {
@@ -69,15 +104,25 @@ test('F9: a folder line linked to a folder elsewhere names that parent; one in i
   const base = { version: 11, documents: [{ id: 'd', title: '합성', folder: '회사', folderId: 'co', lines: [] }],
     folders: [{ id: 'co', title: '회사', parentId: null }, { id: 'mt', title: '회의', parentId: 'co' }, { id: 'mt2', title: '회의', parentId: null }],
     flows: [], bindings: [], taskScopes: {}, itemScopes: {}, progressRecords: [] } as unknown as TextWorkspaceState;
-  let state = M.editText(base, 'd', '- /회의\n- /회사\n  - /회의\n- /회의');
-  const [elsewhere, company, nested, top] = state.documents[0].lines.map(line => line.id);
+  // The 4th line sits under '회사' but links the top-level '회의' (W4 review note): '최상위', the folder screens' word.
+  let state = M.editText(base, 'd', '- /회의\n- /회사\n  - /회의\n  - /회의\n- /회의');
+  const [elsewhere, company, nested, nestedTop, top] = state.documents[0].lines.map(line => line.id);
   state = { ...state, bindings: [
     { kind: 'scope', docId: 'd', lineId: elsewhere, scopeId: 'mt' }, { kind: 'scope', docId: 'd', lineId: company, scopeId: 'co' },
-    { kind: 'scope', docId: 'd', lineId: nested, scopeId: 'mt' }, { kind: 'scope', docId: 'd', lineId: top, scopeId: 'mt2' },
+    { kind: 'scope', docId: 'd', lineId: nested, scopeId: 'mt' }, { kind: 'scope', docId: 'd', lineId: nestedTop, scopeId: 'mt2' },
+    { kind: 'scope', docId: 'd', lineId: top, scopeId: 'mt2' },
   ] } as TextWorkspaceState;
   const meta = textEditorRows(state, 'd');
-  assert.deepEqual(meta.map(row => [row.kind, row.scopePlace ?? null]), [['scope', '회사'], ['scope', null], ['scope', null], ['scope', null]]);
+  assert.deepEqual(meta.map(row => [row.kind, row.scopePlace ?? null]), [['scope', '회사'], ['scope', null], ['scope', null], ['scope', '최상위'], ['scope', null]]);
   // Painted before the name, muted; the RAW ruler and the open/fold lanes are untouched.
-  assert.match(vendor, /if \(typeof safeMeta\.scopePlace === 'string' && safeMeta\.scopePlace\) decorated\.append\(makeSpan\('tle-scope-place', `\$\{safeMeta\.scopePlace\} ›`\)\);/);
+  assert.match(vendor, /const place = makeSpan\('tle-scope-place', ' ›'\);\s*place\.prepend\(makeSpan\('tle-scope-place-name', safeMeta\.scopePlace\)\);\s*decorated\.append\(place\);/);
   assert.match(rule('.tle-scope-place'), /color: var\(--flowme-b-muted\);/);
+});
+
+test('W4 review P2-2: a long parent shrinks to an ellipsis within 40% of the head; the folder name keeps the rest', () => {
+  const place = rule('.tle-scope-place');
+  for (const kept of ['flex: 0 1 auto;', 'min-width: 0;', 'max-width: 40%;']) assert(place.includes(kept), kept);
+  assert.doesNotMatch(place, /flex-shrink: 0/);
+  const name = rule('.tle-scope-place-name');
+  for (const kept of ['min-width: 0;', 'overflow: hidden;', 'text-overflow: ellipsis;', 'white-space: nowrap;']) assert(name.includes(kept), kept);
 });
