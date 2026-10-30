@@ -311,6 +311,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // editor gets noteStatus, so only it takes the host's status; without a host nothing changes.
   const hostStatus = useContext(ProgramServerStatusContext), serverView = props.noteStatus ? hostStatus : null;
   // While typing, saving and editing show as one quiet dot, so the 450 ms saves do not flicker words.
+  // It is marked on bubbling input, after the field's own handler. Marked in capture, its render
+  // committed first and put the old value back into the field, so the typed text was lost.
   const [typing, setTyping] = useState(false), typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   function markTyping() {
     setTyping(true);
@@ -1551,7 +1553,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   const writingBar = <div ref={barRef} className={styles.writingBar} role="toolbar" aria-label="쓰기 도구" data-editor-tools>
       {barButtons('bar')}{barStatusSlot()}</div>;
-  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInputCapture={serverView ? markTyping : undefined} onKeyDownCapture={event => {
+  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInput={serverView ? markTyping : undefined} onKeyDownCapture={event => {
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
     else if (event.key === 'Escape' && suggestion && !event.nativeEvent?.isComposing && !composingRef.current) { event.preventDefault(); event.stopPropagation(); setDismissedSuggestion(suggestionKey); }
