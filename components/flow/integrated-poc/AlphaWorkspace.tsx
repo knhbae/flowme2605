@@ -1,5 +1,6 @@
 'use client';
 import {claimOwnedWritingAck,privateTextChangeIsolatedToDocument,noteWritingPhase} from '@/lib/flow/integrated-poc/writing-ack';
+import { remoteTextSparesDocuments } from '@/lib/flow/integrated-poc/remote-text-baseline';
 
 import {createWritingCompute,type WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -386,8 +387,21 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       creatorEditors.current?.acceptConfirmedCreatorWorking?.(next.account.space.creatorWorkspace?.working ?? null);
       allEditors().forEach(port => { if (port?.acceptConfirmedSocialDrafts?.(next.envelope!.data)) acceptedSocialDraft = true; });
     }
+    // Another device's save that leaves every typed document untouched becomes the new baseline.
+    // The typed input and its selection stay, and its save merges per document against it.
+    // Input outside the private text editor, or a change to a typed document, stays protected.
+    const remoteSparesInput = () => {
+      try {
+        const port = editors.current, displayed = currentData.current, confirmed = next.envelope?.data;
+        if (!port || !displayed || !confirmed || next.draft || !['ready', 'saved', 'same-location', 'cancelled'].includes(next.status)
+          || port.hasPendingInput?.() !== true || !port.pendingDocumentIds || !port.blocksExternalSnapshot
+          || port.blocksExternalSnapshot(displayed, confirmed) !== false || programDiscoveryHasUnstoredInput(discoveryStateRef.current)
+          || allEditors().some(other => other && other !== port && (!other.hasPendingInput || other.hasPendingInput() !== false))) return false;
+        return remoteTextSparesDocuments(displayed, confirmed, session.userId, port.pendingDocumentIds());
+      } catch { return false; }
+    };
     if (currentData.current && (currentRevision.current !== next.account.revision || currentPublicRevision.current !== (next.publicRevision ?? null))
-      && ownMutation.current === 0 && ((hasInput() && !acceptedPrivateInput) || (modalRef.current && !(exactOwnDraft && acceptedSocialDraft)))) {
+      && ownMutation.current === 0 && ((hasInput() && !acceptedPrivateInput && !remoteSparesInput()) || (modalRef.current && !(exactOwnDraft && acceptedSocialDraft)))) {
       captureInput(); externalRef.current = true; setExternal(true); return;
     }
     if (externalRef.current) return;
