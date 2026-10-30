@@ -164,12 +164,12 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
       return outcome;
     } catch { return rejected(failure ?? 'invalid'); }
   };
-  async function settle(kind: 'refresh' | 'resolve', retry = false) {
+  async function settle(kind: 'refresh' | 'refresh-if-changed' | 'resolve', retry = false) {
     if (busy) return false;
     const previous = readClient().state;
     const epoch = generation; busy = true;
     try {
-      const operation = kind === 'refresh' ? client.refresh() : client.resolvePending(retry); emit();
+      const operation = kind === 'refresh' ? client.refresh() : kind === 'refresh-if-changed' ? client.refreshIfChanged() : client.resolvePending(retry); emit();
       const result = await operation;
       if (epoch !== generation) return false;
       const confirmed = readClient().state?.confirmed, revision = confirmed?.revision;
@@ -199,6 +199,8 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
     },
     dispose() { options.writingCompute?.cancel();generation++; busy = false; repository = null; undo = null; redo = null; client.bindSession(null, null); emit(); },
     refresh: () => settle('refresh'), resolvePending: (retrySameRequest = false) => settle('resolve', retrySameRequest),
+    /** The host's own periodic/return reads only; every other read stays a full refresh. */
+    refreshIfChanged: () => settle('refresh-if-changed'),
     async discardConflict() {
       const current = readClient();
       if (busy || !current.ownerId || !repository || !current.state?.draft || current.state.pending) return false;

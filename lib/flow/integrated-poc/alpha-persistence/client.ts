@@ -1,5 +1,5 @@
 import {createWritingAckIssuer,freezeWritingView,noteWritingPhase,type WritingAckInput} from '../writing-ack';
-import type { AlphaAccount, AlphaCommand, AlphaError, AlphaReceipt, AlphaRecovery, AlphaRecoveryPort, AlphaRepository, AlphaReferenceContext, AlphaSpace } from './contract';
+import type { AlphaAccount, AlphaCommand, AlphaError, AlphaReadProbe, AlphaReadTokens, AlphaReceipt, AlphaRecovery, AlphaRecoveryPort, AlphaRepository, AlphaReferenceContext, AlphaSpace } from './contract';
 import {ALPHA_LIMITS} from './contract';
 import type {WritingCompute,WritingIdentity,WritingReply,PreparedWriting} from '../writing-compute';
 import type {ProgramPrivateSpace} from '../contract';
@@ -48,6 +48,9 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
   let lastReceipt: AlphaReceipt | null = null;
   let writingIdentity:WritingIdentity|undefined;
   let confirmedFrame:object=Object.freeze({});
+  // Egress probe: the read tokens of the snapshot that is confirmed now, bound to that exact confirmed and
+  // references object. Any other path that replaces them leaves this stale, and the next read is full.
+  let confirmedRead:{tokens:AlphaReadTokens;confirmed:object;references:object|null;port:object}|null=null;
   const ackIssuer=createWritingAckIssuer();
   let activeAck:{identity:WritingIdentity;input:WritingAckInput;before:object}|null=null;
   let viewFrame:object|null=null,viewConfirmed:AlphaAccount<Space>|null=null,viewReferences:AlphaReferenceContext|undefined;
@@ -165,10 +168,11 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
     status = reason === 'unauthenticated' ? 'session-expired' : reason === 'revision-conflict' || reason === 'undo-conflict' ? 'conflict'
       : reason === 'no-change' ? 'same-location' : 'recovery-required';
   };
-  type ReadCandidate = { account: AlphaAccount<Space>; references?: AlphaReferenceContext };
+  type ReadCandidate = { account: AlphaAccount<Space>; references?: AlphaReferenceContext; tokens?: AlphaReadTokens | null };
   async function readCandidate(epoch: number, port: AlphaRepository<Space>, minimum = 0): Promise<ReadCandidate | null> {
     try {
       const result = await port.read();
+      const tokens = result.ok ? port.readTokens?.() ?? null : null;
       const decodeStart=performance.now();
       if (!current(epoch)) return null;
       if (!result.ok) { fail(result.reason); return null; }
@@ -194,7 +198,7 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
       }
       if (!current(epoch) || repository !== port) return null;
       if(!writingCompute)noteWritingPhase('ack-account-frame',decodeStart,writingIdentity);
-      return { account: writingCompute?account:detached(account), ...(references ? { references: detached(references) } : {}) };
+      return { account: writingCompute?account:detached(account), ...(references ? { references: detached(references) } : {}), tokens };
     } catch { if (current(epoch)) status = state!.pending ? 'checking-result' : 'recovery-required'; return null; }
   }
   async function commitCandidate(candidate: ReadCandidate, epoch: number, port: AlphaRepository<Space>, previous: AlphaRecovery<Space>, clearPending = false): Promise<boolean> {
@@ -211,7 +215,10 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
     // new owner/state or publish an old success, including on persistence failure.
     if (!current(epoch) || repository !== port || state !== previous) return false;
     if (!saved) { status = 'recovery-required'; blocked = true; return false; }
-    state = next; confirmedFrame=Object.freeze({}); accountHidden = false; return true;
+    state = next; confirmedFrame=Object.freeze({}); accountHidden = false;
+    // Tokens count only once their snapshot is validated and saved for recovery.
+    confirmedRead = candidate.tokens && next.confirmed ? { tokens: candidate.tokens, confirmed: next.confirmed, references: next.references ?? null, port } : null;
+    return true;
   }
   async function readCurrent(epoch: number, port: AlphaRepository<Space>, minimum = 0): Promise<boolean> {
     const previous = state!;
@@ -302,7 +309,7 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
     bindSession(nextOwner: string | null, port: AlphaRepository<Space> | null) {
       // A same-owner token refresh alone does not validate cached account bytes.
       accountHidden = accountHidden && nextOwner !== null && port !== null && nextOwner === ownerId;
-      ackIssuer.clear();activeAck=null;confirmedFrame=Object.freeze({});viewFrame=null;viewSlots.clear();
+      ackIssuer.clear();activeAck=null;confirmedFrame=Object.freeze({});viewFrame=null;viewSlots.clear();confirmedRead=null;
       generation++; ownerId = nextOwner; repository = port; state = null; busy = false; blocked = false; lastReceipt = null;writingIdentity=undefined;
       lastError = null; rejectedDraftRequestId = null; rejectedNativeHandoff = null; rejectedSocialDraft = null;
       status = 'signed-out';
@@ -353,6 +360,28 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
         }
         return ok;
       } finally { if (current(epoch)) busy = false; }
+    },
+    /** Automatic refresh only (egress). Ask for the two read tokens first and keep the confirmed snapshot
+     *  when both equal the tokens it was read with. No tokens yet, a pending/draft/held state, changed
+     *  tokens or a missing probe RPC is the ordinary full refresh. An expired session stops here and never
+     *  falls back to a full read; an unavailable probe waits for the next tick instead of a second request.
+     *  Only a normal state may skip: a failure, a hidden account or any other status takes the full read
+     *  that clears it (Codex review F1). */
+    async refreshIfChanged(): Promise<boolean> {
+      const read = confirmedRead, port = repository, own = state;
+      if (accountHidden || lastError !== null || !['ready', 'saved', 'same-location', 'cancelled'].includes(status)) return this.refresh();
+      if (!port || !own || busy || blocked || own.pending || own.draft || !port.probe || !read || read.port !== port
+        || read.confirmed !== own.confirmed || read.references !== (own.references ?? null)
+        || retryableRejectedDraft() || retryableNativeHandoff() || retryableRejectedSocialDraft()) return this.refresh();
+      ackIssuer.clear();activeAck=null;
+      const epoch = generation; busy = true;
+      let probe: AlphaReadProbe | null = null;
+      try { probe = await port.probe(); } catch { probe = null; } finally { if (current(epoch)) busy = false; }
+      if (!current(epoch) || repository !== port || state !== own || confirmedRead !== read) return false;
+      if (probe?.kind === 'tokens' && probe.tokens.privateToken === read.tokens.privateToken && probe.tokens.publicToken === read.tokens.publicToken) return true;
+      if (probe?.kind === 'failed' && probe.reason === 'unauthenticated') { fail('unauthenticated'); return false; }
+      if (!probe || probe.kind === 'failed' && probe.reason === 'unavailable') return false;
+      return this.refresh();
     },
     async execute(command: AlphaCommand, options: { cancelled?: boolean; retryRejectedDraft?: boolean; retryNativeHandoff?: boolean; retryRejectedSocialDraft?: boolean;writingIdentity?:WritingIdentity;preparedReply?:WritingReply;writeCheckpoint?:()=>boolean;writingAckInput?:WritingAckInput } = {}) {
       if (!repository || !state || busy || blocked || state.pending) return false;

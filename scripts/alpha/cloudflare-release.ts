@@ -27,6 +27,8 @@ async function main() {
   const env = releaseEnvironment(settings, signing, process.env);
   if (!env || !existsSync(resolve(candidateRoot, 'node_modules/next/dist/bin/next'))) throw Error('release-preflight-rejected');
   env.FLOWME_ALPHA_NATIVE_AUTHORING_UI = process.env.FLOWME_ALPHA_NATIVE_AUTHORING_UI === 'enabled' ? 'enabled' : 'disabled';
+  // Egress probe (server v2 read functions): on only when the supervisor passes exactly 'v2'.
+  env.FLOWME_ALPHA_READ_PROBE = process.env.FLOWME_ALPHA_READ_PROBE === 'v2' ? 'v2' : 'off';
   const buildId = readFileSync(resolve(candidateRoot, '.next/BUILD_ID'), 'utf8').trim();
   if (!/^[A-Za-z0-9_-]{1,100}$/.test(buildId)) throw Error('release-build-rejected');
   const oldCatalog = process.env.FLOWME_ALPHA_CATALOG_PACK_FILE;

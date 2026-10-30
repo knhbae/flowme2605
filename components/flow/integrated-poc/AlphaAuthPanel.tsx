@@ -34,7 +34,7 @@ function authError(code?: string) {
   return '요청을 완료하지 못했습니다. 연결 상태를 확인하고 다시 시도해 주세요.';
 }
 
-export function AlphaAuthPanel({ config, callback = false, writing, appWriting=false, nativeAuthoringEnabled=false }: { config: AlphaAuthConfig | null; callback?: boolean; writing?: AlphaAuthenticatedWritingPorts;appWriting?:boolean;nativeAuthoringEnabled?:boolean }) {
+export function AlphaAuthPanel({ config, callback = false, writing, appWriting=false, nativeAuthoringEnabled=false, readProbe=false }: { config: AlphaAuthConfig | null; callback?: boolean; writing?: AlphaAuthenticatedWritingPorts;appWriting?:boolean;nativeAuthoringEnabled?:boolean;readProbe?:boolean }) {
   const [view, setView] = useState(initial), [mode, setMode] = useState<Mode>('login');
   const [email, setEmail] = useState(''), [password, setPassword] = useState(''), [confirm, setConfirm] = useState('');
   const [message, setMessage] = useState(''), [busy, setBusy] = useState(false), [ready, setReady] = useState(false);
@@ -257,7 +257,7 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
     legacy = writing
       ?legacyTransport?<AlphaWorkspaceLegacyWriting key={workspaceSession.userId} config={config} session={workspaceSession} email={accountEmail} onSignOut={signOut} transport={legacyTransport}/>
         :<p role="alert">기존 작성 연결을 확인하지 못했습니다. 입력을 다른 계정에 옮기지 않았습니다.</p>
-      :<AlphaWorkspace key={workspaceSession.userId} config={config} session={workspaceSession} email={accountEmail} onSignOut={signOut} pmWriting={appWriting?'v11-pm/1':undefined} nativeAuthoringEnabled={nativeAuthoringEnabled} />;
+      :<AlphaWorkspace key={workspaceSession.userId} config={config} session={workspaceSession} email={accountEmail} onSignOut={signOut} pmWriting={appWriting?'v11-pm/1':undefined} nativeAuthoringEnabled={nativeAuthoringEnabled} readProbe={readProbe} />;
   } else legacy = <main className={styles.page}>
     <header className={styles.header}><a href="/alpha" className={styles.brand}>FlowMe</a><span>개발계 · 로그인 검증</span></header>
     <section className={styles.panel} aria-labelledby="alpha-heading">

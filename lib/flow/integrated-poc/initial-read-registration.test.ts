@@ -15,5 +15,6 @@ test('the interval read and the first read register the same way', () => {
   const body = alpha.slice(start, alpha.indexOf('function startAutomaticRead', start));
   assert(body.includes('startAutomaticRead(store);') && !body.includes('store.refresh()'));
   const register = alpha.slice(alpha.indexOf('function startAutomaticRead'), alpha.indexOf('function closePreservation'));
-  assert(register.includes('automaticRead.current = read;') && register.includes('promise: store.refresh().catch(() => false)'));
+  // Egress probe: the registered automatic read asks for tokens first (alpha-sync/read-probe.test.ts).
+  assert(register.includes('automaticRead.current = read;') && register.includes('promise: store.refreshIfChanged().catch(() => false)'));
 });

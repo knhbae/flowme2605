@@ -40,12 +40,20 @@ export type AlphaReceipt = { requestId: string; revision: number; changed: boole
 export type AlphaOperation = { fingerprint: string; receipt: AlphaReceipt; inverse: AlphaChange[]; undone: boolean };
 export type AlphaError = 'invalid' | 'unauthenticated' | 'not-found' | 'revision-conflict' | 'idempotency-conflict' | 'undo-conflict' | 'unavailable' | 'no-change' | 'rate-limited' | 'limit';
 export type AlphaResult<T> = { ok: true; value: T } | { ok: false; reason: AlphaError };
+/** Opaque server digests of the full read: the whole account, and the context this user may see.
+ *  Compared only for string equality; never parsed, never a revision or a write precondition. */
+export type AlphaReadTokens = { privateToken: string; publicToken: string };
+/** A probe answers tokens only. 'unsupported' means the probe RPC itself does not exist yet. */
+export type AlphaReadProbe = { kind: 'tokens'; tokens: AlphaReadTokens } | { kind: 'unsupported' } | { kind: 'failed'; reason: AlphaError };
 /** Auth identity is bound by the adapter; no owner/actor parameter on any method. */
 export interface AlphaRepository<Space extends AlphaSpace = ProgramPrivateSpace> {
   references?(): AlphaReferenceContext | null;
   read(): Promise<AlphaResult<AlphaAccount<Space>>>;
   execute(command: AlphaCommand): Promise<AlphaResult<AlphaReceipt>>;
   lookup(requestId: string): Promise<AlphaResult<AlphaReceipt | null>>;
+  /** Tokens that came with the last successful read(), from the same server snapshot; null without. */
+  readTokens?(): AlphaReadTokens | null;
+  probe?(): Promise<AlphaReadProbe>;
 }
 export type AlphaRecovery<Space extends AlphaSpace = ProgramPrivateSpace> = { schema: 'flowme-alpha-recovery/1'; ownerId: string; confirmed: AlphaAccount<Space> | null; pending: AlphaCommand | null; draft: AlphaCommand | null; references?: AlphaReferenceContext };
 export interface AlphaRecoveryPort<Space extends AlphaSpace = ProgramPrivateSpace> {

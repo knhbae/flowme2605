@@ -9,7 +9,8 @@ import {isAlphaOrderedBodyCommand,prepareOrderedBodyEdit,exactOrderedBodyAck,typ
 import {prepareMemoBodyEdit,exactMemoBodyAck,type PreparedMemoBodyEdit,type MemoSpace} from '../alpha-persistence/memo-cohort';
 import {isAlphaReaTextEditCommand} from '../alpha-persistence/rea-text-edit';
 import {ALPHA_REA_PROGRESS_EDIT_PROFILE,isAlphaReaProgressSubmission,type AlphaReaProgressOperation} from '../alpha-persistence/rea-progress-edit';
-import type { AlphaAccount, AlphaSpace, AlphaReceipt, AlphaRepository, AlphaResult, AlphaError, AlphaReferenceContext } from '../alpha-persistence/contract';
+import type { AlphaAccount, AlphaSpace, AlphaReceipt, AlphaRepository, AlphaResult, AlphaError, AlphaReferenceContext, AlphaReadProbe, AlphaReadTokens } from '../alpha-persistence/contract';
+import { ALPHA_READ_FULL_RPC, ALPHA_READ_PROBE_RPC, alphaReadFailure, isMissingReadRpc, readAlphaReadFrame, readAlphaReadProbe } from './read-frame';
 import { alphaSocialReferences, readAlphaSocialResponse } from '../alpha-social/projection';
 import { programIdentifier, programShape } from '../program-data';
 import { detached,canonicalJson } from '../alpha-persistence/json';
@@ -20,7 +21,7 @@ import { isAlphaWireCommand, isAlphaWireReceipt } from './wire';
 import { ALPHA_CREATOR_REQUEST_BUDGET } from '../alpha-creator/request-budget';
 const errors: AlphaError[] = ['invalid', 'unauthenticated', 'not-found', 'revision-conflict', 'idempotency-conflict', 'undo-conflict', 'unavailable', 'no-change', 'rate-limited', 'limit'];
 /** Immutable session token: requests started as A never borrow a later B token. */
-export function createAlphaHttpRepository(input: AlphaAuthConfig, identity: VerifiedAlphaSession, request: typeof fetch = fetch, options: { social?: boolean } = {}): AlphaRepository {
+export function createAlphaHttpRepository(input: AlphaAuthConfig, identity: VerifiedAlphaSession, request: typeof fetch = fetch, options: { social?: boolean; readProbe?: boolean } = {}): AlphaRepository {
   return createHttpRepository(input,identity,request,options,createAlphaAccountAccess(input,identity,request),false);
 }
 /** Explicit typed port; default application routes/readers remain v11. */
@@ -120,7 +121,7 @@ export function createAlphaReaProgressHttpRepository(input:AlphaAuthConfig,ident
     clearProgressSubmission(command:Binding['command']){if(binding&&canonicalJson(binding.command)===canonicalJson(command))binding=null;},
   };
 }
-function createHttpRepository<Space extends AlphaSpace=ProgramPrivateSpace>(input:AlphaAuthConfig,identity:VerifiedAlphaSession,request:typeof fetch,options:{social?:boolean},readPort:AlphaAccountAccess<Space>,typed:boolean,executeBody?:(command:unknown)=>unknown|null,typedGuard:(command:unknown)=>boolean=isAlphaReaTextEditCommand):AlphaRepository<Space>{
+function createHttpRepository<Space extends AlphaSpace=ProgramPrivateSpace>(input:AlphaAuthConfig,identity:VerifiedAlphaSession,request:typeof fetch,options:{social?:boolean;readProbe?:boolean},readPort:AlphaAccountAccess<Space>,typed:boolean,executeBody?:(command:unknown)=>unknown|null,typedGuard:(command:unknown)=>boolean=isAlphaReaTextEditCommand):AlphaRepository<Space>{
   const config = Object.freeze({ ...input }), session = Object.freeze({ ...identity });
   let references: AlphaReferenceContext | null = null, socialOpened = false;
   async function rpc(body: unknown, nullable: boolean, endpoint = '/api/alpha/account'): Promise<AlphaResult<AlphaReceipt | null>> {
@@ -139,20 +140,53 @@ function createHttpRepository<Space extends AlphaSpace=ProgramPrivateSpace>(inpu
       return { ok: false, reason: 'unavailable' }; // Unknown post-dispatch outcome must retain request identity.
     } catch { return { ok: false, reason: 'unavailable' }; }
   }
+  // Egress probe (opt-in, social reads only): v2 reads carry two tokens from the same snapshot until the
+  // server answers that the v2 RPCs do not exist; from then on this repository reads v1 without tokens.
+  let readFrame: 'v2' | 'v1' = options.social && options.readProbe && !typed ? 'v2' : 'v1', lastTokens: AlphaReadTokens | null = null;
+  const socialCall = (name: string) => {
+    const headers = { apikey: config.publishableKey, Authorization: `Bearer ${session.accessToken}`, 'Content-Type': 'application/json' };
+    return request(`${config.url}/rest/v1/rpc/${name}`, { method: 'POST', headers, body: '{}', cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(15000) });
+  };
   return {
     references: () => detached(references),
+    readTokens: () => lastTokens ? { ...lastTokens } : null,
+    async probe(): Promise<AlphaReadProbe> {
+      if (readFrame !== 'v2' || !socialOpened) return { kind: 'unsupported' };
+      if (!isAlphaAuthConfig(config) || !session.accessToken || !programIdentifier(session.userId)) return { kind: 'failed', reason: 'invalid' };
+      try {
+        const response = await socialCall(ALPHA_READ_PROBE_RPC), value: unknown = await response.json().catch(() => null);
+        if (isMissingReadRpc(response.status, value)) { readFrame = 'v1'; return { kind: 'unsupported' }; }
+        if (response.status === 401 || response.status === 403) return { kind: 'failed', reason: 'unauthenticated' };
+        const failure = alphaReadFailure(value); if (failure) return { kind: 'failed', reason: failure };
+        const tokens = response.ok ? readAlphaReadProbe(value) : null;
+        return tokens ? { kind: 'tokens', tokens } : { kind: 'failed', reason: response.ok ? 'invalid' : 'unavailable' };
+      } catch { return { kind: 'failed', reason: 'unavailable' }; }
+    },
     async read() {
       if (options.social) {
         if(typed)return {ok:false,reason:'invalid'};
         if (!isAlphaAuthConfig(config) || !session.accessToken || !programIdentifier(session.userId)) return { ok: false, reason: 'invalid' };
-        const headers = { apikey: config.publishableKey, Authorization: `Bearer ${session.accessToken}`, 'Content-Type': 'application/json' };
-        const call = (name: string) => request(`${config.url}/rest/v1/rpc/${name}`, { method: 'POST', headers, body: '{}', cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(15000) });
+        const call = socialCall;
+        lastTokens = null;
         try {
           if (!socialOpened) {
             const opened = await call('flowme_alpha_social_open_v1');
             const value = await opened.json();
             if (!opened.ok || !programShape(value, ['ok', 'value']) || value.ok !== true) return { ok: false, reason: opened.status === 401 || opened.status === 403 ? 'unauthenticated' : 'unavailable' };
             socialOpened = true;
+          }
+          if (readFrame === 'v2') {
+            const response = await call(ALPHA_READ_FULL_RPC), value: unknown = await response.json().catch(() => null);
+            if (isMissingReadRpc(response.status, value)) readFrame = 'v1';
+            else {
+              if (response.status === 401 || response.status === 403) return { ok: false, reason: 'unauthenticated' };
+              const failure = alphaReadFailure(value); if (failure) return { ok: false, reason: failure };
+              if (!response.ok) return { ok: false, reason: 'unavailable' };
+              const frame = readAlphaReadFrame(value), result = frame && readAlphaSocialResponse({ ok: true, value: frame.snapshot }, session.userId);
+              if (!frame || !result) return { ok: false, reason: 'invalid' };
+              references = alphaSocialReferences(result.context, session.userId); lastTokens = frame.tokens;
+              return { ok: true, value: result.account as AlphaAccount<Space> };
+            }
           }
           const response = await call('flowme_alpha_social_read_v1'), value: unknown = await response.json();
           if (programShape(value, ['ok', 'reason']) && value.ok === false && errors.includes(value.reason as AlphaError)) return value as AlphaResult<never>;
