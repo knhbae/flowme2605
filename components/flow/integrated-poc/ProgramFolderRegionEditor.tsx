@@ -3,7 +3,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { planProgramRegionEdit, isProgramFolderViewCurrent, type ProgramFolderDocumentView } from '@/lib/flow/integrated-poc/folder-document-regions';
-import { textEditorRows, textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
+import { textEditorRows, textWorkspaceModel as M, type TextRow, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
+import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
 import { revealProgramEditorLine } from './editor-reveal';
 
 export interface ProgramFolderRegionSnapshot {
@@ -32,6 +33,23 @@ export interface ProgramFolderRegionPort {
   /** Put the caret in a saved line of an editable region (at `column`, else the line end) and show it. */
   revealLine?(lineId: string, column?: number): boolean;
 }
+/** A context line drawn like the body: no raw markers ("[2026-10-30]", "- /", "- [ ]") and no line numbers.
+ *  Only a date line, a task's 날짜 property and a folder line's own tag are drawn differently; what the user
+ *  wrote (titles, URLs, notes, fenced code) stays as written, as in the body. */
+export function regionContextText(row: Pick<TextRow, 'kind' | 'text' | 'date' | 'groupDate' | 'title' | 'done' | 'scopeTitle'>): string {
+  const text = row.text.trim(), item = text.replace(/^- (\[[^\]]*\] ?)?/, '');
+  switch (row.kind) {
+    case 'date': { const date = row.date ?? row.groupDate; return date ? programCalendarDate(date, '') : text === '[미정]' ? '날짜 미정' : text; }
+    case 'scope': return row.scopeTitle ?? text.replace(/ +<!-- flowme-folder:v1 id=[^\s<>]+ -->$/, '').replace(/^- \//, '');
+    case 'task': case 'subcheck': return `${row.done ? '☑' : '☐'} ${row.title ?? item}`;
+    case 'property': { const date = /^날짜:\s*(\d{4}-\d{2}-\d{2})$/.exec(item); return date ? `날짜: ${programCalendarDate(date[1], '')}` : item; }
+    case 'heading': return text.replace(/^#+\s*/, '');
+    case 'blank': return '';
+    case 'fence': return text.replace(/^`{3,}.*$/, '');
+    default: return text.startsWith('- ') ? `• ${item}` : text;
+  }
+}
+
 export function programRegionError(reason: string): string {
   if (['stale-workspace', 'stale-region', 'invalid-view'].includes(reason)) return '다른 곳에서 문서가 바뀌었습니다. 입력은 남아 있습니다. 입력을 받은 뒤 저장본으로 돌아가 주세요.';
   if (reason === 'linked-document-change') return '이 제목을 바꾸면 다른 문서의 연결도 바뀝니다. 여기서는 저장하지 않았습니다. 입력을 받거나 취소한 뒤 전체 문서에서 수정해 주세요.';
@@ -271,11 +289,11 @@ export function ProgramFolderRegionEditor(props: {
   const entries = [...Array.from(context.values()).map(row => ({ index: row.index, row, region: null })),
     ...view.regions.map((region, ordinal) => ({ index: region.startIndex, row: null, region, ordinal }))].sort((a, b) => a.index - b.index);
   return <div ref={root} className={styles.regions} aria-label="현재 문서의 폴더 영역">
-    {entries.map(entry => entry.row ? <div key={`context:${entry.row.id}`} className={styles.context} data-context-line={entry.row.id}>
-      <small>원문 {entry.row.index + 1}줄 · 문맥</small><pre>{entry.row.text || ' '}</pre>
+    {entries.map(entry => entry.row ? <div key={`context:${entry.row.id}`} className={styles.context} data-context-line={entry.row.id}
+      data-kind={entry.row.kind} style={{ '--context-depth': entry.row.depth } as React.CSSProperties}>
+      <span>{regionContextText(entry.row) || ' '}</span>
       {entry.row.scopeMismatch && <small>실제 소속이 이 위치의 폴더와 다릅니다.</small>}
     </div> : entry.region && !entry.region.readOnly ? <div key={entry.region.key} className={styles.region} data-folder-region={entry.region.key}>
-      <span className={styles.regionLabel}>원문 {entry.region.startIndex + 1}–{Math.max(entry.region.startIndex + 1, entry.region.endIndex)}줄</span>
       <NativeProgramRegion label={`폴더 영역 ${'ordinal' in entry ? entry.ordinal! + 1 : 1} 원문`}
         mode={props.mode} listEnterV2={props.listEnterV2}
         raw={state.pending?.key === entry.region.key ? state.pending.raw : entry.region.raw}
