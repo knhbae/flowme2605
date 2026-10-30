@@ -48,7 +48,8 @@ test('finishing puts the line back to its folder name, says where names change, 
   assert(draft.restoreFolderLineName(1));
   const state = draft.getState();
   assert.equal(state.raw, '첫 줄\n- /회의\n  - [ ] 안건');
-  assert.equal(state.folderNotice, '폴더 이름은 분류 화면에서 바꿀 수 있습니다(입력: ‘주간회의’)');
+  // W15 (D12): the 4th edition words; Enter now moves the line (d3b-folder-rename.test.ts), putting back is for the rest.
+  assert.equal(state.folderNotice, '폴더 이름은 Enter로 마칠 때만 바뀝니다 · ‘회의’로 두었습니다(입력: ‘주간회의’)');
   assert.equal(scope(state.working, TYPED, 1)?.id, meeting.id);
   assert.equal(M.getDocument(state.working, TYPED)!.lines[1].id, M.getDocument(start, TYPED)!.lines[1].id, 'the line keeps its ID');
   assert.equal(others(state.working), others(start));
@@ -59,7 +60,8 @@ test('finishing puts the line back to its folder name, says where names change, 
 test('no finishing option, paste or undo renames or moves a linked folder (S10·S25)', () => {
   const start = account(), meeting = scope(start, TYPED, 1)!;
   const typed = held(start, '첫 줄\n- /운동\n  - [ ] 안건');
-  for (const option of [{ folderMove: [1] }, { folderDeclare: [1] }, { folderLink: [1] }, {}]) {
+  // W15: folderMove (Enter) is the one finish that acts now (d3b-folder-rename.test.ts); the others still keep the folder.
+  for (const option of [{ folderDeclare: [1] }, { folderLink: [1] }, {}]) {
     const done = M.editTextResult(typed, TYPED, '첫 줄\n- /운동\n  - [ ] 안건', { folderText: true, ...option });
     assert.equal(done.reason, null); assert.equal(done.folderMoved, undefined);
     assert.equal(scope(done.state, TYPED, 1)?.id, meeting.id, JSON.stringify(option));
@@ -90,7 +92,12 @@ test('Codex counterexamples: a folder another document belongs to by folderId, a
   assert.equal(others(kept), others(alone));
   // F2: two folders named 중복 in that place; the linked line stays on its own folder.
   const twice = account(); twice.folders.push({ id: 'dup-1', title: '중복', parentId: null }, { id: 'dup-2', title: '중복', parentId: null });
-  const finished = M.editTextResult(held(twice, '첫 줄\n- /중복\n  - [ ] 안건'), TYPED, '첫 줄\n- /중복\n  - [ ] 안건', { folderText: true, folderDeclare: [1], folderMove: [1] });
+  // W15: finished with Enter, two folders of the name in the place refuse the move (the editor puts the name back
+  // and says why); declared or left, the line stays on its own folder as before.
+  const typedTwice = held(twice, '첫 줄\n- /중복\n  - [ ] 안건');
+  const refused = M.editTextResult(typedTwice, TYPED, '첫 줄\n- /중복\n  - [ ] 안건', { folderText: true, folderDeclare: [1], folderMove: [1] });
+  assert.equal(refused.reason, 'invalid-format'); assert.equal(refused.folderProblem, 'name-conflict');
+  const finished = M.editTextResult(typedTwice, TYPED, '첫 줄\n- /중복\n  - [ ] 안건', { folderText: true, folderDeclare: [1] });
   assert.equal(finished.reason, null);
   assert.equal(scope(finished.state, TYPED, 1)?.id, scope(twice, TYPED, 1)?.id);
   assert.equal(others(finished.state), others(twice));
@@ -109,11 +116,11 @@ test('putting one line back leaves another line left with a different name as it
   assert.equal(others(draft.getState().working), others(start));
 });
 
-test('the editor finishes a linked line by putting its name back, also after a paste', () => {
-  const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
-  assert.match(editor, /if \(binding\) \{\r?\n *heldFolderLineRef\.current = null;\r?\n.*\r?\n *if \(!controller\.restoreFolderLineName\(index\)\) return;/);
+test('the editor moves a linked line only on Enter (D3 B); left, already off or refused it puts the name back, also after a paste', () => {
+  const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  assert.match(editor, /if \(finishedHere && !held\.offAtStart && linked && linked\.id !== 'folder-unfiled'\) \{\s*const moved = controller\.moveFolderLine\(index\);/);
+  assert.match(editor, /if \(!controller\.restoreFolderLineName\(index\)\) return;/);
   assert.match(editor, /\/\/ A paste over linked folder lines' names is finished like typing: every line it renamed goes back\./);
-  assert.doesNotMatch(editor, /folderMove/);
   assert.match(editor, /editorRef\.current\?\.setValue\(restored, \{ selection: \{ start: restoredLineOffset\(beforeRaw, index, line, selectionStart\),/);
 });
 

@@ -1,0 +1,26 @@
+'use client';
+
+import type { ProgramNoticeAction, ProgramNoticeTone } from '@/lib/flow/integrated-poc/program-notice';
+import styles from './ProgramNoticeRow.module.css';
+
+/** W15: one notice row for writing (and later 오늘·분류): a 3px band by tone, one or two lines of text, at most
+ *  two text buttons and ×. It never takes focus (pointer presses are prevented) and announces once (status).
+ *  Its order and lifetime rules live in lib/flow/integrated-poc/program-notice.ts. */
+export interface ProgramNoticeView {
+  text: string; tone: ProgramNoticeTone; actions?: ProgramNoticeAction[];
+  /** Notices waiting behind this one. */
+  more?: number;
+  /** The × label; the move notice has no × (its 이동 취소 ends it). */
+  closeLabel?: string | null;
+}
+
+const keepFocus = (event: React.PointerEvent) => { event.preventDefault(); };
+
+export function ProgramNoticeRow({ notice, onClose }: { notice: ProgramNoticeView; onClose?: () => void }) {
+  return <div className={styles.row} data-tone={notice.tone} role="status" data-notice-row>
+    <span className={styles.text}>{notice.text}{notice.more ? <small className={styles.more}> · {notice.more}개 더</small> : null}</span>
+    {(notice.actions ?? []).slice(0, 2).map(action =>
+      <button key={action.label} type="button" className={styles.action} onPointerDown={keepFocus} onClick={action.run}>{action.label}</button>)}
+    {notice.closeLabel !== null && onClose && <button type="button" className={styles.close} aria-label={notice.closeLabel ?? '안내 닫기'} onPointerDown={keepFocus} onClick={onClose}>×</button>}
+  </div>;
+}

@@ -1,5 +1,6 @@
 import {consumeOwnedWritingAck,noteWritingPhase,type OwnedWritingAck} from './writing-ack';
 import type {ProgramDocumentInput} from './program-document-input';
+import { ro } from './folder-notice';
 import { textWorkspaceModel as M, type TextInputSplice, type TextTaskSplitIntent, type TextProgressCheckConflict, type TextWorkspaceState } from './text-workspace';
 import { programSame } from './controller';
 import { programClone } from './contract';
@@ -225,13 +226,31 @@ export function createProgramTextDraft(
       if (check.reason === null && check.state === state.working) return false;
       return api.updateRaw(state.raw, '', { inputType: 'folderDeclare', ...lines });
     },
+    /** D3 B (W15): a linked folder line finished with Enter. Its folder is renamed when only this document uses
+     * it; otherwise the line, with its tasks, moves to the folder of its new name in the same place, made if
+     * missing. A refusal (two folders of that name there, a subfolder line under it, the folder limit) changes
+     * nothing and says why; the caller then puts the name back. */
+    moveFolderLine(lineIndex: number): { ok: true; renamed: boolean; fromId: string; toId: string; before: TextWorkspaceState } | { ok: false; reason: string | null } {
+      if (state.invalid) return { ok: false, reason: null };
+      const line = M.getDocument(state.working, docId)?.lines[lineIndex];
+      const binding = line && state.working.bindings.find(row => row.kind === 'scope' && row.docId === docId && row.lineId === line.id);
+      if (!line || !binding || binding.kind !== 'scope') return { ok: false, reason: null };
+      const check = M.editTextResult(state.working, docId, state.raw, { folderText: true, folderMove: [lineIndex] });
+      if (check.reason !== null || !check.folderMoved) return { ok: false, reason: check.folderProblem ?? check.reason };
+      const before = state.working;
+      if (state.folderNotice) state = { ...state, folderNotice: undefined };
+      if (!api.updateRaw(state.raw, '', { inputType: 'folderMove', folderMove: [lineIndex] })) return { ok: false, reason: null };
+      const after = state.working.bindings.find(row => row.kind === 'scope' && row.docId === docId && row.lineId === line.id);
+      const toId = after && after.kind === 'scope' ? after.scopeId : binding.scopeId;
+      return { ok: true, renamed: toId === binding.scopeId, fromId: binding.scopeId, toId, before };
+    },
     /** N1: a linked folder line whose name was typed or pasted over is finished by putting that one line's
      * text back to its folder's name. Nothing is renamed or moved; the status row names the typed name. */
     restoreFolderLineName(lineIndex: number) { return api.restoreFolderLineNames([lineIndex]); },
     /** The same for several lines at once (a paste that renamed more than one), in one edit; only those lines change. */
     restoreFolderLineNames(lineIndexes: number[]) {
       if (state.invalid) return false;
-      const lines = M.getDocument(state.working, docId)?.lines ?? [], raws = state.raw.split('\n'), typed: string[] = [];
+      const lines = M.getDocument(state.working, docId)?.lines ?? [], raws = state.raw.split('\n'), typed: string[] = [], kept: string[] = [];
       let unfiled = false;
       for (const index of lineIndexes) {
         const line = lines[index];
@@ -240,13 +259,14 @@ export function createProgramTextDraft(
         if (!line || !folder || raws[index] !== line.text || !/^ *- \//.test(line.text)) continue;
         const name = line.text.replace(/^ *- \//, '').trim();
         if (name === folder.title) continue;
-        raws[index] = /^ */.exec(line.text)![0] + '- /' + folder.title; typed.push(`‘${name}’`);
+        raws[index] = /^ */.exec(line.text)![0] + '- /' + folder.title; typed.push(`‘${name}’`); kept.push(folder.title);
         // 미분류 cannot be renamed in 분류 either.
         if (folder.id === 'folder-unfiled') unfiled = true;
       }
       if (!typed.length || !api.updateRaw(raws.join('\n'), '', { inputType: 'folderRestore' })) return false;
       state = { ...state, folderNotice: unfiled ? `미분류 폴더의 이름은 바꿀 수 없습니다(입력: ${typed.join(', ')})`
-        : `폴더 이름은 분류 화면에서 바꿀 수 있습니다(입력: ${typed.join(', ')})` }; report(); return true;
+        // W15 (D12): the 4th edition words; a name changes only when its line is finished with Enter.
+        : `폴더 이름은 Enter로 마칠 때만 바뀝니다 · ${kept.length === 1 ? `‘${kept[0]}’${ro(kept[0])}` : '원래 이름으로'} 두었습니다(입력: ${typed.join(', ')})` }; report(); return true;
     },
     canUndoFolderMove: () => !!lastMove && !state.invalid && state.working === lastMove.after,
     /** One undo right after a folder line moved: the state before the move, with the line's name back. */

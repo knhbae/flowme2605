@@ -27,6 +27,9 @@ import { isProgramFolderViewCurrent, planProgramRegionEdit, readProgramFolderReg
 import { childPlace, insertPlaceAfter, insertPreview, planLayoutInsertion, programInsertMenuTitle, programLayoutPlaceNote, programPlaceNote, type InsertPreviewLine } from '@/lib/flow/integrated-poc/writing-insert-place';
 import { programWritingDialogPlace } from '@/lib/flow/integrated-poc/writing-dialog-place';
 import { revealProgramEditorLine } from './editor-reveal';
+import { ProgramNoticeRow } from './ProgramNoticeRow';
+import { programNoticeEndsAt, programNoticeOrder, type ProgramNoticeAction, type ProgramNoticeTone } from '@/lib/flow/integrated-poc/program-notice';
+import { programFolderCreatedNotice, programFolderKeptText, programFolderMoveNotice, programFolderRenamedEverywhere } from '@/lib/flow/integrated-poc/folder-notice';
 import { programFolderCreationLocation, programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
 import { ProgramFolderRegionEditor, programRegionError, type ProgramFolderRegionPort, type ProgramFolderRegionSnapshot } from './ProgramFolderRegionEditor';
 import regionStyles from './ProgramFolderRegionEditor.module.css';
@@ -280,8 +283,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ReturnType<typeof nativeEditor.create> | null>(null);
   const draftRef = useRef<ReturnType<typeof createProgramTextDraft> | null>(null);
-  // The unlinked "- /name" line typed last; `left` once leaving it found no folder of that name.
-  const heldFolderLineRef = useRef<{ id: string; left: boolean } | null>(null);
+  // The "- /name" line typed last; `left` once leaving it found no folder of that name. `offAtStart`: a linked
+  // line whose text was already off its folder's name when this edit began (D3 B c: it is never moved).
+  const heldFolderLineRef = useRef<{ id: string; left: boolean; offAtStart: boolean } | null>(null);
+  // W15: the folder notice in the notice row, with how long it stays (info 6s; a choice while the caret is in
+  // its line's block, then 6s); `held` while pressed or focused.
+  type FolderNotice = { text: string; tone: ProgramNoticeTone; actions?: ProgramNoticeAction[]; lineId?: string; shownAt: number; leftBlockAt: number | null };
+  const [folderNotice, setFolderNotice] = useState<FolderNotice | null>(null);
+  const [noticeHeld, setNoticeHeld] = useState(false);
   // Linked folder lines an edit other than typing (a paste) renamed, by line ID, until they are put back.
   const renamedFolderLinesRef = useRef(new Set<string>());
   const documentInputRef=useRef<ProgramDocumentInput|null>(null);
@@ -425,6 +434,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const held = heldFolderLineRef.current;
     if (held) { if (currentDoc()?.lines[index]?.id === held.id) held.left = false; else finishHeldFolderLine(); }
     finishRenamedFolderLines(false);
+    // W15: a choice notice stays while the caret is in its line's block (the line and the lines under it).
+    setFolderNotice(current => {
+      if (!current || current.tone !== 'choose' || !current.lineId) return current;
+      const rows = textEditorRows(currentState(), propsRef.current.docId), start = rows.findIndex(row => row.id === current.lineId);
+      const inside = start >= 0 && index >= start && index < Math.max(rows[start].subtreeEndIndex, start + 1);
+      const leftBlockAt = inside ? null : current.leftBlockAt ?? Date.now();
+      return leftBlockAt === current.leftBlockAt ? current : { ...current, leftBlockAt };
+    });
     propsRef.current.onPosition?.({ start: textarea.selectionStart, end: textarea.selectionEnd, scrollTop: textarea.scrollTop }, currentDoc()?.lines[index]?.id ?? null);
     syncBarLine();
   }
@@ -443,9 +460,23 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (index < 0 || !FOLDER_LINE.test(lines[index].text) || binding && (!linked || lines[index].text.replace(/^ *- \//, '').trim() === linked.title)) {
       heldFolderLineRef.current = null; return;
     }
-    // N1: a linked line's typed name goes back to its folder's name, however it is finished; nothing moves.
+    // D3 B (W15): Enter on a linked line moves it, or renames its folder when only this document uses it.
+    // Leaving it (b), a line already off its folder's name (c), 미분류 or a refusal puts the name back.
     if (binding) {
       heldFolderLineRef.current = null;
+      const typed = lines[index].text.replace(/^ *- \//, '').trim();
+      const finishedHere = explicit && area.value.slice(0, area.selectionStart).split('\n').length - 1 === index;
+      let why: 'left' | 'off' | 'name-conflict' | 'refused' = finishedHere ? held.offAtStart ? 'off' : 'refused' : 'left';
+      if (finishedHere && !held.offAtStart && linked && linked.id !== 'folder-unfiled') {
+        const moved = controller.moveFolderLine(index);
+        if (moved.ok) {
+          const after = controller.getState();
+          if (after.raw !== area.value) editorRef.current?.setValue(after.raw, { preserveSelection: true });
+          showFolderMove(moved.before, after.working, lines[index].id, moved.fromId, linked.title);
+          scheduleSave(); return;
+        }
+        if (moved.reason === 'name-conflict') why = 'name-conflict';
+      }
       const beforeRaw = area.value, { selectionStart, selectionEnd, selectionDirection } = area;
       if (!controller.restoreFolderLineName(index)) return;
       // The caret keeps its place on the shorter or longer name, so the Enter that finished the line opens
@@ -453,14 +484,18 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       const restored = controller.getState().raw, line = restored.split('\n')[index];
       editorRef.current?.setValue(restored, { selection: { start: restoredLineOffset(beforeRaw, index, line, selectionStart),
         end: restoredLineOffset(beforeRaw, index, line, selectionEnd), direction: selectionDirection } });
-      const notice = controller.getState().folderNotice; if (notice) setMessage(notice);
+      // 미분류 keeps the draft's own words; the others say why the name went back (no buttons).
+      if (linked && linked.id !== 'folder-unfiled') showFolderNotice(programFolderKeptText(linked.title, typed, why), why === 'name-conflict' || why === 'refused' ? 'warn' : 'choose', lines[index].id);
+      else { const notice = controller.getState().folderNotice; if (notice) showFolderNotice(notice, 'warn'); }
       scheduleSave(); return;
     }
     const create = explicit && area.value.slice(0, area.selectionStart).split('\n').length - 1 === index;
     if (!create && held.left) return;
     const declared = controller.declareFolderLine(index, !create);
-    heldFolderLineRef.current = declared || create ? null : { id: held.id, left: true };
-    const notice = controller.getState().folderNotice; if (notice) setMessage(notice);
+    heldFolderLineRef.current = declared || create ? null : { ...held, left: true };
+    // B1 (W15): a folder this made is announced too.
+    const notice = controller.getState().folderNotice ?? (declared ? programFolderCreatedNotice(state.working, controller.getState().working) : null);
+    if (notice) showFolderNotice(notice, 'info');
     if (!declared) return;
     const visibleRaw = controller.getState().raw;
     if (visibleRaw !== area.value) editorRef.current?.setValue(visibleRaw, { preserveSelection: true });
@@ -493,17 +528,54 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       rows[index] = line; raw = rows.join('\n');
     }
     editorRef.current?.setValue(restored, { selection: { start, end, direction: selectionDirection } });
-    const notice = controller.getState().folderNotice; if (notice) setMessage(notice);
+    const notice = controller.getState().folderNotice; if (notice) showFolderNotice(notice, 'choose', lines[indexes[0]]?.id);
     scheduleSave();
   }
-  /** One ↶ right after a finished folder line moved puts the whole move back (D3 B). */
+  /** One ↶ (or the notice's 되돌리기) right after a finished folder line moved puts the whole move back (D3 B). */
   function undoFolderMove() {
     const controller = draftRef.current;
     if (!controller || composingRef.current || inputLockedRef.current || propsRef.current.readOnly || !controller.canUndoFolderMove()) return false;
     if (!controller.undoFolderMove()) return false;
     editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true });
-    const notice = controller.getState().folderNotice; if (notice) setMessage(notice);
+    const notice = controller.getState().folderNotice; if (notice) showFolderNotice(notice, 'info');
     scheduleSave(); return true;
+  }
+  /** D3 B c: was this linked folder line's text already off its folder's name in that state? */
+  function folderLineOff(state: TextWorkspaceState, lineId: string) {
+    const line = M.getDocument(state, propsRef.current.docId)?.lines.find(entry => entry.id === lineId);
+    const binding = line && state.bindings.find(row => row.kind === 'scope' && row.docId === propsRef.current.docId && row.lineId === line.id);
+    const folder = binding && binding.kind === 'scope' ? state.folders.find(entry => entry.id === binding.scopeId) : undefined;
+    return !!line && !!folder && FOLDER_LINE.test(line.text) && line.text.replace(/^ *- \//, '').trim() !== folder.title;
+  }
+  /** W15: show a folder notice in the notice row. A choice notice remembers its line, for its lifetime. */
+  function showFolderNotice(text: string, tone: ProgramNoticeTone, lineId?: string, actions?: ProgramNoticeAction[]) {
+    setFolderNotice({ text, tone, actions, lineId: tone === 'choose' ? lineId : undefined, shownAt: Date.now(), leftBlockAt: null });
+  }
+  /** The notice after Enter moved a linked folder line or renamed its folder, with its buttons. */
+  function showFolderMove(before: TextWorkspaceState, after: TextWorkspaceState, lineId: string, fromId: string, oldTitle: string) {
+    const notice = programFolderMoveNotice(before, after, propsRef.current.docId, lineId, fromId);
+    const title = M.getDocument(after, propsRef.current.docId)?.lines.find(line => line.id === lineId)?.text.replace(/^ *- \//, '').trim() ?? '';
+    const undo: ProgramNoticeAction = { label: '되돌리기', run: () => { if (undoFolderMove()) setFolderNotice(null); } };
+    const everywhere: ProgramNoticeAction = { label: '모든 문서에 적용', run: () => { void renameEverywhere(before, fromId, title, oldTitle); } };
+    showFolderNotice(notice.text, notice.tone, lineId, notice.kind === 'moved' ? [everywhere, undo] : [undo]);
+  }
+  /** [모든 문서에 적용], right after the move only: the move is replaced by renaming the folder in every document
+   *  (the 분류 rename path), applied to the state before the move so no folder of the new name is left behind. */
+  async function renameEverywhere(before: TextWorkspaceState, fromId: string, title: string, oldTitle: string) {
+    const controller = draftRef.current;
+    if (!controller || !controller.canUndoFolderMove() || composingRef.current) { showFolderNotice('다른 편집이 있어 모든 문서에 적용하지 않았습니다. 분류 화면에서 이름을 바꿀 수 있습니다.', 'warn'); return; }
+    const next = M.renameScope(before, fromId, title);
+    if (next === before || !(await apply(next, '폴더 이름 바꾸기'))) return;
+    const back: ProgramNoticeAction = { label: '되돌리기', run: () => { void renameBack(fromId, oldTitle, title); } };
+    showFolderNotice(programFolderRenamedEverywhere(next, fromId, oldTitle), 'info', undefined, [back]);
+  }
+  /** Its 되돌리기: a new change naming the folder back everywhere, unless that name is taken there by now. */
+  async function renameBack(fromId: string, oldTitle: string, title: string) {
+    const state = currentState(), folder = state.folders.find(entry => entry.id === fromId);
+    if (!folder || folder.title !== title || state.folders.some(entry => entry.id !== fromId && entry.parentId === folder.parentId && entry.title === oldTitle)) {
+      showFolderNotice('폴더 이름이 그 사이에 바뀌어 되돌리지 않았습니다.', 'warn'); return;
+    }
+    if (await apply(M.renameScope(state, fromId, oldTitle), '폴더 이름 되돌리기')) setFolderNotice(null);
   }
   /** The editor the writing bar acts on: the body, or the focused folder region. */
   function barEditor() {
@@ -1099,8 +1171,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           if (position) queueMicrotask(() => { const area = textArea(); if (area && area.value === raw) { area.setSelectionRange(position.selection.start, position.selection.end, position.selection.direction); area.scrollTop = position.scrollTop; rememberPosition(); } });
         }
         if (accepted) {
-          { const notice = controller.getState().folderNotice; if (notice) setMessage(notice); }
           const afterText = controller.getState().working;
+          // A paste can make folders; each new one is announced (B1).
+          { const notice = controller.getState().folderNotice ?? programFolderCreatedNotice(beforeText, afterText); if (notice) showFolderNotice(notice, 'info'); }
           const renamed = new Set(beforeText.folders.filter(folder => afterText.folders.some(next => next.id === folder.id && next.title !== folder.title)).map(folder => folder.id));
           if (afterText.bindings.some(binding => binding.kind === 'scope' && binding.docId !== props.docId && renamed.has(binding.scopeId))) {
             setMessage('폴더 이름을 바꾸면 연결된 다른 글에도 같은 이름이 표시됩니다.');
@@ -1116,7 +1189,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           if (hold) {
             const line = currentDoc()?.lines[hold[0]];
             if (heldFolderLineRef.current && heldFolderLineRef.current.id !== line?.id) finishHeldFolderLine();
-            if (line) heldFolderLineRef.current = { id: line.id, left: false };
+            if (line) {
+              // D3 B c: a linked line already off its folder's name before this edit stays off the move.
+              const same = heldFolderLineRef.current?.id === line.id ? heldFolderLineRef.current : null;
+              heldFolderLineRef.current = { id: line.id, left: false, offAtStart: same ? same.offAtStart : folderLineOff(beforeText, line.id) };
+            }
           } else {
             // A paste over linked folder lines' names is finished like typing: every line it renamed goes back.
             const was = new Map((M.getDocument(beforeText, props.docId)?.lines ?? []).map(line => [line.id, line.text]));
@@ -1257,6 +1334,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     editorRef.current?.refresh();
   }, [props.readOnly, props.directWriting, props.docId]);
   useEffect(() => { editorRef.current?.setMode(mode); }, [mode, props.docId]);
+  // W15: an info notice ends 6s after it shows, a choice 6s after the caret leaves its block; held, neither.
+  useEffect(() => {
+    if (!folderNotice) return;
+    const ends = programNoticeEndsAt({ tone: folderNotice.tone, shownAt: folderNotice.shownAt, leftBlockAt: folderNotice.leftBlockAt, held: noticeHeld });
+    if (ends === null) return;
+    const timer = window.setTimeout(() => setFolderNotice(current => current === folderNotice ? null : current), Math.max(0, ends - Date.now()));
+    return () => window.clearTimeout(timer);
+  }, [folderNotice, noticeHeld]);
   useEffect(() => {
     if (props.active !== false) return;
     const tools = hostRef.current?.closest('section')?.querySelector<HTMLDetailsElement>('[data-editor-tools]');
@@ -1722,9 +1807,19 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   /** W2: the move notice and the last message sit under the body (right above the keyboard bar while typing on
    *  a phone), never between the toolbar and the body: the body keeps its top and ends above them instead.
    *  Their buttons keep focus where it is, like the bar's: leaving the body would drop the bar and move them. */
-  const notices = <div ref={noticeRef} className={styles.notices}>
-    {moving && <div className={styles.moveNotice} role="status"><span>{moving.label} · 하위 {moving.descendantCount}줄</span><button type="button" onPointerDown={event => { event.preventDefault(); }} onClick={() => setPanel({ kind: 'move', lineId: moving.lineId })}>위치 선택</button><button type="button" onPointerDown={event => { event.preventDefault(); }} onClick={cancelMove}>이동 취소</button></div>}
-    {message && !panel && <p className={styles.message} role="status"><span>{message}</span><button type="button" aria-label="안내 닫기" onPointerDown={event => { event.preventDefault(); }} onClick={() => setMessage('')}>×</button></p>}
+  // W15: one notice row at a time: an ongoing move, then warnings (the editor's messages, until closed), then
+  // choices, then plain notices; the rest wait ("n개 더"). A press or focus inside holds a notice's time.
+  const noticeViews = programNoticeOrder([
+    ...(moving ? [{ moving: true, tone: 'choose' as const, text: `${moving.label} · 하위 ${moving.descendantCount}줄`, closeLabel: null, close: undefined,
+      actions: [{ label: '위치 선택', run: () => setPanel({ kind: 'move', lineId: moving.lineId }) }, { label: '이동 취소', run: cancelMove }] }] : []),
+    ...(message && !panel ? [{ tone: 'warn' as const, text: message, closeLabel: '안내 닫기', close: () => setMessage('') }] : []),
+    ...(folderNotice ? [{ tone: folderNotice.tone, text: folderNotice.text, actions: folderNotice.actions, closeLabel: '알림 닫기', close: () => setFolderNotice(null) }] : []),
+  ]);
+  const releaseNotice = () => { if (!noticeHeld) return; setNoticeHeld(false);
+    setFolderNotice(current => current && { ...current, shownAt: Date.now(), leftBlockAt: current.leftBlockAt === null ? null : Date.now() }); };
+  const notices = <div ref={noticeRef} className={styles.notices} onPointerDown={() => setNoticeHeld(true)} onPointerUp={releaseNotice} onPointerLeave={releaseNotice}
+    onFocus={() => setNoticeHeld(true)} onBlur={releaseNotice}>
+    {noticeViews[0] && <ProgramNoticeRow notice={{ ...noticeViews[0], more: noticeViews.length - 1 }} onClose={noticeViews[0].close} />}
   </div>;
   const writingBar = <div ref={barRef} className={styles.writingBar} role="toolbar" aria-label="쓰기 도구" data-editor-tools>
       {barButtons('bar')}{barStatusSlot()}</div>;

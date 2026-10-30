@@ -1679,7 +1679,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         </details>
       </>}
       {detail?.kind === 'folder' && <>
-        <form onSubmit={async event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title') ?? ''); await run('폴더 이름 변경', current => renameProgramFolder(current, { ...base(current), folderId: detail.id, title })); }}><label>폴더 이름<input key={detail.id} name="title" defaultValue={space.text.folders.find(item => item.id === detail.id)?.title} required /></label><button>이름 변경</button></form>
+        <form onSubmit={async event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title') ?? ''); await run('폴더 이름 변경', current => renameProgramFolder(current, { ...base(current), folderId: detail.id, title })); }}><label>폴더 이름<input key={detail.id} name="title" defaultValue={space.text.folders.find(item => item.id === detail.id)?.title} required /></label><button>이름 변경</button>
+          {/* W15 (F21): a rename here reaches every document's folder line for this folder. */}
+          {(count => count > 0 && <p data-folder-line-documents>문서 {count}곳의 폴더 줄도 바뀝니다</p>)(new Set(space.text.bindings.filter(row => row.kind === 'scope' && row.scopeId === detail.id).map(row => row.docId)).size)}</form>
         <label className={styles.field}>상위 폴더<select value={space.text.folders.find(item => item.id === detail.id)?.parentId ?? ''} onChange={event => { const parentId = event.target.value || null; void run('폴더 이동', current => moveProgramFolder(current, { ...base(current), folderId: detail.id, parentId })); }}><option value="">최상위</option>{folderOptions.filter(item => item.id !== detail.id).map(item => <option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
         <p>폴더를 삭제해도 문서와 할 일은 미분류에 남습니다. 하위 폴더는 최상위로 옮겨집니다.</p><button onClick={async () => { const result = await run('폴더 삭제', current => deleteProgramFolder(current, { ...base(current), folderId: detail.id })); if (result.ok) { setFolderId('folder-unfiled'); close(); } }}>폴더만 삭제</button>
       </>}

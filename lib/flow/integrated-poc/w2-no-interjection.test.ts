@@ -48,10 +48,15 @@ test('W2: the move notice and the last message sit under the body, which gives u
   for (const old of ['styles.moveNotice', '{message && !panel && <p'])
     assert(!between.includes(old), old);
   const notices = pick(node => ts.isVariableDeclaration(node) && node.name.getText(tree) === 'notices');
-  assert(notices.includes('styles.moveNotice') && notices.includes('styles.message') && notices.includes('ref={noticeRef}'));
+  // W15: the move notice and the message are rows of the shared notice row, in the same place.
+  assert(notices.includes('<ProgramNoticeRow') && notices.includes('ref={noticeRef}'));
+  const views = pick(node => ts.isVariableDeclaration(node) && node.name.getText(tree) === 'noticeViews');
+  assert(views.includes("label: '위치 선택'") && views.includes("label: '이동 취소'") && views.includes("text: message"));
   // A press there while typing must not take focus off the body: the bar would go and they would move under it.
-  assert.equal(notices.match(/<button /g)?.length, 3);
-  assert.equal(notices.match(/onPointerDown=\{event => \{ event\.preventDefault\(\); \}\}/g)?.length, 3);
+  const row = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramNoticeRow.tsx', import.meta.url), 'utf8');
+  assert.equal(row.match(/<button /g)?.length, 2);
+  assert.equal(row.match(/onPointerDown=\{keepFocus\}/g)?.length, 2);
+  assert.match(row, /const keepFocus = \(event: React\.PointerEvent\) => \{ event\.preventDefault\(\); \};/);
   // The body's visible height ends above them, like it ends above the keyboard bar.
   const update = source.slice(source.indexOf('const update = () => {\n      frame = 0;'), source.indexOf('const schedule = () => { if (!frame)'));
   assert(update.length > 0);

@@ -29,7 +29,8 @@ test('a paste that renamed two linked folder lines puts both back in one edit, a
   const state = draft.getState();
   assert.equal(state.raw, RAW);
   assert.deepEqual(M.getDocument(state.working, TYPED)!.lines.map(line => line.id), ids, 'every line keeps its ID');
-  assert.equal(state.folderNotice, '폴더 이름은 분류 화면에서 바꿀 수 있습니다(입력: ‘운동기록’, ‘SIDE_EDIT’)');
+  // W15 (D12): the 4th edition words; two lines put back read "원래 이름으로".
+  assert.equal(state.folderNotice, '폴더 이름은 Enter로 마칠 때만 바뀝니다 · 원래 이름으로 두었습니다(입력: ‘운동기록’, ‘SIDE_EDIT’)');
   assert.deepEqual(state.working.folders.map(folder => folder.title).sort(), start.folders.map(folder => folder.title).sort());
 });
 
