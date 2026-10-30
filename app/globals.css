@@ -78,6 +78,17 @@
   --flowme-b-nav-active: #303e58;
   --flowme-b-nav-hover: #25334a;
   --flowme-b-nav-muted: #53627a;
+  /* Meaning colors (W9a), the values already in use: progress (the amber % chip), late, warning, error. */
+  --flowme-b-progress-ink: #785627;
+  --flowme-b-progress-bg: #fcf8ed;
+  --flowme-b-progress-border: #dfd2b8;
+  --flowme-b-late-ink: #9c272b;
+  --flowme-b-warning-ink: #785c30;
+  --flowme-b-warning-bg: #fff7e7;
+  --flowme-b-warning-border: #d9c7a8;
+  --flowme-b-error-ink: #88422f;
+  --flowme-b-error-bg: #fff0ed;
+  --flowme-b-error-border: #b35744;
   /* One scrim behind every Alpha dialog and one shadow under raised panels (R9b-2). */
   --flowme-b-scrim: rgb(24 34 53 / .4);
   --flowme-b-shadow: rgb(24 34 53 / .14);
