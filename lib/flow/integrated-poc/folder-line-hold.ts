@@ -2,6 +2,17 @@ import { canonicalJson } from './alpha-persistence/json';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 
 const FOLDER_LINE = /^ *- \/(?!.*<!--\s*flowme-folder)/;
+
+/** Where a caret goes when line `index` of `raw` is replaced by `line` (a folder line's name put back):
+ * before the line it stays, after it moves by the length change, and inside the name (past "- /") it goes
+ * to the new line's end, so an Enter that finished the line opens the next line. */
+export function restoredLineOffset(raw: string, index: number, line: string, offset: number): number {
+  const lines = raw.split('\n'), old = lines[index] ?? '', start = lines.slice(0, index).join('\n').length + (index ? 1 : 0);
+  if (offset < start) return offset;
+  if (offset > start + old.length) return offset + line.length - old.length;
+  const name = old.indexOf('- /') + 3, column = offset - start;
+  return start + (name > 2 && column < name ? column : line.length);
+}
 const bound = (state: TextWorkspaceState, documentId: string, lineId: string, scope = false) =>
   state.bindings.some(binding => binding.docId === documentId && binding.lineId === lineId && (!scope || binding.kind === 'scope'));
 

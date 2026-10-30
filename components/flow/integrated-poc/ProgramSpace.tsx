@@ -1204,6 +1204,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (transition.ok) receipt = { before: programClone(current.spaces[actorId]), after: programClone(transition.data.spaces[actorId]) };
       return transition;
     }, { groupId: options?.groupId, onPrivateMutation: options?.onPrivateMutation,...(props.writingCompute&&!moveFlush.current?{alphaWriting:{documentId:docId,expected:options?.expectedWorkspace??space.text,next:nextText,position:positions.current[docId],workingGeneration:options?.writingGeneration??0}}:{}) });
+    // The controller refuses 'unresolved' (a result still pending) and 'busy' before anything is sent.
+    if (!result.ok && (result.reason === 'unresolved' || result.reason === 'busy')) options?.onNotSent?.();
     const authority = moveFlush.current;
     if (authority) {
       // Foreign private writes between local saves break the chain.

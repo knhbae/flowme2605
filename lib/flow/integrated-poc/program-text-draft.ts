@@ -18,6 +18,9 @@ export type ProgramTextCommitOptions = {
   privateTaskSchedule?: { taskId: string; date: string | null; time: string };
   /** UI-only confirmation of a successful schedule's server-generated property IDs. */
   onPrivateTaskScheduleAcknowledged?: (confirmation: Promise<TextWorkspaceState | null>) => void;
+  /** The host refused this save before sending it (a result is still pending, or another command is in
+   * flight): it never reached the server. Without this call a refused save counts as possibly sent. */
+  onNotSent?: () => void;
 };
 
 export type ProgramTextCommit = (next: TextWorkspaceState, label: string, options?: ProgramTextCommitOptions) => Promise<boolean>;
@@ -65,8 +68,9 @@ export function createProgramTextDraft(
   let inputGeneration = 0;
   type Attempt = { before: TextWorkspaceState; next: TextWorkspaceState; generation: number; allowBasicChecks: boolean };
   let submitted: Attempt | null = null;
-  // Earlier unconfirmed attempts from the same committed base. A save whose reply was lost may be followed
-  // by a retry the host refuses at once (a result is still pending); "다시 확인" may prove any one of them.
+  // Earlier attempts from the same committed base that may have reached the server, kept until one is
+  // confirmed, the base moves or the input is discarded. A retry the host refused before sending (a result
+  // still pending) never enters it, so it cannot push out the request whose reply was lost.
   let unconfirmed: Attempt[] = [];
   const pasteHistory: { before: TextWorkspaceState; after: TextWorkspaceState }[] = [];
   const report = () => notify({ ...state });
@@ -322,16 +326,19 @@ export function createProgramTextDraft(
           const oldIds = new Set([...before.documents, ...before.flows].flatMap(doc => doc.lines.map(line => line.id)));
           const insertedProperty = schedule && [...next.documents, ...next.flows].some(doc => doc.lines.some(line => !oldIds.has(line.id)));
           let confirmation: Promise<TextWorkspaceState | null> | undefined;
-          unconfirmed = submitted && programSame(submitted.before, state.committed) ? [...unconfirmed, submitted].slice(-10) : [];
+          const prior = submitted, priorUnconfirmed = unconfirmed;
+          unconfirmed = submitted && programSame(submitted.before, state.committed) ? [...unconfirmed, submitted] : [];
           submitted = { before: state.committed, next, generation: inputGeneration,
             // Structural/schedule/generated-ID confirmations keep their original hold.
             allowBasicChecks:backgroundSave&&!!documentInput&&!schedule&&groupId===`text:${docId}` };
           state = { ...state, saving: true, error: '', progressConflict: undefined }; report();
-          let accepted = false;
-          try { accepted = await commit(next, label, { groupId, expectedWorkspace: state.committed,writingGeneration:inputGeneration,
+          let accepted = false, notSent = false;
+          try { accepted = await commit(next, label, { groupId, expectedWorkspace: state.committed,writingGeneration:inputGeneration, onNotSent: () => { notSent = true; },
             ...(schedule ? { privateTaskSchedule: schedule } : {}),
             ...(insertedProperty ? { onPrivateTaskScheduleAcknowledged: (pending: Promise<TextWorkspaceState | null>) => { confirmation = pending; } } : {}) }); } catch { accepted = false; }
           if (!accepted) {
+            // Refused before sending: the attempts that may have reached the server stay as they were.
+            if (notSent) { submitted = prior; unconfirmed = priorUnconfirmed; }
             state = { ...state, saving: false, dirty: true, error: '저장하지 못했습니다. 입력은 남아 있습니다. 다시 저장해 주세요.' };
             report(); return false;
           }

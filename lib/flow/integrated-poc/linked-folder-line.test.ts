@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import test from 'node:test';
+import { restoredLineOffset } from './folder-line-hold';
 import { createProgramTextDraft } from './program-text-draft';
-import { textWorkspaceModel as M, type TextScopeBinding, type TextWorkspaceState } from './text-workspace';
+import { textEditorRows, textWorkspaceModel as M, type TextScopeBinding, type TextWorkspaceState } from './text-workspace';
 
 // N1 (S08·S10·S25): editing the name of a linked folder line used to rename the folder in every document,
 // one character at a time; D3 B moved the line instead, and both missed other uses of the folder. In N1 a
@@ -109,7 +111,106 @@ test('putting one line back leaves another line left with a different name as it
 
 test('the editor finishes a linked line by putting its name back, also after a paste', () => {
   const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
-  assert.match(editor, /if \(binding\) \{\r?\n *heldFolderLineRef\.current = null;\r?\n *if \(!controller\.restoreFolderLineName\(index\)\) return;/);
+  assert.match(editor, /if \(binding\) \{\r?\n *heldFolderLineRef\.current = null;\r?\n.*\r?\n *if \(!controller\.restoreFolderLineName\(index\)\) return;/);
   assert.match(editor, /\/\/ A paste over a linked folder line's name is finished like typing: its name goes back\./);
   assert.doesNotMatch(editor, /folderMove/);
+  assert.match(editor, /editorRef\.current\?\.setValue\(restored, \{ selection: \{ start: restoredLineOffset\(beforeRaw, index, line, selectionStart\),/);
+});
+
+// Codex N1 F2: putting the name back must keep the caret's place, or the Enter that finished the line
+// breaks the line below it (its indent was split and the structure refused).
+test('the caret keeps its place across a name put back, shorter or longer', () => {
+  const shorter = '첫 줄\n- /운동기록\n  - [ ] 내 할 일\n보존 메모';
+  assert.equal(restoredLineOffset(shorter, 1, '- /운동', 11), 9, 'the end of the name goes to the new end');
+  assert.equal(restoredLineOffset(shorter, 1, '- /운동', 8), 9, 'inside the name too');
+  assert.equal(restoredLineOffset(shorter, 1, '- /운동', 5), 5, 'inside "- /" it stays');
+  assert.equal(restoredLineOffset(shorter, 1, '- /운동', 2), 2, 'before the line it stays');
+  assert.equal(restoredLineOffset(shorter, 1, '- /운동', 14), 12, 'after the line it moves by the change');
+  const longer = '첫 줄\n- /운\n  - [ ] 내 할 일';
+  assert.equal(restoredLineOffset(longer, 1, '- /운동', 8), 9);
+  assert.equal(restoredLineOffset(longer, 1, '- /운동', 11), 12);
+  const indented = '- /상위\n  - /하위변경\n    - [ ] 일';
+  assert.equal(restoredLineOffset(indented, 1, '  - /하위', 15), 13);
+});
+
+const load = createRequire(import.meta.url);
+const inputPlans = load('./text-input-plan.cjs');
+const { resolve } = load('./text-add-settings.cjs') as { resolve(config: Record<string, unknown>): Record<string, () => boolean> };
+const vendor = readFileSync(new URL('./vendor/text-editor.cjs', import.meta.url), 'utf8');
+const vendorSlice = (from: string, to: string) => {
+  const start = vendor.indexOf(from), stop = vendor.indexOf(to, start);
+  assert(start > 0 && stop > start, from); return vendor.slice(start, stop);
+};
+
+/** The vendor's real Enter handler and setValue, with the host's beforeEnter putting the folder name back
+ * as the editor does. After the browser's own line break, where did the new line go? Stubs stand in for
+ * DOM-only work; this does not establish IME or browser event order. */
+function enterAfterRestore(raw: string, lineIndex: number, folder: string) {
+  const lines = raw.split('\n'), restoredLine = /^ */.exec(lines[lineIndex])![0] + '- /' + folder;
+  const restored = [...lines.slice(0, lineIndex), restoredLine, ...lines.slice(lineIndex + 1)].join('\n');
+  let state = M.editText({ version: 11, folders: [{ id: 'f', title: folder, parentId: null }], documents: [{ id: 'd', title: '합성', folder, folderId: 'f', lines: [] }],
+    flows: [], bindings: [], taskScopes: {}, itemScopes: {}, progressRecords: [] } as unknown as TextWorkspaceState, 'd', restored);
+  const bound = state.documents[0].lines[lineIndex];
+  state = { ...state, bindings: [...state.bindings, { kind: 'scope', docId: 'd', lineId: bound.id, scopeId: 'f' }] } as TextWorkspaceState;
+  const meta = textEditorRows(state, 'd');
+  const caret = lines.slice(0, lineIndex + 1).join('\n').length;
+  const textarea = { value: raw, readOnly: false, selectionStart: caret, selectionEnd: caret, selectionDirection: 'none', scrollTop: 0, scrollLeft: 0,
+    setSelectionRange(start: number, end: number, direction: string) { this.selectionStart = start; this.selectionEnd = end; this.selectionDirection = direction; } };
+  const config: { beforeEnter?: () => void } = {};
+  const editor = new Function('textarea', 'imeEnterCycle', 'addSettings', 'inputPlans', 'config', 'getRowMeta', `
+    let selection = { start: textarea.selectionStart, end: textarea.selectionEnd, direction: 'none' };
+    let composing = false, inputRejected = false, nextTabLeaves = false, indentLease = null, inputEpoch = 0, lastReported = textarea.value, lastPickerCandidate = null;
+    let destroyed = false, moveState = null, gesture = null;
+    ${vendorSlice('  const DATE = ', '  function create(')}
+    ${vendorSlice('    function lineAt(offset) {', '    let inputEpoch = 0;')}
+    function remember() { selection = { start: textarea.selectionStart, end: textarea.selectionEnd, direction: textarea.selectionDirection || 'none' }; return selection; }
+    function invalidatePlainRowInput() {}
+    function render() {}
+    function unfoldAll() {}
+    function cancelMove() {}
+    function indent() { return false; }
+    function canApplyInput() { return true; }
+    function insert(text) {
+      textarea.value = textarea.value.slice(0, selection.start) + text + textarea.value.slice(selection.end);
+      textarea.selectionStart = textarea.selectionEnd = selection.start + text.length; remember(); return true;
+    }
+    function replaceRange(start, end, text, settings) {
+      textarea.value = textarea.value.slice(0, start) + text + textarea.value.slice(end);
+      const after = settings && settings.selectionAfter, at = start + text.length;
+      textarea.selectionStart = after ? after.start : at; textarea.selectionEnd = after ? after.end : at; remember(); return true;
+    }
+    ${vendorSlice('    function onKeydown(event) {', "\n    listen(textarea, 'input'")}
+    const api = {
+    ${vendorSlice('      setValue(value, settings) {', '      focus(lineIndex) {')}
+    };
+    return { onKeydown, api };`)(textarea, { keydown: () => false, cancel() {} }, resolve({}), inputPlans, config, () => meta);
+  // The editor's finish: the name goes back, the caret mapped through restoredLineOffset.
+  config.beforeEnter = () => {
+    const start = restoredLineOffset(raw, lineIndex, restoredLine, textarea.selectionStart);
+    editor.api.setValue(restored, { selection: { start, end: start, direction: 'none' } });
+  };
+  let prevented = false;
+  editor.onKeydown({ key: 'Enter', code: 'Enter', keyCode: 13, shiftKey: false, ctrlKey: false, metaKey: false, altKey: false, isComposing: false,
+    defaultPrevented: false, preventDefault: () => { prevented = true; } });
+  if (!prevented) { // the browser's own line break at the caret the handler left
+    const at = textarea.selectionStart;
+    textarea.value = textarea.value.slice(0, at) + '\n' + textarea.value.slice(textarea.selectionEnd); textarea.selectionStart = textarea.selectionEnd = at + 1;
+  }
+  return { value: textarea.value, caretLine: textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1 };
+}
+
+test('Enter right after the name is put back opens a new line under it and leaves the task below whole', () => {
+  for (const [raw, line, folder] of [
+    ['첫 줄\n- /운동기록\n  - [ ] 내 할 일\n보존 메모', 1, '운동'], // shorter, as in S08·S25
+    ['첫 줄\n- /운\n  - [ ] 내 할 일\n보존 메모', 1, '운동'],       // longer
+    ['- /상위\n  - /하위변경\n    - [ ] 일\n끝', 1, '하위'],        // indented
+  ] as const) {
+    const after = enterAfterRestore(raw, line, folder), rows = after.value.split('\n'), below = raw.split('\n')[line + 1];
+    assert.equal(rows[line], /^ */.exec(raw.split('\n')[line])![0] + '- /' + folder, `${raw}: the name is back`);
+    assert.equal(rows.filter(row => row === below).length, 1, `${raw}: the task below is whole`);
+    assert.equal(rows.indexOf(below), line + 2, `${raw}: one new line opened between`);
+    assert.equal(after.caretLine, line + 1, `${raw}: the caret is on the new line`);
+    // The folder line opens an item under it: empty, or a new task at the indent of the one below.
+    assert.match(rows[line + 1], /^ *(- \[ \] )?$/, `${raw}: the new line is a fresh item under the folder`);
+  }
 });

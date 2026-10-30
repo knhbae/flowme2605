@@ -16,6 +16,7 @@ import { applyProgramLinePermutation, createProgramPermutationHistory } from '@/
 import { programSame } from '@/lib/flow/integrated-poc/controller';
 import { readProgramFolderCopyPreview, isProgramFolderCopyPreviewCurrent, copyProgramFolderOccurrence, type ProgramFolderCopyPreview } from '@/lib/flow/integrated-poc/folder-copy';
 import { createAlphaStructuralDraft, type AlphaStructuralDraft } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
+import { restoredLineOffset } from '@/lib/flow/integrated-poc/folder-line-hold';
 import { createProgramTextDraft, type ProgramTextCommit, type ProgramTextCommitOptions, type ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
 import {createProgramDocumentInput,type ProgramDocumentInput} from '@/lib/flow/integrated-poc/program-document-input';
 import type { ProgramReferenceAccess } from '@/lib/flow/integrated-poc/reference-execution-guard';
@@ -420,8 +421,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // N1: a linked line's typed name goes back to its folder's name, however it is finished; nothing moves.
     if (binding) {
       heldFolderLineRef.current = null;
+      const beforeRaw = area.value, { selectionStart, selectionEnd, selectionDirection } = area;
       if (!controller.restoreFolderLineName(index)) return;
-      editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true });
+      // The caret keeps its place on the shorter or longer name, so the Enter that finished the line opens
+      // the next line instead of splitting the one below.
+      const restored = controller.getState().raw, line = restored.split('\n')[index];
+      editorRef.current?.setValue(restored, { selection: { start: restoredLineOffset(beforeRaw, index, line, selectionStart),
+        end: restoredLineOffset(beforeRaw, index, line, selectionEnd), direction: selectionDirection } });
       const notice = controller.getState().folderNotice; if (notice) setMessage(notice);
       scheduleSave(); return;
     }
