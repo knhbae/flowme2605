@@ -83,3 +83,18 @@ test('the exact confirmation without a newer base still works as before', async 
   assert.equal(draft.acceptConfirmedSave(T0, sent[0]), true);
   assert.equal(draft.getState().dirty, false);
 });
+
+test('a retry refused while waiting does not hide the merged request either', async () => {
+  const { draft, sent, T1, T2, A, B, replyNext } = await lostReply();
+  assert.equal(draft.updateRaw('첫 줄\n이어 쓴 줄\n기다리며 쓴 줄'), true);
+  assert.equal(await draft.save(), false, 'the automatic retry is refused at once: a result is still pending');
+  assert.equal(sent.length, 2);
+  assert.equal(draft.acceptConfirmedSave(T1, T2), true, 'the first request, merged onto the newer base, is accepted');
+  const state = draft.getState();
+  assert.equal(state.committed, T2); assert.equal(state.dirty, true); assert.equal(state.error, '');
+  assert.equal(raw(state.working, A), '첫 줄\n이어 쓴 줄\n기다리며 쓴 줄');
+  replyNext(true);
+  assert.equal(await draft.save(), true);
+  assert.equal(sent.length, 3); assert.equal(sent[2].expected, T2);
+  assert.equal(raw(sent[2].next, B), '다른 문서\n원격 줄');
+});

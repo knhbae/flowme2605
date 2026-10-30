@@ -934,7 +934,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     propsRef.current.onRegisterConfirmedSave?.((before, next, ack) => {
       if (!alive || composingRef.current || inputLockedRef.current || textArea()?.value !== controller.getState().raw) return false;
       // Confirmation updates state only; preserve the native textarea and its selection/history.
-      return controller.acceptConfirmedSave(before, next, ack);
+      const accepted = controller.acceptConfirmedSave(before, next, ack);
+      // Input typed while the result was unknown (its own save was refused then) is saved now.
+      if (accepted && !ack && controller.getState().dirty && !controller.getState().saving) scheduleSave();
+      return accepted;
     });
     orderHistoryRef.current = createProgramPermutationHistory(props.docId); orderPositionsRef.current = []; orderEpochRef.current++; pendingOrderRef.current = null;
     movingRef.current = null; setMoving(null); setPanel(null);

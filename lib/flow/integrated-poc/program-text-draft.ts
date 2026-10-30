@@ -63,7 +63,11 @@ export function createProgramTextDraft(
   let groupId: string | undefined;
   let privateTaskSchedule: ProgramTextCommitOptions['privateTaskSchedule'];
   let inputGeneration = 0;
-  let submitted: { before: TextWorkspaceState; next: TextWorkspaceState; generation: number; allowBasicChecks: boolean } | null = null;
+  type Attempt = { before: TextWorkspaceState; next: TextWorkspaceState; generation: number; allowBasicChecks: boolean };
+  let submitted: Attempt | null = null;
+  // Earlier unconfirmed attempts from the same committed base. A save whose reply was lost may be followed
+  // by a retry the host refuses at once (a result is still pending); "다시 확인" may prove any one of them.
+  let unconfirmed: Attempt[] = [];
   const pasteHistory: { before: TextWorkspaceState; after: TextWorkspaceState }[] = [];
   const report = () => notify({ ...state });
   type Input = { inputType: string; inputSplice?: TextInputSplice; taskSplit?: TextTaskSplitIntent; compositionGeneration?: number; folderHold?: number[]; folderDeclare?: number[]; folderLink?: number[]; folderMove?: number[] };
@@ -72,7 +76,7 @@ export function createProgramTextDraft(
    * document, the host took that as its base, and the submitted input was merged onto it per document.
    * Accept only when the confirmed text is exactly that merge of this submission; newer input moves
    * onto the confirmed text by the same merge. Anything else stays unconfirmed (and protected). */
-  function acceptMergedSave(attempt: NonNullable<typeof submitted>, before: TextWorkspaceState, next: TextWorkspaceState) {
+  function acceptMergedSave(attempt: Attempt, before: TextWorkspaceState, next: TextWorkspaceState) {
     if (state.saving || !programSame(state.committed, attempt.before) || programSame(attempt.before, before)) return false;
     const merged = mergeProgramTextWorkspace(attempt.before, attempt.next, before);
     if (!merged || !programSame(merged, next) || !M.validate(next) || !validateWorkspace(next) || !M.getDocument(next, docId)) return false;
@@ -81,14 +85,14 @@ export function createProgramTextDraft(
     if (unchangedInput) {
       const working = documentInput?.install(next) ?? next;
       state = { ...state, committed: working, working, raw: M.raw(M.getDocument(working, docId)), dirty: false, error: '', progressConflict: undefined };
-      submitted = null; report(); return true;
+      submitted = null; unconfirmed = []; report(); return true;
     }
     if (inputGeneration <= attempt.generation) return false;
     const moved = mergeProgramTextWorkspace(attempt.next, state.working, next);
     if (!moved || !validateWorkspace(moved) || !M.getDocument(moved, docId) || M.raw(M.getDocument(moved, docId)) !== state.raw) return false;
     const working = documentInput?.install(moved) ?? moved;
     state = { ...state, committed: next, working, error: '', progressConflict: undefined };
-    submitted = null; report(); return true;
+    submitted = null; unconfirmed = []; report(); return true;
   }
   function deriveRaw(raw:string,input?:Input){
       const baseRaw = M.raw(M.getDocument(state.committed, docId));
@@ -267,16 +271,19 @@ export function createProgramTextDraft(
         }finally{noteWritingPhase('ack-draft-accept',started,ack.identity);}
       }
       if (!attempt || !state.dirty || state.invalid) return false;
-      if (!programSame(state.committed, before) || !programSame(attempt.before, before) || !programSame(attempt.next, next))
-        return acceptMergedSave(attempt, before, next);
-      const unchangedInput = inputGeneration === attempt.generation && programSame(state.working, next)
+      // Any unconfirmed attempt from this base may be the one the server applied, the latest first; each is
+      // judged exactly, then as merged onto the host's newer base.
+      const attempts = [attempt, ...unconfirmed.slice().reverse()];
+      const proven = programSame(state.committed, before) ? attempts.find(entry => programSame(entry.before, before) && programSame(entry.next, next)) : undefined;
+      if (!proven) return attempts.some(entry => acceptMergedSave(entry, before, next));
+      const unchangedInput = inputGeneration === proven.generation && programSame(state.working, next)
         && state.raw === M.raw(M.getDocument(next, docId));
       if (!state.saving && unchangedInput) {
         const working=documentInput?.install(next)??next;
         state = { ...state, committed: working, working, dirty: false, error: '', progressConflict: undefined };
-        submitted = null; report(); return true;
+        submitted = null; unconfirmed = []; report(); return true;
       }
-      if ((!unchangedInput && inputGeneration <= attempt.generation)
+      if ((!unchangedInput && inputGeneration <= proven.generation)
         || !M.validate(next) || !M.validate(state.working)
         || !validateWorkspace(next) || !validateWorkspace(state.working)
         || !M.getDocument(next, docId) || !M.getDocument(state.working, docId)
@@ -284,14 +291,15 @@ export function createProgramTextDraft(
       // The shell proved this exact submitted receipt, not the latest input.
       // Preserve its live flight and all newer working/raw/identity/dirty state.
       // true means the receipt was consumed; callers must still check pending input.
-      state = { ...state, committed: next };
+      // A retry refused while this result was unknown left its error; the newer input is saved next.
+      state = { ...state, committed: next, error: '' }; unconfirmed = [];
       report(); return true;
     },
     discard(next: TextWorkspaceState) {
       if (state.saving) return false;
       if(documentInput&&(!M.validate(next)||!validateWorkspace(next)))return false;
       privateTaskSchedule = undefined;
-      submitted = null; inputGeneration++;
+      submitted = null; unconfirmed = []; inputGeneration++;
       const working=documentInput?.install(next)??next;
       state = { committed: working, working, raw: M.raw(M.getDocument(working, docId)), dirty: false, saving: false, invalid: false, error: '' };
       report(); return true;
@@ -308,6 +316,7 @@ export function createProgramTextDraft(
           const oldIds = new Set([...before.documents, ...before.flows].flatMap(doc => doc.lines.map(line => line.id)));
           const insertedProperty = schedule && [...next.documents, ...next.flows].some(doc => doc.lines.some(line => !oldIds.has(line.id)));
           let confirmation: Promise<TextWorkspaceState | null> | undefined;
+          unconfirmed = submitted && programSame(submitted.before, state.committed) ? [...unconfirmed, submitted].slice(-10) : [];
           submitted = { before: state.committed, next, generation: inputGeneration,
             // Structural/schedule/generated-ID confirmations keep their original hold.
             allowBasicChecks:backgroundSave&&!!documentInput&&!schedule&&groupId===`text:${docId}` };
@@ -350,7 +359,7 @@ export function createProgramTextDraft(
           }
           const unchanged = state.working === next && state.raw === submittedRaw;
           working=documentInput?.install(working)??working;
-          submitted = null;
+          submitted = null; unconfirmed = [];
           state = { ...state, committed, working, saving: false, dirty: !unchanged };
           report();
         }
