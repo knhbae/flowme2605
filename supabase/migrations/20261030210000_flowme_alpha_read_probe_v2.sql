@@ -11,6 +11,10 @@
 --
 -- Written against the repository originals M2/M3/M5 (3e5d3a3a:supabase/migrations). Whether the live
 -- definitions still match them is unverified; see the check list in the report before applying.
+--
+-- Grants: every function is revoked from public, anon, authenticated and service_role (Supabase's default
+-- privileges give service_role direct EXECUTE on new public functions); only the two private entry points
+-- and the two public wrappers are granted back, to authenticated alone.
 
 create function flowme_private.alpha_read_frame_internal_v2()
 returns jsonb language plpgsql volatile security definer set search_path = ''
@@ -69,7 +73,7 @@ exception
   when others then return '{"ok":false,"reason":"unavailable"}'::jsonb;
 end;
 $$;
-revoke all on function flowme_private.alpha_read_frame_internal_v2() from public, anon, authenticated;
+revoke all on function flowme_private.alpha_read_frame_internal_v2() from public, anon, authenticated, service_role;
 
 -- Tokens only: account and context never leave the database on this path.
 create function flowme_private.alpha_read_probe_v2()
@@ -82,23 +86,23 @@ begin
     pg_catalog.jsonb_build_object('schema', 'flowme-alpha-read-probe/2', 'tokens', frame->'value'->'tokens'));
 end;
 $$;
-revoke all on function flowme_private.alpha_read_probe_v2() from public, anon, authenticated;
+revoke all on function flowme_private.alpha_read_probe_v2() from public, anon, authenticated, service_role;
 grant execute on function flowme_private.alpha_read_probe_v2() to authenticated;
 
 create function flowme_private.alpha_read_full_v2()
 returns jsonb language sql volatile security definer set search_path = ''
 as $$ select flowme_private.alpha_read_frame_internal_v2(); $$;
-revoke all on function flowme_private.alpha_read_full_v2() from public, anon, authenticated;
+revoke all on function flowme_private.alpha_read_full_v2() from public, anon, authenticated, service_role;
 grant execute on function flowme_private.alpha_read_full_v2() to authenticated;
 
 create function public.flowme_alpha_read_probe_v2()
 returns jsonb language sql volatile security invoker set search_path = ''
 as $$ select flowme_private.alpha_read_probe_v2(); $$;
-revoke all on function public.flowme_alpha_read_probe_v2() from public, anon, authenticated;
+revoke all on function public.flowme_alpha_read_probe_v2() from public, anon, authenticated, service_role;
 grant execute on function public.flowme_alpha_read_probe_v2() to authenticated;
 
 create function public.flowme_alpha_read_full_v2()
 returns jsonb language sql volatile security invoker set search_path = ''
 as $$ select flowme_private.alpha_read_full_v2(); $$;
-revoke all on function public.flowme_alpha_read_full_v2() from public, anon, authenticated;
+revoke all on function public.flowme_alpha_read_full_v2() from public, anon, authenticated, service_role;
 grant execute on function public.flowme_alpha_read_full_v2() to authenticated;

@@ -364,9 +364,12 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
     /** Automatic refresh only (egress). Ask for the two read tokens first and keep the confirmed snapshot
      *  when both equal the tokens it was read with. No tokens yet, a pending/draft/held state, changed
      *  tokens or a missing probe RPC is the ordinary full refresh. An expired session stops here and never
-     *  falls back to a full read; an unavailable probe waits for the next tick instead of a second request. */
+     *  falls back to a full read; an unavailable probe waits for the next tick instead of a second request.
+     *  Only a normal state may skip: a failure, a hidden account or any other status takes the full read
+     *  that clears it (Codex review F1). */
     async refreshIfChanged(): Promise<boolean> {
       const read = confirmedRead, port = repository, own = state;
+      if (accountHidden || lastError !== null || !['ready', 'saved', 'same-location', 'cancelled'].includes(status)) return this.refresh();
       if (!port || !own || busy || blocked || own.pending || own.draft || !port.probe || !read || read.port !== port
         || read.confirmed !== own.confirmed || read.references !== (own.references ?? null)
         || retryableRejectedDraft() || retryableNativeHandoff() || retryableRejectedSocialDraft()) return this.refresh();

@@ -35,7 +35,7 @@ function supabase(options: { v2: boolean }) {
   const initial = seed(), server = createAlphaFakeServer([initial]), port = server.connect(server.issueSession(OWNER));
   const context = { schema: 'flowme-alpha-social-context/1', revision: 0, ownActorId: ALIAS, actors: [{ id: ALIAS, name: '확인' }],
     public: { flows: [], versions: [], posts: [], replies: [], reactions: [], proposals: [] } };
-  const calls: Record<string, number> = {}, bytes: Record<string, number> = {}, live = { session: true, loseNextReply: false };
+  const calls: Record<string, number> = {}, bytes: Record<string, number> = {}, live = { session: true, loseNextReply: false, failNextFull: false };
   const account = () => server.exportForBackup(OWNER).account;
   const tokens = () => ({ privateToken: `account-sha256-v2:${sha(account())}`, publicToken: `authorized-context-sha256-v2:${sha(context)}` });
   const reply = (name: string, value: unknown, status = 200) => {
@@ -50,6 +50,7 @@ function supabase(options: { v2: boolean }) {
     if (path === '/rest/v1/rpc/flowme_alpha_social_read_v1') return reply('read-v1', { ok: true, value: { account: account(), context } });
     if (path === `/rest/v1/rpc/${ALPHA_READ_FULL_RPC}` || path === `/rest/v1/rpc/${ALPHA_READ_PROBE_RPC}`) {
       const name = path.endsWith(ALPHA_READ_FULL_RPC) ? 'full-v2' : 'probe-v2';
+      if (name === 'full-v2' && live.failNextFull) { live.failNextFull = false; return reply(name, { message: 'upstream unavailable' }, 503); }
       if (!options.v2) return reply(name, { code: 'PGRST202', details: null, hint: null, message: 'Could not find the function' }, 404);
       return reply(name, { ok: true, value: name === 'full-v2'
         ? { schema: 'flowme-alpha-read-frame/2', tokens: tokens(), snapshot: { account: account(), context } }
@@ -155,4 +156,30 @@ test('the host probes only on its own automatic reads; every other read stays fu
   assert(host.includes('createAlphaHttpRepository(config, session, request, { social: true, readProbe: readProbe === true && !syntheticRuntime })'));
   const page = readFileSync(new URL('../../../../app/alpha/page.tsx', import.meta.url), 'utf8');
   assert(page.includes("readProbe={process.env.FLOWME_ALPHA_READ_PROBE==='v2'}"), 'off unless the deployment sets FLOWME_ALPHA_READ_PROBE=v2');
+});
+
+// Codex review of 7dda62f7 (F1): a probe answered with unchanged tokens while the client was in a failure
+// state returned true and left that state behind; the full read that used to clear it never ran.
+test('a failed full read is not covered by unchanged tokens: the next automatic read is full and clears it', async () => {
+  const backend = supabase({ v2: true }), client = connect(backend);
+  await client.refreshIfChanged(); assert.equal(backend.calls['full-v2'], 1);
+  backend.live.failNextFull = true; assert.equal(await client.refresh(), false, 'the manual check fails');
+  assert.equal(client.snapshot().status, 'recovery-required'); assert.equal(client.snapshot().lastError, 'unavailable');
+  assert.equal(await client.refreshIfChanged(), true);
+  assert.equal(backend.calls['probe-v2'] ?? 0, 0, 'no probe from a failure state');
+  assert.equal(backend.calls['full-v2'], 3, 'the failed read, then one full read');
+  assert.equal(client.snapshot().status, 'ready'); assert.equal(client.snapshot().lastError, null);
+  assert.equal(await client.refreshIfChanged(), true); assert.equal(backend.calls['full-v2'], 3, 'quiet again once it is normal');
+});
+
+test('after an expired session the account comes back only through a full read', async () => {
+  const backend = supabase({ v2: true }), client = connect(backend);
+  await client.refreshIfChanged(); backend.live.session = false;
+  assert.equal(await client.refreshIfChanged(), false); assert.equal(client.snapshot().status, 'session-expired');
+  backend.live.session = true;
+  assert.equal(await client.refreshIfChanged(), true);
+  assert.equal(backend.calls['/rest/v1/rpc/flowme_alpha_read_probe_v2'], 1, 'the expired probe (401) only'); assert.equal(backend.calls['probe-v2'] ?? 0, 0);
+  assert.equal(backend.calls['full-v2'], 2, 'the hidden account is read in full');
+  assert.equal(client.snapshot().status, 'ready');
+  assert.equal(await client.refreshIfChanged(), true); assert.equal(backend.calls['full-v2'], 2); assert.equal(backend.calls['probe-v2'], 1, 'normal again: probe only');
 });
