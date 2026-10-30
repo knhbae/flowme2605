@@ -36,10 +36,10 @@
 
 | 찾는 것 | 지금 있는 곳 | 현재성 |
 | --- | --- | --- |
-| Alpha 운영 구조(supervisor, 터널, 포트, 지우면 안 되는 곳) | supervisor README(10/03), 회차별 controller, 총괄 메모리 | 흩어짐. 런북 없음 → 작성 중 |
+| Alpha 운영 구조(supervisor, 터널, 포트, 지우면 안 되는 곳) | [ops.md](ops.md) | 최신(10/30). 원본은 supervisor README(10/03)·회차별 controller |
 | 배포·롤백 절차 | 회차별 원장 `D:/flowme-alpha-today-classification-20261029-01a168e3/revision4/operations/` | 회차마다 복사됨. 런북에 한 번 정리 |
-| Supabase 함수·테이블·마이그레이션 | #218 브랜치(M2~M7.2), 실제 DB | main에 없음. 자료 구조 문서 없음 → 작성 중 |
-| 계정 자료 형식(문서, 제작 도구 데이터) | 코드 `lib/flow/integrated-poc/`와 실제 DB | 문서 없음. egress 진단에서 크기 내역만 확인 |
+| Supabase 함수·테이블·마이그레이션 | [system.md](system.md), #218 브랜치(M2~M7.2), 실제 DB | 지도는 최신(10/30). 마이그레이션은 DB 33개 중 저장소에 22개만 있음 |
+| 계정 자료 형식(문서, 제작 도구 데이터) | [system.md](system.md) 5절, 코드 `lib/flow/integrated-poc/` | 최신(10/30) |
 | 라벨 뜻(R·S·W·FC·C·P·M) | [glossary.md](glossary.md) | 최신(10/30) |
 
 ## 규칙이 어긋나는 곳
