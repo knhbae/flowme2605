@@ -55,6 +55,35 @@ test('the stored key never holds the account ID; different accounts get differen
   assert.equal(readDevNoticeSeen(storage, ids[1]), true);
 });
 
+test('keys that held the account ID are removed from device and tab storage; W11\'s acknowledgement moves (re-review P2)', () => {
+  const id = '22222222-2222-4222-8222-222222222222', prefix = 'flow:poc:personal-workspace:v1:alpha-m3:dev-notice:';
+  const raw = (storage: Storage) => Array.from({ length: storage.length }, (_, index) => storage.key(index)!).filter(key => key.includes(id));
+  // W11's first build kept the acknowledgement on the device under the ID; N1 keeps it per tab.
+  const deviceStore = device(), tabStore = device();
+  deviceStore.setItem(`${prefix}2026-10-31:${id}`, 'seen'); deviceStore.setItem('flow:other', 'kept');
+  tabStore.setItem(`${prefix}${id}`, 'seen');
+  assert.equal(readDevNoticeSeen(deviceStore, id, DEV_NOTICE_VERSION, tabStore), true);
+  assert.deepEqual([raw(deviceStore), raw(tabStore)], [[], []]);
+  assert.equal(deviceStore.length, 2); assert.equal(deviceStore.getItem('flow:other'), 'kept');
+  assert.equal(readDevNoticeSeen(deviceStore, id), true);
+  // N1's per-tab acknowledgement does not carry over (the device-wide notice shows once), but its key goes too,
+  // from whichever storage holds it.
+  const fresh = device(), tab = device();
+  fresh.setItem(`${prefix}${id}`, 'seen'); tab.setItem(`${prefix}${id}`, 'seen');
+  assert.equal(readDevNoticeSeen(fresh, id, DEV_NOTICE_VERSION, tab), false);
+  assert.deepEqual([raw(fresh), raw(tab), fresh.length, tab.length], [[], [], 0, 0]);
+  // W11's first key under another version, or not 'seen', is removed and not moved.
+  const other = device();
+  other.setItem(`${prefix}2026-10-31:${id}`, 'seen');
+  assert.equal(readDevNoticeSeen(other, id, `${DEV_NOTICE_VERSION}-next`), false);
+  assert.deepEqual([raw(other), other.length], [[], 0]);
+  // A storage that cannot write keeps the old key and shows the notice.
+  const stuck = device(); stuck.setItem(`${prefix}2026-10-31:${id}`, 'seen');
+  const readOnly = { getItem: stuck.getItem, removeItem: () => { throw Error('blocked'); }, setItem: () => { throw Error('quota'); } };
+  assert.equal(readDevNoticeSeen(readOnly, id), false);
+  assert.equal(stuck.getItem(`${prefix}2026-10-31:${id}`), 'seen');
+});
+
 test('unusable storage keeps the notice showing', () => {
   const broken = { getItem: () => { throw Error('blocked'); }, setItem: () => { throw Error('quota'); } };
   assert.equal(readDevNoticeSeen(broken, 'owner-a'), false);
@@ -66,4 +95,7 @@ test('unusable storage keeps the notice showing', () => {
 test('the host stores it in device storage, not tab storage', () => {
   const host = readFileSync(new URL('../../../components/flow/integrated-poc/AlphaWorkspace.tsx', import.meta.url), 'utf8');
   assert.match(host, /const devNoticeStorage = \(\) => \{ try \{ return syntheticRuntime\?\.documentStorage \?\? localStorage; \} catch \{ return undefined; \} \};/);
+  // Reading also clears N1's per-tab key from tab storage.
+  assert.match(host, /const devNoticeTabStorage = \(\) => \{ try \{ return syntheticRuntime\?\.tabStorage \?\? sessionStorage; \} catch \{ return undefined; \} \};/);
+  assert.match(host, /readDevNoticeSeen\(devNoticeStorage\(\), session\.userId, DEV_NOTICE_VERSION, devNoticeTabStorage\(\)\)/);
 });

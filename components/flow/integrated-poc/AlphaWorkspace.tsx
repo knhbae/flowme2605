@@ -31,7 +31,7 @@ import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
 import { textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { ProgramSpace, useProgramMobileWritingChrome, type ProgramMainTab } from './ProgramSpace';
 import { programSourceNavigationReady } from '@/lib/flow/integrated-poc/pending-source-navigation';
-import { DEV_NOTICE_TEXT, markDevNoticeSeen, readDevNoticeSeen } from '@/lib/flow/integrated-poc/dev-notice';
+import { DEV_NOTICE_TEXT, DEV_NOTICE_VERSION, markDevNoticeSeen, readDevNoticeSeen } from '@/lib/flow/integrated-poc/dev-notice';
 import { ProgramLegacyWorkspace } from './ProgramLegacyWorkspace';
 import { ProgramPrivateOutput } from './ProgramPrivateOutput';
 import { ProgramCreatorWorkspace } from './ProgramCreatorWorkspace';
@@ -166,7 +166,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const [devNoticeSeen, setDevNoticeSeen] = useState(false);
   // W11: device storage, so the acknowledgement holds for every tab of this device and account.
   const devNoticeStorage = () => { try { return syntheticRuntime?.documentStorage ?? localStorage; } catch { return undefined; } };
-  useEffect(() => { setDevNoticeSeen(readDevNoticeSeen(devNoticeStorage(), session.userId)); }, [session.userId]);
+  const devNoticeTabStorage = () => { try { return syntheticRuntime?.tabStorage ?? sessionStorage; } catch { return undefined; } };
+  useEffect(() => { setDevNoticeSeen(readDevNoticeSeen(devNoticeStorage(), session.userId, DEV_NOTICE_VERSION, devNoticeTabStorage())); }, [session.userId]);
   const openLatestLock = useRef<(() => void) | null>(null);
   // Release the old owner only after the replacement presentation commits, or on unmount.
   useEffect(() => {

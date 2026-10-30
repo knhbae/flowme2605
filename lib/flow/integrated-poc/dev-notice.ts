@@ -19,9 +19,35 @@ function accountKey(ownerId: string): string {
   }).join('');
 }
 const key = (ownerId: string, version: string) => `${KEY_PREFIX}${version}:${accountKey(ownerId)}`;
+/** Keys of earlier builds that held the account ID: N1's per-tab key and W11's first device key. */
+const FIRST_VERSION = '2026-10-31';
+const legacyKeys = (ownerId: string) => ({ tab: `${KEY_PREFIX}${ownerId}`, first: `${KEY_PREFIX}${FIRST_VERSION}:${ownerId}` });
 
-export function readDevNoticeSeen(storage: Pick<Storage, 'getItem'> | undefined, ownerId: string, version = DEV_NOTICE_VERSION): boolean {
-  try { return storage?.getItem(key(ownerId, version)) === 'seen'; } catch { return false; }
+type DevNoticeStorage = Pick<Storage, 'getItem'> & Partial<Pick<Storage, 'setItem' | 'removeItem'>>;
+
+/** Reading also clears the keys that held the account ID, from device storage and from tab storage (N1 kept it
+ *  per tab). W11's first acknowledgement, for its version, moves to the digest key before its key goes; N1's
+ *  per-tab one does not carry over, so the device-wide notice shows once, as for a raised version. A key goes
+ *  only once its acknowledgement is safe; a storage failure leaves it and keeps the notice as it was. */
+export function readDevNoticeSeen(storage: DevNoticeStorage | undefined, ownerId: string, version = DEV_NOTICE_VERSION, tabStorage?: DevNoticeStorage): boolean {
+  let seen: boolean;
+  try { seen = storage?.getItem(key(ownerId, version)) === 'seen'; } catch { return false; }
+  const old = legacyKeys(ownerId);
+  for (const store of [storage, tabStorage]) {
+    if (!store) continue;
+    try {
+      const first = store.getItem(old.first);
+      if (first !== null) {
+        if (!seen && first === 'seen' && version === FIRST_VERSION) {
+          if (!storage?.setItem) continue;
+          storage.setItem(key(ownerId, version), 'seen'); seen = true;
+        }
+        store.removeItem?.(old.first);
+      }
+      if (store.getItem(old.tab) !== null) store.removeItem?.(old.tab);
+    } catch { /* The old key stays. */ }
+  }
+  return seen;
 }
 
 /** Returns whether the acknowledgement was stored; callers hide the notice only when it was. */
