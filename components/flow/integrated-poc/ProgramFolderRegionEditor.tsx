@@ -33,19 +33,20 @@ export interface ProgramFolderRegionPort {
   /** Put the caret in a saved line of an editable region (at `column`, else the line end) and show it. */
   revealLine?(lineId: string, column?: number): boolean;
 }
-/** A context line drawn like the body: no raw markers ("[2026-10-30]", "- /", "- [ ]") and no line numbers. */
+/** A context line drawn like the body: no raw markers ("[2026-10-30]", "- /", "- [ ]") and no line numbers.
+ *  Only a date line, a task's 날짜 property and a folder line's own tag are drawn differently; what the user
+ *  wrote (titles, URLs, notes, fenced code) stays as written, as in the body. */
 export function regionContextText(row: Pick<TextRow, 'kind' | 'text' | 'date' | 'groupDate' | 'title' | 'done' | 'scopeTitle'>): string {
-  const text = row.text.replace(/<!--[\s\S]*?-->/g, '').trim(), item = text.replace(/^- (\[[^\]]*\] ?)?/, '');
-  const dates = (value: string) => value.replace(/\[?(\d{4}-\d{2}-\d{2})\]?/g, (_, date: string) => programCalendarDate(date, ''));
+  const text = row.text.trim(), item = text.replace(/^- (\[[^\]]*\] ?)?/, '');
   switch (row.kind) {
-    case 'date': return dates(row.date ?? row.groupDate ?? text);
-    case 'scope': return row.scopeTitle ?? text.replace(/^- \//, '');
-    case 'task': case 'subcheck': return `${row.done ? '☑' : '☐'} ${dates(row.title ?? item)}`;
-    case 'property': return dates(item);
+    case 'date': { const date = row.date ?? row.groupDate; return date ? programCalendarDate(date, '') : text === '[미정]' ? '날짜 미정' : text; }
+    case 'scope': return row.scopeTitle ?? text.replace(/ +<!-- flowme-folder:v1 id=[^\s<>]+ -->$/, '').replace(/^- \//, '');
+    case 'task': case 'subcheck': return `${row.done ? '☑' : '☐'} ${row.title ?? item}`;
+    case 'property': { const date = /^날짜:\s*(\d{4}-\d{2}-\d{2})$/.exec(item); return date ? `날짜: ${programCalendarDate(date[1], '')}` : item; }
     case 'heading': return text.replace(/^#+\s*/, '');
     case 'blank': return '';
     case 'fence': return text.replace(/^`{3,}.*$/, '');
-    default: return dates(text.startsWith('- ') ? `• ${item}` : text);
+    default: return text.startsWith('- ') ? `• ${item}` : text;
   }
 }
 
