@@ -50,3 +50,6 @@
 .actionBox{position:fixed;left:0;right:0;top:auto;bottom:calc(76px + env(safe-area-inset-bottom));z-index:30;display:flex;align-items:center;height:64px;padding:8px 16px;border:0;border-top:1px solid #d7e1db;border-radius:0}.actionMeta{display:none}
 .importSheet{width:100%;max-width:100%;margin:auto 0 0;border-radius:16px 16px 0 0;max-height:calc(100dvh - 24px)}}
 .detailHeader h1:focus:not(:focus-visible){outline:none}
+.taskRows>li{padding:4px 0}.taskLine{display:flex;align-items:center;gap:4px}.taskLine>.taskRow{flex:1 1 auto;min-width:0}
+.taskToggle{flex:0 0 44px;width:44px;min-height:44px!important;padding:0;border:0!important;background:none!important;color:#3d524d;font-size:16px;line-height:1}
+.taskRows>li>.itemDetails{padding:4px 0 8px}

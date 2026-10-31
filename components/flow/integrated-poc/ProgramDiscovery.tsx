@@ -145,6 +145,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   // Per-version view toggles; they are presentation only and never stored.
   const [summaryOpen, setSummaryOpen] = useState<string | null>(null);
   const [choosingVersion, setChoosingVersion] = useState<string | null>(null);
+  const [openItems, setOpenItems] = useState<string[]>([]);
   const [outputVersion, setOutputVersion] = useState<string | null>(null);
   // FC1: the search filters only after a Hangul composition ends (as the R8b document sheet does).
   const [queryDraft, setQueryDraft] = useState(state.query); const composing = useRef(false);
@@ -194,9 +195,12 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   }, [selectedOutputReturn, outputBase, version?.id]);
   useEffect(() => {
     if (!selectedItemId || !version || selectedOutputReturn && !returnedDetail) return;
+    // A link to one item opens its method and criteria, as the old <details> did.
+    const key = `${version.id}:${selectedItemId}`;
+    setOpenItems(prior => prior.includes(key) ? prior : [...prior, key]);
     const frame = requestAnimationFrame(() => {
       const target = document.getElementById(`program-public-item-${encodeURIComponent(version.id)}-${encodeURIComponent(selectedItemId)}`);
-      if (target) { target.querySelector('details')?.setAttribute('open', ''); target.focus({ preventScroll: true }); target.scrollIntoView({ block: 'center', behavior: 'instant' }); }
+      if (target) { target.focus({ preventScroll: true }); target.scrollIntoView({ block: 'center', behavior: 'instant' }); }
     });
     return () => cancelAnimationFrame(frame);
   }, [version?.id, selectedItemId, selectedOutputReturn, outputBase]);
@@ -225,7 +229,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   const output = version && outputOptions && !flow?.archived ? makeProgramOutput(version, { ...outputOptions, ...(outputBase ? {returnContext:{baseUrl:outputBase}} : {}) }, new Date()) : undefined;
   const sourceOnHold = !!flow && isPublicCatalogFlowOnHold(flow.id);
   const canUseVersion = version && outputOptions && !flow?.archived && !sourceOnHold && useItemIds.length > 0
-    ? programImportCheckPasses(makeProgramOutput(version, { ...outputOptions, recurrenceWindow: undefined, format: 'txt' }, new Date())) : false;
+    ? programImportCheckPasses(useItemIds, itemIds => makeProgramOutput(version, { ...outputOptions, selectedItemIds: itemIds, recurrenceWindow: undefined, format: 'txt' }, new Date())) : false;
   const knownSources = flows.flatMap(row => {
     const current = data.public.versions.find(candidate => candidate.id === row.currentVersionId);
     return current?.source.url ? [{ url: current.source.url, version: current }] : [];
@@ -329,9 +333,14 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
             const classifiedSource = item.sourceUrl ? classifyProgramUrl(item.sourceUrl, []) : null;
             const sourceUrl = classifiedSource && classifiedSource.kind !== 'invalid' ? item.sourceUrl!.trim() : null;
             const row = <><span className={styles.taskNumber}>{index + 1}</span><span className={styles.taskTitle}>{item.title}</span><span className={styles.taskDate}>{programItemDateLabel(item, detail.anchor || null)}</span></>;
+            // UX 2절 8: ▸ on the row opens the method, criteria and item source; the row itself stays one line.
+            const detailsKey = `${version.id}:${item.id}`, detailsId = `${uid}-item-${index}`, open = openItems.includes(detailsKey);
+            const hasDetails = !!(item.description || item.completionCriteria || item.subchecks.length > 0 || sourceUrl);
             return <li key={item.id} id={`program-public-item-${encodeURIComponent(version.id)}-${encodeURIComponent(item.id)}`} tabIndex={-1} aria-current={selectedItemId === item.id ? 'location' : undefined}>
-              {choosing ? <label className={styles.taskRow}><input type="checkbox" disabled={pending} checked={detail.selectedItemIds.includes(item.id)} onChange={event => patchDetail({ selectedItemIds: event.target.checked ? [...detail.selectedItemIds, item.id] : detail.selectedItemIds.filter(id => id !== item.id) })} />{row}</label> : <div className={styles.taskRow}>{row}</div>}
-              {(item.description || item.completionCriteria || item.subchecks.length > 0 || sourceUrl) && <details className={styles.itemDetails}><summary>방법과 완료 기준</summary>{item.description && <p className={styles.pre}>{item.description}</p>}{sourceUrl && <p><a href={sourceUrl} target="_blank" rel="noreferrer noopener" aria-label={`${item.title} 원문 열기`}>항목 원문 열기 ↗</a></p>}{item.completionCriteria && <p><strong>완료 기준</strong><br />{item.completionCriteria}</p>}{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</details>}</li>;
+              <div className={styles.taskLine}>{choosing ? <label className={styles.taskRow}><input type="checkbox" disabled={pending} checked={detail.selectedItemIds.includes(item.id)} onChange={event => patchDetail({ selectedItemIds: event.target.checked ? [...detail.selectedItemIds, item.id] : detail.selectedItemIds.filter(id => id !== item.id) })} />{row}</label> : <div className={styles.taskRow}>{row}</div>}
+                {hasDetails && <button type="button" className={styles.taskToggle} aria-expanded={open} aria-controls={detailsId} aria-label={`${item.title} 방법과 완료 기준 ${open ? '접기' : '펼치기'}`}
+                  onClick={() => setOpenItems(prior => open ? prior.filter(key => key !== detailsKey) : [...prior, detailsKey])}>{open ? '▾' : '▸'}</button>}</div>
+              {hasDetails && open && <div id={detailsId} className={styles.itemDetails}>{item.description && <p className={styles.pre}>{item.description}</p>}{sourceUrl && <p><a href={sourceUrl} target="_blank" rel="noreferrer noopener" aria-label={`${item.title} 원문 열기`}>항목 원문 열기 ↗</a></p>}{item.completionCriteria && <p><strong>완료 기준</strong><br />{item.completionCriteria}</p>}{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</div>}</li>;
           })}</ol>
         </section>
         {outputOpen && !flow.archived && <section className={styles.outputSection} aria-labelledby={`${uid}-output`}><h2 id={`${uid}-output`}>내 도구로 받기</h2>

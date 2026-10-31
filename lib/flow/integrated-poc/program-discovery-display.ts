@@ -97,10 +97,16 @@ export function programVersionUsesAnchor(version: Pick<ProgramPublicVersion, 'it
     && (item.schedule.kind === 'relative' || item.schedule.kind === 'recurring' && item.schedule.start.kind === 'relative'));
 }
 
+type ProgramImportCheck = { ok: true } | { ok: false; reason: string };
 /** The output check also guards the import, but an import may leave the anchor empty: its relative dates
- *  then go in as 미정 (FC-SPEC FC2 sheet, "비워 두면 날짜 미정으로 들어갑니다"). */
-export function programImportCheckPasses(check: { ok: true } | { ok: false; reason: string }): boolean {
-  return check.ok || check.reason === 'missing-anchor';
+ *  then go in as 미정 (FC-SPEC FC2 sheet, "비워 두면 날짜 미정으로 들어갑니다"). The check stops at its first
+ *  failure, so when the whole selection stops at a missing anchor every item is checked on its own: an
+ *  anchor is the only thing an item may lack, and any other failure (a recurrence start past its end, say)
+ *  still blocks the import whatever the item order. */
+export function programImportCheckPasses(itemIds: readonly string[], check: (itemIds: string[]) => ProgramImportCheck): boolean {
+  const whole = check([...itemIds]);
+  if (whole.ok || whole.reason !== 'missing-anchor') return whole.ok;
+  return itemIds.every(id => { const one = check([id]); return one.ok || one.reason === 'missing-anchor'; });
 }
 export const PROGRAM_IMPORT_GENERIC_FAILURE = '저장하지 못했습니다. 입력과 선택은 유지됩니다. 다시 시도해 주세요.';
 /** D1 failure texts for the import sheet. A reason only counts when the screen shows its cause: 'conflict' is the

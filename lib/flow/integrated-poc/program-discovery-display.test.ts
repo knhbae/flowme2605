@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { ProgramPrivateSpace, ProgramPublicFlow, ProgramPublicItem, ProgramPublicVersion } from './contract';
+import { makeProgramOutput } from './output';
 import {
   programFlowBadge, programFlowCardLines, programImportArrivalNotice, programImportCheckPasses, programImportFailure, programItemDateLabel, programObjectParticle, programLiveCopies, programLiveCopy,
   programSortFlowsByRecent, programSourceLine, programVersionScheduleShape, programVersionUsesAnchor, PROGRAM_IMPORT_GENERIC_FAILURE,
@@ -84,8 +85,22 @@ test('failure reasons map to their D1 texts only when the screen shows the cause
   assert.deepEqual(['짐 싸기', '연말정산', '시험 2주', 'Plan A', '이사 준비 '].map(programObjectParticle), ['를', '을', '를', '을(를)', '를']);
 });
 
-test('an empty anchor does not block the import; other output failures still do', () => {
-  assert.equal(programImportCheckPasses({ ok: true }), true);
-  assert.equal(programImportCheckPasses({ ok: false, reason: 'missing-anchor' }), true);
-  for (const reason of ['invalid-version', 'unsupported-schedule', 'no-items', 'invalid-date']) assert.equal(programImportCheckPasses({ ok: false, reason }), false);
+test('an empty anchor does not block the import; every other failure still does, whatever the item order', () => {
+  // FC12 review P2: makeProgramOutput stops at its first failure, so a missing anchor first must not hide a later item's error.
+  const until: ProgramPublicItem['schedule'] = { kind: 'recurring', version: 1, rule: { version: 1, semantics: 'authoring-v1', frequency: 'daily', interval: 1, end: { mode: 'until', date: '2026-11-30' } },
+    start: { kind: 'undated' }, time: null, timeZone: null };
+  const relative = item('rel', { kind: 'relative', days: -3 }), series = item('series', until), plain = item('plain', { kind: 'undated' });
+  const check = (items: ProgramPublicItem[], starts: Record<string, string>) => {
+    const target = version(items);
+    return programImportCheckPasses(items.map(row => row.id), ids => makeProgramOutput(target, { selectedItemIds: ids, anchor: null, format: 'txt', recurrenceStarts: starts }, new Date('2026-10-31T00:00:00.000Z')));
+  };
+  // A start after the series end is blocked in both orders; a start inside the series passes in both orders.
+  assert.equal(check([relative, series], { series: '2026-12-01' }), false);
+  assert.equal(check([series, relative], { series: '2026-12-01' }), false);
+  assert.equal(check([relative, series], { series: '2026-11-01' }), true);
+  assert.equal(check([series, relative], { series: '2026-11-01' }), true);
+  // Anchor-only gaps pass; with no anchor item the first failure is the answer.
+  assert.equal(check([relative, plain], {}), true);
+  assert.equal(programImportCheckPasses(['a'], () => ({ ok: false, reason: 'invalid-version' })), false);
+  assert.equal(programImportCheckPasses(['a', 'b'], ids => ids.length > 1 ? { ok: false, reason: 'missing-anchor' } : ids[0] === 'a' ? { ok: false, reason: 'missing-anchor' } : { ok: false, reason: 'unsupported-schedule' }), false);
 });
