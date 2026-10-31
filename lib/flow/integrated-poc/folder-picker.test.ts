@@ -6,6 +6,12 @@ import { readProgramFolderSlot } from './folder-link-slot';
 import { createProgramTextDraft } from './program-text-draft';
 import { createProgramDocumentInput } from './program-document-input';
 import { mergeProgramTextWorkspace } from './text-merge';
+import { createProgramData } from './program-data';
+import { programTextTransition } from './program-text-transition';
+import { programPreservesLockedDocumentContent } from './reference-execution-guard';
+import { programPreservesSeriesMetadata } from './recurrence-target';
+import { programPreservesLegacyQualityHold } from './legacy-map-review';
+import { programPreservesLegacyPlanExcluded } from './program-legacy-plan-target';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 const cycleFactory = require('./ime-enter-cycle.cjs');
 
@@ -326,5 +332,55 @@ test('later input or another document change never gains folder undo authority f
     const latest = draft.getState().working;
     assert.equal(draft.canUndoFolderMove(), false); assert.equal(draft.undoFolderMove(), false);
     assert.equal(draft.getState().working, latest);
+  }
+});
+test('replacement preserves an existing binding slot among other bindings and equals the production merge', () => {
+  const source = fixture(), doc = M.getDocument(source, 'a')!, target = source.folders.find(folder => folder.title === '회의')!;
+  const binding = source.bindings.find(row => row.docId === 'a' && row.lineId === doc.lines[1].id)!;
+  const ordered = { ...source, bindings: [binding, ...source.bindings.filter(row => row !== binding)] };
+  const next = planFolderPickerLink(ordered, 'a', binding.lineId, target.id);
+  assert.equal(next.problem, null);
+  assert.deepEqual(next.state.bindings.map(row => [row.docId, row.lineId]), ordered.bindings.map(row => [row.docId, row.lineId]));
+  assert.deepEqual(mergeProgramTextWorkspace(ordered, next.state, ordered), next.state);
+  assert.deepEqual(next.state.progressRecords, ordered.progressRecords);
+  assert.deepEqual(M.getDocument(next.state, 'b'), M.getDocument(ordered, 'b'));
+});
+test('a normal production ACK preserves the ordered move undo; another document edit still refuses undo', async () => {
+  for (const external of [false, true]) {
+    let source = fixture(); const task = M.getDocument(source, 'a')!.lines[2].id;
+    source = M.recordProgress(source, task, '2026-10-31', 30);
+    const binding = source.bindings.find(row => row.docId === 'a' && row.kind === 'scope')!;
+    source = { ...source, bindings: [binding, ...source.bindings.filter(row => row !== binding)] };
+    let data = createProgramData(); const actorId = data.activeActorId;
+    data.spaces[actorId].text = source; delete data.spaces[actorId].personalAuthoring;
+    const input = createProgramDocumentInput(source, 'a'); let acknowledgements = 0;
+    const preserved = (next: TextWorkspaceState) => programPreservesLockedDocumentContent(data.spaces[actorId], next)
+      && programPreservesSeriesMetadata(data.spaces[actorId], next) && programPreservesLegacyQualityHold(data.spaces[actorId], next)
+      && programPreservesLegacyPlanExcluded(data.spaces[actorId], next);
+    let draft: ReturnType<typeof createProgramTextDraft>;
+    draft = createProgramTextDraft(input.initial, 'a', async (next, _label, options) => {
+      const before = data.spaces[actorId].text, result = programTextTransition(data, { actorId, documentId: 'a', expected: options!.expectedWorkspace!, next });
+      assert.equal(result.ok, true); if (!result.ok) return false;
+      data = result.data;
+      assert.equal(draft.acceptConfirmedSave(before, data.spaces[actorId].text), true); acknowledgements++; return true;
+    }, () => {}, preserved, input, true);
+    assert.equal(draft.updateRaw(draft.getState().raw.replace('- /OLD', '- /회'), '', { inputType: 'insertText', folderHold: [1] }), true);
+    const before = draft.getState().working, lineId = M.getDocument(before, 'a')!.lines[1].id, target = before.folders.find(folder => folder.title === '회의')!;
+    const chosen = planFolderPickerLink(before, 'a', lineId, target.id);
+    assert.equal(draft.apply(chosen.state, '선택', undefined, { lineId, scopeId: target.id }), true);
+    assert.equal(await draft.save(), true); assert.equal(acknowledgements, 1);
+    assert.equal(draft.synchronize(data.spaces[actorId].text), false, 'the host readback is the exact submitted text');
+    assert.equal(draft.canUndoFolderMove(), true);
+    if (external) {
+      const remote = M.editTextResult(data.spaces[actorId].text, 'b', M.raw(M.getDocument(source, 'b')) + '\n원격 변경', { folderText: true }).state;
+      assert.equal(draft.synchronize(remote), true); assert.equal(draft.canUndoFolderMove(), false);
+      assert.equal(draft.undoFolderMove(), false); assert.deepEqual(draft.getState().working, remote);
+    } else {
+      assert.equal(draft.undoFolderMove(), true); assert.deepEqual(draft.getState().working, source);
+      assert.equal(await draft.save(), true); assert.equal(acknowledgements, 2);
+      assert.deepEqual(data.spaces[actorId].text, source);
+      assert.deepEqual(data.spaces[actorId].text.progressRecords, source.progressRecords);
+      assert.deepEqual(M.getDocument(data.spaces[actorId].text, 'b'), M.getDocument(source, 'b'));
+    }
   }
 });

@@ -105,10 +105,14 @@ export function linkProgramFolder(state: TextWorkspaceState, docId: string, line
     if (!folder || !source) return state;
     const text = `${/^ */.exec(source.text)![0]}- /${folder.title}`;
     if (source.text === text && state.bindings.some(entry => entry.docId === docId && entry.lineId === source.id && entry.kind === 'scope' && entry.scopeId === folder.id)) return state;
+    const bindingIndex = state.bindings.findIndex(entry => entry.docId === docId && entry.lineId === source.id);
+    const binding = { kind: 'scope' as const, docId, lineId: source.id, scopeId: folder.id };
     const next = { ...state, documents: state.documents.map(entry => entry.id === docId ? { ...entry,
       lines: entry.lines.map(line => line.id === source.id ? { ...line, text } : line) } : entry),
-      bindings: [...state.bindings.filter(entry => !(entry.docId === docId && entry.lineId === source.id)),
-        { kind: 'scope' as const, docId, lineId: source.id, scopeId: folder.id }] };
+      // The host merge keeps existing binding keys in place. Preserve that
+      // order so its confirmed snapshot is the exact submitted move, too.
+      bindings: bindingIndex < 0 ? [...state.bindings, binding]
+        : state.bindings.map((entry, index) => index === bindingIndex ? binding : entry) };
     return M.validate(next) ? next : state;
   }
   const next = 'scopeId' in target ? M.attachScope(slot.state, docId, slot.index, target.scopeId) : M.createFolderAt(slot.state, docId, slot.index, target.title.trim());
