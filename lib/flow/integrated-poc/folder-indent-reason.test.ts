@@ -78,10 +78,12 @@ test('an indent over a linked folder line, alone or with other lines, is the cas
 
 test('the editor skips such an indent in canApplyIndent and keeps Tab in the text', () => {
   const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
-  assert.match(editor, /if \(state\.raw === textArea\(\)\?\.value && indentTouchesLinkedFolder\(state\.working, props\.docId, details\.startLine, details\.endLine\)\) \{\r?\n\s*folderIndentSkipped\.current = true; setMessage\(FOLDER_INDENT_NOTICE\); return false;/);
+  // S5: the bar's own notice stays quiet for this one (kind 'folder'); the folder notice says it.
+  assert.match(editor, /if \(state\.raw === textArea\(\)\?\.value && indentTouchesLinkedFolder\(state\.working, props\.docId, details\.startLine, details\.endLine\)\) \{\r?\n\s*folderIndentSkipped\.current = true; indentRefusal\.current = \{ kind: 'folder' \}; setMessage\(FOLDER_INDENT_NOTICE\); return false;/);
   assert.match(editor, /onKeyDown=\{event => \{ if \(event\.key === 'Tab' && folderIndentSkipped\.current\) event\.preventDefault\(\); folderIndentSkipped\.current = false; \}\}/);
   // The bar and a held press reach the same check through the native editor's indent.
-  assert.match(editor, /\} else target\.instance\.indent\(action === 'outdent'\);/);
+  assert.match(editor, /if \(!target\.instance\.indent\(action === 'outdent'\)\) explainIndent\(action, target\.area\);/);
+  assert.match(editor, /if \(recorded\?\.kind === 'folder'\) return;/);
   const vendor = readFileSync(new URL('./vendor/text-editor.cjs', import.meta.url), 'utf8');
   assert.match(vendor, /if \(typeof config\.canApplyIndent === 'function' && config\.canApplyIndent\(plan\.nextRaw, intent\) !== true\)/);
 });
