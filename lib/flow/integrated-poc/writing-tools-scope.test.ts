@@ -123,7 +123,7 @@ test('a document owns personal authoring when it is a Flow, a Flow start, or has
 });
 
 test('the writing bar keeps its contract: order, never dimmed by composition or saves, focus kept, presses held', () => {
-  const { source } = component('ProgramTextEditor.tsx');
+  const { source, tree } = component('ProgramTextEditor.tsx');
   const between = (from: string, to: string) => { const start = source.indexOf(from), stop = source.indexOf(to, start); assert(start > 0 && stop > start, from); return source.slice(start, stop); };
   const buttons = between('function barButtons(', '\n  }');
   const order = ["barButton('task'", "barButton('outdent'", "barButton('indent'", "barButton('enter'", "barButton('menu'"].map(token => buttons.indexOf(token));
@@ -134,7 +134,15 @@ test('the writing bar keeps its contract: order, never dimmed by composition or 
   assert(source.includes('const busy = composingRef.current || !!draftRef.current?.getState().saving && !indentsNow(action);')
     && source.includes('barHold.press(action, busy, area ? writingBarTarget(area, area.value, area.selectionStart, settled) : null)'));
   assert(between('function runBar(', '\n  }').includes('target.instance.enter(true)'));
-  assert(/const writingBar = <div ref=\{barRef\} className=\{styles\.writingBar\} role="toolbar" aria-label="쓰기 도구" data-editor-tools>/.test(source));
+  const bars = find(tree, (node): node is ts.VariableDeclaration => ts.isVariableDeclaration(node) && node.name.getText(tree) === 'writingBar');
+  assert.equal(bars.length, 1);
+  const bar = bars[0].initializer!; assert(ts.isJsxElement(bar));
+  assert.equal(bar.openingElement.tagName.getText(tree), 'div');
+  const attributes = bar.openingElement.attributes.properties.map(attribute => attribute.getText(tree));
+  assert.deepEqual(attributes.slice(0, 5), ['ref={barRef}', 'className={styles.writingBar}', 'role="toolbar"', 'aria-label="쓰기 도구"', 'data-editor-tools']);
+  assert.equal(attributes.length, 7);
+  assert.equal(attributes[5], "data-folder-picker={picker?.phone ? 'true' : undefined}");
+  assert.equal(attributes[6], 'style={picker?.phone && picker.barHeight > 0 ? { height: picker.barHeight, minHeight: picker.barHeight } : undefined}');
   // Under the body, or right after the folder region being edited.
   assert(source.includes('{props.authoringMode && !folderView && writingBar}') && source.includes('afterActive={props.authoringMode ? writingBar : undefined}'));
   assert(source.includes("{props.authoringMode && barButtons('toolbar')}"));

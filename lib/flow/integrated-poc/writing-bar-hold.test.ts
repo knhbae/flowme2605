@@ -6,6 +6,7 @@ import { createWritingBarHold, folderBarLine, heldTargetVerdict, writingBarLine,
 import { planProgramRegionEdit, readProgramFolderRegions } from './folder-document-regions';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 import { programBarDropNotice } from './bar-indent-notice';
+import { createFolderPickerHold } from './folder-picker';
 
 // S3 review fixes: a held press runs only where it was aimed, folder regions offer only what their
 // check accepts, and the folder region being edited ends above the bar. The component functions
@@ -222,10 +223,11 @@ test('IME end order: the final insertText right after compositionend keeps the h
     && node.arguments[0].getText(tree).includes('composedJustNow'));
   const listeners = new Map<string, (event: unknown) => void>(), timers: (() => void)[] = [], messages: string[] = [];
   const root = { addEventListener: (type: string, listener: (event: unknown) => void) => listeners.set(type, listener), removeEventListener: () => {}, contains: () => true };
-  const barHold = createWritingBarHold<WritingBarTarget>(), composing = { current: false }, anchor = { current: null as unknown };
+  const barHold = createWritingBarHold<WritingBarTarget>(), pickerHold = createFolderPickerHold(), composing = { current: false }, anchor = { current: null as unknown };
   class FakeArea { selectionStart = 7; }
   evaluate<() => void>((effect as ts.CallExpression).arguments[0].getText(tree), {
-    hostRef: { current: { closest: () => root } }, barHold, setHeldBar: () => {}, composingRef: composing, compositionAnchorRef: anchor,
+    hostRef: { current: { closest: () => root } }, barHold, pickerHold, setPickerHeld: () => {}, queueMicrotask: (callback: () => void) => callback(),
+    setHeldBar: () => {}, composingRef: composing, compositionAnchorRef: anchor,
     setMessage: (text: string) => messages.push(text), programBarDropNotice, Node: class {},
     HTMLTextAreaElement: FakeArea, setTimeout: (callback: () => void) => { timers.push(callback); return timers.length; }, clearTimeout: () => {},
   })();
@@ -234,6 +236,7 @@ test('IME end order: the final insertText right after compositionend keeps the h
   const area = new FakeArea();
   listeners.get('compositionstart')!({ target: area });
   assert.deepEqual(anchor.current, { area, offset: 7 });
+  assert.equal(pickerHold.pending(), null, 'ordinary bar interaction has no picker intent');
   barHold.press('enter', true, null);
   composing.current = true; input('insertCompositionText'); input('insertText');
   composing.current = false; listeners.get('compositionend')!({});

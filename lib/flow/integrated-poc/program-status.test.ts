@@ -61,7 +61,21 @@ test('wiring: Alpha gives the note editor its status by context; the editor draw
   assert(/\{serverView \? <div className=\{styles\.statusSlot\} data-warn=\{statusWarn \|\| undefined\}>/.test(editorSource));
   assert(editorSource.includes('{props.noteStatus && <div className={styles.noteStatus}>{props.noteStatus}</div>}'));
   assert(editorSource.includes('{serverView?.extras && <div className={styles.serverExtras}>{serverView.extras}</div>}'));
-  assert(editorSource.includes("{barButtons('bar')}{barStatusSlot()}</div>;"));
+  // W16 replaces the phone bar only while its picker is open. Its ordinary
+  // branch still owns exactly the original buttons and the single status slot.
+  const tree = ts.createSourceFile('ProgramTextEditor.tsx', editorSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const bars: ts.VariableDeclaration[] = [];
+  const visit = (node: ts.Node) => { if (ts.isVariableDeclaration(node) && node.name.getText(tree) === 'writingBar') bars.push(node); ts.forEachChild(node, visit); };
+  visit(tree); assert.equal(bars.length, 1);
+  const bar = bars[0].initializer!; assert(ts.isJsxElement(bar));
+  const content = bar.children.filter(ts.isJsxExpression).map(node => node.expression);
+  assert.equal(content.length, 1);
+  const branch = content[0]!; assert(ts.isConditionalExpression(branch));
+  assert.equal(branch.condition.getText(tree), 'picker?.phone');
+  assert(ts.isJsxFragment(branch.whenFalse));
+  assert.deepEqual(branch.whenFalse.children.filter(ts.isJsxExpression).map(node => node.expression?.getText(tree)), ["barButtons('bar')", 'barStatusSlot()']);
+  assert(ts.isJsxFragment(branch.whenTrue));
+  assert(!branch.whenTrue.getText(tree).includes('barStatusSlot()'));
   // The host still builds the same composite node for today, 분류 and the no-document screen.
   assert(alpha.includes('const serverStatus = <div className={styles.statusRow}>') && alpha.includes('{serverStatusMain}{serverStatusExtras}'));
   assert(alpha.includes('noteStatus={usesNoteChrome ? serverStatus : undefined}'));
