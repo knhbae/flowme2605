@@ -48,6 +48,22 @@ export function readFolderPickerCommand(state: TextWorkspaceState, docId: string
   return doc && M.raw(doc) === raw && line && doc.lines[line.index]?.id === lineId ? line : null;
 }
 
+export type FolderPickerCompositionOwner = { controller: object; surface: object; documentId: string; lineId: string; raw: string; caret: number };
+/** Native composition is published to the model only at compositionend. Permit
+ * that gap solely within the original slash line, never across a new owner. */
+export function readFolderPickerCompositionLine(owner: FolderPickerCompositionOwner | null, now: {
+  controller: object; surface: object; documentId: string; lineId: string | null; committedRaw: string; raw: string;
+  caret: number; end: number; composing: boolean; active: boolean; focused: boolean; editable: boolean; connected: boolean;
+}): FolderPickerLine | null {
+  if (!owner || !now.composing || !now.active || !now.focused || !now.editable || !now.connected
+    || owner.controller !== now.controller || owner.surface !== now.surface || owner.documentId !== now.documentId
+    || owner.lineId !== now.lineId || owner.raw !== now.committedRaw) return null;
+  const before = readFolderPickerLine(owner.raw, owner.caret), line = readFolderPickerLine(now.raw, now.caret, now.end);
+  return before && line && before.index === line.index && before.indent === line.indent
+    && owner.raw.slice(0, before.start) === now.raw.slice(0, line.start)
+    && owner.raw.slice(before.end) === now.raw.slice(line.end) ? line : null;
+}
+
 export type FolderPickerCandidate = { id: string; title: string; parentId: string | null; parentLabel: string; path: string; matchKey: string };
 export function createFolderPickerIndex(folders: readonly TextFolder[]) {
   const byId = new Map(folders.map(folder => [folder.id, folder]));

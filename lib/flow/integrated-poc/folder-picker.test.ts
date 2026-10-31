@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createFolderPickerDismissal, createFolderPickerHold, createFolderPickerIndex, folderPickerKey, folderPickerMatchKey, folderPickerNavigation, folderPickerSignature,
-  folderPickerTarget, planFolderPickerLink, readFolderPickerChoices, readFolderPickerCommand, readFolderPickerLine } from './folder-picker';
+  folderPickerTarget, planFolderPickerLink, readFolderPickerChoices, readFolderPickerCommand, readFolderPickerCompositionLine, readFolderPickerLine } from './folder-picker';
 import { readProgramFolderSlot } from './folder-link-slot';
 import { createProgramTextDraft } from './program-text-draft';
+import { createProgramDocumentInput } from './program-document-input';
+import { mergeProgramTextWorkspace } from './text-merge';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 const cycleFactory = require('./ime-enter-cycle.cjs');
 
@@ -99,6 +101,66 @@ test('held chip runs once after native text settles; duplicate presses or change
   assert.equal(hold.input('insertText', false, true), false, 'native final composition input keeps the intent');
   assert.equal(hold.input('insertText', false), true, 'new ordinary input cancels a save-held choice');
   assert.equal(hold.release(now), null);
+});
+test('native composition keeps a valid slash-line picker while its model RAW is intentionally unpublished', () => {
+  const controller = {}, surface = {}, raw = '앞\n- /회\n뒤', caret = raw.indexOf('\n뒤');
+  const owner = { controller, surface, documentId: 'a', lineId: 'line', raw, caret };
+  const now = { ...owner, committedRaw: raw, raw: raw.replace('/회', '/회의'), caret: caret + 1, end: caret + 1,
+    composing: true, active: true, focused: true, editable: true, connected: true };
+  const line = readFolderPickerCompositionLine(owner, now);
+  assert.equal(line?.query, '회의'); assert.notEqual(now.raw, now.committedRaw);
+  const index = createFolderPickerIndex([{ id: 'meeting', title: '회의', parentId: null }]);
+  assert.equal(readFolderPickerChoices(index, line!.query, null, { composing: true, previous: index }).candidates[0].id, 'meeting');
+  const unmatched = readFolderPickerCompositionLine(owner, { ...now, raw: raw.replace('/회', '/없는'), caret: caret + 1, end: caret + 1 });
+  assert(unmatched); assert.deepEqual(readFolderPickerChoices(index, unmatched.query, null, { composing: true, previous: index }).candidates, index);
+});
+test('composition retention refuses a changed editor, document, line, committed baseline or caret owner', () => {
+  const controller = {}, surface = {}, raw = '앞\n- /회\n뒤', caret = raw.indexOf('\n뒤');
+  const owner = { controller, surface, documentId: 'a', lineId: 'line', raw, caret };
+  const now = { ...owner, committedRaw: raw, raw: raw.replace('/회', '/회의'), caret: caret + 1, end: caret + 1,
+    composing: true, active: true, focused: true, editable: true, connected: true };
+  for (const change of [{ controller: {} }, { surface: {} }, { documentId: 'b' }, { lineId: 'other' }, { committedRaw: raw + 'remote' },
+    { composing: false }, { active: false }, { focused: false }, { editable: false }, { connected: false }, { caret }, { end: caret },
+    { raw: now.raw.replace('앞', '다른 줄') }, { raw: now.raw.replace('뒤', '다른 줄') },
+    { raw: '앞\n  - /회의\n뒤', caret: caret + 3, end: caret + 3 }]) {
+    assert.equal(readFolderPickerCompositionLine(owner, { ...now, ...change }), null, JSON.stringify(change));
+  }
+});
+test('composition events defer an existing-folder choice until the settled model command, then save once', async () => {
+  const original = fixture(false), controller = createProgramTextDraft(original, 'a', async () => { saves++; return true; }, () => {});
+  const raw = M.raw(M.getDocument(original, 'a')).replace('- 메모', '- /회');
+  assert.equal(controller.updateRaw(raw, '', { folderHold: [1], inputType: 'insertText' }), true);
+  const before = controller.getState().working, doc = M.getDocument(before, 'a')!, lineId = doc.lines[1].id;
+  const caret = raw.indexOf('\n  - [ ]'), surface = { raw, caret }, owner = { controller, surface, documentId: 'a', lineId, raw, caret };
+  const target = before.folders.find(folder => folder.title === '회의')!, hold = createFolderPickerHold(), events = new EventTarget();
+  let composing = true, saves = 0, applied = 0;
+  const frame = () => ({ controller, surface, documentId: 'a', lineId, committedRaw: controller.getState().raw,
+    raw: surface.raw, caret: surface.caret, end: surface.caret, composing, active: true, focused: true, editable: true, connected: true });
+  const now = () => ({ controller, surface, documentId: 'a', lineId, value: surface.raw, caret: surface.caret, selectionEnd: surface.caret,
+    composing, saving: false, active: !!readFolderPickerLine(surface.raw, surface.caret), editable: true, connected: true, focusHere: true });
+  events.addEventListener('input', () => { assert(readFolderPickerCompositionLine(owner, frame())); });
+  events.addEventListener('compositionend', () => {
+    composing = false;
+    assert.equal(controller.updateRaw(surface.raw, '', { folderHold: [1], inputType: 'insertCompositionText' }), true);
+    const intent = hold.release(now());
+    assert(intent); assert(readFolderPickerCommand(controller.getState().working, 'a', lineId, surface.raw, surface.caret, surface.caret));
+    const linked = planFolderPickerLink(controller.getState().working, 'a', lineId, target.id);
+    assert.equal(linked.problem, null); assert.equal(controller.apply(linked.state, '선택', undefined, { lineId, scopeId: target.id }), true); applied++;
+  });
+  surface.raw = raw.replace('/회', '/회의'); surface.caret++;
+  events.dispatchEvent(new Event('input'));
+  assert.equal(controller.getState().raw, raw, 'native interim value has not been published');
+  const intent = { controller, documentId: 'a', lineId, choice: { kind: 'folder', folder: createFolderPickerIndex(before.folders).find(folder => folder.id === target.id)! } as const,
+    target: folderPickerTarget(surface, surface.raw, surface.caret, caret) };
+  assert.equal(hold.press(intent), true); assert.equal(hold.press(intent), false); assert.equal(hold.release(now()), null);
+  events.dispatchEvent(new Event('compositionend'));
+  assert.equal(hold.release(now()), null); assert.equal(applied, 1);
+  assert.equal(await controller.save(), true); assert.equal(saves, 1);
+  const after = controller.getState().working;
+  assert.equal(after.bindings.filter(row => row.docId === 'a' && row.lineId === lineId).length, 1);
+  assert.deepEqual(M.getDocument(after, 'a')!.lines.map(line => line.id), doc.lines.map(line => line.id));
+  assert.deepEqual(M.getDocument(after, 'b'), M.getDocument(before, 'b')); assert.deepEqual(after.progressRecords, before.progressRecords);
+  assert.equal(controller.getState().raw, surface.raw);
 });
 test('explicit replacement preserves the native line ID, task IDs/progress and all other documents', () => {
   const state = fixture(), doc = M.getDocument(state, 'a')!, lineId = doc.lines[1].id;
@@ -221,4 +283,48 @@ test('validated explicit picker move preserves W15 one-step undo and rejects a f
   const forged = { ...result.state, progressRecords: [] , documents: result.state.documents.map(doc => doc.id === 'b' ? { ...doc, title: '변조' } : doc) };
   const clean = createProgramTextDraft(before, 'a', async () => true, () => {});
   assert.equal(clean.apply(forged, '선택', undefined, { lineId, scopeId: target.id }), false);
+});
+test('an unchanged owned folder move keeps its one-step undo after a lost reply is confirmed by an exact cloned receipt', async () => {
+  const source = fixture(), input = createProgramDocumentInput(source, 'a');
+  let receipt: { before: TextWorkspaceState; next: TextWorkspaceState } | null = null;
+  const clone = (value: TextWorkspaceState): TextWorkspaceState => JSON.parse(JSON.stringify(value));
+  const draft = createProgramTextDraft(input.initial, 'a', async (next, _label, options) => {
+    receipt = { before: clone(options!.expectedWorkspace!), next: clone(next) }; return false;
+  }, () => {}, () => true, input);
+  const before = draft.getState().working, doc = M.getDocument(before, 'a')!, target = before.folders.find(folder => folder.title === '회의')!;
+  const planned = planFolderPickerLink(before, 'a', doc.lines[1].id, target.id);
+  assert.equal(draft.apply(planned.state, '선택', undefined, { lineId: doc.lines[1].id, scopeId: target.id }), true);
+  assert.equal(await draft.save(), false); assert.equal(draft.canUndoFolderMove(), true);
+  const confirmed = receipt! as { before: TextWorkspaceState; next: TextWorkspaceState };
+  assert.equal(draft.acceptConfirmedSave(confirmed.before, confirmed.next), true);
+  assert.equal(draft.canUndoFolderMove(), true); assert.equal(draft.undoFolderMove(), true);
+  assert.deepEqual(draft.getState().working, before);
+});
+test('later input or another document change never gains folder undo authority from a late receipt', async () => {
+  for (const later of ['input', 'remote'] as const) {
+    const source = fixture(), input = createProgramDocumentInput(source, 'a');
+    let receipt: { before: TextWorkspaceState; next: TextWorkspaceState } | null = null;
+    const clone = (value: TextWorkspaceState): TextWorkspaceState => JSON.parse(JSON.stringify(value));
+    const draft = createProgramTextDraft(input.initial, 'a', async (next, _label, options) => {
+      receipt = { before: clone(options!.expectedWorkspace!), next: clone(next) }; return false;
+    }, () => {}, () => true, input);
+    const before = draft.getState().working, doc = M.getDocument(before, 'a')!, target = before.folders.find(folder => folder.title === '회의')!;
+    const planned = planFolderPickerLink(before, 'a', doc.lines[1].id, target.id);
+    assert.equal(draft.apply(planned.state, '선택', undefined, { lineId: doc.lines[1].id, scopeId: target.id }), true);
+    assert.equal(await draft.save(), false);
+    const confirmed = receipt! as { before: TextWorkspaceState; next: TextWorkspaceState };
+    if (later === 'input') {
+      assert.equal(draft.updateRaw(draft.getState().raw.replace('끝', '다음 입력'), '', { inputType: 'insertText' }), true);
+      assert.equal(draft.acceptConfirmedSave(confirmed.before, confirmed.next), true);
+      assert(draft.getState().raw.endsWith('다음 입력'));
+    } else {
+      const remote = M.editTextResult(confirmed.before, 'b', M.raw(M.getDocument(confirmed.before, 'b')) + '\n원격 내용', { folderText: true }).state;
+      const merged = mergeProgramTextWorkspace(confirmed.before, confirmed.next, remote);
+      assert(merged); assert.equal(draft.acceptConfirmedSave(remote, merged), true);
+      assert.deepEqual(M.getDocument(draft.getState().working, 'b'), M.getDocument(remote, 'b'));
+    }
+    const latest = draft.getState().working;
+    assert.equal(draft.canUndoFolderMove(), false); assert.equal(draft.undoFolderMove(), false);
+    assert.equal(draft.getState().working, latest);
+  }
 });

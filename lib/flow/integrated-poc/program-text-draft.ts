@@ -361,6 +361,9 @@ export function createProgramTextDraft(
         && state.raw === M.raw(M.getDocument(next, docId));
       if (!state.saving && unchangedInput) {
         const working=documentInput?.install(next)??next;
+        // An exact late receipt can install a fresh immutable owner for the
+        // unchanged move. It is not a later edit and must not consume its undo.
+        if (lastMove?.after === state.working && programSame(state.working, working)) lastMove = { ...lastMove, after: working };
         state = { ...state, committed: working, working, dirty: false, error: '', progressConflict: undefined };
         submitted = null; unconfirmed = []; report(); return true;
       }

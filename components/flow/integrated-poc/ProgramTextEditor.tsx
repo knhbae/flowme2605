@@ -13,7 +13,7 @@ import { programFlowBelow, programKeyboardBarCramped, programKeyboardBarPlace, p
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
 import { createFolderPickerDismissal, createFolderPickerHold, createFolderPickerIndex, folderPickerKey, folderPickerNavigation, folderPickerSignature, folderPickerTarget,
-  planFolderPickerLink, readFolderPickerChoices, readFolderPickerCommand, readFolderPickerLine, type FolderPickerCandidate, type FolderPickerChoice,
+  planFolderPickerLink, readFolderPickerChoices, readFolderPickerCommand, readFolderPickerCompositionLine, readFolderPickerLine, type FolderPickerCandidate, type FolderPickerChoice, type FolderPickerCompositionOwner,
   type FolderPickerDefault } from '@/lib/flow/integrated-poc/folder-picker';
 
 type FolderPickerView = { lineId: string; signature: string; parentId: string | null; parentLabel: string; linked: boolean;
@@ -365,6 +365,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [barHold] = useState(() => createWritingBarHold<WritingBarTarget>()), [heldBar, setHeldBar] = useState<WritingBarAction | null>(null);
   const barRef = useRef<HTMLDivElement>(null), barLockId = useId(), roomRef = useRef<HTMLDivElement>(null), noticeRef = useRef<HTMLDivElement>(null);
   const [picker, setPicker] = useState<FolderPickerView | null>(null), pickerRef = useRef<FolderPickerView | null>(null);
+  const pickerCompositionOwner = useRef<FolderPickerCompositionOwner | null>(null);
   const pickerId = useId(), [pickerDismissed] = useState(createFolderPickerDismissal), pickerRecent = useRef<string[]>([]);
   const pickerIndex = useRef<{ folders: TextWorkspaceState['folders']; rows: FolderPickerCandidate[] } | null>(null);
   const [pickerHold] = useState(createFolderPickerHold), [pickerHeld, setPickerHeld] = useState(false);
@@ -460,8 +461,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // Folder-region structural edits retain their existing admission surface.
     if (!area || !controller || !state || !propsRef.current.authoringMode || propsRef.current.folderId || panelRef.current
       || movingRef.current || modeRef.current !== 'live' || inputLockedRef.current || propsRef.current.readOnly || state.invalid
-      || checkPendingRef.current || document.activeElement !== area || state.raw !== area.value) { presentPicker(null); return; }
-    const line = readFolderPickerLine(area.value, area.selectionStart, area.selectionEnd), doc = currentDoc();
+      || checkPendingRef.current || document.activeElement !== area) { presentPicker(null); return; }
+    const nativeLine = readFolderPickerLine(area.value, area.selectionStart, area.selectionEnd), doc = currentDoc();
+    const line = composingRef.current ? readFolderPickerCompositionLine(pickerCompositionOwner.current, {
+      controller, surface: area, documentId: propsRef.current.docId, lineId: nativeLine && doc?.lines[nativeLine.index]?.id || null,
+      committedRaw: state.raw, raw: area.value, caret: area.selectionStart, end: area.selectionEnd,
+      composing: true, active: pickerRef.current?.lineId === doc?.lines[nativeLine?.index ?? -1]?.id,
+      focused: document.activeElement === area, editable: !area.readOnly, connected: area.isConnected,
+    }) : state.raw === area.value ? nativeLine : null;
     const source = line && doc?.lines[line.index];
     if (!line || !source) { presentPicker(null); return; }
     const row = currentRow(source.id);
@@ -1491,11 +1498,18 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       direction: area.selectionDirection, epoch, focused: document.activeElement === area, editable: !area.readOnly }));
     pickerIme.current = cycle;
     const refresh = () => { if (frame) cancelAnimationFrame(frame); frame = requestAnimationFrame(() => { frame = 0; if (alive) { syncPicker(); releasePickerHold(); } }); };
-    const start = () => cycle.start();
+    const start = () => {
+      cycle.start();
+      const controller = draftRef.current, line = readFolderPickerLine(area.value, area.selectionStart, area.selectionEnd);
+      const source = line && currentDoc()?.lines[line.index];
+      pickerCompositionOwner.current = controller && source && pickerRef.current?.lineId === source.id
+        && controller.getState().raw === area.value && document.activeElement === area
+        ? { controller, surface: area, documentId: propsRef.current.docId, lineId: source.id, raw: area.value, caret: area.selectionStart } : null;
+    };
     const input = (event: Event) => { epoch++; cycle.input(event as InputEvent); refresh(); };
     // Registered after the native target listeners: the native editor owns the
     // final composition RAW before this receipt and any React picker render.
-    const end = (event: Event) => { cycle.end(event as CompositionEvent); refresh(); };
+    const end = (event: Event) => { pickerCompositionOwner.current = null; cycle.end(event as CompositionEvent); refresh(); };
     const keyup = () => { cycle.keyup(); refresh(); };
     const reconcile = () => { cycle.reconcile(); refresh(); };
     const outside = (event: Event) => {
@@ -1509,7 +1523,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     window.addEventListener('resize', refresh); window.addEventListener('scroll', refresh, true);
     document.addEventListener('pointerdown', outside, true);
     return () => {
-      alive = false; if (frame) cancelAnimationFrame(frame); cycle.cancel(); pickerIme.current = null;
+      alive = false; if (frame) cancelAnimationFrame(frame); cycle.cancel(); pickerIme.current = null; pickerCompositionOwner.current = null;
       pickerHold.cancel(); if (pickerHoldLimit.current) clearTimeout(pickerHoldLimit.current);
       pickerRef.current = null;
       area.removeEventListener('compositionstart', start); area.removeEventListener('compositionend', end);
