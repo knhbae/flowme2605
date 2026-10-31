@@ -111,3 +111,20 @@ test('three places, the same button: Flow detail ⋯, the publish panel, 내 활
   for (const text of ['Alpha에 로그인한 사람만 열 수 있습니다.', '미확인 콘텐츠는 링크를 만들지 않습니다.', '링크를 복사했습니다', '길게 눌러 복사해 주세요']) assert(button.includes(text), text);
   assert.match(button, /window\.setTimeout\(\(\) => setResult\(null\), 3000\)/);
 });
+
+test('C9 × FC5: a republish shows C9 panel with the new Flow link; other account publishes show FC5 panel; 내 공개 Flow keeps both', () => {
+  const read = (file: string) => readFileSync(new URL(`../../../components/flow/integrated-poc/${file}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  const publisher = read('ProgramPublisher.tsx'), community = read('ProgramCommunity.tsx');
+  // The republish branch comes first and returns before FC5's panel.
+  const done = publisher.slice(publisher.indexOf('if (republishing) {\n        const flowId'), publisher.indexOf("} catch { setMessage('공개 결과를 확인하지 못했습니다."));
+  assert(done.indexOf('setRepublished({ flowId, versionId: result.result }); setMessage(\'\'); return;') >= 0);
+  assert(done.indexOf('setRepublished(') < done.indexOf('setPublished('), 'republish first');
+  // C9's panel: its words, then the link for the new Flow's first version, then 새 공개 Flow 열기.
+  const panel = publisher.slice(publisher.indexOf('{republished ? <section'), publisher.indexOf('새 공개 Flow 열기</button></section>'));
+  assert(panel.includes('새 링크의 1판을 공개했습니다. 예전 Flow는 철회된 그대로입니다.'));
+  assert(panel.includes('<ProgramShareLink flowId={republished.flowId} versionId={republished.versionId} />'));
+  // 내 공개 Flow: C9's row (철회됨, 새 링크로 다시 공개…) with FC5's link only while the Flow is live.
+  const row = community.slice(community.indexOf('<section><h2>내 공개 Flow</h2>'), community.indexOf('<section><h2>작성 중인 공개 초안</h2>'));
+  assert(row.includes("{flow.archived ? '공개 철회됨' : '공개 중'}") && row.includes("'새 링크로 다시 공개…'"));
+  assert(row.indexOf('{!flow.archived && <ProgramShareLink flowId={flow.id} versionId={flow.versionId} />}') > row.indexOf('</button>'));
+});
