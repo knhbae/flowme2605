@@ -2,7 +2,7 @@
 
 2026-10-31 08:46 KST · 총괄(Claude) 갱신 · ★ = 사용자가 결정하거나 직접 할 일
 
-운영 Alpha는 **N3**(`CeHJn6tYMt8PJapvYByb9`, commit `6544a3b0`)이다. 10/31 13:50~13:52에 코덱스가 총괄 위임(`DELEGATION-claude-20261031.md`)으로 반영했다. 반영 뒤 확인 통과(/alpha 200 새 빌드, / 307, /flows 404, health 200, /my 200). 되돌리기 대상은 N1 `ZPtHXxThwLF_W1ZVPP4Nb`이다.
+운영 Alpha는 **N4**(`AzI14F3CGuJH0K0FPReUw`, commit `4d081c1e`)이다. 10/31 22:25 코덱스가 총괄 위임(`DELEGATION-claude-N4-20261031.md`)으로 반영했다. 반영 뒤 확인 통과. 되돌리기 대상은 호환 복귀판 N3r `Uy_bdsVTI__3OhwPIxOKX`(N3 그대로는 N4 자료를 못 읽음). 이전 운영 N3 `CeHJn6tYMt8PJapvYByb9`.
 
 N1에 들어간 것:
 - 쓰기 A(모든 문서), UX 개편 R5~R8
