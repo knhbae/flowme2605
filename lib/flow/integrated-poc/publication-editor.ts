@@ -235,7 +235,18 @@ export function publishProgramDocument(data: ProgramData, actorId: string, draft
   const published = publishProgramFlow(data, input, now); if (!published.ok) return published;
   const version = published.data.public.versions.find(row => row.id === published.result); if (!version) return programFailure(data, 'missing');
   const next = programClone(published.data); const space = next.spaces[actorId];
-  if (!space.publications.some(link => link.flowId === version.flowId && link.documentId === draft.documentId)) space.publications.push({ flowId: version.flowId, documentId: draft.documentId, creatorDraftId: space.creatorDraftImports?.find(entry => entry.documentId === draft.documentId)?.creatorDraftId ?? null });
+  if (!space.publications.some(link => link.flowId === version.flowId && link.documentId === draft.documentId)) {
+    // A no-draft republication keeps the last public fields, not a fabricated
+    // acknowledgement of today's source. Carry its private item correspondence
+    // only for items actually published under this new link. Never rewrite the
+    // withdrawn link, or reseed an existing link during a request replay.
+    const source = archivedTarget ? space.publications.find(link => link.flowId === draft.flowId && link.documentId === draft.documentId) : undefined;
+    const publishedIds = new Set(version.items.map(item => item.id));
+    const inherited = source?.seriesBindings?.items.filter(entry => publishedIds.has(entry.itemId)) ?? [];
+    space.publications.push({ flowId: version.flowId, documentId: draft.documentId,
+      creatorDraftId: space.creatorDraftImports?.find(entry => entry.documentId === draft.documentId)?.creatorDraftId ?? null,
+      ...(inherited.length ? { seriesBindings: { version: 1 as const, items: programClone(inherited) } } : {}) });
+  }
   const link = space.publications.find(link => link.flowId === version.flowId && link.documentId === draft.documentId)!;
   const bindings = new Map((link.seriesBindings?.items ?? []).map(entry => [entry.key, entry.itemId]));
   for (const row of draft.rows.filter(row => row.selected && row.seriesSource)) bindings.set(row.seriesSource!.key, row.itemId);

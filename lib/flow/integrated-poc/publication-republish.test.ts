@@ -8,6 +8,9 @@ import { createProgramProposal, publishProgramFlow } from './publication';
 import { importProgramPublicVersion } from './private-space';
 import { readProgramPublishingActivity } from './publishing-activity';
 import { isAlphaSocialIntent } from './alpha-social/contract';
+import { ordinaryPublicationSourceFixture } from './publication-ordinary-source.fixture';
+import { readProgramPublicationSeries } from './publication-series-source';
+import { programPublicationRowFromSeries } from './publication-series-draft';
 
 const NOW = '2026-10-31T00:00:00.000Z';
 function accept<T extends { ok: boolean; data: ProgramData }>(value: T): ProgramData {
@@ -74,6 +77,7 @@ test('C9 creates a new Flow v1 and leaves old versions, copies, proposals and na
   assert.deepEqual(next.data.spaces[f.actor].text, before.spaces[f.actor].text);
   assert.equal(next.data.spaces[f.actor].publicationDrafts.length, 0);
   assert(next.data.spaces[f.actor].publications.some(link => link.flowId === f.flowId));
+  assert.equal(next.data.spaces[f.actor].publications.find(link => link.flowId === next.flowId)?.seriesBindings, undefined);
   assert(validateProgramData(next.data));
 });
 
@@ -146,4 +150,83 @@ test('C9 preserves document/actor/retained-draft conflict gates and archive rest
   const foreign = programClone(f.data); foreign.activeActorId = f.other;
   assert.equal(createProgramRepublishDraft(foreign, f.documentId, f.flowId, NOW), null);
   assert.equal(resolveProgramPrivatePublicationDraft(f.data, f.actor, draft, { ...draft, title: '다른 초안' }, 'mine').ok, false);
+});
+
+const REPEAT_RAW = '# C9 반복\n\n- [ ] 반복 준비\n  - 날짜: 2026-10-31\n  - 반복: 매일\n  - 반복 종료: 5회\n  - 설명: 반복 원문';
+function recurringRepublishFixture(kind: 'creator' | 'native' = 'native') {
+  const f = ordinaryPublicationSourceFixture(kind, REPEAT_RAW), actor = f.actorId;
+  const read = readProgramPublicationSeries(f.data.spaces[actor], f.documentId);
+  assert(read.ok); assert.equal(read.candidates.length, 1, 'one genuine selected recurring source');
+  const draft = createProgramPublicationDraft(f.data, f.documentId, NOW)!;
+  draft.title = 'C9 마지막 반복 공개'; draft.category = '합성';
+  draft.rows = draft.rows.filter(row => row.seriesSource).map(row => ({ ...row, selected: true,
+    title: '마지막 공개의 반복 제목', description: '현재 원문으로 덮지 않을 공개 본문' }));
+  assert.equal(draft.rows.length, 1);
+  const published = storeAndPublish(f.data, draft);
+  const withdrawn = accept(archiveProgramPublication(published.data, actor, f.documentId, published.flowId, published.version.id));
+  assert.equal(withdrawn.spaces[actor].publicationDrafts.length, 0, 'no stored publication draft');
+  const link = withdrawn.spaces[actor].publications.find(link => link.flowId === published.flowId)!;
+  assert.equal(link.seriesBindings?.items.length, 1);
+  return { data: withdrawn, actor, documentId: f.documentId, flowId: published.flowId, version: published.version,
+    source: read.candidates[0], link: programClone(link) };
+}
+
+for (const kind of ['creator', 'native'] as const) test(`C9 P2 ${kind}: no-draft republish keeps one recurring row on reopen and v2`, () => {
+  const f = recurringRepublishFixture(kind), before = programClone(f.data);
+  const draft = createProgramRepublishDraft(f.data, f.documentId, f.flowId, NOW)!;
+  assert.equal(draft.rows.length, 1); assert.equal(draft.rows[0].seriesSource, undefined, 'do not invent acknowledgement of current private source');
+  const next = storeAndPublish(f.data, draft), space = next.data.spaces[f.actor];
+  const link = space.publications.find(link => link.flowId === next.flowId)!;
+  assert.deepEqual(link.seriesBindings, f.link.seriesBindings);
+  assert.equal(next.version.number, 1); assert.deepEqual(next.version.items, f.version.items);
+  const reopened = createProgramPublicationDraft(next.data, f.documentId, NOW)!;
+  assert.equal(reopened.rows.length, 1); assert.equal(reopened.rows[0].itemId, f.version.items[0].id);
+  assert.equal(reopened.rows[0].seriesSource?.key, f.source.key);
+  reopened.rows.forEach(row => { row.selected = true; });
+  const v2 = storeAndPublish(next.data, reopened);
+  assert.equal(v2.flowId, next.flowId); assert.equal(v2.version.number, 2);
+  assert.equal(v2.version.items.length, 1); assert.equal(new Set(v2.version.items.map(item => item.id)).size, 1);
+  const replay = publishProgramDocument(v2.data, f.actor, draft, NOW); assert(replay.ok);
+  assert.equal(replay.changed, false); assert.deepEqual(replay.data, v2.data, 'old request does not reseed a newer link');
+  assert.deepEqual(v2.data.public.flows.find(flow => flow.id === f.flowId), before.public.flows.find(flow => flow.id === f.flowId));
+  assert.deepEqual(v2.data.public.versions.filter(version => version.flowId === f.flowId), before.public.versions.filter(version => version.flowId === f.flowId));
+  assert.deepEqual(v2.data.spaces[f.actor].publications.find(link => link.flowId === f.flowId), f.link);
+  assert.deepEqual(v2.data.spaces[f.actor].text, before.spaces[f.actor].text);
+  assert.deepEqual(v2.data.spaces[f.actor].creatorWorkspace, before.spaces[f.actor].creatorWorkspace);
+  assert.deepEqual(v2.data.public.proposals, before.public.proposals);
+});
+
+test('C9 P2 retained draft excludes old recurring bindings for deselected/deleted public items', () => {
+  for (const deleted of [false, true]) {
+  const f = recurringRepublishFixture(), draft = createProgramRepublishDraft(f.data, f.documentId, f.flowId, NOW)!;
+  if (deleted) draft.rows = []; else draft.rows[0].selected = false;
+  draft.rows.push({ rowId: null, origin: 'previous-public', itemId: 'c9-new-ordinary', selected: true, title: '새 일반 항목',
+    description: '', completionCriteria: '', sourceUrl: '', scheduleKind: 'undated', scheduleValue: '', subchecks: [] });
+  const stored = accept(saveProgramPublicationDraft(f.data, f.actor, draft, null));
+  const next = storeAndPublish(stored, createProgramRepublishDraft(stored, f.documentId, f.flowId, NOW)!);
+  assert.deepEqual(next.version.items.map(item => item.id), ['c9-new-ordinary']);
+  assert.equal(next.data.spaces[f.actor].publications.find(link => link.flowId === next.flowId)?.seriesBindings, undefined);
+  assert.deepEqual(next.data.spaces[f.actor].publications.find(link => link.flowId === f.flowId), f.link);
+  }
+});
+
+test('C9 P2 missing current source keeps last public content and its old link intact', () => {
+  const f = recurringRepublishFixture(), data = programClone(f.data);
+  data.spaces[f.actor].creatorWorkspace!.nativeExecutionSources = {};
+  assert(validateProgramData(data));
+  const read = readProgramPublicationSeries(data.spaces[f.actor], f.documentId); assert(read.ok); assert.equal(read.candidates.length, 0);
+  const before = programClone(data), next = storeAndPublish(data, createProgramRepublishDraft(data, f.documentId, f.flowId, NOW)!);
+  assert.deepEqual(next.version.items, f.version.items);
+  assert.deepEqual(next.data.spaces[f.actor].publications.find(link => link.flowId === next.flowId)?.seriesBindings, f.link.seriesBindings);
+  assert.deepEqual(next.data.spaces[f.actor].publications.find(link => link.flowId === f.flowId), f.link);
+  assert.deepEqual(next.data.spaces[f.actor].creatorWorkspace, before.spaces[f.actor].creatorWorkspace);
+});
+
+test('C9 P2 explicitly selected current series keeps the existing merge into the new link', () => {
+  const f = recurringRepublishFixture(), draft = createProgramRepublishDraft(f.data, f.documentId, f.flowId, NOW)!;
+  const row = programPublicationRowFromSeries(f.source, 'c9-explicit-current-series')!; row.selected = true; draft.rows = [row];
+  const next = storeAndPublish(f.data, draft);
+  assert.deepEqual(next.data.spaces[f.actor].publications.find(link => link.flowId === next.flowId)?.seriesBindings,
+    { version: 1, items: [{ key: f.source.key, itemId: row.itemId }] });
+  assert.deepEqual(next.data.spaces[f.actor].publications.find(link => link.flowId === f.flowId), f.link);
 });
