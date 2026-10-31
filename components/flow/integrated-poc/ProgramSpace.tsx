@@ -128,7 +128,7 @@ type SourceOrigin = { actorId: string; documentId: string; taskId: string; top: 
   /** An occurrence's row, by its list key (it has no task ID). */
   rowKey?: string;
   /** C5: opened from the calendar, with the day open in its sheet or panel. */
-  view: { period: ProgramPeriod; date: string; folderId: string; query: string; monthView?: 'grid'; dayOpen?: string | null } };
+  view: { period: ProgramPeriod; date: string; folderId: string; query: string; monthView?: 'grid'; dayOpen?: boolean } };
 const MONTH_VIEW_KEY = 'flow:poc:personal-workspace:v1:month-view';
 const periods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['week', '주간'], ['month', '월간'], ['all', '분류'], ['undated', '날짜 미정']];
 const mainPeriods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['all', '분류']];
@@ -245,7 +245,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // C5: the month as a list or a calendar (the last choice, on this device only), the day open in a narrow screen's
   // sheet, and the content's width: from 840px the day sits in a panel beside the grid, from 761px cells show titles.
   const [monthView, setMonthViewState] = useState<'list' | 'grid'>('list');
-  const [sheetDay, setSheetDay] = useState<string | null>(null), [monthWidth, setMonthWidth] = useState(0);
+  const [dayOpen, setDayOpen] = useState(false), [monthWidth, setMonthWidth] = useState(0);
+  // The day sheet's ＋ line is being composed in (Korean): a sheet/panel switch waits for it (C5 re-review).
+  const sheetComposing = useRef(false), [sheetSettled, setSheetSettled] = useState(0);
+  const endSheetComposing = () => { if (!sheetComposing.current) return; sheetComposing.current = false; setSheetSettled(count => count + 1); };
   const daySheet = useRef<HTMLDialogElement | null>(null), monthBox = useRef<HTMLDivElement | null>(null);
   useEffect(() => { try { if (localStorage.getItem(MONTH_VIEW_KEY) === 'grid') setMonthViewState('grid'); } catch { /* the list, then */ } }, []);
   const setMonthView = (next: 'list' | 'grid') => { setMonthViewState(next); try { localStorage.setItem(MONTH_VIEW_KEY, next); } catch { /* kept for this visit */ } };
@@ -435,9 +438,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     document.addEventListener('keydown', key);
     return () => document.removeEventListener('keydown', key);
   }, [selecting]);
-  // The day shown beside the grid (wide) or in the sheet (narrow). Narrowing while the panel's ＋ line is open keeps
-  // that day open, now as a sheet (C5 review P2).
-  const dayShown = !monthGrid ? null : wideMonth ? date : sheetDay ?? (addingDate === date ? date : null);
+  // The day shown beside the grid (wide) or in the sheet (narrow): always the chosen date, so a day picked in the panel
+  // is the one the sheet shows. Narrowing while the panel's ＋ line is open keeps that day open, now as a sheet (C5 review P2).
+  const dayShown = !monthGrid ? null : wideMonth || dayOpen || addingDate === date ? date : null;
   const sheetOpen = monthGrid && !wideMonth && !!dayShown;
   // One dialog shows the day either way, so its ＋ line (title, time, composition) survives a switch between them:
   // a modal sheet on a narrow screen, a panel beside the grid when wide. Anything else (a source opening, the view
@@ -447,12 +450,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (!sheet) return;
     const mode = !dayShown ? null : wideMonth ? 'panel' : 'sheet', current = !sheet.open ? null : sheet.matches(':modal') ? 'sheet' : 'panel';
     if (mode === current) return;
+    // Closing the dialog to show it again would blur the ＋ line mid-syllable: a switch waits for the composition to end.
+    if (mode && current && sheetComposing.current && sheet.contains(document.activeElement)) return;
     const active = document.activeElement;
     if (sheet.open) sheet.close();
     if (mode === 'sheet') sheet.showModal(); else if (mode === 'panel') sheet.show();
     // Showing a dialog moves the focus into it: a switch keeps it where it was (the ＋ line), and the panel never takes it.
     if (active instanceof HTMLElement && active.isConnected && active !== document.body && (mode === 'panel' || sheet.contains(active))) active.focus({ preventScroll: true });
-  }, [dayShown, wideMonth]);
+  }, [dayShown, wideMonth, sheetSettled]);
   // The title row already says "오늘" when every row is today's; no repeated heading then.
   const hideDayHeadings = !!props.noteHeader && period === 'today' && date === today
     && executionList.every(item => item.kind !== 'row' || item.group === 'on-date');
@@ -592,7 +597,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const sourceOriginOpen = !!sourceOrigin && period === 'documents' && selected === sourceOrigin.documentId;
   const sourceOriginLabel = sourceOrigin && sourceOriginTab(sourceOrigin) === 'all' ? collectionMode ? '전체 할 일' : '분류' : '오늘';
   /** The view a source opens from: C5 adds the calendar and the day open in its sheet or panel. */
-  const sourceView = (): SourceOrigin['view'] => ({ period, date, folderId, query, ...(monthGrid ? { monthView: 'grid' as const, dayOpen: dayShown } : {}) });
+  const sourceView = (): SourceOrigin['view'] => ({ period, date, folderId, query, ...(monthGrid ? { monthView: 'grid' as const, dayOpen: !!dayShown } : {}) });
   function openFromList(task: TextTask, button: HTMLElement) {
     // C5 review P1: a line written on a day's ＋ stays; the press goes back to it. The sheet itself stays open
     // (the row shows its wait) until the source opens; openDocument closes it then, and 닫기 cancels the wait.
@@ -619,7 +624,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (!await flushAllEditors()) { showViewChangeBlocked(); return; }
       if (dataRef.current.activeActorId !== origin.actorId) return;
       setSourceOrigin(null); setPeriod(origin.view.period); setDate(origin.view.date); setFolderId(origin.view.folderId); setQuery(origin.view.query);
-      if (origin.view.monthView === 'grid') { setMonthView('grid'); setSheetDay(origin.view.dayOpen ?? null); }
+      if (origin.view.monthView === 'grid') { setMonthView('grid'); setDayOpen(!!origin.view.dayOpen); }
       setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setOrderNotice(null); setSourceRestore({ ...origin, opener });
     } finally { release(); }
   }
@@ -1142,7 +1147,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     libraryReturn.current = null;
     // C5: the calendar's day sheet closes the moment its source opens; a modal left over the writing screen would block it.
     if (daySheet.current?.matches(':modal')) daySheet.current.close();
-    setSheetDay(null);
+    setDayOpen(false);
     setSelected(id); setLibraryOpen(false); setOpened(previous => previous.includes(id) ? previous : [...previous, id]); setPeriod('documents');
     props.navigate({ view: 'space', id }, taskId ? { writingLineId: taskId } : undefined);
     // The full App owns history/checkpoint focus. Alpha has no navigation port
@@ -1276,7 +1281,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   function pickMonthDay(day: string, open: boolean) {
     if (keepWrittenDay()) return false;
     setDate(day);
-    if (open && !wideMonth) setSheetDay(day);
+    if (open && !wideMonth) setDayOpen(true);
     return true;
   }
   /** C6a: into 고르기 (2-1). From the calendar it goes to the list at the chosen day's group first. */
@@ -1336,9 +1341,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   function closeDaySheet() {
     if (keepWrittenDay()) return;
-    const day = sheetDay;
-    setSheetDay(null); setAddingDate(null);
-    requestAnimationFrame(() => root.current?.querySelector<HTMLButtonElement>(`[data-month-day="${day}"]`)?.focus({ preventScroll: true }));
+    setDayOpen(false); setAddingDate(null);
+    requestAnimationFrame(() => root.current?.querySelector<HTMLButtonElement>(`[data-month-day="${date}"]`)?.focus({ preventScroll: true }));
   }
   /** C5: one day in the sheet or the panel: the list's heading words with I7 and ＋ (and 닫기 in the sheet), the ＋ line,
    *  the day's rows as the list draws them, or a note and a wide ＋ on an empty day. */
@@ -1904,6 +1908,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             data-expanded={!wideMonth && !!dayShown && addingDate === dayShown || undefined}
             onCancel={event => { event.preventDefault(); if (!wideMonth) closeDaySheet(); }}
             onKeyDown={event => { if (event.key === 'Escape' && (event.nativeEvent.isComposing || event.keyCode === 229)) { event.preventDefault(); event.stopPropagation(); } }}
+            onCompositionStart={() => { sheetComposing.current = true; }} onCompositionEnd={endSheetComposing} onBlur={endSheetComposing}
             onClick={event => { const box = event.currentTarget.getBoundingClientRect();
               if (!wideMonth && event.target === event.currentTarget && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) closeDaySheet(); }}>
             {dayShown && <>{dayGroup(dayShown, wideMonth ? undefined : closeDaySheet)}{sheetOpen && !detail && taskNoticeContent}{sheetOpen && !detail && orderNoticeContent}</>}
