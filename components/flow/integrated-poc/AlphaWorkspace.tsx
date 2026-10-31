@@ -774,7 +774,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   function clearReviewContext() {
     reviewContext.current = null; reviewRestore.current = null; setReviewEntry(null); refreshReviewContext(value => value + 1);
   }
+  // C6a: while the space shown is picking rows (고르기), the host's own writes wait (다시 확인, 되돌리기·다시 실행).
+  const programSelecting = useRef(false);
+  const selectingRefuses = () => { if (!programSelecting.current || destinationRef.current.view !== 'space') return false; setMessage('여러 개 고르는 중에는 할 수 없습니다. 고르기를 끝낸 뒤 다시 눌러 주세요.'); return true; };
   async function resolvePendingResult() {
+    if (selectingRefuses()) return;
     const pending = controller.current?.snapshot().pending, context = reviewContext.current;
     const review = pending?.kind === 'social' && pending.intent.type === 'participation-submit'
       && pending.intent.draft.id === context?.draftId;
@@ -869,6 +873,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   }
   async function signOut() { clearReviewContext(); await onSignOut(); }
   async function history(kind: 'undo' | 'redo') {
+    if (selectingRefuses()) return;
     if(currentData.current?.spaces[session.userId]?.personalAuthoring){setMessage('개인 Flow 판본·실행 기록을 보존하기 위해 전체 변경 되돌리기는 보류합니다. 본문 입력 취소는 편집기에서 사용할 수 있습니다.');return;}
     if (storageError) { setMessage('입력 보관 상태를 확인하기 전에는 변경할 수 없습니다.'); return; }
     if (hasInput()) { setMessage('작성 중인 내용을 먼저 저장하거나 보관해 주세요.'); return; }
@@ -1377,7 +1382,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         documentCollections={collectionsMode && collectionsState ? { state: collectionsState, onChange: changeCollections } : undefined}
         navigate={next => { void navigate(next); }} capabilities={capability}
         sourceReturnEpoch={sessionEpoch} awaitSourceReturnReady={awaitSourceReturnReady}
-        sourceReturnWaits={() => !!sourceReturnWaiting()} onSourceReturnQueued={showSourceReturnQueued}
+        sourceReturnWaits={() => !!sourceReturnWaiting()} onSourceReturnQueued={showSourceReturnQueued} onSelectingChange={value => { programSelecting.current = value; }}
         canContinueWholeDocument={() => {
           const authority = controller.current?.snapshot();
           return !disposed.current && !externalRef.current && !!authority && !authority.pending && !authority.busy && authority.status !== 'conflict';

@@ -115,7 +115,7 @@ test('the space wires it: title, list or calendar remembered on the device, shee
   assert.match(space, /\{monthGrid \? <div className=\{styles\.monthLayout\} data-wide=\{wideMonth \|\| undefined\}>\s*<ProgramMonthGrid /);
   // Narrow: a modal sheet; wide (content 840px and up): a panel beside the grid (one dialog, c5-review-fix.test.ts).
   assert.match(space, /const wideMonth = monthWidth >= 840;/);
-  assert.match(space, /<dialog ref=\{daySheet\} className=\{wideMonth \? styles\.dayPanel : `\$\{styles\.findDialog\} \$\{styles\.daySheet\}`\}/);
+  assert.match(space, /<dialog ref=\{daySheet\} className=\{daySheetLook \? `\$\{styles\.findDialog\} \$\{styles\.daySheet\}` : styles\.dayPanel\}/);
   // A written line is never lost: picking another day, the month arrows or closing the sheet goes back to it.
   assert.match(space, /function keepWrittenDay\(\) \{ if \(!addingDate \|\| !groupAddField\.current\?\.value\.trim\(\)\) return false; groupAddField\.current\.focus\(\); return true; \}/);
   assert.match(space, /function pickMonthDay\(day: string, open: boolean\) \{\s*if \(keepWrittenDay\(\)\) return false;/);

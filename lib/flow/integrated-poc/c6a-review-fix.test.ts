@@ -13,7 +13,7 @@ test('P1: every save of the space is refused while picking; input typed into a d
   // One gate for the space's saves and its undo/redo; props.mutate and the host's undo are reached only through it.
   assert.match(space, /const countedMutate: ProgramMutate = async \(label, build, options\) => \{ setSavesPending\(count => count \+ 1\); try \{ return await props\.mutate\(label, build, options\); \} finally \{ setSavesPending\(count => count - 1\); \} \};/);
   assert.match(space, /const mutate: ProgramMutate = \(label, build, options\) => selectingNow\.current \? Promise\.resolve\(\{ ok: false, reason: 'busy' \}\)\s*: countedMutate\(label, build, options\)/);
-  assert.match(space, /const onUndo = \(\) => selectingNow\.current \? Promise\.resolve\(\) : props\.onUndo\(\), onRedo = \(\) => selectingNow\.current \? Promise\.resolve\(\) : props\.onRedo\(\);/);
+  assert.match(space, /const onUndo = \(\) => selectingNow\.current \? Promise\.resolve\(\) : countedHistory\(props\.onUndo\), onRedo = \(\) => selectingNow\.current \? Promise\.resolve\(\) : countedHistory\(props\.onRedo\);/);
   assert.equal(space.match(/props\.mutate\b/g)?.length, 1, 'props.mutate only in countedMutate');
   assert.equal(space.match(/props\.on(Undo|Redo)\b/g)?.length, 2, 'the host undo/redo only in the gate');
   assert(!space.includes('const { data, mutate, today } = props'));
@@ -30,12 +30,12 @@ test('P1: every save of the space is refused while picking; input typed into a d
 });
 
 test('P2: 고르기 waits for any save of the space (a new 분류, an order, a document action), one state for all', () => {
-  assert.match(space, /const saving = savesPending > 0 \|\| preparingDocumentAction \|\| classificationCreating \|\| orderPending;/);
+  assert.match(space, /const saving = savesPending > 0 \|\| preparingDocumentAction \|\| classificationCreating \|\| orderPending \|\| !!props\.sourceReturnWaits\?\.\(\);/);
   assert.match(space, /: moving \? '순서를 옮기는 동안에는 고를 수 없습니다' : saving \? '저장하는 동안에는 고를 수 없습니다' : null;/);
 });
 
 test('P2: on a phone the covered bottom tabs are inert while picking, and come back after', () => {
-  const effect = space.slice(space.indexOf('// C6a review: on a phone the bar covers'), space.indexOf('}, [!!selecting]);'));
+  const at = space.indexOf('// C6a review: on a phone the bar covers'), effect = space.slice(at, space.indexOf('}, [!!selecting]);', at));
   assert(effect.length > 0);
   assert.match(effect, /const nav = root\.current\?\.ownerDocument\.querySelector\('\[data-main-tab\]'\)\?\.closest\('nav'\);/);
   assert.match(effect, /const wide = window\.matchMedia\('\(min-width: 701px\)'\);/);

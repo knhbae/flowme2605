@@ -94,3 +94,16 @@ test('an add may clear the line only if the title and time did not change while 
   const composed = entry.mark(); entry.compositionStart(); entry.compositionEnd();
   assert.equal(entry.unchangedSince(composed), false);
 });
+
+test('a composition whose end event never comes: blur or the next key or input that is not composing lets it go', () => {
+  const entry = createGroupAddEntry();
+  entry.compositionStart();
+  assert.equal(entry.submit('회의'), 'ignore'); assert.equal(entry.escape(), 'ignore');
+  // A key that is still composing keeps it.
+  entry.keySeen(true); assert.equal(entry.submit('회의'), 'ignore');
+  // The next key or input that is not composing: it is over.
+  entry.keySeen(false); assert.equal(entry.escape(), 'close'); assert.equal(entry.submit('회의'), 'add'); entry.settled();
+  // Blur ends it too (compositionEnd from the input's blur).
+  entry.compositionStart(); assert.equal(entry.leave(''), 'ignore');
+  entry.compositionEnd(); assert.equal(entry.leave(''), 'close');
+});
