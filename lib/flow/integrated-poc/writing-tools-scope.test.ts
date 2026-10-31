@@ -131,7 +131,7 @@ test('the writing bar keeps its contract: order, never dimmed by composition or 
   assert(source.includes('const barOff = inputLocked || !!props.readOnly;'));
   const button = between('function barButton(', '\n  }');
   assert(button.includes('disabled={barOff || off}') && button.includes('onPointerDown={event => { event.preventDefault(); }}'));
-  assert(source.includes('const busy = composingRef.current || !!draftRef.current?.getState().saving;')
+  assert(source.includes('const busy = composingRef.current || !!draftRef.current?.getState().saving && !indentsNow(action);')
     && source.includes('barHold.press(action, busy, area ? writingBarTarget(area, area.value, area.selectionStart, settled) : null)'));
   assert(between('function runBar(', '\n  }').includes('target.instance.enter(true)'));
   assert(/const writingBar = <div ref=\{barRef\} className=\{styles\.writingBar\} role="toolbar" aria-label="쓰기 도구" data-editor-tools>/.test(source));

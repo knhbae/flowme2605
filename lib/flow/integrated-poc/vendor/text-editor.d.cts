@@ -26,6 +26,8 @@ declare namespace editor {
     lineHints?: () => boolean;
     /** The row metadata may not match the text, so progress marks stay RAW. Defaults to isActionDisabled. */
     isPaintDisabled?: () => boolean;
+    /** ⇤·⇥ (indent and Tab) may run while other actions wait. Defaults to isActionDisabled. */
+    isIndentDisabled?: () => boolean;
     /** Compatibility alias: true turns lineBreakEnter and plusOpensAuthoring on and typingPickers off. */
     explicitAddOnly?:()=>boolean;
     /** Enter inserts one plain line break instead of the list continuation rules. */
