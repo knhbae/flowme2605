@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { parseProgramLocation } from './navigation';
-import { PROGRAM_RETURN_KEY, PROGRAM_RETURN_MS, programFlowShareUrl, rememberProgramReturn, shareProgramLink, takeProgramReturn } from './program-share-link';
+import { PROGRAM_RETURN_KEY, PROGRAM_RETURN_MS, forgetProgramReturn, programFlowShareUrl, rememberProgramReturn, shareProgramLink, takeProgramReturn } from './program-share-link';
 
 const memory = () => { const map = new Map<string, string>(); return { map, getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => { map.set(k, v); }, removeItem: (k: string) => { map.delete(k); } }; };
 
@@ -40,7 +40,7 @@ test('a sign-in returns once to the remembered place, within half an hour', () =
   rememberProgramReturn(store, '#flowme/flow/flow-move?version=flow-move-v2', now);
   assert.equal(takeProgramReturn(store, now + PROGRAM_RETURN_MS + 1), null);
   assert.equal(store.map.has(PROGRAM_RETURN_KEY), false);
-  rememberProgramReturn(store, '#flowme/discover', now);
+  rememberProgramReturn(store, '#flowme/flow/a', now);
   assert.equal(takeProgramReturn(store, now - 1), null);
   // Only exact, meaningful places are kept: not the default space, not a malformed or tampered fragment.
   for (const hash of ['#flowme/space', '', '#elsewhere', '#flowme/flow/a?version=v&item=', '#flowme/flow/a?item=i']) assert.equal(rememberProgramReturn(store, hash, now), false, hash);
@@ -52,12 +52,50 @@ test('a sign-in returns once to the remembered place, within half an hour', () =
   assert.equal(rememberProgramReturn(null, '#flowme/discover', now), false);
 });
 
+test('FC5 review 1·2: only a public Flow detail is remembered, and each attempt forgets the last one', () => {
+  const store = memory(), now = 1_000_000;
+  // A Flow, with or without its version, is kept; documents, drafts and other places never reach storage.
+  for (const hash of ['#flowme/flow/flow-move?version=flow-move-v2', '#flowme/flow/flow-move']) {
+    assert.equal(rememberProgramReturn(store, hash, now), true, hash);
+    assert.equal(takeProgramReturn(store, now), hash);
+  }
+  for (const hash of ['#flowme/space/doc-private', '#flowme/creator/draft-1', '#flowme/discover', '#flowme/community', '#flowme/space']) {
+    assert.equal(rememberProgramReturn(store, hash, now), false, hash);
+    assert.equal(store.map.has(PROGRAM_RETURN_KEY), false, hash);
+  }
+  // A stored document place (an older build, or a tampered entry) is not returned to.
+  store.map.set(PROGRAM_RETURN_KEY, JSON.stringify({ hash: '#flowme/space/doc-private', at: now }));
+  assert.equal(takeProgramReturn(store, now), null);
+  // Flow A, sign-in cancelled, then a new attempt from /alpha (or the default space): the A entry is gone.
+  for (const retry of ['', '#flowme/space']) {
+    rememberProgramReturn(store, '#flowme/flow/flow-a?version=flow-a-v1', now);
+    assert.equal(rememberProgramReturn(store, retry, now + 60_000), false);
+    assert.equal(takeProgramReturn(store, now + 120_000), null, retry || 'empty');
+  }
+  // A new attempt from another Flow replaces it.
+  rememberProgramReturn(store, '#flowme/flow/flow-a?version=flow-a-v1', now);
+  rememberProgramReturn(store, '#flowme/flow/flow-b?version=flow-b-v3', now + 1);
+  assert.equal(takeProgramReturn(store, now + 2), '#flowme/flow/flow-b?version=flow-b-v3');
+  forgetProgramReturn(null);
+});
+
 test('the sign-in wiring: Google remembers the place; the callback restores it once in place of plain /alpha', () => {
   const panel = readFileSync(new URL('../../../components/flow/integrated-poc/AlphaAuthPanel.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   const google = panel.slice(panel.indexOf('async function signInGoogle()'), panel.indexOf('const signedIn = '));
   assert(google.indexOf('rememberProgramReturn(') >= 0 && google.indexOf('rememberProgramReturn(') < google.indexOf('signInWithOAuth('));
   assert.match(panel, /window\.history\.replaceState\(null, '', `\/alpha\$\{takeProgramReturn\(tabStorage\(\), Date\.now\(\)\) \?\? ''\}`\);/);
   assert(!panel.includes("window.history.replaceState(null, '', '/alpha');"));
+  // A password sign-in, sign-up or reset is a new attempt too: it forgets an earlier Google attempt's place.
+  const submit = panel.slice(panel.indexOf("const result = mode === 'signup'") - 200, panel.indexOf("const result = mode === 'signup'"));
+  assert(submit.includes('forgetProgramReturn(tabStorage());'));
+});
+
+test('FC5 review 3: the link, the waiting state and a late answer belong to the Flow and version they were made for', () => {
+  const button = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramShareLink.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  assert(button.includes('const key = `${flowId}\\n${versionId}`;'));
+  assert(button.includes('const state = result?.key === key ? result : null, busy = busyKey === key;'));
+  assert(button.includes('setBusyKey(current => current === started ? null : current);'));
+  assert(button.includes('if (shown.current !== started) return;'));
 });
 
 test('three places, the same button: Flow detail ⋯, the publish panel, 내 활동 › 내 공개 Flow; never for an archived Flow', () => {
@@ -71,5 +109,5 @@ test('three places, the same button: Flow detail ⋯, the publish panel, 내 활
   assert(panel.indexOf('<ProgramShareLink') < panel.indexOf('공개한 Flow 보기') && panel.indexOf('공개한 Flow 보기') < panel.indexOf('>닫기<'));
   // The honest line, the unverified block, the 3-second result and the hand-copy fallback.
   for (const text of ['Alpha에 로그인한 사람만 열 수 있습니다.', '미확인 콘텐츠는 링크를 만들지 않습니다.', '링크를 복사했습니다', '길게 눌러 복사해 주세요']) assert(button.includes(text), text);
-  assert.match(button, /window\.setTimeout\(\(\) => setState\(null\), 3000\)/);
+  assert.match(button, /window\.setTimeout\(\(\) => setResult\(null\), 3000\)/);
 });

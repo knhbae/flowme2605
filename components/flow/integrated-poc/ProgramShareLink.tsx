@@ -14,18 +14,27 @@ function browserSharePort(): ProgramSharePort {
 /** FC5: the same button in three places (Flow detail ⋯, the publish panel, 내 활동 › 내 공개 Flow). It shares a
  *  version-pinned link to this page's Flow detail; success says so for 3 seconds, a failure shows the link to copy. */
 export function ProgramShareLink({ flowId, versionId, unverified = false }: { flowId: string; versionId: string; unverified?: boolean }) {
-  const [state, setState] = useState<{ outcome: ProgramShareOutcome; url: string } | null>(null);
-  const [busy, setBusy] = useState(false);
+  // FC5 review 3: the result, the waiting state and a late share answer belong to the Flow and version they were
+  // made for; another version shows none of them.
+  const key = `${flowId}\n${versionId}`;
+  const shown = useRef(key);
+  useEffect(() => { shown.current = key; }, [key]);
+  const [result, setResult] = useState<{ key: string; outcome: ProgramShareOutcome; url: string } | null>(null);
+  const [busyKey, setBusyKey] = useState<string | null>(null);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(timer.current), []);
+  const state = result?.key === key ? result : null, busy = busyKey === key;
   const run = async () => {
     if (busy || unverified) return;
     const url = programFlowShareUrl(`${window.location.origin}${window.location.pathname}`, flowId, versionId);
     if (!url) return;
-    setBusy(true); window.clearTimeout(timer.current);
+    const started = key;
+    setBusyKey(started); window.clearTimeout(timer.current);
     const outcome = await shareProgramLink(url, browserSharePort());
-    setBusy(false); setState({ outcome, url });
-    if (outcome === 'shared' || outcome === 'copied') timer.current = window.setTimeout(() => setState(null), 3000);
+    setBusyKey(current => current === started ? null : current);
+    if (shown.current !== started) return;
+    setResult({ key: started, outcome, url });
+    if (outcome === 'shared' || outcome === 'copied') timer.current = window.setTimeout(() => setResult(null), 3000);
   };
   return <div className={styles.share} data-share-link>
     <button type="button" disabled={busy || unverified} onClick={() => void run()}>링크 복사</button>

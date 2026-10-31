@@ -13,7 +13,7 @@ import {createAlphaLegacyWritingTransport} from '@/lib/flow/integrated-poc/alpha
 import { AlphaAuthenticatedWritingWorkspace } from './AlphaAuthenticatedWritingWorkspace';
 import type { AlphaAuthenticatedWritingPorts } from '@/lib/flow/integrated-poc/alpha-sync/authenticated-writing-shell';
 import {AlphaAppWritingWorkspace} from './AlphaAppWritingWorkspace';
-import { rememberProgramReturn, takeProgramReturn } from '@/lib/flow/integrated-poc/program-share-link';
+import { forgetProgramReturn, rememberProgramReturn, takeProgramReturn } from '@/lib/flow/integrated-poc/program-share-link';
 /** This tab's storage, which survives the sign-in redirect; null where the browser refuses it. */
 const tabStorage = () => { try { return window.sessionStorage; } catch { return null; } };
 
@@ -193,6 +193,8 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
         catch { setMessage('비밀번호는 변경했습니다. 브라우저의 복구 상태를 지우지 못해 다음 로그인에서 다시 확인할 수 있습니다.'); }
         return;
       }
+      // FC5 review 2: a new attempt never returns to an earlier Google attempt's place.
+      forgetProgramReturn(tabStorage());
       const result = mode === 'signup' ? await sdk.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: config.redirectUrl } })
         : mode === 'reset' ? await sdk.auth.resetPasswordForEmail(email.trim(), { redirectTo: config.redirectUrl })
         : await sdk.auth.signInWithPassword({ email: email.trim(), password });

@@ -31,10 +31,22 @@ export async function shareProgramLink(url: string, port: ProgramSharePort, wait
 /** Session storage (this tab, survives the sign-in redirect), read once and only within half an hour. */
 export const PROGRAM_RETURN_KEY = 'flowme-alpha-return/1';
 export const PROGRAM_RETURN_MS = 30 * 60_000;
-const meaningful = (hash: string) => typeof hash === 'string' && hash !== '#flowme/space' && programLocation(parseProgramLocation(hash)) === hash;
-/** Remembers an exact, readable place (not the default space) before the sign-in redirect drops the fragment. */
-export function rememberProgramReturn(storage: Pick<Storage, 'setItem'> | null, hash: string, now: number): boolean {
-  if (!storage || !meaningful(hash)) return false;
+/** Only a public Flow detail, with or without its version, read back exactly: never a document, draft or item
+ *  (FC5 review 1: those would put private IDs in storage). */
+const publicFlowPlace = (hash: string) => {
+  if (typeof hash !== 'string') return false;
+  const place = parseProgramLocation(hash);
+  return place.view === 'flow' && !!place.id && !place.itemId && programLocation(place) === hash;
+};
+/** Drops any remembered place: every sign-in attempt starts without the last one's (FC5 review 2). */
+export function forgetProgramReturn(storage: Pick<Storage, 'removeItem'> | null): void {
+  try { storage?.removeItem(PROGRAM_RETURN_KEY); } catch { /* nothing kept to return to */ }
+}
+/** Before the sign-in redirect drops the fragment: forgets the last attempt's place, then remembers this one when it
+ *  is a public Flow detail. */
+export function rememberProgramReturn(storage: Pick<Storage, 'setItem' | 'removeItem'> | null, hash: string, now: number): boolean {
+  forgetProgramReturn(storage);
+  if (!storage || !publicFlowPlace(hash)) return false;
   try { storage.setItem(PROGRAM_RETURN_KEY, JSON.stringify({ hash, at: now })); return true; } catch { return false; }
 }
 /** The remembered place, once: the entry is removed on every read, and an old or unreadable one returns nothing. */
@@ -46,6 +58,6 @@ export function takeProgramReturn(storage: Pick<Storage, 'getItem' | 'removeItem
     const value: unknown = raw ? JSON.parse(raw) : null;
     if (!value || typeof value !== 'object') return null;
     const { hash, at } = value as { hash?: unknown; at?: unknown };
-    return typeof hash === 'string' && typeof at === 'number' && at <= now && now - at <= PROGRAM_RETURN_MS && meaningful(hash) ? hash : null;
+    return typeof hash === 'string' && typeof at === 'number' && at <= now && now - at <= PROGRAM_RETURN_MS && publicFlowPlace(hash) ? hash : null;
   } catch { return null; }
 }
