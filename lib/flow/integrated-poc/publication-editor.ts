@@ -78,7 +78,7 @@ export function resolveProgramPrivatePublicationDraft(data: ProgramData, actorId
   // Another tab may have published this document and removed its draft. Never turn
   // an old create request into a second public Flow when keeping local input.
   const linked = data.spaces[actorId].publications.filter(link => link.documentId === mine.documentId);
-  if (linked.some(link => link.flowId !== mine.flowId) || expected && expected.flowId !== mine.flowId) return programFailure(data, 'conflict');
+  if ((linked.some(link => link.flowId !== mine.flowId) && !(canRepublishProgramDocument(data, actorId, mine.documentId) && programPublicationRepublishSource(data, actorId, mine))) || expected && expected.flowId !== mine.flowId) return programFailure(data, 'conflict');
   return saveProgramPublicationDraft(data, actorId, mine, expected);
 }
 function fingerprint(value: unknown): string {
@@ -108,10 +108,15 @@ export function createProgramPublicationDraft(data: ProgramData, documentId: str
   const actorId = data.activeActorId; const space = data.spaces[actorId]; const fingerprint = documentFingerprint(data, actorId, documentId);
   if (!space || fingerprint === null) return null;
   const retained = space.publicationDrafts.find(row => row.documentId === documentId);
-  if (retained) return programClone(retained);
+  if (retained) {
+    const flow = data.public.flows.find(flow => flow.id === retained.flowId && flow.ownerId === actorId && flow.archived);
+    return flow && canRepublishProgramDocument(data, actorId, documentId)
+      ? createProgramRepublishDraft(data, documentId, flow.id, now, retained) : programClone(retained);
+  }
   const linkedFlows = space.publications.flatMap(link => data.public.flows.filter(flow => flow.id === link.flowId && link.documentId === documentId && flow.ownerId === actorId));
-  const linked = linkedFlows.find(flow => !flow.archived) ?? linkedFlows[0];
+  const linked = linkedFlows.find(flow => !flow.archived) ?? linkedFlows.at(-1);
   const current = linked && data.public.versions.find(version => version.id === linked.currentVersionId);
+  if (linked?.archived) return createProgramRepublishDraft(data, documentId, linked.id, now);
   const rows: ProgramPublicationDraftRow[] = [];
   for (const row of M.rowMeta(space.text, documentId)) {
     if (row.kind !== 'task' && row.kind !== 'note') continue;
@@ -137,6 +142,8 @@ export function createProgramPublicationDraft(data: ProgramData, documentId: str
 export function saveProgramPublicationDraft(data: ProgramData, actorId: string, draft: ProgramPublicationDraft, expected: ProgramPublicationDraft | null): ProgramTransition<string> {
   if (data.activeActorId !== actorId || !data.spaces[actorId]) return programFailure(data, 'forbidden');
   if (documentFingerprint(data, actorId, draft.documentId) === null) return programFailure(data, 'missing');
+  if (data.public.flows.some(flow => flow.id === draft.flowId && flow.archived)
+    && !canRepublishProgramDocument(data, actorId, draft.documentId)) return programFailure(data, 'conflict');
   const existing = data.spaces[actorId].publicationDrafts.find(row => row.documentId === draft.documentId) ?? null;
   if (!same(existing, expected)) return programFailure(data, 'conflict');
   if (same(existing, draft)) return { ok: true, data, changed: false, result: draft.id };
@@ -144,7 +151,46 @@ export function saveProgramPublicationDraft(data: ProgramData, actorId: string, 
   return validateProgramData(next) ? programResult(data, next, draft.id) : programFailure(data, 'invalid');
 }
 
-export function programPublicationInput(draft: ProgramPublicationDraft, actorId: string): PublishProgramFlowInput | null {
+/** The private draft keeps the old pointer so 763/N2 can still read it on rollback. */
+export function canRepublishProgramDocument(data: ProgramData, actorId: string, documentId: string): boolean {
+  const space = data.spaces[actorId];
+  if (data.activeActorId !== actorId || !space || documentFingerprint(data, actorId, documentId) === null) return false;
+  const links = space.publications.filter(link => link.documentId === documentId);
+  return links.length > 0 && links.every(link => data.public.flows.some(flow => flow.id === link.flowId && flow.ownerId === actorId && flow.archived));
+}
+export function programPublicationRepublishSource(data: ProgramData, actorId: string, draft: ProgramPublicationDraft) {
+  const flow = data.public.flows.find(row => row.id === draft.flowId && row.ownerId === actorId && row.archived);
+  const version = flow && data.public.versions.find(row => row.id === flow.currentVersionId && row.flowId === flow.id);
+  if (data.activeActorId !== actorId || !flow || !version || draft.expectedVersionId !== version.id
+    || !data.spaces[actorId]?.publications.some(link => link.documentId === draft.documentId && link.flowId === flow.id)
+    || !same(draft.derivedFrom, flow.derivedFrom) || draft.sourceKind !== (version.source.kind === 'simulated-example' ? 'simulated-example' : 'user-text')) return null;
+  return { flow, version };
+}
+/** Keep retained input intact; otherwise seed exactly the last public item order. */
+export function createProgramRepublishDraft(data: ProgramData, documentId: string, flowId: string, now: string, input?: ProgramPublicationDraft): ProgramPublicationDraft | null {
+  const actorId = data.activeActorId, space = data.spaces[actorId];
+  if (!canRepublishProgramDocument(data, actorId, documentId)) return null;
+  const flow = data.public.flows.find(row => row.id === flowId && row.ownerId === actorId && row.archived);
+  const version = flow && data.public.versions.find(row => row.id === flow.currentVersionId && row.flowId === flow.id);
+  if (!flow || !version || !space.publications.some(link => link.documentId === documentId && link.flowId === flowId)) return null;
+  const retained = input ?? publicationDraftAt(data, actorId, documentId);
+  if (retained && (retained.documentId !== documentId || retained.flowId !== flowId)) return null;
+  const meta = M.rowMeta(space.text, documentId);
+  const draft: ProgramPublicationDraft = retained ? programClone(retained) : {
+    id: programId('publication-draft'), documentId, requestId: programId('publication-request'), flowId, expectedVersionId: version.id,
+    sourceDocumentFingerprint: documentFingerprint(data, actorId, documentId)!, title: version.title, summary: version.summary,
+    category: flow.category, situationsText: flow.situations.join(', '), sourceKind: version.source.kind === 'simulated-example' ? 'simulated-example' : 'user-text',
+    sourceLabel: version.source.label, sourceUrl: version.source.url ?? '', derivedFrom: programClone(flow.derivedFrom), updatedAt: now,
+    rows: version.items.map(item => { const row = meta.find(row => publicId(row.id) === item.id && (row.kind === 'task' || row.kind === 'note'));
+      return fromPublic(item, row?.id ?? null, row?.kind === 'note' ? 'note' : row?.kind === 'task' ? 'task' : 'previous-public'); }),
+  };
+  // These are original provenance and transaction metadata, never editable input.
+  draft.flowId = flowId; draft.expectedVersionId = version.id; draft.derivedFrom = programClone(flow.derivedFrom);
+  draft.sourceKind = version.source.kind === 'simulated-example' ? 'simulated-example' : 'user-text';
+  if (data.receipts.some(receipt => receipt.actorId === actorId && receipt.id === draft.requestId && receipt.kind === 'publication')) draft.requestId = programId('publication-request');
+  return draft;
+}
+export function programPublicationInput(draft: ProgramPublicationDraft, actorId: string, options: { newFlow?: boolean } = {}): PublishProgramFlowInput | null {
   if (!draft.title.trim() || !draft.category.trim() || !draft.sourceLabel.trim()) return null;
   if (draft.sourceUrl.trim() && classifyProgramUrl(draft.sourceUrl.trim(), []).kind === 'invalid') return null;
   const items: ProgramPublicItem[] = [];
@@ -164,7 +210,7 @@ export function programPublicationInput(draft: ProgramPublicationDraft, actorId:
       subchecks: row.subchecks.map(check => ({ id: check.id, title: check.title })) });
   }
   if (!items.length) return null;
-  return { actorId, requestId: draft.requestId, ...(draft.flowId ? { flowId: draft.flowId, expectedVersionId: draft.expectedVersionId ?? undefined } : {}),
+  return { actorId, requestId: draft.requestId, ...(draft.flowId && !options.newFlow ? { flowId: draft.flowId, expectedVersionId: draft.expectedVersionId ?? undefined } : {}),
     title: draft.title.trim(), summary: draft.summary, category: draft.category.trim(), situations: [...new Set(draft.situationsText.split(',').map(value => value.trim()).filter(Boolean))],
     source: { kind: draft.sourceKind, label: draft.sourceLabel.trim(), url: draft.sourceUrl.trim() || null, checkedAt: null },
     derivedFrom: draft.derivedFrom ? { flowId: draft.derivedFrom.flowId, versionId: draft.derivedFrom.versionId } : null, items };
@@ -176,10 +222,16 @@ export function publishProgramDocument(data: ProgramData, actorId: string, draft
   if (data.activeActorId !== actorId || !data.spaces[actorId]) return programFailure(data, 'forbidden');
   if (!sameFingerprint(documentFingerprint(data, actorId, draft.documentId), draft.sourceDocumentFingerprint)) return programFailure(data, 'conflict');
   if (!programPublicationSeriesSourcesCurrent(data, actorId, draft)) return programFailure(data, 'conflict');
-  const input = programPublicationInput(draft, actorId); if (!input) return programFailure(data, 'invalid');
+  const archivedTarget = data.public.flows.some(flow => flow.id === draft.flowId && flow.ownerId === actorId && flow.archived);
+  if (archivedTarget && !programPublicationRepublishSource(data, actorId, draft)) return programFailure(data, 'conflict');
+  const input = programPublicationInput(draft, actorId, { newFlow: archivedTarget }); if (!input) return programFailure(data, 'invalid');
   const stored = data.spaces[actorId].publicationDrafts.find(row => row.id === draft.id);
   const replay = data.receipts.find(row => row.actorId === actorId && row.id === draft.requestId && row.kind === 'publication');
   if (!replay && !same(stored, draft)) return programFailure(data, 'conflict');
+  // Check the latest transaction state, not only the UI or draft preparation.
+  // A second tab must not create another active Flow for this document.
+  if (!replay && (archivedTarget && !canRepublishProgramDocument(data, actorId, draft.documentId)
+    || !draft.flowId && data.spaces[actorId].publications.some(link => link.documentId === draft.documentId))) return programFailure(data, 'conflict');
   const published = publishProgramFlow(data, input, now); if (!published.ok) return published;
   const version = published.data.public.versions.find(row => row.id === published.result); if (!version) return programFailure(data, 'missing');
   const next = programClone(published.data); const space = next.spaces[actorId];
