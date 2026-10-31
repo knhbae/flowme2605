@@ -48,10 +48,13 @@ export function ProgramGroupAddRow(props: { date: string; dayLabel: string; inpu
     <form ref={formRef} onFocus={() => { focusCount.current++; }} onSubmit={event => { event.preventDefault(); void act(entry.submit(props.inputRef.current?.value ?? '')); }}
       onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) void act(entry.leave(props.inputRef.current?.value ?? ''), true); }}>
       <input ref={props.inputRef} name="title" aria-label={`${props.dayLabel}에 추가할 할 일`} placeholder="할 일" maxLength={500} autoComplete="off" enterKeyHint="done"
-        onInput={() => entry.edited()} onCompositionStart={() => entry.compositionStart()} onCompositionEnd={() => entry.compositionEnd()}
+        onInput={event => { entry.edited(); entry.keySeen((event.nativeEvent as InputEvent).isComposing); }} onCompositionStart={() => entry.compositionStart()} onCompositionEnd={() => entry.compositionEnd()}
+        onBlur={() => entry.compositionEnd()}
         onKeyDown={event => {
-          // Leave a composing key to the IME; the Enter after it is the one that adds.
+          // Leave a composing key to the IME; the Enter after it is the one that adds. A key that is not composing
+          // also ends a composition whose end event never came (C5 re-review 2).
           if (event.nativeEvent.isComposing) return;
+          if (event.keyCode !== 229) entry.keySeen(false);
           if (event.key === 'Enter') { event.preventDefault(); void act(entry.submit(event.currentTarget.value)); }
           else if (event.key === 'Escape') { event.preventDefault(); void act(entry.escape()); }
         }} />

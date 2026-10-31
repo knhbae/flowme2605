@@ -13,6 +13,8 @@ export function createGroupAddEntry() {
     mark() { return edits; },
     unchangedSince(mark: number) { return edits === mark; },
     compositionEnd() { composing = false; },
+    /** A key or input of the line: one that is not composing means a composition whose end event never came is over. */
+    keySeen(isComposing: boolean) { if (!isComposing) composing = false; },
     /** Enter or the 추가 button. `isComposing` is the key event's own flag (false for a button). */
     submit(title: string, isComposing = false): GroupAddAction {
       if (composing || isComposing || saving) return 'ignore';

@@ -7,6 +7,27 @@ import { validateProgramOrdinaryTimingDraft } from '../public-ordinary-time';
 import { isProgramCreatorDraftJson } from '../creator-draft-provenance';
 
 export const ALPHA_SOCIAL_COMMAND_SCHEMA = 'flowme-alpha-social-command/1' as const;
+/** C6b: one task's new date in a change of several, with the date and time it had when picked and a token of its
+ *  whole state (lines, progress, a copy's override; any change since refuses the whole change). clearOverride, on a
+ *  copy's task only, takes its date override away again (되돌리기). */
+export type AlphaTaskDateMove = { taskId:string; expected:{ date:string|null; time:string; state?:string }; date:string|null; clearOverride?:true };
+export const ALPHA_TASK_DATE_MOVE_LIMIT = 100;
+const taskTime=(v:unknown)=>typeof v==='string'&&(v===''||/^([01]\d|2[0-3]):[0-5]\d$/.test(v));
+/** The wire shape of a C6b list: 1-100 moves, each task once, real dates (or none) and times. */
+export function isAlphaTaskDateMoves(v:unknown):v is AlphaTaskDateMove[] {
+ if(!Array.isArray(v)||!v.length||v.length>ALPHA_TASK_DATE_MOVE_LIMIT)return false;
+ const ids=new Set<string>();
+ for(const move of v){
+  if(!programRecord(move)||!['taskId','expected','date'].every(k=>Object.hasOwn(move,k))||Object.keys(move).some(k=>!['taskId','expected','date','clearOverride'].includes(k))
+   ||!programIdentifier(move.taskId)||ids.has(move.taskId))return false;
+  ids.add(move.taskId);
+  const expected=move.expected;
+  if(!programRecord(expected)||!['date','time'].every(k=>Object.hasOwn(expected,k))||Object.keys(expected).some(k=>!['date','time','state'].includes(k))
+   ||!(expected.date===null||programDate(expected.date))||!taskTime(expected.time)||expected.state!==undefined&&!(typeof expected.state==='string'&&/^[0-9a-z]{1,64}$/.test(expected.state)))return false;
+  if(!(move.date===null||programDate(move.date))||move.clearOverride!==undefined&&move.clearOverride!==true)return false;
+ }
+ return true;
+}
 export type AlphaSocialIntent =
  | { type:'publication-save'; draft:ProgramPublicationDraft; expected:ProgramPublicationDraft|null }
  | { type:'publication-discard'; draftId:string; expected:ProgramPublicationDraft }
@@ -18,6 +39,7 @@ export type AlphaSocialIntent =
  | { type:'copy-import'; versionId:string; itemIds:string[]; anchor:string|null; targetDocumentId?:string; recurrenceStarts?:Record<string,string|null> }
  | { type:'copy-anchor'; copyId:string; anchor:string|null }
  | { type:'private-task-schedule'; copyId:string; itemId:string; taskId:string; date:string|null; time:string }
+ | { type:'private-task-dates'; moves:AlphaTaskDateMove[] }
  | { type:'copy-inclusion'; copyId:string; itemId:string; included:boolean }
  | { type:'copy-series-start'; copyId:string; itemId:string; start:string|null }
  | { type:'copy-series-link'; copyId:string; itemId:string; documentId:string }
@@ -72,6 +94,7 @@ export function isAlphaSocialIntent(v:unknown):v is AlphaSocialIntent {
    case 'publication-archive':return shape(['documentId','flowId','expectedVersionId'])&&named('documentId','flowId','expectedVersionId');
    case 'copy-import':return shape(['versionId','itemIds','anchor'],['targetDocumentId','recurrenceStarts'])&&named('versionId')&&ids(v.itemIds)&&date(v.anchor)&&(v.targetDocumentId===undefined||named('targetDocumentId'))&&(v.recurrenceStarts===undefined||programRecord(v.recurrenceStarts)&&Object.entries(v.recurrenceStarts).every(([k,x])=>programIdentifier(k)&&date(x)));
    case 'copy-anchor':return shape(['copyId','anchor'])&&named('copyId')&&date(v.anchor);
+   case 'private-task-dates':return shape(['moves'])&&isAlphaTaskDateMoves(v.moves);
    case 'private-task-schedule':return shape(['copyId','itemId','taskId','date','time'])&&named('copyId','itemId','taskId')&&date(v.date)&&typeof v.time==='string'&&(v.time===''||/^([01]\d|2[0-3]):[0-5]\d$/.test(v.time));
    case 'copy-inclusion':return shape(['copyId','itemId','included'])&&named('copyId','itemId')&&typeof v.included==='boolean';
    case 'copy-series-start':return shape(['copyId','itemId','start'])&&named('copyId','itemId')&&date(v.start);

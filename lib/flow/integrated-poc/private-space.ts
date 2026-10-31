@@ -154,28 +154,31 @@ export function setProgramDocumentFolder(data: ProgramData, input: ProgramPrivat
 }
 
 export function updateProgramTask(data: ProgramData, input: ProgramPrivateMutationBase & { taskId: string; patch: { title?: string; date?: string | null; note?: string; time?: string } }): ProgramTransition<string> {
-  return mutate(data, input, 'private-task-update', { taskId: input.taskId, patch: input.patch }, space => {
-    if (programReferenceExecutionAccess(space, input.taskId).kind !== 'active') return { result: input.taskId, reason: 'unresolved' };
-    if (programLegacyTaskQualityHold(space, input.taskId) || programLegacyPlanTaskExcluded(space, input.taskId)) return { result: input.taskId, reason: 'unresolved' };
-    const before = documents(space.text).flatMap(doc => M.parseDocument(doc, space.text).items).find(task => task.id === input.taskId);
-    if (!before) return { result: input.taskId, reason: 'missing' };
-    if (!programRecord(input.patch) || !Object.keys(input.patch).length || Object.keys(input.patch).some(key => !['title', 'date', 'note', 'time'].includes(key))) return { result: input.taskId, reason: 'invalid' };
-    const unchanged = Object.entries(input.patch).every(([key, value]) => key === 'date' ? before.date === value
-      : typeof value === 'string' && (key === 'time' ? before.time ?? '' : before[key as 'title' | 'note']) === value.trim());
-    if (unchanged) return { result: input.taskId };
-    const next = M.updateTask(space.text, input.taskId, input.patch);
-    if (next === space.text && Object.entries(input.patch).some(([key, value]) => before[key as keyof typeof before] !== value)) return { result: input.taskId, reason: 'invalid' };
-    space.text = next;
-    const copy = space.copies.find(copy => Object.values(copy.itemLines).includes(input.taskId));
-    if (copy) {
-      const itemId = Object.keys(copy.itemLines).find(id => copy.itemLines[id] === input.taskId)!;
-      const override = copy.itemOverrides[itemId] ?? {};
-      if (input.patch.title !== undefined) override.title = input.patch.title.trim();
-      if (input.patch.date !== undefined) override.date = input.patch.date;
-      if (Object.keys(override).length) copy.itemOverrides[itemId] = override;
-    }
-    return { result: input.taskId };
-  });
+  return mutate(data, input, 'private-task-update', { taskId: input.taskId, patch: input.patch }, space => patchProgramTask(space, input.taskId, input.patch));
+}
+/** The row detail's change of one task, on a space being changed: its checks, the text, and a copy's override. Also
+ *  each task of C6b's several dates at once (task-date-move.ts), so both mean the same. */
+export function patchProgramTask(space: ProgramPrivateSpace, taskId: string, patch: { title?: string; date?: string | null; note?: string; time?: string }): { result: string; reason?: ProgramFailure } {
+  if (programReferenceExecutionAccess(space, taskId).kind !== 'active') return { result: taskId, reason: 'unresolved' };
+  if (programLegacyTaskQualityHold(space, taskId) || programLegacyPlanTaskExcluded(space, taskId)) return { result: taskId, reason: 'unresolved' };
+  const before = documents(space.text).flatMap(doc => M.parseDocument(doc, space.text).items).find(task => task.id === taskId);
+  if (!before) return { result: taskId, reason: 'missing' };
+  if (!programRecord(patch) || !Object.keys(patch).length || Object.keys(patch).some(key => !['title', 'date', 'note', 'time'].includes(key))) return { result: taskId, reason: 'invalid' };
+  const unchanged = Object.entries(patch).every(([key, value]) => key === 'date' ? before.date === value
+    : typeof value === 'string' && (key === 'time' ? before.time ?? '' : before[key as 'title' | 'note']) === value.trim());
+  if (unchanged) return { result: taskId };
+  const next = M.updateTask(space.text, taskId, patch);
+  if (next === space.text && Object.entries(patch).some(([key, value]) => before[key as keyof typeof before] !== value)) return { result: taskId, reason: 'invalid' };
+  space.text = next;
+  const copy = space.copies.find(copy => Object.values(copy.itemLines).includes(taskId));
+  if (copy) {
+    const itemId = Object.keys(copy.itemLines).find(id => copy.itemLines[id] === taskId)!;
+    const override = copy.itemOverrides[itemId] ?? {};
+    if (patch.title !== undefined) override.title = patch.title.trim();
+    if (patch.date !== undefined) override.date = patch.date;
+    if (Object.keys(override).length) copy.itemOverrides[itemId] = override;
+  }
+  return { result: taskId };
 }
 
 export function recordProgramTaskProgress(data: ProgramData, input: ProgramPrivateMutationBase & { taskId: string; date: string; percent: number; correctionAsOfDate?: string }): ProgramTransition<string> {

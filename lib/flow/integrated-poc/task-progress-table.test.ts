@@ -41,7 +41,8 @@ test('checkbox history, a numeric token, a reopened task and a broken text all m
 
 test('today and classification rows read the table, not the model once per row', () => {
   const source = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
-  const start = source.indexOf('executionList.map(item =>'), end = source.indexOf('className={styles.task} data-task-id', start);
+  // C5 moved the list's item rendering into renderListItem (the calendar's day sheet and panel draw rows with it too).
+  const start = source.indexOf('function renderListItem('), end = source.indexOf('className={styles.task} data-task-id', start);
   assert.ok(start > 0 && end > start);
   const rows = source.slice(start, end);
   assert.match(rows, /taskProgress\(task\.id\)/);

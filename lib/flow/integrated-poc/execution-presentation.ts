@@ -6,7 +6,8 @@ import { programCalendarDate, programDateLabel, programOverdueLabel } from './da
 
 export type ProgramExecutionDayGroup = 'on-date' | 'past-incomplete';
 export type ProgramExecutionListItem =
-  | { kind: 'heading'; key: string; label: string; late: boolean; addDate: string | null }
+  /** `orderDate`: I7, this one day is ordered by hand and differs from time order ('직접 정렬 · 시간순으로'). */
+  | { kind: 'heading'; key: string; label: string; late: boolean; addDate: string | null; orderDate?: string }
   /** `dated`: a heading above already says this row's date. */
   | { kind: 'row'; entry: ProgramOrderedExecutionRow; group: ProgramExecutionDayGroup | null; dated: boolean }
   | { kind: 'empty-days'; dates: string[]; open: boolean };
@@ -18,8 +19,10 @@ const incomplete = (entry: ProgramOrderedExecutionRow) => entry.kind === 'text-t
  * Today splits into past incomplete and the viewed day; week and month get one heading per day,
  * and their days without rows fold into one line (shown as empty headings when open). */
 export function programExecutionList(rows: readonly ProgramOrderedExecutionRow[], period: ProgramPeriod,
-  date: string, today: string, emptyDaysOpen = false): ProgramExecutionListItem[] {
+  date: string, today: string, emptyDaysOpen = false, manual: ReadonlyMap<string, unknown> = new Map()): ProgramExecutionListItem[] {
   const items: ProgramExecutionListItem[] = [];
+  // I7: only a heading of one day carries it (지난 미완료 mixes days).
+  const order = (day: string) => manual.has(day) ? { orderDate: day } : {};
   if (period === 'today') {
     const groups = rows.map(entry => !programDate(date) || !programDate(entry.date) ? null
       : entry.date === date ? 'on-date' as const : entry.date! < date && incomplete(entry) ? 'past-incomplete' as const : null);
@@ -28,12 +31,15 @@ export function programExecutionList(rows: readonly ProgramOrderedExecutionRow[]
       const group = groups[index];
       if (group && group !== groups[index - 1]) items.push(group === 'past-incomplete'
         ? { kind: 'heading', key: 'heading:past', label: `지난 미완료 · ${late}`, late: true, addDate: null }
-        : { kind: 'heading', key: `heading:${date}`, label: dayHeading(date, today), late: false, addDate: date });
+        : { kind: 'heading', key: `heading:${date}`, label: dayHeading(date, today), late: false, addDate: date, ...order(date) });
       items.push({ kind: 'row', entry, group, dated: group === 'on-date' });
     });
     return items;
   }
-  if (period !== 'week' && period !== 'month') return rows.map(entry => ({ kind: 'row', entry, group: null, dated: period === 'undated' }));
+  // 날짜 없음 has no headings; a hand-made order gets one, to carry its button.
+  if (period === 'undated' && manual.has('undated') && rows.length)
+    items.push({ kind: 'heading', key: 'heading:undated', label: '날짜 없음', late: false, addDate: null, orderDate: 'undated' });
+  if (period !== 'week' && period !== 'month') return [...items, ...rows.map(entry => ({ kind: 'row' as const, entry, group: null, dated: period === 'undated' }))];
   const range = programDateRange(period, date), days: string[] = [];
   for (let day = range.from ?? ''; programDate(day) && day <= range.to!; day = programShiftDate(day, 1)) days.push(day);
   const counts = new Map<string, number>();
@@ -45,14 +51,24 @@ export function programExecutionList(rows: readonly ProgramOrderedExecutionRow[]
     if (index === 0 || entry.date !== rows[index - 1].date) {
       if (emptyDaysOpen) while (next < empty.length && (!entry.date || empty[next] < entry.date)) items.push(emptyHeading(empty[next++]));
       items.push(entry.date
-        ? { kind: 'heading', key: `heading:${entry.date}`, label: `${dayHeading(entry.date, today)} · ${counts.get(entry.date)}`, late: false, addDate: programDate(entry.date) ? entry.date : null }
-        : { kind: 'heading', key: 'heading:undated', label: `날짜 없음 · ${counts.get('')}`, late: false, addDate: null });
+        ? { kind: 'heading', key: `heading:${entry.date}`, label: `${dayHeading(entry.date, today)} · ${counts.get(entry.date)}`, late: false, addDate: programDate(entry.date) ? entry.date : null, ...order(entry.date) }
+        : { kind: 'heading', key: 'heading:undated', label: `날짜 없음 · ${counts.get('')}`, late: false, addDate: null, ...order('undated') });
     }
     items.push({ kind: 'row', entry, group: null, dated: true });
   });
   if (emptyDaysOpen) while (next < empty.length) items.push(emptyHeading(empty[next++]));
   if (empty.length) items.push({ kind: 'empty-days', dates: empty, open: emptyDaysOpen });
   return items;
+}
+
+/** C5: one day's group for the calendar's sheet or panel, as the list heads it: the heading (its count, ＋ and
+ *  I7's '시간순으로' when ordered by hand), then that day's rows in list order. A day without rows is its heading. */
+export function programExecutionDay(rows: readonly ProgramOrderedExecutionRow[], day: string, today: string,
+  manual: ReadonlyMap<string, unknown> = new Map()): ProgramExecutionListItem[] {
+  const own = rows.filter(entry => entry.date === day);
+  return [{ kind: 'heading', key: `heading:${day}`, label: own.length ? `${dayHeading(day, today)} · ${own.length}` : dayHeading(day, today), late: false,
+    addDate: programDate(day) ? day : null, ...(manual.has(day) ? { orderDate: day } : {}) },
+  ...own.map(entry => ({ kind: 'row' as const, entry, group: null, dated: true }))];
 }
 
 /** One row's date words: "20일 지남" stays apart so it can carry the warning colour. */
