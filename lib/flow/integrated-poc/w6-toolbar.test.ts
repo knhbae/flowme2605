@@ -54,6 +54,13 @@ test('an empty document shows a two-line hint, and the writing example is in its
   assert(editor.includes("textarea.placeholder = props.readOnly ? '' : props.directWriting ? '여기에 바로 적으세요' : EMPTY_DOCUMENT_HINT;"));
   // The textarea text is transparent over the mirror; its placeholder needs its own color.
   assert.match(css, /\.host :global\(\.tle-textarea::placeholder\)[^{]*\{[^}]*-webkit-text-fill-color: var\(--flowme-b-muted\);/);
+  // S4 N3 W1: the editor masks the textarea to its one empty row once focused and hides it in reading view; while
+  // the hint shows, both step aside so its two lines show before and after focus.
+  const vendor = readFileSync(new URL('./vendor/text-editor.css', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  assert(vendor.includes('.tle-root[data-mode="live"].tle-native-input .tle-textarea,\n') && vendor.includes('mask-image: linear-gradient(to bottom, transparent var(--tle-native-top)'));
+  assert(vendor.includes('.tle-root.tle-reading-view .tle-textarea { opacity: 0; pointer-events: none; }'));
+  assert(css.includes('.host :global(.tle-root[data-mode="live"].tle-native-input .tle-textarea:placeholder-shown) { -webkit-mask-image: none; mask-image: none; }'));
+  assert(css.includes('.host :global(.tle-root[data-mode="live"].tle-reading-view .tle-textarea:placeholder-shown) { opacity: 1; }'));
   assert(editor.includes('{props.onWritingExample && <button type="button" disabled={insertionDisabled} onClick={() => { closePanel(); props.onWritingExample?.(); }}>작성 예시 넣기'));
   assert(!space.includes('{selectedDocumentExample}'));
   assert(space.includes('onWritingExample={selected === id && writingExampleReady ? () => { void applyWritingExample(); } : undefined}'));
