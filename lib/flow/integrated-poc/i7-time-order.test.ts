@@ -94,6 +94,12 @@ test('a day ordered again since refuses 되돌리기; an unrelated save does not
   assert(validateProgramData(deleted));
   const afterDelete = restoreProgramExecutionDayOrder(deleted, { actorId: deleted.activeActorId, removed }); assert(afterDelete.ok);
   assert.deepEqual(readProgramDayOrder(space(afterDelete.data), day).legacy, removed.legacy!.filter(id => id !== gone));
+  // Review P2: the mixed array drops it too; an occurrence's place (not a text task) stays.
+  assert.deepEqual(readProgramDayOrder(space(afterDelete.data), day).mixed, removed.mixed!.filter(key => JSON.parse(key)[2] !== gone));
+  assert.equal(removed.mixed!.some(key => JSON.parse(key)[2] === gone), true, 'the deleted task had a place');
+  const occurrence = JSON.stringify(['occurrence', 'series-a', 'item-a', 'plan-a', 'rev-a', 'occ-a', day]);
+  const withOccurrence = restoreProgramExecutionDayOrder(deleted, { actorId: deleted.activeActorId, removed: { ...removed, mixed: [occurrence, ...removed.mixed!] } });
+  assert(withOccurrence.ok); assert.equal(readProgramDayOrder(space(withOccurrence.data), day).mixed![0], occurrence);
   // 시간순으로 from a screen that showed another order: refused.
   const stale = resetProgramExecutionDayOrder(byHand(ordered), { actorId: ordered.activeActorId, expected: removed });
   assert(!stale.ok); assert.equal(stale.reason, 'conflict');
@@ -145,8 +151,9 @@ test('the list wires it: heading button, today menu, notice with 되돌리기, h
   assert.match(source, /\{item\.orderDate && !moving && <><span className=\{styles\.manualOrder\}>직접 정렬<\/span><button type="button" className=\{styles\.timeOrder\}/);
   assert.match(source, /aria-label=\{`\$\{orderDayName\(item\.orderDate\)\} 순서를 시간순으로 되돌리기`\}/);
   assert.match(source, /hideDayHeadings && manualOrderDays\.has\(date\) && !moving && <button type="button" disabled=\{orderPending\}\s*onClick=\{\(\) => \{ if \(noteFindMenu\.current\) noteFindMenu\.current\.open = false; void resetDayOrder\(date\); \}\}>오늘 순서를 시간순으로<\/button>/);
-  assert.match(source, /const result = await run\('시간순으로 정렬', current => resetProgramExecutionDayOrder\(current, \{ actorId, expected \}\)\);/);
-  assert.match(source, /const result = await run\('순서 되돌리기', current => restoreProgramExecutionDayOrder\(current, \{ actorId, removed: notice\.removed \}\)\);/);
+  // Review P2: both wait out the host's automatic read (R4), like a completion tap, instead of being refused as busy.
+  assert.match(source, /const result = await run\('시간순으로 정렬', current => resetProgramExecutionDayOrder\(current, \{ actorId, expected \}\), true, undefined, undefined, true\);/);
+  assert.match(source, /const result = await run\('순서 되돌리기', current => restoreProgramExecutionDayOrder\(current, \{ actorId, removed: notice\.removed \}\), true, undefined, undefined, true\);/);
   assert.match(source, /'그 뒤 순서가 바뀌어 되돌리지 않았습니다'/);
   assert.match(source, /`\$\{orderDayName\(notice\.removed\.date\)\} 순서를 시간순으로 되돌렸습니다\$\{notice\.hidden \? ` · 숨긴 할 일 \$\{notice\.hidden\}개 포함` : ''\}`/);
   assert.match(source, /if \(orderBusy\.current\) return;/);

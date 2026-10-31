@@ -4,7 +4,7 @@ import { programSame } from './controller';
 import { programExecutionTasks } from './execution';
 import { programRecurrencePeriodRows } from './recurrence-target';
 import { type ProgramExecutionOccurrenceRow } from './recurrence-state';
-import { type TextTask } from './text-workspace';
+import { textWorkspaceModel as M, type TextTask } from './text-workspace';
 import { type ProgramExecutionTimelineOrders } from './recurrence-order-contract';
 type Space = ProgramPrivateSpace & { executionTimelineOrders?: ProgramExecutionTimelineOrders };
 export type ProgramExecutionQuery = Parameters<typeof programRecurrencePeriodRows>[1];
@@ -118,7 +118,7 @@ export function resetProgramExecutionDayOrder(data: ProgramData, input: { actorI
 }
 /** Its 되돌리기, a new change (I10): both arrays back as they were, each present or not, only while the day still
  *  has no saved order; one saved since (here or on another device) refuses it. A task deleted since loses its
- *  place in the old array, as a text edit drops it. */
+ *  place in both arrays, as a text edit drops it; an occurrence's place stays (the order reads only live ones). */
 export function restoreProgramExecutionDayOrder(data: ProgramData, input: { actorId: string; removed: ProgramDayOrder }): ProgramTransition<string> {
   if (data.activeActorId !== input.actorId) return programFailure(data, 'forbidden');
   if (!validateProgramData(data)) return programFailure(data, 'invalid');
@@ -126,7 +126,9 @@ export function restoreProgramExecutionDayOrder(data: ProgramData, input: { acto
   if (now.mixed !== null || now.legacy !== null) return programFailure(data, 'conflict');
   if (mixed === null && legacy === null) return { ok: true, data, changed: false, result: date };
   const next = programClone(data), owner = next.spaces[input.actorId] as Space;
-  if (mixed !== null) owner.executionTimelineOrders = { ...owner.executionTimelineOrders, [date]: [...mixed] };
+  const tasks = new Set(M.tasks(owner.text).map(task => programTextExecutionKey(task)));
+  const live = (key: string) => { try { return JSON.parse(key)[0] !== 'text-task' || tasks.has(key); } catch { return false; } };
+  if (mixed !== null) owner.executionTimelineOrders = { ...owner.executionTimelineOrders, [date]: mixed.filter(live) };
   if (legacy !== null) {
     const lines = new Set([...owner.text.documents, ...owner.text.flows].flatMap(doc => doc.lines.map(line => line.id)));
     owner.timelineOrders = { ...owner.timelineOrders, [date]: legacy.filter(id => lines.has(id)) };

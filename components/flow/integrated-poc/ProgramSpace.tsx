@@ -1342,7 +1342,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const expected = readProgramDayOrder(space, day), hidden = manualOrderDays.get(day)?.hidden ?? 0;
     orderBusy.current = true; setOrderPending(true);
     try {
-      const result = await run('시간순으로 정렬', current => resetProgramExecutionDayOrder(current, { actorId, expected }));
+      // Like a completion tap, it waits out the host's automatic read (R4) rather than being refused as busy.
+      const result = await run('시간순으로 정렬', current => resetProgramExecutionDayOrder(current, { actorId, expected }), true, undefined, undefined, true);
       if (result.ok) { setTaskNotice(null); setOrderNotice({ actorId, removed: expected, hidden, shownAt: Date.now() }); }
     } finally { orderBusy.current = false; setOrderPending(false); }
   }
@@ -1351,7 +1352,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (orderBusy.current) return;
     orderBusy.current = true; setOrderPending(true);
     try {
-      const result = await run('순서 되돌리기', current => restoreProgramExecutionDayOrder(current, { actorId, removed: notice.removed }));
+      const result = await run('순서 되돌리기', current => restoreProgramExecutionDayOrder(current, { actorId, removed: notice.removed }), true, undefined, undefined, true);
       if (result.ok) setOrderNotice(null);
       else if (result.reason === 'conflict') { setMessage(''); setOrderNotice({ ...notice, refused: '그 뒤 순서가 바뀌어 되돌리지 않았습니다', shownAt: Date.now() }); }
     } finally { orderBusy.current = false; setOrderPending(false); }
