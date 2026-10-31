@@ -76,7 +76,7 @@ test('the space wires it: entry beside 글 찾기, the title, what hides, the ro
   assert.match(source, /<div className=\{styles\.selectBar\} role="group" aria-label="고른 할 일">/);
   assert.match(css, /\.space \.selectBar \{ position: fixed; inset: auto 0 0; z-index: 45;/);
   // Out: 취소, Esc, a view change; the screen and its scroll come back (and the calendar, when it started there).
-  assert.match(source, /useEffect\(\(\) => \{ setSelecting\(null\); setSelectNotice\(null\); \}, \[actorId, period, date, folderId, query\]\);/);
+  assert.match(source, /useEffect\(\(\) => \{ stopSelecting\(false\); \}, \[actorId, period, date, folderId, query\]\);/);
   // The scroll comes back once the list is drawn again (390 found it restored too early).
   assert.match(source, /selectScrollBack\.current = state\.scrollY;/);
   assert.match(source, /if \(selecting \|\| top === null\) return;\s*selectScrollBack\.current = null;\s*const frame = requestAnimationFrame\(\(\) => window\.scrollTo\(\{ top, behavior: 'instant' \}\)\);/);

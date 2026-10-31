@@ -165,7 +165,13 @@ function sameScheduleWorkspace(before: TextWorkspaceState, expected: TextWorkspa
 }
 
 export function ProgramSpace(props: ProgramSpaceProps) {
-  const { data, mutate, today } = props, actorId = data.activeActorId, space = data.spaces[actorId];
+  const { data, today } = props, actorId = data.activeActorId, space = data.spaces[actorId];
+  // C6a review: every save of the space goes through here. Each is counted while it waits (고르기 does not start during
+  // one), and while picking it is refused, with undo/redo: 고르기 changes nothing. A document's own commit is counted only.
+  const selectingNow = useRef(false), [savesPending, setSavesPending] = useState(0);
+  const countedMutate: ProgramMutate = async (label, build, options) => { setSavesPending(count => count + 1); try { return await props.mutate(label, build, options); } finally { setSavesPending(count => count - 1); } };
+  const mutate: ProgramMutate = (label, build, options) => selectingNow.current ? Promise.resolve({ ok: false, reason: 'busy' }) : countedMutate(label, build, options);
+  const onUndo = () => selectingNow.current ? Promise.resolve() : props.onUndo(), onRedo = () => selectingNow.current ? Promise.resolve() : props.onRedo();
   const writingAccess=useMemo(()=>createProgramReferenceExecutionAccess(space,actorId),[space,actorId]);
   // A PM save port does not establish full-document editing support. Keep the
   // existing complete writer for this route, without swapping owners on ACKs,
@@ -430,14 +436,26 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const executionList = programExecutionList(executionRows, period, date, today, emptyDaysOpen, manualOrderDays);
   const monthGrid = period === 'month' && monthView === 'grid';
   const wideMonth = monthWidth >= 840;
-  // C6a: 고르기 ends with any view change (탭·기간·날짜·분류·검색) and with Esc; the picks are not kept.
-  useEffect(() => { setSelecting(null); setSelectNotice(null); }, [actorId, period, date, folderId, query]);
+  // C6a: 고르기 ends with any view change (탭·기간·날짜·분류·검색) and with Esc; the picks are not kept. A view change
+  // leaves the way 취소 does (the calendar comes back), but not to the old scroll: the view is another one now.
+  useEffect(() => { stopSelecting(false); }, [actorId, period, date, folderId, query]);
   useEffect(() => {
     if (!selecting) return;
     const key = (event: KeyboardEvent) => { if (event.key === 'Escape' && !event.isComposing && !document.querySelector('dialog:modal')) { event.preventDefault(); stopSelecting(); } };
     document.addEventListener('keydown', key);
     return () => document.removeEventListener('keydown', key);
   }, [selecting]);
+  // C6a review: on a phone the bar covers the host's bottom tabs; they also leave the focus order and the accessibility
+  // tree while picking (wide screens keep them: a tab there ends 고르기). The host's markup is left as it is.
+  useEffect(() => {
+    if (!selecting) return;
+    const nav = root.current?.ownerDocument.querySelector('[data-main-tab]')?.closest('nav');
+    if (!(nav instanceof HTMLElement)) return;
+    const wide = window.matchMedia('(min-width: 701px)');
+    const apply = () => { nav.inert = !wide.matches; };
+    apply(); wide.addEventListener('change', apply);
+    return () => { wide.removeEventListener('change', apply); nav.inert = false; };
+  }, [!!selecting]);
   // The day shown beside the grid (wide) or in the sheet (narrow): always the chosen date, so a day picked in the panel
   // is the one the sheet shows. Narrowing while the panel's ＋ line is open keeps that day open, now as a sheet (C5 review P2).
   const dayShown = !monthGrid ? null : wideMonth || dayOpen || addingDate === date ? date : null;
@@ -458,8 +476,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     // Showing a dialog moves the focus into it: a switch keeps it where it was (the ＋ line), and the panel never takes it.
     if (active instanceof HTMLElement && active.isConnected && active !== document.body && (mode === 'panel' || sheet.contains(active))) active.focus({ preventScroll: true });
   }, [dayShown, wideMonth, sheetSettled]);
-  // The title row already says "오늘" when every row is today's; no repeated heading then.
-  const hideDayHeadings = !!props.noteHeader && period === 'today' && date === today
+  // The title row already says "오늘" when every row is today's; no repeated heading then (but 고르기 keeps it, for its [모두]).
+  const hideDayHeadings = !selecting && !!props.noteHeader && period === 'today' && date === today
     && executionList.every(item => item.kind !== 'row' || item.group === 'on-date');
   const allTasks = useMemo(() => programExecutionTasks(space), [space]);
   const taskProgress = useMemo(() => programTaskProgress(space.text), [space.text]);
@@ -1290,20 +1308,23 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())) { setMessage('회차 날짜를 적용하거나 취소한 뒤 골라 주세요.'); return; }
     if (noteFindMenu.current) noteFindMenu.current.open = false;
     setTaskNotice(null); setOrderNotice(null); setAddingDate(null); setSelectNotice(null);
+    selectingNow.current = true;
     setSelecting({ keys: new Set(), anchor: null, scrollY: window.scrollY, calendar: monthGrid });
     if (monthGrid) {
       setMonthViewState('list');
       requestAnimationFrame(() => requestAnimationFrame(() => root.current?.querySelector(`[data-day-heading="${date}"]`)?.scrollIntoView({ block: 'start' })));
     }
   }
-  /** Out of 고르기 (취소, Esc): nothing is saved; the screen and its scroll come back, and the calendar if it started there. */
-  function stopSelecting() {
+  /** Out of 고르기 (취소, Esc, a view change): nothing is saved; the screen comes back, and the calendar if it started
+   *  there; 취소 and Esc also bring back its scroll. */
+  function stopSelecting(scrollBack = true) {
     const state = selecting;
+    selectingNow.current = false;
     setSelecting(null); setSelectNotice(null);
     if (!state) return;
     if (state.calendar) setMonthViewState('grid');
     // Scrolled once the list is drawn again (the rows of 고르기 are not the list's height).
-    selectScrollBack.current = state.scrollY;
+    if (scrollBack) selectScrollBack.current = state.scrollY;
   }
   /** A row pressed in 고르기: picked or let go (Shift: the range from the last one); a row that cannot be picked says why. */
   function pickRow(key: string, block: ProgramSelectBlock | null, shift: boolean) {
@@ -1402,7 +1423,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       }
     }
     let receipt: { before: typeof space; after: typeof space } | null = null;
-    const result = await mutate(label, current => {
+    const result = await countedMutate(label, current => {
       const transition = programTextTransition(current, { actorId, documentId: docId, expected: options?.expectedWorkspace ?? space.text, next: nextText, position: positions.current[docId] });
       if (transition.ok) receipt = { before: programClone(current.spaces[actorId]), after: programClone(transition.data.spaces[actorId]) };
       return transition;
@@ -1567,8 +1588,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   const compactNoteToday = !!props.noteHeader && period === 'today';
   // C6a: 고르기 stays off, with its reason, while a check or a source waits, a move or a save is on (2-1).
+  // Any save of the space waiting (C6a review): one state for all of them.
+  const saving = savesPending > 0 || preparingDocumentAction || classificationCreating || orderPending;
   const selectBlocked = completingTaskIds.size ? '완료 저장을 기다리는 동안에는 고를 수 없습니다' : sourceWaitingTask ? '원문을 여는 동안에는 고를 수 없습니다'
-    : moving ? '순서를 옮기는 동안에는 고를 수 없습니다' : orderPending ? '저장하는 동안에는 고를 수 없습니다' : null;
+    : moving ? '순서를 옮기는 동안에는 고를 수 없습니다' : saving ? '저장하는 동안에는 고를 수 없습니다' : null;
   const findActions = <div className={styles.findActions}>
     {period === 'documents' && <button className={styles.newWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글</button>}
     <button ref={libraryToggle} className={styles.libraryToggle} aria-label="글 찾기 · 내 문서와 할 일" aria-expanded={libraryOpen} aria-controls="program-library"
@@ -1595,7 +1618,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     <button type="button" aria-pressed={monthView === 'grid'} onClick={() => { if (!keepWrittenDay()) { setAddingDate(null); setMonthView('grid'); } }}>달력</button></div></div>;
   // C6a: in 고르기 the title row is "n개 선택 · 취소" (0: what to do), the count spoken as it changes.
   const selectTitle = selecting && <div className={styles.selectTitle}><span role="status">{selecting.keys.size ? `${selecting.keys.size}개 선택` : '옮길 할 일을 누르세요'}</span>
-    <button type="button" onClick={stopSelecting}>취소</button></div>;
+    <button type="button" onClick={() => stopSelecting()}>취소</button></div>;
 
   const guardOccurrenceDraft = (event: React.SyntheticEvent) => {
     const pending = Object.entries(recurrencePorts.current).filter(([, port]) => port?.hasPendingInput?.());
@@ -1639,7 +1662,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {period === 'today' && entry.row.executionDate && entry.row.executionDate < date && <small>계속할 회차</small>}
             <div className={styles.actions}><button onClick={() => moveExecutionStep(entry.key, -1)}>같은 날짜에서 위로</button><button onClick={() => moveExecutionStep(entry.key, 1)}>같은 날짜에서 아래로</button>{moving && <button onClick={() => void moveBefore(moving, entry.key)}>이 회차 앞에 놓기</button>}</div>
             <ProgramRecurrence data={data} mutate={mutate} today={today} period={period} date={date} row={entry.row} onPlanApplied={focusAppliedPlan} onRegisterEditors={port => { recurrencePorts.current[entry.row.key] = port; }}
-            onOpenSource={(id, line) => openOccurrenceSource(id, line, entry.key)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} /></li>;
+            onOpenSource={(id, line) => openOccurrenceSource(id, line, entry.key)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={onUndo} onRedo={onRedo} /></li>;
           const task = entry.task;
           const origin = readProgramTaskOrigin(data, task);
           const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
@@ -1718,8 +1741,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       <ProgramDocumentTrash space={space} onOpen={id => void openDocument(id)} />
     </dialog>
     <div className={styles.content}>
-      {props.outputReturn && <ProgramOutputReturn key={`${actorId}:${props.outputReturn.executionKey}`} data={data} destination={props.outputReturn} today={today} mutate={mutate}
-        onOpenSource={(id, line) => void openDocument(id, line)} onRegisterEditors={(port, key) => { recurrencePorts.current[key] = port; }} onUndo={props.onUndo} onRedo={props.onRedo} />}
+      {/* C6a review: hidden while picking (it saves), kept mounted with what it holds. */}
+      {props.outputReturn && <div hidden={!!selecting}><ProgramOutputReturn key={`${actorId}:${props.outputReturn.executionKey}`} data={data} destination={props.outputReturn} today={today} mutate={mutate}
+        onOpenSource={(id, line) => void openDocument(id, line)} onRegisterEditors={(port, key) => { recurrencePorts.current[key] = port; }} onUndo={onUndo} onRedo={onRedo} /></div>}
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {!libraryOpen && !detail && viewChangeNoticeContent}
       {!detail && !sheetOpen && taskNoticeContent}
@@ -1822,7 +1846,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             if (sourceFocus?.documentId === id && sourceFocus.isCurrent()) return;
             positions.current[id] = { ...position, documentId: id, lineId };
           }}
-          onDirtyChange={value => { editorDirtyChanged(id, actorId, value); }} onInputFailureChange={failed => inputFailureChanged(id, failed)} onUndo={props.onUndo} onRedo={props.onRedo}
+          onDirtyChange={value => { editorDirtyChanged(id, actorId, value); }} onInputFailureChange={failed => inputFailureChanged(id, failed)} onUndo={onUndo} onRedo={onRedo}
           onRegisterSave={(save, status) => { saveRequests.current[id] = save; saveStatusReaders.current[id] = status ?? null; }}
           onRegisterSourceFocus={focus => registerSourceFocus(id, focus)}
           onRegisterDraft={read => { draftReaders.current[id] = read; }}
@@ -1837,7 +1861,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {selectedDoc && !selectedArchived && <ProgramRecurrence key={`${actorId}:${selectedDoc.id}`} data={data} mutate={mutate} today={today} period="documents" date={date} documentId={selectedDoc.id} onPlanApplied={focusAppliedPlan}
           presentation={recurrencePresentation.documents[selectedDoc.id] ?? { page: 0, includeHeld: false, includeExcluded: false }} onPresentationChange={value => setRecurrencePresentation(previous => ({ ...previous, documents: { ...previous.documents, [selectedDoc.id]: value } }))}
           onRegisterEditors={port => { recurrencePorts.current[selectedDoc.id] = port; }}
-          onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} />}
+          onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={onUndo} onRedo={onRedo} />}
       </div>
       <div ref={monthBox} hidden={period === 'documents'} className={styles.executionView} data-note-today={compactNoteToday || undefined}>
         {period !== 'all' && !selecting && <label className={styles.periodPicker}>기간<select aria-label="기간 보기" value={period} onChange={event => { void changePeriod(event.target.value as ProgramPeriod); }}>{periods.filter(([key]) => !['documents', 'all'].includes(key)).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>}
@@ -1854,9 +1878,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         </div></div> : period === 'month' ? monthTitleRow : periodTitle}{!selecting && !['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date); }}>‹</button><label>날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value) && !keepWrittenDay()) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date); }}>›</button></div>}</div>
         {props.noteHeader && <div className={styles.periodNotice}>{props.noteHeader}</div>}
         {selecting && selectBlocks && [...selectBlocks.values()].some(Boolean) && <p className={styles.selectNote}>반복 회차·끝낸 할 일은 고를 수 없습니다</p>}
-        {props.noteStatus && <div className={styles.periodStatus}>{props.noteStatus}{!compactNoteToday && period !== 'documents' && findActions}</div>}
+        {props.noteStatus && <div className={styles.periodStatus}>{props.noteStatus}{!compactNoteToday && period !== 'documents' && !selecting && findActions}</div>}
         {period === 'all' && !collectionMode && <div className={styles.classificationActions}><label className={styles.classificationPicker}>분류<select aria-label="할 일 분류 보기" value={folderId} onChange={event => { void changeFolder(event.target.value); }}><option value="">모든 분류</option>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
-          <details className={styles.classificationCreate}><summary>새 분류</summary><form onSubmit={async event => {
+          {!selecting && <details className={styles.classificationCreate}><summary>새 분류</summary><form onSubmit={async event => {
             event.preventDefault(); const form = event.currentTarget, title = String(new FormData(form).get('title') ?? '');
             if (classificationRequest.current) return;
             classificationRequest.current = true; setClassificationCreating(true);
@@ -1864,7 +1888,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               const result = await run('분류 만들기', current => createProgramFolder(current, { ...base(current), title, parentId: null }));
               if (result.ok) { form.reset(); form.closest('details')?.removeAttribute('open'); }
             } finally { classificationRequest.current = false; setClassificationCreating(false); }
-          }}><label>분류 이름<input name="title" required maxLength={100} disabled={classificationCreating} /></label><button type="submit" disabled={preparingDocumentAction || classificationCreating}>{classificationCreating ? '만드는 중…' : '만들기'}</button></form></details></div>}
+          }}><label>분류 이름<input name="title" required maxLength={100} disabled={classificationCreating} /></label><button type="submit" disabled={preparingDocumentAction || classificationCreating}>{classificationCreating ? '만드는 중…' : '만들기'}</button></form></details>}</div>}
         {collectionMode && <p className={styles.muted}>모음과 관계없이 모든 문서의 같은 할 일을 날짜별로 봅니다.</p>}
         {props.hostMainTabs ? viewScope.length > 0 && <div className={styles.scopeLine} role="group" aria-label="지금 보는 범위">
           {viewScope.map(item => <span key={item.kind} className={styles.scopeChip}>{item.label}
@@ -1881,7 +1905,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         </details>}
         {moving && <p role="status">옮길 행의 앞을 선택하세요. <button onClick={() => setMoving(null)}>취소</button></p>}
         {programSeriesMetadata(space).length > 0 && <div className={styles.actions}><label><input type="checkbox" checked={includeHeldOccurrences} onChange={event => setIncludeHeldOccurrences(event.target.checked)} /> 보류 회차</label><label><input type="checkbox" checked={includeExcludedOccurrences} onChange={event => setIncludeExcludedOccurrences(event.target.checked)} /> 제외 회차</label>
-          <button onClick={() => void props.onUndo()}>변경 되돌리기</button><button onClick={() => void props.onRedo()}>다시 실행</button>
+          {!selecting && <><button onClick={() => void onUndo()}>변경 되돌리기</button><button onClick={() => void onRedo()}>다시 실행</button></>}
           {period === 'all' && <><button disabled={!occurrencePage} onClick={() => setOccurrencePage(value => value - 1)}>이전 회차 구간</button><span>회차 조회 {occurrencePage + 1}</span><button disabled={!occurrenceResult.hasMore || occurrencePage >= 128} onClick={() => setOccurrencePage(value => value + 1)}>다음 회차 구간</button>
             {occurrencePage >= 128 && occurrenceResult.hasMore && <p role="status">조회 상한에 도달했습니다. 뒤에 회차가 더 있으며, 반복이 끝난 것은 아닙니다. 위에서 날짜를 고른 뒤 주간 목록으로 확인해 주세요.</p>}
             <button disabled={preparingDocumentAction} onClick={() => { if (Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())) { setMessage('회차 날짜를 적용하거나 취소한 뒤 기간을 바꿔 주세요.'); return; } setPeriod('week'); }}>고른 날짜의 주간 보기</button></>}
@@ -1898,7 +1922,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {selecting && <div className={styles.selectBar} role="group" aria-label="고른 할 일">
           <span className={styles.selectBarCount}>{selecting.keys.size}개 선택</span>
           <button type="button" className={styles.selectApply} disabled>날짜 바꾸기{selecting.keys.size ? ` · ${selecting.keys.size}개` : ''}</button>
-          <button type="button" className={styles.selectCancel} onClick={stopSelecting}>취소</button></div>}
+          <button type="button" className={styles.selectCancel} onClick={() => stopSelecting()}>취소</button></div>}
         {monthGrid ? <div className={styles.monthLayout} data-wide={wideMonth || undefined}>
           <ProgramMonthGrid rows={executionRows} date={date} today={today} titles={monthWidth >= 761} onPick={pickMonthDay} />
           {/* The chosen day: a sheet on a narrow screen (its row notices inside while open), a panel beside the grid
