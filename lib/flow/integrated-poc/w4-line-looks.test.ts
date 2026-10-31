@@ -41,7 +41,13 @@ test('S4 N3 W3 (fold tap A): on touch the fold lane is 56px, the open button and
   const touch = css.slice(css.indexOf('@media (pointer: coarse) {'), css.indexOf('\n}\n', css.indexOf('@media (pointer: coarse) {')) + 3);
   assert(touch.startsWith('@media (pointer: coarse) {'));
   // The extra 12px is after the triangle (flex-start), not around it; the glyph is hidden behind a drawn chevron.
-  assert(touch.includes('.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-fold-toggle { width: 56px; justify-content: flex-start; font-size: 0;'));
+  const lanes = '.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"])';
+  assert(touch.includes(`${lanes} .tle-fold-toggle { width: 56px; justify-content: flex-start; font-size: 0;`));
+  // Review P2: a move keeps the 44px lanes, with the same states left out as the host's name inset, so the open
+  // button and the name never come within 1px of each other.
+  const rules = touch.split('\n').filter(line => line.trim().startsWith('.tle-root'));
+  assert.equal(rules.length, 4);
+  assert(rules.every(rule => rule.trim().startsWith(`${lanes} `)), 'every touch rule leaves the move states out');
   assert.match(touch, /\.tle-fold-toggle::before \{ content: ''; [^}]*border-width: 0 2px 2px 0;[^}]*transform: rotate\(45deg\); \}/);
   assert.match(touch, /\.tle-fold-toggle\[aria-expanded="false"\]::before \{[^}]*transform: rotate\(-45deg\); \}/);
   assert(touch.includes('.tle-scope-anchor { left: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 56px); }'));
@@ -51,6 +57,7 @@ test('S4 N3 W3 (fold tap A): on touch the fold lane is 56px, the open button and
   const hostTouch = module.slice(module.indexOf('@media (pointer: coarse) {'));
   assert(module.indexOf('@media (pointer: coarse) {') > module.indexOf('.tle-scope-label) { padding-left: 75px; }'));
   assert.match(hostTouch, /^@media \(pointer: coarse\) \{\n  \.host :global\([^\n]*\.tle-scope-label\) \{ padding-left: 87px; \}\n\}/);
+  assert(hostTouch.includes(`.host :global(${lanes} .tle-scope-label) { padding-left: 87px; }`), 'the name and the lanes leave out the same states');
   // The control markup, its label and its state stay as they were.
   assert.match(vendor, /button\.setAttribute\('aria-expanded', String\(!folded\)\);/);
 });
