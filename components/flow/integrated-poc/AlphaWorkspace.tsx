@@ -36,6 +36,7 @@ import { ProgramLegacyWorkspace } from './ProgramLegacyWorkspace';
 import { ProgramPrivateOutput } from './ProgramPrivateOutput';
 import { ProgramCreatorWorkspace } from './ProgramCreatorWorkspace';
 import { ProgramDiscovery, createProgramDiscoveryNavigationState, programDiscoveryHasUnstoredInput, type ProgramImportOutcome } from './ProgramDiscovery';
+import { programImportArrivalNotice } from '@/lib/flow/integrated-poc/program-discovery-display';
 import { ProgramCommunity, type ProgramCommunityDraftSaveRecovery } from './ProgramCommunity';
 import { ProgramPublisher } from './ProgramPublisher';
 import { ProgramCopyInspector } from './ProgramCopyInspector';
@@ -1026,8 +1027,15 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       requestId: programId('request'), expectedSpace: fresh.spaces[session.userId], versionId, itemIds, anchor, ...(recurrenceStarts ? { recurrenceStarts } : {}) }),
     { alphaSocial: { type: 'copy-import', versionId, itemIds, anchor, ...(recurrenceStarts ? { recurrenceStarts } : {}) } });
     if (!result.ok) return { ok: false, reason: result.reason };
-    const copy = currentData.current?.spaces[session.userId].copies.find(row => row.id === result.result);
-    if (copy) await navigate({ view: 'space', id: copy.documentId });
+    const live = currentData.current, copy = live?.spaces[session.userId].copies.find(row => row.id === result.result);
+    const version = live?.public.versions.find(row => row.id === versionId);
+    if (copy) {
+      await navigate({ view: 'space', id: copy.documentId });
+      // FC2: the success notice belongs to the writing screen it arrives on; Flow 찾기 is hidden by then.
+      const arrived = destinationRef.current;
+      if (version && arrived.view === 'space' && arrived.id === copy.documentId)
+        setMessage(programImportArrivalNotice(version.title, !!live?.spaces[session.userId]?.personalAuthoring));
+    }
     return { ok: true };
   }
   async function startText(raw: string, title: string) {
