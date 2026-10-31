@@ -6,6 +6,8 @@ import { prepareProgramInitialData, type ProgramLegacyInput } from '@/lib/flow/i
 import { hydrateProgramLegacy } from '@/lib/flow/integrated-poc/legacy-projection';
 import { createProgramController, type ProgramController, type ProgramControllerSnapshot } from '@/lib/flow/integrated-poc/controller';
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
+import { captureProgramImportLinks, cancelProgramImportLinks, programImportTargets, type ProgramImportLinks } from '@/lib/flow/integrated-poc/program-import-links';
+import { restoreProgramDialogFocus } from '@/lib/flow/integrated-poc/dialog-return-focus';
 import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
 import { programInputBlocksSnapshot, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
 import { parseProgramLocation, programLocation, programNavigationMatchesDocument, programCheckpointForNavigation, readProgramNavigationCheckpoint, type ProgramNavigationCheckpoint, type ProgramSpaceNavigation, type ProgramDiscoveryNavigation } from '@/lib/flow/integrated-poc/navigation';
@@ -53,6 +55,14 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
   const [revisionDocument, setRevisionDocument] = useState<string | null>(null);
   const [creatorLibraryOpen, setCreatorLibraryOpen] = useState(false);
   const [outputDocument, setOutputDocument] = useState<string | null>(null);
+  const [flowReturn, setFlowReturn] = useState<{ actorId: string; documentId?: string; kind: 'copy' | 'browse'; returnFocus?: HTMLElement } | null>(null);
+  const [importUndo, setImportUndo] = useState<{ batch: ProgramImportLinks; text: string; done?: boolean } | null>(null);
+  const [importUndoBusy, setImportUndoBusy] = useState(false), importUndoLock = useRef(false);
+  useEffect(() => {
+    const actorId = snapshot?.envelope.data.activeActorId;
+    setImportUndo(previous => previous && (previous.batch.actorId !== actorId || destination.view !== 'space' || destination.id !== previous.batch.documentId) ? null : previous);
+    setFlowReturn(previous => previous?.actorId !== actorId || !['flow', 'discover'].includes(destination.view) ? null : previous);
+  }, [destination, snapshot?.envelope.data.activeActorId]);
   const publicationRequest = useRef<string | null>(null);
   const editors = useRef<ProgramEditorFlush | null>(null), changingContext = useRef(false);
   const legacyEditors = useRef<ProgramEditorFlush | null>(null);
@@ -517,12 +527,69 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
     const result = await mutate('원문 문서 만들기', data => createProgramDocument(data, { actorId, requestId: programId('request'), expectedSpace: data.spaces[actorId], title, raw }));
     if (result.ok) navigate({ view: 'space', id: result.result }); return result.ok;
   }
-  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>): Promise<ProgramImportOutcome> {
+  function pendingImportDocuments() {
+    const live = current.current?.envelope.data, actor = live?.activeActorId, port = editors.current, ids = port?.pendingDocumentIds?.() ?? [];
+    const space = actor ? live?.spaces[actor] : undefined;
+    return port?.hasPendingInput?.() && !ids.length && space ? [...space.text.documents, ...space.text.flows].map(doc => doc.id) : ids;
+  }
+  function openFlowsFromDocument(documentId?: string, flowId?: string, returnFocus?: HTMLElement) {
+    const owner = current.current?.envelope.data.activeActorId; if (!owner) return;
+    const next: ProgramDestination = flowId ? { view: 'flow', id: flowId } : { view: 'discover' };
+    navigate(next);
+    requestAnimationFrame(() => {
+      if (current.current?.envelope.data.activeActorId === owner && destinationRef.current.view === next.view && destinationRef.current.id === next.id)
+        setFlowReturn({ actorId: owner, documentId, kind: flowId ? 'copy' : 'browse', returnFocus });
+    });
+  }
+  function returnFromFlows() {
+    const returning = flowReturn, opener = document.activeElement;
+    if (!returning || returning.actorId !== current.current?.envelope.data.activeActorId) return;
+    navigate({ view: 'space', id: returning.documentId });
+    const arrived = destinationRef.current;
+    if (arrived.view !== 'space' || arrived.id !== returning.documentId) return;
+    setFlowReturn(null);
+    requestAnimationFrame(() => {
+      if (current.current?.envelope.data.activeActorId === returning.actorId && destinationRef.current === arrived
+        && (document.activeElement === opener || document.activeElement === document.body)) restoreProgramDialogFocus(returning.returnFocus ?? null);
+    });
+  }
+  async function cancelImportLinks() {
+    if (!importUndo || importUndoLock.current) return;
+    const batch = importUndo.batch;
+    importUndoLock.current = true; setImportUndoBusy(true);
+    const isCurrent = () => current.current?.envelope.data.activeActorId === batch.actorId
+      && destinationRef.current.view === 'space' && destinationRef.current.id === batch.documentId;
+    try {
+      const outcome = await cancelProgramImportLinks({ batch, read: () => current.current?.envelope.data ?? null, mutate, pending: pendingImportDocuments, isCurrent });
+      if (isCurrent()) setImportUndo(previous => previous?.batch === batch ? { batch, done: outcome.remaining === 0,
+        text: outcome.reason === 'pending-input' ? '입력 중인 내용을 저장한 뒤 취소할 수 있습니다.'
+          : outcome.remaining ? (outcome.total - outcome.remaining) + '개를 뺐습니다. 남은 연결 ' + outcome.remaining + '개는 다시 취소할 수 있습니다.'
+            : '넣은 할 일을 뺐습니다. 사본 문서와 원래 할 일·진행 기록은 그대로 남아 있습니다.' } : previous);
+    } finally { importUndoLock.current = false; setImportUndoBusy(false); }
+  }
+  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>, targetDocumentId?: string): Promise<ProgramImportOutcome> {
     const actorId = current.current?.envelope.data.activeActorId; if (!actorId) return { ok: false, reason: 'invalid' };
+    const beforeData = current.current!.envelope.data, before = beforeData.spaces[actorId];
+    const copyDocumentId = before.copies.find(copy => copy.flowId === beforeData.public.versions.find(row => row.id === versionId)?.flowId)?.documentId;
+    if (targetDocumentId && !programImportTargets(beforeData, actorId, copyDocumentId, pendingImportDocuments()).some(doc => doc.id === targetDocumentId && !doc.reason))
+      return { ok: false, reason: 'unresolved' };
     const requestId = programId('request');
-    const result = await mutate('개인 Flow 가져오기', data => importProgramPublicVersion(data, { actorId, requestId, expectedSpace: data.spaces[actorId], versionId, itemIds, anchor,
-      ...(recurrenceStarts && Object.keys(recurrenceStarts).length ? { recurrenceStarts } : {}) }));
-    if (result.ok) { const copy = current.current?.envelope.data.spaces[actorId].copies.find(row => row.id === result.result); if (copy) navigate({ view: 'space', id: copy.documentId }); }
+    const result = await mutate('개인 Flow 가져오기', data => data.activeActorId !== actorId
+      || targetDocumentId && !programImportTargets(data, actorId, copyDocumentId, pendingImportDocuments()).some(doc => doc.id === targetDocumentId && !doc.reason)
+      ? programFailure(data, 'conflict') : importProgramPublicVersion(data, { actorId, requestId, expectedSpace: data.spaces[actorId], versionId, itemIds, anchor,
+      ...(targetDocumentId ? { targetDocumentId } : {}), ...(recurrenceStarts && Object.keys(recurrenceStarts).length ? { recurrenceStarts } : {}) }));
+    if (result.ok) {
+      if (result.presentationPending || current.current?.envelope.data.activeActorId !== actorId) return { ok: false, reason: 'presentation-pending' };
+      const live = current.current.envelope.data, copy = live.spaces[actorId].copies.find(row => row.id === result.result);
+      if (copy) {
+        navigate({ view: 'space', id: targetDocumentId ?? copy.documentId });
+        if (targetDocumentId) {
+          const batch = captureProgramImportLinks(actorId, copy.id, targetDocumentId, before, live.spaces[actorId]);
+          const count = batch.ordinary.length + batch.recurring.length;
+          setImportUndo({ batch, done: !count, text: count ? '문서 끝에 할 일 ' + count + '개를 넣었습니다.' : '이미 연결한 할 일입니다. 새로 넣은 것은 없습니다.' });
+        }
+      }
+    }
     return result.ok ? { ok: true } : { ok: false, reason: result.reason };
   }
   useEffect(() => {
@@ -586,8 +653,8 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
       <div hidden={destination.view !== 'space'}>{outputActorMismatch ? <section className={styles.legacyNotice} role="status" aria-label="출력 링크의 인물 확인">
         <p>이 링크를 만든 인물과 현재 선택한 인물이 다릅니다. 개인 내용은 열지 않았습니다. 같은 브라우저에서 원래 인물을 직접 선택해 주세요.</p>
         <button onClick={() => navigate({ view: 'space' })}>현재 내 공간으로</button>
-      </section> : <ProgramSpace key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} selectedDocumentId={destination.view === 'space' ? destination.id : undefined} outputReturn={outputReturn} onUndo={() => history('undo')} onRedo={() => history('redo')} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRevisionHistory={setRevisionDocument} onOutputDocument={setOutputDocument} onRegisterEditors={registered => { editors.current = registered; }} onRegisterNavigation={registered => { spaceNavigation.current = registered; }} onStartReview={startReview} onRegisterReviewSpace={registered => { reviewSpace.current = registered; }} />}</div>
-      {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined} selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} onStartText={startText} onUseVersion={useVersion} navigationState={discoveryStates[data.activeActorId] ?? emptyDiscoveryState} onNavigationStateChange={state => changeDiscoveryPresentation(data.activeActorId, state)} onRegisterNavigation={registered => { discoveryNavigation.current = registered; }} /></div>}
+      </section> : <ProgramSpace key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} selectedDocumentId={destination.view === 'space' ? destination.id : undefined} outputReturn={outputReturn} onUndo={() => history('undo')} onRedo={() => history('redo')} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRevisionHistory={setRevisionDocument} onOpenCopySource={(flowId, id, focus) => openFlowsFromDocument(id, flowId, focus)} onBrowseFlows={(id, focus) => openFlowsFromDocument(id, undefined, focus)} importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } } : undefined} onOutputDocument={setOutputDocument} onRegisterEditors={registered => { editors.current = registered; }} onRegisterNavigation={registered => { spaceNavigation.current = registered; }} onStartReview={startReview} onRegisterReviewSpace={registered => { reviewSpace.current = registered; }} />}</div>
+      {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined} selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} actorId={data.activeActorId} pendingDocumentIds={pendingImportDocuments} copySourceReturn={flowReturn?.kind === 'copy'} onReturnToSpace={flowReturn?.actorId === data.activeActorId ? returnFromFlows : undefined} onStartText={startText} onUseVersion={useVersion} navigationState={discoveryStates[data.activeActorId] ?? emptyDiscoveryState} onNavigationStateChange={state => changeDiscoveryPresentation(data.activeActorId, state)} onRegisterNavigation={registered => { discoveryNavigation.current = registered; }} /></div>}
       {seen.community && <div hidden={!['community', 'activity'].includes(destination.view)}><ProgramCommunity key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} view={communityView} selectedPostId={communitySelection} selectedReplyId={destination.view === 'community' ? destination.replyId : undefined} presentation={communityStates[data.activeActorId] ?? emptyProgramCommunityPresentation()} onPresentationChange={value => changeCommunityPresentation(data.activeActorId, value)} onRegisterEditors={registerCommunityEditors} reviewEntry={reviewEntry} captureReviewVisit={captureReviewVisit}
         onReviewPublished={(draftId, postId) => { const context = reviewContext.current; if (context?.draftId === draftId && context.origin.actorId === current.current?.envelope.data.activeActorId) { context.postId = postId; refreshReviewContext(value => value + 1); } }}
         reviewReturnPostId={reviewContext.current?.origin.actorId === data.activeActorId ? reviewContext.current?.postId : undefined} onReturnReview={returnFromReview} /></div>}

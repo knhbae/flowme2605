@@ -62,8 +62,40 @@ import { createProgramWritingEntry } from '@/lib/flow/integrated-poc/writing-ent
 import { createPendingProgramSourceNavigation } from '@/lib/flow/integrated-poc/pending-source-navigation';
 import { programCheckpointForWritingTarget } from '@/lib/flow/integrated-poc/writing-navigation';
 import { canClassifyProgramTask, setProgramTaskClassification } from '@/lib/flow/integrated-poc/task-classification';
+import { programCopyHeader } from '@/lib/flow/integrated-poc/program-copy-header';
+import { programImportTargets } from '@/lib/flow/integrated-poc/program-import-links';
 
 export { programMobileWritingKeyboardOpen, useProgramMobileWritingChrome } from './useProgramMobileWritingChrome';
+
+/** The document sheet's selection-only surface: no navigation, creation or editor is mounted here. */
+export function ProgramImportDocumentPicker({ data, actorId, copyDocumentId, pendingDocumentIds, onChoose, onClose }: {
+  data: ProgramData; actorId: string; copyDocumentId?: string; pendingDocumentIds: () => string[];
+  onChoose: (documentId: string) => void; onClose: () => void;
+}) {
+  const dialog = useRef<HTMLDialogElement>(null), composing = useRef(false);
+  const [draft, setDraft] = useState(''), [query, setQuery] = useState(''), [folder, setFolder] = useState('');
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null, node = dialog.current;
+    node?.showModal();
+    return () => { if (node?.open) node.close(); restoreProgramDialogFocus(opener); };
+  }, []);
+  const space = data.spaces[actorId];
+  const rows = programImportTargets(data, actorId, copyDocumentId, pendingDocumentIds()).filter(doc =>
+    (!folder || doc.folderId === folder) && (!query || (doc.title + '\n' + M.raw(doc)).toLocaleLowerCase().includes(query.toLocaleLowerCase())));
+  return <dialog ref={dialog} className={styles.findDialog} aria-label="넣을 문서 고르기" onCancel={event => { event.preventDefault(); if (!composing.current) onClose(); }}>
+    <div className={styles.findHeading}><h2>넣을 문서 고르기</h2><button type="button" onClick={() => { if (!composing.current) onClose(); }}>닫기</button></div>
+    <label className={styles.field}>내 문서·할 일 찾기<input autoFocus type="search" value={draft}
+      onCompositionStart={() => { composing.current = true; }}
+      onCompositionEnd={event => { composing.current = false; setQuery(event.currentTarget.value); }}
+      onChange={event => { setDraft(event.target.value); if (!composing.current && !(event.nativeEvent as InputEvent).isComposing) setQuery(event.target.value); }} /></label>
+    <label className={styles.field}>글 안의 폴더 범위<select value={folder} onChange={event => setFolder(event.target.value)}><option value="">전체 글</option>{space?.text.folders.map(row => <option key={row.id} value={row.id}>{row.title}</option>)}</select></label>
+    <ul className={styles.documents}>{rows.map(row => <li key={row.id}><button type="button" aria-disabled={!!row.reason} onClick={() => {
+      const current = programImportTargets(data, actorId, copyDocumentId, pendingDocumentIds()).find(doc => doc.id === row.id);
+      if (current && !current.reason) onChoose(row.id);
+    }}>{row.title}<small>{row.reason ?? row.folder}</small></button></li>)}</ul>
+    {!rows.length && <p className={styles.muted}>넣을 수 있는 문서가 없습니다.</p>}
+  </dialog>;
+}
 
 export type ProgramSpaceCapabilities = {
   discovery?: boolean;
@@ -94,6 +126,9 @@ export type ProgramSpaceProps = {
   outputReturn?: ProgramDestination;
   onPublishDocument?: (documentId: string) => void;
   onInspectCopy?: (copyId: string) => void;
+  onOpenCopySource?: (flowId: string, documentId: string, returnFocus?: HTMLElement) => void;
+  onBrowseFlows?: (documentId?: string, returnFocus?: HTMLElement) => void;
+  importNotice?: { actorId: string; documentId: string; lineId?: string; text: string; busy: boolean; onCancel?: () => void };
   onRevisionHistory?: (documentId: string) => void;
   onOutputDocument?: (documentId: string) => void;
   onStartReview?: (documentId: string) => Promise<void>;
@@ -611,6 +646,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const documentsRef = useRef(docs); documentsRef.current = docs;
   const workspaceRef = useRef(space.text); workspaceRef.current = space.text;
   const sourceFocusPorts = useRef<Record<string, ProgramSourceFocus | null>>({});
+  const importArrival = useRef<{ key: string; attempt: () => void } | null>(null);
+  const importArrived = useRef<string | null>(null);
   const pendingSourceFocus = useRef<{ documentId: string; taskId: string; attempt: () => void; isCurrent: () => boolean; managedReturnFocus?: Element | null; findPanel?: HTMLDialogElement; findSourceOwner?: Element | null } | null>(null);
   const sourceNavigation = useMemo(createPendingProgramSourceNavigation, []);
   const sourceEpoch = props.sourceReturnEpoch ?? props.pmTextHost?.epoch;
@@ -736,7 +773,32 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     sourceFocusPorts.current[documentId] = focus;
     const request = pendingSourceFocus.current;
     if (focus && request?.documentId === documentId) requestAnimationFrame(request.attempt);
+    if (focus && props.importNotice?.documentId === documentId && importArrival.current) requestAnimationFrame(importArrival.current.attempt);
   }
+  useEffect(() => {
+    const notice = props.importNotice;
+    if (!notice?.lineId || notice.actorId !== actorId || notice.documentId !== selected) return;
+    const key = actorId + ':' + notice.documentId + ':' + notice.lineId;
+    if (importArrived.current === key) return;
+    const focusOwner = document.activeElement;
+    const attempt = () => {
+      if (importArrival.current?.key !== key || dataRef.current.activeActorId !== actorId || selectedRef.current !== notice.documentId
+        || sourceSession.current !== sourceEpoch || inputLockCount.current > 0 || Object.values(dirty.current).some(Boolean)
+        || Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())) return;
+      if (document.activeElement !== focusOwner && document.activeElement !== document.body) { importArrival.current = null; return; }
+      const doc = M.getDocument(dataRef.current.spaces[actorId].text, notice.documentId);
+      const textarea = document.getElementById('program-text-' + encodeURIComponent(notice.documentId)) as HTMLTextAreaElement | null;
+      const index = doc?.lines.findIndex(line => line.id === notice.lineId) ?? -1;
+      if (!doc || index < 0 || !textarea || !root.current?.contains(textarea) || !textarea.getClientRects().length
+        || !sourceFocusPorts.current[notice.documentId]?.({ documentId: notice.documentId, lineId: notice.lineId!, raw: M.raw(doc) })) return;
+      importArrived.current = key; importArrival.current = null;
+      textarea.scrollTop = textarea.scrollHeight;
+      const row = textarea.closest('.tle-root')?.querySelectorAll<HTMLElement>('.tle-line')[index];
+      row?.animate([{ backgroundColor: '#dbeafe' }, { backgroundColor: 'transparent' }], { duration: 1500 });
+    };
+    importArrival.current = { key, attempt }; requestAnimationFrame(attempt);
+    return () => { if (importArrival.current?.key === key) importArrival.current = null; };
+  }, [actorId, selected, props.importNotice?.documentId, props.importNotice?.lineId, sourceEpoch]);
   function cancelLibraryReveal() {
     libraryReveal.current.epoch++;
     if (libraryReveal.current.frame !== null) cancelAnimationFrame(libraryReveal.current.frame);
@@ -1802,6 +1864,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>
           </li>;
   }
+  const copyHeader = useMemo(() => selectedDoc ? programCopyHeader(data, actorId, selectedDoc.id) : null, [data, actorId, selectedDoc?.id]);
   return <section ref={root} className={styles.space} data-note-layout={!!props.noteHeader} data-library-open={libraryOpen} aria-label="내 공간"
     onCompositionStartCapture={() => { libraryComposing.current = true; }} onCompositionEndCapture={() => { libraryComposing.current = false; }}
     onClickCapture={guardOccurrenceDraft} onKeyDownCapture={event => { if (!['Tab', 'Shift', 'Escape'].includes(event.key)) guardOccurrenceDraft(event); }}>
@@ -1814,6 +1877,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       onCancel={event => { event.preventDefault(); if (!libraryComposing.current) { cancelLibraryReveal(); setLibraryOpen(false); } }}>
       <div className={styles.findHeading}><h2 id="program-find-title">{props.hostMainTabs ? '문서' : '글 찾기'}</h2><button type="button" onClick={() => { if (!libraryComposing.current) { cancelLibraryReveal(); setLibraryOpen(false); } }}>닫기</button></div>
       {props.hostMainTabs && <button type="button" className={styles.sheetNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>＋ 새 글</button>}
+      {props.hostMainTabs && props.capabilities?.discovery !== false && props.onBrowseFlows && <button type="button" className={styles.flowEntry} disabled={preparingDocumentAction} onClick={() => {
+        const returnFocus = libraryReturn.current?.area ?? libraryReturn.current?.element ?? titleToggle.current ?? libraryToggle.current ?? undefined;
+        setLibraryOpen(false); void (selectedDoc ? openDocumentAction(id => props.onBrowseFlows!(id, returnFocus)) : props.onBrowseFlows!(undefined, returnFocus));
+      }}>준비된 Flow에서 시작 ›</button>}
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {libraryOpen && viewChangeNoticeContent}
       <label className={styles.field}>내 문서·할 일 찾기<input autoFocus id="program-private-search" type="search" value={queryDraft}
@@ -1862,6 +1929,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           {props.hostMainTabs ? selectedDocumentTools && <div className={styles.titleActions}>{selectedDocumentTools}</div>
             : (!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</div>
         {props.noteHeader}
+        {props.importNotice?.actorId === actorId && props.importNotice.documentId === selected && <div className={styles.importNotice}><span role="status">{props.importNotice.text}</span>{props.importNotice.onCancel && <button type="button" disabled={props.importNotice.busy} onClick={props.importNotice.onCancel}>{props.importNotice.busy ? '연결을 빼는 중…' : '이번 가져오기 취소'}</button>}</div>}
         <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice data-quiet={props.noteNoticeShown ? 'true' : undefined}>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
         {!selectedDoc && props.noteStatus}
         {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>
@@ -1870,6 +1938,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           <button type="button" className={styles.emptyNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글 쓰기</button>{props.capabilities?.discovery !== false && <button onClick={() => props.navigate({ view: 'discover' })}>다른 사람의 Flow 둘러보기</button>}</div> : <>
           {selectedTrashed && <ProgramDocumentTrashAction key={selectedDoc.id} space={space} documentId={selectedDoc.id} disabled={preparingDocumentAction} onChange={changeDocumentTrash} />}
           <ProgramDocumentProvenance data={data} documentId={selectedDoc.id} disabled={preparingDocumentAction || selectedTrashed} onOpenRevisions={props.capabilities?.revisionHistory !== false && props.onRevisionHistory ? () => void openDocumentAction(props.onRevisionHistory!) : undefined} onOpenCreatorDraft={props.capabilities?.creatorNavigation !== false ? draftId => void openDocumentAction(() => props.navigate({ view: 'creator', id: draftId })) : undefined} />
+          {copyHeader && <div className={styles.copyHeader} data-state={copyHeader.kind}><span>{copyHeader.text}</span>
+            {copyHeader.action === 'inspect' && props.onInspectCopy && props.capabilities?.copyInspection !== false && <button type="button" disabled={preparingDocumentAction} onClick={() => void openDocumentAction(() => props.onInspectCopy!(copyHeader.copyId), { modalReturnFocus: true })}>변경 확인</button>}
+            {copyHeader.action === 'source' && props.onOpenCopySource && props.capabilities?.discovery !== false && <button type="button" disabled={preparingDocumentAction} onClick={event => { const returnFocus = event.currentTarget; void openDocumentAction(id => props.onOpenCopySource!(copyHeader.flowId, id, returnFocus)); }}>원본 보기</button>}
+          </div>}
           {selectedQualityHold && <p role="status" className={styles.muted}>{selectedQualityHold} 해당 원본 항목과 실행 기록은 읽기 전용으로 남깁니다. 다른 자유 메모는 계속 쓸 수 있습니다.</p>}
           {retentionSource && <p className={styles.muted}>판본 복구 중 빠진 내용을 보관한 곳입니다. <button onClick={() => void openDocument(retentionSource)}>원래 문서로 돌아가기</button></p>}
           {collectionMode && !retentionSource && !selectedTrashed && <><details className={styles.collectionDisclosure}>

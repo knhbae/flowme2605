@@ -15,6 +15,8 @@ import type { ProgramDiscoveryDetailPresentation } from '@/lib/flow/integrated-p
 import { readProgramDiscoveryPresentation, type ProgramDiscoveryNavigation, type ProgramDiscoveryPresentation, type ProgramNavigationCheckpoint } from '@/lib/flow/integrated-poc/navigation';
 import { createTransientOutputDraft, previewTransientOutput, confirmTransientOutput, confirmedTransientOutput, type TransientOutputDraft, type TransientOutputRow } from '@/lib/flow/integrated-poc/transient-output';
 import { ProgramShareLink } from './ProgramShareLink';
+import { ProgramImportDocumentPicker } from './ProgramSpace';
+import { programImportTargets } from '@/lib/flow/integrated-poc/program-import-links';
 import styles from './ProgramDiscovery.module.css';
 
 export type ProgramDiscoveryDraftState = {
@@ -47,7 +49,11 @@ export type ProgramDiscoveryProps = {
   storageScope?: 'local' | 'account';
   selectedVersionId?: string; selectedItemId?: string; selectedOutputReturn?: string;
   /** FC2: the host imports, opens the copy document and reports the reason of a failure (D1). */
-  onUseVersion: (versionId: string, selectedItemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>) => Promise<ProgramImportOutcome>;
+  onUseVersion: (versionId: string, selectedItemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>, targetDocumentId?: string) => Promise<ProgramImportOutcome>;
+  actorId?: string;
+  pendingDocumentIds?: () => string[];
+  onReturnToSpace?: () => void;
+  copySourceReturn?: boolean;
   onStartText: (raw: string, title: string) => Promise<boolean>;
   onCreateFlow?: () => void;
   navigationState?: ProgramDiscoveryNavigationState;
@@ -134,7 +140,7 @@ export function TransientOutputEditor({ draft, stale, onChange, onDiscard }: { d
   </section>;
 }
 
-export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersionId, selectedItemId, selectedOutputReturn, today, onUseVersion, onStartText, onCreateFlow, navigationState, onNavigationStateChange, onRegisterNavigation, storageScope = 'local' }: ProgramDiscoveryProps) {
+export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersionId, selectedItemId, selectedOutputReturn, today, onUseVersion, onStartText, onCreateFlow, navigationState, onNavigationStateChange, onRegisterNavigation, storageScope = 'local', actorId = data.activeActorId, pendingDocumentIds = () => [], onReturnToSpace, copySourceReturn = false }: ProgramDiscoveryProps) {
   const [local, setLocal] = useState(createProgramDiscoveryNavigationState);
   const state = navigationState ?? local; const stateRef = useRef(state); stateRef.current = state;
   const [message, setMessage] = useState(''); const [failed, setFailed] = useState(false); const [pending, setPending] = useState(false);
@@ -142,6 +148,9 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   const heading = useRef<HTMLHeadingElement>(null);
   const sheet = useRef<HTMLDialogElement>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [importDestination, setImportDestination] = useState<'new' | 'existing'>('new');
+  const [targetDocumentId, setTargetDocumentId] = useState<string>();
+  const [pickingDocument, setPickingDocument] = useState(false);
   const [importFailure, setImportFailure] = useState<{ text: string; continueCopy: boolean } | null>(null);
   // Per-version view toggles; they are presentation only and never stored.
   const [summaryOpen, setSummaryOpen] = useState<string | null>(null);
@@ -185,7 +194,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   const flow = selectedFlowId ? data.public.flows.find(row => row.id === selectedFlowId) : undefined;
   // Returning to a saved copy is navigation, not another import. Read only the
   // current actor's live documents; missing/trashed sources are not substitutes.
-  const privateSpace = data.spaces[data.activeActorId];
+  const privateSpace = data.spaces[actorId];
   const storedCopy = flow && privateSpace?.copies.find(copy => copy.flowId === flow.id);
   const existingCopy = flow && programLiveCopy(privateSpace, flow.id);
   const versions = flow ? data.public.versions.filter(row => row.flowId === flow.id).sort((a, b) => b.number - a.number) : [];
@@ -284,19 +293,26 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     if (!result.ok) { setFailed(true); setMessage(errorText(result.reason)); return; }
     update({ transient: result.draft, transientSource: { text: state.pastedText, title: state.pastedTitle, url: state.url } }); setFailed(false); setMessage('');
   };
-  const openSheet = () => { if (pendingRef.current) return; setImportFailure(null); setSheetOpen(true); if (!sheet.current?.open) sheet.current?.showModal(); };
+  const openSheet = (existing = false) => { if (pendingRef.current) return; setImportDestination(existing ? 'existing' : 'new'); setTargetDocumentId(undefined); setImportFailure(null); setSheetOpen(true); if (!sheet.current?.open) sheet.current?.showModal(); if (existing) setPickingDocument(true); };
   const closeSheet = () => { if (pendingRef.current) return; setSheetOpen(false); sheet.current?.close(); };
   // FC2: one import per press. The host saves, opens the copy document and says so there; a failure keeps the
   // sheet, the anchor and the selection, and names its reason (D1).
   const runImport = async () => {
     if (pendingRef.current || !version || !detail || !canUseVersion) return;
     pendingRef.current = true; setPending(true); setImportFailure(null);
-    const anchor = detail.anchor || null;
+    const target = importDestination === 'existing' ? targetDocumentId : undefined;
+    const importingVersion = target && storedCopy ? storedCopy.baseVersionId : version.id;
+    const anchor = target && storedCopy ? storedCopy.anchor : detail.anchor || null;
+    const importingItems = target && storedCopy ? storedCopy.includedItemIds : useItemIds;
     try {
-      const outcome = await onUseVersion(version.id, useItemIds, anchor, Object.keys(recurrenceStarts).length ? recurrenceStarts : undefined);
+      if (importDestination === 'existing' && (!target || privateSpace?.documentTrash?.[storedCopy?.documentId ?? '']
+        || !programImportTargets(data, actorId, storedCopy?.documentId, pendingDocumentIds()).some(doc => doc.id === target && !doc.reason))) {
+        setImportFailure({ text: '고른 문서에 저장 안 한 입력이 있거나 지금 넣을 수 없습니다. 저장하거나 취소한 뒤 다시 골라 주세요.', continueCopy: false }); return;
+      }
+      const outcome = await onUseVersion(importingVersion, importingItems, anchor, target && storedCopy ? undefined : Object.keys(recurrenceStarts).length ? recurrenceStarts : undefined, target);
       if (outcome.ok) { setSheetOpen(false); sheet.current?.close(); }
       else setImportFailure(programImportFailure(outcome.reason, { onHold: sourceOnHold,
-        copyConflict: !!storedCopy && (storedCopy.baseVersionId !== version.id || storedCopy.anchor !== anchor) }));
+        copyConflict: !!storedCopy && (storedCopy.baseVersionId !== importingVersion || storedCopy.anchor !== anchor) }));
     } catch { setImportFailure(programImportFailure('unavailable', { onHold: false, copyConflict: false })); }
     finally { pendingRef.current = false; setPending(false); }
   };
@@ -329,14 +345,14 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     const action = existingCopy ? <button type="button" className={styles.primary} data-testid="program-existing-copy-return" disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>내 문서에서 이어보기</button>
       : flow.archived ? null
         : storedCopy ? <button type="button" className={styles.primary} disabled={pending} onClick={() => navigate({ view: 'space' })}>내 공간에서 확인</button>
-          : <button type="button" className={styles.primary} data-testid="program-import-open" disabled={pending || !canUseVersion} onClick={openSheet}>{importLabel}</button>;
+          : <button type="button" className={styles.primary} data-testid="program-import-open" disabled={pending || !canUseVersion} onClick={() => openSheet()}>{importLabel}</button>;
     const stateNote = flow.archived ? '공개가 철회된 Flow입니다. 가져간 사본은 그대로입니다.'
       : existingCopy ? privateSpace.archivedDocumentIds.includes(existingCopy.documentId) ? '보관한 내 문서를 읽기 전용으로 엽니다.' : '이미 가져온 내 문서를 엽니다. 날짜·진행 기록은 그대로입니다.'
         : storedCopy ? '이 Flow의 개인 사본이 있지만 지금 바로 열 수 없습니다. 내 공간에서 휴지통과 보관 상태를 확인해 주세요. 새 사본은 만들지 않습니다.'
           : sourceOnHold ? '출처를 다시 확인하는 중이라 지금은 새로 가져올 수 없습니다.' : null;
     return <section className={`${styles.page} ${styles.flowDetail}`} data-testid="program-flow-detail" data-has-action={action ? 'true' : undefined}>
       {selectedOutputReturn && returnedDetail && <p role="status">출력한 공개 판본의 같은 항목으로 돌아왔습니다. 출력 선택·기준일·반복 범위를 복원했으며 원래 일정과 개인 기록은 변경하지 않았습니다.</p>}
-      <div className={styles.detailBar}><button className={styles.back} type="button" disabled={pending} onClick={() => navigate({ view: 'discover' })}>← Flow 찾기</button>
+      <div className={styles.detailBar}><button className={styles.back} type="button" disabled={pending} onClick={() => copySourceReturn && onReturnToSpace ? onReturnToSpace() : navigate({ view: 'discover' })}>{copySourceReturn && onReturnToSpace ? '← 내 문서' : '← Flow 찾기'}</button>
         <details className={styles.moreMenu}><summary aria-label="Flow 더보기 메뉴">⋯</summary><div>
           {versions.length > 1 && <label className={styles.field}>이전 판본 보기<select value={version.id} disabled={pending} onChange={event => { update({ versionByFlow: { ...state.versionByFlow, [flow.id]: event.target.value } }); navigate({ view: 'flow', id: flow.id, versionId: event.target.value }); }}>{versions.map(row => <option key={row.id} value={row.id}>판본 {row.number}{row.id === flow.currentVersionId ? ' · 최신' : ''}</option>)}</select></label>}
           {!flow.archived && <button type="button" disabled={pending} onClick={() => setOutputVersion(outputOpen ? null : version.id)}>{outputOpen ? '내 도구로 받기 닫기' : '내 도구로 받기'}</button>}
@@ -404,6 +420,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
       {action && <aside className={styles.actionBox} aria-label="이 Flow 사용">
         <p className={styles.actionMeta}>할 일 {version.items.length}개 · {programVersionScheduleShape(version)}</p>
         {action}
+        {existingCopy && !flow.archived && <button type="button" className={styles.linkButton} disabled={pending} onClick={() => openSheet(true)}>다른 문서에 넣기</button>}
       </aside>}</div>
       <dialog ref={sheet} className={styles.importSheet} aria-labelledby={`${uid}-sheet`} onCancel={event => { if (pendingRef.current) event.preventDefault(); else setSheetOpen(false); }} onClose={() => setSheetOpen(false)}>
         {sheetOpen && <div className={styles.sheetBody}>
@@ -412,11 +429,20 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
           {anchorNeeded && !detail.anchor && <label className={styles.field}>{sourceMeta?.anchorLabel ?? '기준일'}<input type="date" value={detail.anchor} disabled={pending} onChange={event => patchDetail({ anchor: event.target.value })} /><small>비워 두면 날짜 미정으로 들어갑니다.</small></label>}
           {undatedStarts.map(item => <label key={item.id} className={styles.field}>반복 시작일(선택) · {item.title}<input type="date" disabled={pending} value={detail.recurrenceStarts?.[item.id] ?? ''} onChange={event => { const starts = { ...detail.recurrenceStarts }; if (event.target.value) starts[item.id] = event.target.value; else delete starts[item.id]; patchDetail({ recurrenceStarts: starts }); }} /><small>비우면 가져온 뒤 정할 수 있습니다.</small></label>)}
           <fieldset className={styles.destinationChoices} disabled={pending}><legend className={styles.visuallyHidden}>넣을 곳</legend>
-            <label className={styles.destinationChoice}><input type="radio" name={`${uid}-destination`} checked readOnly /><span><strong>새 문서</strong><small>‘{version.title}’ 문서를 미분류에 만듭니다.</small></span></label></fieldset>
-          <button type="button" className={styles.primary} data-testid="program-import-run" disabled={pending || !canUseVersion} onClick={() => void runImport()}>{pending ? '가져오는 중…' : '새 문서로 가져오기'}</button>
+            <label className={styles.destinationChoice}><input type="radio" name={`${uid}-destination`} checked={importDestination === 'new'} onChange={() => setImportDestination('new')} /><span><strong>새 문서</strong><small>‘{version.title}’ 문서를 미분류에 만듭니다.</small></span></label>
+            <label className={styles.destinationChoice}><input type="radio" name={`${uid}-destination`} checked={importDestination === 'existing'} disabled={!!privateSpace?.documentTrash?.[storedCopy?.documentId ?? '']} onChange={() => { setImportDestination('existing'); setPickingDocument(true); }} /><span><strong>기존 문서 끝에 넣기</strong><small>고른 문서 끝에 할 일을 연결합니다.</small></span></label></fieldset>
+          {importDestination === 'existing' && <div className={styles.targetPreview}>
+            <button type="button" disabled={pending} onClick={() => setPickingDocument(true)}>{targetDocumentId ? (programImportTargets(data, actorId, storedCopy?.documentId, []).find(doc => doc.id === targetDocumentId)?.title ?? '문서') + ' · 바꾸기' : '넣을 문서 고르기'}</button>
+            <p>{storedCopy ? '이미 가져온 사본의 할 일을 연결합니다. 새 사본은 만들지 않습니다.' : '넣은 할 일은 미분류의 사본 문서와 연결됩니다. 어느 쪽에서 체크해도 같이 바뀝니다.'}</p>
+            {storedCopy && privateSpace.archivedDocumentIds.includes(storedCopy.documentId) && <p>보관한 사본 문서는 다시 꺼내집니다.</p>}
+            {targetDocumentId && <><p>고른 문서 끝에 할 일 {storedCopy ? storedCopy.includedItemIds.length : useItemIds.length}개가 들어갑니다.</p><ul>{(storedCopy ? data.public.versions.find(row => row.id === storedCopy.baseVersionId)?.items.filter(row => storedCopy.includedItemIds.includes(row.id)) ?? [] : version.items.filter(item => useItemIds.includes(item.id))).slice(0, 3).map(item => <li key={item.id}>{item.schedule.kind === 'recurring' ? '반복 참조: ' : ''}{item.title}</li>)}</ul>{(storedCopy ? storedCopy.includedItemIds.length : useItemIds.length) > 3 && <p>… {(storedCopy ? storedCopy.includedItemIds.length : useItemIds.length) - 3}개 더</p>}</>}
+          </div>}
+          {privateSpace?.documentTrash?.[storedCopy?.documentId ?? ''] && <p>사본 문서가 휴지통에 있습니다. 복원한 뒤 넣을 수 있습니다.</p>}
+          <button type="button" className={styles.primary} data-testid="program-import-run" disabled={pending || !canUseVersion || importDestination === 'existing' && !targetDocumentId} onClick={() => void runImport()}>{pending ? '가져오는 중…' : importDestination === 'existing' ? '고른 문서에 넣기' : '새 문서로 가져오기'}</button>
           {importFailure && <div className={styles.error} role="alert"><p>{importFailure.text}</p>{importFailure.continueCopy && (existingCopy ?? storedCopy) && <button type="button" onClick={() => { closeSheet(); navigate({ view: 'space', id: (existingCopy ?? storedCopy)!.documentId }); }}>내 문서에서 이어보기</button>}</div>}
         </div>}
       </dialog>
+      {pickingDocument && <ProgramImportDocumentPicker data={data} actorId={actorId} copyDocumentId={storedCopy?.documentId} pendingDocumentIds={pendingDocumentIds} onChoose={id => { setTargetDocumentId(id); setPickingDocument(false); }} onClose={() => setPickingDocument(false)} />}
     </section>;
   }
 
@@ -432,6 +458,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   }));
   const urlShown = state.urlOpen || showPastedInput;
   return <section className={styles.page} data-testid="program-discovery">
+    {onReturnToSpace && <button type="button" className={styles.back} onClick={onReturnToSpace}>← 내 문서</button>}
     <header className={styles.listHeader}><h1>Flow 찾기</h1>
       <details className={styles.moreMenu}><summary aria-label="Flow 찾기 더보기 메뉴">⋯</summary><div>
         <button type="button" disabled={pending} onClick={event => { (event.currentTarget.closest('details') as HTMLDetailsElement | null)?.removeAttribute('open'); update({ urlOpen: true }); requestAnimationFrame(() => document.getElementById(`${uid}-url`)?.focus()); }}>주소로 찾기</button>
