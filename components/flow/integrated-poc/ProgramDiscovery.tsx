@@ -200,9 +200,12 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     });
     return () => cancelAnimationFrame(frame);
   }, [version?.id, selectedItemId, selectedOutputReturn, outputBase]);
-  // A detail opened from the list starts at its title (the old intro step did the same).
+  // A detail opened from the list starts at the top, focus on its title (the old intro step did the same);
+  // the list's own scroll position stays in the navigation state for the way back.
   useEffect(() => {
-    if (storageScope === 'account' && selectedFlowId && !selectedItemId && !selectedOutputReturn) heading.current?.focus({ preventScroll: true });
+    if (!selectedFlowId || selectedItemId || selectedOutputReturn) return;
+    window.scrollTo({ top: 0 });
+    if (storageScope === 'account') heading.current?.focus({ preventScroll: true });
   }, [storageScope, selectedFlowId, version?.id, selectedItemId, selectedOutputReturn]);
   const sourceMeta = version ? programCatalogMetadata(version.id) : undefined;
   const detail: ProgramDiscoveryDetailPresentation | undefined = version ? (selectedOutputReturn !== editedReturn.current ? returnedDetail : null) ?? state.details[version.id] ?? { selectedItemIds: version.items.map(item => item.id), anchor: '', format: 'txt' } : undefined;
@@ -316,7 +319,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
           {existingCopy && copyVersion && existingCopy.baseVersionId !== version.id && <p className={styles.versionLine}>내 사본은 판본 {copyVersion.number}입니다. 원본에 판본 {version.number}이 있습니다. <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>변경 확인</button></p>}
         </section>
         {stateNote && <p className={flow.archived || existingCopy ? styles.muted : styles.notice}>{stateNote}</p>}
-        {anchorUsed && !flow.archived && <label className={`${styles.field} ${styles.anchorRow}`}>{sourceMeta?.anchorLabel ?? '기준일'}<input type="date" value={detail.anchor} disabled={pending} onChange={event => patchDetail({ anchor: event.target.value })} /><small>{sourceMeta?.anchorHint || '날짜를 넣으면 아래 할 일의 날짜가 바로 바뀝니다. 원문에 고정된 날짜는 그대로입니다.'}</small></label>}
+        {anchorUsed && !flow.archived && <label className={`${styles.field} ${styles.anchorRow}`}>{sourceMeta?.anchorLabel ?? '기준일'}<input type="date" value={detail.anchor} disabled={pending} onChange={event => patchDetail({ anchor: event.target.value })} /><small>{sourceMeta?.anchorHint || '넣으면 아래 날짜가 바로 바뀝니다. 고정 날짜는 그대로입니다.'}</small></label>}
         <section aria-labelledby={`${uid}-items`}><div className={styles.row}><h2 id={`${uid}-items`}>할 일 <span>{choosing ? `${useItemIds.length}/${version.items.length}` : version.items.length}</span></h2>
           {!flow.archived && !existingCopy && !storedCopy && version.items.length > 1 && <button type="button" className={styles.linkButton} disabled={pending} aria-pressed={choosing}
             onClick={() => { if (choosing) { setChoosingVersion(null); patchDetail({ selectedItemIds: version.items.map(item => item.id) }); } else setChoosingVersion(version.id); }}>{choosing ? '모두 가져오기' : '할 일 고르기'}</button>}</div>
