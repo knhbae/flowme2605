@@ -15,6 +15,7 @@ import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
 import { ProgramMonthGrid } from './ProgramMonthGrid';
 import { programMonthTitle } from '@/lib/flow/integrated-poc/month-grid';
+import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
 import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
 import { programViewScope } from '@/lib/flow/integrated-poc/view-scope';
@@ -221,6 +222,18 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [orderNotice, setOrderNotice] = useState<OrderNotice | null>(null);
   const [orderNoticeHeld, setOrderNoticeHeld] = useState(false), [orderPending, setOrderPending] = useState(false);
   const orderBusy = useRef(false);
+  // C6a 여러 개 고르기: the picked rows (list keys), the row pressed last (for Shift ranges), and what comes back on the
+  // way out (the page's scroll; the calendar, when it started there). None of it is saved.
+  type Selecting = { keys: ReadonlySet<string>; anchor: string | null; scrollY: number; calendar: boolean };
+  const [selecting, setSelecting] = useState<Selecting | null>(null), [selectNotice, setSelectNotice] = useState<string | null>(null);
+  const selectScrollBack = useRef<number | null>(null);
+  useEffect(() => {
+    const top = selectScrollBack.current;
+    if (selecting || top === null) return;
+    selectScrollBack.current = null;
+    const frame = requestAnimationFrame(() => window.scrollTo({ top, behavior: 'instant' }));
+    return () => cancelAnimationFrame(frame);
+  }, [selecting]);
   // W15 rules: a plain notice lasts 6s, held while pressed or focused; a refusal stays until closed.
   useEffect(() => {
     if (!orderNotice) return;
@@ -414,6 +427,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const executionList = programExecutionList(executionRows, period, date, today, emptyDaysOpen, manualOrderDays);
   const monthGrid = period === 'month' && monthView === 'grid';
   const wideMonth = monthWidth >= 840;
+  // C6a: 고르기 ends with any view change (탭·기간·날짜·분류·검색) and with Esc; the picks are not kept.
+  useEffect(() => { setSelecting(null); setSelectNotice(null); }, [actorId, period, date, folderId, query]);
+  useEffect(() => {
+    if (!selecting) return;
+    const key = (event: KeyboardEvent) => { if (event.key === 'Escape' && !event.isComposing && !document.querySelector('dialog:modal')) { event.preventDefault(); stopSelecting(); } };
+    document.addEventListener('keydown', key);
+    return () => document.removeEventListener('keydown', key);
+  }, [selecting]);
   // The day shown beside the grid (wide) or in the sheet (narrow). Narrowing while the panel's ＋ line is open keeps
   // that day open, now as a sheet (C5 review P2).
   const dayShown = !monthGrid ? null : wideMonth ? date : sheetDay ?? (addingDate === date ? date : null);
@@ -437,6 +458,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     && executionList.every(item => item.kind !== 'row' || item.group === 'on-date');
   const allTasks = useMemo(() => programExecutionTasks(space), [space]);
   const taskProgress = useMemo(() => programTaskProgress(space.text), [space.text]);
+  // C6a: why each row of the view can or cannot be picked, and each day group's rows (for its [모두]).
+  const selectBlocks = selecting ? new Map(executionRows.map(row => [row.key, programSelectBlock(space, row,
+    row.kind === 'text-task' && (taskProgress(row.task.id).current ?? (row.task.done ? 100 : 0)) === 100)])) : null;
+  const headingKeys = new Map<string, string[]>();
+  if (selecting) { let heading = ''; for (const item of executionList) { if (item.kind === 'heading') heading = item.key; else if (item.kind === 'row' && heading) headingKeys.set(heading, [...(headingKeys.get(heading) ?? []), item.entry.key]); } }
   const detailTask = detail?.kind === 'task' ? allTasks.find(task => task.id === detail.id) : null;
   const detailLinkedMemos = detailTask ? space.text.bindings.flatMap(binding => {
     if (binding.kind !== 'task' || binding.taskId !== detailTask.id) return [];
@@ -1253,6 +1279,61 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (open && !wideMonth) setSheetDay(day);
     return true;
   }
+  /** C6a: into 고르기 (2-1). From the calendar it goes to the list at the chosen day's group first. */
+  function startSelecting() {
+    if (selectBlocked || keepWrittenDay()) return;
+    if (Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())) { setMessage('회차 날짜를 적용하거나 취소한 뒤 골라 주세요.'); return; }
+    if (noteFindMenu.current) noteFindMenu.current.open = false;
+    setTaskNotice(null); setOrderNotice(null); setAddingDate(null); setSelectNotice(null);
+    setSelecting({ keys: new Set(), anchor: null, scrollY: window.scrollY, calendar: monthGrid });
+    if (monthGrid) {
+      setMonthViewState('list');
+      requestAnimationFrame(() => requestAnimationFrame(() => root.current?.querySelector(`[data-day-heading="${date}"]`)?.scrollIntoView({ block: 'start' })));
+    }
+  }
+  /** Out of 고르기 (취소, Esc): nothing is saved; the screen and its scroll come back, and the calendar if it started there. */
+  function stopSelecting() {
+    const state = selecting;
+    setSelecting(null); setSelectNotice(null);
+    if (!state) return;
+    if (state.calendar) setMonthViewState('grid');
+    // Scrolled once the list is drawn again (the rows of 고르기 are not the list's height).
+    selectScrollBack.current = state.scrollY;
+  }
+  /** A row pressed in 고르기: picked or let go (Shift: the range from the last one); a row that cannot be picked says why. */
+  function pickRow(key: string, block: ProgramSelectBlock | null, shift: boolean) {
+    if (block) { setSelectNotice(PROGRAM_SELECT_REASON[block]); return; }
+    const order = executionRows.map(row => row.key), pickable = new Set(order.filter(row => !selectBlocks?.get(row)));
+    setSelecting(current => current && { ...current, anchor: key,
+      keys: shift ? programSelectRange(current.keys, order, pickable, current.anchor, key) : programToggleSelection(current.keys, key) });
+  }
+  /** A day heading's [모두]/[풀기] in 고르기, over that day's pickable rows (지난 미완료 too). */
+  function selectDayButton(item: Extract<ProgramExecutionListItem, { kind: 'heading' }>) {
+    const keys = (headingKeys.get(item.key) ?? []).filter(key => !selectBlocks?.get(key));
+    if (!selecting || !keys.length) return null;
+    const all = programDayPicked(selecting.keys, keys);
+    return <button type="button" className={styles.selectDay} aria-label={`${item.label.replace(/ · \d+$/, '')} ${all ? '모두 풀기' : '모두 고르기'}`}
+      onClick={() => setSelecting(current => current && { ...current, keys: programSelectDay(current.keys, keys).selected })}>{all ? '풀기' : '모두'}</button>;
+  }
+  /** A row in 고르기: one button that picks it (aria-pressed); no check, source, drag, long press, … or Alt+↑↓. */
+  function renderSelectRow(item: Extract<ProgramExecutionListItem, { kind: 'row' }>) {
+    const entry = item.entry, block = selectBlocks?.get(entry.key) ?? null, picked = !!selecting?.keys.has(entry.key);
+    return <li key={entry.key} className={styles.selectItem} data-select-row={entry.key} data-blocked={block ?? undefined}>
+      <button type="button" className={styles.selectRow} aria-pressed={block ? undefined : picked} aria-disabled={block ? true : undefined}
+        onClick={event => pickRow(entry.key, block, event.shiftKey)}>
+        <span className={styles.selectMark} aria-hidden="true" data-picked={picked || undefined} />
+        <span className={styles.selectText}><span className={styles.taskTitleText}>{entry.kind === 'text-task' ? entry.task.title : entry.row.title}</span>
+          <small>{entry.kind === 'text-task' ? entry.task.docTitle : '반복 회차'}</small></span>
+      </button></li>;
+  }
+  /** ↑↓ between the rows in 고르기 (Space picks the focused one). */
+  function moveSelectFocus(event: React.KeyboardEvent<HTMLUListElement>) {
+    if (!['ArrowDown', 'ArrowUp'].includes(event.key) || event.altKey || event.nativeEvent.isComposing) return;
+    const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('[data-select-row] button')), at = buttons.indexOf(document.activeElement as HTMLButtonElement);
+    if (at < 0) return;
+    event.preventDefault();
+    buttons[Math.max(0, Math.min(buttons.length - 1, at + (event.key === 'ArrowDown' ? 1 : -1)))].focus();
+  }
   function closeDaySheet() {
     if (keepWrittenDay()) return;
     const day = sheetDay;
@@ -1480,13 +1561,20 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (libraryComposing.current) { event.preventDefault(); event.stopPropagation(); return; }
     rememberFindFocus(); if (libraryReturn.current?.area) event.preventDefault();
   }
+  const compactNoteToday = !!props.noteHeader && period === 'today';
+  // C6a: 고르기 stays off, with its reason, while a check or a source waits, a move or a save is on (2-1).
+  const selectBlocked = completingTaskIds.size ? '완료 저장을 기다리는 동안에는 고를 수 없습니다' : sourceWaitingTask ? '원문을 여는 동안에는 고를 수 없습니다'
+    : moving ? '순서를 옮기는 동안에는 고를 수 없습니다' : orderPending ? '저장하는 동안에는 고를 수 없습니다' : null;
   const findActions = <div className={styles.findActions}>
     {period === 'documents' && <button className={styles.newWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글</button>}
     <button ref={libraryToggle} className={styles.libraryToggle} aria-label="글 찾기 · 내 문서와 할 일" aria-expanded={libraryOpen} aria-controls="program-library"
       onPointerDown={findPointerDown}
       onClick={openFindPanel}>글 찾기</button>
+    {/* C6a: 여러 할 일을 골라 날짜를 한꺼번에 바꾸기 (the calendar goes to its list first). */}
+    {period !== 'documents' && !selecting && <button type="button" className={styles.selectStart} disabled={!!selectBlocked} title={selectBlocked ?? undefined}
+      onClick={startSelecting}>{compactNoteToday ? '여러 개 고르기' : monthGrid ? '목록에서 고르기' : '고르기'}</button>}
+    {period !== 'documents' && !selecting && selectBlocked && <small className={styles.selectBlocked}>{selectBlocked}</small>}
   </div>;
-  const compactNoteToday = !!props.noteHeader && period === 'today';
   const viewScope = programViewScope({ period, date, today, folderTitle: folderId ? folderOptions.find(item => item.id === folderId)?.title ?? '선택한 분류' : null, query });
   async function clearScope(kind: 'period' | 'folder' | 'query') {
     if (kind === 'period') return changePeriod('today');
@@ -1501,6 +1589,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const monthTitleRow = <div className={styles.monthTitleRow}>{periodTitle}<div className={styles.monthViews} role="group" aria-label="월간 보기 방식">
     <button type="button" aria-pressed={monthView === 'list'} onClick={() => { if (!keepWrittenDay()) { setAddingDate(null); setMonthView('list'); } }}>목록</button>
     <button type="button" aria-pressed={monthView === 'grid'} onClick={() => { if (!keepWrittenDay()) { setAddingDate(null); setMonthView('grid'); } }}>달력</button></div></div>;
+  // C6a: in 고르기 the title row is "n개 선택 · 취소" (0: what to do), the count spoken as it changes.
+  const selectTitle = selecting && <div className={styles.selectTitle}><span role="status">{selecting.keys.size ? `${selecting.keys.size}개 선택` : '옮길 할 일을 누르세요'}</span>
+    <button type="button" onClick={stopSelecting}>취소</button></div>;
 
   const guardOccurrenceDraft = (event: React.SyntheticEvent) => {
     const pending = Object.entries(recurrencePorts.current).filter(([, port]) => port?.hasPendingInput?.());
@@ -1524,10 +1615,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       onAdd={(title, time) => addOnDay(item.addDate!, title, time)} onClose={() => closeGroupAdd(item.addDate!)} />;
   }
   function renderListItem(item: ProgramExecutionListItem): React.ReactNode {
+          if (selecting && item.kind === 'row') return renderSelectRow(item);
           if (item.kind === 'heading') return <React.Fragment key={item.key}>
-            {!hideDayHeadings && <li className={styles.dayHeading} data-late={item.late || undefined}><h2 className={styles.executionGroup}>{item.label}</h2>
-              {dayHeadingControls(item)}</li>}
-            {dayAddRow(item)}
+            {!hideDayHeadings && <li className={styles.dayHeading} data-late={item.late || undefined} data-day-heading={item.addDate ?? undefined}><h2 className={styles.executionGroup}>{item.label}</h2>
+              {selecting ? selectDayButton(item) : dayHeadingControls(item)}</li>}
+            {!selecting && dayAddRow(item)}
           </React.Fragment>;
           if (item.kind === 'empty-days') return <li key="empty-days" className={styles.emptyDays}><button type="button" aria-expanded={item.open} onClick={() => {
             // Folding would unmount a line being written on an empty day; keep it open and go back to it.
@@ -1744,9 +1836,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} />}
       </div>
       <div ref={monthBox} hidden={period === 'documents'} className={styles.executionView} data-note-today={compactNoteToday || undefined}>
-        {period !== 'all' && <label className={styles.periodPicker}>기간<select aria-label="기간 보기" value={period} onChange={event => { void changePeriod(event.target.value as ProgramPeriod); }}>{periods.filter(([key]) => !['documents', 'all'].includes(key)).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>}
+        {period !== 'all' && !selecting && <label className={styles.periodPicker}>기간<select aria-label="기간 보기" value={period} onChange={event => { void changePeriod(event.target.value as ProgramPeriod); }}>{periods.filter(([key]) => !['documents', 'all'].includes(key)).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>}
         <ProgramRecurrencePlanRecovery data={data} today={today} folderId={folderId || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
-        <div className={styles.periodHeading}>{compactNoteToday ? <div className={styles.notePeriodTitle}>{periodTitle}<div className={styles.notePeriodActions}>
+        <div className={styles.periodHeading}>{selecting ? selectTitle : compactNoteToday ? <div className={styles.notePeriodTitle}>{periodTitle}<div className={styles.notePeriodActions}>
           <button type="button" aria-expanded={noteQuickOpen} aria-controls="program-note-quick-task" onClick={() => setNoteQuickOpen(value => !value)}>할 일 추가</button>
           <details ref={noteFindMenu} className={styles.notePeriodTools} onKeyDown={event => {
             if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
@@ -1755,8 +1847,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {/* I7: the day heading is hidden here, so its button sits in this menu. */}
             {hideDayHeadings && manualOrderDays.has(date) && !moving && <button type="button" disabled={orderPending}
               onClick={() => { if (noteFindMenu.current) noteFindMenu.current.open = false; void resetDayOrder(date); }}>오늘 순서를 시간순으로</button>}</div></details>
-        </div></div> : period === 'month' ? monthTitleRow : periodTitle}{!['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date); }}>‹</button><label>날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value) && !keepWrittenDay()) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date); }}>›</button></div>}</div>
+        </div></div> : period === 'month' ? monthTitleRow : periodTitle}{!selecting && !['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date); }}>‹</button><label>날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value) && !keepWrittenDay()) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date); }}>›</button></div>}</div>
         {props.noteHeader && <div className={styles.periodNotice}>{props.noteHeader}</div>}
+        {selecting && selectBlocks && [...selectBlocks.values()].some(Boolean) && <p className={styles.selectNote}>반복 회차·끝낸 할 일은 고를 수 없습니다</p>}
         {props.noteStatus && <div className={styles.periodStatus}>{props.noteStatus}{!compactNoteToday && period !== 'documents' && findActions}</div>}
         {period === 'all' && !collectionMode && <div className={styles.classificationActions}><label className={styles.classificationPicker}>분류<select aria-label="할 일 분류 보기" value={folderId} onChange={event => { void changeFolder(event.target.value); }}><option value="">모든 분류</option>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
           <details className={styles.classificationCreate}><summary>새 분류</summary><form onSubmit={async event => {
@@ -1771,11 +1864,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {collectionMode && <p className={styles.muted}>모음과 관계없이 모든 문서의 같은 할 일을 날짜별로 봅니다.</p>}
         {props.hostMainTabs ? viewScope.length > 0 && <div className={styles.scopeLine} role="group" aria-label="지금 보는 범위">
           {viewScope.map(item => <span key={item.kind} className={styles.scopeChip}>{item.label}
-            <button type="button" aria-label={`${item.label} 조건 풀기`} onClick={() => void clearScope(item.kind)}>×</button></span>)}
-          <button type="button" className={styles.scopeAll} onClick={() => void changePeriod('today', true)}>전체로 보기</button></div>
+            {!selecting && <button type="button" aria-label={`${item.label} 조건 풀기`} onClick={() => void clearScope(item.kind)}>×</button>}</span>)}
+          {!selecting && <button type="button" className={styles.scopeAll} onClick={() => void changePeriod('today', true)}>전체로 보기</button>}</div>
           : (folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { void changeFolder(''); setQuery(''); }}>필터 해제</button></div>}
         {!monthGrid && range.from && range.to && range.to !== range.from && <p className={styles.muted}>{programCalendarDate(range.from, today)} ~ {programCalendarDate(range.to, today)}</p>}
-        {!monthGrid && <details className={styles.quickDisclosure} data-collapsible id={compactNoteToday ? 'program-note-quick-task' : undefined}
+        {!monthGrid && !selecting && <details className={styles.quickDisclosure} data-collapsible id={compactNoteToday ? 'program-note-quick-task' : undefined}
           {...(compactNoteToday ? { open: noteQuickOpen, hidden: !noteQuickOpen, onToggle: (event: React.SyntheticEvent<HTMLDetailsElement>) => setNoteQuickOpen(event.currentTarget.open) } : {})}>
           <summary>할 일 추가</summary>
           <form className={styles.quick} onSubmit={quickTask}>
@@ -1796,6 +1889,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           <button type="button" onClick={() => void openDocument(entry.documentId, entry.lineId)}>사본에서 날짜 정하기</button></p>)}
         {!executionRows.length && !monthGrid && <div className={styles.empty}><p>{folderId || query ? '현재 조회 조건에 맞는 할 일이 없습니다.' : '이 보기에 할 일이 없습니다.'}</p>{period !== 'all' && period !== 'documents' && <button type="button" onClick={() => void showAllTasksFromEmpty()}>전체 할 일에서 찾기</button>}</div>}
         {/* C5: in the calendar the grid takes the list's place; the chosen day sits beside it when the content is wide. */}
+        {/* C6a: the bar of 고르기. Phones cover the bottom tabs with it; wide screens hold it over the list. The date
+            change itself (its sheet, the one save, 되돌리기) comes with C6b; until then the action shows, off. */}
+        {selecting && <div className={styles.selectBar} role="group" aria-label="고른 할 일">
+          <span className={styles.selectBarCount}>{selecting.keys.size}개 선택</span>
+          <button type="button" className={styles.selectApply} disabled>날짜 바꾸기{selecting.keys.size ? ` · ${selecting.keys.size}개` : ''}</button>
+          <button type="button" className={styles.selectCancel} onClick={stopSelecting}>취소</button></div>}
         {monthGrid ? <div className={styles.monthLayout} data-wide={wideMonth || undefined}>
           <ProgramMonthGrid rows={executionRows} date={date} today={today} titles={monthWidth >= 761} onPick={pickMonthDay} />
           {/* The chosen day: a sheet on a narrow screen (its row notices inside while open), a panel beside the grid
@@ -1809,7 +1908,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               if (!wideMonth && event.target === event.currentTarget && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) closeDaySheet(); }}>
             {dayShown && <>{dayGroup(dayShown, wideMonth ? undefined : closeDaySheet)}{sheetOpen && !detail && taskNoticeContent}{sheetOpen && !detail && orderNoticeContent}</>}
           </dialog>
-        </div> : <ul className={styles.tasks}>{executionList.map(renderListItem)}</ul>}
+        </div> : <ul className={styles.tasks} onKeyDown={selecting ? moveSelectFocus : undefined}>{executionList.map(renderListItem)}</ul>}
+        {selecting && selectNotice && <div className={styles.orderNotice}><ProgramNoticeRow notice={{ tone: 'info', text: selectNotice }} onClose={() => setSelectNotice(null)} /></div>}
         {/* I7: under the list, held at the bottom of the screen (above the bottom tabs on a phone) while it scrolls. */}
         {!detail && !sheetOpen && orderNoticeContent}
       </div>

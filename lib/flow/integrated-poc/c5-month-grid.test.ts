@@ -111,7 +111,7 @@ test('the space wires it: title, list or calendar remembered on the device, shee
   assert.match(space, /const MONTH_VIEW_KEY = 'flow:poc:personal-workspace:v1:month-view';/);
   // In the calendar the range words, the quick add and the empty days line go; the grid takes the list's place.
   assert.match(space, /\{!monthGrid && range\.from && range\.to/);
-  assert.match(space, /\{!monthGrid && <details className=\{styles\.quickDisclosure\}/);
+  assert.match(space, /\{!monthGrid && !selecting && <details className=\{styles\.quickDisclosure\}/);
   assert.match(space, /\{monthGrid \? <div className=\{styles\.monthLayout\} data-wide=\{wideMonth \|\| undefined\}>\s*<ProgramMonthGrid /);
   // Narrow: a modal sheet; wide (content 840px and up): a panel beside the grid (one dialog, c5-review-fix.test.ts).
   assert.match(space, /const wideMonth = monthWidth >= 840;/);
