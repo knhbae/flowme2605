@@ -27,5 +27,13 @@ test('an undo/redo started before picking, or any host operation still running, 
   assert.match(space, /const onUndo = \(\) => selectingNow\.current \? Promise\.resolve\(\) : countedHistory\(props\.onUndo\), onRedo = \(\) => selectingNow\.current \? Promise\.resolve\(\) : countedHistory\(props\.onRedo\);/);
   assert.match(space, /const saving = savesPending > 0 \|\| preparingDocumentAction \|\| classificationCreating \|\| orderPending \|\| !!props\.sourceReturnWaits\?\.\(\);/);
   // Checked again at the press (the host's operation may have started since the last draw).
-  assert.match(body(space, 'startSelecting'), /if \(selectBlocked \|\| props\.sourceReturnWaits\?\.\(\) \|\| keepWrittenDay\(\)\) return;/);
+  assert.match(body(space, 'startSelecting'), /if \(selectBlocked \|\| props\.sourceReturnWaits\?\.\(\) \|\|/);
+});
+
+test('re-review 3: the host\'s own undo, redo or recheck still waiting (the controller busy) keeps 고르기 off, drawn and pressed', () => {
+  // The host hands its controller's busy state over (sourceReturnWaits() only knows tracked writes and reads).
+  assert.match(space, /hostBusy\?: \(\) => boolean;/);
+  assert.match(host, /hostBusy=\{\(\) => !!controller\.current\?\.snapshot\(\)\.busy\}/);
+  assert.match(space, /: saving \? '저장하는 동안에는 고를 수 없습니다' : props\.hostBusy\?\.\(\) \? '서버 확인이 끝난 뒤 고를 수 있습니다' : null;/);
+  assert.match(body(space, 'startSelecting'), /if \(selectBlocked \|\| props\.sourceReturnWaits\?\.\(\) \|\| props\.hostBusy\?\.\(\) \|\| keepWrittenDay\(\)\) return;/);
 });

@@ -1382,7 +1382,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         documentCollections={collectionsMode && collectionsState ? { state: collectionsState, onChange: changeCollections } : undefined}
         navigate={next => { void navigate(next); }} capabilities={capability}
         sourceReturnEpoch={sessionEpoch} awaitSourceReturnReady={awaitSourceReturnReady}
-        sourceReturnWaits={() => !!sourceReturnWaiting()} onSourceReturnQueued={showSourceReturnQueued} onSelectingChange={value => { programSelecting.current = value; }}
+        sourceReturnWaits={() => !!sourceReturnWaiting()} onSourceReturnQueued={showSourceReturnQueued} onSelectingChange={value => { programSelecting.current = value; }} hostBusy={() => !!controller.current?.snapshot().busy}
         canContinueWholeDocument={() => {
           const authority = controller.current?.snapshot();
           return !disposed.current && !externalRef.current && !!authority && !authority.pending && !authority.busy && authority.status !== 'conflict';
