@@ -35,7 +35,7 @@ import { DEV_NOTICE_TEXT, DEV_NOTICE_VERSION, markDevNoticeSeen, readDevNoticeSe
 import { ProgramLegacyWorkspace } from './ProgramLegacyWorkspace';
 import { ProgramPrivateOutput } from './ProgramPrivateOutput';
 import { ProgramCreatorWorkspace } from './ProgramCreatorWorkspace';
-import { ProgramDiscovery, createProgramDiscoveryNavigationState, programDiscoveryHasUnstoredInput } from './ProgramDiscovery';
+import { ProgramDiscovery, createProgramDiscoveryNavigationState, programDiscoveryHasUnstoredInput, type ProgramImportOutcome } from './ProgramDiscovery';
 import { ProgramCommunity, type ProgramCommunityDraftSaveRecovery } from './ProgramCommunity';
 import { ProgramPublisher } from './ProgramPublisher';
 import { ProgramCopyInspector } from './ProgramCopyInspector';
@@ -1021,15 +1021,14 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (!dialog.open) dialog.showModal();
     return () => { if (dialog.open) dialog.close(); restoreProgramDialogFocus(opener); };
   }, [inspector]);
-  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>) {
+  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>): Promise<ProgramImportOutcome> {
     const result = await mutate('개인 Flow 가져오기', fresh => importProgramPublicVersion(fresh, { actorId: session.userId,
       requestId: programId('request'), expectedSpace: fresh.spaces[session.userId], versionId, itemIds, anchor, ...(recurrenceStarts ? { recurrenceStarts } : {}) }),
     { alphaSocial: { type: 'copy-import', versionId, itemIds, anchor, ...(recurrenceStarts ? { recurrenceStarts } : {}) } });
-    if (result.ok) {
-      const copy = currentData.current?.spaces[session.userId].copies.find(row => row.id === result.result);
-      if (copy) await navigate({ view: 'space', id: copy.documentId });
-    }
-    return result.ok;
+    if (!result.ok) return { ok: false, reason: result.reason };
+    const copy = currentData.current?.spaces[session.userId].copies.find(row => row.id === result.result);
+    if (copy) await navigate({ view: 'space', id: copy.documentId });
+    return { ok: true };
   }
   async function startText(raw: string, title: string) {
     const result = await mutate('원문 문서 만들기', fresh => createProgramDocument(fresh, { actorId: session.userId, requestId: programId('request'), expectedSpace: fresh.spaces[session.userId], title, raw }));

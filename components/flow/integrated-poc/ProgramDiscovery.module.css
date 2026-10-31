@@ -12,3 +12,41 @@
 .choiceFacts{padding:0 0 24px;border:0;border-bottom:1px solid #d7e1db;border-radius:0;background:none;margin:24px 0}.firstAction{padding-left:16px;border-left:3px solid #176d59;margin-bottom:24px}.firstAction h2,.completion strong{font-size:13px;line-height:20px;color:#5b6b66}.firstAction>p:first-of-type{font-size:20px;line-height:30px;font-weight:600}.completion{font-size:16px;line-height:26px}.choiceMeta,.sourceLabel{font-size:13px;line-height:20px;color:#5b6b66}.sourceLabel a{display:inline-flex;align-items:center;min-height:44px}
 .fullIntroduction{border-bottom:1px solid #d7e1db;margin-bottom:24px;padding-bottom:8px}.fullIntroduction>p{max-width:760px}.related{padding-top:16px;border-top:1px solid #d7e1db}.relatedPost{border:0!important;border-bottom:1px solid #d7e1db!important;border-radius:0!important;background:none!important}.contextLinks{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:16px}
 @media(max-width:700px){.page{padding:24px 16px 48px}.catalog{gap:0}.card{padding:24px 0}.choiceActions{gap:8px}.choiceActions button{flex-basis:100%}.row{flex-wrap:wrap}.sourceLabel a{white-space:normal}.catalogSource{flex-basis:100%}}
+/* FC1·FC2 (FC-SPEC.md): six-line cards, one-screen detail, the import sheet. */
+.visuallyHidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.listHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}.listHeader h1{margin:0}
+.moreMenu{position:relative}.moreMenu>summary{display:grid;place-items:center;min-width:48px;list-style:none;cursor:pointer;border:1px solid #d7e1db;border-radius:10px;font-size:20px;line-height:1}.moreMenu>summary::-webkit-details-marker{display:none}
+.moreMenu>div{position:absolute;right:0;top:calc(100% + 6px);z-index:20;display:grid;gap:8px;min-width:220px;padding:12px;background:#fff;border:1px solid #d7e1db;border-radius:12px;box-shadow:0 8px 24px rgba(16,40,34,.14)}.moreMenu>div button{width:100%;text-align:left}
+.urlEntry{margin:8px 0 16px;padding:16px;border:1px solid #d7e1db;border-radius:12px;background:#fff}
+.listFilters{display:grid;gap:8px;margin:8px 0 16px}.searchField input{width:100%;min-height:48px;font-size:16px}
+.filterRow{display:flex;align-items:center;gap:8px}.filterSelect{flex:0 1 160px;min-width:0}.filterSelect select{width:100%}.filterRow .resultCount{margin:0 0 0 auto;white-space:nowrap}
+.flowCards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.flowCard{display:flex;flex-direction:column;gap:2px;width:100%;min-height:0;padding:12px;text-align:left;background:#fff;border:1px solid #d7e1db;border-radius:12px;color:#20342f;font:inherit;cursor:pointer}
+.flowCard:hover{border-color:#9fbcb2}.flowCard>span{display:block;min-width:0}
+.cardTitleRow{display:flex!important;align-items:center;gap:8px}.cardTitle{flex:1 1 auto;min-width:0;font-size:16px;line-height:24px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cardBadge{flex:0 0 auto;padding:0 8px;border-radius:999px;font-size:12px;line-height:20px;background:#e8f2ed;color:#176d59}
+.cardBadge[data-badge="출처 재검토 필요"]{background:#fff4e5;color:#8a5200}.cardBadge[data-badge="미확인"]{background:#fcf8ed;color:#986209;border:1px dashed #986209}
+.cardSummary{font-size:14px;line-height:21px;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cardFirst{font-size:14px;line-height:21px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cardMeta,.cardSource{font-size:12px;line-height:18px;color:#5b6b66;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.detailBar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.detailLayout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:32px;align-items:start}.detailMain{min-width:0}
+.summaryClamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.sourceBlock{margin:12px 0;display:grid;gap:4px}.sourceLine{margin:0;font-size:14px;line-height:22px;color:#3d524d}
+.versionLine{margin:8px 0;font-size:14px;line-height:22px}
+.anchorRow{margin:12px 0}
+.taskRows{list-style:none;margin:8px 0 16px;padding:0}.taskRows>li{border-bottom:1px solid #e1e9e4;padding:8px 0}
+.taskRow{display:grid;grid-template-columns:auto 24px minmax(0,1fr) auto;align-items:baseline;gap:8px;min-height:44px}.taskRow:not(label){grid-template-columns:24px minmax(0,1fr) auto}
+.taskRow input{width:20px;height:20px;align-self:center}.taskNumber{color:#5b6b66;font-size:13px;text-align:right}.taskTitle{font-weight:600}.taskDate{color:#5b6b66;font-size:13px;white-space:nowrap}
+.outputSection{margin:16px 0;padding-top:16px;border-top:1px solid #d7e1db;display:grid;gap:8px}
+.actionBox{position:sticky;top:16px;display:grid;gap:12px;padding:16px;border:1px solid #d7e1db;border-radius:12px;background:#fff}.actionBox button{width:100%}.actionMeta{margin:0;font-size:14px;color:#3d524d}
+.importSheet{width:min(560px,calc(100% - 32px));max-height:calc(100dvh - 48px);padding:0;border:0;border-radius:16px;box-shadow:0 12px 40px rgba(16,40,34,.24);color:#20342f}
+.importSheet::backdrop{background:rgba(16,32,28,.42)}.sheetBody{display:grid;gap:12px;padding:20px}.sheetBody h2{margin:0;font-size:20px}.sheetSummary{margin:0;color:#3d524d}
+.destinationChoices{border:0;margin:0;padding:0;display:grid;gap:8px}.destinationChoice{display:flex;gap:12px;align-items:flex-start;padding:12px;border:2px solid #176d59;border-radius:12px}.destinationChoice span{display:grid}.destinationChoice small{color:#5b6b66}
+.sheetBody>.primary{width:100%}
+@media(max-width:900px){.detailLayout{grid-template-columns:minmax(0,1fr) 260px;gap:20px}}
+@media(max-width:700px){.flowCards{grid-template-columns:1fr}
+.detailLayout{display:block}.flowDetail[data-has-action]{padding-bottom:calc(48px + 72px)}
+.actionBox{position:fixed;left:0;right:0;top:auto;bottom:calc(76px + env(safe-area-inset-bottom));z-index:30;display:flex;align-items:center;height:64px;padding:8px 16px;border:0;border-top:1px solid #d7e1db;border-radius:0}.actionMeta{display:none}
+.importSheet{width:100%;max-width:100%;margin:auto 0 0;border-radius:16px 16px 0 0;max-height:calc(100dvh - 24px)}}
+.detailHeader h1:focus:not(:focus-visible){outline:none}
