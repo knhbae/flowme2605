@@ -137,3 +137,21 @@ test('the search box filters only after Korean composition settles', () => {
   type('견적서', false);
   assert.deepEqual(queries, ['견적', '견적서']);
 });
+
+test('둘러보기 on phones takes the R8b title rows; its status row warns only; 되돌리기 stays in 편집 (UX FC-DETAIL-HEAD)', () => {
+  const css = read('AlphaWorkspace.module.css').replace(/\r\n/g, '\n');
+  // One data attribute names the browse screens; the space keeps data-note-layout as before.
+  assert.match(alpha, /data-note-layout=\{usesNoteChrome\} data-browse-layout=\{browse \? destination\.view === 'flow' \? 'detail' : 'list' : undefined\}/);
+  // The same phone rules as the space: no header bar or FlowMe/개발계 label, bottom tabs kept, frameless pane.
+  const phone = css.slice(css.indexOf('/* UX FC-DETAIL-HEAD 1:'));
+  for (const rule of ['.page[data-alpha-frame="b"][data-browse-layout] > .header { height: 0; min-height: 0; padding: 0; border: 0; background: transparent; }',
+    '.page[data-alpha-frame="b"][data-browse-layout] > .header > :not(.globalNavigation) { display: none; }',
+    '.page[data-alpha-frame="b"][data-browse-layout="detail"] .browseNavigation { display: none; }',
+    '.page[data-alpha-frame="b"][data-browse-layout] .workPane { width: 100%; margin: 0; padding: 0 12px; border: 0; border-radius: 0; }']) assert(phone.includes(rule), rule);
+  assert(css.indexOf('@media (max-width: 700px) {\n  .page[data-alpha-frame="b"][data-browse-layout] { padding-top: 8px; }') > 0);
+  // R6: levels 1–5 only on 둘러보기; the space and other screens keep their rows.
+  assert.match(alpha, /const browseStatusShown = serverSlot\.level <= 5;/);
+  assert.match(alpha, /\{!usesNoteChrome && \(!browse \|\| browseStatusShown\) && serverStatus\}/);
+  // 되돌리기 next to 다시 실행 on every screen, so hiding the row loses no undo path.
+  assert.match(alpha, /<div className=\{styles\.managementActions\}>\{serverUndo\}<button type="button" onClick=\{\(\) => void history\('redo'\)\}/);
+});

@@ -332,3 +332,25 @@
 @media (max-width: 700px) {
   .page[data-alpha-frame="b"][data-note-layout="true"] .workPane { width: 100%; margin: 0; padding-inline: 12px; border: 0; border-radius: 0; }
 }
+
+/* UX FC-DETAIL-HEAD 1: 둘러보기 on phones takes the R8b title rows of 쓰기·오늘·분류 (no fixed header bar, no
+   FlowMe or 개발계 label; the bottom tabs stay) and W1's frameless pane. The tab row is the 56px title row of the
+   list; a Flow detail draws its own (ProgramDiscovery's ← Flow 찾기 bar). PC keeps its rail and frame. */
+@media (max-width: 700px) {
+  .page[data-alpha-frame="b"][data-browse-layout] { padding-top: 8px; }
+  .page[data-alpha-frame="b"][data-browse-layout] > .header { height: 0; min-height: 0; padding: 0; border: 0; background: transparent; }
+  .page[data-alpha-frame="b"][data-browse-layout] > .header > :not(.globalNavigation) { display: none; }
+  .page[data-alpha-frame="b"][data-browse-layout] .browseNavigation { width: 100%; min-height: 56px; margin: 0; padding-inline: 12px; align-items: center; }
+  .page[data-alpha-frame="b"][data-browse-layout="detail"] .browseNavigation { display: none; }
+  .page[data-alpha-frame="b"][data-browse-layout] .workPane { width: 100%; margin: 0; padding: 0 12px; border: 0; border-radius: 0; }
+}
+/* R6 on 둘러보기: with no warning there is no status row, so the shell around the hidden 더보기 menu takes no room. */
+.page[data-alpha-frame="b"][data-browse-layout] .sync:not(:has(> .statusRow)) { margin: 0; padding: 0; border: 0; min-height: 0; }
+/* W11: the development notice is one line here as in 쓰기, until 확인 (shared per device). */
+.page[data-alpha-frame="b"][data-browse-layout] .devNotice { margin: 0 0 8px; background: var(--flowme-b-surface-subtle); }
+.page[data-alpha-frame="b"][data-browse-layout] .devNotice > .notice { padding: 0 10px; margin: 0; border: 0; border-radius: 0; background: transparent; font-size: 13px; line-height: 20px; }
+.page[data-alpha-frame="b"][data-browse-layout] .devNotice > .notice > summary { display: block; box-sizing: border-box; min-height: 48px; padding-block: 14px; font-size: 13px; line-height: 20px; list-style: none; }
+.page[data-alpha-frame="b"][data-browse-layout] .devNotice > .notice > summary::-webkit-details-marker { display: none; }
+/* FC head review P1: on 둘러보기 a history step made elsewhere is shown off, and pressing it says where to undo. */
+.managementActions button[aria-disabled="true"] { opacity: .55; }
+.menuHint { margin: 4px 0 0; font-size: 13px; line-height: 20px; color: var(--flowme-text-secondary); }

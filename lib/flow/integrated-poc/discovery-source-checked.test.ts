@@ -11,7 +11,8 @@ type Node = { tag: string; props: Record<string, unknown> | null; children: unkn
 const h = (tag: string, props: Record<string, unknown> | null, ...children: unknown[]): Node => ({ tag, props, children });
 const text = (value: unknown): string => Array.isArray(value) ? value.map(text).join('') : value && typeof value === 'object' ? text((value as Node).children) : value == null || value === false ? '' : String(value);
 
-test('the source-check line is drawn only with a check date, on the intro and on the detail', () => {
+// FC2 folded the intro into the one detail screen, so the line is drawn once (FC0 regression).
+test('the source-check line is drawn only with a check date, on the one detail screen', () => {
   const tree = ts.createSourceFile('ProgramDiscovery.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
   const lines: string[] = [];
   const visit = (node: ts.Node) => {
@@ -19,7 +20,7 @@ test('the source-check line is drawn only with a check date, on the intro and on
     ts.forEachChild(node, visit);
   };
   visit(tree);
-  assert.equal(lines.length, 2);
+  assert.equal(lines.length, 1);
   assert(!source.includes("checkedAt ?? '없음'"));
   for (const expression of lines) {
     const code = ts.transpileModule(`const out = (${expression});`, { compilerOptions: { jsx: ts.JsxEmit.React, jsxFactory: 'h', target: ts.ScriptTarget.ES2022 } }).outputText;

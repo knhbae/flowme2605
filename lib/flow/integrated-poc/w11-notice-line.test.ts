@@ -22,7 +22,8 @@ test('one slot under the title on 쓰기: saved input first, then the developmen
   assert.match(host, /const noteNoticeShown = writingTab && \(!!savedNotice \|\| !devNoticeSeen\);/);
   assert.match(host, /noteHeader=\{usesNoteChrome \? noteNotice : undefined\} noteNoticeShown=\{noteNoticeShown\}/);
   assert.match(host, /\{!writingTab && savedNotice\}/);
-  assert.match(host, /\{!usesNoteChrome && publicNotice\}/);
+  // FC head review P2: 둘러보기 follows the same order, saved input first, the development notice waiting.
+  assert(host.includes('{!usesNoteChrome && (browse && savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice)}'));
   assert.equal(host.match(/className=\{styles\.savedNotice\}/g)?.length, 1);
   // The saved-input notice itself is unchanged: count, 복구함 열기, 닫기.
   assert.match(host, /const savedNotice = savedNoticeShown && <p className=\{styles\.savedNotice\} role="status"><span>확인이 필요한 입력 \{savedTotal\}개<\/span>\s*<button type="button" onClick=\{openRecoveryBox\}>복구함 열기<\/button>/);

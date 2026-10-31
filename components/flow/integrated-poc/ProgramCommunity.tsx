@@ -10,6 +10,7 @@ import { programSame } from '../../../lib/flow/integrated-poc/controller';
 import { ProgramProposalReview } from './ProgramProposalReview';
 import { ProgramCommunityImage } from './ProgramCommunityImage';
 import type { ProgramCommunityMediaPort } from '../../../lib/flow/integrated-poc/community-media';
+import { ProgramShareLink } from './ProgramShareLink';
 import styles from './ProgramCommunity.module.css';
 import { emptyProgramCommunityPresentation, type ProgramCommunityPresentation } from '../../../lib/flow/integrated-poc/navigation';
 import { programReviewPublicRelationValid, type ProgramReviewEntry } from '../../../lib/flow/integrated-poc/review-return';
@@ -509,6 +510,7 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
       <div hidden={view !== 'activity' || !!selectedPostId} className={styles.activity}>
         <section><h2>내 공개 Flow</h2>{publishingActivity.flows.length ? <ul className={styles.list}>{publishingActivity.flows.map(flow => <li key={flow.id}>
           <button className={styles.rowLink} type="button" onClick={() => void go({ view: 'flow', id: flow.id, versionId: flow.versionId })}><strong>{flow.title}</strong><span>{flow.number}판 · {flow.archived ? '공개 철회·보관' : '공개 중'}</span></button>
+          {!flow.archived && <ProgramShareLink flowId={flow.id} versionId={flow.versionId} />}
           {flow.documents.length ? flow.documents.map(doc => <div className={styles.actions} key={doc.id}><button type="button" onClick={() => void go({ view: 'space', id: doc.id })}>개인 원문 · {doc.title}{doc.archived ? ' (보관됨)' : ''}</button>{!doc.archived && doc.canEditPublication && <button type="button" onClick={() => void go({ view: 'space', id: doc.id, action: 'publish' })}>{flow.archived ? '공개 보관 상태 확인' : '공개 내용 편집'}</button>}{!doc.canEditPublication && <small>이 문서의 공개 편집은 다른 초안에 연결되어 있습니다.</small>}</div>) : <p className={styles.meta}>연결된 개인 문서가 없습니다. 공개 판본은 읽을 수 있습니다.</p>}
         </li>)}</ul> : <p className={styles.empty}>공개한 Flow가 없어요.</p>}</section>
         <section><h2>작성 중인 공개 초안</h2>{publishingActivity.drafts.length ? <ul className={styles.list}>{publishingActivity.drafts.map(entry => <li key={entry.id}><strong>{entry.title || entry.document?.title || '제목 없는 공개 초안'}</strong><p className={styles.meta}>{stamp(entry.updatedAt)}{entry.flowArchived ? ' · 공개 철회된 Flow의 초안' : ''}</p>

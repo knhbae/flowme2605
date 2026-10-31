@@ -1,0 +1,6 @@
+/* FC5 link button: a 44px button, one hint line, a 3-second result line or the link to copy by hand. */
+.share{display:grid;gap:4px;min-width:0}
+.share>button{min-height:44px;width:100%}
+.hint,.done,.fallback p{margin:0;font-size:13px;line-height:20px;color:#5b6b66}
+.done{color:#176d59}
+.fallback{display:grid;gap:4px}.fallback input{min-height:44px;width:100%;font-size:14px}

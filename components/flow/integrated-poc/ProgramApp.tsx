@@ -13,7 +13,7 @@ import { programErrorMessage, type ProgramDestination, type ProgramMutate, type 
 import { nextProgramMutationFeedback, programMutationFeedbackAfterNavigation, type ProgramMutationFeedback } from '@/lib/flow/integrated-poc/mutation-feedback';
 import type { PersonalWorkspacePocReadModel, PersonalWorkspacePocState } from '@/lib/flow/personal-workspace-poc-contract';
 import { ProgramSpace, useProgramMobileWritingChrome } from './ProgramSpace';
-import { ProgramDiscovery, createProgramDiscoveryNavigationState, captureProgramDiscoveryPresentation, restoreProgramDiscoveryPresentation, programDiscoveryHasUnstoredInput, type ProgramDiscoveryNavigationState } from './ProgramDiscovery';
+import { ProgramDiscovery, createProgramDiscoveryNavigationState, captureProgramDiscoveryPresentation, restoreProgramDiscoveryPresentation, programDiscoveryHasUnstoredInput, type ProgramDiscoveryNavigationState, type ProgramImportOutcome } from './ProgramDiscovery';
 import { ProgramCommunity } from './ProgramCommunity';
 import { emptyProgramCommunityPresentation, readProgramCommunityPresentation, type ProgramCommunityPresentation } from '@/lib/flow/integrated-poc/navigation';
 import { ProgramPublisher } from './ProgramPublisher';
@@ -517,13 +517,13 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
     const result = await mutate('원문 문서 만들기', data => createProgramDocument(data, { actorId, requestId: programId('request'), expectedSpace: data.spaces[actorId], title, raw }));
     if (result.ok) navigate({ view: 'space', id: result.result }); return result.ok;
   }
-  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>): Promise<boolean> {
-    const actorId = current.current?.envelope.data.activeActorId; if (!actorId) return false;
+  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>): Promise<ProgramImportOutcome> {
+    const actorId = current.current?.envelope.data.activeActorId; if (!actorId) return { ok: false, reason: 'invalid' };
     const requestId = programId('request');
     const result = await mutate('개인 Flow 가져오기', data => importProgramPublicVersion(data, { actorId, requestId, expectedSpace: data.spaces[actorId], versionId, itemIds, anchor,
       ...(recurrenceStarts && Object.keys(recurrenceStarts).length ? { recurrenceStarts } : {}) }));
     if (result.ok) { const copy = current.current?.envelope.data.spaces[actorId].copies.find(row => row.id === result.result); if (copy) navigate({ view: 'space', id: copy.documentId }); }
-    return result.ok;
+    return result.ok ? { ok: true } : { ok: false, reason: result.reason };
   }
   useEffect(() => {
     if (destination.view !== 'space' || destination.action !== 'publish' || !destination.id || !snapshot) return;

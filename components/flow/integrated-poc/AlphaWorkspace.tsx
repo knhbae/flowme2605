@@ -35,7 +35,9 @@ import { DEV_NOTICE_TEXT, DEV_NOTICE_VERSION, markDevNoticeSeen, readDevNoticeSe
 import { ProgramLegacyWorkspace } from './ProgramLegacyWorkspace';
 import { ProgramPrivateOutput } from './ProgramPrivateOutput';
 import { ProgramCreatorWorkspace } from './ProgramCreatorWorkspace';
-import { ProgramDiscovery, createProgramDiscoveryNavigationState, programDiscoveryHasUnstoredInput } from './ProgramDiscovery';
+import { ProgramDiscovery, createProgramDiscoveryNavigationState, programDiscoveryHasUnstoredInput, type ProgramImportOutcome } from './ProgramDiscovery';
+import { programImportArrivalNotice } from '@/lib/flow/integrated-poc/program-discovery-display';
+import { PROGRAM_BROWSE_VIEWS, programBrowseHistoryAllowed, programEmptyHistoryOrigin, programHistoryAfterChange, programHistoryAfterStep } from '@/lib/flow/integrated-poc/program-history-origin';
 import { ProgramCommunity, type ProgramCommunityDraftSaveRecovery } from './ProgramCommunity';
 import { ProgramPublisher } from './ProgramPublisher';
 import { ProgramCopyInspector } from './ProgramCopyInspector';
@@ -166,6 +168,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const [external, setExternal] = useState(false), [presentation, setPresentation] = useState(0), [leave, setLeave] = useState(false);
   // The publication notice shows once per tab and account; storage that cannot be used keeps it showing.
   const [devNoticeSeen, setDevNoticeSeen] = useState(false);
+  // FC head review P1: which screen made each end of the server history (lib/flow/integrated-poc/program-history-origin.ts).
+  const historyOrigin = useRef(programEmptyHistoryOrigin());
+  const [historyHint, setHistoryHint] = useState<'undo' | 'redo' | null>(null);
   // W11: device storage, so the acknowledgement holds for every tab of this device and account.
   const devNoticeStorage = () => { try { return syntheticRuntime?.documentStorage ?? localStorage; } catch { return undefined; } };
   const devNoticeTabStorage = () => { try { return syntheticRuntime?.tabStorage ?? sessionStorage; } catch { return undefined; } };
@@ -628,6 +633,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   }, []);
   const performMutation: ProgramMutate = async (label, build, options) => {
     const store = controller.current, owner = currentOwnerRef.current, epoch = sessionEpochRef.current;
+    const startedInBrowse = PROGRAM_BROWSE_VIEWS.includes(destinationRef.current.view);
     if (!store || storageErrorRef.current) return { ok: false, reason: 'recovery-required' };
     if (externalRef.current) return { ok: false, reason: 'conflict' };
     if (!captureInput()) return { ok: false, reason: 'recovery-required' };
@@ -686,6 +692,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       }
       else {
         setSaveFailed(false);
+        if (outcome.changed !== false) historyOrigin.current = programHistoryAfterChange(historyOrigin.current, store.snapshot().account?.revision, startedInBrowse);
         if (!reviewOwnsMessage) setMessage('');
         // Drop only input that exactly matches confirmed server text. A newer keystroke stays protected.
         const saved = uiRecovery.current?.read(), confirmed = store.snapshot().account;
@@ -784,6 +791,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     setMessage('저장 결과를 확인했습니다.');
   }
   useEffect(() => { clearReviewContext(); }, [sessionEpoch]);
+  useEffect(() => { historyOrigin.current = programEmptyHistoryOrigin(); }, [sessionEpoch]);
+  useEffect(() => { setHistoryHint(null); }, [destination]);
   useEffect(() => {
     if (queuedTaps.current.epoch === sessionEpoch) return;
     queuedTaps.current = { epoch: sessionEpoch, count: 0 };
@@ -872,8 +881,14 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if(currentData.current?.spaces[session.userId]?.personalAuthoring){setMessage('개인 Flow 판본·실행 기록을 보존하기 위해 전체 변경 되돌리기는 보류합니다. 본문 입력 취소는 편집기에서 사용할 수 있습니다.');return;}
     if (storageError) { setMessage('입력 보관 상태를 확인하기 전에는 변경할 수 없습니다.'); return; }
     if (hasInput()) { setMessage('작성 중인 내용을 먼저 저장하거나 보관해 주세요.'); return; }
+    // 둘러보기 takes back only a change made there; anything else is the writing screens' to undo.
+    if (PROGRAM_BROWSE_VIEWS.includes(destinationRef.current.view)
+      && !programBrowseHistoryAllowed(historyOrigin.current, kind, controller.current?.snapshot().account?.revision)) { setHistoryHint(kind); return; }
+    setHistoryHint(null);
+    const before = controller.current?.snapshot().account?.revision;
     const result = await controller.current?.[kind]();
     if (result && !result.ok) setMessage(programErrorMessage(result.reason));
+    else if (result?.ok) historyOrigin.current = programHistoryAfterStep(historyOrigin.current, kind, before, controller.current?.snapshot().account?.revision);
   }
   async function openLatest() {
     const store = controller.current, owner = currentOwnerRef.current, epoch = sessionEpochRef.current, visit = destinationRef.current;
@@ -1021,15 +1036,21 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (!dialog.open) dialog.showModal();
     return () => { if (dialog.open) dialog.close(); restoreProgramDialogFocus(opener); };
   }, [inspector]);
-  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>) {
+  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>): Promise<ProgramImportOutcome> {
     const result = await mutate('개인 Flow 가져오기', fresh => importProgramPublicVersion(fresh, { actorId: session.userId,
       requestId: programId('request'), expectedSpace: fresh.spaces[session.userId], versionId, itemIds, anchor, ...(recurrenceStarts ? { recurrenceStarts } : {}) }),
     { alphaSocial: { type: 'copy-import', versionId, itemIds, anchor, ...(recurrenceStarts ? { recurrenceStarts } : {}) } });
-    if (result.ok) {
-      const copy = currentData.current?.spaces[session.userId].copies.find(row => row.id === result.result);
-      if (copy) await navigate({ view: 'space', id: copy.documentId });
+    if (!result.ok) return { ok: false, reason: result.reason };
+    const live = currentData.current, copy = live?.spaces[session.userId].copies.find(row => row.id === result.result);
+    const version = live?.public.versions.find(row => row.id === versionId);
+    if (copy) {
+      await navigate({ view: 'space', id: copy.documentId });
+      // FC2: the success notice belongs to the writing screen it arrives on; Flow 찾기 is hidden by then.
+      const arrived = destinationRef.current;
+      if (version && arrived.view === 'space' && arrived.id === copy.documentId)
+        setMessage(programImportArrivalNotice(version.title, !!live?.spaces[session.userId]?.personalAuthoring));
     }
-    return result.ok;
+    return { ok: true };
   }
   async function startText(raw: string, title: string) {
     const result = await mutate('원문 문서 만들기', fresh => createProgramDocument(fresh, { actorId: session.userId, requestId: programId('request'), expectedSpace: fresh.spaces[session.userId], title, raw }));
@@ -1251,7 +1272,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const writingTab = usesNoteChrome && mainTab === 'documents';
   const noteNotice = writingTab ? savedNotice || publicNotice : savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice;
   const noteNoticeShown = writingTab && (!!savedNotice || !devNoticeSeen);
-  const serverUndo = <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>;
+  const browseHistory = (kind: 'undo' | 'redo') => !browse || programBrowseHistoryAllowed(historyOrigin.current, kind, snapshot?.account?.revision);
+  const serverUndo = <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external} aria-disabled={browseHistory('undo') ? undefined : true}>되돌리기</button>;
   // The recovery box with its actions. `announce` is off inside the note editor, whose one status
   // slot does the announcing; elsewhere (today, 분류, no document) it keeps its own alert.
   const inputRecoveryLabel = storageError ? '입력 보관 실패 · 확인' : pendingUnknown ? '저장 여부 확인 못 함'
@@ -1279,14 +1301,18 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         {serverStatusMain}{serverStatusExtras}
         {!usesNoteChrome && serverUndo}
       </div>;
+  const serverSlot = programServerStatus({ snapshot, storageError, external, participationRecovery: !!localParticipationRecovery });
+  // UX FC-DETAIL-HEAD 1 (R6): 둘러보기 draws its status row only for a warning or a wait (levels 1–5). Saved and
+  // saving stay off, so the list does not jump; 되돌리기 is in 더보기 › 편집 on every screen.
+  const browseStatusShown = serverSlot.level <= 5;
   const serverStatusView: ProgramServerStatusView | null = usesNoteChrome ? {
-    ...programServerStatus({ snapshot, storageError, external, participationRecovery: !!localParticipationRecovery }),
+    ...serverSlot,
     recovery: destination.view === 'space' && needsInputProtection ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,
     recoveryBody: destination.view === 'space' && needsInputProtection ? <div className={styles.inputRecoveryGroup}>{inputProtectionFor(false)}</div> : null,
     extras: destination.view === 'space' && message && !participationMessage
       ? <div className={styles.statusRow}>{serverStatusExtras}</div> : null,
   } : null;
-  return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
+  return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} data-browse-layout={browse ? destination.view === 'flow' ? 'detail' : 'list' : undefined} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
     <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}>FlowMe</a>
       {!unavailable && <nav className={styles.globalNavigation} aria-label="주요 메뉴">
         {([['documents', '쓰기', 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4'], ['today', '오늘', 'M4 4h16v16H4zm4 8 3 3 5-6'], ['all', '분류', 'M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z']] as const).map(([tab, label, path]) =>
@@ -1301,9 +1327,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       <details className={styles.development}><summary>{syntheticRuntime ? '합성 검증' : '개발계'}</summary><p>{DEV_NOTICE_TEXT}</p></details></header>
     {browse && <nav className={styles.browseNavigation} aria-label="둘러보기 종류"><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({view:'community'})}>경험·질문·지식</button><button aria-current={['discover','flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({view:'discover'})}>Flow 찾기</button></nav>}
     <div className={styles.workPane} data-testid="alpha-work-pane">
-    {!usesNoteChrome && publicNotice}
+    {!usesNoteChrome && (browse && savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice)}
     <section className={styles.sync} aria-label="서버 저장 상태">
-      {!usesNoteChrome && serverStatus}
+      {!usesNoteChrome && (!browse || browseStatusShown) && serverStatus}
       <details ref={managementMenu} className={styles.management} aria-label="계정 및 자료 관리" onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
@@ -1318,7 +1344,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
             <button type="button" aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>Flow 찾기</button></div>
         </section>}
         <section className={styles.menuGroup} aria-label="편집"><h3>편집</h3>
-          <div className={styles.managementActions}>{usesNoteChrome && serverUndo}<button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external}>다시 실행</button></div>
+          <div className={styles.managementActions}>{serverUndo}<button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external} aria-disabled={browseHistory('redo') ? undefined : true}>다시 실행</button></div>
+          {browse && historyHint && <p className={styles.menuHint} role="status">{historyHint === 'undo' ? '쓰기 화면에서 되돌릴 수 있어요.' : '쓰기 화면에서 다시 실행할 수 있어요.'}</p>}
         </section>
         {!unavailable && data && <section className={styles.menuGroup} aria-label="내 활동"><h3>내 활동</h3>
           <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>내 활동</button>

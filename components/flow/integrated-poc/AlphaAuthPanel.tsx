@@ -13,6 +13,9 @@ import {createAlphaLegacyWritingTransport} from '@/lib/flow/integrated-poc/alpha
 import { AlphaAuthenticatedWritingWorkspace } from './AlphaAuthenticatedWritingWorkspace';
 import type { AlphaAuthenticatedWritingPorts } from '@/lib/flow/integrated-poc/alpha-sync/authenticated-writing-shell';
 import {AlphaAppWritingWorkspace} from './AlphaAppWritingWorkspace';
+import { forgetProgramReturn, rememberProgramReturn, takeProgramReturn } from '@/lib/flow/integrated-poc/program-share-link';
+/** This tab's storage, which survives the sign-in redirect; null where the browser refuses it. */
+const tabStorage = () => { try { return window.sessionStorage; } catch { return null; } };
 
 type Mode = 'login' | 'signup' | 'reset' | 'new-password';
 type CallbackPhase = 'pending' | 'failed' | 'ready';
@@ -134,7 +137,8 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
             // PASSWORD_RECOVERY is emitted before exchange resolves. Replay the
             // verified result explicitly, including across StrictMode replay.
             accept(outcome.session, outcome.recovery);
-            window.history.replaceState(null, '', '/alpha');
+            // FC5: a link opened before signing in returns once to its place (the redirect dropped the fragment).
+            window.history.replaceState(null, '', `/alpha${takeProgramReturn(tabStorage(), Date.now()) ?? ''}`);
           }
         }
         if (!disposed) setReady(true);
@@ -189,6 +193,8 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
         catch { setMessage('비밀번호는 변경했습니다. 브라우저의 복구 상태를 지우지 못해 다음 로그인에서 다시 확인할 수 있습니다.'); }
         return;
       }
+      // FC5 review 2: a new attempt never returns to an earlier Google attempt's place.
+      forgetProgramReturn(tabStorage());
       const result = mode === 'signup' ? await sdk.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: config.redirectUrl } })
         : mode === 'reset' ? await sdk.auth.resetPasswordForEmail(email.trim(), { redirectTo: config.redirectUrl })
         : await sdk.auth.signInWithPassword({ email: email.trim(), password });
@@ -246,6 +252,7 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
   async function signInGoogle() {
     if (!client.current || !config || busy || !ready || logoutPending || callbackGate.current !== 'ready') return;
     setBusy(true); setMessage('');
+    rememberProgramReturn(tabStorage(), window.location.hash, Date.now());
     try { const result = await client.current.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: config.redirectUrl } }); if (result.error) setMessage(authError(result.error.code)); }
     catch { setMessage(authError()); } finally { if (mounted.current) setBusy(false); }
   }

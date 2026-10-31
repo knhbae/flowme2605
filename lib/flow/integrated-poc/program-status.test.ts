@@ -65,7 +65,8 @@ test('wiring: Alpha gives the note editor its status by context; the editor draw
   // The host still builds the same composite node for today, 분류 and the no-document screen.
   assert(alpha.includes('const serverStatus = <div className={styles.statusRow}>') && alpha.includes('{serverStatusMain}{serverStatusExtras}'));
   assert(alpha.includes('noteStatus={usesNoteChrome ? serverStatus : undefined}'));
-  assert(/const serverStatusView: ProgramServerStatusView \| null = usesNoteChrome \? \{\s*\.\.\.programServerStatus\(/.test(alpha));
+  // FC-DETAIL-HEAD: the slot is computed once; the note editor spreads it and 둘러보기 reads its level.
+  assert(/const serverSlot = programServerStatus\(/.test(alpha) && /const serverStatusView: ProgramServerStatusView \| null = usesNoteChrome \? \{\s*\.\.\.serverSlot,/.test(alpha));
   assert(alpha.includes('<ProgramServerStatusContext.Provider value={serverStatusView}>') && alpha.includes('</ProgramServerStatusContext.Provider>'));
   // While the bar shows, the slot steps aside (its live node stays) unless a recovery box in it is open.
   assert(css.includes('.toolbar > .statusSlot:not(:has(details[open])) {'));

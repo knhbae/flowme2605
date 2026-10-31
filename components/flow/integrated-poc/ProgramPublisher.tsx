@@ -15,6 +15,7 @@ import { hasProgramOrdinaryPublicationSource, inspectProgramPublicationSource, a
 import { ProgramPublicationSourceReviewPanel } from './ProgramPublicationSourceReview';
 import { ProgramPublicationTiming } from './ProgramPublicationTiming';
 import { programOrdinaryTimingLabel } from '@/lib/flow/integrated-poc/public-ordinary-time';
+import { ProgramShareLink } from './ProgramShareLink';
 import styles from './ProgramPublisher.module.css';
 import { fullRowText } from '@/lib/flow/integrated-poc/publication-editor';
 
@@ -52,6 +53,12 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   const sourceOpener = useRef<HTMLButtonElement | null>(null);
   const restoreSourceFocus = useRef(false);
   const dialog = useRef<HTMLDialogElement>(null); const opener = useRef<HTMLElement | null>(null);
+  const [published, setPublished] = useState<{ flowId: string; versionId: string; title: string } | null>(null);
+  const leavePublished = (view: boolean) => {
+    const done = published; if (!done) return;
+    dialog.current?.close(); onClose();
+    if (view) navigate({ view: 'flow', id: done.flowId, versionId: done.versionId }); else restoreProgramDialogFocus(opener.current);
+  };
   const recovery = useRef<HTMLDetailsElement>(null);
   useEffect(() => { if (message && recovery.current) recovery.current.open = true; }, [message]);
   const composing = useRef(new Set<EventTarget>()), locks = useRef(0); const [locked, setLocked] = useState(false);
@@ -172,7 +179,10 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       if (!result.ok) { setMessage(programErrorMessage(result.reason)); return; }
       if (result.presentationPending) { setMessage(programErrorMessage('presentation-pending')); return; }
       const version = (readCurrentData?.() ?? dataRef.current).public.versions.find(row => row.id === result.result);
-      dialog.current?.close(); onClose(); navigate({ view: 'flow', id: result.flowId ?? version?.flowId ?? (storageScope === 'local' ? publishedFlowId : undefined) ?? submitted.flowId ?? undefined, ...(storageScope === 'account' ? { versionId: result.result } : {}) });
+      const flowId = result.flowId ?? version?.flowId ?? (storageScope === 'local' ? publishedFlowId : undefined) ?? submitted.flowId ?? undefined;
+      // FC5 (UX 13): the account dialog stays open on a "공개했습니다" panel with the link, instead of closing at once.
+      if (storageScope === 'account' && flowId) { setPublished({ flowId, versionId: result.result, title: version?.title ?? submitted.title }); return; }
+      dialog.current?.close(); onClose(); navigate({ view: 'flow', id: flowId, ...(storageScope === 'account' ? { versionId: result.result } : {}) });
     } catch { setMessage('공개 결과를 확인하지 못했습니다. 초안과 요청 번호를 유지합니다. 최신 목록을 확인한 뒤 다시 시도해 주세요.'); }
     finally { endAction(); }
   };
@@ -309,6 +319,12 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   useEffect(() => {
     if (!sourceReview && !blocked && restoreSourceFocus.current) { restoreSourceFocus.current = false; sourceOpener.current?.focus(); }
   }, [sourceReview, blocked]);
+  if (published) return <dialog ref={dialog} className={styles.dialog} aria-labelledby="program-published-title" onCancel={event => { event.preventDefault(); leavePublished(false); }}>
+    <section className={styles.publishedPanel}><h2 id="program-published-title">공개했습니다</h2><p>{published.title}</p>
+      <ProgramShareLink flowId={published.flowId} versionId={published.versionId} />
+      <div className={styles.publishedActions}><button type="button" onClick={() => leavePublished(true)}>공개한 Flow 보기</button><button type="button" onClick={() => leavePublished(false)}>닫기</button></div>
+    </section>
+  </dialog>;
   return <dialog ref={dialog} className={styles.dialog} aria-labelledby="program-publisher-title" onCancel={event => { event.preventDefault(); void close(); }}
     onCompositionStartCapture={event => { composing.current.add(event.target); }}
     onCompositionEndCapture={event => { composing.current.delete(event.target); const next = read(); if (next) setCurrent({ ...next, updatedAt: new Date().toISOString() }); syncReadonly(); void save(); }}>
