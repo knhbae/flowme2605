@@ -6,6 +6,7 @@ import {createWritingCompute,type WritingCompute} from '@/lib/flow/integrated-po
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { restoreProgramDialogFocus } from '@/lib/flow/integrated-poc/dialog-return-focus';
+import { programFailure } from '@/lib/flow/integrated-poc/contract';
 import type { AlphaAuthConfig } from '@/lib/flow/integrated-poc/alpha-auth/config';
 import type { VerifiedAlphaSession } from '@/lib/flow/integrated-poc/alpha-auth/account-access';
 import { createAlphaSyncController, type AlphaSyncSnapshot } from '@/lib/flow/integrated-poc/alpha-sync/controller';
@@ -27,6 +28,7 @@ import { pendingResultUnknown } from '@/lib/flow/integrated-poc/save-status';
 import { programServerStatus } from '@/lib/flow/integrated-poc/program-status';
 import { ProgramServerStatusContext, type ProgramServerStatusView } from './program-status-context';
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
+import { captureProgramImportLinks, cancelProgramImportLinks, programImportTargets, programImportReceiptOwnsLinks, type ProgramImportLinks } from '@/lib/flow/integrated-poc/program-import-links';
 import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
 import { textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { ProgramSpace, useProgramMobileWritingChrome, type ProgramMainTab } from './ProgramSpace';
@@ -159,6 +161,13 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const publisherEditors = useRef<ProgramEditorFlush | null>(null), communityEditors = useRef<ProgramEditorFlush | null>(null), inspectorEditors = useRef<ProgramEditorFlush | null>(null);
   const mediaPort = useMemo(() => createAlphaCommunityMediaPort({ accessToken: () => session.accessToken, fetch: request }), [session.userId, session.accessToken, request]);
   const [output, setOutput] = useState<string | null>(null), [message, setMessage] = useState('');
+  const [flowReturn, setFlowReturn] = useState<{ actorId: string; documentId?: string; kind: 'copy' | 'browse'; returnFocus?: HTMLElement } | null>(null);
+  const [importUndo, setImportUndo] = useState<{ batch: ProgramImportLinks; text: string; done?: boolean } | null>(null);
+  const [importUndoBusy, setImportUndoBusy] = useState(false), importUndoLock = useRef(false);
+  useEffect(() => {
+    setImportUndo(previous => previous && (previous.batch.actorId !== session.userId || destination.view !== 'space' || destination.id !== previous.batch.documentId) ? null : previous);
+  }, [destination, session.userId]);
+  useEffect(() => { setFlowReturn(null); setImportUndo(null); importUndoLock.current = false; setImportUndoBusy(false); }, [sessionEpoch]);
   const [reviewAnnouncement, setReviewAnnouncement] = useState<{ isCurrent: () => boolean } | null>(null);
   const reviewAnnouncementGeneration = useRef(0);
   const [recoveries, setRecoveries] = useState<AlphaUiRecoveryRecord | null>(null), [storageError, setStorageError] = useState(false);
@@ -1016,6 +1025,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (next.view === 'space' && next.action === 'publish' && next.id) { setPublisher(next.id); next = { view: 'space', id: next.id }; }
     if (window.location.hash !== programLocation(next)) window.history.pushState(null, '', programLocation(next));
     destinationRef.current = next; setDestination(next); setOutput(null);
+    if (!['flow', 'discover'].includes(next.view)) setFlowReturn(null);
   }
   useEffect(() => {
     const initial = parseProgramLocation(window.location.hash);
@@ -1041,18 +1051,75 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (!dialog.open) dialog.showModal();
     return () => { if (dialog.open) dialog.close(); restoreProgramDialogFocus(opener); };
   }, [inspector]);
-  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>): Promise<ProgramImportOutcome> {
-    const result = await mutate('개인 Flow 가져오기', fresh => importProgramPublicVersion(fresh, { actorId: session.userId,
-      requestId: programId('request'), expectedSpace: fresh.spaces[session.userId], versionId, itemIds, anchor, ...(recurrenceStarts ? { recurrenceStarts } : {}) }),
-    { alphaSocial: { type: 'copy-import', versionId, itemIds, anchor, ...(recurrenceStarts ? { recurrenceStarts } : {}) } });
+  function pendingImportDocuments() {
+    const port = editors.current, ids = port?.pendingDocumentIds?.() ?? [];
+    const space = currentData.current?.spaces[session.userId];
+    return port?.hasPendingInput?.() && !ids.length && space ? [...space.text.documents, ...space.text.flows].map(doc => doc.id) : ids;
+  }
+  async function openFlowsFromDocument(documentId?: string, flowId?: string, returnFocus?: HTMLElement) {
+    const epoch = sessionEpochRef.current;
+    await navigate(flowId ? { view: 'flow', id: flowId } : { view: 'discover' });
+    if (epoch === sessionEpochRef.current && currentOwnerRef.current === session.userId
+      && ['flow', 'discover'].includes(destinationRef.current.view))
+      setFlowReturn({ actorId: session.userId, documentId, kind: flowId ? 'copy' : 'browse', returnFocus });
+  }
+  async function returnFromFlows() {
+    const returning = flowReturn, epoch = sessionEpochRef.current, opener = document.activeElement;
+    if (!returning || returning.actorId !== currentOwnerRef.current) return;
+    await navigate({ view: 'space', id: returning.documentId });
+    if (epoch !== sessionEpochRef.current || returning.actorId !== currentOwnerRef.current
+      || destinationRef.current.view !== 'space' || destinationRef.current.id !== returning.documentId) return;
+    setFlowReturn(null);
+    requestAnimationFrame(() => {
+      if (epoch === sessionEpochRef.current && returning.actorId === currentOwnerRef.current
+        && destinationRef.current.view === 'space' && destinationRef.current.id === returning.documentId
+        && (document.activeElement === opener || document.activeElement === document.body)) restoreProgramDialogFocus(returning.returnFocus ?? null);
+    });
+  }
+  async function cancelImportLinks() {
+    if (!importUndo || importUndoLock.current) return;
+    const batch = importUndo.batch, epoch = sessionEpochRef.current;
+    importUndoLock.current = true; setImportUndoBusy(true);
+    const isCurrent = () => !disposed.current && epoch === sessionEpochRef.current && currentOwnerRef.current === batch.actorId
+      && destinationRef.current.view === 'space' && destinationRef.current.id === batch.documentId;
+    try {
+      const outcome = await cancelProgramImportLinks({ batch, read: () => currentData.current, mutate, pending: pendingImportDocuments, isCurrent });
+      if (isCurrent()) setImportUndo(previous => previous?.batch === batch ? { batch, done: outcome.remaining === 0,
+        text: outcome.reason === 'pending-input' ? '입력 중인 내용을 저장한 뒤 취소할 수 있습니다.'
+          : outcome.remaining ? (outcome.total - outcome.remaining) + '개를 뺐습니다. 남은 연결 ' + outcome.remaining + '개는 다시 취소할 수 있습니다.'
+            : '넣은 할 일을 뺐습니다. 사본 문서와 원래 할 일·진행 기록은 그대로 남아 있습니다.' } : previous);
+    } finally { if (epoch === sessionEpochRef.current) { importUndoLock.current = false; setImportUndoBusy(false); } }
+  }
+  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>, targetDocumentId?: string): Promise<ProgramImportOutcome> {
+    const owner = session.userId, epoch = sessionEpochRef.current, before = currentData.current?.spaces[owner];
+    if (!before || targetDocumentId && !programImportTargets(currentData.current!, owner, before.copies.find(copy => copy.flowId === currentData.current!.public.versions.find(row => row.id === versionId)?.flowId)?.documentId, pendingImportDocuments()).some(doc => doc.id === targetDocumentId && !doc.reason))
+      return { ok: false, reason: 'unresolved' };
+    const result = await mutate('개인 Flow 가져오기', fresh => epoch !== sessionEpochRef.current || owner !== currentOwnerRef.current
+      || targetDocumentId && !programImportTargets(fresh, owner, before.copies.find(copy => copy.flowId === fresh.public.versions.find(row => row.id === versionId)?.flowId)?.documentId, pendingImportDocuments()).some(doc => doc.id === targetDocumentId && !doc.reason)
+      ? programFailure(fresh, 'conflict') : importProgramPublicVersion(fresh, { actorId: owner,
+      requestId: programId('request'), expectedSpace: fresh.spaces[session.userId], versionId, itemIds, anchor, ...(targetDocumentId ? { targetDocumentId } : {}), ...(recurrenceStarts ? { recurrenceStarts } : {}) }),
+    { alphaSocial: { type: 'copy-import', versionId, itemIds, anchor, ...(targetDocumentId ? { targetDocumentId } : {}), ...(recurrenceStarts ? { recurrenceStarts } : {}) } });
     if (!result.ok) return { ok: false, reason: result.reason };
-    const live = currentData.current, copy = live?.spaces[session.userId].copies.find(row => row.id === result.result);
+    if (result.presentationPending || epoch !== sessionEpochRef.current || owner !== currentOwnerRef.current) return { ok: false, reason: 'presentation-pending' };
+    const confirmed = controller.current?.snapshot();
+    const live = confirmed?.envelope?.data, copy = live?.spaces[session.userId].copies.find(row => row.id === result.result);
     const version = live?.public.versions.find(row => row.id === versionId);
     if (copy) {
-      await navigate({ view: 'space', id: copy.documentId });
+      await navigate({ view: 'space', id: targetDocumentId ?? copy.documentId });
+      if (epoch !== sessionEpochRef.current || owner !== currentOwnerRef.current) return { ok: false, reason: 'presentation-pending' };
       // FC2: the success notice belongs to the writing screen it arrives on; Flow 찾기 is hidden by then.
       const arrived = destinationRef.current;
-      if (version && arrived.view === 'space' && arrived.id === copy.documentId)
+      if (targetDocumentId && arrived.view === 'space' && arrived.id === targetDocumentId) {
+        if (!programImportReceiptOwnsLinks(confirmed?.lastReceipt, confirmed?.account?.revision, copy.id)) {
+          setImportUndo(null);
+          setMessage(result.changed === false ? '이미 연결한 할 일입니다. 새로 넣은 것은 없습니다.'
+            : '문서에 넣었습니다. 더 최신 상태를 함께 받아 이번 연결을 구분하지 못했습니다. 연결과 입력은 그대로 두었습니다.');
+          return { ok: true };
+        }
+        const batch = captureProgramImportLinks(owner, copy.id, targetDocumentId, before, live!.spaces[owner]);
+        const count = batch.ordinary.length + batch.recurring.length;
+        setImportUndo({ batch, done: !count, text: count ? '문서 끝에 할 일 ' + count + '개를 넣었습니다.' : '이미 연결한 할 일입니다. 새로 넣은 것은 없습니다.' });
+      } else if (version && arrived.view === 'space' && arrived.id === copy.documentId)
         setMessage(programImportArrivalNotice(version.title, !!live?.spaces[session.userId]?.personalAuthoring));
     }
     return { ok: true };
@@ -1416,10 +1483,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         }}
         selectedDocumentId={destination.view === 'space' ? destination.id : undefined} onUndo={() => history('undo')} onRedo={() => history('redo')}
         onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} onInputFailureChange={setEditorInputFailed}
+        onOpenCopySource={(flowId, id, focus) => { void openFlowsFromDocument(id, flowId, focus); }} onBrowseFlows={(id, focus) => { void openFlowsFromDocument(id, undefined, focus); }}
+        importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } } : undefined}
         onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></ProgramServerStatusContext.Provider></div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} storageScope="account"
         selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined}
-        selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} onUseVersion={useVersion} onStartText={startText} onCreateFlow={openCreatorEntry} navigationState={discoveryState} onNavigationStateChange={setDiscoveryState} /></div>}
+        selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} actorId={session.userId} pendingDocumentIds={pendingImportDocuments} copySourceReturn={flowReturn?.kind === 'copy'} onReturnToSpace={flowReturn?.actorId === session.userId ? () => { void returnFromFlows(); } : undefined} onUseVersion={useVersion} onStartText={startText} onCreateFlow={openCreatorEntry} navigationState={discoveryState} onNavigationStateChange={setDiscoveryState} /></div>}
       {seen.community && <div hidden={!['community', 'activity'].includes(destination.view)}><ProgramCommunity key={`community:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()}
         view={communityView} selectedPostId={communitySelection} selectedReplyId={destination.view === 'community' ? destination.replyId : undefined} presentation={communityState} onPresentationChange={setCommunityState}
         storageScope="account" mediaPort={mediaPort} draftSaveRecovery={localParticipationRecovery}
