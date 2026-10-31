@@ -14,7 +14,7 @@ import { programManualOrderDays, programOrderedExecutionRows, programTextExecuti
 import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
 import { ProgramMonthGrid } from './ProgramMonthGrid';
-import { programMonthTitle } from '@/lib/flow/integrated-poc/month-grid';
+import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
 import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
@@ -255,6 +255,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // The day sheet's ＋ line is being composed in (Korean): a sheet/panel switch waits for it (C5 re-review).
   const sheetComposing = useRef(false), [sheetSettled, setSheetSettled] = useState(0);
   const endSheetComposing = () => { if (!sheetComposing.current) return; sheetComposing.current = false; setSheetSettled(count => count + 1); };
+  // What the day's dialog really is now (C5 re-review 2): its look and rules follow this, so while a switch waits for a
+  // composition the sheet still looks and acts as a sheet (and the panel as a panel).
+  const [dayDialog, setDayDialog] = useState<ProgramDayDialogMode>(null);
   const daySheet = useRef<HTMLDialogElement | null>(null), monthBox = useRef<HTMLDivElement | null>(null);
   useEffect(() => { try { if (localStorage.getItem(MONTH_VIEW_KEY) === 'grid') setMonthViewState('grid'); } catch { /* the list, then */ } }, []);
   const setMonthView = (next: 'list' | 'grid') => { setMonthViewState(next); try { localStorage.setItem(MONTH_VIEW_KEY, next); } catch { /* kept for this visit */ } };
@@ -459,22 +462,27 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // The day shown beside the grid (wide) or in the sheet (narrow): always the chosen date, so a day picked in the panel
   // is the one the sheet shows. Narrowing while the panel's ＋ line is open keeps that day open, now as a sheet (C5 review P2).
   const dayShown = !monthGrid ? null : wideMonth || dayOpen || addingDate === date ? date : null;
-  const sheetOpen = monthGrid && !wideMonth && !!dayShown;
+  const daySheetLook = (dayDialog ?? (wideMonth ? 'panel' : 'sheet')) === 'sheet';
+  const sheetOpen = monthGrid && daySheetLook && !!dayShown;
   // One dialog shows the day either way, so its ＋ line (title, time, composition) survives a switch between them:
   // a modal sheet on a narrow screen, a panel beside the grid when wide. Anything else (a source opening, the view
   // changing) closes it.
   useEffect(() => {
     const sheet = daySheet.current;
     if (!sheet) return;
-    const mode = !dayShown ? null : wideMonth ? 'panel' : 'sheet', current = !sheet.open ? null : sheet.matches(':modal') ? 'sheet' : 'panel';
-    if (mode === current) return;
+    const current: ProgramDayDialogMode = !sheet.open ? null : sheet.matches(':modal') ? 'sheet' : 'panel';
     // Closing the dialog to show it again would blur the ＋ line mid-syllable: a switch waits for the composition to end.
-    if (mode && current && sheetComposing.current && sheet.contains(document.activeElement)) return;
+    const step = programDayDialogStep({ day: dayShown, wide: wideMonth, current, composing: sheetComposing.current && sheet.contains(document.activeElement) });
+    if (step.mode === current || step.wait) { setDayDialog(current); return; }
     const active = document.activeElement;
     if (sheet.open) sheet.close();
-    if (mode === 'sheet') sheet.showModal(); else if (mode === 'panel') sheet.show();
+    if (step.mode === 'sheet') sheet.showModal(); else if (step.mode === 'panel') sheet.show();
+    setDayDialog(step.mode);
     // Showing a dialog moves the focus into it: a switch keeps it where it was (the ＋ line), and the panel never takes it.
-    if (active instanceof HTMLElement && active.isConnected && active !== document.body && (mode === 'panel' || sheet.contains(active))) active.focus({ preventScroll: true });
+    if (active instanceof HTMLElement && active.isConnected && active !== document.body && (step.mode === 'panel' || sheet.contains(active))) active.focus({ preventScroll: true });
+    // A sheet given up from inside (its ＋ line closed) hands the focus to the chosen day, not back to the page.
+    if (!step.mode && current === 'sheet' && monthGrid && (!active || active === document.body || sheet.contains(active)))
+      root.current?.querySelector<HTMLButtonElement>(`[data-month-day="${date}"]`)?.focus({ preventScroll: true });
   }, [dayShown, wideMonth, sheetSettled]);
   // The title row already says "오늘" when every row is today's; no repeated heading then (but 고르기 keeps it, for its [모두]).
   const hideDayHeadings = !selecting && !!props.noteHeader && period === 'today' && date === today
@@ -1927,15 +1935,18 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           <ProgramMonthGrid rows={executionRows} date={date} today={today} titles={monthWidth >= 761} onPick={pickMonthDay} />
           {/* The chosen day: a sheet on a narrow screen (its row notices inside while open), a panel beside the grid
               when wide. One element either way, so its ＋ line survives the switch. */}
-          <dialog ref={daySheet} className={wideMonth ? styles.dayPanel : `${styles.findDialog} ${styles.daySheet}`}
-            aria-labelledby={wideMonth ? undefined : 'program-day-sheet-title'} aria-label={wideMonth ? `${programCalendarDate(date, today)} 할 일` : undefined}
-            data-expanded={!wideMonth && !!dayShown && addingDate === dayShown || undefined}
-            onCancel={event => { event.preventDefault(); if (!wideMonth) closeDaySheet(); }}
-            onKeyDown={event => { if (event.key === 'Escape' && (event.nativeEvent.isComposing || event.keyCode === 229)) { event.preventDefault(); event.stopPropagation(); } }}
+          <dialog ref={daySheet} className={daySheetLook ? `${styles.findDialog} ${styles.daySheet}` : styles.dayPanel}
+            aria-labelledby={daySheetLook ? 'program-day-sheet-title' : undefined} aria-label={daySheetLook ? undefined : `${programCalendarDate(date, today)} 할 일`}
+            data-expanded={daySheetLook && !!dayShown && addingDate === dayShown || undefined}
+            onCancel={event => { event.preventDefault(); if (daySheetLook) closeDaySheet(); }}
+            onKeyDown={event => { if (event.key === 'Escape' && (event.nativeEvent.isComposing || event.keyCode === 229)) { event.preventDefault(); event.stopPropagation(); }
+              // A key that is not composing ends a composition whose end event never came (C5 re-review 2).
+              if (!event.nativeEvent.isComposing && event.keyCode !== 229) endSheetComposing(); }}
+            onInput={event => { if (!(event.nativeEvent as InputEvent).isComposing) endSheetComposing(); }}
             onCompositionStart={() => { sheetComposing.current = true; }} onCompositionEnd={endSheetComposing} onBlur={endSheetComposing}
             onClick={event => { const box = event.currentTarget.getBoundingClientRect();
-              if (!wideMonth && event.target === event.currentTarget && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) closeDaySheet(); }}>
-            {dayShown && <>{dayGroup(dayShown, wideMonth ? undefined : closeDaySheet)}{sheetOpen && !detail && taskNoticeContent}{sheetOpen && !detail && orderNoticeContent}</>}
+              if (daySheetLook && event.target === event.currentTarget && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) closeDaySheet(); }}>
+            {dayShown && <>{dayGroup(dayShown, daySheetLook ? closeDaySheet : undefined)}{sheetOpen && !detail && taskNoticeContent}{sheetOpen && !detail && orderNoticeContent}</>}
           </dialog>
         </div> : <ul className={styles.tasks} onKeyDown={selecting ? moveSelectFocus : undefined}>{executionList.map(renderListItem)}</ul>}
         {selecting && selectNotice && <div className={styles.orderNotice}><ProgramNoticeRow notice={{ tone: 'info', text: selectNotice }} onClose={() => setSelectNotice(null)} /></div>}

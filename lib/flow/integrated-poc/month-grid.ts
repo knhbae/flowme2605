@@ -69,3 +69,12 @@ export function programMonthKeyTarget(date: string, key: string): string | null 
   if (key === 'PageUp' || key === 'PageDown') return programShiftMonth(date, key === 'PageUp' ? -1 : 1) || null;
   return null;
 }
+
+/** C5: what the day's one dialog is: a modal sheet on a narrow screen, a panel beside the grid when wide, closed with
+ *  no day. A switch between sheet and panel while Korean is composed in it waits for the composition to end (closing
+ *  the dialog to show it again would blur the ＋ line mid-syllable); opening and closing never wait. */
+export type ProgramDayDialogMode = 'sheet' | 'panel' | null;
+export function programDayDialogStep(input: { day: string | null; wide: boolean; current: ProgramDayDialogMode; composing: boolean }): { mode: ProgramDayDialogMode; wait: boolean } {
+  const mode: ProgramDayDialogMode = !input.day ? null : input.wide ? 'panel' : 'sheet';
+  return { mode, wait: mode !== input.current && mode !== null && input.current !== null && input.composing };
+}
