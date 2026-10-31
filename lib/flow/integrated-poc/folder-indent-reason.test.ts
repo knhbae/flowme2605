@@ -83,7 +83,7 @@ test('the editor skips such an indent in canApplyIndent and keeps Tab in the tex
   assert.match(editor, /onKeyDown=\{event => \{ if \(event\.key === 'Tab' && folderIndentSkipped\.current\) event\.preventDefault\(\); folderIndentSkipped\.current = false; \}\}/);
   // The bar and a held press reach the same check through the native editor's indent.
   assert.match(editor, /if \(!target\.instance\.indent\(action === 'outdent'\)\) explainIndent\(action, target\.area\);/);
-  assert.match(editor, /if \(recorded\?\.kind === 'folder'\) return;/);
+  assert.match(editor, /if \(recorded\?\.kind === 'folder' \|\| recorded\?\.kind === 'protected'\) return;/);
   const vendor = readFileSync(new URL('./vendor/text-editor.cjs', import.meta.url), 'utf8');
   assert.match(vendor, /if \(typeof config\.canApplyIndent === 'function' && config\.canApplyIndent\(plan\.nextRaw, intent\) !== true\)/);
 });

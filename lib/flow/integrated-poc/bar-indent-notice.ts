@@ -18,13 +18,16 @@ export function programBarDropNotice(action: WritingBarAction, why: ProgramBarDr
   }[why]}`;
 }
 
-/** Why ⇤·⇥ was refused when it ran: the editor's state, the line's own shape (the native plan), or the model. */
-export type ProgramIndentShape = 'tab' | 'odd' | 'fence' | 'deepest' | 'none' | 'other';
+/** Why ⇤·⇥ was refused when it ran: the editor's state, the line's own shape (the native plan), or the model.
+ *  'folder' and 'protected' already said why (a linked folder line; a protection rule such as a recurring item's
+ *  source line), so the bar adds nothing. A refusal with no known cause is 'unknown', never a shape guess. */
+export type ProgramIndentShape = 'tab' | 'odd' | 'fence' | 'deepest' | 'none' | 'unknown';
 export type ProgramIndentRefusal =
   | { kind: 'busy'; why: 'locked' | 'checking' | 'invalid' }
   | { kind: 'shape'; why: ProgramIndentShape }
   | { kind: 'model'; reason: string | null }
-  | { kind: 'folder' };
+  | { kind: 'folder' }
+  | { kind: 'protected' };
 
 const MAX_DEPTH = 32;
 /** The native plan's line rules (text-input-plan planIndent) for the caret's line: a tab or an odd number of
@@ -36,10 +39,10 @@ export function programIndentShape(raw: string, caret: number, outdent: boolean)
   if (prefix.includes('\t')) return 'tab';
   if (prefix.length % 2) return 'odd';
   if (outdent ? prefix.length < 2 : prefix.length / 2 >= MAX_DEPTH) return outdent ? 'none' : 'deepest';
-  return 'other';
+  return 'unknown';
 }
 
-export function programIndentRefusalNotice(action: 'indent' | 'outdent', refusal: Exclude<ProgramIndentRefusal, { kind: 'folder' }>): string {
+export function programIndentRefusalNotice(action: 'indent' | 'outdent', refusal: Exclude<ProgramIndentRefusal, { kind: 'folder' } | { kind: 'protected' }>): string {
   const reason = refusal.kind === 'busy' ? {
     locked: '지금은 이 문서를 고칠 수 없습니다.',
     checking: '앞의 체크를 반영하는 중입니다. 잠시 뒤 다시 눌러 주세요.',
@@ -50,7 +53,7 @@ export function programIndentRefusalNotice(action: 'indent' | 'outdent', refusal
     fence: '코드 블록(```) 안의 줄은 바꾸지 않습니다.',
     deepest: '더 깊게 들일 수 없는 단계입니다.',
     none: '더 내어 쓸 칸이 없습니다.',
-    other: '이 줄이나 딸린 줄의 들여쓰기 칸이 맞지 않습니다.',
+    unknown: '이 줄을 지금 옮기지 못했습니다.',
   }[refusal.why] : refusal.reason === 'invalid-format' ? '이렇게 옮기면 날짜·진행률·하위 구조가 맞지 않습니다.'
     : refusal.reason === 'identity-ambiguous' ? '옮긴 뒤 기존 항목과의 연결을 확인하지 못했습니다. 한 줄씩 옮겨 주세요.'
     : refusal.reason === 'progress-check-conflict' ? '옮기면 진행 기록과 체크 표시가 맞지 않게 됩니다.'
