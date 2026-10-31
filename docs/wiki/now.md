@@ -2,7 +2,7 @@
 
 2026-10-31 08:46 KST · 총괄(Claude) 갱신 · ★ = 사용자가 결정하거나 직접 할 일
 
-운영 Alpha는 **N1**(`ZPtHXxThwLF_W1ZVPP4Nb`, commit `f41bf41b`)이다. 10/31 03:2x에 반영했다. 롤백 대상은 R4h `G6Wq8au6Uip5_oSxr9Ldf`이다.
+운영 Alpha는 **N3**(`CeHJn6tYMt8PJapvYByb9`, commit `6544a3b0`)이다. 10/31 13:50~13:52에 코덱스가 총괄 위임(`DELEGATION-claude-20261031.md`)으로 반영했다. 반영 뒤 확인 통과(/alpha 200 새 빌드, / 307, /flows 404, health 200, /my 200). 되돌리기 대상은 N1 `ZPtHXxThwLF_W1ZVPP4Nb`이다.
 
 N1에 들어간 것:
 - 쓰기 A(모든 문서), UX 개편 R5~R8
