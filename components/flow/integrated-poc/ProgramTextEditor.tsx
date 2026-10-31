@@ -648,10 +648,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     syncBarLine();
   }
   /** S5: a refused ⇤·⇥ says why: the editor's state, the model's reason, or the line's own shape. A linked folder
-   *  line already showed its notice, and a folder region shows its structure lock. */
+   *  line or a protection rule already showed its notice, and a folder region shows its structure lock. */
   function explainIndent(action: 'indent' | 'outdent', area: HTMLTextAreaElement) {
     const recorded = indentRefusal.current; indentRefusal.current = null;
-    if (recorded?.kind === 'folder') return;
+    if (recorded?.kind === 'folder' || recorded?.kind === 'protected') return;
     if (propsRef.current.folderId) { setMessage(FOLDER_STRUCTURE_LOCK); return; }
     const state = draftRef.current?.getState();
     const refusal = recorded ?? (inputLockedRef.current || propsRef.current.readOnly ? { kind: 'busy', why: 'locked' } as const
@@ -1324,6 +1324,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
             event.preventDefault(); event.stopImmediatePropagation();
             const index = textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1;
             setMessage(programTextProtectionMessage(accessFor(currentDoc()?.lines[index]?.id ?? null)));
+            // Bar indent review P2: an ⇤·⇥ this refused keeps this reason; the bar's notice must not replace it.
+            indentRefusal.current = { kind: 'protected' };
           }
         }
       }

@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 import { textEditorRows, textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 import { writingBarLine } from './writing-bar';
 import { createProgramTextDraft } from './program-text-draft';
+import * as ts from 'typescript';
 import { programBarDropNotice, programIndentRefusalNotice, programIndentShape } from './bar-indent-notice';
 
 // S5 (real accounts, 10/31; inbox s5-indent-diag): → on the writing bar did nothing and said nothing. A press made
@@ -133,4 +134,56 @@ test('refusals: the notice matches what the plan or the model decided (old shape
   // Busy reasons and an unknown model reason still say something.
   for (const why of ['locked', 'checking', 'invalid'] as const) assert.match(programIndentRefusalNotice('outdent', { kind: 'busy', why }), /^내어쓰기를 하지 않았습니다\. \S/);
   assert.equal(programIndentRefusalNotice('indent', { kind: 'model', reason: 'blocked' }), '들여쓰기를 하지 않았습니다. 이렇게 옮기면 문서 구조를 안전하게 저장할 수 없습니다.');
+});
+
+// Bar indent review P2: the real runBar, explainIndent and the textarea's beforeinput guard, run together.
+const tree = ts.createSourceFile('ProgramTextEditor.tsx', editor, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+function nodeOf(match: (node: ts.Node) => boolean) {
+  const found: ts.Node[] = [];
+  const visit = (node: ts.Node) => { if (match(node)) found.push(node); ts.forEachChild(node, visit); };
+  visit(tree); assert.equal(found.length, 1); return found[0];
+}
+const declared = (name: string) => nodeOf(node => ts.isFunctionDeclaration(node) && node.name?.text === name).getText(tree).replace(/^export /, '');
+const assigned = (name: string) => (nodeOf(node => ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === name && !!node.initializer) as ts.VariableDeclaration)
+  .initializer!.getText(tree);
+function evaluate<T>(expression: string, scope: Record<string, unknown>): T {
+  const code = ts.transpileModule('const extracted = (' + expression + ');', { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
+  return new Function(...Object.keys(scope), code + '\nreturn extracted;')(...Object.values(scope)) as T;
+}
+
+test('review P2: a protection rule refusing ⇤·⇥ keeps its own notice; an unknown failure says so, never a shape guess', () => {
+  const messages: string[] = [], indentRefusal = { current: null as unknown };
+  const textarea = { value: '- [ ] 매주 운동\n- 반복: 매주 월', selectionStart: 0, selectionEnd: 0 };
+  const scope = {
+    textarea, indentRefusal, setMessage: (text: string) => messages.push(text),
+    controller: { cancelPreparedRaw: () => {}, getState: () => ({ saving: false }), prepareRaw: () => false },  // validateWorkspace refuses
+    composingRef: { current: false }, inputLockedRef: { current: false }, compositionGeneration: { current: 0 },
+    propsRef: { current: { validateWorkspace: () => false, readOnly: false, folderId: '' } },
+    undoFolderMove: () => false, heldInput: () => [], accessFor: () => undefined, currentDoc: () => ({ lines: [{ id: 'l0' }, { id: 'l1' }] }),
+  };
+  const programTextProtectionMessage = evaluate<(access?: unknown) => string>(declared('programTextProtectionMessage'), {});
+  const guard = evaluate<(event: unknown) => void>(assigned('preventLockedInput'), { ...scope, programTextProtectionMessage });
+  // The native indent writes its plan with insertText; the guard sees that beforeinput first.
+  let indentResult = false;
+  const instance = { indent: () => {
+    const start = textarea.value.indexOf('- 반복'), end = textarea.value.length;
+    textarea.selectionStart = start; textarea.selectionEnd = end;
+    let prevented = false;
+    guard({ inputType: 'insertText', data: '  - 반복: 매주 월', preventDefault: () => { prevented = true; }, stopImmediatePropagation: () => {}, get defaultPrevented() { return prevented; } });
+    return indentResult = !prevented;
+  } };
+  const explainIndent = evaluate<(action: string, area: unknown) => void>(declared('explainIndent'), { ...scope, checkPendingRef: { current: false },
+    draftRef: { current: { getState: () => ({ invalid: false }) } }, FOLDER_STRUCTURE_LOCK: 'FOLDER_STRUCTURE_LOCK', programIndentShape, programIndentRefusalNotice });
+  const runBar = evaluate<(action: string) => void>(declared('runBar'), { ...scope, barEditor: () => ({ instance, area: textarea }), finishHeldFolderLine: () => {},
+    explainIndent, syncBarLine: () => {} });
+  runBar('indent');
+  assert.equal(indentResult, false);
+  assert.deepEqual(messages, [programTextProtectionMessage()], 'the protection notice stays; the bar adds nothing');
+  // A failure the editor cannot place (the line looks fine) is said plainly, not as a spacing problem.
+  messages.length = 0; indentRefusal.current = null;
+  const quiet = { indent: () => false };
+  evaluate<(action: string) => void>(declared('runBar'), { ...scope, barEditor: () => ({ instance: quiet, area: { value: '- [ ] a\n- [ ] b', selectionStart: 15 } }),
+    finishHeldFolderLine: () => {}, explainIndent, syncBarLine: () => {} })('indent');
+  assert.deepEqual(messages, ['들여쓰기를 하지 않았습니다. 이 줄을 지금 옮기지 못했습니다.']);
+  assert.equal(programIndentShape('- [ ] a\n- [ ] b', 15, false), 'unknown');
 });
