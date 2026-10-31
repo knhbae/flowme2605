@@ -24,6 +24,9 @@ test('share sheet first, then the clipboard; a cancelled sheet is quiet; a failu
   assert.equal(await shareProgramLink('u', { copy: async () => { throw new Error('denied'); } }), 'fallback');
   assert.equal(await shareProgramLink('u', {}), 'fallback');
   assert.deepEqual(calls, ['share', 'copy3']);
+  // A share that never settles shows the link instead of leaving the button waiting.
+  assert.equal(await shareProgramLink('u', { share: () => new Promise<void>(() => {}), copy: async () => { calls.push('never'); } }, 20), 'fallback');
+  assert.equal(calls.includes('never'), false);
 });
 
 test('a sign-in returns once to the remembered place, within half an hour', () => {

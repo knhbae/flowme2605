@@ -14,11 +14,15 @@ export function programFlowShareUrl(page: string, flowId: string, versionId: str
 export type ProgramShareOutcome = 'shared' | 'copied' | 'cancelled' | 'fallback';
 export type ProgramSharePort = { share?: (url: string) => Promise<void>; copy?: (text: string) => Promise<void> };
 /** A phone's share sheet first when the host offers one, else the clipboard; a cancelled sheet says nothing, and any
- *  other failure falls back to showing the link to copy by hand. */
-export async function shareProgramLink(url: string, port: ProgramSharePort): Promise<ProgramShareOutcome> {
+ *  other failure falls back to showing the link to copy by hand. A share that never settles (a browser that offers
+ *  navigator.share without a sheet) also shows the link after `waitMs`, so the button is never left waiting. */
+export async function shareProgramLink(url: string, port: ProgramSharePort, waitMs = 20_000): Promise<ProgramShareOutcome> {
   if (port.share) {
-    try { await port.share(url); return 'shared'; }
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const stalled = new Promise<'stalled'>(resolve => { timer = setTimeout(() => resolve('stalled'), waitMs); });
+    try { if (await Promise.race([port.share(url).then(() => 'done' as const), stalled]) === 'stalled') return 'fallback'; return 'shared'; }
     catch (error) { if ((error as { name?: unknown } | null)?.name === 'AbortError') return 'cancelled'; }
+    finally { clearTimeout(timer); }
   }
   if (port.copy) { try { await port.copy(url); return 'copied'; } catch { /* the link is shown instead */ } }
   return 'fallback';
