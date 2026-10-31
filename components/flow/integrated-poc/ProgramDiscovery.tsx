@@ -14,6 +14,7 @@ import { programPublicOutputBase, resolveProgramPublicOutputReturn } from '@/lib
 import type { ProgramDiscoveryDetailPresentation } from '@/lib/flow/integrated-poc/navigation';
 import { readProgramDiscoveryPresentation, type ProgramDiscoveryNavigation, type ProgramDiscoveryPresentation, type ProgramNavigationCheckpoint } from '@/lib/flow/integrated-poc/navigation';
 import { createTransientOutputDraft, previewTransientOutput, confirmTransientOutput, confirmedTransientOutput, type TransientOutputDraft, type TransientOutputRow } from '@/lib/flow/integrated-poc/transient-output';
+import { ProgramShareLink } from './ProgramShareLink';
 import styles from './ProgramDiscovery.module.css';
 
 export type ProgramDiscoveryDraftState = {
@@ -335,6 +336,8 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
         <details className={styles.moreMenu}><summary aria-label="Flow 더보기 메뉴">⋯</summary><div>
           {versions.length > 1 && <label className={styles.field}>이전 판본 보기<select value={version.id} disabled={pending} onChange={event => { update({ versionByFlow: { ...state.versionByFlow, [flow.id]: event.target.value } }); navigate({ view: 'flow', id: flow.id, versionId: event.target.value }); }}>{versions.map(row => <option key={row.id} value={row.id}>판본 {row.number}{row.id === flow.currentVersionId ? ' · 최신' : ''}</option>)}</select></label>}
           {!flow.archived && <button type="button" disabled={pending} onClick={() => setOutputVersion(outputOpen ? null : version.id)}>{outputOpen ? '내 도구로 받기 닫기' : '내 도구로 받기'}</button>}
+          {/* FC5: a link to this version; an archived Flow's link stays closed (UX 13, C9). */}
+          {!flow.archived && <ProgramShareLink flowId={flow.id} versionId={version.id} unverified={flow.id.startsWith('catalog-')} />}
         </div></details></div>
       {flow.archived && <p className={styles.notice} role="status">공개 목록에서 내려 보관된 Flow입니다. 연결된 판본은 읽을 수 있지만 새로 가져오거나 출력할 수 없습니다. 기존 개인 사본과 기록은 그대로 남아 있습니다.</p>}
       {version.id !== flow.currentVersionId && current && !flow.archived && <p className={styles.versionLine}>판본 {version.number}을 보고 있습니다 · <button type="button" className={styles.linkButton} disabled={pending} onClick={() => { update({ versionByFlow: { ...state.versionByFlow, [flow.id]: current.id } }); navigate({ view: 'flow', id: flow.id, versionId: current.id }); }}>최신 판본으로</button></p>}
