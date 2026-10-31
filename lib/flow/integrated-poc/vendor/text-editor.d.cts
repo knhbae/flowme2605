@@ -1,4 +1,5 @@
 import type { TextEditorRowMeta, TextMoveSelection, TextMoveTarget, TextTaskSplitIntent } from '../text-workspace';
+import type { FolderIndentPlan } from '../folder-operation';
 
 declare namespace editor {
   interface Selection {
@@ -42,6 +43,11 @@ declare namespace editor {
     /** Separate direct-check admission; structural actions retain the common hold. */
     isCheckDisabled?: (lineIndex?: number) => boolean;
     canApplyIndent?: (value: string, details: { outdent: boolean; startLine: number; endLine: number }) => boolean;
+    /** A narrow host proof can adjust a just-created folder's captured automatic blank. */
+    adjustIndentPlan?: (plan: FolderIndentPlan) => FolderIndentPlan | null;
+    onIndentStart?: (plan: FolderIndentPlan) => void;
+    /** Always cleared synchronously after the native command, including failures. */
+    onIndentEnd?: () => void;
     canApplyInput?: (value: string, intent: InputIntent) => boolean;
     canApplyTaskSplit?: (value: string, intent: InputIntent) => boolean;
     onInputRejected?: (intent: InputIntent) => void;

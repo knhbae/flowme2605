@@ -18,6 +18,11 @@
   border-radius: 8px;
 }
 .tle-root *, .tle-root *::before, .tle-root *::after { box-sizing: border-box; }
+.tle-line-folder-pending .tle-pending-prefix { color: transparent; }
+.tle-line-folder-pending .tle-pending-name { color: var(--flowme-b-muted); opacity: .65; }
+.tle-pending-folder-icon { position: absolute; top: calc((var(--tle-line) - 16px) / 2); width: 16px; height: 16px; color: var(--flowme-b-muted); opacity: .65; pointer-events: none; }
+.tle-pending-folder-icon svg { display: block; width: 16px; height: 16px; }
+.tle-pending-folder-icon path { stroke-dasharray: 2 2; fill: none; }
 .tle-root[data-mode] { --tle-pad-left: 14px; --tle-pad-right: 110px; }
 .tle-textarea, .tle-presentation, .tle-native-ruler {
   box-sizing: border-box;

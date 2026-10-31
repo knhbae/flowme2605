@@ -57,7 +57,7 @@ test('the editor tracks every renamed linked line of an edit and puts them back 
   assert.match(editor, /if \(was\.has\(line\.id\) && was\.get\(line\.id\) !== line\.text && FOLDER_LINE\.test\(line\.text\)\r?\n\s*&& afterText\.bindings\.some\(row => row\.kind === 'scope' && row\.docId === props\.docId && row\.lineId === line\.id\)\) renamedFolderLinesRef\.current\.add\(line\.id\);/);
   assert.match(editor, /else finishHeldFolderLine\(\); \}\r?\n\s*finishRenamedFolderLines\(false\);/, 'when the caret moves');
   assert.match(editor, /const finishOnBlur = \(\) => \{ finishHeldFolderLine\(\); finishRenamedFolderLines\(true\); \};/);
-  assert.match(editor, /beforeEnter: \(\) => \{ finishHeldFolderLine\(true\); finishRenamedFolderLines\(true\); \},/);
+  assert.match(editor, /beforeEnter: \(\) => \{[\s\S]*?finishHeldFolderLine\(true\); finishRenamedFolderLines\(true\);/);
   assert.match(editor, /if \(!controller\.restoreFolderLineNames\(indexes\)\) return;/);
 });
 

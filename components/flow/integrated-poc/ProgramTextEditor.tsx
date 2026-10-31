@@ -42,7 +42,7 @@ import { programWritingDialogPlace } from '@/lib/flow/integrated-poc/writing-dia
 import { revealProgramEditorLine } from './editor-reveal';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
 import { programNoticeEndsAt, programNoticeOrder, type ProgramNoticeAction, type ProgramNoticeTone } from '@/lib/flow/integrated-poc/program-notice';
-import { programFolderCreatedNotice, programFolderKeptText, programFolderLines, programFolderMoveNotice, programFolderRenameBack, programFolderRenamedEverywhere } from '@/lib/flow/integrated-poc/folder-notice';
+import { programFolderCreatedNotice, programFolderKeptText, programFolderMoveNotice, programFolderRenamedEverywhere } from '@/lib/flow/integrated-poc/folder-notice';
 import { programFolderCreationLocation, programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
 import { ProgramFolderRegionEditor, programRegionError, type ProgramFolderRegionPort, type ProgramFolderRegionSnapshot } from './ProgramFolderRegionEditor';
 import regionStyles from './ProgramFolderRegionEditor.module.css';
@@ -301,8 +301,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const heldFolderLineRef = useRef<{ id: string; left: boolean; offAtStart: boolean } | null>(null);
   // W15: the folder notice in the notice row, with how long it stays (info 6s; a choice while the caret is in
   // its line's block, then 6s); `held` while pressed or focused.
-  type FolderNotice = { text: string; tone: ProgramNoticeTone; actions?: ProgramNoticeAction[]; lineId?: string; shownAt: number; leftBlockAt: number | null };
+  type FolderNotice = { text: string; tone: ProgramNoticeTone; actions?: ProgramNoticeAction[]; lineId?: string; shownAt: number; leftBlockAt: number | null; operationId?: number };
   const [folderNotice, setFolderNotice] = useState<FolderNotice | null>(null);
+  const folderNoticeRef = useRef<FolderNotice | null>(null); folderNoticeRef.current = folderNotice;
+  const folderRawUndoRef = useRef(false);
   const [noticeHeld, setNoticeHeld] = useState(false);
   // W15 review P1-4: a notice button pressed during a composition runs once it has ended, like a held bar press,
   // so the model changes only when the native editor can take the new text.
@@ -528,7 +530,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (moved?.ok && oldFolder) showFolderMove(moved.before, after.working, lineId, moved.fromId, oldFolder.title);
       else {
         const notice = after.folderNotice ?? programFolderCreatedNotice(previous.working, after.working);
-        if (notice) showFolderNotice(notice, 'info');
+        if (notice) showFolderOperation(notice, 'info', lineId);
       }
       dismissPicker();
       const doc = currentDoc(), at = doc?.lines.findIndex(line => line.id === lineId) ?? -1;
@@ -673,7 +675,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     heldFolderLineRef.current = declared || create ? null : { ...held, left: true };
     // B1 (W15): a folder this made is announced too.
     const notice = controller.getState().folderNotice ?? (declared ? programFolderCreatedNotice(state.working, controller.getState().working) : null);
-    if (notice) showFolderNotice(notice, 'info');
+    if (notice) showFolderOperation(notice, 'info', lines[index]?.id);
     if (!declared) return;
     const visibleRaw = controller.getState().raw;
     if (visibleRaw !== area.value) editorRef.current?.setValue(visibleRaw, { preserveSelection: true });
@@ -712,10 +714,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   /** One ↶ (or the notice's 되돌리기) right after a finished folder line moved puts the whole move back (D3 B). */
   function undoFolderMove() {
     const controller = draftRef.current;
-    if (!controller || composingRef.current || inputLockedRef.current || propsRef.current.readOnly || !controller.canUndoFolderMove()) return false;
+    const id = folderNoticeRef.current?.operationId;
+    if (!controller || id === undefined || composingRef.current || inputLockedRef.current || propsRef.current.readOnly) return false;
     const previous = controller.getState();
-    if (!controller.undoFolderMove()) return false;
+    const result = controller.undoFolderOperation(id);
+    if (!result.ok) { showFolderNotice(result.reason, 'warn'); return true; }
     if (!shown(controller.getState().raw)) { controller.restoreState(previous); return false; }
+    folderRawUndoRef.current = false;
     const notice = controller.getState().folderNotice; if (notice) showFolderNotice(notice, 'info');
     scheduleSave(); return true;
   }
@@ -728,36 +733,42 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   /** W15: show a folder notice in the notice row. A choice notice remembers its line, for its lifetime. */
   function showFolderNotice(text: string, tone: ProgramNoticeTone, lineId?: string, actions?: ProgramNoticeAction[]) {
-    setFolderNotice({ text, tone, actions, lineId: tone === 'choose' ? lineId : undefined, shownAt: Date.now(), leftBlockAt: null });
+    draftRef.current?.endFolderNotice();
+    const next = { text, tone, actions, lineId: tone === 'choose' ? lineId : undefined, shownAt: Date.now(), leftBlockAt: null };
+    folderNoticeRef.current = next; setFolderNotice(next);
   }
+  function showFolderOperation(text: string, tone: ProgramNoticeTone, lineId?: string, actions: ProgramNoticeAction[] = []) {
+    const operation = draftRef.current?.folderOperation();
+    if (!operation) { showFolderNotice(text, tone, lineId, actions); return; }
+    const undo: ProgramNoticeAction = { label: '되돌리기', run: whenComposed(() => {
+      if (folderNoticeRef.current?.operationId !== operation.id) { showFolderNotice('이 폴더 동작의 알림이 끝났습니다. 현재 입력은 유지했습니다.', 'warn'); return; }
+      undoFolderMove();
+    }) };
+    folderRawUndoRef.current = true;
+    const next: FolderNotice = { text: operation.kind === 'scopes' ? operation.notice : text + (operation.notice ? ' · ' + operation.notice : ''), tone, actions: [...actions, undo], lineId: tone === 'choose' ? lineId : undefined,
+      shownAt: Date.now(), leftBlockAt: null, operationId: operation.id };
+    folderNoticeRef.current = next; setFolderNotice(next);
+  }
+  function explainRawFolderUndo() { if (folderRawUndoRef.current) { folderRawUndoRef.current = false; setMessage('글만 돌아갑니다'); } }
   /** The notice after Enter moved a linked folder line or renamed its folder, with its buttons. */
   function showFolderMove(before: TextWorkspaceState, after: TextWorkspaceState, lineId: string, fromId: string, oldTitle: string) {
     const notice = programFolderMoveNotice(before, after, propsRef.current.docId, lineId, fromId);
     const title = M.getDocument(after, propsRef.current.docId)?.lines.find(line => line.id === lineId)?.text.replace(/^ *- \//, '').trim() ?? '';
     // Only right after the move: an edit since (a held press's composition too) leaves it, and says so.
-    const undo: ProgramNoticeAction = { label: '되돌리기', run: whenComposed(() => { if (undoFolderMove()) setFolderNotice(null);
-      else showFolderNotice('그 뒤에 다른 편집이 있어 폴더 옮김을 되돌리지 않았습니다 · 분류 화면에서 정리할 수 있습니다', 'warn'); }) };
     const everywhere: ProgramNoticeAction = { label: '모든 문서에 적용', run: whenComposed(() => { void renameEverywhere(before, fromId, title, oldTitle); }) };
-    showFolderNotice(notice.text, notice.tone, lineId, notice.kind === 'moved' ? [everywhere, undo] : [undo]);
+    showFolderOperation(notice.text, notice.tone, lineId, notice.kind === 'moved' ? [everywhere] : []);
   }
   /** [모든 문서에 적용], right after the move only: the move is replaced by renaming the folder in every document
    *  (the 분류 rename path), applied to the state before the move so no folder of the new name is left behind. */
   async function renameEverywhere(before: TextWorkspaceState, fromId: string, title: string, oldTitle: string) {
     const controller = draftRef.current;
     if (!controller || !controller.canUndoFolderMove() || composingRef.current) { showFolderNotice('다른 편집이 있어 모든 문서에 적용하지 않았습니다. 분류 화면에서 이름을 바꿀 수 있습니다.', 'warn'); return; }
-    const next = M.renameScope(before, fromId, title);
-    if (next === before || !(await apply(next, '폴더 이름 바꾸기'))) return;
+    const original = controller.folderRenameBase(fromId);
+    if (!original) { showFolderNotice('그 뒤에 관련 입력이나 연결이 바뀌어 모든 문서에 적용하지 않았습니다. 현재 입력은 유지했습니다.', 'warn'); return; }
+    const next = M.renameScope(original, fromId, title);
+    if (next === original || !(await apply(next, '폴더 이름 바꾸기', undefined, undefined, original))) return;
     // The folder's lines as the rename left them: its 되돌리기 undoes only that (W15 review P1-2).
-    const lines = programFolderLines(next, fromId);
-    const back: ProgramNoticeAction = { label: '되돌리기', run: whenComposed(() => { void renameBack(fromId, oldTitle, title, lines); }) };
-    showFolderNotice(programFolderRenamedEverywhere(next, fromId, oldTitle), 'info', undefined, [back]);
-  }
-  /** Its 되돌리기: a new change naming the folder back everywhere. Anything changed there since (a line typed over
-   *  or newly linked in any document, another name, the old name taken) refuses it with the reason instead. */
-  async function renameBack(fromId: string, oldTitle: string, title: string, lines: Record<string, string>) {
-    const back = programFolderRenameBack(currentState(), fromId, oldTitle, title, lines);
-    if (!back.ok) { showFolderNotice(back.reason, 'warn'); return; }
-    if (await apply(back.next, '폴더 이름 되돌리기')) setFolderNotice(null);
+    showFolderOperation(programFolderRenamedEverywhere(next, fromId, oldTitle), 'info');
   }
   /** The editor the writing bar acts on: the body, or the focused folder region. */
   function barEditor() {
@@ -779,6 +790,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       meta = (documentInputRef.current?.paint(working) ?? textEditorRows(working, docId))[raw.slice(0, caret).split('\n').length - 1];
     }
     const line = writingBarLine(raw, caret, isTask => isTask ? taskMarkerLock(meta, state, docId) : null);
+    if (!propsRef.current.folderId && meta?.scopeKind === 'folder'
+      && !(folderNoticeRef.current?.operationId === draftRef.current?.folderOperation()?.id && draftRef.current?.freshFolderLine(meta.id))) {
+      return { ...line, canIndent: false, canOutdent: false, structureLock: FOLDER_INDENT_NOTICE };
+    }
     // A folder region keeps saved lines' kind and depth; offer only what its own check accepts.
     return propsRef.current.folderId
       ? folderBarLine(line, raw, caret, next => !!regionPortRef.current?.canApplyActive?.(next), FOLDER_STRUCTURE_LOCK, target.area.selectionEnd) : line;
@@ -1118,12 +1133,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   /** Puts the model's text on the screen; false when the native editor refused it (a composition began). */
   const shown = (raw: string) => !editorRef.current || editorRef.current.setValue(raw, { preserveSelection: true }) !== false;
-  async function apply(next: TextWorkspaceState, label: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule'], pickerTarget?: { lineId: string; scopeId: string }) {
+  async function apply(next: TextWorkspaceState, label: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule'], pickerTarget?: { lineId: string; scopeId: string }, folderBefore?: TextWorkspaceState) {
     const before = currentState(), selected = writingSelection(), previous = draftRef.current?.getState();
+    const beforeOperation = draftRef.current?.folderOperation();
     // W15 review P1-4: never change the model during a composition (the screen would refuse the text), and if
     // the screen refuses it anyway, put the model back so both agree.
     if (composingRef.current) { setMessage('한글 입력을 마친 뒤 다시 눌러 주세요. 현재 내용은 유지했습니다.'); return false; }
-    if (actionsDisabled() || !previous || !draftRef.current?.apply(next, label, schedule, pickerTarget)) { setMessage('이 변경은 적용할 수 없습니다. 현재 내용은 유지했습니다.'); return false; }
+    if (actionsDisabled() || !previous || !draftRef.current?.apply(next, label, schedule, pickerTarget, folderBefore)) { setMessage('이 변경은 적용할 수 없습니다. 현재 내용은 유지했습니다.'); return false; }
     cancelMove();
     if (!shown(draftRef.current.getState().raw)) { draftRef.current.restoreState(previous); setMessage('화면에 반영하지 못해 적용하지 않았습니다. 현재 내용은 유지했습니다.'); return false; }
     orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++;
@@ -1135,6 +1151,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       editorRef.current?.refreshViewport();
     }
     editorRef.current?.refresh();
+    const operation = draftRef.current.folderOperation();
+    if (operation && (operation.id !== beforeOperation?.id || operation.at !== beforeOperation.at)) showFolderOperation('폴더 동작을 반영했습니다', 'info');
     return saveNow();
   }
   function beginMove(lineId: string | null, openDialog: boolean) {
@@ -1321,6 +1339,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     });
     orderHistoryRef.current = createProgramPermutationHistory(props.docId); orderPositionsRef.current = []; orderEpochRef.current++; pendingOrderRef.current = null;
     movingRef.current = null; setMoving(null); setPanel(null);
+    type FreshIndent = NonNullable<ReturnType<typeof controller.planFreshFolderIndent>>;
+    let indentCandidate: FreshIndent | null = null, indentAction: FreshIndent | null = null;
+    const currentIndentAction = (raw: string) => indentAction && alive && draftRef.current === controller && propsRef.current.docId === props.docId
+      && propsRef.current.active !== false && !propsRef.current.folderId && !composingRef.current && !inputLockedRef.current && !propsRef.current.readOnly
+      && folderNoticeRef.current?.operationId === indentAction.operationId && controller.getState().working === indentAction.before
+      && controller.generation() === indentAction.generation && indentAction.plan.nextRaw === raw ? indentAction : null;
     const instance = nativeEditor.create(host, {
       value: controller.getState().raw, label: '문서 내용', taskSplitEnabled: !!propsRef.current.authorizeTaskSplit,
       getCheckAction: (_index, meta) => programCheckboxAction(meta,
@@ -1339,11 +1363,24 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       lineHints:()=>!!propsRef.current.authoringMode&&!propsRef.current.readOnly,
       getAddAnchor:index=>propsRef.current.authoringMode?{parentIndex:index,bottomIndex:index}:null,
       isCheckDisabled: checkActionsDisabled,
+      adjustIndentPlan: plan => {
+        indentCandidate = null;
+        const area = textArea(), operationId = folderNoticeRef.current?.operationId;
+        if (!alive || draftRef.current !== controller || propsRef.current.active === false || propsRef.current.folderId || composingRef.current
+          || inputLockedRef.current || propsRef.current.readOnly || operationId === undefined || area?.value !== controller.getState().raw
+          || plan.selectionBefore.start !== area.selectionStart || plan.selectionBefore.end !== area.selectionEnd) return null;
+        indentCandidate = controller.planFreshFolderIndent(plan, operationId);
+        return indentCandidate?.plan ?? null;
+      },
+      onIndentStart: plan => { indentAction = indentCandidate?.plan === plan ? indentCandidate : null; indentCandidate = null; },
+      onIndentEnd: () => { indentAction = null; indentCandidate = null; },
       canApplyIndent: (raw, details) => {
         if (indentDisabled()) return false;
         // D11 (d): ⇤·⇥ never moves a linked folder line, alone or with other selected lines: the whole action is
         // skipped and the reason shows. The bar, Tab and a press held through a composition all come here.
         const state = controller.getState();
+        if (indentCandidate && indentCandidate.before === state.working && indentCandidate.generation === controller.generation()
+          && indentCandidate.plan.nextRaw === raw && folderNoticeRef.current?.operationId === indentCandidate.operationId) return true;
         if (state.raw === textArea()?.value && indentTouchesLinkedFolder(state.working, props.docId, details.startLine, details.endLine)) {
           folderIndentSkipped.current = true; indentRefusal.current = { kind: 'folder' }; setMessage(FOLDER_INDENT_NOTICE); return false;
         }
@@ -1362,7 +1399,36 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         return next.reason === null && M.raw(M.getDocument(next.state, props.docId)) === raw
           && (propsRef.current.validateWorkspace?.(next.state) ?? true);
       },
-      beforeEnter: () => { finishHeldFolderLine(true); finishRenamedFolderLines(true); },
+      beforeEnter: () => {
+        // A restored plain slash line has no typing-history ref. Only this real
+        // Enter may adopt its exact current unbound head, using W16's parser.
+        const liveArea = textArea(), live = controller.getState();
+        if (draftRef.current === controller && propsRef.current.docId === props.docId
+          && liveArea && !liveArea.readOnly && !live.invalid && !inputLockedRef.current && propsRef.current.active !== false
+          && !composingRef.current && !propsRef.current.readOnly && live.raw === liveArea.value
+          && liveArea.selectionStart === liveArea.selectionEnd) {
+          const index = liveArea.value.slice(0, liveArea.selectionStart).split('\n').length - 1;
+          const head = M.getDocument(live.working, props.docId)?.lines[index];
+          if (head && !live.working.bindings.some(row => row.docId === props.docId && row.lineId === head.id)
+            && readFolderPickerCommand(live.working, props.docId, head.id, liveArea.value, liveArea.selectionStart, liveArea.selectionEnd)) {
+            // Finish a different old owner only as leaving it (link-only), never
+            // as this Enter's declaration. Re-read the exact B command after it.
+            if (heldFolderLineRef.current && heldFolderLineRef.current.id !== head.id) finishHeldFolderLine(false);
+            const current = controller.getState();
+            if (!current.invalid && current.raw === liveArea.value
+              && !current.working.bindings.some(row => row.docId === props.docId && row.lineId === head.id)
+              && readFolderPickerCommand(current.working, props.docId, head.id, liveArea.value, liveArea.selectionStart, liveArea.selectionEnd))
+              heldFolderLineRef.current = { id: head.id, left: false, offAtStart: false };
+          }
+        }
+        finishHeldFolderLine(true); finishRenamedFolderLines(true);
+        const area = textArea();
+        if (area && area.selectionStart === area.selectionEnd) {
+          const at = area.value.slice(0, area.selectionStart).split('\n').length - 1;
+          const line = M.getDocument(controller.getState().working, props.docId)?.lines[at];
+          if (line && area.selectionStart === area.value.split('\n').slice(0, at + 1).join('\n').length) controller.noteFolderEnter(line.id);
+        }
+      },
       onChange: (raw, input) => {
         if (inputLockedRef.current || propsRef.current.readOnly) { editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true }); return; }
         if (raw === controller.getState().raw) { historyTypeRef.current = ''; return; }
@@ -1373,9 +1439,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         const historyType = input?.inputType || historyTypeRef.current; historyTypeRef.current = '';
         const restored = orderHistoryRef.current.resolve(controller.getState().working, raw, historyType);
         const beforeText = controller.getState().working;
+        const beforeOperation = controller.folderOperation();
         let accepted = false;
         const hold = heldInput(raw, textArea()?.selectionStart, historyType || input?.inputType || '');
-        if (pending) {
+        const indentProof = currentIndentAction(raw);
+        if (indentProof) accepted = controller.applyFreshFolderIndent(indentProof, raw);
+        else if (pending) {
           accepted = pending.raw === raw && programSame(pending.before, controller.getState().working) && controller.apply(pending.next, '같은 구간 날짜순 정렬');
           if (accepted) orderHistoryRef.current.record(pending.before, pending.next);
           else controller.rejectRaw(raw);
@@ -1390,7 +1459,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         if (accepted) {
           const afterText = controller.getState().working;
           // A paste can make folders; each new one is announced (B1).
-          { const notice = controller.getState().folderNotice ?? programFolderCreatedNotice(beforeText, afterText); if (notice) showFolderNotice(notice, 'info'); }
+          { const operation = controller.folderOperation();
+            const changed = operation && (operation.id !== beforeOperation?.id || operation.at !== beforeOperation.at);
+            const notice = controller.getState().folderNotice ?? programFolderCreatedNotice(beforeText, afterText);
+            if (notice || changed) showFolderOperation(notice ?? '폴더 분류를 바꿨습니다', 'info', operation?.lineId);
+          }
           const renamed = new Set(beforeText.folders.filter(folder => afterText.folders.some(next => next.id === folder.id && next.title !== folder.title)).map(folder => folder.id));
           if (afterText.bindings.some(binding => binding.kind === 'scope' && binding.docId !== props.docId && renamed.has(binding.scopeId))) {
             setMessage('폴더 이름을 바꾸면 연결된 다른 글에도 같은 이름이 표시됩니다.');
@@ -1470,6 +1543,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       controller.cancelPreparedRaw();
       const type = (event as InputEvent).inputType;
       if (type === 'historyUndo' && undoFolderMove()) { event.preventDefault(); event.stopImmediatePropagation(); return; }
+      if (type === 'historyUndo') explainRawFolderUndo();
       if ((inputLockedRef.current || (controller.getState().saving && (type === 'historyUndo' || type === 'historyRedo'))) && !composingRef.current) { event.preventDefault(); event.stopImmediatePropagation(); }
       if (!event.defaultPrevented && !composingRef.current && textarea && propsRef.current.validateWorkspace && !type?.startsWith('history')) {
         let start = textarea.selectionStart, end = textarea.selectionEnd, insert: string | null = null;
@@ -1479,6 +1553,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         else if (type === 'deleteContentForward') { insert = ''; if (start === end) end = Math.min(textarea.value.length, end + 1); }
         if (insert !== null) {
           const raw=textarea.value.slice(0,start)+insert+textarea.value.slice(end);
+          // D11 B: this proof exists only inside this exact synchronous native indentation.
+          // Every other beforeinput keeps the ordinary linked-folder/model guard.
+          if (currentIndentAction(raw)) return;
           if (!controller.prepareRaw(raw,{inputType:type??'',compositionGeneration:compositionGeneration.current,...(type==='insertFromPaste'?{inputSplice:{start,end,text:insert}}:{}),folderHold:heldInput(raw,start+insert.length,type??'')})) {
             event.preventDefault(); event.stopImmediatePropagation();
             const index = textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1;
@@ -1628,12 +1705,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     folderWaitedRef.current = false; restartFolderNotice();
   }, [folderWaiting]);
   useEffect(() => {
+    if (!folderNotice) draftRef.current?.endFolderNotice();
     if (!folderNotice) return;
     const ends = programNoticeEndsAt({ tone: folderNotice.tone, shownAt: folderNotice.shownAt, leftBlockAt: folderNotice.leftBlockAt, held: noticeHeld, waiting: folderWaiting });
     if (ends === null) return;
     const timer = window.setTimeout(() => setFolderNotice(current => current === folderNotice ? null : current), Math.max(0, ends - Date.now()));
     return () => window.clearTimeout(timer);
   }, [folderNotice, noticeHeld, folderWaiting]);
+  useEffect(() => { syncBarLine(); }, [folderNotice, draft.working, props.authoringMode]);
   useEffect(() => {
     if (props.active !== false) return;
     const tools = hostRef.current?.closest('section')?.querySelector<HTMLDetailsElement>('[data-editor-tools]');
@@ -2086,8 +2165,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       </div></details>;
   }
   function barButton(action: WritingBarAction, icon: React.ReactNode, label: string, keys: string, off: boolean, className?: string, describedBy?: string) {
+    const folderHint = (action === 'indent' || action === 'outdent') && barLine.structureLock === FOLDER_INDENT_NOTICE;
     return <button key={action} type="button" className={className} data-bar-action={action} data-held={heldBar === action ? 'true' : undefined}
-      aria-label={label} aria-describedby={describedBy} title={`${label} · ${keys}`} disabled={barOff || off}
+      aria-label={label} aria-describedby={describedBy} aria-disabled={folderHint || undefined} style={folderHint ? { opacity: .45 } : undefined} title={`${label} · ${keys}`} disabled={barOff || off && !folderHint}
       onPointerDown={event => { event.preventDefault(); }} onClick={() => { pressBar(action); }}>{icon}</button>;
   }
   function barButtons(place: 'toolbar' | 'bar') {
