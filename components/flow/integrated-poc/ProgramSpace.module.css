@@ -386,6 +386,22 @@
   .space .selectApply { flex: 0 0 auto; min-height: 44px; padding: 0 16px; background: var(--flowme-b-selected); font-size: 14px; }
   .space .selectMark { border-radius: 4px; }
 }
+/* C6b: the date sheet. On a phone a W5 sheet from the bottom (modal); on a PC a small menu under the bar. */
+.space .datesSheet { box-sizing: border-box; width: 100%; max-width: 100%; max-height: calc(100dvh - 64px); margin: auto 0 0; padding: 16px 16px calc(24px + env(safe-area-inset-bottom)); overflow-y: auto; border: 0; border-radius: 16px 16px 0 0; background: #ffffff; color: var(--flowme-b-ink); }
+.space .datesSheet h2 { margin: 0 0 8px; font-size: 17px; line-height: 24px; }
+.space .datesChoice { display: flex; width: 100%; min-height: 52px; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px; border: 0; border-bottom: 1px solid var(--flowme-b-line); background: transparent; color: inherit; font-size: 16px; text-align: left; }
+.space .datesChoice small { color: var(--flowme-b-muted); font-size: 14px; }
+.space .datesChoice:disabled { color: var(--flowme-b-muted); opacity: .55; }
+.space .datesPick { display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 4px 12px; border-bottom: 1px solid var(--flowme-b-line); }
+.space .datesPick label { display: flex; flex: 1 1 auto; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; font-size: 16px; white-space: nowrap; }
+.space .datesPick input { flex: 0 1 160px; min-width: 0; min-height: 44px; font-size: 16px; }
+.space .datesPick button, .space .datesClose { min-height: 44px; padding: 0 12px; white-space: nowrap; }
+.space .datesClose { width: 100%; margin-top: 8px; }
+@media (min-width: 701px) {
+  .space .datesSheet { position: absolute; inset: calc(100% + 4px) 0 auto auto; z-index: 46; width: 340px; max-height: none; margin: 0; padding: 12px; border: 1px solid var(--flowme-b-line); border-radius: 10px; box-shadow: 0 8px 24px var(--flowme-b-shadow); }
+  .space .datesChoice, .space .datesPick { min-height: 44px; font-size: 14px; }
+  .space .datesPick label, .space .datesPick input { font-size: 14px; }
+}
 /* Its notice (W15 row) stays in sight below the list: at the screen's bottom, above the phone's bottom tabs. */
 .space .orderNotice { position: sticky; bottom: 8px; z-index: 2; margin: 12px 0 0; }
 @media (max-width: 700px) { .space .orderNotice { bottom: calc(84px + env(safe-area-inset-bottom)); } }

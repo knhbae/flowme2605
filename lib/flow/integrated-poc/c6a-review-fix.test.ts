@@ -12,7 +12,7 @@ const body = (name: string) => { const from = space.indexOf(`function ${name}(`)
 test('P1: every save of the space is refused while picking; input typed into a document before still saves', () => {
   // One gate for the space's saves and its undo/redo; props.mutate and the host's undo are reached only through it.
   assert.match(space, /const countedMutate: ProgramMutate = async \(label, build, options\) => \{ setSavesPending\(count => count \+ 1\); try \{ return await props\.mutate\(label, build, options\); \} finally \{ setSavesPending\(count => count - 1\); \} \};/);
-  assert.match(space, /const mutate: ProgramMutate = \(label, build, options\) => selectingNow\.current \? Promise\.resolve\(\{ ok: false, reason: 'busy' \}\) : countedMutate\(label, build, options\);/);
+  assert.match(space, /const mutate: ProgramMutate = \(label, build, options\) => selectingNow\.current \? Promise\.resolve\(\{ ok: false, reason: 'busy' \}\)\s*: countedMutate\(label, build, options\)/);
   assert.match(space, /const onUndo = \(\) => selectingNow\.current \? Promise\.resolve\(\) : props\.onUndo\(\), onRedo = \(\) => selectingNow\.current \? Promise\.resolve\(\) : props\.onRedo\(\);/);
   assert.equal(space.match(/props\.mutate\b/g)?.length, 1, 'props.mutate only in countedMutate');
   assert.equal(space.match(/props\.on(Undo|Redo)\b/g)?.length, 2, 'the host undo/redo only in the gate');

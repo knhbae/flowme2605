@@ -3,6 +3,7 @@ import { programLegacyTaskQualityHold } from './legacy-map-review';
 import { programLegacyPlanTaskExcluded } from './program-legacy-plan-target';
 import type { ProgramOrderedExecutionRow } from './recurrence-order';
 import { programReferenceExecutionAccess } from './reference-execution-guard';
+import { programTaskRepeatMember } from './task-date-move';
 
 /** C6a 여러 개 고르기 (C6-C9-I7 2-2): why a row cannot be picked, or null when it can. Occurrences move one by one
  *  (총괄 10/30), finished tasks stay (결정 1), and a task the row's detail could not move (the same checks as its
@@ -14,7 +15,8 @@ export const PROGRAM_SELECT_REASON: Record<ProgramSelectBlock, string> = {
   locked: '이 할 일은 지금 날짜를 바꿀 수 없습니다',
 };
 export function programSelectBlock(space: ProgramPrivateSpace, row: ProgramOrderedExecutionRow, done: boolean): ProgramSelectBlock | null {
-  if (row.kind === 'occurrence') return 'occurrence';
+  // A repeat's own task (a personal round, a copy's item in its repeat) moves like an occurrence: one by one (C6b).
+  if (row.kind === 'occurrence' || programTaskRepeatMember(space, row.task.id)) return 'occurrence';
   if (done) return 'done';
   if (programReferenceExecutionAccess(space, row.task.id).kind !== 'active'
     || programLegacyTaskQualityHold(space, row.task.id) || programLegacyPlanTaskExcluded(space, row.task.id)) return 'locked';
