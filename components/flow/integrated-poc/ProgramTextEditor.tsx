@@ -2076,15 +2076,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       <button type="button" onClick={downloadDraft}>입력한 원문 받기</button>
       <button type="button" disabled={inputLocked || draft.saving} onClick={() => { if (draftRef.current?.discard(propsRef.current.workspace)) { orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++; editorRef.current?.setValue(draftRef.current.getState().raw, { preserveSelection: true }); } }}>저장본으로 되돌리기</button>
       </div></>;
-    return <>{refused && <p className={styles.refusedLine}><span>{refusedLine}번째 줄: {refusedReason}</span></p>}
-    <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
+    return <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || composingRef.current || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
         event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
       }}><summary title={props.readOnly ? props.disabledReason || '읽기 전용' : draft.error}>{announce ? <span role="alert">{label}</span> : <span>{label}</span>}</summary><div className={styles.error}>
       {server ? <><section className={styles.recoveryGroup} aria-label="서버 저장"><h4>서버 저장</h4>{server}</section>
         <section className={styles.recoveryGroup} aria-label="이 기기의 입력"><h4>이 기기의 입력</h4>{own}</section></> : own}
-      </div></details></>;
+      </div></details>;
   }
   function barButton(action: WritingBarAction, icon: React.ReactNode, label: string, keys: string, off: boolean, className?: string, describedBy?: string) {
     return <button key={action} type="button" className={className} data-bar-action={action} data-held={heldBar === action ? 'true' : undefined}
@@ -2117,6 +2116,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const releaseNotice = () => { if (!noticeHeld) return; setNoticeHeld(false); restartFolderNotice(); };
   const notices = <div ref={noticeRef} className={styles.notices} onPointerDown={() => setNoticeHeld(true)} onPointerUp={releaseNotice} onPointerLeave={releaseNotice}
     onFocus={() => setNoticeHeld(true)} onBlur={releaseNotice}>
+    {refused && <p className={styles.refusedLine}><span>{refusedLine}번째 줄: {refusedReason}</span></p>}
+    {serverView?.extras && <div className={styles.serverExtras}>{serverView.extras}</div>}
     {noticeViews[0] && <ProgramNoticeRow notice={{ ...noticeViews[0], more: noticeViews.length - 1 }} onClose={noticeViews[0].close} />}
   </div>;
   const pickerEnterLabel = picker?.enter?.kind === 'folder' ? picker.enter.folder.title
@@ -2207,7 +2208,6 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {props.noteStatus && <div className={styles.noteStatus}>{props.noteStatus}</div>}
         {draft.error ? editorRecovery(true) : <span className={styles.status} role="status" aria-live="polite">{editorStatus.label}</span>}
       </>}
-      {serverView?.extras && <div className={styles.serverExtras}>{serverView.extras}</div>}
     </div>
     {props.folderId && <div className={regionStyles.actions} aria-label="문서 조회 범위"><p>{currentDoc()?.title || '현재 글'} · 분류: {folderView?.folderPath ?? '선택한 분류'} · 하위 분류 포함</p>
       <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || composingRef.current} onClick={props.onContinueWholeDocument ? continueWholeDocument : props.onShowWholeDocument}>전체 문서 보기</button><button type="button" onClick={props.onShowFolderTasks}>폴더 전체 할 일</button>

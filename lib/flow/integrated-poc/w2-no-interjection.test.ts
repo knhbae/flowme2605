@@ -48,6 +48,10 @@ test('W2: the move notice and the last message sit under the body, which gives u
   for (const old of ['styles.moveNotice', '{message && !panel && <p'])
     assert(!between.includes(old), old);
   const notices = pick(node => ts.isVariableDeclaration(node) && node.name.getText(tree) === 'notices');
+  // Server feedback and the refused-line reason use the same measured area below the body.
+  assert(notices.includes('serverView?.extras') && notices.includes('styles.serverExtras'));
+  assert(notices.includes('styles.refusedLine') && notices.includes('refusedReason'));
+  assert(!between.includes('styles.serverExtras') && !between.includes('styles.refusedLine'));
   // W15: the move notice and the message are rows of the shared notice row, in the same place.
   assert(notices.includes('<ProgramNoticeRow') && notices.includes('ref={noticeRef}'));
   const views = pick(node => ts.isVariableDeclaration(node) && node.name.getText(tree) === 'noticeViews');
