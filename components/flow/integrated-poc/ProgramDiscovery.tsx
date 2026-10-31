@@ -146,6 +146,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   const [summaryOpen, setSummaryOpen] = useState<string | null>(null);
   const [choosingVersion, setChoosingVersion] = useState<string | null>(null);
   const [openItems, setOpenItems] = useState<string[]>([]);
+  const taskList = useRef<HTMLOListElement>(null); const [clippedItems, setClippedItems] = useState<string[]>([]);
   const [outputVersion, setOutputVersion] = useState<string | null>(null);
   // FC1: the search filters only after a Hangul composition ends (as the R8b document sheet does).
   const [queryDraft, setQueryDraft] = useState(state.query); const composing = useRef(false);
@@ -220,6 +221,19 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   };
   // FC2: '할 일 고르기' shows check boxes; a partial selection (also a restored one) keeps them shown.
   const choosing = !!version && !!detail && (choosingVersion === version.id || detail.selectedItemIds.length !== version.items.length);
+  // FC12 re-review: a 44px row cuts a long title or date; those rows get ▸, which shows them in full.
+  useEffect(() => {
+    const list = taskList.current;
+    if (!list) { setClippedItems(prior => prior.length ? [] : prior); return; }
+    const measure = () => {
+      const ids = [...new Set([...list.querySelectorAll<HTMLElement>('[data-task-clip]')].filter(element => element.scrollWidth > element.clientWidth + 1).map(element => element.dataset.taskClip!))];
+      setClippedItems(prior => prior.length === ids.length && prior.every((id, index) => id === ids[index]) ? prior : ids);
+    };
+    measure();
+    const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(measure) : null;
+    observer?.observe(list);
+    return () => observer?.disconnect();
+  }, [version?.id, detail?.anchor, choosing]);
   const useItemIds = version && detail ? version.items.filter(item => detail.selectedItemIds.includes(item.id)).map(item => item.id) : [];
   const selectedSeries = version?.items.filter(item => item.schedule.kind === 'recurring' && useItemIds.includes(item.id)) ?? [];
   const recurrenceWindow = detail?.recurrenceWindow ?? defaultProgramOutputRecurrenceWindow();
@@ -329,18 +343,21 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
           {!flow.archived && !existingCopy && !storedCopy && version.items.length > 1 && <button type="button" className={styles.linkButton} disabled={pending} aria-pressed={choosing}
             onClick={() => { if (choosing) { setChoosingVersion(null); patchDetail({ selectedItemIds: version.items.map(item => item.id) }); } else setChoosingVersion(version.id); }}>{choosing ? '모두 가져오기' : '할 일 고르기'}</button>}</div>
           {selectedItemId && !version.items.some(item => item.id === selectedItemId) && <p className={styles.notice} role="status">이 판본에서 연결된 항목을 찾을 수 없습니다. 다른 항목으로 바꾸지 않고 지정된 판본을 표시합니다.</p>}
-          <ol className={styles.taskRows}>{version.items.map((item, index) => {
+          <ol ref={taskList} className={styles.taskRows}>{version.items.map((item, index) => {
             const classifiedSource = item.sourceUrl ? classifyProgramUrl(item.sourceUrl, []) : null;
             const sourceUrl = classifiedSource && classifiedSource.kind !== 'invalid' ? item.sourceUrl!.trim() : null;
-            const row = <><span className={styles.taskNumber}>{index + 1}</span><span className={styles.taskTitle}>{item.title}</span><span className={styles.taskDate}>{programItemDateLabel(item, detail.anchor || null)}</span></>;
-            // UX 2절 8: ▸ on the row opens the method, criteria and item source; the row itself stays one line.
+            const dateLabel = programItemDateLabel(item, detail.anchor || null);
+            const row = <><span className={styles.taskNumber}>{index + 1}</span><span className={styles.taskTitle} data-task-clip={item.id}>{item.title}</span><span className={styles.taskDate} data-task-clip={item.id}>{dateLabel}</span></>;
+            // UX 2절 8: ▸ on the row opens the method, criteria and item source; the row itself stays one 44px line,
+            // so a long title or date is cut there and read in full under ▸.
             const detailsKey = `${version.id}:${item.id}`, detailsId = `${uid}-item-${index}`, open = openItems.includes(detailsKey);
-            const hasDetails = !!(item.description || item.completionCriteria || item.subchecks.length > 0 || sourceUrl);
+            const cut = clippedItems.includes(item.id);
+            const hasMethod = !!(item.description || item.completionCriteria || item.subchecks.length > 0 || sourceUrl), hasDetails = cut || hasMethod;
             return <li key={item.id} id={`program-public-item-${encodeURIComponent(version.id)}-${encodeURIComponent(item.id)}`} tabIndex={-1} aria-current={selectedItemId === item.id ? 'location' : undefined}>
               <div className={styles.taskLine}>{choosing ? <label className={styles.taskRow}><input type="checkbox" disabled={pending} checked={detail.selectedItemIds.includes(item.id)} onChange={event => patchDetail({ selectedItemIds: event.target.checked ? [...detail.selectedItemIds, item.id] : detail.selectedItemIds.filter(id => id !== item.id) })} />{row}</label> : <div className={styles.taskRow}>{row}</div>}
-                {hasDetails && <button type="button" className={styles.taskToggle} aria-expanded={open} aria-controls={detailsId} aria-label={`${item.title} 방법과 완료 기준 ${open ? '접기' : '펼치기'}`}
+                {hasDetails && <button type="button" className={styles.taskToggle} aria-expanded={open} aria-controls={detailsId} aria-label={`${item.title} ${hasMethod ? '방법과 완료 기준' : '전체 제목과 날짜'} ${open ? '접기' : '펼치기'}`}
                   onClick={() => setOpenItems(prior => open ? prior.filter(key => key !== detailsKey) : [...prior, detailsKey])}>{open ? '▾' : '▸'}</button>}</div>
-              {hasDetails && open && <div id={detailsId} className={styles.itemDetails}>{item.description && <p className={styles.pre}>{item.description}</p>}{sourceUrl && <p><a href={sourceUrl} target="_blank" rel="noreferrer noopener" aria-label={`${item.title} 원문 열기`}>항목 원문 열기 ↗</a></p>}{item.completionCriteria && <p><strong>완료 기준</strong><br />{item.completionCriteria}</p>}{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</div>}</li>;
+              {hasDetails && open && <div id={detailsId} className={styles.itemDetails}>{cut && <p className={styles.taskFull}><strong>{item.title}</strong><br />{dateLabel}</p>}{item.description &&<p className={styles.pre}>{item.description}</p>}{sourceUrl && <p><a href={sourceUrl} target="_blank" rel="noreferrer noopener" aria-label={`${item.title} 원문 열기`}>항목 원문 열기 ↗</a></p>}{item.completionCriteria && <p><strong>완료 기준</strong><br />{item.completionCriteria}</p>}{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</div>}</li>;
           })}</ol>
         </section>
         {outputOpen && !flow.archived && <section className={styles.outputSection} aria-labelledby={`${uid}-output`}><h2 id={`${uid}-output`}>내 도구로 받기</h2>

@@ -53,3 +53,6 @@
 .taskRows>li{padding:0}.taskLine{display:flex;align-items:center;gap:4px}.taskLine>.taskRow{flex:1 1 auto;min-width:0}
 .taskToggle{flex:0 0 44px;width:44px;min-height:44px!important;padding:0;border:0!important;background:none!important;color:#3d524d;font-size:16px;line-height:1}
 .taskRows>li>.itemDetails{padding:4px 0 8px}
+/* FC12 re-review: the row stays 44px; a long title or date is cut with … and read in full under ▸. */
+.taskTitle,.taskDate{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.taskDate{max-width:12em}
+.taskFull{margin:0 0 8px;font-size:14px;line-height:22px}
