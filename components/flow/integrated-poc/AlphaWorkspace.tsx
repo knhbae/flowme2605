@@ -885,9 +885,10 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (PROGRAM_BROWSE_VIEWS.includes(destinationRef.current.view)
       && !programBrowseHistoryAllowed(historyOrigin.current, kind, controller.current?.snapshot().account?.revision)) { setHistoryHint(kind); return; }
     setHistoryHint(null);
+    const before = controller.current?.snapshot().account?.revision;
     const result = await controller.current?.[kind]();
     if (result && !result.ok) setMessage(programErrorMessage(result.reason));
-    else if (result?.ok) historyOrigin.current = programHistoryAfterStep(historyOrigin.current, kind, controller.current?.snapshot().account?.revision);
+    else if (result?.ok) historyOrigin.current = programHistoryAfterStep(historyOrigin.current, kind, before, controller.current?.snapshot().account?.revision);
   }
   async function openLatest() {
     const store = controller.current, owner = currentOwnerRef.current, epoch = sessionEpochRef.current, visit = destinationRef.current;

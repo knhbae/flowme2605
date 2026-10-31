@@ -59,14 +59,16 @@
 /* UX FC-DETAIL-HEAD 2 (mockup ②), phones only (FC head review P2: PC keeps its earlier detail): the back bar is the
    56px title row; 22px title, two summary lines with '더 보기' at the end of the second, the source line as is, a
    one-line 기준일 whose general hint is for screen readers, a small "할 일 N개", 45px rows, extras under the list. */
-.summaryBox{position:relative}.summaryText{margin:0}.anchorHint{margin:0 0 8px;font-size:13px;line-height:20px;color:#5b6b66}
-@media(min-width:701px){.phoneOnly{display:none!important}}
+.summaryBox{position:relative}.anchorHint{margin:0 0 8px;font-size:13px;line-height:20px;color:#5b6b66}
+@media(min-width:701px){.phoneOnly{display:none!important}
+/* PC as before the head change (re-review P2): a summary with no '더 보기' after it reads as the header's closing line. */
+.detailHeader>.summaryBox:last-child>.summaryText:last-child{color:#5b6b66;max-width:680px}}
 @media(max-width:700px){
 .pcOnly{display:none!important}
 .detailBar{min-height:56px;margin:0 0 8px}
 .flowDetail .detailHeader{margin:0}.flowDetail .detailHeader .eyebrow{margin:0;font-size:13px;line-height:20px}
 .flowDetail .detailHeader h1{font-size:22px;line-height:30px;margin:4px 0}
-.summaryText{font-size:16px;line-height:25px}.summaryText.summaryClamp{-webkit-line-clamp:2}
+.summaryText{margin:0;font-size:16px;line-height:25px}.summaryText.summaryClamp{-webkit-line-clamp:2}
 .summaryMore{position:absolute;right:0;bottom:-10px;min-height:44px!important;padding:0 0 0 32px!important;border:0!important;background:linear-gradient(90deg,rgba(250,250,247,0),#fafaf7 28px)!important}
 .summaryMore[data-open]{position:static;padding:0!important;background:none!important}
 .flowDetail .sourceBlock{margin:4px 0}

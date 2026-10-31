@@ -12,10 +12,12 @@ export const programEmptyHistoryOrigin = (): ProgramHistoryOrigin => ({ undo: nu
 export function programHistoryAfterChange(origin: ProgramHistoryOrigin, revision: number | undefined, browse: boolean): ProgramHistoryOrigin {
   return typeof revision === 'number' ? { undo: { revision, browse }, redo: null } : origin;
 }
-/** An undo moves its change to the redo end; a redo moves it back. The controller keeps one step each way. */
-export function programHistoryAfterStep(origin: ProgramHistoryOrigin, kind: 'undo' | 'redo', revision: number | undefined): ProgramHistoryOrigin {
+/** An undo moves its change to the redo end; a redo moves it back. The controller keeps one step each way. The origin
+ *  moves only when it was recorded for the revision the step started from: after a recovered save or any skipped
+ *  revision the stepped change is not the recorded one, so its origin is dropped and 둘러보기 stays off for it. */
+export function programHistoryAfterStep(origin: ProgramHistoryOrigin, kind: 'undo' | 'redo', before: number | undefined, after: number | undefined): ProgramHistoryOrigin {
   const moved = kind === 'undo' ? origin.undo : origin.redo;
-  const end = moved && typeof revision === 'number' ? { revision, browse: moved.browse } : null;
+  const end = moved && typeof before === 'number' && moved.revision === before && typeof after === 'number' ? { revision: after, browse: moved.browse } : null;
   return kind === 'undo' ? { undo: null, redo: end } : { undo: end, redo: null };
 }
 /** 둘러보기 steps only when that end of the history was made there and still matches the account revision. */
