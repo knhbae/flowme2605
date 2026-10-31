@@ -56,19 +56,25 @@
 /* FC12 re-review: the row stays 44px; a long title or date is cut with … and read in full under ▸. */
 .taskTitle,.taskDate{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.taskDate{max-width:12em}
 .taskFull{margin:0 0 8px;font-size:14px;line-height:22px}
-/* UX FC-DETAIL-HEAD 2 (mockup ②): the back bar is the 56px title row; 22px title, two summary lines with '더 보기'
-   at the end of the second, the source line as is, a one-line 기준일, a small task count, 45px rows. */
+/* UX FC-DETAIL-HEAD 2 (mockup ②), phones only (FC head review P2: PC keeps its earlier detail): the back bar is the
+   56px title row; 22px title, two summary lines with '더 보기' at the end of the second, the source line as is, a
+   one-line 기준일 whose general hint is for screen readers, a small "할 일 N개", 45px rows, extras under the list. */
+.summaryBox{position:relative}.summaryText{margin:0}.anchorHint{margin:0 0 8px;font-size:13px;line-height:20px;color:#5b6b66}
+@media(min-width:701px){.phoneOnly{display:none!important}}
+@media(max-width:700px){
+.pcOnly{display:none!important}
 .detailBar{min-height:56px;margin:0 0 8px}
 .flowDetail .detailHeader{margin:0}.flowDetail .detailHeader .eyebrow{margin:0;font-size:13px;line-height:20px}
 .flowDetail .detailHeader h1{font-size:22px;line-height:30px;margin:4px 0}
-.summaryBox{position:relative}.summaryText{margin:0;font-size:16px;line-height:25px}.summaryText.summaryClamp{-webkit-line-clamp:2}
+.summaryText{font-size:16px;line-height:25px}.summaryText.summaryClamp{-webkit-line-clamp:2}
 .summaryMore{position:absolute;right:0;bottom:-10px;min-height:44px!important;padding:0 0 0 32px!important;border:0!important;background:linear-gradient(90deg,rgba(250,250,247,0),#fafaf7 28px)!important}
 .summaryMore[data-open]{position:static;padding:0!important;background:none!important}
 .flowDetail .sourceBlock{margin:4px 0}
-.flowDetail .anchorRow{min-height:48px;margin:4px 0 8px}.anchorRow>span{font-weight:600}.anchorHint{margin:0 0 8px;font-size:13px;line-height:20px;color:#5b6b66}
-.flowDetail .itemsLabel{margin:0;padding:4px 0;font-size:13px;line-height:20px;font-weight:600;color:#5b6b66}
+.flowDetail .anchorRow{min-height:48px;margin:4px 0 8px}.anchorRow>span{font-weight:600}
+.anchorGeneralHint{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.flowDetail .itemsHead{margin:0}.flowDetail .itemsLabel{margin:0;padding:4px 0;font-size:13px;line-height:20px;font-weight:600;color:#5b6b66}
+.flowDetail .itemsLabel span{font-size:inherit;font-weight:inherit;color:inherit}
 .flowDetail .taskRows{margin:4px 0 0}.chooseButton{margin:4px 0}
-@media(max-width:700px){
 :global([data-alpha-frame="b"][data-browse-layout]) .page{padding-top:0;padding-left:0;padding-right:0}
 :global([data-alpha-frame="b"][data-browse-layout]) .listHeader{min-height:44px;margin:0;justify-content:flex-end}
 :global([data-alpha-frame="b"][data-browse-layout]) .listHeader h1{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}

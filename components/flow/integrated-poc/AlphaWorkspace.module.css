@@ -351,3 +351,6 @@
 .page[data-alpha-frame="b"][data-browse-layout] .devNotice > .notice { padding: 0 10px; margin: 0; border: 0; border-radius: 0; background: transparent; font-size: 13px; line-height: 20px; }
 .page[data-alpha-frame="b"][data-browse-layout] .devNotice > .notice > summary { display: block; box-sizing: border-box; min-height: 48px; padding-block: 14px; font-size: 13px; line-height: 20px; list-style: none; }
 .page[data-alpha-frame="b"][data-browse-layout] .devNotice > .notice > summary::-webkit-details-marker { display: none; }
+/* FC head review P1: on 둘러보기 a history step made elsewhere is shown off, and pressing it says where to undo. */
+.managementActions button[aria-disabled="true"] { opacity: .55; }
+.menuHint { margin: 4px 0 0; font-size: 13px; line-height: 20px; color: var(--flowme-text-secondary); }
