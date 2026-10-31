@@ -311,6 +311,8 @@
 .savedNotice { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0; padding: 4px 12px; border-left: 3px solid var(--flowme-action, #3548ce); background: var(--flowme-surface); font-size: 14px; }
 .savedNotice > span { flex: 1 1 auto; min-width: 0; }
 .savedNotice > button { min-height: 44px; }
+/* Match the closed publication notice's space when kept input takes its place. */
+.page[data-note-layout="true"] .savedNotice { padding-block: 8px; }
 
 /* R8b: four bottom tabs (쓰기·오늘·분류·더보기); 더보기 opens the menu, so its own "…" button steps aside. */
 .page[data-alpha-frame="b"] .globalNavigation button { position: relative; }
