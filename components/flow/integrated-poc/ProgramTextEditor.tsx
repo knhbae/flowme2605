@@ -12,6 +12,18 @@ import { createWritingBarHold, folderBarLine, heldTargetVerdict, taskMarkerLock,
 import { programFlowBelow, programKeyboardBarCramped, programKeyboardBarPlace, programKeyboardRoom, programVisibleBottom } from '@/lib/flow/integrated-poc/keyboard-bar-place';
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
+import { createFolderPickerDismissal, createFolderPickerHold, createFolderPickerIndex, folderPickerKey, folderPickerNavigation, folderPickerSignature, folderPickerTarget,
+  planFolderPickerLink, readFolderPickerChoices, readFolderPickerCommand, readFolderPickerCompositionLine, readFolderPickerLine, type FolderPickerCandidate, type FolderPickerChoice, type FolderPickerCompositionOwner,
+  type FolderPickerDefault } from '@/lib/flow/integrated-poc/folder-picker';
+
+type FolderPickerView = { lineId: string; signature: string; parentId: string | null; parentLabel: string; linked: boolean;
+  enter: FolderPickerDefault | null; candidates: FolderPickerCandidate[]; navigation: number; indent: boolean;
+  left: number; top: number; width: number; above: boolean; listHeight: number; barHeight: number; phone: boolean };
+type PickerImeCycle = { start(): void; input(event: InputEvent): void; end(event: CompositionEvent): void;
+  keydown(event: KeyboardEvent): boolean; keyup(): void; reconcile(): void; cancel(): void };
+const pickerImeFactory = require('@/lib/flow/integrated-poc/ime-enter-cycle.cjs') as {
+  create(readFrame: () => { raw: string; start: number; end: number; direction: string; epoch: number; focused: boolean; editable: boolean } | null): PickerImeCycle;
+};
 import { planProgramDateBlockOrder, type DateBlockOrderPlan, type DateOrderSelection } from '@/lib/flow/integrated-poc/date-block-order';
 import { applyProgramLinePermutation, createProgramPermutationHistory } from '@/lib/flow/integrated-poc/line-permutation';
 import { programSame } from '@/lib/flow/integrated-poc/controller';
@@ -324,6 +336,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [draft, setDraft] = useState<ProgramTextDraftState>(() => ({ committed: props.workspace, working: props.workspace,
     raw: M.raw(M.getDocument(props.workspace, props.docId)), dirty: false, saving: false, invalid: false, error: '' }));
   const [mode, setMode] = useState<'live' | 'text'>('live');
+  const modeRef = useRef(mode); modeRef.current = mode;
   const [panel, setPanelState] = useState<Panel>(null),panelRef=useRef<Panel>(null);
   const setPanel=(next:Panel)=>{panelRef.current=next;setPanelState(next);};
   const childTarget=panel?.kind==='child'?panel.child??null:null;
@@ -354,6 +367,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // S5: why the last ⇤·⇥ was refused inside the editor's own check (the model's reason, or a linked folder line).
   const indentRefusal = useRef<ProgramIndentRefusal | null>(null);
   const barRef = useRef<HTMLDivElement>(null), barLockId = useId(), roomRef = useRef<HTMLDivElement>(null), noticeRef = useRef<HTMLDivElement>(null);
+  const [picker, setPicker] = useState<FolderPickerView | null>(null), pickerRef = useRef<FolderPickerView | null>(null);
+  const pickerCompositionOwner = useRef<FolderPickerCompositionOwner | null>(null);
+  const pickerId = useId(), [pickerDismissed] = useState(createFolderPickerDismissal), pickerRecent = useRef<string[]>([]);
+  const pickerIndex = useRef<{ folders: TextWorkspaceState['folders']; rows: FolderPickerCandidate[] } | null>(null);
+  const [pickerHold] = useState(createFolderPickerHold), [pickerHeld, setPickerHeld] = useState(false);
+  const pickerIme = useRef<PickerImeCycle | null>(null), pickerHoldLimit = useRef<ReturnType<typeof setTimeout> | null>(null);
   // R6b: with the host's status (Alpha note), one slot shows one status. Only the open document's
   // editor gets noteStatus, so only it takes the host's status; without a host nothing changes.
   const hostStatus = useContext(ProgramServerStatusContext), serverView = props.noteStatus ? hostStatus : null;
@@ -395,19 +414,23 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const cancel = (why: ProgramBarDrop) => { const action = barHold.held(); if (action) { barHold.cancel(); setHeldBar(null); setMessage(programBarDropNotice(action, why)); } };
     const typed = (event: Event) => {
       const type = (event as InputEvent).inputType;
+      // The lease ends on newer ordinary input. Only mutate its ref here;
+      // render after native/bubble input, never over the incoming DOM value.
+      if (pickerHold.input(type, composingRef.current, composedJustNow)) queueMicrotask(() => setPickerHeld(false));
       if (composingRef.current || ['insertCompositionText', 'insertFromComposition', 'deleteByComposition', 'deleteCompositionText'].includes(type)
         || composedJustNow && type === 'insertText') return;
       cancel('typed');
     };
     const composed = () => { compositionAnchorRef.current = null; composedJustNow = true; if (settle) clearTimeout(settle); settle = setTimeout(() => { composedJustNow = false; settle = null; }, 0); };
     const started = (event: Event) => {
+      if (pickerHold.pending()) { pickerHold.cancel(); queueMicrotask(() => setPickerHeld(false)); }
       const area = event.target instanceof HTMLTextAreaElement ? event.target : null;
       compositionAnchorRef.current = area ? { area, offset: area.selectionStart } : null;
     };
     const left = (event: FocusEvent) => { if (!(event.relatedTarget instanceof Node && root.contains(event.relatedTarget))) cancel('left'); };
     root.addEventListener('beforeinput', typed, true); root.addEventListener('compositionstart', started, true); root.addEventListener('compositionend', composed, true); root.addEventListener('focusout', left);
     return () => { if (settle) clearTimeout(settle); root.removeEventListener('beforeinput', typed, true); root.removeEventListener('compositionstart', started, true); root.removeEventListener('compositionend', composed, true); root.removeEventListener('focusout', left); };
-  }, [barHold]);
+  }, [barHold, pickerHold]);
 
   const currentState = () => draftRef.current?.getState().working ?? propsRef.current.workspace;
   const currentDoc = () => M.getDocument(currentState(), propsRef.current.docId);
@@ -422,6 +445,142 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // them; composition stops them in the native editor.
   const indentDisabled = () => paintDisabled();
   const indentsNow = (action: WritingBarAction | null) => (action === 'indent' || action === 'outdent') && !propsRef.current.folderId;
+
+  function presentPicker(next: FolderPickerView | null) {
+    if (JSON.stringify(pickerRef.current) === JSON.stringify(next)) return;
+    pickerRef.current = next; setPicker(next);
+    const area = textArea();
+    if (area) {
+      if (next) { area.setAttribute('role', 'combobox'); area.setAttribute('aria-autocomplete', 'list'); area.setAttribute('aria-expanded', 'true'); area.setAttribute('aria-controls', pickerId); }
+      else { for (const name of ['role', 'aria-autocomplete', 'aria-expanded', 'aria-controls', 'aria-activedescendant']) area.removeAttribute(name); }
+      if (next && next.navigation >= 0) area.setAttribute('aria-activedescendant', `${pickerId}-${next.navigation}`);
+      else area.removeAttribute('aria-activedescendant');
+    }
+  }
+  function dismissPicker() {
+    const view = pickerRef.current;
+    if (view) {
+      const source = currentDoc()?.lines.find(line => line.id === view.lineId);
+      if (source) pickerDismissed.hide(propsRef.current.docId, view.lineId, source.text);
+    }
+    pickerHold.cancel(); setPickerHeld(false); presentPicker(null);
+  }
+  function syncPicker() {
+    const area = textArea(), controller = draftRef.current, state = controller?.getState();
+    // Folder-region structural edits retain their existing admission surface.
+    if (!area || !controller || !state || !propsRef.current.authoringMode || propsRef.current.folderId || panelRef.current
+      || movingRef.current || modeRef.current !== 'live' || inputLockedRef.current || propsRef.current.readOnly || state.invalid
+      || checkPendingRef.current || document.activeElement !== area) { presentPicker(null); return; }
+    const nativeLine = readFolderPickerLine(area.value, area.selectionStart, area.selectionEnd), doc = currentDoc();
+    const line = composingRef.current ? readFolderPickerCompositionLine(pickerCompositionOwner.current, {
+      controller, surface: area, documentId: propsRef.current.docId, lineId: nativeLine && doc?.lines[nativeLine.index]?.id || null,
+      committedRaw: state.raw, raw: area.value, caret: area.selectionStart, end: area.selectionEnd,
+      composing: true, active: pickerRef.current?.lineId === doc?.lines[nativeLine?.index ?? -1]?.id,
+      focused: document.activeElement === area, editable: !area.readOnly, connected: area.isConnected,
+    }) : state.raw === area.value ? nativeLine : null;
+    const source = line && doc?.lines[line.index];
+    if (!line || !source) { presentPicker(null); return; }
+    const row = currentRow(source.id);
+    if (!row || !['note', 'scope'].includes(row.kind) || row.isReference || row.kind === 'scope' && row.scopeKind !== 'folder') { presentPicker(null); return; }
+    const binding = state.working.bindings.find(item => item.docId === propsRef.current.docId && item.lineId === source.id && item.kind === 'scope');
+    const linked = binding?.kind === 'scope' ? state.working.folders.find(item => item.id === binding.scopeId) : null;
+    const signature = folderPickerSignature(propsRef.current.docId, source.id, line.text);
+    if (pickerDismissed.hidden(propsRef.current.docId, source.id, line.text) || linked?.title === line.query && pickerRef.current?.lineId !== source.id) { presentPicker(null); return; }
+    if (pickerIndex.current?.folders !== state.working.folders) pickerIndex.current = { folders: state.working.folders, rows: createFolderPickerIndex(state.working.folders) };
+    const parentId = linked ? linked.parentId : row.ancestorScopeKind === 'folder' ? row.ancestorScopeId : null;
+    const parent = parentId ? pickerIndex.current.rows.find(item => item.id === parentId) : null;
+    const old = pickerRef.current, choices = readFolderPickerChoices(pickerIndex.current.rows, line.query, parentId,
+      { composing: composingRef.current, previous: old?.candidates, recentIds: pickerRecent.current });
+    const box = editorRef.current?.caretRect(line.start + line.indent.length + 3), viewport = window.visualViewport;
+    const width = Math.min(320, window.innerWidth - 16), bottom = (viewport?.offsetTop ?? 0) + (viewport?.height ?? window.innerHeight);
+    const overhead = 80 + (choices.enter?.kind === 'folder' ? 0 : 44), desired = overhead + Math.min(240, Math.max(40, choices.candidates.length * 40));
+    const belowRoom = box ? bottom - box.bottom - 16 : 240, aboveRoom = box ? box.top - (viewport?.offsetTop ?? 0) - 16 : 0;
+    const above = !!box && belowRoom < desired && aboveRoom > belowRoom;
+    const listHeight = Math.max(40, Math.min(240, (above ? aboveRoom : belowRoom) - overhead));
+    const barHeight = old?.barHeight ?? barRef.current?.getBoundingClientRect().height ?? 0;
+    presentPicker({ lineId: source.id, signature, parentId, parentLabel: parent?.path ?? '최상위', linked: !!linked,
+      ...choices, indent: line.indent.length > 0, navigation: folderPickerNavigation(old?.candidates ?? [], old?.navigation ?? -1, choices.candidates, old?.signature === signature),
+      left: Math.max(8, Math.min(window.innerWidth - width - 8, box?.left ?? area.getBoundingClientRect().left)),
+      top: box ? above ? Math.max(8, box.top - 8) : box.bottom + 8 : area.getBoundingClientRect().top,
+      width, above, listHeight, barHeight, phone: window.matchMedia('(max-width: 700px)').matches });
+  }
+  function runPickerChoice(choice: FolderPickerChoice, lineId: string) {
+    const view = pickerRef.current, controller = draftRef.current, area = textArea();
+    if (!view || view.lineId !== lineId || !controller || !area || actionsDisabled() || composingRef.current) return;
+    const command = readFolderPickerCommand(currentState(), propsRef.current.docId, lineId, area.value, area.selectionStart, area.selectionEnd);
+    if (!command || view.signature !== folderPickerSignature(propsRef.current.docId, lineId, command.text)) { syncPicker(); return; }
+    if (choice.kind === 'ambiguous') { setMessage('같은 이름의 폴더가 여러 개입니다. 연결할 폴더를 직접 골라 주세요.'); return; }
+    if (choice.kind === 'create') {
+      // A pointer chooses the item; only a later native Enter starts a line.
+      // An explicit live command must also work after restore/reload, where no
+      // typing-history heldFolderLineRef exists.
+      const previous = controller.getState(), binding = previous.working.bindings.find(row => row.docId === propsRef.current.docId && row.lineId === lineId);
+      const oldFolder = binding?.kind === 'scope' ? previous.working.folders.find(folder => folder.id === binding.scopeId) : null;
+      const moved = oldFolder ? controller.moveFolderLine(command.index) : null;
+      const declared = moved ? moved.ok : !binding && controller.declareFolderLine(command.index, false, true);
+      if (!declared) {
+        const notice = controller.getState().folderNotice;
+        showFolderNotice(notice || '이 폴더 선택은 적용할 수 없습니다. 현재 내용은 유지했습니다.', 'warn'); return;
+      }
+      const after = controller.getState();
+      if (after.raw !== area.value && !shown(after.raw)) { controller.restoreState(previous); return; }
+      heldFolderLineRef.current = null;
+      if (moved?.ok && oldFolder) showFolderMove(moved.before, after.working, lineId, moved.fromId, oldFolder.title);
+      else {
+        const notice = after.folderNotice ?? programFolderCreatedNotice(previous.working, after.working);
+        if (notice) showFolderNotice(notice, 'info');
+      }
+      dismissPicker();
+      const doc = currentDoc(), at = doc?.lines.findIndex(line => line.id === lineId) ?? -1;
+      if (doc && at >= 0) { const end = doc.lines.slice(0, at + 1).reduce((length, line) => length + line.text.length + 1, -1); area.setSelectionRange(end, end); }
+      editorRef.current?.refresh(); scheduleSave(); return;
+    }
+    if (choice.kind === 'outdent') { pickerHold.cancel(); setPickerHeld(false); editorRef.current?.indent(true); queueMicrotask(syncPicker); return; }
+    const before = currentState(), old = before.bindings.find(item => item.docId === propsRef.current.docId && item.lineId === lineId && item.kind === 'scope');
+    const linked = planFolderPickerLink(before, propsRef.current.docId, lineId, choice.folder.id);
+    if (linked.problem) { setMessage(linked.problem); return; }
+    dismissPicker();
+    if (programSame(before, linked.state)) return;
+    // apply installs the native value synchronously; the completion never steals a newer caret.
+    const pending = apply(linked.state, '폴더 선택', undefined, { lineId, scopeId: choice.folder.id });
+    const installed = controller.getState();
+    if (programSame(installed.working, linked.state)) {
+      const lines = M.getDocument(installed.working, propsRef.current.docId)!.lines, at = lines.findIndex(line => line.id === lineId);
+      const caret = lines.slice(0, at + 1).reduce((length, line) => length + line.text.length + 1, -1);
+      area.setSelectionRange(caret, caret); editorRef.current?.refresh();
+      pickerRecent.current = [choice.folder.id, ...pickerRecent.current.filter(id => id !== choice.folder.id)].slice(0, 30);
+      if (linked.moved && old?.kind === 'scope') showFolderMove(before, installed.working, lineId, old.scopeId, before.folders.find(item => item.id === old.scopeId)?.title ?? '');
+    }
+    void pending;
+  }
+  function releasePickerHold() {
+    const view = pickerRef.current, area = textArea(), controller = draftRef.current;
+    const intent = pickerHold.release({ controller, documentId: propsRef.current.docId, lineId: view?.lineId ?? null,
+      composing: composingRef.current, saving: !!controller?.getState().saving, active: !!view,
+      surface: area, value: area?.value ?? '', caret: area?.selectionStart ?? 0, selectionEnd: area?.selectionEnd ?? 0,
+      editable: !!area && !area.readOnly && !inputLockedRef.current && !propsRef.current.readOnly,
+      connected: !!area?.isConnected, focusHere: document.activeElement === area });
+    if (!pickerHold.pending()) setPickerHeld(false);
+    if (intent) runPickerChoice(intent.choice, intent.lineId);
+  }
+  function pressPicker(choice: FolderPickerChoice) {
+    const view = pickerRef.current, area = textArea(), controller = draftRef.current;
+    if (!view || !area || !controller || inputLockedRef.current || propsRef.current.readOnly) return;
+    const anchor = compositionAnchorRef.current;
+    if (!composingRef.current && !controller.getState().saving) { runPickerChoice(choice, view.lineId); return; }
+    if (!pickerHold.press({ controller, documentId: propsRef.current.docId, lineId: view.lineId, choice,
+      target: folderPickerTarget(area, area.value, area.selectionStart, composingRef.current && anchor?.area === area ? anchor.offset : area.selectionStart) })) return;
+    setPickerHeld(true);
+    if (pickerHoldLimit.current) clearTimeout(pickerHoldLimit.current);
+    if (composingRef.current) {
+      const serial = pickerHold.serial();
+      pickerHoldLimit.current = setTimeout(() => {
+        if (pickerHold.pending() && pickerHold.serial() === serial && composingRef.current) {
+          pickerHold.cancel(); setPickerHeld(false); setMessage(BAR_COMPOSING_NOTICE);
+        }
+      }, 1000);
+    }
+  }
 
   const checkActionsDisabled = (lineIndex?:number) => {
     const controller=draftRef.current,state=controller?.getState();
@@ -959,12 +1118,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   /** Puts the model's text on the screen; false when the native editor refused it (a composition began). */
   const shown = (raw: string) => !editorRef.current || editorRef.current.setValue(raw, { preserveSelection: true }) !== false;
-  async function apply(next: TextWorkspaceState, label: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule']) {
+  async function apply(next: TextWorkspaceState, label: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule'], pickerTarget?: { lineId: string; scopeId: string }) {
     const before = currentState(), selected = writingSelection(), previous = draftRef.current?.getState();
     // W15 review P1-4: never change the model during a composition (the screen would refuse the text), and if
     // the screen refuses it anyway, put the model back so both agree.
     if (composingRef.current) { setMessage('한글 입력을 마친 뒤 다시 눌러 주세요. 현재 내용은 유지했습니다.'); return false; }
-    if (actionsDisabled() || !previous || !draftRef.current?.apply(next, label, schedule)) { setMessage('이 변경은 적용할 수 없습니다. 현재 내용은 유지했습니다.'); return false; }
+    if (actionsDisabled() || !previous || !draftRef.current?.apply(next, label, schedule, pickerTarget)) { setMessage('이 변경은 적용할 수 없습니다. 현재 내용은 유지했습니다.'); return false; }
     cancelMove();
     if (!shown(draftRef.current.getState().raw)) { draftRef.current.restoreState(previous); setMessage('화면에 반영하지 못해 적용하지 않았습니다. 현재 내용은 유지했습니다.'); return false; }
     orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++;
@@ -1372,6 +1531,70 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // Keep the same native textarea through every edit, failed save and parent rerender.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.docId]);
+
+  useEffect(() => {
+    const area = textArea(); if (!area) return;
+    let epoch = 0, frame = 0, alive = true;
+    const cycle = pickerImeFactory.create(() => ({ raw: area.value, start: area.selectionStart, end: area.selectionEnd,
+      direction: area.selectionDirection, epoch, focused: document.activeElement === area, editable: !area.readOnly }));
+    pickerIme.current = cycle;
+    const refresh = () => { if (frame) cancelAnimationFrame(frame); frame = requestAnimationFrame(() => { frame = 0; if (alive) { syncPicker(); releasePickerHold(); } }); };
+    const start = () => {
+      cycle.start();
+      const controller = draftRef.current, line = readFolderPickerLine(area.value, area.selectionStart, area.selectionEnd);
+      const source = line && currentDoc()?.lines[line.index];
+      pickerCompositionOwner.current = controller && source && pickerRef.current?.lineId === source.id
+        && controller.getState().raw === area.value && document.activeElement === area
+        ? { controller, surface: area, documentId: propsRef.current.docId, lineId: source.id, raw: area.value, caret: area.selectionStart } : null;
+    };
+    const input = (event: Event) => { epoch++; cycle.input(event as InputEvent); refresh(); };
+    // Registered after the native target listeners: the native editor owns the
+    // final composition RAW before this receipt and any React picker render.
+    const end = (event: Event) => { pickerCompositionOwner.current = null; cycle.end(event as CompositionEvent); refresh(); };
+    const keyup = () => { cycle.keyup(); refresh(); };
+    const reconcile = () => { cycle.reconcile(); refresh(); };
+    const outside = (event: Event) => {
+      const target = event.target;
+      if (target instanceof Node && !hostRef.current?.contains(target) && !barRef.current?.contains(target)
+        && !(target instanceof Element && target.closest('[data-folder-picker]'))) { pickerHold.cancel(); setPickerHeld(false); presentPicker(null); }
+    };
+    area.addEventListener('compositionstart', start); area.addEventListener('compositionend', end);
+    area.addEventListener('input', input); area.addEventListener('keyup', keyup);
+    for (const name of ['select', 'click', 'focus', 'blur', 'scroll']) area.addEventListener(name, reconcile);
+    window.addEventListener('resize', refresh); window.addEventListener('scroll', refresh, true);
+    document.addEventListener('pointerdown', outside, true);
+    return () => {
+      alive = false; if (frame) cancelAnimationFrame(frame); cycle.cancel(); pickerIme.current = null; pickerCompositionOwner.current = null;
+      pickerHold.cancel(); if (pickerHoldLimit.current) clearTimeout(pickerHoldLimit.current);
+      pickerRef.current = null;
+      area.removeEventListener('compositionstart', start); area.removeEventListener('compositionend', end);
+      area.removeEventListener('input', input); area.removeEventListener('keyup', keyup);
+      for (const name of ['select', 'click', 'focus', 'blur', 'scroll']) area.removeEventListener(name, reconcile);
+      window.removeEventListener('resize', refresh); window.removeEventListener('scroll', refresh, true);
+      document.removeEventListener('pointerdown', outside, true);
+    };
+    // Native owner stays mounted through input and React renders.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.docId]);
+  useEffect(() => {
+    // A remote/ACK snapshot can change folder names without an input event.
+    // Run after the native synchronize effect, retaining a highlighted ID only.
+    const timer = setTimeout(() => { syncPicker(); releasePickerHold(); }, 0);
+    return () => clearTimeout(timer);
+  }, [composing, draft.saving, inputLocked, props.readOnly, draft.invalid, mode, panel, moving, props.workspace]);
+  useEffect(() => {
+    if (!picker || picker.navigation < 0) return;
+    const option = document.getElementById(`${pickerId}-${picker.navigation}`), list = option?.parentElement;
+    if (!option || list?.getAttribute('role') !== 'listbox') return;
+    const cell = option.getBoundingClientRect(), box = list.getBoundingClientRect();
+    if (picker.phone) {
+      if (cell.left < box.left) list.scrollLeft -= box.left - cell.left;
+      else if (cell.right > box.right) list.scrollLeft += cell.right - box.right;
+    } else {
+      if (cell.top < box.top) list.scrollTop -= box.top - cell.top;
+      else if (cell.bottom > box.bottom) list.scrollTop += cell.bottom - box.bottom;
+    }
+  }, [picker?.navigation, picker?.signature, picker?.phone, pickerId]);
 
   useEffect(() => {
     const controller = draftRef.current;
@@ -1896,14 +2119,59 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     onFocus={() => setNoticeHeld(true)} onBlur={releaseNotice}>
     {noticeViews[0] && <ProgramNoticeRow notice={{ ...noticeViews[0], more: noticeViews.length - 1 }} onClose={noticeViews[0].close} />}
   </div>;
-  const writingBar = <div ref={barRef} className={styles.writingBar} role="toolbar" aria-label="쓰기 도구" data-editor-tools>
-      {barButtons('bar')}{barStatusSlot()}</div>;
+  const pickerEnterLabel = picker?.enter?.kind === 'folder' ? picker.enter.folder.title
+    : picker?.enter?.kind === 'create' ? `새 폴더 ‘${picker.enter.title}’` : picker?.enter?.kind === 'ambiguous' ? '폴더를 직접 선택' : '폴더 이름 입력';
+  const heldPickerChoice = pickerHold.pending()?.choice, heldPickerFolderId = heldPickerChoice?.kind === 'folder' ? heldPickerChoice.folder.id : null;
+  const pickerFolderIcon = <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M3 7V5h7l2 2h9v13H3Z" /></svg>;
+  const pickerChoiceButton = (candidate: FolderPickerCandidate, index: number) => <button key={candidate.id} type="button" tabIndex={-1}
+    id={`${pickerId}-${index}`} role="option" aria-selected={picker?.navigation === index} data-folder-choice={candidate.id}
+    data-held={pickerHeld && heldPickerFolderId === candidate.id ? 'true' : undefined}
+    title={`${candidate.parentLabel} › ${candidate.title}`} onPointerDown={event => event.preventDefault()}
+    onClick={() => pressPicker({ kind: 'folder', folder: candidate })}>
+    {candidate.parentId !== picker?.parentId && <span className={styles.pickerParent}>{candidate.parentLabel} › </span>}{candidate.title}
+  </button>;
+  const writingBar = <div ref={barRef} className={styles.writingBar} role="toolbar" aria-label="쓰기 도구" data-editor-tools
+    data-folder-picker={picker?.phone ? 'true' : undefined}
+    style={picker?.phone && picker.barHeight > 0 ? { height: picker.barHeight, minHeight: picker.barHeight } : undefined}>
+    {picker?.phone ? <>
+      {picker.indent && !picker.linked ? <button type="button" tabIndex={-1} className={styles.pickerHeading} aria-label="상위로 내어쓰기"
+        title={picker.parentLabel} onPointerDown={event => event.preventDefault()} onClick={() => pressPicker({ kind: 'outdent' })}>⇤ {picker.parentLabel} ›</button>
+        : <span className={styles.pickerHeading} title={picker.parentLabel} aria-label={`현재 상위: ${picker.parentLabel}`}>{picker.parentId ? `${picker.parentLabel} ›` : pickerFolderIcon}</span>}
+      {picker.enter && <button type="button" tabIndex={-1} className={styles.pickerEnter} data-held={pickerHeld ? 'true' : undefined}
+        data-new={picker.enter.kind === 'create' ? 'true' : undefined}
+        title={pickerEnterLabel} aria-label={`Enter로 ${pickerEnterLabel}`}
+        onPointerDown={event => event.preventDefault()} onClick={() => { if (picker.enter) pressPicker(picker.enter); }}>↵ {pickerEnterLabel}</button>}
+      <div id={pickerId} role="listbox" aria-label="연결할 폴더" className={styles.pickerChips}>{picker.candidates.map(pickerChoiceButton)}</div>
+      {!picker.enter && !picker.candidates.length && <span className={styles.pickerEmpty}>폴더 이름을 치고 Enter</span>}
+      <button type="button" tabIndex={-1} className={styles.pickerClose} aria-label="폴더 추천 닫기" onPointerDown={event => event.preventDefault()} onClick={dismissPicker}>×</button>
+    </> : <>{barButtons('bar')}{barStatusSlot()}</>}
+  </div>;
+  const folderPicker = picker && !picker.phone ? <div data-folder-picker className={styles.folderPicker}
+    style={{ left: picker.left, top: picker.top, width: picker.width, transform: picker.above ? 'translateY(-100%)' : undefined }}>
+    <div className={styles.pickerHeader}><span>{picker.parentId ? `${picker.parentLabel} ›` : '최상위'}</span>
+      <button type="button" tabIndex={-1} aria-label="폴더 추천 닫기" onPointerDown={event => event.preventDefault()} onClick={dismissPicker}>×</button></div>
+    <div id={pickerId} role="listbox" aria-label="연결할 폴더" className={styles.pickerList} style={{ maxHeight: picker.listHeight }}>{picker.candidates.map(pickerChoiceButton)}
+      {!picker.candidates.length && <p>{picker.enter ? '일치하는 폴더가 없습니다.' : '폴더 이름을 치고 Enter'}</p>}</div>
+    {picker.enter && picker.enter.kind !== 'folder' && <button type="button" tabIndex={-1} className={styles.pickerDefault}
+      onPointerDown={event => event.preventDefault()} onClick={() => { if (picker.enter) pressPicker(picker.enter); }}>↵ {pickerEnterLabel}</button>}
+    <small>↓ 폴더 선택 · Esc 닫기{picker.indent && !picker.linked ? ' · Shift+Tab 상위로' : ''}</small>
+  </div> : null;
   return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInput={serverView ? markTyping : undefined}
     onKeyDown={event => { if (event.key === 'Tab' && folderIndentSkipped.current) event.preventDefault(); folderIndentSkipped.current = false; }} onKeyDownCapture={event => {
+    const imeConsumed = pickerIme.current?.keydown(event.nativeEvent) ?? false;
+    const view = pickerRef.current;
+    if (view && event.target === textArea()) {
+      const action = folderPickerKey(event.nativeEvent, view.navigation, view.candidates.length, composingRef.current, imeConsumed);
+      if (action.kind === 'dismiss') { event.preventDefault(); event.stopPropagation(); dismissPicker(); return; }
+      if (action.kind === 'highlight') { event.preventDefault(); event.stopPropagation(); presentPicker({ ...view, navigation: action.index }); return; }
+      if (action.kind === 'select') { event.preventDefault(); event.stopPropagation(); pressPicker({ kind: 'folder', folder: view.candidates[action.index] }); return; }
+      if (action.kind === 'reset' && view.navigation !== -1) presentPicker({ ...view, navigation: -1 });
+    }
     if (event.key === 'Tab') folderIndentSkipped.current = false;
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
   }}>
+    {folderPicker}
     <div className={styles.toolbar}>
       {mode === 'text' && <button type="button" onClick={event => returnToDocumentMode(event.currentTarget)}>문서로 돌아가기</button>}
       <button type="button" hidden={props.directWriting && !props.noteStatus} disabled={props.folderId ? inputLocked || !!props.readOnly || draft.invalid || composing || checkPending : insertionDisabled}

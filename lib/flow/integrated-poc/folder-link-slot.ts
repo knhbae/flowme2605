@@ -26,13 +26,18 @@ export function programFolderLineTitle(state: TextWorkspaceState, docId: string,
 }
 
 /** Read placement without preparing text or allocating a line/folder ID. */
-export function readProgramFolderSlot(state: TextWorkspaceState, docId: string, lineId: string | null) {
+export type ProgramFolderSlotOptions = { replaceSlot?: boolean };
+export function readProgramFolderSlot(state: TextWorkspaceState, docId: string, lineId: string | null, options: ProgramFolderSlotOptions = {}) {
   const doc = M.getDocument(state, docId);
   if (!doc) return null;
   const row = M.rowMeta(state, docId).find(entry => entry.id === lineId);
   if (lineId !== null && !row) return null;
-  const inPlace = !!row && row.subtreeEndIndex === row.index + 1
-    && (/^ *-\s*$/.test(row.text) || programFolderLineTitle(state, docId, lineId) !== null);
+  // The picker addresses an existing / line, including a linked subtree head.
+  // Menu callers keep their original insert-after-subtree behavior.
+  if (options.replaceSlot && (!row || !/^ *- \/[^/\r\n]*$/.test(row.text)
+    || !['note', 'scope'].includes(row.kind) || row.isReference || (row.kind === 'scope' && row.scopeKind !== 'folder'))) return null;
+  const inPlace = !!row && (options.replaceSlot || row.subtreeEndIndex === row.index + 1
+    && (/^ *-\s*$/.test(row.text) || programFolderLineTitle(state, docId, lineId) !== null));
   const index = inPlace ? row!.index : row?.subtreeEndIndex ?? doc.lines.length;
   const depth = inPlace ? row!.depth : row?.kind === 'scope' ? row.depth + 1 : row?.kind === 'date' ? 0 : row?.depth ?? 0;
   return { doc, row, index, depth, inPlace };
@@ -41,8 +46,8 @@ export function readProgramFolderSlot(state: TextWorkspaceState, docId: string, 
 type FolderLinkProblem = { code: string; message: string };
 
 /** Read placement once for the whole menu; never try mutations while rendering. */
-export function programFolderLinkProblems(state: TextWorkspaceState, docId: string, lineId: string | null): Map<string, FolderLinkProblem | null> {
-  const slot = readProgramFolderSlot(state, docId, lineId);
+export function programFolderLinkProblems(state: TextWorkspaceState, docId: string, lineId: string | null, options: ProgramFolderSlotOptions = {}): Map<string, FolderLinkProblem | null> {
+  const slot = readProgramFolderSlot(state, docId, lineId, options);
   const context = slot && M.insertionContext(state, docId, slot.index, slot.depth);
   return new Map(state.folders.map(scope => {
     let problem: FolderLinkProblem | null = null;
@@ -62,15 +67,16 @@ export function programFolderLinkProblems(state: TextWorkspaceState, docId: stri
   }));
 }
 
-export function programFolderLinkProblem(state: TextWorkspaceState, docId: string, lineId: string | null, scopeId: string): FolderLinkProblem | null {
-  return programFolderLinkProblems(state, docId, lineId).get(scopeId)
+export function programFolderLinkProblem(state: TextWorkspaceState, docId: string, lineId: string | null, scopeId: string, options: ProgramFolderSlotOptions = {}): FolderLinkProblem | null {
+  return programFolderLinkProblems(state, docId, lineId, options).get(scopeId)
     ?? (state.folders.some(folder => folder.id === scopeId) ? null : { code: 'missing-folder', message: '이 폴더가 없어졌습니다. 닫고 다시 선택해 주세요.' });
 }
 
-export function prepareProgramFolderSlot(state: TextWorkspaceState, docId: string, lineId: string | null) {
-  const slot = readProgramFolderSlot(state, docId, lineId);
+export function prepareProgramFolderSlot(state: TextWorkspaceState, docId: string, lineId: string | null, options: ProgramFolderSlotOptions = {}) {
+  const slot = readProgramFolderSlot(state, docId, lineId, options);
   if (!slot) return null;
   const { doc, row, index, depth, inPlace } = slot;
+  if (options.replaceSlot && row) return { state, index: row.index, lineId: row.id, inPlace: true };
   if (inPlace && row) {
     // The transient blank never goes to a writer; the final scope keeps this ID.
     const lines = doc.lines.map(line => line.id === lineId ? { ...line, text: `${'  '.repeat(row.depth)}- ` } : line);
@@ -86,9 +92,29 @@ export function prepareProgramFolderSlot(state: TextWorkspaceState, docId: strin
 }
 
 export function linkProgramFolder(state: TextWorkspaceState, docId: string, lineId: string | null,
-  target: { scopeId: string } | { title: string }): TextWorkspaceState {
-  const slot = prepareProgramFolderSlot(state, docId, lineId);
+  target: { scopeId: string } | { title: string }, options: ProgramFolderSlotOptions = {}): TextWorkspaceState {
+  const slot = prepareProgramFolderSlot(state, docId, lineId, options);
   if (!slot) return state;
+  if (options.replaceSlot) {
+    // attachScope's insertion port intentionally refuses every childful slot.
+    // This opt-in replaces an addressed folder head, never inserts/removes a
+    // subtree. Its caller separately admits the W15 descendant ownership move.
+    if (!('scopeId' in target) || !M.validate(state) || programFolderLinkProblem(state, docId, lineId, target.scopeId, options)) return state;
+    const folder = state.folders.find(entry => entry.id === target.scopeId), doc = M.getDocument(state, docId)!;
+    const source = doc.lines[slot.index];
+    if (!folder || !source) return state;
+    const text = `${/^ */.exec(source.text)![0]}- /${folder.title}`;
+    if (source.text === text && state.bindings.some(entry => entry.docId === docId && entry.lineId === source.id && entry.kind === 'scope' && entry.scopeId === folder.id)) return state;
+    const bindingIndex = state.bindings.findIndex(entry => entry.docId === docId && entry.lineId === source.id);
+    const binding = { kind: 'scope' as const, docId, lineId: source.id, scopeId: folder.id };
+    const next = { ...state, documents: state.documents.map(entry => entry.id === docId ? { ...entry,
+      lines: entry.lines.map(line => line.id === source.id ? { ...line, text } : line) } : entry),
+      // The host merge keeps existing binding keys in place. Preserve that
+      // order so its confirmed snapshot is the exact submitted move, too.
+      bindings: bindingIndex < 0 ? [...state.bindings, binding]
+        : state.bindings.map((entry, index) => index === bindingIndex ? binding : entry) };
+    return M.validate(next) ? next : state;
+  }
   const next = 'scopeId' in target ? M.attachScope(slot.state, docId, slot.index, target.scopeId) : M.createFolderAt(slot.state, docId, slot.index, target.title.trim());
   // Reject all preparation if the existing model refuses the folder operation.
   return next === slot.state || !M.validate(next) ? state : next;

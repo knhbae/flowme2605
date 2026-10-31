@@ -242,6 +242,30 @@
 /* Writing model A (S3): the same actions as a mobile keyboard bar under the body and in the wide
    toolbar. Buttons stay solid during composition and saves; a held press looks pressed until it runs. */
 .writingBar { display: none; }
+.folderPicker { position: fixed; z-index: 70; box-sizing: border-box; border: 1px solid var(--flowme-b-line); border-radius: 10px; background: var(--flowme-b-surface, #fff); color: var(--flowme-b-ink); box-shadow: 0 4px 18px #0002; overflow: hidden; }
+.pickerHeader { display: flex; align-items: center; justify-content: space-between; min-height: 40px; padding-left: 12px; color: var(--flowme-b-muted); }
+.pickerHeader > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pickerHeader > button { flex: none; width: 40px; height: 40px; min-height: 40px; }
+.pickerList { max-height: 240px; overflow: auto; overscroll-behavior: contain; }
+.pickerList > button { display: block; box-sizing: border-box; min-height: 40px; width: 100%; padding: 8px 12px; border: 0; border-radius: 0; text-align: left; background: transparent; color: inherit; }
+.pickerList > button[aria-selected='true'] { background: var(--flowme-b-selected); outline: 2px solid var(--flowme-b-primary-strong); outline-offset: -2px; }
+.pickerList > p { margin: 8px 12px; color: var(--flowme-b-muted); }
+.pickerParent { color: var(--flowme-b-muted); font-weight: 400; }
+.pickerDefault { width: 100%; min-height: 40px; padding: 8px 12px; text-align: left; border-width: 1px 0 0; border-radius: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.folderPicker > small { display: block; padding: 6px 12px; color: var(--flowme-b-muted); }
+.pickerChips { display: flex; flex: 1; min-width: 0; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
+.pickerEmpty { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--flowme-b-muted); font-size: 14px; }
+.pickerChips > button { position: relative; isolation: isolate; flex: none; max-width: 240px; height: 44px; min-height: 44px; padding: 0 10px; border: 0; background: transparent; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pickerChips > button::before { content: ''; position: absolute; z-index: -1; inset: 4px 0; border: 1px solid var(--flowme-b-line); border-radius: 18px; background: var(--flowme-b-surface-subtle); }
+@media (max-width: 700px) {
+  .writingBar[data-folder-picker='true'] { gap: 6px; overflow: hidden; }
+  .writingBar[data-folder-picker='true'] > .pickerHeading { flex: none; box-sizing: border-box; max-width: 96px; min-width: 20px; width: auto; height: 44px; min-height: 44px; padding: 0 2px; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--flowme-b-muted); }
+  .writingBar[data-folder-picker='true'] > .pickerEnter { position: relative; isolation: isolate; flex: none; box-sizing: border-box; width: auto; min-width: 44px; max-width: 150px; height: 44px; min-height: 44px; padding: 0 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; border: 0; background: transparent; }
+  .pickerEnter::before { content: ''; position: absolute; z-index: -1; inset: 4px 0; border: 1px solid var(--flowme-b-line); border-radius: 18px; background: var(--flowme-b-surface-subtle); }
+  .pickerEnter[data-new='true']::before { border-style: dashed; border-color: var(--flowme-b-primary-strong); }
+  .writingBar[data-folder-picker='true'] > .pickerClose { flex: none; width: 44px; min-width: 44px; height: 44px; }
+  .pickerEnter[data-held='true']::before, .pickerChips > button[data-held='true']::before { box-shadow: inset 0 0 0 2px var(--flowme-b-primary-strong); }
+}
 /* N1 fix 5: room under the body while writing on a phone (its height comes from the script), so the page can
    scroll the body and its last line above the fixed bar. */
 .keyboardRoom { display: none; }
