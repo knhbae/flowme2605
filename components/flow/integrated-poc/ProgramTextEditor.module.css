@@ -74,6 +74,11 @@
 .contextHint { color: var(--muted, var(--flowme-b-muted)); font-size: .875rem; line-height: 1.5; overflow-wrap: anywhere; }
 .contextHint small { display: block; font-size: inherit; }
 .host :global(.tle-textarea::placeholder), .directWriting :global(.tle-textarea::placeholder) { color: var(--flowme-b-muted); -webkit-text-fill-color: var(--flowme-b-muted); opacity: 1; }
+/* S4 N3 W1: the empty-document hint is the textarea placeholder. Native paint masks the textarea to its one empty
+   row, and reading view hides the textarea, so only the first line showed after focus and none before. While the
+   hint shows, neither applies; the first character brings both back. */
+.host :global(.tle-root[data-mode="live"].tle-native-input .tle-textarea:placeholder-shown) { -webkit-mask-image: none; mask-image: none; }
+.host :global(.tle-root[data-mode="live"].tle-reading-view .tle-textarea:placeholder-shown) { opacity: 1; }
 /* Shared textarea/mirror padding keeps native caret and presentation aligned.
    The current-line menu retains insert/date/move actions in one 44px lane. */
 @media (max-width: 600px) {
@@ -167,6 +172,10 @@
   color: var(--flowme-b-ink);
 }
 .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scope-label) { padding-left: 75px; }
+/* S4 N3 W3 (fold tap A): on touch the open button sits 12px further right (vendor), and the name with it. */
+@media (pointer: coarse) {
+  .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scope-label) { padding-left: 87px; }
+}
 .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope[data-scope-kind="folder"] .tle-scope-subtitle) {
   position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
 }

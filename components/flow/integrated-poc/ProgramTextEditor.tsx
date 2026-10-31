@@ -19,6 +19,7 @@ import { readProgramFolderCopyPreview, isProgramFolderCopyPreviewCurrent, copyPr
 import { createAlphaStructuralDraft, type AlphaStructuralDraft } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
 import { indentTouchesLinkedFolder, restoredLineOffset } from '@/lib/flow/integrated-poc/folder-line-hold';
 import { createProgramTextDraft, FOLDER_INDENT_NOTICE, type ProgramTextCommit, type ProgramTextCommitOptions, type ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
+import { programBarDropNotice, programIndentRefusalNotice, programIndentShape, type ProgramBarDrop, type ProgramIndentRefusal } from '@/lib/flow/integrated-poc/bar-indent-notice';
 import {createProgramDocumentInput,type ProgramDocumentInput} from '@/lib/flow/integrated-poc/program-document-input';
 import type { ProgramReferenceAccess } from '@/lib/flow/integrated-poc/reference-execution-guard';
 import { linkProgramFolder, programFolderLineTitle, programFolderLinkProblem, programFolderLinkProblems } from '@/lib/flow/integrated-poc/folder-link-slot';
@@ -350,6 +351,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // a press then is held, shown pressed, and runs once when input settles.
   const [barLine, setBarLine] = useState<WritingBarLine>({ canOutdent: false, canIndent: false, isTask: false, markerLock: null });
   const [barHold] = useState(() => createWritingBarHold<WritingBarTarget>()), [heldBar, setHeldBar] = useState<WritingBarAction | null>(null);
+  // S5: why the last ⇤·⇥ was refused inside the editor's own check (the model's reason, or a linked folder line).
+  const indentRefusal = useRef<ProgramIndentRefusal | null>(null);
   const barRef = useRef<HTMLDivElement>(null), barLockId = useId(), roomRef = useRef<HTMLDivElement>(null), noticeRef = useRef<HTMLDivElement>(null);
   // R6b: with the host's status (Alpha note), one slot shows one status. Only the open document's
   // editor gets noteStatus, so only it takes the host's status; without a host nothing changes.
@@ -388,19 +391,20 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const root = hostRef.current?.closest('section');
     if (!root) return;
     let composedJustNow = false, settle: ReturnType<typeof setTimeout> | null = null;
-    const cancel = () => { if (barHold.held()) { barHold.cancel(); setHeldBar(null); } };
+    // S5: a press let go here says so; it used to vanish without a word.
+    const cancel = (why: ProgramBarDrop) => { const action = barHold.held(); if (action) { barHold.cancel(); setHeldBar(null); setMessage(programBarDropNotice(action, why)); } };
     const typed = (event: Event) => {
       const type = (event as InputEvent).inputType;
       if (composingRef.current || ['insertCompositionText', 'insertFromComposition', 'deleteByComposition', 'deleteCompositionText'].includes(type)
         || composedJustNow && type === 'insertText') return;
-      cancel();
+      cancel('typed');
     };
     const composed = () => { compositionAnchorRef.current = null; composedJustNow = true; if (settle) clearTimeout(settle); settle = setTimeout(() => { composedJustNow = false; settle = null; }, 0); };
     const started = (event: Event) => {
       const area = event.target instanceof HTMLTextAreaElement ? event.target : null;
       compositionAnchorRef.current = area ? { area, offset: area.selectionStart } : null;
     };
-    const left = (event: FocusEvent) => { if (!(event.relatedTarget instanceof Node && root.contains(event.relatedTarget))) cancel(); };
+    const left = (event: FocusEvent) => { if (!(event.relatedTarget instanceof Node && root.contains(event.relatedTarget))) cancel('left'); };
     root.addEventListener('beforeinput', typed, true); root.addEventListener('compositionstart', started, true); root.addEventListener('compositionend', composed, true); root.addEventListener('focusout', left);
     return () => { if (settle) clearTimeout(settle); root.removeEventListener('beforeinput', typed, true); root.removeEventListener('compositionstart', started, true); root.removeEventListener('compositionend', composed, true); root.removeEventListener('focusout', left); };
   }, [barHold]);
@@ -413,6 +417,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // A save in flight only blocks actions: the row metadata still matches the text, so the vendor keeps painting.
   const paintDisabled = () => !!checkPendingRef.current || inputLockedRef.current || !!propsRef.current.readOnly || !!draftRef.current?.getState().invalid;
   const actionsDisabled = () => paintDisabled() || !!draftRef.current?.getState().saving;
+  // S5: ⇤·⇥ on the body do not wait for a save in flight. The draft keeps input made during a save and the save
+  // loop takes it next, as it does for typing. Locks, read-only, a check in flight and an invalid draft still stop
+  // them; composition stops them in the native editor.
+  const indentDisabled = () => paintDisabled();
+  const indentsNow = (action: WritingBarAction | null) => (action === 'indent' || action === 'outdent') && !propsRef.current.folderId;
 
   const checkActionsDisabled = (lineIndex?:number) => {
     const controller=draftRef.current,state=controller?.getState();
@@ -632,12 +641,27 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (line?.markerLock) return;
       const plan = toggleTaskLine(target.area.value, target.area.selectionStart);
       target.instance.replaceRange(plan.start, plan.end, plan.text, { selectionAfter: { start: plan.caret, end: plan.caret } });
-    } else target.instance.indent(action === 'outdent');
+    } else {
+      indentRefusal.current = null;
+      if (!target.instance.indent(action === 'outdent')) explainIndent(action, target.area);
+    }
     syncBarLine();
+  }
+  /** S5: a refused ⇤·⇥ says why: the editor's state, the model's reason, or the line's own shape. A linked folder
+   *  line or a protection rule already showed its notice, and a folder region shows its structure lock. */
+  function explainIndent(action: 'indent' | 'outdent', area: HTMLTextAreaElement) {
+    const recorded = indentRefusal.current; indentRefusal.current = null;
+    if (recorded?.kind === 'folder' || recorded?.kind === 'protected') return;
+    if (propsRef.current.folderId) { setMessage(FOLDER_STRUCTURE_LOCK); return; }
+    const state = draftRef.current?.getState();
+    const refusal = recorded ?? (inputLockedRef.current || propsRef.current.readOnly ? { kind: 'busy', why: 'locked' } as const
+      : checkPendingRef.current ? { kind: 'busy', why: 'checking' } as const : state?.invalid ? { kind: 'busy', why: 'invalid' } as const
+      : { kind: 'shape', why: programIndentShape(area.value, area.selectionStart, action === 'outdent') } as const);
+    setMessage(programIndentRefusalNotice(action, refusal));
   }
   function pressBar(action: WritingBarAction) {
     if (inputLockedRef.current || propsRef.current.readOnly) return;
-    const busy = composingRef.current || !!draftRef.current?.getState().saving;
+    const busy = composingRef.current || !!draftRef.current?.getState().saving && !indentsNow(action);
     // A held press remembers where it was aimed; a folder region may be read-only while it saves.
     const surface = busy ? propsRef.current.folderId ? regionPortRef.current?.activeEditor?.(true) ?? null : barEditor() : null;
     if (busy && !surface) return;
@@ -661,10 +685,16 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function stopBarRetry() { if (barRetry.current) { cancelAnimationFrame(barRetry.current.frame); barRetry.current = null; } }
   /** Run a held press once input settles, only where it was aimed. The press is taken only when its
    *  target is ready, so a region still read-only right after its save keeps it, for up to one second. */
+  function dropHeldBar(why: ProgramBarDrop) {
+    const action = barHold.held();
+    stopBarRetry(); barHold.cancel(); setHeldBar(null);
+    if (action) setMessage(programBarDropNotice(action, why));
+  }
   function releaseHeldBar() {
     if (!barHold.held()) { stopBarRetry(); return; }
-    if (inputLockedRef.current || propsRef.current.readOnly) { stopBarRetry(); barHold.cancel(); setHeldBar(null); return; }
-    if (composingRef.current || draftRef.current?.getState().saving) return;
+    if (inputLockedRef.current || propsRef.current.readOnly) { dropHeldBar('locked'); return; }
+    // A ⇤·⇥ held through a composition runs once it ends, even while a save is in flight (S5).
+    if (composingRef.current || draftRef.current?.getState().saving && !indentsNow(barHold.held())) return;
     const target = barHold.target(), aimed = target?.surface as HTMLTextAreaElement | undefined, now = barEditor(), active = document.activeElement;
     const verdict = heldTargetVerdict(target, { surface: now?.area ?? null, value: now?.area.value ?? '', caret: now?.area.selectionStart ?? 0,
       selectionEnd: now?.area.selectionEnd ?? now?.area.selectionStart ?? 0, editable: !!now && !now.area.readOnly, connected: !!aimed?.isConnected,
@@ -672,17 +702,21 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (verdict === 'wait') {
       const serial = barHold.serial(), since = barRetry.current?.serial === serial ? barRetry.current.since : performance.now();
       stopBarRetry();
-      if (performance.now() - since > 1000) { barHold.cancel(); setHeldBar(null); return; }
+      if (performance.now() - since > 1000) { dropHeldBar('expired'); return; }
       const frame = requestAnimationFrame(() => { if (barRetry.current?.frame === frame) releaseHeldBar(); });
       barRetry.current = { frame, serial, since };
       return;
     }
     // A retry that outlived its second is dropped even if the line just became ready.
     const expired = barRetry.current?.serial === barHold.serial() && performance.now() - barRetry.current.since > 1000;
+    if (expired) { dropHeldBar('expired'); return; }
+    // Never run on another line or surface: the press is let go, and says whether focus left or the line changed.
+    if (verdict === 'cancel') { dropHeldBar(!aimed?.isConnected || !(active === aimed || !!barRef.current?.contains(active)
+      || active instanceof HTMLElement && !!active.closest('[data-bar-action]')) ? 'left' : 'moved'); return; }
     stopBarRetry();
     const run = barHold.release(false);
     setHeldBar(null);
-    if (verdict === 'run' && run && !expired) runBar(run);
+    if (run) runBar(run);
   }
   function closePanel() {
     if(panelComposingRef.current||composingRef.current)return;
@@ -1135,6 +1169,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       getRowMeta: () => documentInput.paint(controller.getState().working)??textEditorRows(controller.getState().working, props.docId),
       isActionDisabled: actionsDisabled,
       isPaintDisabled: paintDisabled,
+      isIndentDisabled: indentDisabled,
       // Enter keeps the list rules; with the writing tools on, ＋ opens their menu, typed pickers stay off,
       // and list Enter v2 applies (one flag, so turning it off restores the R3 Enter).
       lineBreakEnter:()=>false,
@@ -1146,14 +1181,18 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       getAddAnchor:index=>propsRef.current.authoringMode?{parentIndex:index,bottomIndex:index}:null,
       isCheckDisabled: checkActionsDisabled,
       canApplyIndent: (raw, details) => {
-        if (actionsDisabled()) return false;
+        if (indentDisabled()) return false;
         // D11 (d): ⇤·⇥ never moves a linked folder line, alone or with other selected lines: the whole action is
         // skipped and the reason shows. The bar, Tab and a press held through a composition all come here.
         const state = controller.getState();
         if (state.raw === textArea()?.value && indentTouchesLinkedFolder(state.working, props.docId, details.startLine, details.endLine)) {
-          folderIndentSkipped.current = true; setMessage(FOLDER_INDENT_NOTICE); return false;
+          folderIndentSkipped.current = true; indentRefusal.current = { kind: 'folder' }; setMessage(FOLDER_INDENT_NOTICE); return false;
         }
-        return M.raw(M.getDocument(M.editText(state.working, props.docId, raw, { progressDate: today() }), props.docId)) === raw;
+        // The model's own reason is kept for the bar's notice (S5).
+        const result = M.editTextResult(state.working, props.docId, raw, { progressDate: today() });
+        if (M.raw(M.getDocument(result.state, props.docId)) === raw) return true;
+        indentRefusal.current = { kind: 'model', reason: result.reason };
+        return false;
       },
       canApplyTaskSplit: (raw, intent) => {
         if (!intent.taskSplit) return true;
@@ -1285,6 +1324,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
             event.preventDefault(); event.stopImmediatePropagation();
             const index = textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1;
             setMessage(programTextProtectionMessage(accessFor(currentDoc()?.lines[index]?.id ?? null)));
+            // Bar indent review P2: an ⇤·⇥ this refused keeps this reason; the bar's notice must not replace it.
+            indentRefusal.current = { kind: 'protected' };
           }
         }
       }

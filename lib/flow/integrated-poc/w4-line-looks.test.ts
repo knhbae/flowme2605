@@ -37,6 +37,51 @@ test('the folder head: an outline triangle in the lane before the icon, the icon
   assert.match(module, /:is\(\.tle-check-hit,\.tle-fold-toggle,\.tle-row-open,\.tle-plus,\.tle-row-menu\)\) \{ min-height: 44px; min-width: 44px; height: 44px; \}/);
 });
 
+test('S4 N3 W3 (fold tap A): on touch the fold lane is 56px, the open button and the name 12px further, a drawn chevron', () => {
+  const touch = css.slice(css.indexOf('@media (pointer: coarse) {'), css.indexOf('\n}\n', css.indexOf('@media (pointer: coarse) {')) + 3);
+  assert(touch.startsWith('@media (pointer: coarse) {'));
+  // The extra 12px is after the triangle (flex-start), not around it; the glyph is hidden behind a drawn chevron.
+  const lanes = '.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"])';
+  assert(touch.includes(`${lanes} .tle-fold-toggle { width: 56px; justify-content: flex-start; font-size: 0;`));
+  // Review P2: a move keeps the 44px lanes, with the same states left out as the host's name inset, so the open
+  // button and the name never come within 1px of each other.
+  const rules = touch.split('\n').filter(line => line.trim().startsWith('.tle-root'));
+  assert.equal(rules.length, 4);
+  assert(rules.every(rule => rule.trim().startsWith(`${lanes} `)), 'every touch rule leaves the move states out');
+  assert.match(touch, /\.tle-fold-toggle::before \{ content: ''; [^}]*border-width: 0 2px 2px 0;[^}]*transform: rotate\(45deg\); \}/);
+  assert.match(touch, /\.tle-fold-toggle\[aria-expanded="false"\]::before \{[^}]*transform: rotate\(-45deg\); \}/);
+  assert(touch.includes('.tle-scope-anchor { left: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 56px); }'));
+  // Pointer devices keep the 44px lanes; the touch block comes after them so it wins at the same specificity.
+  assert(css.indexOf('@media (pointer: coarse) {') > css.indexOf('.tle-scope-anchor { left: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 44px); }'));
+  const module = read('../../../components/flow/integrated-poc/ProgramTextEditor.module.css');
+  const hostTouch = module.slice(module.indexOf('@media (pointer: coarse) {'));
+  assert(module.indexOf('@media (pointer: coarse) {') > module.indexOf('.tle-scope-label) { padding-left: 75px; }'));
+  assert.match(hostTouch, /^@media \(pointer: coarse\) \{\n  \.host :global\([^\n]*\.tle-scope-label\) \{ padding-left: 87px; \}\n\}/);
+  assert(hostTouch.includes(`.host :global(${lanes} .tle-scope-label) { padding-left: 87px; }`), 'the name and the lanes leave out the same states');
+  // The control markup, its label and its state stay as they were.
+  assert.match(vendor, /button\.setAttribute\('aria-expanded', String\(!folded\)\);/);
+});
+
+test('S4 N3 W3 (fold tap A): taps at the phone x positions reach fold or 분류 by the new lanes', () => {
+  // Lanes from the CSS: the fold lane starts at its anchor (indent − 13px) and the open button at its anchor − 13px
+  // (cjs). At 390 (S4 page, 'W 시험') the fold lane starts at x 13; taps were measured on the real-phone W3 memo.
+  const px = (pattern: RegExp, text: string) => { const found = text.match(pattern); assert(found, String(pattern)); return Number(found[1]); };
+  const touch = css.slice(css.indexOf('@media (pointer: coarse) {'));
+  const foldWidth = { mouse: px(/^\.tle-fold-toggle \{ width: (\d+)px;/m, css), touch: px(/\.tle-fold-toggle \{ width: (\d+)px;/, touch) };
+  const openShift = { mouse: px(/\.tle-scope-anchor \{ left: calc\([^\n]*\) \+ (\d+)px\); \}/, css), touch: px(/\.tle-scope-anchor \{ left: calc\([^\n]*\) \+ (\d+)px\); \}/, touch) };
+  const foldAnchor = -px(/\.tle-fold-anchor \{ left: calc\([^\n]*\) - (\d+)px\); \}/, css);
+  const lanes = (kind: 'mouse' | 'touch', start = 13) => {
+    const openLeft = start + (openShift[kind] - 13) - foldAnchor;
+    return (x: number) => x >= start && x < start + foldWidth[kind] ? 'fold' : x >= openLeft && x < openLeft + 44 ? '분류' : 'row';
+  };
+  const before = lanes('mouse'), after = lanes('touch');
+  assert.deepEqual([36, 50, 56, 60, 79].map(before), ['fold', 'fold', 'fold', '분류', '분류']);
+  assert.deepEqual([36, 50, 56, 60, 66, 68, 69, 79, 91, 112, 113].map(after), ['fold', 'fold', 'fold', 'fold', 'fold', 'fold', '분류', '분류', '분류', '분류', 'row']);
+  // From the triangle's centre (x 35) the 분류 edge is 34px away, not 22px.
+  assert.equal([...Array(200).keys()].find(x => after(x) === '분류')! - 35, 34);
+  assert.equal([...Array(200).keys()].find(x => before(x) === '분류')! - 35, 22);
+});
+
 test("while writing, a folder line's '/' joins the transparent syntax and keeps its RAW advance", () => {
   const paint = slice('function paintActiveSyntax(', 'function propertyCheckOwner(');
   assert.match(paint, /const title = task \? task\[4\] : scope\[2\]\.replace\(\/\^\\\/\/, ''\);/);

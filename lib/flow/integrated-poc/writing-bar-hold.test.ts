@@ -5,6 +5,7 @@ import * as ts from 'typescript';
 import { createWritingBarHold, folderBarLine, heldTargetVerdict, writingBarLine, writingBarTarget, type WritingBarTarget } from './writing-bar';
 import { planProgramRegionEdit, readProgramFolderRegions } from './folder-document-regions';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
+import { programBarDropNotice } from './bar-indent-notice';
 
 // S3 review fixes: a held press runs only where it was aimed, folder regions offer only what their
 // check accepts, and the folder region being edited ends above the bar. The component functions
@@ -19,6 +20,7 @@ function find(match: (node: ts.Node) => boolean) {
   return found[0];
 }
 const fn = (name: string) => find(node => ts.isFunctionDeclaration(node) && node.name?.text === name).getText(tree);
+const arrow = (name: string) => (find(node => ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === name) as ts.VariableDeclaration).initializer!.getText(tree);
 function evaluate<T>(expression: string, scope: Record<string, unknown>): T {
   const code = ts.transpileModule('const extracted = (' + expression + ');', { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
   return new Function(...Object.keys(scope), code + '\nreturn extracted;')(...Object.values(scope)) as T;
@@ -78,11 +80,13 @@ function holdHarness(options: { folder?: boolean } = {}) {
     cancelAnimationFrame: (id: number) => { state.cancelled.push(id); state.frames.delete(id); },
     barRetry: { current: null as unknown }, compositionAnchorRef: { current: null as unknown },
     holdLimit: { current: null as unknown }, setTimeout: (callback: () => void) => state.timers.push(callback), clearTimeout: () => {},
-    setMessage: (text: string) => state.messages.push(text), BAR_COMPOSING_NOTICE: 'BAR_COMPOSING_NOTICE',
+    setMessage: (text: string) => state.messages.push(text), BAR_COMPOSING_NOTICE: 'BAR_COMPOSING_NOTICE', programBarDropNotice,
   };
+  const indentsNow = evaluate<(action: string | null) => boolean>(arrow('indentsNow'), scope);
   const stopBarRetry = evaluate<() => void>(fn('stopBarRetry'), scope);
-  const release = evaluate<() => void>(fn('releaseHeldBar'), { ...scope, stopBarRetry });
-  const press = evaluate<(action: string) => void>(fn('pressBar'), { ...scope, stopBarRetry, releaseHeldBar: release });
+  const dropHeldBar = evaluate<(why: string) => void>(fn('dropHeldBar'), { ...scope, stopBarRetry });
+  const release = evaluate<() => void>(fn('releaseHeldBar'), { ...scope, stopBarRetry, dropHeldBar, indentsNow });
+  const press = evaluate<(action: string) => void>(fn('pressBar'), { ...scope, stopBarRetry, releaseHeldBar: release, indentsNow });
   const frame = () => { const [id, callback] = [...state.frames][0]; state.frames.delete(id); callback(); };
   return { area, state, barHold, press, release, frame, scope };
 }
@@ -101,12 +105,14 @@ test('real press and release: a press held during a save runs on its line once; 
   h.area.selectionStart = h.area.value.indexOf('빨래');
   h.state.saving = false; h.release();
   assert.deepEqual([h.state.runs, h.barHold.held()], [[], null]);
+  // S5: dropped with a word, never silently.
+  assert.deepEqual(h.state.messages, [programBarDropNotice('task', 'moved')]);
 
   h = holdHarness();
-  h.press('indent');
+  h.press('task');
   h.state.active = {};
   h.state.saving = false; h.release();
-  assert.deepEqual([h.state.runs, h.barHold.held()], [[], null]);
+  assert.deepEqual([h.state.runs, h.barHold.held(), h.state.messages], [[], null, [programBarDropNotice('task', 'left')]]);
 
   // Same line, but a range selected while waiting: dropped, nothing restored.
   h = holdHarness();
@@ -141,8 +147,36 @@ test('a press held through a composition that does not end lets go after one sec
   h.state.timers[0]();
   assert.deepEqual([h.state.runs, h.state.messages], [['indent'], []]);
   // A press held only for a save sets no limit.
-  h = holdHarness(); h.press('indent');
-  assert.equal(h.state.timers.length, 0);
+  h = holdHarness(); h.press('task');
+  assert.deepEqual([h.barHold.held(), h.state.timers.length], ['task', 0]);
+});
+
+// S5 (real accounts): → pressed while '저장 중…' was held, and the next keystroke dropped it without a word.
+test('S5: ⇤·⇥ on the body act at once during a save; other actions and a folder region still wait; a composition still holds', () => {
+  let h = holdHarness();
+  h.press('indent'); h.press('outdent');
+  assert.deepEqual([h.state.runs, h.barHold.held(), h.state.timers.length], [['indent', 'outdent'], null, 0]);
+  for (const action of ['task', 'enter', 'menu']) {
+    h = holdHarness(); h.press(action);
+    assert.deepEqual([h.state.runs, h.barHold.held()], [[], action], action);
+  }
+  // A folder region may be read-only while it saves: its indent still waits.
+  h = holdHarness({ folder: true }); h.press('indent');
+  assert.deepEqual([h.state.runs, h.barHold.held()], [[], 'indent']);
+  // Composing (천지인): held as before, at most one, and run when the composition ends even though the save goes on.
+  h = holdHarness();
+  h.area.value = '- [ ] 장보기 ㄱ'; h.area.selectionStart = h.area.selectionEnd = h.area.value.length;
+  h.scope.compositionAnchorRef.current = { area: h.area, offset: h.area.value.length - 1 };
+  h.state.composing = true; h.press('indent'); h.press('indent'); h.press('indent');
+  assert.deepEqual([h.state.runs, h.barHold.held()], [[], 'indent']);
+  h.state.composing = false; h.area.value = '- [ ] 장보기 가'; h.release();
+  assert.deepEqual([h.state.runs, h.barHold.held(), h.state.messages], [['indent'], null, []]);
+  h.release();
+  assert.deepEqual(h.state.runs, ['indent']);
+  // A held ☐ still waits for the save after its composition.
+  h = holdHarness();
+  h.state.composing = true; h.press('task'); h.state.composing = false; h.release();
+  assert.deepEqual([h.state.runs, h.barHold.held()], [[], 'task']);
 });
 
 test('folder region right after its save: the held press waits for the region to be editable, then runs once', () => {
@@ -186,12 +220,13 @@ test('one retry chain per held press, capped at one second of real time; a newer
 test('IME end order: the final insertText right after compositionend keeps the hold; later typing drops it', () => {
   const effect = find(node => ts.isCallExpression(node) && node.expression.getText(tree) === 'useEffect'
     && node.arguments[0].getText(tree).includes('composedJustNow'));
-  const listeners = new Map<string, (event: unknown) => void>(), timers: (() => void)[] = [];
+  const listeners = new Map<string, (event: unknown) => void>(), timers: (() => void)[] = [], messages: string[] = [];
   const root = { addEventListener: (type: string, listener: (event: unknown) => void) => listeners.set(type, listener), removeEventListener: () => {}, contains: () => true };
   const barHold = createWritingBarHold<WritingBarTarget>(), composing = { current: false }, anchor = { current: null as unknown };
   class FakeArea { selectionStart = 7; }
   evaluate<() => void>((effect as ts.CallExpression).arguments[0].getText(tree), {
     hostRef: { current: { closest: () => root } }, barHold, setHeldBar: () => {}, composingRef: composing, compositionAnchorRef: anchor,
+    setMessage: (text: string) => messages.push(text), programBarDropNotice, Node: class {},
     HTMLTextAreaElement: FakeArea, setTimeout: (callback: () => void) => { timers.push(callback); return timers.length; }, clearTimeout: () => {},
   })();
   const input = (inputType: string) => listeners.get('beforeinput')!({ inputType });
@@ -211,6 +246,11 @@ test('IME end order: the final insertText right after compositionend keeps the h
   barHold.press('enter', true, null);
   input('deleteContentBackward');
   assert.equal(barHold.held(), null);
+  // S5: each drop says so; leaving the editor too.
+  assert.deepEqual(messages, [programBarDropNotice('enter', 'typed'), programBarDropNotice('enter', 'typed')]);
+  barHold.press('task', true, null);
+  listeners.get('focusout')!({ relatedTarget: null });
+  assert.deepEqual([barHold.held(), messages.at(-1)], [null, programBarDropNotice('task', 'left')]);
 });
 
 function regionFixture() {
