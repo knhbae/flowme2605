@@ -61,6 +61,16 @@ export function programExecutionList(rows: readonly ProgramOrderedExecutionRow[]
   return items;
 }
 
+/** C5: one day's group for the calendar's sheet or panel, as the list heads it: the heading (its count, ＋ and
+ *  I7's '시간순으로' when ordered by hand), then that day's rows in list order. A day without rows is its heading. */
+export function programExecutionDay(rows: readonly ProgramOrderedExecutionRow[], day: string, today: string,
+  manual: ReadonlyMap<string, unknown> = new Map()): ProgramExecutionListItem[] {
+  const own = rows.filter(entry => entry.date === day);
+  return [{ kind: 'heading', key: `heading:${day}`, label: own.length ? `${dayHeading(day, today)} · ${own.length}` : dayHeading(day, today), late: false,
+    addDate: programDate(day) ? day : null, ...(manual.has(day) ? { orderDate: day } : {}) },
+  ...own.map(entry => ({ kind: 'row' as const, entry, group: null, dated: true }))];
+}
+
 /** One row's date words: "20일 지남" stays apart so it can carry the warning colour. */
 export function programExecutionRowMeta(input: { date: string | null; done: boolean; progress: { date: string; percent: number } | null;
   today: string; dated: boolean }): { late: string | null; parts: string[] } {

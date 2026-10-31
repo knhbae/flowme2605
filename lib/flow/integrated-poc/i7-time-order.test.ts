@@ -152,7 +152,8 @@ test('the list wires it: heading button, today menu, notice with 되돌리기, h
   assert.match(source, /if \(orderBusy\.current\) return;/);
   assert.match(css, /\.space \.manualOrder \{/);
   // The notice sits under the list and stays in sight (sticky), above the phone's bottom tabs.
-  assert.match(source, /\}\)\}<\/ul>\n\s*\{\/\* I7: under the list[^\n]*\*\/\}\n\s*\{!detail && orderNoticeContent\}/);
+  // (C5: after the list or the month grid; inside the day sheet while that is open.)
+  assert.match(source, /<\/ul>\}\n\s*\{\/\* I7: under the list[^\n]*\*\/\}\n\s*\{!detail && !sheetOpen && orderNoticeContent\}/);
   assert.match(css, /\.space \.orderNotice \{ position: sticky; bottom: 8px;/);
   assert.match(css, /@media \(max-width: 700px\) \{ \.space \.orderNotice \{ bottom: calc\(84px \+ env\(safe-area-inset-bottom\)\); \} \}/);
   assert.match(css, /\.space \.timeOrder \{[^}]*min-height: 44px;[^}]*font-size: 13px;/);

@@ -1,0 +1,22 @@
+/* C5 month grid (10-month-calendar.md 2·5): seven columns from Monday; about 50×48 cells at 390, about 76px wide
+   cells with up to three titles from 761px. */
+.month { min-width: 0; }
+.weekdays { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); margin-bottom: 4px; font-size: 12px; line-height: 20px; text-align: center; color: var(--flowme-b-muted); }
+.grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
+.day { box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0 !important; min-height: 48px; padding: 4px 2px; border: 2px solid transparent; border-radius: 8px; background: transparent; color: var(--flowme-b-ink); font: inherit; }
+.day[data-selected] { border-color: var(--flowme-b-primary); }
+.number { min-width: 24px; font-size: 14px; line-height: 24px; text-align: center; border-radius: 999px; }
+.day[data-today] .number { background: var(--flowme-b-primary); color: #ffffff; font-weight: 700; }
+.dots { display: flex; align-items: center; justify-content: center; gap: 3px; min-height: 12px; font-size: 12px; line-height: 12px; color: var(--flowme-b-muted); }
+.dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--flowme-b-primary); }
+.dots i[data-state="late"] { background: #986209; }
+.dots i[data-state="done"] { box-sizing: border-box; border: 1px solid var(--flowme-b-control); background: transparent; }
+.blank { min-height: 48px; }
+.month[data-titles] .day { align-items: stretch; min-height: 88px; }
+.month[data-titles] .number { align-self: flex-start; }
+.month[data-titles] .blank { min-height: 88px; }
+.titles { display: grid; gap: 1px; min-width: 0; font-size: 12px; line-height: 16px; text-align: left; }
+.titles > span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.titles [data-state="done"] { color: var(--flowme-b-muted); text-decoration: line-through; }
+.titles [data-state="late"] { color: #986209; }
+.more { color: var(--flowme-b-muted); }

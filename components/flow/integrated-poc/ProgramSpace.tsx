@@ -13,7 +13,9 @@ import { programManualOrderDays, programOrderedExecutionRows, programTextExecuti
   restoreProgramExecutionDayOrder, type ProgramDayOrder } from '@/lib/flow/integrated-poc/recurrence-order';
 import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
-import { programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
+import { ProgramMonthGrid } from './ProgramMonthGrid';
+import { programMonthTitle } from '@/lib/flow/integrated-poc/month-grid';
+import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
 import { programViewScope } from '@/lib/flow/integrated-poc/view-scope';
 import { ProgramGroupAddRow } from './ProgramGroupAddRow';
@@ -122,7 +124,9 @@ type Detail = { kind: 'task'; id: string } | { kind: 'folder'; id: string } | { 
 type LibraryWritingHandoff = { epoch: number; documentId: string; folderId: string; focusOwner: Element | null };
 /** The list view a row's title opened its source from, and where that row sat on screen. */
 type SourceOrigin = { actorId: string; documentId: string; taskId: string; top: number | null; scrollY: number;
-  view: { period: ProgramPeriod; date: string; folderId: string; query: string } };
+  /** C5: opened from the calendar, with the day open in its sheet or panel. */
+  view: { period: ProgramPeriod; date: string; folderId: string; query: string; monthView?: 'grid'; dayOpen?: string | null } };
+const MONTH_VIEW_KEY = 'flow:poc:personal-workspace:v1:month-view';
 const periods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['week', '주간'], ['month', '월간'], ['all', '분류'], ['undated', '날짜 미정']];
 const mainPeriods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['all', '분류']];
 export const PROGRAM_EMPTY_EXAMPLE = '이번 주 준비\n- [ ] 확인할 일\n  - [ ] 먼저 확인할 내용\n자유롭게 적는 메모';
@@ -223,6 +227,20 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const timer = setTimeout(() => setOrderNotice(current => current === orderNotice ? null : current), Math.max(0, ends - Date.now()));
     return () => clearTimeout(timer);
   }, [orderNotice, orderNoticeHeld]);
+  // C5: the month as a list or a calendar (the last choice, on this device only), the day open in a narrow screen's
+  // sheet, and the content's width: from 840px the day sits in a panel beside the grid, from 761px cells show titles.
+  const [monthView, setMonthViewState] = useState<'list' | 'grid'>('list');
+  const [sheetDay, setSheetDay] = useState<string | null>(null), [monthWidth, setMonthWidth] = useState(0);
+  const daySheet = useRef<HTMLDialogElement | null>(null), monthBox = useRef<HTMLDivElement | null>(null);
+  useEffect(() => { try { if (localStorage.getItem(MONTH_VIEW_KEY) === 'grid') setMonthViewState('grid'); } catch { /* the list, then */ } }, []);
+  const setMonthView = (next: 'list' | 'grid') => { setMonthViewState(next); try { localStorage.setItem(MONTH_VIEW_KEY, next); } catch { /* kept for this visit */ } };
+  useEffect(() => {
+    const box = monthBox.current;
+    if (!box || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(([entry]) => setMonthWidth(Math.round(entry.contentRect.width)));
+    observer.observe(box);
+    return () => observer.disconnect();
+  }, []);
   const [moving, setMoving] = useState<string | null>(null), [showArchived, setShowArchived] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const libraryToggle = useRef<HTMLButtonElement | null>(null);
@@ -392,6 +410,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const manualOrderDays = useMemo(() => period === 'documents' ? new Map<string, { hidden: number }>() : programManualOrderDays(data, executionQuery, executionRows),
     [data, period, date, today, folderId, query, includeHeldOccurrences, includeExcludedOccurrences, occurrencePage, executionRows]);
   const executionList = programExecutionList(executionRows, period, date, today, emptyDaysOpen, manualOrderDays);
+  const monthGrid = period === 'month' && monthView === 'grid';
+  const wideMonth = monthWidth >= 840;
+  const sheetOpen = monthGrid && !wideMonth && !!sheetDay;
+  // The sheet is a modal: shown only while its day is open in the calendar; anything else (a source opening, the
+  // view changing, the content widening into the panel) closes it.
+  useEffect(() => {
+    const sheet = daySheet.current;
+    if (!sheet) return;
+    if (sheetOpen && !sheet.open) sheet.showModal();
+    if (!sheetOpen && sheet.open) sheet.close();
+  }, [sheetOpen]);
   // The title row already says "오늘" when every row is today's; no repeated heading then.
   const hideDayHeadings = !!props.noteHeader && period === 'today' && date === today
     && executionList.every(item => item.kind !== 'row' || item.group === 'on-date');
@@ -528,7 +557,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   function openFromList(task: TextTask, button: HTMLElement) {
     const row = button.closest('li');
     const origin: SourceOrigin = { actorId, documentId: task.docId, taskId: task.id, top: row ? row.getBoundingClientRect().top : null,
-      scrollY: window.scrollY, view: { period, date, folderId, query } };
+      scrollY: window.scrollY, view: { period, date, folderId, query, ...(monthGrid ? { monthView: 'grid' as const, dayOpen: wideMonth ? date : sheetDay } : {}) } };
+    // C5: the sheet closes before the source opens; a modal left over the writing screen would block it.
+    if (sheetDay) { daySheet.current?.close(); setSheetDay(null); }
     void openDocument(task.docId, task.id).then(opened => { if (opened && dataRef.current.activeActorId === origin.actorId) setSourceOrigin(origin); });
   }
   async function returnToSourceOrigin() {
@@ -540,6 +571,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (!await flushAllEditors()) { showViewChangeBlocked(); return; }
       if (dataRef.current.activeActorId !== origin.actorId) return;
       setSourceOrigin(null); setPeriod(origin.view.period); setDate(origin.view.date); setFolderId(origin.view.folderId); setQuery(origin.view.query);
+      if (origin.view.monthView === 'grid') { setMonthView('grid'); setSheetDay(origin.view.dayOpen ?? null); }
       setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setOrderNotice(null); setSourceRestore({ ...origin, opener });
     } finally { release(); }
   }
@@ -571,7 +603,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       }
       if (Math.abs(offset) > 1) window.scrollBy({ top: offset, behavior: 'instant' });
       const active = document.activeElement;
-      if (!active || active === document.body || !active.getClientRects().length || active === origin.opener)
+      // C5: a row back in the calendar's sheet takes the focus the sheet's opening gave its first button.
+      if (!active || active === document.body || !active.getClientRects().length || active === origin.opener || !!daySheet.current?.open && daySheet.current.contains(row))
         row.querySelector<HTMLButtonElement>(`button.${styles.taskTitle}`)?.focus({ preventScroll: true });
     });
     return () => cancelAnimationFrame(frame);
@@ -1185,6 +1218,34 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (addingDate && addingDate !== day && groupAddField.current?.value.trim()) { groupAddField.current.focus(); return; }
     if (addingDate === day) groupAddField.current?.focus(); else setAddingDate(day);
   }
+  /** C5: a line written on a day is never lost: picking another day, the month arrows or closing the sheet go back to it. */
+  function keepWrittenDay() { if (!addingDate || !groupAddField.current?.value.trim()) return false; groupAddField.current.focus(); return true; }
+  /** C5: a day of the grid becomes the chosen day; `open` shows it (a sheet on a narrow screen; the panel follows the chosen day). */
+  function pickMonthDay(day: string, open: boolean) {
+    if (keepWrittenDay()) return;
+    setDate(day);
+    if (open && !wideMonth) setSheetDay(day);
+  }
+  function closeDaySheet() {
+    if (keepWrittenDay()) return;
+    const day = sheetDay;
+    setSheetDay(null); setAddingDate(null);
+    requestAnimationFrame(() => root.current?.querySelector<HTMLButtonElement>(`[data-month-day="${day}"]`)?.focus({ preventScroll: true }));
+  }
+  /** C5: one day in the sheet or the panel: the list's heading words with I7 and ＋ (and 닫기 in the sheet), the ＋ line,
+   *  the day's rows as the list draws them, or a note and a wide ＋ on an empty day. */
+  function dayGroup(day: string, close?: () => void) {
+    const [heading, ...rows] = programExecutionDay(executionRows, day, today, manualOrderDays);
+    if (heading.kind !== 'heading') return null;
+    return <>
+      <div className={close ? `${styles.findHeading} ${styles.dayGroupHeading}` : styles.dayGroupHeading}>
+        <h2 id={close ? 'program-day-sheet-title' : undefined} className={styles.executionGroup}>{heading.label}</h2>
+        <div className={styles.dayGroupActions}>{dayHeadingControls(heading)}{close && <button type="button" onClick={close}>닫기</button>}</div></div>
+      <ul className={styles.tasks}>{dayAddRow(heading)}{rows.map(renderListItem)}</ul>
+      {!rows.length && addingDate !== day && <div className={styles.dayEmpty}><p>이 날에는 할 일이 없습니다.</p>
+        <button type="button" disabled={preparingDocumentAction} onClick={() => openGroupAdd(day)}>＋ 이 날에 할 일</button></div>}
+    </>;
+  }
   function closeGroupAdd(day: string) {
     setAddingDate(current => current === day ? null : current);
     requestAnimationFrame(() => {
@@ -1407,7 +1468,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const documentTitleText = selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : '필요한 내용을 먼저 적으세요';
   const periodTitle = <h1>{period === 'today' ? (date === today ? `오늘 · ${programCalendarDate(today, today)}` : programCalendarDate(date, today))
     : period === 'all' ? (collectionMode ? '전체 할 일' : folder ? folder.title : '분류')
-    : `${periods.find(([key]) => key === period)?.[1]}${folder ? ` · ${folder.title}` : ''}`}</h1>;
+    : `${period === 'month' ? programMonthTitle(date, today) : periods.find(([key]) => key === period)?.[1]}${folder ? ` · ${folder.title}` : ''}`}</h1>;
+  // C5: in the month, the title row ends with [목록|달력] (each 52×44), remembered on this device.
+  const monthTitleRow = <div className={styles.monthTitleRow}>{periodTitle}<div className={styles.monthViews} role="group" aria-label="월간 보기 방식">
+    <button type="button" aria-pressed={monthView === 'list'} onClick={() => { if (!keepWrittenDay()) setMonthView('list'); }}>목록</button>
+    <button type="button" aria-pressed={monthView === 'grid'} onClick={() => { if (!keepWrittenDay()) setMonthView('grid'); }}>달력</button></div></div>;
 
   const guardOccurrenceDraft = (event: React.SyntheticEvent) => {
     const pending = Object.entries(recurrencePorts.current).filter(([, port]) => port?.hasPendingInput?.());
@@ -1416,6 +1481,75 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       event.preventDefault(); event.stopPropagation(); setMessage('회차 날짜를 적용하거나 취소한 뒤 이동해 주세요.');
     }
   };
+  /** One item of the period list: a day heading (with its ＋ line), the empty days line, or a row. C5's day sheet
+   *  and panel draw their rows with it too. */
+  /** A day heading's own controls (I7's '시간순으로', the day's ＋), for the list and for C5's sheet and panel. */
+  function dayHeadingControls(item: Extract<ProgramExecutionListItem, { kind: 'heading' }>) {
+    return <>{item.orderDate && !moving && <><span className={styles.manualOrder}>직접 정렬</span><button type="button" className={styles.timeOrder}
+        aria-label={`${orderDayName(item.orderDate)} 순서를 시간순으로 되돌리기`} disabled={orderPending} onClick={() => void resetDayOrder(item.orderDate!)}>시간순으로</button></>}
+      {item.addDate && !collectionMode && <button type="button" className={styles.dayAdd} data-add-date={item.addDate} aria-label={`${programCalendarDate(item.addDate, today)}에 할 일 추가`}
+        aria-expanded={addingDate === item.addDate} disabled={preparingDocumentAction} onClick={() => openGroupAdd(item.addDate!)}>＋</button>}</>;
+  }
+  /** The day's ＋ line (C2), under its heading. */
+  function dayAddRow(item: Extract<ProgramExecutionListItem, { kind: 'heading' }>) {
+    return addingDate === item.addDate && item.addDate && <ProgramGroupAddRow key={`${actorId}:${item.addDate}`} date={item.addDate} dayLabel={programCalendarDate(item.addDate, today)} inputRef={groupAddField}
+      onAdd={(title, time) => addOnDay(item.addDate!, title, time)} onClose={() => closeGroupAdd(item.addDate!)} />;
+  }
+  function renderListItem(item: ProgramExecutionListItem): React.ReactNode {
+          if (item.kind === 'heading') return <React.Fragment key={item.key}>
+            {!hideDayHeadings && <li className={styles.dayHeading} data-late={item.late || undefined}><h2 className={styles.executionGroup}>{item.label}</h2>
+              {dayHeadingControls(item)}</li>}
+            {dayAddRow(item)}
+          </React.Fragment>;
+          if (item.kind === 'empty-days') return <li key="empty-days" className={styles.emptyDays}><button type="button" aria-expanded={item.open} onClick={() => {
+            // Folding would unmount a line being written on an empty day; keep it open and go back to it.
+            if (item.open && addingDate && item.dates.includes(addingDate)) {
+              if (groupAddField.current?.value.trim()) { groupAddField.current.focus(); return; }
+              setAddingDate(null);
+            }
+            setEmptyDaysOpen(open => !open);
+          }}>
+            할 일 없는 날 {item.dates.length}일 · {item.open ? '접기' : '펼치기'}</button></li>;
+          const entry = item.entry;
+          if (entry.kind === 'occurrence') return <li key={entry.key} onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveExecutionStep(entry.key, event.key === 'ArrowUp' ? -1 : 1); } }} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}>
+            {period === 'today' && entry.row.executionDate && entry.row.executionDate < date && <small>계속할 회차</small>}
+            <div className={styles.actions}><button onClick={() => moveExecutionStep(entry.key, -1)}>같은 날짜에서 위로</button><button onClick={() => moveExecutionStep(entry.key, 1)}>같은 날짜에서 아래로</button>{moving && <button onClick={() => void moveBefore(moving, entry.key)}>이 회차 앞에 놓기</button>}</div>
+            <ProgramRecurrence data={data} mutate={mutate} today={today} period={period} date={date} row={entry.row} onPlanApplied={focusAppliedPlan} onRegisterEditors={port => { recurrencePorts.current[entry.row.key] = port; }}
+            onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} /></li>;
+          const task = entry.task;
+          const origin = readProgramTaskOrigin(data, task);
+          const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
+          const meta = programExecutionRowMeta({ date: task.date, done: value === 100, progress: progress?.date ? { date: progress.date, percent: progress.percent } : null, today, dated: item.dated });
+          return <li key={entry.key} className={styles.task} data-task-id={task.id} data-done={value === 100 || undefined} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
+            onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
+            onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
+            <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskIds.has(task.id) ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskIds.has(task.id) || undefined} onClick={() => {
+              if (value > 0 && value < 100) { setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }
+              else {
+                // A repeat tap while the first still waits or saves would act on a stale
+                // value, so ignore it; the first tap waits out a refresh by itself.
+                const ids = completingInSession(completingTasks, sourceSession.current);
+                if (ids.has(task.id)) return;
+                ids.add(task.id); setCompletingTaskIds(new Set(ids));
+                const done = () => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); };
+                void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }),
+                  true, undefined, undefined, true).then(done, done);
+              }
+            }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
+              {completingTaskIds.has(task.id) ? '…' : value > 0 && value < 100 ? `${value}%` : ''}</span></button>
+            <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} aria-busy={sourceWaitingTask === task.id || undefined} onClick={event => moving ? void moveBefore(moving, entry.key) : openFromList(task, event.currentTarget)}><span className={styles.taskTitleText}>{task.title}</span>
+              {/* R4's waits, now visible on the row. The title's aria-busy and the host notice still do the announcing. */}
+              <small>{sourceWaitingTask === task.id ? <span className={styles.rowBusy}>원문 여는 중…</span> : <>
+                {completingTaskIds.has(task.id) && <><span className={styles.rowBusy}>{value === 100 ? '다시 열기 대기 중' : '완료 대기 중'}</span> · </>}
+                {meta.late && <><em className={styles.rowLate}>{meta.late}</em> · </>}
+                {[...meta.parts, ...(task.time ? [task.time] : [])].map((part, index) => <React.Fragment key={index}>{part} · </React.Fragment>)}
+                <span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}<span className={styles.taskFolder}>{taskFolderPath(task)} / </span>{task.docTitle} →</span>
+              </>}</small></button>
+            <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
+              onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
+              onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>
+          </li>;
+  }
   return <section ref={root} className={styles.space} data-note-layout={!!props.noteHeader} data-library-open={libraryOpen} aria-label="내 공간"
     onCompositionStartCapture={() => { libraryComposing.current = true; }} onCompositionEndCapture={() => { libraryComposing.current = false; }}
     onClickCapture={guardOccurrenceDraft} onKeyDownCapture={event => { if (!['Tab', 'Shift', 'Escape'].includes(event.key)) guardOccurrenceDraft(event); }}>
@@ -1464,11 +1598,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         onOpenSource={(id, line) => void openDocument(id, line)} onRegisterEditors={(port, key) => { recurrencePorts.current[key] = port; }} onUndo={props.onUndo} onRedo={props.onRedo} />}
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {!libraryOpen && !detail && viewChangeNoticeContent}
-      {!detail && taskNoticeContent}
+      {!detail && !sheetOpen && taskNoticeContent}
       <div hidden={period !== 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         <div className={styles.docHeading}>{sourceOriginOpen && <button type="button" className={styles.sourceReturn}
-          aria-label={`${sourceOriginLabel} 목록으로 돌아가기`} onClick={() => void returnToSourceOrigin()}>← {sourceOriginLabel}</button>}<h1>{props.hostMainTabs
+          aria-label={sourceOrigin?.view.monthView === 'grid' ? `오늘 · ${programMonthTitle(sourceOrigin.view.date, today)} 달력으로 돌아가기` : `${sourceOriginLabel} 목록으로 돌아가기`} onClick={() => void returnToSourceOrigin()}>← {sourceOriginLabel}</button>}<h1>{props.hostMainTabs
           ? <button ref={titleToggle} type="button" className={styles.titleButton} aria-haspopup="dialog" aria-expanded={libraryOpen} aria-controls="program-library"
             aria-label={`${documentTitleText} · 문서 목록 열기`} onPointerDown={findPointerDown} onClick={openFindPanel}><span>{documentTitleText}</span><span aria-hidden="true"> ▾</span></button>
           : documentTitleText}</h1>
@@ -1581,7 +1715,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onRegisterEditors={port => { recurrencePorts.current[selectedDoc.id] = port; }}
           onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} />}
       </div>
-      <div hidden={period === 'documents'} className={styles.executionView} data-note-today={compactNoteToday || undefined}>
+      <div ref={monthBox} hidden={period === 'documents'} className={styles.executionView} data-note-today={compactNoteToday || undefined}>
         {period !== 'all' && <label className={styles.periodPicker}>기간<select aria-label="기간 보기" value={period} onChange={event => { void changePeriod(event.target.value as ProgramPeriod); }}>{periods.filter(([key]) => !['documents', 'all'].includes(key)).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>}
         <ProgramRecurrencePlanRecovery data={data} today={today} folderId={folderId || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         <div className={styles.periodHeading}>{compactNoteToday ? <div className={styles.notePeriodTitle}>{periodTitle}<div className={styles.notePeriodActions}>
@@ -1593,7 +1727,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {/* I7: the day heading is hidden here, so its button sits in this menu. */}
             {hideDayHeadings && manualOrderDays.has(date) && !moving && <button type="button" disabled={orderPending}
               onClick={() => { if (noteFindMenu.current) noteFindMenu.current.open = false; void resetDayOrder(date); }}>오늘 순서를 시간순으로</button>}</div></details>
-        </div></div> : periodTitle}{!['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date)}>‹</button><label>날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value)) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date)}>›</button></div>}</div>
+        </div></div> : period === 'month' ? monthTitleRow : periodTitle}{!['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date); }}>‹</button><label>날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value) && !keepWrittenDay()) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date); }}>›</button></div>}</div>
         {props.noteHeader && <div className={styles.periodNotice}>{props.noteHeader}</div>}
         {props.noteStatus && <div className={styles.periodStatus}>{props.noteStatus}{!compactNoteToday && period !== 'documents' && findActions}</div>}
         {period === 'all' && !collectionMode && <div className={styles.classificationActions}><label className={styles.classificationPicker}>분류<select aria-label="할 일 분류 보기" value={folderId} onChange={event => { void changeFolder(event.target.value); }}><option value="">모든 분류</option>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
@@ -1612,14 +1746,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <button type="button" aria-label={`${item.label} 조건 풀기`} onClick={() => void clearScope(item.kind)}>×</button></span>)}
           <button type="button" className={styles.scopeAll} onClick={() => void changePeriod('today', true)}>전체로 보기</button></div>
           : (folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { void changeFolder(''); setQuery(''); }}>필터 해제</button></div>}
-        {range.from && range.to && range.to !== range.from && <p className={styles.muted}>{programCalendarDate(range.from, today)} ~ {programCalendarDate(range.to, today)}</p>}
-        <details className={styles.quickDisclosure} data-collapsible id={compactNoteToday ? 'program-note-quick-task' : undefined}
+        {!monthGrid && range.from && range.to && range.to !== range.from && <p className={styles.muted}>{programCalendarDate(range.from, today)} ~ {programCalendarDate(range.to, today)}</p>}
+        {!monthGrid && <details className={styles.quickDisclosure} data-collapsible id={compactNoteToday ? 'program-note-quick-task' : undefined}
           {...(compactNoteToday ? { open: noteQuickOpen, hidden: !noteQuickOpen, onToggle: (event: React.SyntheticEvent<HTMLDetailsElement>) => setNoteQuickOpen(event.currentTarget.open) } : {})}>
           <summary>할 일 추가</summary>
           <form className={styles.quick} onSubmit={quickTask}>
           {collectionMode && <label className={styles.quickDocument}>작성 문서<select name="documentId" aria-label="빠른 추가 작성 문서" required value={quickTarget} onChange={event => setQuickDocumentId(event.target.value)}><option value="">문서 선택</option>{quickDocuments.map(doc => <option key={doc.id} value={doc.id}>{doc.title}</option>)}</select><small>모음에 자동 연결하지 않습니다.{!quickDocuments.length && ' 문서를 먼저 만들어 주세요.'}</small></label>}
           <label>빠른 할 일<input name="title" required placeholder="할 일을 적으세요" maxLength={500} /></label><label>실행 날짜<input key={period + date} type="date" name="date" defaultValue={period === 'undated' ? '' : date} /></label><button disabled={!!collectionMode && !quickTarget}>추가</button></form>
-        </details>
+        </details>}
         {moving && <p role="status">옮길 행의 앞을 선택하세요. <button onClick={() => setMoving(null)}>취소</button></p>}
         {programSeriesMetadata(space).length > 0 && <div className={styles.actions}><label><input type="checkbox" checked={includeHeldOccurrences} onChange={event => setIncludeHeldOccurrences(event.target.checked)} /> 보류 회차</label><label><input type="checkbox" checked={includeExcludedOccurrences} onChange={event => setIncludeExcludedOccurrences(event.target.checked)} /> 제외 회차</label>
           <button onClick={() => void props.onUndo()}>변경 되돌리기</button><button onClick={() => void props.onRedo()}>다시 실행</button>
@@ -1632,68 +1766,22 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {occurrenceResult.issues.includes('query-window-limit') && <p role="alert">조회 가능한 회차 범위를 넘었습니다. 표시된 목록이 전체는 아니며, 원문과 기존 기록은 보존했습니다.</p>}
         {occurrenceResult.pendingStarts.map(entry => <p role="status" key={entry.itemRef}>{entry.title} · {entry.reason === 'anchor-required' ? '내 기준일' : '내 시작일'} 미정
           <button type="button" onClick={() => void openDocument(entry.documentId, entry.lineId)}>사본에서 날짜 정하기</button></p>)}
-        {!executionRows.length && <div className={styles.empty}><p>{folderId || query ? '현재 조회 조건에 맞는 할 일이 없습니다.' : '이 보기에 할 일이 없습니다.'}</p>{period !== 'all' && period !== 'documents' && <button type="button" onClick={() => void showAllTasksFromEmpty()}>전체 할 일에서 찾기</button>}</div>}
-        <ul className={styles.tasks}>{executionList.map(item => {
-          if (item.kind === 'heading') return <React.Fragment key={item.key}>
-            {!hideDayHeadings && <li className={styles.dayHeading} data-late={item.late || undefined}><h2 className={styles.executionGroup}>{item.label}</h2>
-              {item.orderDate && !moving && <><span className={styles.manualOrder}>직접 정렬</span><button type="button" className={styles.timeOrder}
-                aria-label={`${orderDayName(item.orderDate)} 순서를 시간순으로 되돌리기`} disabled={orderPending} onClick={() => void resetDayOrder(item.orderDate!)}>시간순으로</button></>}
-              {item.addDate && !collectionMode && <button type="button" className={styles.dayAdd} data-add-date={item.addDate} aria-label={`${programCalendarDate(item.addDate, today)}에 할 일 추가`}
-                aria-expanded={addingDate === item.addDate} disabled={preparingDocumentAction} onClick={() => openGroupAdd(item.addDate!)}>＋</button>}</li>}
-            {addingDate === item.addDate && item.addDate && <ProgramGroupAddRow key={`${actorId}:${item.addDate}`} date={item.addDate} dayLabel={programCalendarDate(item.addDate, today)} inputRef={groupAddField}
-              onAdd={(title, time) => addOnDay(item.addDate!, title, time)} onClose={() => closeGroupAdd(item.addDate!)} />}
-          </React.Fragment>;
-          if (item.kind === 'empty-days') return <li key="empty-days" className={styles.emptyDays}><button type="button" aria-expanded={item.open} onClick={() => {
-            // Folding would unmount a line being written on an empty day; keep it open and go back to it.
-            if (item.open && addingDate && item.dates.includes(addingDate)) {
-              if (groupAddField.current?.value.trim()) { groupAddField.current.focus(); return; }
-              setAddingDate(null);
-            }
-            setEmptyDaysOpen(open => !open);
-          }}>
-            할 일 없는 날 {item.dates.length}일 · {item.open ? '접기' : '펼치기'}</button></li>;
-          const entry = item.entry;
-          if (entry.kind === 'occurrence') return <li key={entry.key} onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveExecutionStep(entry.key, event.key === 'ArrowUp' ? -1 : 1); } }} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}>
-            {period === 'today' && entry.row.executionDate && entry.row.executionDate < date && <small>계속할 회차</small>}
-            <div className={styles.actions}><button onClick={() => moveExecutionStep(entry.key, -1)}>같은 날짜에서 위로</button><button onClick={() => moveExecutionStep(entry.key, 1)}>같은 날짜에서 아래로</button>{moving && <button onClick={() => void moveBefore(moving, entry.key)}>이 회차 앞에 놓기</button>}</div>
-            <ProgramRecurrence data={data} mutate={mutate} today={today} period={period} date={date} row={entry.row} onPlanApplied={focusAppliedPlan} onRegisterEditors={port => { recurrencePorts.current[entry.row.key] = port; }}
-            onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} /></li>;
-          const task = entry.task;
-          const origin = readProgramTaskOrigin(data, task);
-          const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
-          const meta = programExecutionRowMeta({ date: task.date, done: value === 100, progress: progress?.date ? { date: progress.date, percent: progress.percent } : null, today, dated: item.dated });
-          return <li key={entry.key} className={styles.task} data-task-id={task.id} data-done={value === 100 || undefined} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
-            onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
-            onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
-            <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskIds.has(task.id) ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskIds.has(task.id) || undefined} onClick={() => {
-              if (value > 0 && value < 100) { setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }
-              else {
-                // A repeat tap while the first still waits or saves would act on a stale
-                // value, so ignore it; the first tap waits out a refresh by itself.
-                const ids = completingInSession(completingTasks, sourceSession.current);
-                if (ids.has(task.id)) return;
-                ids.add(task.id); setCompletingTaskIds(new Set(ids));
-                const done = () => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); };
-                void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }),
-                  true, undefined, undefined, true).then(done, done);
-              }
-            }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
-              {completingTaskIds.has(task.id) ? '…' : value > 0 && value < 100 ? `${value}%` : ''}</span></button>
-            <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} aria-busy={sourceWaitingTask === task.id || undefined} onClick={event => moving ? void moveBefore(moving, entry.key) : openFromList(task, event.currentTarget)}><span className={styles.taskTitleText}>{task.title}</span>
-              {/* R4's waits, now visible on the row. The title's aria-busy and the host notice still do the announcing. */}
-              <small>{sourceWaitingTask === task.id ? <span className={styles.rowBusy}>원문 여는 중…</span> : <>
-                {completingTaskIds.has(task.id) && <><span className={styles.rowBusy}>{value === 100 ? '다시 열기 대기 중' : '완료 대기 중'}</span> · </>}
-                {meta.late && <><em className={styles.rowLate}>{meta.late}</em> · </>}
-                {[...meta.parts, ...(task.time ? [task.time] : [])].map((part, index) => <React.Fragment key={index}>{part} · </React.Fragment>)}
-                <span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}<span className={styles.taskFolder}>{taskFolderPath(task)} / </span>{task.docTitle} →</span>
-              </>}</small></button>
-            <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
-              onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
-              onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>
-          </li>;
-        })}</ul>
+        {!executionRows.length && !monthGrid && <div className={styles.empty}><p>{folderId || query ? '현재 조회 조건에 맞는 할 일이 없습니다.' : '이 보기에 할 일이 없습니다.'}</p>{period !== 'all' && period !== 'documents' && <button type="button" onClick={() => void showAllTasksFromEmpty()}>전체 할 일에서 찾기</button>}</div>}
+        {/* C5: in the calendar the grid takes the list's place; the chosen day sits beside it when the content is wide. */}
+        {monthGrid ? <div className={styles.monthLayout} data-wide={wideMonth || undefined}>
+          <ProgramMonthGrid rows={executionRows} date={date} today={today} titles={monthWidth >= 761} onPick={pickMonthDay} />
+          {wideMonth && <aside className={styles.dayPanel} aria-label={`${programCalendarDate(date, today)} 할 일`}>{dayGroup(date)}</aside>}
+        </div> : <ul className={styles.tasks}>{executionList.map(renderListItem)}</ul>}
         {/* I7: under the list, held at the bottom of the screen (above the bottom tabs on a phone) while it scrolls. */}
-        {!detail && orderNoticeContent}
+        {!detail && !sheetOpen && orderNoticeContent}
+        {/* C5: the chosen day on a narrow screen, as a sheet; its row notices show inside while it is open. */}
+        <dialog ref={daySheet} className={`${styles.findDialog} ${styles.daySheet}`} aria-labelledby="program-day-sheet-title" data-expanded={!!sheetDay && addingDate === sheetDay || undefined}
+          onCancel={event => { event.preventDefault(); closeDaySheet(); }}
+          onKeyDown={event => { if (event.key === 'Escape' && (event.nativeEvent.isComposing || event.keyCode === 229)) { event.preventDefault(); event.stopPropagation(); } }}
+          onClick={event => { const box = event.currentTarget.getBoundingClientRect();
+            if (event.target === event.currentTarget && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) closeDaySheet(); }}>
+          {sheetOpen && <>{dayGroup(sheetDay!, closeDaySheet)}{!detail && taskNoticeContent}{!detail && orderNoticeContent}</>}
+        </dialog>
       </div>
     </div>
     <dialog ref={dialog} className={styles.dialog} data-task-detail={detail?.kind === 'task' ? true : undefined} aria-labelledby="program-detail-title" onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2 id="program-detail-title">{detail?.kind === 'task' ? detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 정리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>
