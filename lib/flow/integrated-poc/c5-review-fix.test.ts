@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { programMonthGrid, programMonthTabStop } from './month-grid';
+import { programDayDialogStep, programMonthGrid, programMonthTabStop } from './month-grid';
 
 // C5 review (FIX): a written ＋ line survives a row's source press and the sheet waits until the source opens (P1);
 // an occurrence's source returns to the calendar too; the calendar's ＋ waits out an automatic read; a refused month
@@ -43,11 +43,11 @@ test('P2: a month change refused for a written ＋ line keeps the focus, and the
 test('P2: the sheet and the panel are one dialog, so its ＋ line survives the 840px switch', () => {
   assert.equal(space.match(/<dialog ref=\{daySheet\}/g)?.length, 1);
   assert(!space.includes('<aside className={styles.dayPanel}'), 'no separate panel');
-  assert.match(space, /<dialog ref=\{daySheet\} className=\{wideMonth \? styles\.dayPanel : `\$\{styles\.findDialog\} \$\{styles\.daySheet\}`\}/);
+  assert.match(space, /<dialog ref=\{daySheet\} className=\{daySheetLook \? `\$\{styles\.findDialog\} \$\{styles\.daySheet\}` : styles\.dayPanel\}/);
   // Narrowing with the panel's ＋ line open keeps the day open as a sheet (the day itself is always `date`, below).
   assert.match(space, /const dayShown = !monthGrid \? null : wideMonth \|\| dayOpen \|\| addingDate === date \? date : null;/);
-  assert.match(space, /if \(mode === 'sheet'\) sheet\.showModal\(\); else if \(mode === 'panel'\) sheet\.show\(\);/);
-  assert.match(space, /\{dayShown && <>\{dayGroup\(dayShown, wideMonth \? undefined : closeDaySheet\)\}/);
+  assert.match(space, /if \(step\.mode === 'sheet'\) sheet\.showModal\(\); else if \(step\.mode === 'panel'\) sheet\.show\(\);/);
+  assert.match(space, /\{dayShown && <>\{dayGroup\(dayShown, daySheetLook \? closeDaySheet : undefined\)\}/);
 });
 
 test('re-review P2: the sheet and the panel show one day, the chosen date, so a day picked wide keeps its ＋ line narrow', () => {
@@ -59,12 +59,47 @@ test('re-review P2: the sheet and the panel show one day, the chosen date, so a 
   assert.match(space, /monthView\?: 'grid'; dayOpen\?: boolean \}/);
 });
 
-test('re-review: a sheet/panel switch while Korean is composed in the day waits for the composition to end', () => {
+test('re-review: a sheet/panel switch while Korean is composed in the day waits for the composition to end, both ways', () => {
+  // Narrow → wide and wide → narrow, composing in the dialog: it waits, then goes once the composition is over.
+  assert.deepEqual(programDayDialogStep({ day: '2026-10-30', wide: true, current: 'sheet', composing: true }), { mode: 'panel', wait: true });
+  assert.deepEqual(programDayDialogStep({ day: '2026-10-30', wide: false, current: 'panel', composing: true }), { mode: 'sheet', wait: true });
+  assert.deepEqual(programDayDialogStep({ day: '2026-10-30', wide: true, current: 'sheet', composing: false }), { mode: 'panel', wait: false });
+  assert.deepEqual(programDayDialogStep({ day: '2026-10-30', wide: false, current: 'panel', composing: false }), { mode: 'sheet', wait: false });
+  // Opening or closing never waits (closing removes the line anyway).
+  assert.deepEqual(programDayDialogStep({ day: null, wide: false, current: 'sheet', composing: true }), { mode: null, wait: false });
+  assert.deepEqual(programDayDialogStep({ day: '2026-10-30', wide: false, current: null, composing: true }), { mode: 'sheet', wait: false });
   const effect = space.slice(space.indexOf('const sheet = daySheet.current;'), space.indexOf('}, [dayShown, wideMonth, sheetSettled]);'));
   assert(effect.length > 0, 'the switch re-runs when a composition ends');
-  // Closing the dialog to reopen it would blur the ＋ line mid-syllable; only a switch waits (a day closing does not).
-  assert.match(effect, /if \(mode === current\) return;\s*(\/\/[^\n]*\n\s*)*if \(mode && current && sheetComposing\.current && sheet\.contains\(document\.activeElement\)\) return;\s*const active = document\.activeElement;/);
+  assert.match(effect, /const step = programDayDialogStep\(\{ day: dayShown, wide: wideMonth, current, composing: sheetComposing\.current && sheet\.contains\(document\.activeElement\) \}\);\s*if \(step\.mode === current \|\| step\.wait\) \{ setDayDialog\(current\); return; \}/);
   assert.match(space, /const endSheetComposing = \(\) => \{ if \(!sheetComposing\.current\) return; sheetComposing\.current = false; setSheetSettled\(count => count \+ 1\); \};/);
+});
+
+test('re-review 2 P2: while a switch waits, the dialog looks and acts as what it really is (one state for its mode)', () => {
+  // The real mode is set only when the dialog really changes; its look and rules read that, not the new width.
+  assert.match(space, /const \[dayDialog, setDayDialog\] = useState<ProgramDayDialogMode>\(null\);/);
+  assert.match(space, /const daySheetLook = \(dayDialog \?\? \(wideMonth \? 'panel' : 'sheet'\)\) === 'sheet';/);
+  const effect = space.slice(space.indexOf('const sheet = daySheet.current;'), space.indexOf('}, [dayShown, wideMonth, sheetSettled]);'));
+  assert.match(effect, /setDayDialog\(step\.mode\);/);
+  assert.match(space, /const sheetOpen = monthGrid && daySheetLook && !!dayShown;/);
+  const dialog = space.slice(space.indexOf('<dialog ref={daySheet}'), space.indexOf('</dialog>', space.indexOf('<dialog ref={daySheet}')));
+  assert(!/wideMonth/.test(dialog), 'the class, the name, 닫기, Esc and the outside press follow the real mode');
+  assert.match(dialog, /aria-labelledby=\{daySheetLook \? 'program-day-sheet-title' : undefined\} aria-label=\{daySheetLook \? undefined : `\$\{programCalendarDate\(date, today\)\} 할 일`\}/);
+  assert.match(dialog, /onCancel=\{event => \{ event\.preventDefault\(\); if \(daySheetLook\) closeDaySheet\(\); \}\}/);
+  assert.match(dialog, /if \(daySheetLook && event\.target === event\.currentTarget/);
+});
+
+test('re-review 2 P2: a composition whose end never comes is let go on blur, or on the next key or input that is not composing, both in the dialog and the ＋ line', () => {
   const dialog = space.slice(space.indexOf('<dialog ref={daySheet}'), space.indexOf('</dialog>', space.indexOf('<dialog ref={daySheet}')));
   assert.match(dialog, /onCompositionStart=\{\(\) => \{ sheetComposing\.current = true; \}\} onCompositionEnd=\{endSheetComposing\} onBlur=\{endSheetComposing\}/);
+  assert.match(dialog, /onInput=\{event => \{ if \(!\(event\.nativeEvent as InputEvent\)\.isComposing\) endSheetComposing\(\); \}\}/);
+  assert.match(dialog, /if \(!event\.nativeEvent\.isComposing && event\.keyCode !== 229\) endSheetComposing\(\);/);
+  const row = read('ProgramGroupAddRow.tsx');
+  assert.match(row, /onBlur=\{\(\) => entry\.compositionEnd\(\)\}/);
+  assert.match(row, /onInput=\{event => \{ entry\.edited\(\); entry\.keySeen\(\(event\.nativeEvent as InputEvent\)\.isComposing\); \}\}/);
+  assert.match(row, /if \(event\.nativeEvent\.isComposing\) return;\s*if \(event\.keyCode !== 229\) entry\.keySeen\(false\);/);
+});
+
+test('re-review 2: a sheet closed from inside (its ＋ line given up) gives the focus to the chosen day, not to the page', () => {
+  const effect = space.slice(space.indexOf('const sheet = daySheet.current;'), space.indexOf('}, [dayShown, wideMonth, sheetSettled]);'));
+  assert.match(effect, /if \(!step\.mode && current === 'sheet' && monthGrid && \(!active \|\| active === document\.body \|\| sheet\.contains\(active\)\)\)\s*root\.current\?\.querySelector<HTMLButtonElement>\(`\[data-month-day="\$\{date\}"\]`\)\?\.focus\(\{ preventScroll: true \}\);/);
 });
