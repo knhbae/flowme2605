@@ -15,7 +15,7 @@ test('P1: a row press with a written ＋ line goes back to it; the sheet closes 
   assert(!body('openFromList').includes('daySheet.current?.close()'), 'not at the press');
   // The moment openDocument switches to the document, right before the view changes.
   const open = space.slice(space.indexOf('async function openDocument(id: string'), space.indexOf("setPeriod('documents');\n    props.navigate("));
-  assert.match(open, /if \(daySheet\.current\?\.matches\(':modal'\)\) daySheet\.current\.close\(\);\s*setSheetDay\(null\);\s*setSelected\(id\);[^\n]*$/);
+  assert.match(open, /if \(daySheet\.current\?\.matches\(':modal'\)\) daySheet\.current\.close\(\);\s*setDayOpen\(false\);\s*setSelected\(id\);[^\n]*$/);
 });
 
 test('P2: an occurrence opens its source like a task does, so "← 오늘" finds its month, day and row', () => {
@@ -44,8 +44,27 @@ test('P2: the sheet and the panel are one dialog, so its ＋ line survives the 8
   assert.equal(space.match(/<dialog ref=\{daySheet\}/g)?.length, 1);
   assert(!space.includes('<aside className={styles.dayPanel}'), 'no separate panel');
   assert.match(space, /<dialog ref=\{daySheet\} className=\{wideMonth \? styles\.dayPanel : `\$\{styles\.findDialog\} \$\{styles\.daySheet\}`\}/);
-  // Narrowing with the panel's ＋ line open keeps the day open as a sheet.
-  assert.match(space, /const dayShown = !monthGrid \? null : wideMonth \? date : sheetDay \?\? \(addingDate === date \? date : null\);/);
+  // Narrowing with the panel's ＋ line open keeps the day open as a sheet (the day itself is always `date`, below).
+  assert.match(space, /const dayShown = !monthGrid \? null : wideMonth \|\| dayOpen \|\| addingDate === date \? date : null;/);
   assert.match(space, /if \(mode === 'sheet'\) sheet\.showModal\(\); else if \(mode === 'panel'\) sheet\.show\(\);/);
   assert.match(space, /\{dayShown && <>\{dayGroup\(dayShown, wideMonth \? undefined : closeDaySheet\)\}/);
+});
+
+test('re-review P2: the sheet and the panel show one day, the chosen date, so a day picked wide keeps its ＋ line narrow', () => {
+  // No second day: the sheet only remembers that it is open; the day shown, the source return and the focus on close use `date`.
+  assert(!/sheetDay/.test(space), 'no separate sheet day');
+  assert.match(space, /const \[dayOpen, setDayOpen\] = useState\(false\)/);
+  assert.match(body('pickMonthDay'), /setDate\(day\);\s*if \(open && !wideMonth\) setDayOpen\(true\);/);
+  assert.match(body('closeDaySheet'), /setDayOpen\(false\); setAddingDate\(null\);\s*requestAnimationFrame\(\(\) => root\.current\?\.querySelector<HTMLButtonElement>\(`\[data-month-day="\$\{date\}"\]`\)/);
+  assert.match(space, /monthView\?: 'grid'; dayOpen\?: boolean \}/);
+});
+
+test('re-review: a sheet/panel switch while Korean is composed in the day waits for the composition to end', () => {
+  const effect = space.slice(space.indexOf('const sheet = daySheet.current;'), space.indexOf('}, [dayShown, wideMonth, sheetSettled]);'));
+  assert(effect.length > 0, 'the switch re-runs when a composition ends');
+  // Closing the dialog to reopen it would blur the ＋ line mid-syllable; only a switch waits (a day closing does not).
+  assert.match(effect, /if \(mode === current\) return;\s*(\/\/[^\n]*\n\s*)*if \(mode && current && sheetComposing\.current && sheet\.contains\(document\.activeElement\)\) return;\s*const active = document\.activeElement;/);
+  assert.match(space, /const endSheetComposing = \(\) => \{ if \(!sheetComposing\.current\) return; sheetComposing\.current = false; setSheetSettled\(count => count \+ 1\); \};/);
+  const dialog = space.slice(space.indexOf('<dialog ref={daySheet}'), space.indexOf('</dialog>', space.indexOf('<dialog ref={daySheet}')));
+  assert.match(dialog, /onCompositionStart=\{\(\) => \{ sheetComposing\.current = true; \}\} onCompositionEnd=\{endSheetComposing\} onBlur=\{endSheetComposing\}/);
 });
