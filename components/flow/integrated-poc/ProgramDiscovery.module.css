@@ -41,7 +41,7 @@
 .outputSection{margin:16px 0;padding-top:16px;border-top:1px solid #d7e1db;display:grid;gap:8px}
 .actionBox{position:sticky;top:16px;display:grid;gap:12px;padding:16px;border:1px solid #d7e1db;border-radius:12px;background:#fff}.actionBox button{width:100%}.actionMeta{margin:0;font-size:14px;color:#3d524d}
 .importSheet{width:min(560px,calc(100% - 32px));max-height:calc(100dvh - 48px);padding:0;border:0;border-radius:16px;box-shadow:0 12px 40px rgba(16,40,34,.24);color:#20342f}
-.importSheet::backdrop{background:rgba(16,32,28,.42)}.sheetBody{display:grid;gap:12px;padding:20px}.sheetBody h2{margin:0;font-size:20px}.sheetSummary{margin:0;color:#3d524d}
+.importSheet::backdrop{background:var(--flowme-b-scrim)}.sheetBody{display:grid;gap:12px;padding:20px}.sheetBody h2{margin:0;font-size:20px}.sheetSummary{margin:0;color:#3d524d}
 .destinationChoices{border:0;margin:0;padding:0;display:grid;gap:8px}.destinationChoice{display:flex;gap:12px;align-items:flex-start;padding:12px;border:2px solid #176d59;border-radius:12px}.destinationChoice span{display:grid}.destinationChoice small{color:#5b6b66}
 .sheetBody>.primary{width:100%}
 @media(max-width:900px){.detailLayout{grid-template-columns:minmax(0,1fr) 260px;gap:20px}}
