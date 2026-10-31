@@ -136,7 +136,7 @@ test('되돌리기 is one change back to the old dates, the copy\'s override as 
   const { data, ids } = account();
   const moves = [moveOf(data, ids['하나'], '2026-11-02'), moveOf(data, ids['둘'], null), moveOf(data, ids.copy, '2026-11-02')];
   const moved = ok(moveProgramTaskDates(data, { actorId: actor(data), requestId: 'c6b-apply', moves }));
-  const undo = programTaskDateUndo(space(data), moves);
+  const undo = programTaskDateUndo(space(data), space(moved.data), moves);
   assert.deepEqual(undo.map(move => [move.taskId, move.expected.date, move.date]), [[ids['하나'], '2026-11-02', '2026-10-29'], [ids['둘'], null, '2026-10-30'], [ids.copy, '2026-11-02', '2026-10-30']]);
   // An unrelated save in between does not block it (only the moved tasks are compared).
   const other = ok(createProgramDocument(moved.data, { ...base(moved.data), title: '그 사이 글' })).data;

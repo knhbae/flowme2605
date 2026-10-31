@@ -10,7 +10,7 @@ const space = read('ProgramSpace.tsx'), css = read('ProgramSpace.module.css');
 const body = (name: string) => { const from = space.indexOf(`function ${name}(`); return space.slice(from, space.indexOf('\n  }\n', from)); };
 
 test('each pick keeps what its task had when picked, sent as the move\'s expectation', () => {
-  assert.match(space, /type Selecting = \{ keys: ReadonlySet<string>; expected: ReadonlyMap<string, \{ taskId: string; date: string \| null; time: string \}>;/);
+  assert.match(space, /type Selecting = \{ keys: ReadonlySet<string>; expected: ReadonlyMap<string, \{ taskId: string; date: string \| null; time: string; state\?: string \}>;/);
   assert.match(space, /const withPicks = \(current: Selecting, keys: ReadonlySet<string>\): Selecting =>/);
   assert.match(body('pickRow'), /withPicks\(current, shift \? programSelectRange\(/);
   assert.match(space, /onClick=\{\(\) => setSelecting\(current => current && withPicks\(current, programSelectDay\(current\.keys, keys\)\.selected\)\)\}/);
@@ -26,7 +26,7 @@ test('the bar opens the sheet; a choice is one save of the list, pressed once, w
   assert.match(apply, /if \(!selecting \|\| datesBusy\.current\) return;/);
   // One save: the one command, the whole list; with a copy in it, as one social intent.
   assert.equal(apply.match(/countedMutate\(/g)?.length, 1);
-  assert.match(apply, /countedMutate\('날짜 한꺼번에 바꾸기', current => moveProgramTaskDates\(current, \{ actorId, requestId, moves \}\),\s*\{ history: true, awaitAutomaticRead: true, \.\.\.\(programTaskDateMovesSocial\(space, moves\) \? \{ alphaSocial: \{ type: 'private-task-dates' as const, moves \} \} : \{\}\) \}\);/);
+  assert.match(apply, /countedMutate\('날짜 한꺼번에 바꾸기', current => \{ const next = moveProgramTaskDates\(current, \{ actorId, requestId, moves \}\);[^\n]*return next; \},\s*\{ history: true, awaitAutomaticRead: true, \.\.\.\(programTaskDateMovesSocial\(space, moves\) \? \{ alphaSocial: \{ type: 'private-task-dates' as const, moves \} \} : \{\}\) \}\);/);
   assert(!/for \([^)]*moves[^)]*\)[\s\S]{0,80}(run|mutate)\(/.test(apply), 'never a save per task');
   // Changed since: nothing moved, 고르기 and the picks stay.
   assert.match(apply, /else if \(result\.reason === 'conflict'\) setSelectNotice\('그사이 바뀐 할 일이 있어 옮기지 않았습니다\. 다시 확인해 주세요\.'\);/);
@@ -35,7 +35,7 @@ test('the bar opens the sheet; a choice is one save of the list, pressed once, w
 test('after it: 고르기 ends, the notice offers 되돌리기 (one save back) and 그날 보기 when the rows left the view', () => {
   const apply = body('applySelectDates');
   assert.match(apply, /if \(selectingNow\.current\) stopSelecting\(\);/);
-  assert.match(apply, /setDatesNotice\(\{ actorId, count: picks\.length, date: target, undo: programTaskDateUndo\(before, moves\), taskIds: moves\.map\(move => move\.taskId\), shownAt: Date\.now\(\) \}\);/);
+  assert.match(apply, /setDatesNotice\(\{ actorId, count: picks\.length, date: target, undo, taskIds: undo\.map\(move => move\.taskId\), shownAt: Date\.now\(\) \}\);/);
   const undo = body('restoreSelectDates');
   assert.equal(undo.match(/countedMutate\(/g)?.length, 1);
   assert.match(undo, /moveProgramTaskDates\(current, \{ actorId, requestId, moves: notice\.undo \}\)/);

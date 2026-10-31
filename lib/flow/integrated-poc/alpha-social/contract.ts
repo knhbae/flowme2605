@@ -7,9 +7,10 @@ import { validateProgramOrdinaryTimingDraft } from '../public-ordinary-time';
 import { isProgramCreatorDraftJson } from '../creator-draft-provenance';
 
 export const ALPHA_SOCIAL_COMMAND_SCHEMA = 'flowme-alpha-social-command/1' as const;
-/** C6b: one task's new date in a change of several, with the date and time it had when picked (any change since
- *  refuses the whole change). clearOverride, on a copy's task only, takes its date override away again (되돌리기). */
-export type AlphaTaskDateMove = { taskId:string; expected:{ date:string|null; time:string }; date:string|null; clearOverride?:true };
+/** C6b: one task's new date in a change of several, with the date and time it had when picked and a token of its
+ *  whole state (lines, progress, a copy's override; any change since refuses the whole change). clearOverride, on a
+ *  copy's task only, takes its date override away again (되돌리기). */
+export type AlphaTaskDateMove = { taskId:string; expected:{ date:string|null; time:string; state?:string }; date:string|null; clearOverride?:true };
 export const ALPHA_TASK_DATE_MOVE_LIMIT = 100;
 const taskTime=(v:unknown)=>typeof v==='string'&&(v===''||/^([01]\d|2[0-3]):[0-5]\d$/.test(v));
 /** The wire shape of a C6b list: 1-100 moves, each task once, real dates (or none) and times. */
@@ -20,7 +21,9 @@ export function isAlphaTaskDateMoves(v:unknown):v is AlphaTaskDateMove[] {
   if(!programRecord(move)||!['taskId','expected','date'].every(k=>Object.hasOwn(move,k))||Object.keys(move).some(k=>!['taskId','expected','date','clearOverride'].includes(k))
    ||!programIdentifier(move.taskId)||ids.has(move.taskId))return false;
   ids.add(move.taskId);
-  if(!programShape(move.expected,['date','time'])||!(move.expected.date===null||programDate(move.expected.date))||!taskTime(move.expected.time))return false;
+  const expected=move.expected;
+  if(!programRecord(expected)||!['date','time'].every(k=>Object.hasOwn(expected,k))||Object.keys(expected).some(k=>!['date','time','state'].includes(k))
+   ||!(expected.date===null||programDate(expected.date))||!taskTime(expected.time)||expected.state!==undefined&&!(typeof expected.state==='string'&&/^[0-9a-z]{1,64}$/.test(expected.state)))return false;
   if(!(move.date===null||programDate(move.date))||move.clearOverride!==undefined&&move.clearOverride!==true)return false;
  }
  return true;

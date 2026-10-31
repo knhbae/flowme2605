@@ -20,11 +20,35 @@ export function programTaskRepeatMember(space: ProgramPrivateSpace, taskId: stri
   if (space.copies.some(copy => (copy.recurrence?.itemIds ?? []).some(itemId => copy.itemLines[itemId] === taskId))) return true;
   return programSeriesMetadata(space).some(row => row.lineId === taskId);
 }
+/** A token of a task's whole state: its line and the lines under it (words, date, time, memo), finished or not, its
+ *  progress, and a copy's override (present or not, and its value). A list expects it as picked; 되돌리기 expects it
+ *  as the move left it (C6b review). */
+export function programTaskDateState(space: ProgramPrivateSpace, taskId: string): string | null {
+  for (const doc of [...space.text.documents, ...space.text.flows]) {
+    const at = doc.lines.findIndex(line => line.id === taskId);
+    if (at < 0) continue;
+    const indent = (text: string) => /^\s*/.exec(text)![0].length, lines = [doc.lines[at].text];
+    for (const line of doc.lines.slice(at + 1)) { if (!line.text.trim() || indent(line.text) <= indent(doc.lines[at].text)) break; lines.push(line.text); }
+    const task = M.tasks(space.text).find(row => row.id === taskId), copy = copyOf(space, taskId);
+    const itemId = copy && Object.keys(copy.itemLines).find(id => copy.itemLines[id] === taskId);
+    return hash(JSON.stringify({ lines, done: task?.done ?? null, progress: M.currentProgress(space.text, taskId), override: copy && itemId ? copy.itemOverrides[itemId] ?? null : null }));
+  }
+  return null;
+}
+/** cyrb53: a short, stable token (not a secret; it only tells a change). */
+function hash(text: string): string {
+  let a = 0xdeadbeef, b = 0x41c6ce57;
+  for (let i = 0; i < text.length; i++) { const c = text.charCodeAt(i); a = Math.imul(a ^ c, 2654435761); b = Math.imul(b ^ c, 1597334677); }
+  a = Math.imul(a ^ (a >>> 16), 2246822507) ^ Math.imul(b ^ (b >>> 13), 3266489909);
+  b = Math.imul(b ^ (b >>> 16), 2246822507) ^ Math.imul(a ^ (a >>> 13), 3266489909);
+  return (4294967296 * (2097151 & b) + (a >>> 0)).toString(36);
+}
 /** Whether the list holds a public copy's task: then the whole list goes to the server as one social intent. */
 export const programTaskDateMovesSocial = (space: ProgramPrivateSpace, moves: readonly ProgramTaskDateMove[]) => moves.some(move => !!copyOf(space, move.taskId));
 
-/** Moves the listed tasks, all or none, in one change. Each must still have the date and time it had when picked and
- *  be open, active and outside a repeat; a copy's task must resolve to exactly its copy (as for one task). Only the
+/** Moves the listed tasks, all or none, in one change. Each must still be as it was when picked (its date, time and
+ *  whole state) and be open, active and outside a repeat, also one already on the new date (it is checked, not moved);
+ *  a copy's task must resolve to exactly its copy (as for one task). Only the
  *  date (with a copy's date override) changes: ids, progress, time, text and the lines' places stay, the day orders
  *  too. The whole space is not compared, only these tasks, so an unrelated save in between does not block it.
  *  되돌리기 is the same command (programTaskDateUndo). A retry of the request changes nothing again. */
@@ -40,10 +64,12 @@ export function moveProgramTaskDates(data: ProgramData, input: { actorId: string
       if (copy && !resolveAlphaPrivateTaskSchedule(data, input.actorId, move.taskId)) return { result: move.taskId, reason: 'unresolved' };
       const before = tasks.find(task => task.id === move.taskId);
       if (!before) return { result: move.taskId, reason: 'missing' };
-      // Changed since it was picked (its date, its time, or finished): nothing moves.
+      // Changed since it was picked (its date, its time, anything of it, or finished): nothing moves.
       if (before.date !== move.expected.date || (before.time ?? '') !== move.expected.time
+        || move.expected.state !== undefined && programTaskDateState(space, move.taskId) !== move.expected.state
         || before.done || M.currentProgress(space.text, move.taskId) === 100) return { result: move.taskId, reason: 'conflict' };
-      const patched = move.date === before.date ? { result: move.taskId } : patchProgramTask(space, move.taskId, { date: move.date });
+      // The row detail's checks run for every task, also one already on the new date (it then does not change).
+      const patched = patchProgramTask(space, move.taskId, { date: move.date });
       if (patched.reason) return patched;
       if (move.clearOverride && copy) {
         const itemId = Object.keys(copy.itemLines).find(id => copy.itemLines[id] === move.taskId)!;
@@ -55,13 +81,15 @@ export function moveProgramTaskDates(data: ProgramData, input: { actorId: string
   });
 }
 
-/** 되돌리기 of a list moved from `before` (the space as it was): each moved task back to its old date, expecting the
- *  new one, and a copy's override taken away again where it had none. */
-export function programTaskDateUndo(before: ProgramPrivateSpace, moves: readonly ProgramTaskDateMove[]): ProgramTaskDateMove[] {
+/** 되돌리기 of a list, made from the space the move applied to (`before`) and the one it made (`after`): each moved task
+ *  back to its old date, expecting it exactly as the move left it, and a copy's override taken away again where it had
+ *  none when the move applied. */
+export function programTaskDateUndo(before: ProgramPrivateSpace, after: ProgramPrivateSpace, moves: readonly ProgramTaskDateMove[]): ProgramTaskDateMove[] {
   return moves.filter(move => move.date !== move.expected.date).map(move => {
     const copy = copyOf(before, move.taskId), itemId = copy && Object.keys(copy.itemLines).find(id => copy.itemLines[id] === move.taskId);
     const hadOverride = !!copy && !!itemId && copy.itemOverrides[itemId]?.date !== undefined;
-    return { taskId: move.taskId, expected: { date: move.date, time: move.expected.time }, date: move.expected.date, ...(copy && !hadOverride ? { clearOverride: true as const } : {}) };
+    return { taskId: move.taskId, expected: { date: move.date, time: move.expected.time, state: programTaskDateState(after, move.taskId)! }, date: move.expected.date,
+      ...(copy && !hadOverride ? { clearOverride: true as const } : {}) };
   });
 }
 

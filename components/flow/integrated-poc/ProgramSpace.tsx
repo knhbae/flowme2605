@@ -15,7 +15,7 @@ import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
 import { ProgramMonthGrid } from './ProgramMonthGrid';
 import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
-import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
+import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
 import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
@@ -235,8 +235,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const orderBusy = useRef(false);
   // C6a 여러 개 고르기: the picked rows (list keys), the row pressed last (for Shift ranges), and what comes back on the
   // way out (the page's scroll; the calendar, when it started there). None of it is saved.
-  // C6b: and what each picked task had when it was picked (its date and time), the move's expectation.
-  type Selecting = { keys: ReadonlySet<string>; expected: ReadonlyMap<string, { taskId: string; date: string | null; time: string }>; anchor: string | null; scrollY: number; calendar: boolean };
+  // C6b: and what each picked task was when it was picked (its date, time and whole state), the move's expectation.
+  type Selecting = { keys: ReadonlySet<string>; expected: ReadonlyMap<string, { taskId: string; date: string | null; time: string; state?: string }>; anchor: string | null; scrollY: number; calendar: boolean };
   const [selecting, setSelecting] = useState<Selecting | null>(null), [selectNotice, setSelectNotice] = useState<string | null>(null);
   const selectScrollBack = useRef<number | null>(null);
   // C6b: the date sheet, the one save it makes (pressed once), and its notice with 되돌리기.
@@ -1366,7 +1366,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const withPicks = (current: Selecting, keys: ReadonlySet<string>): Selecting => ({ ...current, keys, expected: new Map([...keys].flatMap(key => {
     const kept = current.expected.get(key); if (kept) return [[key, kept] as const];
     const row = executionRows.find(entry => entry.key === key);
-    return row?.kind === 'text-task' ? [[key, { taskId: row.task.id, date: row.task.date, time: row.task.time ?? '' }] as const] : [];
+    return row?.kind === 'text-task' ? [[key, { taskId: row.task.id, date: row.task.date, time: row.task.time ?? '', state: programTaskDateState(space, row.task.id) ?? undefined }] as const] : [];
   })) });
   /** C6b 2-4: the date sheet from the bar: a W5 sheet on a phone, a small menu under the bar on a PC. */
   function openDatesSheet() {
@@ -1382,23 +1382,26 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     root.current?.querySelector<HTMLButtonElement>('[aria-label="고른 할 일"] button[aria-haspopup]')?.focus({ preventScroll: true });
   }
   /** C6b 2-5: every pick to one date in one save, all or none, pressed once (it waits out an automatic read). A task
-   *  changed since it was picked moves nothing and 고르기 stays with its picks. */
+   *  changed since it was picked moves nothing and 고르기 stays with its picks. Picks already on that date go too: they
+   *  are checked (changed since, finished, locked) though they do not move (C6b review). */
   async function applySelectDates(target: string | null) {
     if (!selecting || datesBusy.current) return;
     const picks = [...selecting.keys].map(key => selecting.expected.get(key));
     if (!picks.length || picks.some(pick => !pick)) { setSelectNotice('그사이 바뀐 할 일이 있어 옮기지 않았습니다. 다시 확인해 주세요.'); return; }
-    const moves: ProgramTaskDateMove[] = picks.flatMap(pick => pick && pick.date !== target ? [{ taskId: pick.taskId, expected: { date: pick.date, time: pick.time }, date: target }] : []);
+    const moves: ProgramTaskDateMove[] = picks.flatMap(pick => pick ? [{ taskId: pick.taskId, expected: { date: pick.date, time: pick.time, state: pick.state }, date: target }] : []);
     datesSheet.current?.close();
-    if (!moves.length) return;
-    const before = space, requestId = programId('dates');
+    if (moves.every(move => move.date === move.expected.date)) return;
+    const requestId = programId('dates');
+    // 되돌리기 is made inside the save, from the very state the move applies to (not the one shown before a read).
+    let undo: ProgramTaskDateMove[] = [];
     datesBusy.current = true; setDatesPending(true); setSelectNotice(null);
     try {
-      const result = await countedMutate('날짜 한꺼번에 바꾸기', current => moveProgramTaskDates(current, { actorId, requestId, moves }),
+      const result = await countedMutate('날짜 한꺼번에 바꾸기', current => { const next = moveProgramTaskDates(current, { actorId, requestId, moves }); if (next.ok) undo = programTaskDateUndo(current.spaces[actorId], next.data.spaces[actorId], moves); return next; },
         { history: true, awaitAutomaticRead: true, ...(programTaskDateMovesSocial(space, moves) ? { alphaSocial: { type: 'private-task-dates' as const, moves } } : {}) });
       if (result.ok) {
         if (selectingNow.current) stopSelecting();
         setTaskNotice(null); setOrderNotice(null);
-        setDatesNotice({ actorId, count: picks.length, date: target, undo: programTaskDateUndo(before, moves), taskIds: moves.map(move => move.taskId), shownAt: Date.now() });
+        setDatesNotice({ actorId, count: picks.length, date: target, undo, taskIds: undo.map(move => move.taskId), shownAt: Date.now() });
       }
       else if (result.reason === 'conflict') setSelectNotice('그사이 바뀐 할 일이 있어 옮기지 않았습니다. 다시 확인해 주세요.');
       else if (result.reason !== 'busy') setSelectNotice(programErrorMessage(result.reason));
