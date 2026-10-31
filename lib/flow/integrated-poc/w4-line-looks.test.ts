@@ -55,6 +55,26 @@ test('S4 N3 W3 (fold tap A): on touch the fold lane is 56px, the open button and
   assert.match(vendor, /button\.setAttribute\('aria-expanded', String\(!folded\)\);/);
 });
 
+test('S4 N3 W3 (fold tap A): taps at the phone x positions reach fold or 분류 by the new lanes', () => {
+  // Lanes from the CSS: the fold lane starts at its anchor (indent − 13px) and the open button at its anchor − 13px
+  // (cjs). At 390 (S4 page, 'W 시험') the fold lane starts at x 13; taps were measured on the real-phone W3 memo.
+  const px = (pattern: RegExp, text: string) => { const found = text.match(pattern); assert(found, String(pattern)); return Number(found[1]); };
+  const touch = css.slice(css.indexOf('@media (pointer: coarse) {'));
+  const foldWidth = { mouse: px(/^\.tle-fold-toggle \{ width: (\d+)px;/m, css), touch: px(/\.tle-fold-toggle \{ width: (\d+)px;/, touch) };
+  const openShift = { mouse: px(/\.tle-scope-anchor \{ left: calc\([^\n]*\) \+ (\d+)px\); \}/, css), touch: px(/\.tle-scope-anchor \{ left: calc\([^\n]*\) \+ (\d+)px\); \}/, touch) };
+  const foldAnchor = -px(/\.tle-fold-anchor \{ left: calc\([^\n]*\) - (\d+)px\); \}/, css);
+  const lanes = (kind: 'mouse' | 'touch', start = 13) => {
+    const openLeft = start + (openShift[kind] - 13) - foldAnchor;
+    return (x: number) => x >= start && x < start + foldWidth[kind] ? 'fold' : x >= openLeft && x < openLeft + 44 ? '분류' : 'row';
+  };
+  const before = lanes('mouse'), after = lanes('touch');
+  assert.deepEqual([36, 50, 56, 60, 79].map(before), ['fold', 'fold', 'fold', '분류', '분류']);
+  assert.deepEqual([36, 50, 56, 60, 66, 68, 69, 79, 91, 112, 113].map(after), ['fold', 'fold', 'fold', 'fold', 'fold', 'fold', '분류', '분류', '분류', '분류', 'row']);
+  // From the triangle's centre (x 35) the 분류 edge is 34px away, not 22px.
+  assert.equal([...Array(200).keys()].find(x => after(x) === '분류')! - 35, 34);
+  assert.equal([...Array(200).keys()].find(x => before(x) === '분류')! - 35, 22);
+});
+
 test("while writing, a folder line's '/' joins the transparent syntax and keeps its RAW advance", () => {
   const paint = slice('function paintActiveSyntax(', 'function propertyCheckOwner(');
   assert.match(paint, /const title = task \? task\[4\] : scope\[2\]\.replace\(\/\^\\\/\/, ''\);/);
