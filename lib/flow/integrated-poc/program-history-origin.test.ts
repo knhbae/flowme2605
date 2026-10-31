@@ -84,9 +84,18 @@ test('re-review P1: a recovered save skips the recorded revision, so the stepped
 test('re-review P2: on PC the summary keeps the header closing-line look it had before the head change', () => {
   const css = read('ProgramDiscovery.module.css');
   assert(css.includes('@media(min-width:701px){.phoneOnly{display:none!important}\n'));
-  assert(css.includes('.detailHeader>.summaryBox:last-child>.summaryText:last-child{color:#5b6b66;max-width:680px}}'));
+  assert(css.includes('.detailHeader .summaryText.summaryPlain{color:#5b6b66;max-width:680px}}'));
   // The zero margin belongs to the phone head only.
   const phone = css.slice(css.indexOf('@media(max-width:700px){\n.pcOnly{display:none!important}'));
   assert(phone.includes('.summaryText{margin:0;font-size:16px;line-height:25px}'));
   assert(!css.slice(0, css.indexOf('@media(max-width:700px){\n.pcOnly{display:none!important}')).includes('.summaryText{margin:0}'));
+});
+
+test('re-review 2 P2: PC shows 더 보기 by the earlier rule; only phones go by the measured cut', () => {
+  const tsx = read('ProgramDiscovery.tsx');
+  // The rule before the head change (eb6f38fc), and the plain look exactly when it has no button.
+  assert(tsx.includes("const longSummary = version.summary.length > 90 || version.summary.includes('\\n');"));
+  assert(tsx.includes("${longSummary ? '' : ` ${styles.summaryPlain}`}"));
+  assert(tsx.includes('{longSummary && <button type="button" className={`${styles.linkButton} ${styles.pcOnly}`}'));
+  assert(tsx.includes('{(summaryClipped || summaryOpen === version.id) && <button type="button" className={`${styles.linkButton} ${styles.summaryMore} ${styles.phoneOnly}`}'));
 });

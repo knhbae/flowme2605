@@ -61,8 +61,9 @@
    one-line 기준일 whose general hint is for screen readers, a small "할 일 N개", 45px rows, extras under the list. */
 .summaryBox{position:relative}.anchorHint{margin:0 0 8px;font-size:13px;line-height:20px;color:#5b6b66}
 @media(min-width:701px){.phoneOnly{display:none!important}
-/* PC as before the head change (re-review P2): a summary with no '더 보기' after it reads as the header's closing line. */
-.detailHeader>.summaryBox:last-child>.summaryText:last-child{color:#5b6b66;max-width:680px}}
+/* PC as before the head change (re-reviews P2): a summary with no '더 보기' (90 characters or fewer, one paragraph)
+   reads as the header's closing line. */
+.detailHeader .summaryText.summaryPlain{color:#5b6b66;max-width:680px}}
 @media(max-width:700px){
 .pcOnly{display:none!important}
 .detailBar{min-height:56px;margin:0 0 8px}

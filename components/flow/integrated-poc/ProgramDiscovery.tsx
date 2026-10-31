@@ -314,6 +314,10 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     const outputOpen = outputVersion === version.id || !!selectedOutputReturn;
     const kindLabel = version.source.kind === 'repository-source' ? '기존 출처 자료' : version.source.kind === 'user-text' ? '사용자가 정리한 자료' : null;
     const importLabel = choosing ? `할 일 ${useItemIds.length}개 가져오기` : '내 계획으로 가져오기';
+    // Head re-review 2 P2: PC keeps its earlier '더 보기' rule (over 90 characters or a line break) and, without it,
+    // the plain closing-line look; phones show it only when the two lines really cut text.
+    const longSummary = version.summary.length > 90 || version.summary.includes('\n');
+    const toggleSummary = () => setSummaryOpen(summaryOpen === version.id ? null : version.id);
     // FC head review P2: phones list these under the tasks (mockup ②); PC keeps its earlier places.
     const chooseButton = (place: string) => !flow.archived && !existingCopy && !storedCopy && version.items.length > 1 && <button type="button" className={`${styles.linkButton} ${place}`} disabled={pending} aria-pressed={choosing}
       onClick={() => { if (choosing) { setChoosingVersion(null); patchDetail({ selectedItemIds: version.items.map(item => item.id) }); } else setChoosingVersion(version.id); }}>{choosing ? '모두 가져오기' : '할 일 고르기'}</button>;
@@ -341,8 +345,9 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
       <div className={styles.detailLayout}><div className={styles.detailMain}>
         <header className={styles.detailHeader}><p className={styles.eyebrow}>{[flow.category, ...flow.situations].join(' · ')}</p>
           <h1 ref={heading} tabIndex={-1}>{version.title}</h1>
-          <div className={styles.summaryBox}><p ref={summaryRef} id={`${uid}-summary`} className={`${styles.pre} ${styles.summaryText} ${summaryOpen === version.id ? '' : styles.summaryClamp}`}>{version.summary}</p>
-            {(summaryClipped || summaryOpen === version.id) && <button type="button" className={`${styles.linkButton} ${styles.summaryMore}`} data-open={summaryOpen === version.id ? 'true' : undefined} aria-expanded={summaryOpen === version.id} aria-controls={`${uid}-summary`} onClick={() => setSummaryOpen(summaryOpen === version.id ? null : version.id)}>{summaryOpen === version.id ? '접기' : '더 보기'}</button>}</div>
+          <div className={styles.summaryBox}><p ref={summaryRef} id={`${uid}-summary`} className={`${styles.pre} ${styles.summaryText} ${summaryOpen === version.id ? '' : styles.summaryClamp}${longSummary ? '' : ` ${styles.summaryPlain}`}`}>{version.summary}</p>
+            {longSummary && <button type="button" className={`${styles.linkButton} ${styles.pcOnly}`} aria-expanded={summaryOpen === version.id} aria-controls={`${uid}-summary`} onClick={toggleSummary}>{summaryOpen === version.id ? '접기' : '더 보기'}</button>}
+            {(summaryClipped || summaryOpen === version.id) && <button type="button" className={`${styles.linkButton} ${styles.summaryMore} ${styles.phoneOnly}`} data-open={summaryOpen === version.id ? 'true' : undefined} aria-expanded={summaryOpen === version.id} aria-controls={`${uid}-summary`} onClick={toggleSummary}>{summaryOpen === version.id ? '접기' : '더 보기'}</button>}</div>
         </header>
         <section className={styles.sourceBlock} aria-label="출처와 판본">
           <p className={styles.sourceLine}>{kindLabel && <>{kindLabel} · </>}{programSourceLine(version.source)}{version.source.url && <> · <a href={version.source.url} target="_blank" rel="noreferrer noopener">원문 열기 ↗</a></>}</p>
