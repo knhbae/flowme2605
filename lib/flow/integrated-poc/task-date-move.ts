@@ -6,6 +6,7 @@ import { programShiftDate } from './execution';
 import { programCalendarDate } from './date-label';
 import { ALPHA_TASK_DATE_MOVE_LIMIT, isAlphaTaskDateMoves, type AlphaTaskDateMove } from './alpha-social/contract';
 import { resolveAlphaPrivateTaskSchedule } from './alpha-social/private-task-schedule';
+import { detached } from './alpha-persistence/json';
 
 /** C6b 날짜 한꺼번에 바꾸기 (C6-C9-I7 2-4~2-6): one task of the list, its date and time when picked, its new date. */
 export type ProgramTaskDateMove = AlphaTaskDateMove;
@@ -27,11 +28,13 @@ export function programTaskDateState(space: ProgramPrivateSpace, taskId: string)
   for (const doc of [...space.text.documents, ...space.text.flows]) {
     const at = doc.lines.findIndex(line => line.id === taskId);
     if (at < 0) continue;
-    const indent = (text: string) => /^\s*/.exec(text)![0].length, lines = [doc.lines[at].text];
-    for (const line of doc.lines.slice(at + 1)) { if (!line.text.trim() || indent(line.text) <= indent(doc.lines[at].text)) break; lines.push(line.text); }
+    // A blank does not end the parser-owned block: a later indented memo (or
+    // independent child task) still belongs to this task's picked state.
+    const row = M.parseDocument(doc, space.text).rows[at];
+    const lines = doc.lines.slice(at, row?.subtreeEndIndex ?? at + 1).map(line => line.text);
     const task = M.tasks(space.text).find(row => row.id === taskId), copy = copyOf(space, taskId);
     const itemId = copy && Object.keys(copy.itemLines).find(id => copy.itemLines[id] === taskId);
-    return hash(JSON.stringify({ lines, done: task?.done ?? null, progress: M.currentProgress(space.text, taskId), override: copy && itemId ? copy.itemOverrides[itemId] ?? null : null }));
+    return hash(JSON.stringify({ lines, done: task?.done ?? null, progress: M.currentProgress(space.text, taskId), override: copy && itemId ? detached(copy.itemOverrides[itemId] ?? null) : null }));
   }
   return null;
 }
@@ -57,6 +60,8 @@ export function moveProgramTaskDates(data: ProgramData, input: { actorId: string
   const current = data.spaces[input.actorId];
   return transitionProgramPrivateSpace(data, { actorId: input.actorId, requestId: input.requestId, expectedSpace: current }, 'private-task-dates', { moves: input.moves }, space => {
     const tasks = M.tasks(space.text);
+    // Every expectation reads the same untouched transaction snapshot. A prior
+    // pick's date change must not invalidate a selected ancestor's state token.
     for (const move of input.moves) {
       const copy = copyOf(space, move.taskId);
       if (move.clearOverride && !copy) return { result: move.taskId, reason: 'invalid' };
@@ -68,6 +73,9 @@ export function moveProgramTaskDates(data: ProgramData, input: { actorId: string
       if (before.date !== move.expected.date || (before.time ?? '') !== move.expected.time
         || move.expected.state !== undefined && programTaskDateState(space, move.taskId) !== move.expected.state
         || before.done || M.currentProgress(space.text, move.taskId) === 100) return { result: move.taskId, reason: 'conflict' };
+    }
+    for (const move of input.moves) {
+      const copy = copyOf(space, move.taskId);
       // The row detail's checks run for every task, also one already on the new date (it then does not change).
       const patched = patchProgramTask(space, move.taskId, { date: move.date });
       if (patched.reason) return patched;

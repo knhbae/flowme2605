@@ -7,6 +7,7 @@ import { addProgramQuickTask, createProgramDocument, importProgramPublicVersion,
 import { textWorkspaceModel as M } from './text-workspace';
 import { isAlphaTaskDateMoves } from './alpha-social/contract';
 import { executeAlphaSocialIntent } from './alpha-social/dispatch';
+import { detached } from './alpha-persistence/json';
 import { moveProgramTaskDates, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from './task-date-move';
 
 // C6b review (FIX): every pick is checked, also one already on the target date (P2-1 in the space, P2-2 in the
@@ -98,4 +99,70 @@ test('P2-4: 되돌리기 expects each task as the move left it: a title changed 
   // The wire takes the state as a short token, nothing else.
   assert(isAlphaTaskDateMoves(undo));
   assert(!isAlphaTaskDateMoves([{ ...undo[0], expected: { ...undo[0].expected, state: 'x'.repeat(65) } }]));
+});
+
+test('rereview P2-1: actual detached override key normalization still permits unchanged dispatch undo', () => {
+  const original = account();
+  const data = ok(updateProgramTask(original.data, { ...base(original.data), taskId: original.ids.copy, patch: { title: '내 제목' } })).data;
+  const moves = [pick(data, original.ids.copy, '2026-11-02')];
+  const moved = ok(executeAlphaSocialIntent(data, actor(data), { type: 'private-task-dates', moves }, 'rereview-canonical-move'));
+  const undo = programTaskDateUndo(space(data), space(moved.data), moves), stored = detached(moved.data);
+  assert(validateProgramData(stored));
+  const back = executeAlphaSocialIntent(stored, actor(stored), { type: 'private-task-dates', moves: undo }, 'rereview-canonical-undo');
+  assert(back.ok, back.ok ? '' : back.reason);
+  assert.equal(programTaskDateState(space(moved.data), original.ids.copy), programTaskDateState(space(stored), original.ids.copy));
+  assert.deepEqual(space(back.data).copies[0].itemOverrides['item-a'], { title: '내 제목' });
+  assert.deepEqual(back.data.public, data.public);
+  assert.deepEqual(space(back.data).text.progressRecords, space(data).text.progressRecords);
+});
+
+test('rereview P2-2: parser-owned memo beyond a blank is checked for both move and undo dispatch', () => {
+  let { data, ids } = account();
+  const created = ok(createProgramDocument(data, { ...base(data), title: '빈 줄 메모' })); data = created.data;
+  space(data).text = M.editText(space(data).text, created.result, '- [ ] 메모 대상\n\n  - 메모: 처음\n끝');
+  const selected = M.tasks(space(data).text).find(row => row.docId === created.result)!;
+  assert(selected.note.includes('처음'), 'the real parser owns this memo despite the blank');
+  assert(validateProgramData(data));
+  const moves = [pick(data, ids.A, '2026-11-02'), pick(data, selected.id, '2026-11-02')];
+  const changedMemo = (source: ProgramData) => {
+    const changed = programClone(source), doc = M.getDocument(space(changed).text, created.result)!;
+    doc.lines.find(line => line.text.includes('- 메모:'))!.text = '  - 메모: 원격 변경';
+    assert(validateProgramData(changed)); return changed;
+  };
+  const remote = changedMemo(data), refusedMove = executeAlphaSocialIntent(remote, actor(remote), { type: 'private-task-dates', moves }, 'rereview-memo-move');
+  const moved = ok(executeAlphaSocialIntent(data, actor(data), { type: 'private-task-dates', moves }, 'rereview-memo-setup'));
+  const undo = programTaskDateUndo(space(data), space(moved.data), moves), remoteAfter = changedMemo(moved.data);
+  const refusedUndo = executeAlphaSocialIntent(remoteAfter, actor(remoteAfter), { type: 'private-task-dates', moves: undo }, 'rereview-memo-undo');
+  assert.deepEqual([refusedMove.ok, refusedUndo.ok], [false, false]);
+  if (!refusedMove.ok && !refusedUndo.ok) {
+    assert.equal(refusedMove.reason, 'conflict'); assert.equal(refusedUndo.reason, 'conflict');
+    assert.equal(refusedMove.data, remote); assert.equal(refusedUndo.data, remoteAfter);
+  }
+  assert.equal(task(remote, ids.A).date, task(data, ids.A).date, 'a later rejection never applies an earlier pick');
+});
+
+test('rereview P2-3: ancestor and independent descendant expectations are checked before either order is applied', () => {
+  let { data } = account();
+  const created = ok(createProgramDocument(data, { ...base(data), title: '상위와 독립 항목' })); data = created.data;
+  space(data).text = M.editText(space(data).text, created.result, '- [ ] 상위 A\n- [ ] 독립 C');
+  const doc = M.getDocument(space(data).text, created.result)!, [a, c] = doc.lines.map(line => line.id);
+  doc.lines[1].text = '  - [ ] 독립 C';
+  assert(validateProgramData(data)); assert(task(data, a)); assert(task(data, c));
+  assert.equal(M.rowMeta(space(data).text, created.result).find(row => row.id === c)?.isCanonical, true);
+  const moveA = pick(data, a, '2026-11-02'), moveC = pick(data, c, '2026-11-03');
+  const forward = executeAlphaSocialIntent(data, actor(data), { type: 'private-task-dates', moves: [moveA, moveC] }, 'rereview-order-ac');
+  const reverse = executeAlphaSocialIntent(data, actor(data), { type: 'private-task-dates', moves: [moveC, moveA] }, 'rereview-order-ca');
+  assert.deepEqual([forward.ok, reverse.ok], [true, true]);
+  if (!forward.ok || !reverse.ok) return;
+  for (const moved of [forward, reverse]) {
+    assert(validateProgramData(moved.data)); assert.equal(task(moved.data, a).date, moveA.date); assert.equal(task(moved.data, c).date, moveC.date);
+    assert.deepEqual(M.getDocument(space(moved.data).text, created.result)!.lines.filter(line => [a, c].includes(line.id)).map(line => line.id), [a, c]);
+    assert.deepEqual(space(moved.data).text.progressRecords, space(data).text.progressRecords); assert.deepEqual(moved.data.public, data.public);
+  }
+  assert.equal(M.raw(M.getDocument(space(forward.data).text, created.result)), M.raw(M.getDocument(space(reverse.data).text, created.result)));
+  const changed = ok(updateProgramTask(data, { ...base(data), taskId: c, patch: { title: '원격에서 바뀐 C' } })).data;
+  for (const moves of [[moveA, moveC], [moveC, moveA]]) {
+    const rejected = executeAlphaSocialIntent(changed, actor(changed), { type: 'private-task-dates', moves }, `rereview-stale-${++request}`);
+    assert(!rejected.ok); assert.equal(rejected.reason, 'conflict'); assert.equal(rejected.data, changed);
+  }
 });
