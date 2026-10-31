@@ -55,6 +55,12 @@ export function programMonthGrid(rows: readonly ProgramOrderedExecutionRow[], da
   return { title: programMonthTitle(date, today), weekdays: WEEKDAYS, weeks };
 }
 
+/** The day that takes Tab: the focused one while it is in the shown month, else the chosen day (C5 review P2: a
+ *  month change refused, to keep a written ＋ line, must not leave the grid without a way in). */
+export function programMonthTabStop(grid: ReturnType<typeof programMonthGrid>, focusDate: string, date: string): string {
+  return grid.weeks.some(week => week.some(cell => cell?.date === focusDate)) ? focusDate : date;
+}
+
 /** The day a key moves the grid's focus to (2: ←→ a day, ↑↓ a week, Home/End the week's ends, PageUp/PageDown a
  *  month); null for any other key. Past the month's edge the caller changes the month. */
 export function programMonthKeyTarget(date: string, key: string): string | null {

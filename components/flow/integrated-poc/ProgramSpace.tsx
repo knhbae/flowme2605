@@ -124,6 +124,8 @@ type Detail = { kind: 'task'; id: string } | { kind: 'folder'; id: string } | { 
 type LibraryWritingHandoff = { epoch: number; documentId: string; folderId: string; focusOwner: Element | null };
 /** The list view a row's title opened its source from, and where that row sat on screen. */
 type SourceOrigin = { actorId: string; documentId: string; taskId: string; top: number | null; scrollY: number;
+  /** An occurrence's row, by its list key (it has no task ID). */
+  rowKey?: string;
   /** C5: opened from the calendar, with the day open in its sheet or panel. */
   view: { period: ProgramPeriod; date: string; folderId: string; query: string; monthView?: 'grid'; dayOpen?: string | null } };
 const MONTH_VIEW_KEY = 'flow:poc:personal-workspace:v1:month-view';
@@ -412,15 +414,24 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const executionList = programExecutionList(executionRows, period, date, today, emptyDaysOpen, manualOrderDays);
   const monthGrid = period === 'month' && monthView === 'grid';
   const wideMonth = monthWidth >= 840;
-  const sheetOpen = monthGrid && !wideMonth && !!sheetDay;
-  // The sheet is a modal: shown only while its day is open in the calendar; anything else (a source opening, the
-  // view changing, the content widening into the panel) closes it.
+  // The day shown beside the grid (wide) or in the sheet (narrow). Narrowing while the panel's ＋ line is open keeps
+  // that day open, now as a sheet (C5 review P2).
+  const dayShown = !monthGrid ? null : wideMonth ? date : sheetDay ?? (addingDate === date ? date : null);
+  const sheetOpen = monthGrid && !wideMonth && !!dayShown;
+  // One dialog shows the day either way, so its ＋ line (title, time, composition) survives a switch between them:
+  // a modal sheet on a narrow screen, a panel beside the grid when wide. Anything else (a source opening, the view
+  // changing) closes it.
   useEffect(() => {
     const sheet = daySheet.current;
     if (!sheet) return;
-    if (sheetOpen && !sheet.open) sheet.showModal();
-    if (!sheetOpen && sheet.open) sheet.close();
-  }, [sheetOpen]);
+    const mode = !dayShown ? null : wideMonth ? 'panel' : 'sheet', current = !sheet.open ? null : sheet.matches(':modal') ? 'sheet' : 'panel';
+    if (mode === current) return;
+    const active = document.activeElement;
+    if (sheet.open) sheet.close();
+    if (mode === 'sheet') sheet.showModal(); else if (mode === 'panel') sheet.show();
+    // Showing a dialog moves the focus into it: a switch keeps it where it was (the ＋ line), and the panel never takes it.
+    if (active instanceof HTMLElement && active.isConnected && active !== document.body && (mode === 'panel' || sheet.contains(active))) active.focus({ preventScroll: true });
+  }, [dayShown, wideMonth]);
   // The title row already says "오늘" when every row is today's; no repeated heading then.
   const hideDayHeadings = !!props.noteHeader && period === 'today' && date === today
     && executionList.every(item => item.kind !== 'row' || item.group === 'on-date');
@@ -554,13 +565,24 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const sourceOriginTab = (origin: SourceOrigin) => origin.view.period === 'all' ? 'all' : 'today';
   const sourceOriginOpen = !!sourceOrigin && period === 'documents' && selected === sourceOrigin.documentId;
   const sourceOriginLabel = sourceOrigin && sourceOriginTab(sourceOrigin) === 'all' ? collectionMode ? '전체 할 일' : '분류' : '오늘';
+  /** The view a source opens from: C5 adds the calendar and the day open in its sheet or panel. */
+  const sourceView = (): SourceOrigin['view'] => ({ period, date, folderId, query, ...(monthGrid ? { monthView: 'grid' as const, dayOpen: dayShown } : {}) });
   function openFromList(task: TextTask, button: HTMLElement) {
+    // C5 review P1: a line written on a day's ＋ stays; the press goes back to it. The sheet itself stays open
+    // (the row shows its wait) until the source opens; openDocument closes it then, and 닫기 cancels the wait.
+    if (keepWrittenDay()) return;
     const row = button.closest('li');
     const origin: SourceOrigin = { actorId, documentId: task.docId, taskId: task.id, top: row ? row.getBoundingClientRect().top : null,
-      scrollY: window.scrollY, view: { period, date, folderId, query, ...(monthGrid ? { monthView: 'grid' as const, dayOpen: wideMonth ? date : sheetDay } : {}) } };
-    // C5: the sheet closes before the source opens; a modal left over the writing screen would block it.
-    if (sheetDay) { daySheet.current?.close(); setSheetDay(null); }
+      scrollY: window.scrollY, view: sourceView() };
     void openDocument(task.docId, task.id).then(opened => { if (opened && dataRef.current.activeActorId === origin.actorId) setSourceOrigin(origin); });
+  }
+  /** C5 review P2: an occurrence's source opens the same way, so "← 오늘" brings back its month, day and row. */
+  function openOccurrenceSource(documentId: string, lineId: string, rowKey: string) {
+    if (keepWrittenDay()) return;
+    const row = Array.from(root.current?.querySelectorAll<HTMLElement>('[data-execution-key]') ?? [])
+      .find(element => element.dataset.executionKey === rowKey && element.getClientRects().length);
+    const origin: SourceOrigin = { actorId, documentId, taskId: '', rowKey, top: row ? row.getBoundingClientRect().top : null, scrollY: window.scrollY, view: sourceView() };
+    void openDocument(documentId, lineId).then(opened => { if (opened && dataRef.current.activeActorId === origin.actorId) setSourceOrigin(origin); });
   }
   async function returnToSourceOrigin() {
     const origin = sourceOrigin, opener = document.activeElement;
@@ -592,8 +614,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (period !== origin.view.period) { setSourceRestore(null); return; }
     const frame = requestAnimationFrame(() => {
       setSourceRestore(null);
-      const row = Array.from(root.current?.querySelectorAll<HTMLElement>('[data-task-id]') ?? [])
-        .find(element => element.dataset.taskId === origin.taskId && element.getClientRects().length);
+      const row = Array.from(root.current?.querySelectorAll<HTMLElement>('[data-task-id], [data-execution-key]') ?? [])
+        .find(element => (origin.rowKey ? element.dataset.executionKey === origin.rowKey : element.dataset.taskId === origin.taskId) && element.getClientRects().length);
       if (!row || origin.top === null) { window.scrollTo({ top: origin.scrollY, behavior: 'instant' }); return; }
       // Put the row back at its old height in whichever box scrolls it, then on the page.
       let offset = row.getBoundingClientRect().top - origin.top;
@@ -605,7 +627,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       const active = document.activeElement;
       // C5: a row back in the calendar's sheet takes the focus the sheet's opening gave its first button.
       if (!active || active === document.body || !active.getClientRects().length || active === origin.opener || !!daySheet.current?.open && daySheet.current.contains(row))
-        row.querySelector<HTMLButtonElement>(`button.${styles.taskTitle}`)?.focus({ preventScroll: true });
+        (row.querySelector<HTMLButtonElement>(`button.${styles.taskTitle}`) ?? row.querySelector<HTMLButtonElement>('button'))?.focus({ preventScroll: true });
     });
     return () => cancelAnimationFrame(frame);
   }, [sourceRestore, period]);
@@ -1092,6 +1114,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     else setFolderId(programFolderAfterDocumentOpen(dataRef.current.spaces[actorId].text,
       selectedRef.current, id, presentation.current.folderId));
     libraryReturn.current = null;
+    // C5: the calendar's day sheet closes the moment its source opens; a modal left over the writing screen would block it.
+    if (daySheet.current?.matches(':modal')) daySheet.current.close();
+    setSheetDay(null);
     setSelected(id); setLibraryOpen(false); setOpened(previous => previous.includes(id) ? previous : [...previous, id]); setPeriod('documents');
     props.navigate({ view: 'space', id }, taskId ? { writingLineId: taskId } : undefined);
     // The full App owns history/checkpoint focus. Alpha has no navigation port
@@ -1210,7 +1235,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (!added.ok || !time) return added;
       const timed = updateProgramTask(added.data, { ...base(added.data), expectedSpace: added.data.spaces[actorId], taskId: added.result, patch: { time } });
       return timed.ok ? programResult(current, timed.data, added.result) : timed;
-    });
+    }, true, undefined, undefined, true);
+    // (C5 review P2: like a completion tap it waits out the host's automatic read instead of being refused as busy.)
     return result.ok;
   }
   function openGroupAdd(day: string) {
@@ -1222,9 +1248,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   function keepWrittenDay() { if (!addingDate || !groupAddField.current?.value.trim()) return false; groupAddField.current.focus(); return true; }
   /** C5: a day of the grid becomes the chosen day; `open` shows it (a sheet on a narrow screen; the panel follows the chosen day). */
   function pickMonthDay(day: string, open: boolean) {
-    if (keepWrittenDay()) return;
+    if (keepWrittenDay()) return false;
     setDate(day);
     if (open && !wideMonth) setSheetDay(day);
+    return true;
   }
   function closeDaySheet() {
     if (keepWrittenDay()) return;
@@ -1472,8 +1499,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     : `${period === 'month' ? programMonthTitle(date, today) : periods.find(([key]) => key === period)?.[1]}${folder ? ` · ${folder.title}` : ''}`}</h1>;
   // C5: in the month, the title row ends with [목록|달력] (each 52×44), remembered on this device.
   const monthTitleRow = <div className={styles.monthTitleRow}>{periodTitle}<div className={styles.monthViews} role="group" aria-label="월간 보기 방식">
-    <button type="button" aria-pressed={monthView === 'list'} onClick={() => { if (!keepWrittenDay()) setMonthView('list'); }}>목록</button>
-    <button type="button" aria-pressed={monthView === 'grid'} onClick={() => { if (!keepWrittenDay()) setMonthView('grid'); }}>달력</button></div></div>;
+    <button type="button" aria-pressed={monthView === 'list'} onClick={() => { if (!keepWrittenDay()) { setAddingDate(null); setMonthView('list'); } }}>목록</button>
+    <button type="button" aria-pressed={monthView === 'grid'} onClick={() => { if (!keepWrittenDay()) { setAddingDate(null); setMonthView('grid'); } }}>달력</button></div></div>;
 
   const guardOccurrenceDraft = (event: React.SyntheticEvent) => {
     const pending = Object.entries(recurrencePorts.current).filter(([, port]) => port?.hasPendingInput?.());
@@ -1512,11 +1539,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           }}>
             할 일 없는 날 {item.dates.length}일 · {item.open ? '접기' : '펼치기'}</button></li>;
           const entry = item.entry;
-          if (entry.kind === 'occurrence') return <li key={entry.key} onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveExecutionStep(entry.key, event.key === 'ArrowUp' ? -1 : 1); } }} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}>
+          if (entry.kind === 'occurrence') return <li key={entry.key} data-execution-key={entry.key} onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveExecutionStep(entry.key, event.key === 'ArrowUp' ? -1 : 1); } }} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}>
             {period === 'today' && entry.row.executionDate && entry.row.executionDate < date && <small>계속할 회차</small>}
             <div className={styles.actions}><button onClick={() => moveExecutionStep(entry.key, -1)}>같은 날짜에서 위로</button><button onClick={() => moveExecutionStep(entry.key, 1)}>같은 날짜에서 아래로</button>{moving && <button onClick={() => void moveBefore(moving, entry.key)}>이 회차 앞에 놓기</button>}</div>
             <ProgramRecurrence data={data} mutate={mutate} today={today} period={period} date={date} row={entry.row} onPlanApplied={focusAppliedPlan} onRegisterEditors={port => { recurrencePorts.current[entry.row.key] = port; }}
-            onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} /></li>;
+            onOpenSource={(id, line) => openOccurrenceSource(id, line, entry.key)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} /></li>;
           const task = entry.task;
           const origin = readProgramTaskOrigin(data, task);
           const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
@@ -1771,18 +1798,20 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {/* C5: in the calendar the grid takes the list's place; the chosen day sits beside it when the content is wide. */}
         {monthGrid ? <div className={styles.monthLayout} data-wide={wideMonth || undefined}>
           <ProgramMonthGrid rows={executionRows} date={date} today={today} titles={monthWidth >= 761} onPick={pickMonthDay} />
-          {wideMonth && <aside className={styles.dayPanel} aria-label={`${programCalendarDate(date, today)} 할 일`}>{dayGroup(date)}</aside>}
+          {/* The chosen day: a sheet on a narrow screen (its row notices inside while open), a panel beside the grid
+              when wide. One element either way, so its ＋ line survives the switch. */}
+          <dialog ref={daySheet} className={wideMonth ? styles.dayPanel : `${styles.findDialog} ${styles.daySheet}`}
+            aria-labelledby={wideMonth ? undefined : 'program-day-sheet-title'} aria-label={wideMonth ? `${programCalendarDate(date, today)} 할 일` : undefined}
+            data-expanded={!wideMonth && !!dayShown && addingDate === dayShown || undefined}
+            onCancel={event => { event.preventDefault(); if (!wideMonth) closeDaySheet(); }}
+            onKeyDown={event => { if (event.key === 'Escape' && (event.nativeEvent.isComposing || event.keyCode === 229)) { event.preventDefault(); event.stopPropagation(); } }}
+            onClick={event => { const box = event.currentTarget.getBoundingClientRect();
+              if (!wideMonth && event.target === event.currentTarget && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) closeDaySheet(); }}>
+            {dayShown && <>{dayGroup(dayShown, wideMonth ? undefined : closeDaySheet)}{sheetOpen && !detail && taskNoticeContent}{sheetOpen && !detail && orderNoticeContent}</>}
+          </dialog>
         </div> : <ul className={styles.tasks}>{executionList.map(renderListItem)}</ul>}
         {/* I7: under the list, held at the bottom of the screen (above the bottom tabs on a phone) while it scrolls. */}
         {!detail && !sheetOpen && orderNoticeContent}
-        {/* C5: the chosen day on a narrow screen, as a sheet; its row notices show inside while it is open. */}
-        <dialog ref={daySheet} className={`${styles.findDialog} ${styles.daySheet}`} aria-labelledby="program-day-sheet-title" data-expanded={!!sheetDay && addingDate === sheetDay || undefined}
-          onCancel={event => { event.preventDefault(); closeDaySheet(); }}
-          onKeyDown={event => { if (event.key === 'Escape' && (event.nativeEvent.isComposing || event.keyCode === 229)) { event.preventDefault(); event.stopPropagation(); } }}
-          onClick={event => { const box = event.currentTarget.getBoundingClientRect();
-            if (event.target === event.currentTarget && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) closeDaySheet(); }}>
-          {sheetOpen && <>{dayGroup(sheetDay!, closeDaySheet)}{!detail && taskNoticeContent}{!detail && orderNoticeContent}</>}
-        </dialog>
       </div>
     </div>
     <dialog ref={dialog} className={styles.dialog} data-task-detail={detail?.kind === 'task' ? true : undefined} aria-labelledby="program-detail-title" onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2 id="program-detail-title">{detail?.kind === 'task' ? detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 정리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>

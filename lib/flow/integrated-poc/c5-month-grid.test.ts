@@ -113,18 +113,17 @@ test('the space wires it: title, list or calendar remembered on the device, shee
   assert.match(space, /\{!monthGrid && range\.from && range\.to/);
   assert.match(space, /\{!monthGrid && <details className=\{styles\.quickDisclosure\}/);
   assert.match(space, /\{monthGrid \? <div className=\{styles\.monthLayout\} data-wide=\{wideMonth \|\| undefined\}>\s*<ProgramMonthGrid /);
-  // Narrow: a modal sheet; wide (content 840px and up): a panel beside the grid.
+  // Narrow: a modal sheet; wide (content 840px and up): a panel beside the grid (one dialog, c5-review-fix.test.ts).
   assert.match(space, /const wideMonth = monthWidth >= 840;/);
-  assert.match(space, /<dialog ref=\{daySheet\} className=\{`\$\{styles\.findDialog\} \$\{styles\.daySheet\}`\}/);
+  assert.match(space, /<dialog ref=\{daySheet\} className=\{wideMonth \? styles\.dayPanel : `\$\{styles\.findDialog\} \$\{styles\.daySheet\}`\}/);
   // A written line is never lost: picking another day, the month arrows or closing the sheet goes back to it.
   assert.match(space, /function keepWrittenDay\(\) \{ if \(!addingDate \|\| !groupAddField\.current\?\.value\.trim\(\)\) return false; groupAddField\.current\.focus\(\); return true; \}/);
-  assert.match(space, /function pickMonthDay\(day: string, open: boolean\) \{\s*if \(keepWrittenDay\(\)\) return;/);
+  assert.match(space, /function pickMonthDay\(day: string, open: boolean\) \{\s*if \(keepWrittenDay\(\)\) return false;/);
   assert.match(space, /function closeDaySheet\(\) \{\s*if \(keepWrittenDay\(\)\) return;/);
-  // A source opened from the sheet closes it first and remembers the calendar, the day and the row.
-  assert.match(space, /view: \{ period, date, folderId, query, \.\.\.\(monthGrid \? \{ monthView: 'grid' as const, dayOpen: wideMonth \? date : sheetDay \} : \{\}\) \}/);
-  assert.match(space, /if \(sheetDay\) \{ daySheet\.current\?\.close\(\); setSheetDay\(null\); \}/);
+  // A source opened from the day remembers the calendar, the day and the row (the sheet closes when it opens).
+  assert.match(space, /const sourceView = \(\): SourceOrigin\['view'\] => \(\{ period, date, folderId, query, \.\.\.\(monthGrid \? \{ monthView: 'grid' as const, dayOpen: dayShown \} : \{\}\) \}\);/);
   assert.match(space, /if \(origin\.view\.monthView === 'grid'\) \{ setMonthView\('grid'\); setSheetDay\(origin\.view\.dayOpen \?\? null\); \}/);
-  assert.match(grid, /tabIndex=\{cell\.date === focusDate \? 0 : -1\}/);
+  assert.match(grid, /tabIndex=\{cell\.date === tabDate \? 0 : -1\}/);
   assert.match(grid, /const target = programMonthKeyTarget\(focusDate, event\.key\);/);
   assert.match(css, /\.grid \{[^}]*grid-template-columns: repeat\(7, minmax\(0, 1fr\)\);/);
 });

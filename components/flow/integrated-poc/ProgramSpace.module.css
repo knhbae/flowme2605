@@ -354,7 +354,8 @@
 .space .monthViews button[aria-pressed="true"] { background: var(--flowme-b-selected); color: var(--flowme-b-primary); font-weight: 700; }
 .space .monthLayout { display: grid; gap: 24px; margin-top: 8px; }
 .space .monthLayout[data-wide] { grid-template-columns: minmax(0, 1fr) minmax(260px, 300px); align-items: start; }
-.space .dayPanel { position: sticky; top: 12px; min-width: 0; }
+/* The panel is the sheet's own dialog, shown without a modal: in the layout, beside the grid. */
+.space dialog.dayPanel { position: sticky; top: 12px; inset: auto; display: block; box-sizing: border-box; width: auto; min-width: 0; max-width: none; height: auto; max-height: none; margin: 0; padding: 0; border: 0; background: transparent; color: inherit; overflow: visible; }
 .space .dayGroupHeading { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; }
 .space .dayGroupHeading h2 { margin: 0; }
 .space .dayGroupActions { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
