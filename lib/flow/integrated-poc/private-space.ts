@@ -256,9 +256,33 @@ function scheduleLabel(item: ProgramPublicItem): string {
   return schedule.kind === 'recurring' ? programRecurringScheduleLabel(schedule)
     : programOrdinaryScheduleLabel(schedule);
 }
+/** FC2b (총괄 결정 7): the task line (or '반복:' head) already holds the title, so no '원문 제목:' line is written,
+ *  and a field without a value writes no line. The date and time lines are not fields and stay: '- 날짜: 미정'
+ *  stops a date from being inherited. Old copies keep their lines; currentField reads both shapes the same. */
 function fieldText(item: ProgramPublicItem, field: Exclude<ProgramCopyField, 'subchecks'>): string[] {
+  if (field === 'title') return [];
   const value = field === 'schedule' ? scheduleLabel(item) : field === 'sourceUrl' ? item.sourceUrl ?? '' : item[field];
-  return normalizedLines(value).map(line => `${fieldPrefix[field]}${line}`);
+  return value.trim() ? normalizedLines(value).map(line => `${fieldPrefix[field]}${line}`) : [];
+}
+/** D3: an untouched generated line reads as no line: a prefix with no value, or an '원문 제목:' line equal to the task
+ *  title. Text after the prefix, a renamed task or a reworded line stays a private change, as before. */
+function untouchedFieldLines(field: Exclude<ProgramCopyField, 'subchecks'>, lines: string[], title: string | null): string[] {
+  if (lines.length !== 1) return lines;
+  const prefix = fieldPrefix[field].trimEnd(), line = lines[0].trim();
+  if (!line.startsWith(prefix)) return lines;
+  const value = line.slice(prefix.length).trim();
+  return !value || field === 'title' && title !== null && value === title.trim() ? [] : lines;
+}
+const GENERATED_FIELD_ORDER: readonly Exclude<ProgramCopyField, 'subchecks'>[] = ['title', 'description', 'completionCriteria', 'sourceUrl', 'schedule'];
+/** Where a field line that is not there yet goes: after the owner's date and time lines and the generated lines of the
+ *  fields before it, so a value that appears later lands in the order an import writes. */
+function generatedFieldSlot(doc: TextDocument, ownerIndex: number, lineId: string, field: Exclude<ProgramCopyField, 'subchecks'>): number {
+  const earlier = GENERATED_FIELD_ORDER.slice(0, GENERATED_FIELD_ORDER.indexOf(field)).map(name => `${lineId}:${name}:`);
+  let at = ownerIndex + 1;
+  doc.lines.forEach((line, index) => {
+    if (index > ownerIndex && (line.id === `${lineId}:date` || line.id === `${lineId}:time` || earlier.some(prefix => line.id.startsWith(prefix)))) at = Math.max(at, index + 1);
+  });
+  return at;
 }
 function sourceFieldLines(item: ProgramPublicItem, lineId: string, field: Exclude<ProgramCopyField, 'subchecks'>, depth = 1): TextLine[] {
   return fieldText(item, field).map((text, index) => ({ id: `${lineId}:${field}:${index}`, text: `${'  '.repeat(depth)}${text}` }));
@@ -580,8 +604,9 @@ function currentField(space: ProgramPrivateSpace, copy: ProgramCopy, itemId: str
     }
     return normalizedChecks(values);
   }
-  const lines = ownedFieldLines(doc, lineId, field).map(line => line.text.trimStart());
-  return field === 'title' ? { title: series ? seriesMetadataTitle(doc.lines.find(line => line.id === lineId), '반복: ') : rows.find(row => row.id === lineId)?.title ?? null, source: lines } : lines;
+  const title = field === 'title' ? series ? seriesMetadataTitle(doc.lines.find(line => line.id === lineId), '반복: ') : rows.find(row => row.id === lineId)?.title ?? null : null;
+  const lines = untouchedFieldLines(field, ownedFieldLines(doc, lineId, field).map(line => line.text.trimStart()), title);
+  return field === 'title' ? { title, source: lines } : lines;
 }
 function fieldCurrentLabel(value: unknown): string {
   if (Array.isArray(value)) return value.every(part => typeof part === 'string') ? value.join('\n') : value.map(part => (part as { title: string }).title).join('\n');
@@ -664,7 +689,7 @@ function replaceSourceField(space: ProgramPrivateSpace, copy: ProgramCopy, item:
   const owner = series ? { sourceIndex: series.row.index, depth: series.row.depth } : doc && M.parseDocument(doc, space.text).items.find(row => row.id === lineId);
   if (!doc || !owner) return false;
   const existing = ownedFieldLines(doc, lineId, field), ids = new Set(existing.map(line => line.id));
-  const at = existing.length ? doc.lines.findIndex(line => line.id === existing[0].id) : owner.sourceIndex + 1;
+  const at = existing.length ? doc.lines.findIndex(line => line.id === existing[0].id) : generatedFieldSlot(doc, owner.sourceIndex, lineId, field);
   const preceding = doc.lines.slice(0, at).filter(line => !ids.has(line.id)).length;
   doc.lines = doc.lines.filter(line => !ids.has(line.id));
   doc.lines.splice(preceding, 0, ...sourceFieldLines(item, lineId, field, owner.depth + 1));
