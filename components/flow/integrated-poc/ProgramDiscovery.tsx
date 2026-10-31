@@ -7,7 +7,7 @@ import { classifyProgramUrl, makeProgramOutput, type ProgramOutput, type Program
 import { programCatalogMetadata } from '@/lib/flow/integrated-poc/catalog';
 import { isPublicCatalogFlowOnHold } from '@/lib/flow/public-source-review-policy';
 import { PROGRAM_PUBLIC_RECURRENCE_WINDOW } from '@/lib/flow/integrated-poc/public-recurrence-contract';
-import { PROGRAM_IMPORT_GENERIC_FAILURE, programFlowCardLines, programImportFailure, programItemDateLabel, programLiveCopies, programLiveCopy, programShortDate,
+import { PROGRAM_IMPORT_GENERIC_FAILURE, programFlowCardLines, programImportCheckPasses, programImportFailure, programItemDateLabel, programLiveCopies, programLiveCopy, programShortDate,
   programSortFlowsByRecent, programSourceLine, programVersionScheduleShape, programVersionUsesAnchor } from '@/lib/flow/integrated-poc/program-discovery-display';
 import { defaultProgramOutputRecurrenceWindow } from '@/lib/flow/integrated-poc/public-output-recurrence';
 import { programPublicOutputBase, resolveProgramPublicOutputReturn } from '@/lib/flow/integrated-poc/public-output-return';
@@ -224,7 +224,8 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     ...(selectedSeries.length ? { recurrenceWindow, recurrenceStarts } : {}) } : null;
   const output = version && outputOptions && !flow?.archived ? makeProgramOutput(version, { ...outputOptions, ...(outputBase ? {returnContext:{baseUrl:outputBase}} : {}) }, new Date()) : undefined;
   const sourceOnHold = !!flow && isPublicCatalogFlowOnHold(flow.id);
-  const canUseVersion = version && outputOptions && !flow?.archived && !sourceOnHold && useItemIds.length > 0 ? makeProgramOutput(version, { ...outputOptions, recurrenceWindow: undefined, format: 'txt' }, new Date()).ok : false;
+  const canUseVersion = version && outputOptions && !flow?.archived && !sourceOnHold && useItemIds.length > 0
+    ? programImportCheckPasses(makeProgramOutput(version, { ...outputOptions, recurrenceWindow: undefined, format: 'txt' }, new Date())) : false;
   const knownSources = flows.flatMap(row => {
     const current = data.public.versions.find(candidate => candidate.id === row.currentVersionId);
     return current?.source.url ? [{ url: current.source.url, version: current }] : [];

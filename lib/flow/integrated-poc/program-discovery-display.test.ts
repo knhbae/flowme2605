@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { ProgramPrivateSpace, ProgramPublicFlow, ProgramPublicItem, ProgramPublicVersion } from './contract';
 import {
-  programFlowBadge, programFlowCardLines, programImportArrivalNotice, programImportFailure, programItemDateLabel, programObjectParticle, programLiveCopies, programLiveCopy,
+  programFlowBadge, programFlowCardLines, programImportArrivalNotice, programImportCheckPasses, programImportFailure, programItemDateLabel, programObjectParticle, programLiveCopies, programLiveCopy,
   programSortFlowsByRecent, programSourceLine, programVersionScheduleShape, programVersionUsesAnchor, PROGRAM_IMPORT_GENERIC_FAILURE,
 } from './program-discovery-display';
 
@@ -82,4 +82,10 @@ test('failure reasons map to their D1 texts only when the screen shows the cause
   assert.match(programImportArrivalNotice('이사 준비', false), /^‘이사 준비’를 가져왔습니다\. 날짜가 있는 할 일은 오늘에도 보입니다\. .*되돌리기/);
   assert.match(programImportArrivalNotice('이사 준비', true), /휴지통으로 옮길 수 있습니다/);
   assert.deepEqual(['짐 싸기', '연말정산', '시험 2주', 'Plan A', '이사 준비 '].map(programObjectParticle), ['를', '을', '를', '을(를)', '를']);
+});
+
+test('an empty anchor does not block the import; other output failures still do', () => {
+  assert.equal(programImportCheckPasses({ ok: true }), true);
+  assert.equal(programImportCheckPasses({ ok: false, reason: 'missing-anchor' }), true);
+  for (const reason of ['invalid-version', 'unsupported-schedule', 'no-items', 'invalid-date']) assert.equal(programImportCheckPasses({ ok: false, reason }), false);
 });

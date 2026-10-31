@@ -97,6 +97,11 @@ export function programVersionUsesAnchor(version: Pick<ProgramPublicVersion, 'it
     && (item.schedule.kind === 'relative' || item.schedule.kind === 'recurring' && item.schedule.start.kind === 'relative'));
 }
 
+/** The output check also guards the import, but an import may leave the anchor empty: its relative dates
+ *  then go in as 미정 (FC-SPEC FC2 sheet, "비워 두면 날짜 미정으로 들어갑니다"). */
+export function programImportCheckPasses(check: { ok: true } | { ok: false; reason: string }): boolean {
+  return check.ok || check.reason === 'missing-anchor';
+}
 export const PROGRAM_IMPORT_GENERIC_FAILURE = '저장하지 못했습니다. 입력과 선택은 유지됩니다. 다시 시도해 주세요.';
 /** D1 failure texts for the import sheet. A reason only counts when the screen shows its cause: 'conflict' is the
  *  copy conflict only when a copy with another version or anchor exists (the host also reports an external change
