@@ -17,7 +17,7 @@ import { ProgramPublicationTiming } from './ProgramPublicationTiming';
 import { programOrdinaryTimingLabel } from '@/lib/flow/integrated-poc/public-ordinary-time';
 import { ProgramShareLink } from './ProgramShareLink';
 import styles from './ProgramPublisher.module.css';
-import { fullRowText } from '@/lib/flow/integrated-poc/publication-editor';
+import { fullRowText, canRepublishProgramDocument, createProgramRepublishDraft, programPublicationRepublishSource } from '@/lib/flow/integrated-poc/publication-editor';
 
 export type ProgramPublisherProps = { data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate; documentId: string; onClose: () => void; today: string; storageScope?: 'local' | 'account'; readCurrentData?: () => ProgramData | null; externalRecovery?: React.ReactNode; onRegisterEditors?: (port: ProgramEditorFlush | null) => void };
 import { publicationDraftAt, programPublicationNativeValue, captureProgramPublicationInput, programPublicationRecoveryText, createProgramPublicationEditorPort, resolveProgramPrivatePublicationDraft, sameFingerprint, publicId, documentFingerprint, createProgramPublicationDraft, saveProgramPublicationDraft, programPublicationInput, publishProgramDocument, compareProgramPublication, resolveProgramPublicationComparison, archiveProgramPublication, type PublicationComparison, type PublicationConflictChoices } from '@/lib/flow/integrated-poc/publication-editor';
@@ -39,6 +39,11 @@ export function PublicationConflictReview({ comparison, choices, disabled, onCho
 export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, onRegisterEditors, externalRecovery, storageScope = 'local', readCurrentData }: ProgramPublisherProps) {
   const actorId = useRef(data.activeActorId).current; const dataRef = useRef(data); dataRef.current = data;
   const [draft, setDraft] = useState(() => createProgramPublicationDraft(data, documentId, new Date().toISOString()));
+  const [republishing, setRepublishing] = useState(() => {
+    const saved = publicationDraftAt(data, data.activeActorId, documentId);
+    return !!saved?.flowId && data.public.flows.some(flow => flow.id === saved.flowId && flow.archived);
+  });
+  const [republished, setRepublished] = useState<{ flowId: string; versionId: string } | null>(null);
   const draftRef = useRef(draft); draftRef.current = draft;
   const savedRef = useRef(data.spaces[actorId]?.publicationDrafts.find(row => row.documentId === documentId) ?? null);
   const flight = useRef<Promise<boolean> | null>(null); const [saving, setSaving] = useState(false); const [publishing, setPublishing] = useState(false);
@@ -171,7 +176,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       if (!await save()) return;
       const submitted = programClone(draftRef.current);
       let publishedFlowId: string | undefined;
-      const result = await mutate(storageScope === 'account' ? submitted.flowId ? '새 판본 공개' : '선택 내용 공개' : submitted.flowId ? 'PoC 새 판본 공개' : 'PoC에 선택 내용 공개', current => {
+      const result = await mutate(republishing ? '새 링크로 공개' : storageScope === 'account' ? submitted.flowId ? '새 판본 공개' : '선택 내용 공개' : submitted.flowId ? 'PoC 새 판본 공개' : 'PoC에 선택 내용 공개', current => {
         const transition = publishProgramDocument(current, actorId, submitted, new Date().toISOString());
         if (transition.ok) publishedFlowId = transition.data.public.versions.find(row => row.id === transition.result)?.flowId;
         return transition;
@@ -179,6 +184,13 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       if (!result.ok) { setMessage(programErrorMessage(result.reason)); return; }
       if (result.presentationPending) { setMessage(programErrorMessage('presentation-pending')); return; }
       const version = (readCurrentData?.() ?? dataRef.current).public.versions.find(row => row.id === result.result);
+      // C9 × FC5: a republish keeps C9's own panel (its link button is added there); any other account publish shows
+      // FC5's "공개했습니다" panel; a local publish closes and goes to the Flow as before.
+      if (republishing) {
+        const flowId = result.flowId ?? version?.flowId ?? publishedFlowId;
+        if (!flowId) { setMessage('새 공개 링크를 확인하지 못했습니다. 입력을 유지했습니다. 현재 상태를 다시 확인해 주세요.'); return; }
+        setRepublished({ flowId, versionId: result.result }); setMessage(''); return;
+      }
       const flowId = result.flowId ?? version?.flowId ?? (storageScope === 'local' ? publishedFlowId : undefined) ?? submitted.flowId ?? undefined;
       // FC5 (UX 13): the account dialog stays open on a "공개했습니다" panel with the link, instead of closing at once.
       if (storageScope === 'account' && flowId) { setPublished({ flowId, versionId: result.result, title: version?.title ?? submitted.title }); return; }
@@ -187,8 +199,17 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     finally { endAction(); }
   };
   const space = data.spaces[actorId]; const originalRows = space ? M.rowMeta(space.text, documentId) : [];
-  const input = draft ? programPublicationInput(draft, actorId) : null;
   const currentFlow = draft?.flowId ? data.public.flows.find(row => row.id === draft.flowId) : undefined;
+  const republishSource = draft ? programPublicationRepublishSource(data, actorId, draft) : null;
+  const canRepublish = !!republishSource && canRepublishProgramDocument(data, actorId, documentId);
+  const republishBlocked = !!currentFlow?.archived && (!republishing || !canRepublish);
+  const input = draft ? programPublicationInput(draft, actorId, { newFlow: republishing && !!currentFlow?.archived }) : null;
+  const startRepublishing = () => {
+    if (unavailable()) return; const current = read(); if (!current?.flowId) return;
+    const next = createProgramRepublishDraft(dataRef.current, documentId, current.flowId, new Date().toISOString(), current);
+    if (!next) { setMessage('이 문서의 공개 연결이 바뀌었습니다. 입력은 유지했습니다. 현재 공개 상태를 다시 확인해 주세요.'); return; }
+    setCurrent(next); setRepublishing(true); setPreview(false);
+  };
   const sourceChanged = !!draft && !sameFingerprint(documentFingerprint(data, actorId, documentId), draft.sourceDocumentFingerprint);
   const seriesChanged = !!draft && !programPublicationSeriesSourcesCurrent(data, actorId, draft);
   const versionChanged = !!draft?.flowId && currentFlow?.currentVersionId !== draft.expectedVersionId;
@@ -329,17 +350,20 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     onCompositionStartCapture={event => { composing.current.add(event.target); }}
     onCompositionEndCapture={event => { composing.current.delete(event.target); const next = read(); if (next) setCurrent({ ...next, updatedAt: new Date().toISOString() }); syncReadonly(); void save(); }}>
     {externalRecovery}
-    <header className={styles.header}><div><p>선택한 내용만 공유</p><h2 id="program-publisher-title">{currentFlow?.archived ? '공개 철회·보관 상태' : draft?.flowId ? '새 판본 공개' : '공개할 내용 고르기'}</h2></div><button type="button" disabled={blocked} onClick={() => void close()}>닫기 · 초안 보관</button></header>
-    {!draft ? <p className={styles.error}>문서가 없거나 보관되었습니다. 공개할 내용을 다시 선택해 주세요.</p> : <>
+    <header className={styles.header}><div><p>선택한 내용만 공유</p><h2 id="program-publisher-title">{republishing ? '새 링크로 다시 공개' : currentFlow?.archived ? '공개 철회·보관 상태' : draft?.flowId ? '새 판본 공개' : '공개할 내용 고르기'}</h2></div><button type="button" disabled={blocked} onClick={() => void close()}>닫기 · 초안 보관</button></header>
+    {republished ? <section className={styles.preview} role="status" aria-label="새 링크 공개 완료"><p>새 링크의 1판을 공개했습니다. 예전 Flow는 철회된 그대로입니다.</p>
+      <ProgramShareLink flowId={republished.flowId} versionId={republished.versionId} />
+      <button type="button" onClick={() => { dialog.current?.close(); onClose(); navigate({ view: 'flow', id: republished.flowId, versionId: republished.versionId }); }}>새 공개 Flow 열기</button></section> : !draft ? <p className={styles.error}>문서가 없거나 보관되었습니다. 공개할 내용을 다시 선택해 주세요.</p> : <>
       <p className={styles.boundary}>{storageScope === 'account' ? '개발계의 다른 사용자에게 선택한 내용을 공개합니다.' : '이 기기의 로컬 PoC 목록에 공개합니다.'} 개인 메모·실행 날짜·진행·시간·문서 경로는 자동으로 포함하지 않습니다.</p>
+      {republishing && republishSource && <section className={styles.preview} aria-label="새 링크로 다시 공개 안내"><p>‘{republishSource.version.title}’({republishSource.version.number}판)는 철회된 채로 남습니다. 같은 내용으로 새 링크의 1판을 공개합니다.</p><p>예전 링크로는 가져오거나 출력할 수 없습니다. 새 링크를 다시 보내 주세요.</p><p>이전 판본·개인 사본·받은 제안은 철회한 Flow에 그대로 있습니다.</p></section>}
       {privateChanged && <section className={styles.warning} aria-label="다른 탭 공개 초안 변경"><p>다른 탭에 저장된 비공개 초안이 바뀌었습니다. 이 화면의 입력은 유지했으며 자동으로 덮어쓰지 않습니다.</p><button type="button" disabled={blocked} onClick={() => { if (!unavailable()) setPrivateComparison({ stored: programClone(storedDraft) }); }}>최신 비공개 초안과 비교</button></section>}
       {privateComparison && <section className={styles.warning} aria-label="비공개 초안 비교"><h3>어느 초안을 보관할까요?</h3><p>공개 판본 비교와 다릅니다. 선택해도 공개하지 않습니다. 내 입력을 TXT로 보관한 뒤 선택할 수 있습니다.</p>
         <details open><summary>이 화면의 입력</summary><pre className={styles.pre}>{draft ? programPublicationRecoveryText(draft) : ''}</pre></details>
         <details open><summary>비교할 때 저장된 초안</summary><pre className={styles.pre}>{privateComparison.stored ? programPublicationRecoveryText(privateComparison.stored) : '저장 초안 없음 · 다른 탭에서 공개했거나 지웠을 수 있습니다.'}</pre></details>
         <button type="button" disabled={blocked} onClick={() => void resolvePrivate('mine')}>내 입력으로 초안 보관</button><button type="button" disabled={blocked} onClick={() => void resolvePrivate('stored')}>내 입력 대신 확인한 저장 초안 열기</button><button type="button" disabled={blocked} onClick={() => setPrivateComparison(null)}>취소 · 내 입력 유지</button>
       </section>}
-      {currentFlow?.ownerId === actorId && <details className={styles.management}><summary>공개 상태 관리</summary>{currentFlow.archived ? <p>공개 목록에서 내려 보관 중입니다. 기존 판본·개인 사본·연결된 글은 삭제하지 않았습니다. 이 Flow에 새 판본을 공개할 수는 없습니다.</p> : <><p>공개를 철회하면 탐색 목록에서 숨깁니다. 이미 만들어진 개인 사본과 이전 판본은 남습니다.</p><button type="button" disabled={blocked} onClick={() => setArchiveTarget({ flowId: currentFlow.id, versionId: currentFlow.currentVersionId, title: data.public.versions.find(row => row.id === currentFlow.currentVersionId)?.title ?? draft.title })}>공개 목록에서 내리기</button></>}</details>}
-      {archiveTarget && <section className={styles.warning} aria-label="공개 철회 확인"><h3>‘{archiveTarget.title}’ 공개를 철회할까요?</h3><p>공개 목록에서만 숨깁니다. 원문·이전 판본·개인 사본·현재 초안은 지우지 않습니다. 철회한 Flow를 다시 공개하는 기능은 없습니다.</p>{currentFlow?.currentVersionId !== archiveTarget.versionId && <p role="alert">확인 중 판본이 바뀌었습니다. 취소한 뒤 최신 제목과 판본으로 다시 확인해 주세요.</p>}<button type="button" disabled={blocked || currentFlow?.currentVersionId !== archiveTarget.versionId} onClick={() => void archive()}>확인 · 공개 철회하고 보관</button><button type="button" disabled={blocked} onClick={() => setArchiveTarget(null)}>취소 · 공개 유지</button></section>}
+      {currentFlow?.ownerId === actorId && <details className={styles.management}><summary>공개 상태 관리</summary>{currentFlow.archived ? <><p>이 Flow는 철회된 채로 둡니다. 같은 내용을 새 링크로 다시 공개할 수 있습니다.</p>{!republishing && canRepublish && <button type="button" disabled={blocked} onClick={startRepublishing}>새 링크로 다시 공개…</button>}{!canRepublish && <p>이 문서는 새 링크로 공개 중이거나 공개 연결이 바뀌었습니다.</p>}</> : <><p>공개를 철회하면 탐색 목록에서 숨깁니다. 이미 만들어진 개인 사본과 이전 판본은 남습니다.</p><button type="button" disabled={blocked} onClick={() => setArchiveTarget({ flowId: currentFlow.id, versionId: currentFlow.currentVersionId, title: data.public.versions.find(row => row.id === currentFlow.currentVersionId)?.title ?? draft.title })}>공개 목록에서 내리기</button></>}</details>}
+      {archiveTarget && <section className={styles.warning} aria-label="공개 철회 확인"><h3>‘{archiveTarget.title}’ 공개를 철회할까요?</h3><p>공개 목록에서만 숨깁니다. 원문·이전 판본·개인 사본·현재 초안은 지우지 않습니다. 나중에 같은 문서를 새 링크로 다시 공개할 수 있습니다. 이 Flow의 링크로는 더 이상 가져오거나 출력할 수 없습니다.</p>{currentFlow?.currentVersionId !== archiveTarget.versionId && <p role="alert">확인 중 판본이 바뀌었습니다. 취소한 뒤 최신 제목과 판본으로 다시 확인해 주세요.</p>}<button type="button" disabled={blocked || currentFlow?.currentVersionId !== archiveTarget.versionId} onClick={() => void archive()}>확인 · 공개 철회하고 보관</button><button type="button" disabled={blocked} onClick={() => setArchiveTarget(null)}>취소 · 공개 유지</button></section>}
       {sourceChanged && <section className={styles.warning}><strong>개인 문서가 바뀌었습니다.</strong><p>원문 변경을 확인해 주세요. 개인 내용은 공개 초안에 자동으로 추가하지 않습니다.</p><details><summary>현재 개인 원문 읽기 · 공개되지 않음</summary><pre className={styles.pre}>{M.raw(M.getDocument(space.text, documentId))}</pre></details><button type="button" disabled={blocked} onClick={acknowledgeSource}>원문 변경 확인 · 공개 초안 유지</button></section>}
       {versionChanged && !currentFlow?.archived && <section className={styles.warning}><strong>공개 판본이 바뀌었습니다.</strong><p>공개할 필드별로 초안을 유지할지 최신 내용을 가져올지 선택해 주세요.</p><button type="button" disabled={blocked} onClick={startComparison}>{comparison ? '최신 상태로 비교 다시 시작' : '최신 공개 판본과 비교'}</button></section>}
       {comparison && <PublicationConflictReview comparison={comparison} choices={choices} disabled={blocked} onChoice={(key, choice) => setChoices(previous => ({ ...previous, [key]: choice }))} onApply={() => void applyComparison()} onCancel={() => { setComparison(null); setChoices({}); }} />}
@@ -384,7 +408,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
         </details>
       </div>}
       {message && <p className={styles.error} role="alert">{message}</p>}
-      <footer className={styles.footer}><div><small role="status">{saving ? '초안 저장 중…' : same(savedRef.current, draft) ? storageScope === 'account' ? '계정에 초안 저장됨' : '이 기기에 초안 저장됨' : '입력 유지 중'}</small><details ref={recovery} className={styles.recovery}><summary>초안 보관·복구</summary><div className={styles.recoveryActions}><button type="button" onClick={keepInput}>공개 초안 입력 TXT 보관</button><button type="button" disabled={blocked} onClick={() => void save()}>초안 다시 저장</button><button type="button" className={styles.discard} disabled={blocked} onClick={() => setDiscarding(!discarding)}>초안 버리기</button></div></details></div><div className={styles.actions}>{preview ? <><button type="button" disabled={blocked} onClick={() => setPreview(false)}>수정하기</button><button type="button" className={styles.primary} disabled={blocked || privateChanged || sourceChanged || versionChanged || currentFlow?.archived || !input || !publicationReady} onClick={() => void publish()}>{publishing ? '공개 중…' : storageScope === 'account' ? '이 내용으로 공개' : '이 내용으로 PoC에 공개'}</button></> : <button type="button" className={styles.primary} disabled={!input || blocked || sourceChanged || versionChanged || currentFlow?.archived} onClick={openPreview}>공개 내용 미리보기</button>}</div></footer>
+      <footer className={styles.footer}><div><small role="status">{saving ? '초안 저장 중…' : same(savedRef.current, draft) ? storageScope === 'account' ? '계정에 초안 저장됨' : '이 기기에 초안 저장됨' : '입력 유지 중'}</small><details ref={recovery} className={styles.recovery}><summary>초안 보관·복구</summary><div className={styles.recoveryActions}><button type="button" onClick={keepInput}>공개 초안 입력 TXT 보관</button><button type="button" disabled={blocked} onClick={() => void save()}>초안 다시 저장</button><button type="button" className={styles.discard} disabled={blocked} onClick={() => setDiscarding(!discarding)}>초안 버리기</button></div></details></div><div className={styles.actions}>{preview ? <><button type="button" disabled={blocked} onClick={() => setPreview(false)}>수정하기</button><button type="button" className={styles.primary} disabled={blocked || privateChanged || sourceChanged || versionChanged || republishBlocked || !input || !publicationReady} onClick={() => void publish()}>{publishing ? '공개 중…' : republishing ? '새 링크로 공개' : storageScope === 'account' ? '이 내용으로 공개' : '이 내용으로 PoC에 공개'}</button></> : <button type="button" className={styles.primary} disabled={!input || blocked || sourceChanged || versionChanged || republishBlocked} onClick={openPreview}>공개 내용 미리보기</button>}</div></footer>
       {discarding && <section className={styles.warning}><p>공개 초안만 버립니다. 개인 문서와 이미 공개한 판본은 유지됩니다.</p><button type="button" disabled={blocked} onClick={() => void discard()}>공개 초안 버리기</button><button type="button" onClick={() => setDiscarding(false)}>계속 작성</button></section>}
     </>}
   </dialog>;

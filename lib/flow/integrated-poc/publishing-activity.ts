@@ -36,7 +36,7 @@ export function readProgramPublishingActivity(data: ProgramData, actorId: string
     // linked Flow while the activity row names this one.
     const linked = space.publications.flatMap(link => data.public.flows.filter(flow => link.documentId === documentId
       && link.flowId === flow.id && flow.ownerId === actorId));
-    return (linked.find(flow => !flow.archived) ?? linked[0])?.id ?? null;
+    return (linked.find(flow => !flow.archived) ?? linked.at(-1))?.id ?? null;
   };
   return {
     flows: data.public.flows.filter(flow => flow.ownerId === actorId).flatMap(flow => {
@@ -44,8 +44,11 @@ export function readProgramPublishingActivity(data: ProgramData, actorId: string
       if (!version) return [];
       const ids = [...new Set(space.publications.filter(link => link.flowId === flow.id).map(link => link.documentId))];
       return [{ id: flow.id, title: version.title, versionId: version.id, number: version.number, archived: flow.archived,
-        documents: ids.flatMap(id => { const linked = document(id); return linked ? [{ ...linked, canEditPublication: editableFlow(linked.id) === flow.id }] : []; }) }];
-    }),
+        documents: ids.flatMap(id => { const linked = document(id); if (!linked) return [];
+          const retained = space.publicationDrafts.find(draft => draft.documentId === id);
+          const allWithdrawn = space.publications.filter(link => link.documentId === id).every(link => data.public.flows.some(flow => flow.id === link.flowId && flow.ownerId === actorId && flow.archived));
+          return [{ ...linked, canEditPublication: flow.archived && !retained ? allWithdrawn : editableFlow(linked.id) === flow.id }]; }) }];
+    }).sort((a, b) => Number(a.archived) - Number(b.archived)),
     drafts: space.publicationDrafts.map(draft => ({ id: draft.id, title: draft.title, updatedAt: draft.updatedAt,
       flowId: draft.flowId, flowArchived: !!data.public.flows.find(flow => flow.id === draft.flowId)?.archived,
       document: document(draft.documentId) })).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
