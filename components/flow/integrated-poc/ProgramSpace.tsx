@@ -86,6 +86,8 @@ export type ProgramSpaceProps = {
   noteNoticeShown?: boolean;
   noteStatus?: React.ReactNode;
   selectedDocumentId?: string; onUndo: () => Promise<void>; onRedo: () => Promise<void>;
+  /** C6a: the space is picking rows (고르기); the host refuses its own writes meanwhile. */
+  onSelectingChange?: (selecting: boolean) => void;
   outputReturn?: ProgramDestination;
   onPublishDocument?: (documentId: string) => void;
   onInspectCopy?: (copyId: string) => void;
@@ -171,7 +173,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const selectingNow = useRef(false), [savesPending, setSavesPending] = useState(0);
   const countedMutate: ProgramMutate = async (label, build, options) => { setSavesPending(count => count + 1); try { return await props.mutate(label, build, options); } finally { setSavesPending(count => count - 1); } };
   const mutate: ProgramMutate = (label, build, options) => selectingNow.current ? Promise.resolve({ ok: false, reason: 'busy' }) : countedMutate(label, build, options);
-  const onUndo = () => selectingNow.current ? Promise.resolve() : props.onUndo(), onRedo = () => selectingNow.current ? Promise.resolve() : props.onRedo();
+  const countedHistory = async (run: () => Promise<void>) => { setSavesPending(count => count + 1); try { await run(); } finally { setSavesPending(count => count - 1); } };
+  const onUndo = () => selectingNow.current ? Promise.resolve() : countedHistory(props.onUndo), onRedo = () => selectingNow.current ? Promise.resolve() : countedHistory(props.onRedo);
   const writingAccess=useMemo(()=>createProgramReferenceExecutionAccess(space,actorId),[space,actorId]);
   // A PM save port does not establish full-document editing support. Keep the
   // existing complete writer for this route, without swapping owners on ACKs,
@@ -448,6 +451,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     document.addEventListener('keydown', key);
     return () => document.removeEventListener('keydown', key);
   }, [selecting]);
+  // C6a re-review: the host hears when picking starts and ends (and when the space goes away while picking).
+  useEffect(() => { const on = !!selecting; props.onSelectingChange?.(on); return () => { if (on) props.onSelectingChange?.(false); }; }, [!!selecting]);
   // C6a review: on a phone the bar covers the host's bottom tabs; they also leave the focus order and the accessibility
   // tree while picking (wide screens keep them: a tab there ends 고르기). The host's markup is left as it is.
   useEffect(() => {
@@ -1312,7 +1317,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   /** C6a: into 고르기 (2-1). From the calendar it goes to the list at the chosen day's group first. */
   function startSelecting() {
-    if (selectBlocked || keepWrittenDay()) return;
+    if (selectBlocked || props.sourceReturnWaits?.() || keepWrittenDay()) return;
     if (Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())) { setMessage('회차 날짜를 적용하거나 취소한 뒤 골라 주세요.'); return; }
     if (noteFindMenu.current) noteFindMenu.current.open = false;
     setTaskNotice(null); setOrderNotice(null); setAddingDate(null); setSelectNotice(null);
@@ -1596,8 +1601,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   const compactNoteToday = !!props.noteHeader && period === 'today';
   // C6a: 고르기 stays off, with its reason, while a check or a source waits, a move or a save is on (2-1).
-  // Any save of the space waiting (C6a review): one state for all of them.
-  const saving = savesPending > 0 || preparingDocumentAction || classificationCreating || orderPending;
+  // Any save waiting (C6a review): one state for all of them, the host's own operation too (an undo from its menu).
+  const saving = savesPending > 0 || preparingDocumentAction || classificationCreating || orderPending || !!props.sourceReturnWaits?.();
   const selectBlocked = completingTaskIds.size ? '완료 저장을 기다리는 동안에는 고를 수 없습니다' : sourceWaitingTask ? '원문을 여는 동안에는 고를 수 없습니다'
     : moving ? '순서를 옮기는 동안에는 고를 수 없습니다' : saving ? '저장하는 동안에는 고를 수 없습니다' : null;
   const findActions = <div className={styles.findActions}>
