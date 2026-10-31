@@ -130,7 +130,9 @@ test('the writing bar keeps its contract: order, never dimmed by composition or 
   assert(order.every((at, index) => at > 0 && (index === 0 || at > order[index - 1])), 'bar order ☐ ← → ↵ ＋');
   assert(source.includes('const barOff = inputLocked || !!props.readOnly;'));
   const button = between('function barButton(', '\n  }');
-  assert(button.includes('disabled={barOff || off}') && button.includes('onPointerDown={event => { event.preventDefault(); }}'));
+  assert(button.includes('disabled={barOff || off && !folderHint}') && button.includes('onPointerDown={event => { event.preventDefault(); }}'));
+  assert(button.includes("(action === 'indent' || action === 'outdent') && barLine.structureLock === FOLDER_INDENT_NOTICE")
+    && button.includes('aria-disabled={folderHint || undefined}'), 'only the folder reason hint remains clickable; input/read-only protection still disables it');
   assert(source.includes('const busy = composingRef.current || !!draftRef.current?.getState().saving && !indentsNow(action);')
     && source.includes('barHold.press(action, busy, area ? writingBarTarget(area, area.value, area.selectionStart, settled) : null)'));
   assert(between('function runBar(', '\n  }').includes('target.instance.enter(true)'));

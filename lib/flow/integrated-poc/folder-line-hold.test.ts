@@ -170,7 +170,7 @@ test('the editor finishes the held line inside the Enter handler, keeps it held 
   const ime = keydown.indexOf('imeEnterCycle.keydown(event)'), guard = keydown.indexOf("if (event.key !== 'Enter' || event.ctrlKey"),
     hook = keydown.indexOf('config.beforeEnter()'), meta = keydown.indexOf('const meta = getRowMeta()[line.index];');
   assert(ime > 0 && guard > ime && hook > guard && meta > hook, `${ime} ${guard} ${hook} ${meta}`);
-  assert.match(editor, /beforeEnter: \(\) => \{ finishHeldFolderLine\(true\); finishRenamedFolderLines\(true\); \},/);
+  assert.match(editor, /beforeEnter: \(\) => \{[\s\S]*?finishHeldFolderLine\(true\); finishRenamedFolderLines\(true\);/);
   assert.doesNotMatch(editor, /addEventListener\('keydown', finishBeforeEnter/);
   assert.match(editor, /'historyUndo', 'historyRedo'/);
   assert.match(editor, /const hold = heldInput\(raw, textArea\(\)\?\.selectionStart, /);

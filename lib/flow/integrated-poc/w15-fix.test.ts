@@ -80,9 +80,10 @@ test('P1-2: 되돌리기 after 모든 문서에 적용 is the inverse of the ren
   assert(!programFolderRenameBack(M.renameScope(renamed, meeting, '월례회의'), meeting, '회의', '주간회의', lines).ok);
   const taken = { ...renamed, folders: [...renamed.folders, { id: 'again', title: '회의', parentId: null }] } as TextWorkspaceState;
   assert(!programFolderRenameBack(taken, meeting, '회의', '주간회의', lines).ok);
-  // The editor uses it, with the lines kept when the rename was applied.
-  assert.match(body('renameEverywhere'), /const lines = programFolderLines\(next, fromId\);/);
-  assert.match(body('renameBack'), /const back = programFolderRenameBack\(currentState\(\), fromId, oldTitle, title, lines\);\s*if \(!back\.ok\) \{ showFolderNotice\(back\.reason, 'warn'\); return; \}/);
+  // W18 replaces this UI's old special-case button with the shared selective inverse.
+  assert.match(body('renameEverywhere'), /const original = controller\.folderRenameBase\(fromId\);/);
+  assert.match(body('renameEverywhere'), /apply\(next, '폴더 이름 바꾸기', undefined, undefined, original\)/);
+  assert.match(body('undoFolderMove'), /const result = controller\.undoFolderOperation\(id\);\s*if \(!result\.ok\) \{ showFolderNotice\(result\.reason, 'warn'\); return true; \}/);
 });
 
 test('P1-3: a moved folder line takes every task in its block along, also one put elsewhere by hand (3.6)', () => {
@@ -116,9 +117,11 @@ test('P1-4: nothing changes the model while a composition runs; a screen that re
   assert.match(body('undoFolderMove'), /if \(!shown\(controller\.getState\(\)\.raw\)\) \{ controller\.restoreState\(previous\); return false; \}/);
   // A notice button pressed during a composition runs once it has ended, like a held bar press.
   assert.match(editor, /const whenComposed = \(run: \(\) => void\) => \(\) => \{ if \(composingRef\.current\) \{ heldNoticeAction\.current = run; return; \} run\(\); \};/);
-  assert.match(body('showFolderMove'), /run: whenComposed\(\(\) => \{ if \(undoFolderMove\(\)\) setFolderNotice\(null\);\s*else showFolderNotice\('그 뒤에 다른 편집이 있어 폴더 옮김을 되돌리지 않았습니다 · 분류 화면에서 정리할 수 있습니다', 'warn'\); \}\)/);
+  assert.match(body('showFolderOperation'), /run: whenComposed\(\(\) => \{/);
+  assert.match(body('showFolderOperation'), /folderNoticeRef\.current\?\.operationId !== operation\.id/);
+  assert.match(body('undoFolderMove'), /controller\.undoFolderOperation\(id\)/);
   assert.match(body('showFolderMove'), /run: whenComposed\(\(\) => \{ void renameEverywhere\(before, fromId, title, oldTitle\); \}\)/);
-  assert.match(body('renameEverywhere'), /run: whenComposed\(\(\) => \{ void renameBack\(fromId, oldTitle, title, lines\); \}\)/);
+  assert.match(body('renameEverywhere'), /showFolderOperation\(programFolderRenamedEverywhere\(next, fromId, oldTitle\), 'info'\)/);
   // The draft puts back exactly the state from before the refused change.
   const start = account(), draft = createProgramTextDraft(start, TYPED, async () => true, () => {});
   const previous = draft.getState();

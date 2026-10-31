@@ -75,6 +75,8 @@ export interface TextEditorRowMeta {
   progressTargetId?: string; progressPercent?: number; progressDate?: string | null;
   progressTracked?: boolean; lastRecordedPercent?: number; scopeKind?: 'folder' | 'flow'; subtitle?: string;
   scopeMismatch?: string; dateMismatch?: string; scopePlace?: string;
+  /** W17: presentation only. This slash line is still plain text, with no binding. */
+  folderPending?: boolean;
 }
 export interface TextWorkspaceModel {
   MAX_DEPTH: number;
@@ -157,6 +159,8 @@ export function projectTextEditorRows(state: TextWorkspaceState, rows: TextRow[]
       guideLevels: row.guideLevels, subtreeEndIndex: row.subtreeEndIndex,
       label: row.scopeTitle || row.title || row.task?.title || row.text,
     };
+    if (row.kind === 'note' && /^(?:  )*- \/[^/\r\n]+$/.test(row.text) && row.text.replace(/^ *- \//, '').trim()
+      && !row.text.includes('<!--') && !state.bindings.some(binding => binding.lineId === row.id)) meta.folderPending = true;
     if (targetId) Object.assign(meta, {
       progressTargetId: targetId, progressPercent: row.progressPercent ?? progress?.percent ?? (row.done ? 100 : 0),
       progressDate: progress?.date ?? null, progressTracked: !!progress, lastRecordedPercent: progress?.percent,

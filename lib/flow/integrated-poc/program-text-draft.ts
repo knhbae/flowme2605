@@ -1,12 +1,13 @@
 import {consumeOwnedWritingAck,noteWritingPhase,type OwnedWritingAck} from './writing-ack';
 import type {ProgramDocumentInput} from './program-document-input';
-import { ro } from './folder-notice';
+import { eul, ro } from './folder-notice';
 import { planFolderPickerLink } from './folder-picker';
 import { textWorkspaceModel as M, type TextInputSplice, type TextTaskSplitIntent, type TextProgressCheckConflict, type TextWorkspaceState } from './text-workspace';
 import { programSame } from './controller';
 import { programClone } from './contract';
 import { mergeProgramTextWorkspace } from './text-merge';
 import type { ProgramPrivateMutationObserver } from './ui-contract';
+import { captureProgramFolderOperation, undoProgramFolderOperation, combineProgramFolderScopes, planProgramFreshFolderIndent, programFreshFolderAvailable, programFolderOperationNotice, type ProgramFolderOperation, type FolderIndentPlan } from './folder-operation';
 
 export type ProgramTaskProgressEdit = { taskId: string; date: string; percent: number; correctionAsOfDate?: string };
 export type ProgramTextCommitOptions = {
@@ -96,13 +97,14 @@ export function createProgramTextDraft(
     if (unchangedInput) {
       const working = documentInput?.install(next) ?? next;
       state = { ...state, committed: working, working, raw: M.raw(M.getDocument(working, docId)), dirty: false, error: '', progressConflict: undefined };
-      submitted = null; unconfirmed = []; report(); return true;
+      folderOperation = null; folderEnter = null; submitted = null; unconfirmed = []; report(); return true;
     }
     if (inputGeneration <= attempt.generation) return false;
     const moved = mergeProgramTextWorkspace(attempt.next, state.working, next);
     if (!moved || !validateWorkspace(moved) || !M.getDocument(moved, docId) || M.raw(M.getDocument(moved, docId)) !== state.raw) return false;
     const working = documentInput?.install(moved) ?? moved;
     state = { ...state, committed: next, working, error: '', progressConflict: undefined };
+    folderOperation = null; folderEnter = null;
     submitted = null; unconfirmed = []; report(); return true;
   }
   function deriveRaw(raw:string,input?:Input){
@@ -136,15 +138,86 @@ export function createProgramTextDraft(
     && programSame({ ...from, documents: [], flows: [] }, { ...to, documents: [], flows: [] });
   // The last finished folder line move, for one undo right after it (D3 B).
   let lastMove: { before: TextWorkspaceState; after: TextWorkspaceState; lineIds: string[] } | null = null;
+  let folderSequence = 0;
+  let folderOperation: { id: number; at: number; change: ProgramFolderOperation; generation: number; fresh: boolean;
+    automaticBlank?: { id: string; text: string } } | null = null;
+  let folderEnter: { before: TextWorkspaceState; generation: number; lineId: string } | null = null;
+  const folderIndentProofs = new WeakSet<object>();
+  function recordFolder(before: TextWorkspaceState, after: TextWorkspaceState) {
+    const change = captureProgramFolderOperation(before, after);
+    if (!change) { if (folderOperation) folderOperation.fresh = false; return; }
+    const previous = folderOperation;
+    const grouped = previous?.change.kind === 'scopes' && change.kind === 'scopes' && Date.now() - previous.at <= 3000;
+    folderOperation = { id: grouped ? previous.id : ++folderSequence, at: Date.now(),
+      change: grouped ? combineProgramFolderScopes(previous.change, change) : change, generation: inputGeneration,
+      fresh: change.kind === 'create' && change.createdLines.length === 1 };
+  }
   let prepared: {state:ProgramTextDraftState;raw:string;signature:string;ownerRevision:number|undefined;context:unknown;value:ReturnType<typeof deriveRaw>}|null=null;
   const basicCheckReady=()=>!state.invalid&&(!state.saving||submitted?.allowBasicChecks===true);
   const api = {
     canCheck:(lineId:string,date:string)=>basicCheckReady()&&!!documentInput?.canPrepareCheck(state.working,lineId,date),
     generation:()=>inputGeneration,
+    folderOperation: () => folderOperation && { id: folderOperation.id, kind: folderOperation.change.kind, at: folderOperation.at,
+      lineId: folderOperation.change.createdLines[0]?.lineId ?? folderOperation.change.lines[0]?.lineId,
+      notice: programFolderOperationNotice(state.working, folderOperation.change) },
+    endFolderNotice(id?: number) { if (folderOperation && (id === undefined || folderOperation.id === id)) { folderOperation = null; folderEnter = null; } },
+    noteFolderEnter(lineId: string) {
+      if (folderOperation && folderOperation.generation === inputGeneration && !folderOperation.automaticBlank
+        && folderOperation.change.lines.some(line => line.docId === docId && line.lineId === lineId && line.expected?.trimStart().startsWith('- /')))
+        folderEnter = { before: state.working, generation: inputGeneration, lineId };
+    },
+    folderRenameBase(fromId: string) {
+      if (!folderOperation || folderOperation.change.kind !== 'move' || !api.canUndoFolderMove()
+        || !folderOperation.change.bindings.some(row => row.before?.scopeId === fromId)) return null;
+      const restored = undoProgramFolderOperation(state.working, folderOperation.change);
+      return restored.ok ? restored.next : null;
+    },
+    freshFolderLine(lineId: string) {
+      const operation = folderOperation, created = operation?.change.createdLines[0];
+      return !!operation?.fresh && operation.generation === inputGeneration && created?.lineId === lineId
+        && programFreshFolderAvailable(state.working, { ...created, automaticBlank: operation.automaticBlank });
+    },
+    planFreshFolderIndent(plan: FolderIndentPlan, operationId: number) {
+      const operation = folderOperation;
+      if (!basicCheckReady() || !operation?.fresh || operation.id !== operationId || operation.generation !== inputGeneration) return null;
+      const created = operation.change.createdLines[0]; if (!created || created.docId !== docId) return null;
+      const proof = planProgramFreshFolderIndent(state.working, { ...created, automaticBlank: operation.automaticBlank }, plan);
+      if (!proof) return null;
+      const owned = { ...proof, plan: programClone(proof.plan), before: state.working, generation: inputGeneration, operationId };
+      const seal = (value: object) => { for (const entry of Object.values(value)) if (entry && typeof entry === 'object' && !Object.isFrozen(entry)) seal(entry); Object.freeze(value); };
+      seal(owned.next); seal(owned.plan); Object.freeze(owned);
+      folderIndentProofs.add(owned); return owned;
+    },
+    applyFreshFolderIndent(proof: { next: TextWorkspaceState; before: TextWorkspaceState; generation: number; operationId: number }, raw: string) {
+      if (!folderIndentProofs.has(proof)) return false;
+      folderIndentProofs.delete(proof);
+      if (!basicCheckReady() || proof.before !== state.working || proof.generation !== inputGeneration || folderOperation?.id !== proof.operationId
+        || !folderOperation.fresh || M.raw(M.getDocument(proof.next, docId)) !== raw || !M.validate(proof.next) || !validateWorkspace(proof.next)) return false;
+      const before = state.working, automaticBlank = folderOperation.automaticBlank;
+      const folder = proof.next.folders.find(folder => folder.id === folderOperation!.change.createdLines[0]?.folderId)!;
+      const place = folder.parentId ? `‘${proof.next.folders.find(parent => parent.id === folder.parentId)!.title}’ 아래` : '최상위';
+      inputGeneration++; prepared = null; folderEnter = null; privateTaskSchedule = undefined; lastMove = null;
+      const working = documentInput?.install(proof.next) ?? proof.next;
+      state = { ...state, working, raw, dirty: true, invalid: false, error: '', progressConflict: undefined, folderNotice: `‘${folder.title}’${eul(folder.title)} ${place}로 옮겼습니다` };
+      recordFolder(before, working);
+      if (automaticBlank && folderOperation) folderOperation.change = captureProgramFolderOperation(before, working, [automaticBlank.id])!;
+      label = '새 폴더 옮기기'; groupId = `text:${docId}`; report(); return true;
+    },
+    undoFolderOperation(id: number) {
+      if (!basicCheckReady() || folderOperation?.id !== id) return { ok: false as const, reason: '이 폴더 동작의 알림이 끝났습니다. 현재 입력은 유지했습니다.' };
+      const result = undoProgramFolderOperation(state.working, folderOperation.change);
+      if (!result.ok) return result;
+      if (!validateWorkspace(result.next)) return { ok: false as const, reason: '현재 문서의 보존 조건이 바뀌어 되돌리지 않았습니다. 현재 입력은 유지했습니다.' };
+      inputGeneration++; prepared = null; privateTaskSchedule = undefined; lastMove = null; folderOperation = null; folderEnter = null;
+      const working = documentInput?.install(result.next) ?? result.next;
+      state = { ...state, working, raw: M.raw(M.getDocument(working, docId)), dirty: true, error: '', folderNotice: '폴더 동작을 되돌렸습니다', progressConflict: undefined };
+      label = '폴더 동작 되돌리기'; groupId = `text:${docId}`; report(); return { ok: true as const };
+    },
     canApplyLocal:()=>!!documentInput&&basicCheckReady(),
     applyLocal(next:TextWorkspaceState,nextLabel:string){
       if(!documentInput||!basicCheckReady()||next===state.working||!M.validate(next)||!validateWorkspace(next))return false;
       inputGeneration++;prepared=null;privateTaskSchedule=undefined;
+      if (folderOperation) folderOperation.fresh = false; folderEnter = null;
       const working=documentInput.install(next);
       state={...state,working,raw:M.raw(M.getDocument(working,docId)),dirty:true,error:'',progressConflict:undefined};
       label=nextLabel;groupId=`text:${docId}`;report();return true;
@@ -155,6 +228,7 @@ export function createProgramTextDraft(
       if(!proof||!validateWorkspace(proof.next.workspace))return false;
       const working=documentInput.accept(proof,before);if(!working)return false;
       inputGeneration++;prepared=null;privateTaskSchedule=undefined;
+      if (folderOperation) folderOperation.fresh = false; folderEnter = null;
       state={...state,working,raw:M.raw(M.getDocument(working,docId)),dirty:true,error:'',progressConflict:undefined};
       label='할 일 체크 변경';groupId=`text:${docId}`;report();return true;
     },
@@ -175,11 +249,13 @@ export function createProgramTextDraft(
     getState: () => state,
     rejectRaw(raw: string) {
       privateTaskSchedule = undefined;
+      if (folderOperation) folderOperation.fresh = false; folderEnter = null;
       inputGeneration++;
       state = { ...state, raw, invalid: true, dirty: true, progressConflict: undefined, problemLine: undefined, error: '문서 문맥이 바뀌어 순서를 반영하지 않았습니다. 입력은 남아 있습니다.' }; report();
     },
     updateRaw(raw: string, progressDate = '', input?: Input) {
       privateTaskSchedule = undefined;
+      const enter = folderEnter; folderEnter = null;
       inputGeneration++;
       const admitted = prepared && prepared.state===state && prepared.raw===raw && prepared.signature===signature(input)
         &&prepared.ownerRevision===documentInput?.revision()&&prepared.context===validationContext() ? prepared : null;
@@ -213,6 +289,23 @@ export function createProgramTextDraft(
       // The Enter that finished the line only adds an empty line; the move stays the one thing ↶ puts back.
       if (!invalid) lastMove = edit.folderMoved ? { before, after: state.working, lineIds: (input?.folderMove ?? []).map(index => M.getDocument(before, docId)?.lines[index]?.id).filter((id): id is string => !!id) }
         : lastMove && lastMove.after === before && onlyBlankLinesAdded(lastMove.after, state.working) ? { ...lastMove, after: state.working } : null;
+      if (!invalid) {
+        const oldDoc = M.getDocument(before, docId), newDoc = M.getDocument(state.working, docId);
+        const at = oldDoc?.lines.findIndex(line => line.id === enter?.lineId) ?? -1;
+        const blank = newDoc?.lines[at + 1];
+        const automatic = enter && enter.before === before && enter.generation === inputGeneration - 1 && folderOperation
+          && oldDoc && newDoc && at >= 0 && newDoc.lines.length === oldDoc.lines.length + 1 && blank
+          && blank.text === /^ */.exec(oldDoc.lines[at].text)![0] + '  '
+          && oldDoc.lines.every((line, index) => programSame(line, newDoc.lines[index <= at ? index : index + 1]))
+          && onlyBlankLinesAdded(before, state.working);
+        if (automatic && folderOperation) {
+          folderOperation.automaticBlank = { ...blank }; folderOperation.generation = inputGeneration;
+          for (const region of folderOperation.change.regions) if (region.docId === docId && region.ids.includes(enter.lineId)) {
+            const index = region.ids.indexOf(enter.lineId); region.ids.splice(index + 1, 0, blank.id);
+          }
+          folderOperation.change.lines.push({ docId, lineId: blank.id, expected: blank.text, restore: blank.text, order: newDoc.lines.map(line => line.id) });
+        } else recordFolder(before, state.working);
+      } else if (folderOperation) folderOperation.fresh = false;
       label = '문서 편집'; groupId = `text:${docId}`; report();
       return !invalid;
     },
@@ -245,7 +338,7 @@ export function createProgramTextDraft(
         const placed = planFolderPickerLink(base, docId, lineId!, linked.scopeId);
         if (placed.problem || !validateWorkspace(placed.state)) { api.restoreState(previous); return false; }
         const working = documentInput?.install(placed.state) ?? placed.state;
-        inputGeneration++; state = { ...state, working, raw: M.raw(M.getDocument(working, docId)) }; report();
+        inputGeneration++; state = { ...state, working, raw: M.raw(M.getDocument(working, docId)) }; recordFolder(previous.working, working); report();
       }
       return changed;
     },
@@ -292,27 +385,12 @@ export function createProgramTextDraft(
         : `폴더 이름은 Enter로 마칠 때만 바뀝니다 · ${kept.length === 1 ? `‘${kept[0]}’${ro(kept[0])}` : '원래 이름으로'} 두었습니다(입력: ${typed.join(', ')})` }; report(); return true;
     },
     canUndoFolderMove: () => !!lastMove && !state.invalid && state.working === lastMove.after,
-    /** One undo right after a folder line moved: the state before the move, with that line's name back. Only the
-     *  moved line changes; another line typed over and left keeps its text (W15 review P1-1, D3 B F4). */
+    /** Compatibility port for existing picker callers; W18 uses the same selective forward inverse. */
     undoFolderMove() {
-      if (!api.canUndoFolderMove()) return false;
-      const { before, lineIds } = lastMove!; lastMove = null;
-      const doc = M.getDocument(before, docId); if (!doc) return false;
-      const raw = doc.lines.map(line => {
-        if (!lineIds.includes(line.id)) return line.text;
-        const binding = before.bindings.find(row => row.kind === 'scope' && row.docId === docId && row.lineId === line.id);
-        const folder = binding && binding.kind === 'scope' ? before.folders.find(entry => entry.id === binding.scopeId) : undefined;
-        return folder && /^ *- \//.test(line.text) ? /^ */.exec(line.text)![0] + '- /' + folder.title : line.text;
-      }).join('\n');
-      const restored = M.editTextResult(before, docId, raw, { folderText: true });
-      if (restored.reason !== null || !validateWorkspace(restored.state)) return false;
-      inputGeneration++; prepared = null; privateTaskSchedule = undefined;
-      const working = documentInput?.install(restored.state) ?? restored.state;
-      state = { ...state, working, raw: M.raw(M.getDocument(working, docId)), dirty: true, invalid: false, error: '',
-        progressConflict: undefined, problemLine: undefined, folderNotice: '폴더 옮김을 되돌렸습니다' };
-      label = '폴더 옮김 되돌리기'; groupId = `text:${docId}`; report(); return true;
+      if (!api.canUndoFolderMove() || !folderOperation) return false;
+      return api.undoFolderOperation(folderOperation.id).ok;
     },
-    apply(next: TextWorkspaceState, nextLabel: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule'], picker?: { lineId: string; scopeId: string }) {
+    apply(next: TextWorkspaceState, nextLabel: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule'], picker?: { lineId: string; scopeId: string }, folderBefore?: TextWorkspaceState) {
       if (state.invalid || state.saving || !M.validate(next) || !validateWorkspace(next) || next === state.working) return false;
       const before = state.working;
       const linked = picker && planFolderPickerLink(before, docId, picker.lineId, picker.scopeId);
@@ -321,6 +399,7 @@ export function createProgramTextDraft(
       const working=documentInput?.install(next)??next;
       lastMove = picker && linked?.moved ? { before, after: working, lineIds: [picker.lineId] } : null;
       state = { ...state, working, raw: M.raw(M.getDocument(working, docId)), dirty: true, error: '', progressConflict: undefined };
+      folderEnter = null; recordFolder(folderBefore ?? before, working);
       label = nextLabel; groupId = undefined; privateTaskSchedule = schedule; report(); return true;
     },
     /** W15 review P1-4: the screen refused the text of a change just made (apply, a folder move or its undo), so
@@ -328,6 +407,7 @@ export function createProgramTextDraft(
     restoreState(previous: ProgramTextDraftState) {
       if (state.saving || previous.saving) return false;
       inputGeneration++; prepared = null; privateTaskSchedule = undefined;
+      folderOperation = null; folderEnter = null;
       const working = documentInput?.install(previous.working) ?? previous.working;
       state = { ...previous, working }; report(); return true;
     },
@@ -335,6 +415,7 @@ export function createProgramTextDraft(
       if (state.dirty || state.saving || state.committed === next || programSame(state.committed, next)) return false;
       if(documentInput&&(!M.validate(next)||!validateWorkspace(next)))return false;
       const working=documentInput?.install(next)??next;
+      folderOperation = null; folderEnter = null;
       state = { ...state, committed: working, working, raw: M.raw(M.getDocument(working, docId)), error: '', progressConflict: undefined };
       report(); return true;
     },
@@ -384,6 +465,7 @@ export function createProgramTextDraft(
       if(documentInput&&(!M.validate(next)||!validateWorkspace(next)))return false;
       privateTaskSchedule = undefined;
       submitted = null; unconfirmed = []; inputGeneration++;
+      folderOperation = null; folderEnter = null;
       const working=documentInput?.install(next)??next;
       state = { committed: working, working, raw: M.raw(M.getDocument(working, docId)), dirty: false, saving: false, invalid: false, error: '' };
       report(); return true;

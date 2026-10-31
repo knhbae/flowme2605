@@ -98,8 +98,9 @@ test('why a name went back: left without Enter (b), already off (c), two of the 
 
 test('the editor: Enter moves, the notice carries 모든 문서에 적용 and 되돌리기, and the row replaces the old notices', () => {
   const editor = read('../../../components/flow/integrated-poc/ProgramTextEditor.tsx');
-  assert.match(editor, /showFolderNotice\(notice\.text, notice\.tone, lineId, notice\.kind === 'moved' \? \[everywhere, undo\] : \[undo\]\);/);
-  assert.match(editor, /const next = M\.renameScope\(before, fromId, title\);\s*if \(next === before \|\| !\(await apply\(next, '폴더 이름 바꾸기'\)\)\) return;/);
+  assert.match(editor, /showFolderOperation\(notice\.text, notice\.tone, lineId, notice\.kind === 'moved' \? \[everywhere\] : \[\]\);/);
+  assert.match(editor, /actions: \[\.\.\.actions, undo\]/, 'all folder notices share the same forward undo');
+  assert.match(editor, /const next = M\.renameScope\(original, fromId, title\);\s*if \(next === original \|\| !\(await apply\(next, '폴더 이름 바꾸기', undefined, undefined, original\)\)\) return;/);
   assert.match(editor, /if \(!controller \|\| !controller\.canUndoFolderMove\(\) \|\| composingRef\.current\)/);
   assert.match(editor, /\{noticeViews\[0\] && <ProgramNoticeRow notice=\{\{ \.\.\.noticeViews\[0\], more: noticeViews\.length - 1 \}\} onClose=\{noticeViews\[0\]\.close\} \/>\}/);
   assert.match(editor, /const ends = programNoticeEndsAt\(\{ tone: folderNotice\.tone, shownAt: folderNotice\.shownAt, leftBlockAt: folderNotice\.leftBlockAt, held: noticeHeld, waiting: folderWaiting \}\);/);
