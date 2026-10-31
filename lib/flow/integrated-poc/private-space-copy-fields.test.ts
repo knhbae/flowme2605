@@ -19,7 +19,8 @@ const moveV1 = [
   item('pack', '짐 줄이기', { kind: 'relative', days: -3 }),
   item('move-in', '전입신고', { kind: 'fixed', date: '2026-12-03', timing: { version: 1, time: '09:00', timeZone: null } },
     { description: '주민센터 방문', completionCriteria: '확인증 받기', sourceUrl: 'https://example.org/move-in', subchecks: [{ id: 'move-in-id', title: '신분증' }] }),
-  item('later', '정리하기', { kind: 'undated' }),
+  // FC2b review: a whitespace-only value over two lines; the old writer made two prefix-only '설명:' lines of it.
+  item('later', '정리하기', { kind: 'undated' }, { description: ' \n ' }),
 ];
 // 판본 2: an empty description gains a value.
 const moveV2 = moveV1.map(row => row.id === 'pack' ? { ...row, description: '안 쓰는 물건부터 나눔' } : row);
@@ -56,7 +57,8 @@ function toOldShape(data: ProgramData, flowId = 'move'): ProgramData {
       ['sourceUrl', '출처: ', source.sourceUrl ?? ''], ['schedule', '원문 일정: ', scheduleText(source.schedule)]];
     let at = doc.lines.findIndex(line => line.id === lineId) + 1;
     while (doc.lines[at] && [`${lineId}:date`, `${lineId}:time`].includes(doc.lines[at].id)) at++;
-    doc.lines.splice(at, 0, ...values.map(([field, prefix, value]) => ({ id: `${lineId}:${field}:0`, text: `  ${prefix}${value}` })));
+    doc.lines.splice(at, 0, ...values.flatMap(([field, prefix, value]) => value.replace(/\r\n?/g, '\n').split('\n')
+      .map((part, index) => ({ id: `${lineId}:${field}:${index}`, text: `  ${prefix}${part}` }))));
   }
   assert(validateProgramData(next), 'old shape is a valid copy');
   return next;

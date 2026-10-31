@@ -267,11 +267,11 @@ function fieldText(item: ProgramPublicItem, field: Exclude<ProgramCopyField, 'su
 /** D3: an untouched generated line reads as no line: a prefix with no value, or an '원문 제목:' line equal to the task
  *  title. Text after the prefix, a renamed task or a reworded line stays a private change, as before. */
 function untouchedFieldLines(field: Exclude<ProgramCopyField, 'subchecks'>, lines: string[], title: string | null): string[] {
-  if (lines.length !== 1) return lines;
-  const prefix = fieldPrefix[field].trimEnd(), line = lines[0].trim();
-  if (!line.startsWith(prefix)) return lines;
-  const value = line.slice(prefix.length).trim();
-  return !value || field === 'title' && title !== null && value === title.trim() ? [] : lines;
+  const prefix = fieldPrefix[field].trimEnd();
+  const values = lines.map(line => line.trim().startsWith(prefix) ? line.trim().slice(prefix.length).trim() : null);
+  // A whitespace-only value (" \n ") was written as several prefix-only lines; every one of them must be empty.
+  if (values.length && values.every(value => value === '')) return [];
+  return lines.length === 1 && field === 'title' && title !== null && values[0] === title.trim() ? [] : lines;
 }
 const GENERATED_FIELD_ORDER: readonly Exclude<ProgramCopyField, 'subchecks'>[] = ['title', 'description', 'completionCriteria', 'sourceUrl', 'schedule'];
 /** Where a field line that is not there yet goes: after the owner's date and time lines and the generated lines of the
