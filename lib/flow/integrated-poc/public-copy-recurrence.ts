@@ -6,6 +6,7 @@ import { isValidAuthoringDate } from './native-creator-vendor/text-authoring/rec
 import { stableAuthoringJson } from './native-creator-vendor/text-authoring/identity';
 import { textWorkspaceModel as M } from './text-workspace';
 import { validateProgramCopyKindHandoffs } from './public-copy-kind-contract';
+import { validateProgramOrdinaryTiming } from './public-ordinary-time';
 import { programCopyEffectiveChecks, validateProgramCopyCheckResolutions } from './public-copy-check-contract';
 import { programPublicRecurrenceToAuthoring, programRecurringScheduleStart, projectProgramPublicRecurrence,
   validateProgramPublicRecurringSchedule, type ProgramPublicRecurringScheduleV1 } from './public-recurrence-contract';
@@ -113,9 +114,15 @@ function publicItem(value: unknown): value is ProgramPublicItem {
   if (!Array.isArray(value.subchecks) || value.subchecks.length > 500 || !value.subchecks.every(c => record(c) && exact(c, ['id', 'title']) && id(c.id)
     && typeof c.title === 'string' && !!c.title.trim() && c.title.length <= 500) || new Set(value.subchecks.map(c => c.id)).size !== value.subchecks.length) return false;
   const s = value.schedule;
-  return validateProgramPublicRecurringSchedule(s) || record(s) && (exact(s, ['kind']) && s.kind === 'undated'
-    || exact(s, ['kind', 'date']) && s.kind === 'fixed' && date(s.date)
-    || exact(s, ['kind', 'days']) && s.kind === 'relative' && Number.isSafeInteger(s.days) && Math.abs(Number(s.days)) <= 36600);
+  if (validateProgramPublicRecurringSchedule(s)) return true;
+  if (!record(s)) return false;
+  // The same rule as validateProgramSchedule (program-data.ts): an ordinary schedule may carry one optional timing,
+  // checked by its own validator. Without it a version mixing a timed task and a series failed every copy read.
+  const timing = Object.hasOwn(s, 'timing') ? ['timing'] : [];
+  if (timing.length && !validateProgramOrdinaryTiming(s.timing)) return false;
+  return exact(s, ['kind', ...timing]) && s.kind === 'undated'
+    || exact(s, ['kind', 'date', ...timing]) && s.kind === 'fixed' && date(s.date)
+    || exact(s, ['kind', 'days', ...timing]) && s.kind === 'relative' && Number.isSafeInteger(s.days) && Math.abs(Number(s.days)) <= 36600;
 }
 
 /** Display the immutable schedule source, not a current title or a private start.
