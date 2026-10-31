@@ -89,6 +89,8 @@ export type ProgramSpaceProps = {
   selectedDocumentId?: string; onUndo: () => Promise<void>; onRedo: () => Promise<void>;
   /** C6a: the space is picking rows (고르기); the host refuses its own writes meanwhile. */
   onSelectingChange?: (selecting: boolean) => void;
+  /** C6a: the host's own operation runs (its undo/redo, a recheck, a read): 고르기 waits for it. */
+  hostBusy?: () => boolean;
   outputReturn?: ProgramDestination;
   onPublishDocument?: (documentId: string) => void;
   onInspectCopy?: (copyId: string) => void;
@@ -1333,7 +1335,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   /** C6a: into 고르기 (2-1). From the calendar it goes to the list at the chosen day's group first. */
   function startSelecting() {
-    if (selectBlocked || props.sourceReturnWaits?.() || keepWrittenDay()) return;
+    if (selectBlocked || props.sourceReturnWaits?.() || props.hostBusy?.() || keepWrittenDay()) return;
     if (Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())) { setMessage('회차 날짜를 적용하거나 취소한 뒤 골라 주세요.'); return; }
     if (noteFindMenu.current) noteFindMenu.current.open = false;
     setTaskNotice(null); setOrderNotice(null); setAddingDate(null); setSelectNotice(null);
@@ -1694,7 +1696,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // Any save waiting (C6a review): one state for all of them, the host's own operation too (an undo from its menu).
   const saving = savesPending > 0 || preparingDocumentAction || classificationCreating || orderPending || !!props.sourceReturnWaits?.();
   const selectBlocked = completingTaskIds.size ? '완료 저장을 기다리는 동안에는 고를 수 없습니다' : sourceWaitingTask ? '원문을 여는 동안에는 고를 수 없습니다'
-    : moving ? '순서를 옮기는 동안에는 고를 수 없습니다' : saving ? '저장하는 동안에는 고를 수 없습니다' : null;
+    : moving ? '순서를 옮기는 동안에는 고를 수 없습니다' : saving ? '저장하는 동안에는 고를 수 없습니다' : props.hostBusy?.() ? '서버 확인이 끝난 뒤 고를 수 있습니다' : null;
   const findActions = <div className={styles.findActions}>
     {period === 'documents' && <button className={styles.newWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글</button>}
     <button ref={libraryToggle} className={styles.libraryToggle} aria-label="글 찾기 · 내 문서와 할 일" aria-expanded={libraryOpen} aria-controls="program-library"

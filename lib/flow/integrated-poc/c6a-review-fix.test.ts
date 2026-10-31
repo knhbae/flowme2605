@@ -31,7 +31,7 @@ test('P1: every save of the space is refused while picking; input typed into a d
 
 test('P2: 고르기 waits for any save of the space (a new 분류, an order, a document action), one state for all', () => {
   assert.match(space, /const saving = savesPending > 0 \|\| preparingDocumentAction \|\| classificationCreating \|\| orderPending \|\| !!props\.sourceReturnWaits\?\.\(\);/);
-  assert.match(space, /: moving \? '순서를 옮기는 동안에는 고를 수 없습니다' : saving \? '저장하는 동안에는 고를 수 없습니다' : null;/);
+  assert.match(space, /: moving \? '순서를 옮기는 동안에는 고를 수 없습니다' : saving \? '저장하는 동안에는 고를 수 없습니다' : /);
 });
 
 test('P2: on a phone the covered bottom tabs are inert while picking, and come back after', () => {
