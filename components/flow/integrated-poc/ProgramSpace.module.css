@@ -342,6 +342,13 @@
 .space .dayHeading { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; margin-top: 16px; }
 .space .dayHeading .executionGroup { margin: 0; font-size: 13px; line-height: 20px; font-weight: 700; color: var(--flowme-b-muted); }
 .space .dayHeading[data-late] .executionGroup { color: #986209; }
+/* I7: '직접 정렬 · 시간순으로' between the day and its ＋ (C6-C9-I7 1-2). */
+.space .manualOrder { flex: 0 0 auto; margin-left: auto; font-size: 12px; line-height: 20px; color: var(--flowme-b-muted); }
+.space .timeOrder { flex: 0 0 auto; min-height: 44px; padding: 0 6px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 13px; }
+.space .manualOrder + .timeOrder + .dayAdd { margin-left: -4px; }
+/* Its notice (W15 row) stays in sight below the list: at the screen's bottom, above the phone's bottom tabs. */
+.space .orderNotice { position: sticky; bottom: 8px; z-index: 2; margin: 12px 0 0; }
+@media (max-width: 700px) { .space .orderNotice { bottom: calc(84px + env(safe-area-inset-bottom)); } }
 .space .dayAdd { flex: 0 0 auto; min-width: 44px; padding: 0; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 20px; line-height: 1; }
 .space .emptyDays > button { min-height: 44px; padding: 8px 4px; border: 0; background: transparent; color: var(--flowme-b-muted); font-size: 13px; }
 .space .groupAdd > form { display: flex; align-items: center; gap: 6px; padding: 6px 4px; border-bottom: 1px solid var(--flowme-b-line); }

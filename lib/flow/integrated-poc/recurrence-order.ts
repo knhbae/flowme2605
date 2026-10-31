@@ -69,3 +69,67 @@ export function reorderProgramExecutionTimeline(data: ProgramData, input: { acto
   owner.timelineOrders[date] = [...new Set(legacy)];
   return validateProgramData(next) ? programResult(data, next, input.targetKey) : programFailure(data, 'invalid');
 }
+
+/** I7: one day's saved order, both arrays, each null when the day has none (absent is not the same as empty). */
+export type ProgramDayOrder = { date: string; mixed: string[] | null; legacy: string[] | null };
+const own = (record: object | undefined, key: string) => !!record && Object.prototype.hasOwnProperty.call(record, key);
+export function readProgramDayOrder(space: ProgramPrivateSpace, date: string): ProgramDayOrder {
+  const saved = space as Space;
+  return { date, mixed: own(saved.executionTimelineOrders, date) ? [...saved.executionTimelineOrders![date]] : null,
+    legacy: own(saved.timelineOrders, date) ? [...saved.timelineOrders[date]] : null };
+}
+const dayOf = (row: ProgramOrderedExecutionRow) => row.date ?? 'undated';
+const keysOn = (rows: readonly ProgramOrderedExecutionRow[], date: string) => rows.filter(row => dayOf(row) === date).map(row => row.key);
+/** I7 '직접 정렬': the days of this view whose saved order now differs from time order, with how many of that day's
+ *  rows the saved order places but a filter (분류, 글 찾기) hides here. A saved order that happens to match time
+ *  order is not shown. */
+export function programManualOrderDays(data: ProgramData, query: ProgramExecutionQuery,
+  ordered: readonly ProgramOrderedExecutionRow[] = programOrderedExecutionRows(data, query).rows): Map<string, { hidden: number }> {
+  const actorId = data.activeActorId, space = data.spaces[actorId] as Space;
+  const dates = [...new Set(ordered.map(dayOf))].filter(date => !!space.executionTimelineOrders?.[date]?.length || !!space.timelineOrders[date]?.length);
+  const days = new Map<string, { hidden: number }>();
+  if (!dates.length) return days;
+  const without = (orders: Record<string, string[]>) => Object.fromEntries(Object.entries(orders).filter(([date]) => !dates.includes(date)));
+  const plain: ProgramData = { ...data, spaces: { ...data.spaces, [actorId]: { ...space, timelineOrders: without(space.timelineOrders),
+    ...(space.executionTimelineOrders ? { executionTimelineOrders: without(space.executionTimelineOrders) } : {}) } as Space } };
+  const byTime = programOrderedExecutionRows(plain, query).rows;
+  const whole = query.folderId || query.query ? programOrderedExecutionRows(data, { ...query, folderId: '', query: '' }).rows : ordered;
+  for (const date of dates) {
+    if (programSame(keysOn(ordered, date), keysOn(byTime, date))) continue;
+    const shown = new Set(keysOn(ordered, date)), placed = new Set([...(space.executionTimelineOrders?.[date] ?? []), ...(space.timelineOrders[date] ?? [])]);
+    const hidden = whole.filter(row => dayOf(row) === date && !shown.has(row.key) && (placed.has(row.key) || row.kind === 'text-task' && placed.has(row.task.id))).length;
+    days.set(date, { hidden });
+  }
+  return days;
+}
+/** I7 '시간순으로': forget the day's hand-made order, both arrays in one change and with them the places of rows a
+ *  filter hides, only while it is the order the screen showed. The day then runs by time, untimed rows last,
+ *  occurrences among them. Its result is the day. */
+export function resetProgramExecutionDayOrder(data: ProgramData, input: { actorId: string; expected: ProgramDayOrder }): ProgramTransition<string> {
+  if (data.activeActorId !== input.actorId) return programFailure(data, 'forbidden');
+  if (!validateProgramData(data)) return programFailure(data, 'invalid');
+  const date = input.expected.date;
+  if (!programSame(readProgramDayOrder(data.spaces[input.actorId], date), input.expected)) return programFailure(data, 'conflict');
+  if (input.expected.mixed === null && input.expected.legacy === null) return { ok: true, data, changed: false, result: date };
+  const next = programClone(data), owner = next.spaces[input.actorId] as Space;
+  if (owner.executionTimelineOrders) owner.executionTimelineOrders = Object.fromEntries(Object.entries(owner.executionTimelineOrders).filter(([key]) => key !== date));
+  owner.timelineOrders = Object.fromEntries(Object.entries(owner.timelineOrders).filter(([key]) => key !== date));
+  return validateProgramData(next) ? programResult(data, next, date) : programFailure(data, 'invalid');
+}
+/** Its 되돌리기, a new change (I10): both arrays back as they were, each present or not, only while the day still
+ *  has no saved order; one saved since (here or on another device) refuses it. A task deleted since loses its
+ *  place in the old array, as a text edit drops it. */
+export function restoreProgramExecutionDayOrder(data: ProgramData, input: { actorId: string; removed: ProgramDayOrder }): ProgramTransition<string> {
+  if (data.activeActorId !== input.actorId) return programFailure(data, 'forbidden');
+  if (!validateProgramData(data)) return programFailure(data, 'invalid');
+  const { date, mixed, legacy } = input.removed, now = readProgramDayOrder(data.spaces[input.actorId], date);
+  if (now.mixed !== null || now.legacy !== null) return programFailure(data, 'conflict');
+  if (mixed === null && legacy === null) return { ok: true, data, changed: false, result: date };
+  const next = programClone(data), owner = next.spaces[input.actorId] as Space;
+  if (mixed !== null) owner.executionTimelineOrders = { ...owner.executionTimelineOrders, [date]: [...mixed] };
+  if (legacy !== null) {
+    const lines = new Set([...owner.text.documents, ...owner.text.flows].flatMap(doc => doc.lines.map(line => line.id)));
+    owner.timelineOrders = { ...owner.timelineOrders, [date]: legacy.filter(id => lines.has(id)) };
+  }
+  return validateProgramData(next) ? programResult(data, next, date) : programFailure(data, 'invalid');
+}

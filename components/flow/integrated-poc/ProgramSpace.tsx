@@ -9,7 +9,10 @@ import { programFolderCopyAccessProblem } from '@/lib/flow/integrated-poc/folder
 import { completingInSession, finishCompleting, type CompletingTasks } from '@/lib/flow/integrated-poc/automatic-read-wait';
 import { addProgramQuickTask, archiveProgramDocument, completeProgramTask, createProgramDocument, createProgramFolder, deleteProgramFolder, linkProgramTask, moveProgramFolder, recordProgramTaskProgress, renameProgramDocument, renameProgramFolder, setProgramDocumentFolder, updateProgramTask } from '@/lib/flow/integrated-poc/private-space';
 import { programDateRange, programExecutionTasks, programShiftDate, programShiftMonth, programTaskProgress, type ProgramPeriod } from '@/lib/flow/integrated-poc/execution';
-import { programOrderedExecutionRows, programTextExecutionKey, reorderProgramExecutionTimeline } from '@/lib/flow/integrated-poc/recurrence-order';
+import { programManualOrderDays, programOrderedExecutionRows, programTextExecutionKey, readProgramDayOrder, reorderProgramExecutionTimeline, resetProgramExecutionDayOrder,
+  restoreProgramExecutionDayOrder, type ProgramDayOrder } from '@/lib/flow/integrated-poc/recurrence-order';
+import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
+import { ProgramNoticeRow } from './ProgramNoticeRow';
 import { programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
 import { programViewScope } from '@/lib/flow/integrated-poc/view-scope';
@@ -207,6 +210,19 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [writingNotice, setWritingNotice] = useState<{ actorId: string; documentId: string; text: string } | null>(null);
   const [viewChangeNotice, setViewChangeNotice] = useState<{ actorId: string; reason: 'composition' | 'recurrence' | 'saving' | 'save-failed' | 'pending' } | null>(null);
   const [taskNotice, setTaskNotice] = useState<{ taskId: string; title: string; text: string } | null>(null);
+  // I7: the notice after '시간순으로', holding the arrays it removed for its 되돌리기, or why that was refused.
+  type OrderNotice = { actorId: string; removed: ProgramDayOrder; hidden: number; refused?: string; shownAt: number };
+  const [orderNotice, setOrderNotice] = useState<OrderNotice | null>(null);
+  const [orderNoticeHeld, setOrderNoticeHeld] = useState(false), [orderPending, setOrderPending] = useState(false);
+  const orderBusy = useRef(false);
+  // W15 rules: a plain notice lasts 6s, held while pressed or focused; a refusal stays until closed.
+  useEffect(() => {
+    if (!orderNotice) return;
+    const ends = programNoticeEndsAt({ tone: orderNotice.refused ? 'warn' : 'info', shownAt: orderNotice.shownAt, leftBlockAt: null, held: orderNoticeHeld });
+    if (ends === null) return;
+    const timer = setTimeout(() => setOrderNotice(current => current === orderNotice ? null : current), Math.max(0, ends - Date.now()));
+    return () => clearTimeout(timer);
+  }, [orderNotice, orderNoticeHeld]);
   const [moving, setMoving] = useState<string | null>(null), [showArchived, setShowArchived] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const libraryToggle = useRef<HTMLButtonElement | null>(null);
@@ -372,7 +388,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [addingDate, setAddingDate] = useState<string | null>(null);
   const groupAddField = useRef<HTMLInputElement | null>(null);
   useEffect(() => { setEmptyDaysOpen(false); setAddingDate(null); }, [actorId, period, date]);
-  const executionList = programExecutionList(executionRows, period, date, today, emptyDaysOpen);
+  // I7: the days of this view ordered by hand and no longer in time order, with the rows a filter hides there.
+  const manualOrderDays = useMemo(() => period === 'documents' ? new Map<string, { hidden: number }>() : programManualOrderDays(data, executionQuery, executionRows),
+    [data, period, date, today, folderId, query, includeHeldOccurrences, includeExcludedOccurrences, occurrencePage, executionRows]);
+  const executionList = programExecutionList(executionRows, period, date, today, emptyDaysOpen, manualOrderDays);
   // The title row already says "오늘" when every row is today's; no repeated heading then.
   const hideDayHeadings = !!props.noteHeader && period === 'today' && date === today
     && executionList.every(item => item.kind !== 'row' || item.group === 'on-date');
@@ -521,7 +540,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (!await flushAllEditors()) { showViewChangeBlocked(); return; }
       if (dataRef.current.activeActorId !== origin.actorId) return;
       setSourceOrigin(null); setPeriod(origin.view.period); setDate(origin.view.date); setFolderId(origin.view.folderId); setQuery(origin.view.query);
-      setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setSourceRestore({ ...origin, opener });
+      setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setOrderNotice(null); setSourceRestore({ ...origin, opener });
     } finally { release(); }
   }
   /** One way to change the main tab, for the space's own tabs and the host's: the tab a source was
@@ -686,7 +705,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const release = lockInput();
     try {
       if (!await flushAllEditors()) { showViewChangeBlocked(); return; }
-      setFolderId(nextFolderId); setMessage(''); setViewChangeNotice(null); setTaskNotice(null);
+      setFolderId(nextFolderId); setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setOrderNotice(null);
       // Only an explicit mobile library choice hands presentation back to writing.
       // Empty results keep the library available for choosing another document.
       if (options.fromLibrary && libraryReveal.current.epoch === epoch && window.matchMedia('(max-width:760px)').matches
@@ -706,7 +725,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     try {
       if (!await flushAllEditors()) { showViewChangeBlocked(); return false; }
       if (main) { setQuery(''); if (nextPeriod === 'documents' || nextPeriod === 'today') setFolderId(''); }
-      setPeriod(nextPeriod); if (collectionMode) setLibraryOpen(false); if (nextPeriod === 'today') setDate(today); setMessage(''); setViewChangeNotice(null); setTaskNotice(null); return true;
+      setPeriod(nextPeriod); if (collectionMode) setLibraryOpen(false); if (nextPeriod === 'today') setDate(today); setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setOrderNotice(null); return true;
     } finally { release(); }
   }
   async function changeCollection(nextId: string) {
@@ -1254,6 +1273,28 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const expectedKeys = executionRows.filter(row => row.date === target.date).map(row => row.key);
     await run('기간 목록 순서 이동', current => reorderProgramExecutionTimeline(current, { actorId, query: executionQuery, targetKey, beforeKey, expectedKeys, expectedOrder: space.executionTimelineOrders?.[target.date ?? 'undated'] ?? null })); setMoving(null);
   }
+  const orderDayName = (day: string) => day === 'undated' ? '날짜 없음' : programCalendarDate(day, today, false);
+  /** I7 '시간순으로': one save forgets the day's hand-made order (the whole day, rows a filter hides too). */
+  async function resetDayOrder(day: string) {
+    if (orderBusy.current) return;
+    if (Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())) { setMessage('회차 날짜를 적용하거나 취소한 뒤 순서를 바꿔 주세요.'); return; }
+    const expected = readProgramDayOrder(space, day), hidden = manualOrderDays.get(day)?.hidden ?? 0;
+    orderBusy.current = true; setOrderPending(true);
+    try {
+      const result = await run('시간순으로 정렬', current => resetProgramExecutionDayOrder(current, { actorId, expected }));
+      if (result.ok) { setTaskNotice(null); setOrderNotice({ actorId, removed: expected, hidden, shownAt: Date.now() }); }
+    } finally { orderBusy.current = false; setOrderPending(false); }
+  }
+  /** Its 되돌리기: a new save putting the order back; a day ordered again since refuses it, said in the notice. */
+  async function restoreDayOrder(notice: OrderNotice) {
+    if (orderBusy.current) return;
+    orderBusy.current = true; setOrderPending(true);
+    try {
+      const result = await run('순서 되돌리기', current => restoreProgramExecutionDayOrder(current, { actorId, removed: notice.removed }));
+      if (result.ok) setOrderNotice(null);
+      else if (result.reason === 'conflict') { setMessage(''); setOrderNotice({ ...notice, refused: '그 뒤 순서가 바뀌어 되돌리지 않았습니다', shownAt: Date.now() }); }
+    } finally { orderBusy.current = false; setOrderPending(false); }
+  }
   function moveExecutionStep(key: string, direction: -1 | 1) {
     const target = executionRows.find(row => row.key === key); if (!target) return;
     const bucket = executionRows.filter(row => row.date === target.date), index = bucket.findIndex(row => row.key === key);
@@ -1296,6 +1337,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     <p>{taskNotice.title} · {taskNotice.text}{taskNoticeOutsideView && ' 현재 보기에서는 빠졌지만 항목과 기록은 그대로 있습니다.'}</p>
     {taskNoticeOutsideView && <button type="button" disabled={detailSchedulePending || detailProgressPending}
       onClick={() => void findChangedTask()}>전체 할 일에서 같은 항목 찾기</button>}
+  </div>;
+  const orderNoticeText = (notice: OrderNotice) => notice.refused
+    ?? `${orderDayName(notice.removed.date)} 순서를 시간순으로 되돌렸습니다${notice.hidden ? ` · 숨긴 할 일 ${notice.hidden}개 포함` : ''}`;
+  const releaseOrderNotice = () => { if (!orderNoticeHeld) return; setOrderNoticeHeld(false); setOrderNotice(current => current && { ...current, shownAt: Date.now() }); };
+  const orderNoticeContent = orderNotice?.actorId === actorId && <div className={styles.orderNotice} data-order-notice onPointerDown={() => setOrderNoticeHeld(true)}
+    onPointerUp={releaseOrderNotice} onPointerLeave={releaseOrderNotice} onFocus={() => setOrderNoticeHeld(true)} onBlur={releaseOrderNotice}>
+    <ProgramNoticeRow notice={{ tone: orderNotice.refused ? 'warn' : 'info', text: orderNoticeText(orderNotice),
+      actions: orderNotice.refused || orderPending ? [] : [{ label: '되돌리기', run: () => void restoreDayOrder(orderNotice) }] }} onClose={() => setOrderNotice(null)} />
   </div>;
   const viewChangeNoticeContent = viewChangeNotice?.actorId === actorId && <p role="alert" className={styles.error} data-view-change-notice={viewChangeNotice.reason}>{
     viewChangeNotice.reason === 'composition' ? '한글 입력을 마친 뒤 보기를 바꿔 주세요. 입력은 그대로 있습니다.'
@@ -1540,7 +1589,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           <details ref={noteFindMenu} className={styles.notePeriodTools} onKeyDown={event => {
             if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
             event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; noteFindMenuSummary.current?.focus({ preventScroll: true });
-          }}><summary ref={noteFindMenuSummary} aria-label="편집 도구" title="편집 도구"><span aria-hidden="true">…</span></summary><div className={styles.notePeriodToolsBody}>{findActions}</div></details>
+          }}><summary ref={noteFindMenuSummary} aria-label="편집 도구" title="편집 도구"><span aria-hidden="true">…</span></summary><div className={styles.notePeriodToolsBody}>{findActions}
+            {/* I7: the day heading is hidden here, so its button sits in this menu. */}
+            {hideDayHeadings && manualOrderDays.has(date) && !moving && <button type="button" disabled={orderPending}
+              onClick={() => { if (noteFindMenu.current) noteFindMenu.current.open = false; void resetDayOrder(date); }}>오늘 순서를 시간순으로</button>}</div></details>
         </div></div> : periodTitle}{!['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date)}>‹</button><label>날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value)) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date)}>›</button></div>}</div>
         {props.noteHeader && <div className={styles.periodNotice}>{props.noteHeader}</div>}
         {props.noteStatus && <div className={styles.periodStatus}>{props.noteStatus}{!compactNoteToday && period !== 'documents' && findActions}</div>}
@@ -1584,6 +1636,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         <ul className={styles.tasks}>{executionList.map(item => {
           if (item.kind === 'heading') return <React.Fragment key={item.key}>
             {!hideDayHeadings && <li className={styles.dayHeading} data-late={item.late || undefined}><h2 className={styles.executionGroup}>{item.label}</h2>
+              {item.orderDate && !moving && <><span className={styles.manualOrder}>직접 정렬</span><button type="button" className={styles.timeOrder}
+                aria-label={`${orderDayName(item.orderDate)} 순서를 시간순으로 되돌리기`} disabled={orderPending} onClick={() => void resetDayOrder(item.orderDate!)}>시간순으로</button></>}
               {item.addDate && !collectionMode && <button type="button" className={styles.dayAdd} data-add-date={item.addDate} aria-label={`${programCalendarDate(item.addDate, today)}에 할 일 추가`}
                 aria-expanded={addingDate === item.addDate} disabled={preparingDocumentAction} onClick={() => openGroupAdd(item.addDate!)}>＋</button>}</li>}
             {addingDate === item.addDate && item.addDate && <ProgramGroupAddRow key={`${actorId}:${item.addDate}`} date={item.addDate} dayLabel={programCalendarDate(item.addDate, today)} inputRef={groupAddField}
@@ -1638,6 +1692,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>
           </li>;
         })}</ul>
+        {/* I7: under the list, held at the bottom of the screen (above the bottom tabs on a phone) while it scrolls. */}
+        {!detail && orderNoticeContent}
       </div>
     </div>
     <dialog ref={dialog} className={styles.dialog} data-task-detail={detail?.kind === 'task' ? true : undefined} aria-labelledby="program-detail-title" onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2 id="program-detail-title">{detail?.kind === 'task' ? detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 정리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>
