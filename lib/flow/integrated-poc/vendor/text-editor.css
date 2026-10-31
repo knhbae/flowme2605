@@ -262,6 +262,15 @@
  * open button (icon centred, 12px before the name) moves one 44px lane right. Both stay 44px; the name does not move. */
 .tle-root:is(.tle-reading-view, .tle-folded-view) .tle-fold-anchor { left: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) - 13px); }
 .tle-root:is(.tle-reading-view, .tle-folded-view) .tle-scope-anchor { left: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 44px); }
+/* S4 N3 W3 (fold tap A): on touch a tap aimed at the small ▾ often landed on the open button right after it. The
+ * fold lane is 56px with its extra 12px after the triangle, the open button moves 12px right (the host moves the
+ * name too), and the triangle is a drawn chevron where the ▾ glyph read as a dot. */
+@media (pointer: coarse) {
+  .tle-root:is(.tle-reading-view, .tle-folded-view) .tle-fold-toggle { width: 56px; justify-content: flex-start; font-size: 0; color: var(--flowme-b-ink); }
+  .tle-root:is(.tle-reading-view, .tle-folded-view) .tle-fold-toggle::before { content: ''; flex: none; box-sizing: border-box; width: 9px; height: 9px; margin: calc(var(--tle-line) / 2 - 7px) 0 0 18px; border: solid currentColor; border-width: 0 2px 2px 0; opacity: .72; transform: rotate(45deg); }
+  .tle-root:is(.tle-reading-view, .tle-folded-view) .tle-fold-toggle[aria-expanded="false"]::before { margin: calc(var(--tle-line) / 2 - 4.5px) 0 0 15px; transform: rotate(-45deg); }
+  .tle-root:is(.tle-reading-view, .tle-folded-view) .tle-scope-anchor { left: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 56px); }
+}
 .tle-root:not(.tle-reading-view):not(.tle-folded-view) :is(.tle-active-scope-icon, .tle-indent-guide, .tle-scope-anchor, .tle-check-anchor, .tle-fold-anchor, .tle-scope-label) { height: var(--tle-line); }
 .tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-check-glyph { top: calc((var(--tle-line) - 20px) / 2); }
 .tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-active-progress { top: 0; }

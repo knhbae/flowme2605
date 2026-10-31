@@ -167,6 +167,10 @@
   color: var(--flowme-b-ink);
 }
 .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scope-label) { padding-left: 75px; }
+/* S4 N3 W3 (fold tap A): on touch the open button sits 12px further right (vendor), and the name with it. */
+@media (pointer: coarse) {
+  .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scope-label) { padding-left: 87px; }
+}
 .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope[data-scope-kind="folder"] .tle-scope-subtitle) {
   position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
 }

@@ -37,6 +37,24 @@ test('the folder head: an outline triangle in the lane before the icon, the icon
   assert.match(module, /:is\(\.tle-check-hit,\.tle-fold-toggle,\.tle-row-open,\.tle-plus,\.tle-row-menu\)\) \{ min-height: 44px; min-width: 44px; height: 44px; \}/);
 });
 
+test('S4 N3 W3 (fold tap A): on touch the fold lane is 56px, the open button and the name 12px further, a drawn chevron', () => {
+  const touch = css.slice(css.indexOf('@media (pointer: coarse) {'), css.indexOf('\n}\n', css.indexOf('@media (pointer: coarse) {')) + 3);
+  assert(touch.startsWith('@media (pointer: coarse) {'));
+  // The extra 12px is after the triangle (flex-start), not around it; the glyph is hidden behind a drawn chevron.
+  assert(touch.includes('.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-fold-toggle { width: 56px; justify-content: flex-start; font-size: 0;'));
+  assert.match(touch, /\.tle-fold-toggle::before \{ content: ''; [^}]*border-width: 0 2px 2px 0;[^}]*transform: rotate\(45deg\); \}/);
+  assert.match(touch, /\.tle-fold-toggle\[aria-expanded="false"\]::before \{[^}]*transform: rotate\(-45deg\); \}/);
+  assert(touch.includes('.tle-scope-anchor { left: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 56px); }'));
+  // Pointer devices keep the 44px lanes; the touch block comes after them so it wins at the same specificity.
+  assert(css.indexOf('@media (pointer: coarse) {') > css.indexOf('.tle-scope-anchor { left: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 44px); }'));
+  const module = read('../../../components/flow/integrated-poc/ProgramTextEditor.module.css');
+  const hostTouch = module.slice(module.indexOf('@media (pointer: coarse) {'));
+  assert(module.indexOf('@media (pointer: coarse) {') > module.indexOf('.tle-scope-label) { padding-left: 75px; }'));
+  assert.match(hostTouch, /^@media \(pointer: coarse\) \{\n  \.host :global\([^\n]*\.tle-scope-label\) \{ padding-left: 87px; \}\n\}/);
+  // The control markup, its label and its state stay as they were.
+  assert.match(vendor, /button\.setAttribute\('aria-expanded', String\(!folded\)\);/);
+});
+
 test("while writing, a folder line's '/' joins the transparent syntax and keeps its RAW advance", () => {
   const paint = slice('function paintActiveSyntax(', 'function propertyCheckOwner(');
   assert.match(paint, /const title = task \? task\[4\] : scope\[2\]\.replace\(\/\^\\\/\/, ''\);/);
