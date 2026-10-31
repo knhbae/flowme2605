@@ -1,6 +1,7 @@
 import {consumeOwnedWritingAck,noteWritingPhase,type OwnedWritingAck} from './writing-ack';
 import type {ProgramDocumentInput} from './program-document-input';
 import { ro } from './folder-notice';
+import { planFolderPickerLink } from './folder-picker';
 import { textWorkspaceModel as M, type TextInputSplice, type TextTaskSplitIntent, type TextProgressCheckConflict, type TextWorkspaceState } from './text-workspace';
 import { programSame } from './controller';
 import { programClone } from './contract';
@@ -218,13 +219,35 @@ export function createProgramTextDraft(
     /** A typed "- /name" line was kept as text (folderHold); judge it once now that it is finished.
      * linkOnly (left, not finished explicitly) links only a folder of exactly that name and makes nothing.
      * False when there is nothing to do, or when the judgement refused it (the error keeps the input). */
-    declareFolderLine(lineIndex: number, linkOnly = false) {
+    declareFolderLine(lineIndex: number, linkOnly = false, picker = false) {
       if (state.invalid) return false;
+      const previous = state, doc = M.getDocument(state.working, docId), lineId = doc?.lines[lineIndex]?.id;
+      const unbound = !!lineId && !state.working.bindings.some(row => row.docId === docId && row.lineId === lineId);
+      if (picker && unbound) {
+        const row = M.rowMeta(state.working, docId).find(row => row.id === lineId);
+        const ids = new Set(doc!.lines.slice(lineIndex + 1, row?.subtreeEndIndex ?? lineIndex + 1).map(line => line.id));
+        if (state.working.bindings.some(row => row.docId === docId && row.kind === 'scope' && ids.has(row.lineId))) {
+          state = { ...state, folderNotice: '하위 폴더가 연결된 줄은 여기서 옮길 수 없습니다. 하위 폴더를 먼저 옮겨 주세요.' }; report(); return false;
+        }
+      }
       if (state.folderNotice) state = { ...state, folderNotice: undefined };
       const lines = linkOnly ? { folderLink: [lineIndex] } : { folderDeclare: [lineIndex] };
       const check = M.editTextResult(state.working, docId, state.raw, { folderText: true, ...lines });
       if (check.reason === null && check.state === state.working) return false;
-      return api.updateRaw(state.raw, '', { inputType: 'folderDeclare', ...lines });
+      const changed = api.updateRaw(state.raw, '', { inputType: 'folderDeclare', ...lines });
+      if (changed && picker && unbound) {
+        const linked = state.working.bindings.find(row => row.docId === docId && row.lineId === lineId && row.kind === 'scope');
+        if (linked?.kind !== 'scope') { api.restoreState(previous); return false; }
+        // The declaration port supplies its validated new/existing folder ID.
+        // Reuse explicit selection admission for the original unbound head's
+        // children; every other normalized field stays as declared.
+        const base = { ...state.working, bindings: state.working.bindings.filter(row => !(row.docId === docId && row.lineId === lineId)) };
+        const placed = planFolderPickerLink(base, docId, lineId!, linked.scopeId);
+        if (placed.problem || !validateWorkspace(placed.state)) { api.restoreState(previous); return false; }
+        const working = documentInput?.install(placed.state) ?? placed.state;
+        inputGeneration++; state = { ...state, working, raw: M.raw(M.getDocument(working, docId)) }; report();
+      }
+      return changed;
     },
     /** D3 B (W15): a linked folder line finished with Enter. Its folder is renamed when only this document uses
      * it; otherwise the line, with its tasks, moves to the folder of its new name in the same place, made if
@@ -289,10 +312,14 @@ export function createProgramTextDraft(
         progressConflict: undefined, problemLine: undefined, folderNotice: '폴더 옮김을 되돌렸습니다' };
       label = '폴더 옮김 되돌리기'; groupId = `text:${docId}`; report(); return true;
     },
-    apply(next: TextWorkspaceState, nextLabel: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule']) {
+    apply(next: TextWorkspaceState, nextLabel: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule'], picker?: { lineId: string; scopeId: string }) {
       if (state.invalid || state.saving || !M.validate(next) || !validateWorkspace(next) || next === state.working) return false;
+      const before = state.working;
+      const linked = picker && planFolderPickerLink(before, docId, picker.lineId, picker.scopeId);
+      if (picker && (!linked || linked.problem || !programSame(linked.state, next))) return false;
       inputGeneration++;
       const working=documentInput?.install(next)??next;
+      lastMove = picker && linked?.moved ? { before, after: working, lineIds: [picker.lineId] } : null;
       state = { ...state, working, raw: M.raw(M.getDocument(working, docId)), dirty: true, error: '', progressConflict: undefined };
       label = nextLabel; groupId = undefined; privateTaskSchedule = schedule; report(); return true;
     },

@@ -52,6 +52,8 @@ declare namespace editor {
     getValue(): string;
     getText(): string;
     getSelection(): Selection;
+    /** Read caret/name-start viewport geometry without changing input or layout. */
+    caretRect(offset?: number): { left: number; top: number; right: number; bottom: number; width: number; height: number } | null;
     /** selection: an explicit caret for the new value (it wins over preserveSelection). */
     setValue(value: string, settings?: { preserveSelection?: boolean; selection?: { start: number; end: number; direction?: Selection['direction'] } }): boolean;
     setText(value: string, settings?: { preserveSelection?: boolean }): boolean;
