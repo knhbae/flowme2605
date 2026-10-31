@@ -27,7 +27,8 @@ test('every function of the old "…" menu has a place in the new groups, in the
   assert.deepEqual([...groups].sort((a, b) => a - b), groups);
   const between = (from: string, to?: string) => menu.slice(menu.indexOf(`aria-label="${from}"`), to ? menu.indexOf(`aria-label="${to}"`) : undefined);
   const expect: [string, string[]][] = [
-    ['편집', ['{usesNoteChrome && serverUndo}', '다시 실행']],
+    // UX FC-DETAIL-HEAD 1: 되돌리기 is in 편집 on every screen (둘러보기 no longer has a status row with it).
+    ['편집', ['{serverUndo}', '다시 실행']],
     ['내 활동', ['>내 활동</button>', '개인 Flow 상세']],
     ['자료', ['복구함', '백업 · 복원 · 가져오기']],
     ['계정', ['{email}', '로그아웃 · 계정 바꾸기']],

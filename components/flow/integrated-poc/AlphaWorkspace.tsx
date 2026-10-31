@@ -1286,14 +1286,18 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         {serverStatusMain}{serverStatusExtras}
         {!usesNoteChrome && serverUndo}
       </div>;
+  const serverSlot = programServerStatus({ snapshot, storageError, external, participationRecovery: !!localParticipationRecovery });
+  // UX FC-DETAIL-HEAD 1 (R6): 둘러보기 draws its status row only for a warning or a wait (levels 1–5). Saved and
+  // saving stay off, so the list does not jump; 되돌리기 is in 더보기 › 편집 on every screen.
+  const browseStatusShown = serverSlot.level <= 5;
   const serverStatusView: ProgramServerStatusView | null = usesNoteChrome ? {
-    ...programServerStatus({ snapshot, storageError, external, participationRecovery: !!localParticipationRecovery }),
+    ...serverSlot,
     recovery: destination.view === 'space' && needsInputProtection ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,
     recoveryBody: destination.view === 'space' && needsInputProtection ? <div className={styles.inputRecoveryGroup}>{inputProtectionFor(false)}</div> : null,
     extras: destination.view === 'space' && message && !participationMessage
       ? <div className={styles.statusRow}>{serverStatusExtras}</div> : null,
   } : null;
-  return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
+  return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} data-browse-layout={browse ? destination.view === 'flow' ? 'detail' : 'list' : undefined} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
     <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}>FlowMe</a>
       {!unavailable && <nav className={styles.globalNavigation} aria-label="주요 메뉴">
         {([['documents', '쓰기', 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4'], ['today', '오늘', 'M4 4h16v16H4zm4 8 3 3 5-6'], ['all', '분류', 'M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z']] as const).map(([tab, label, path]) =>
@@ -1310,7 +1314,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     <div className={styles.workPane} data-testid="alpha-work-pane">
     {!usesNoteChrome && publicNotice}
     <section className={styles.sync} aria-label="서버 저장 상태">
-      {!usesNoteChrome && serverStatus}
+      {!usesNoteChrome && (!browse || browseStatusShown) && serverStatus}
       <details ref={managementMenu} className={styles.management} aria-label="계정 및 자료 관리" onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
@@ -1325,7 +1329,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
             <button type="button" aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>Flow 찾기</button></div>
         </section>}
         <section className={styles.menuGroup} aria-label="편집"><h3>편집</h3>
-          <div className={styles.managementActions}>{usesNoteChrome && serverUndo}<button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external}>다시 실행</button></div>
+          <div className={styles.managementActions}>{serverUndo}<button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external}>다시 실행</button></div>
         </section>
         {!unavailable && data && <section className={styles.menuGroup} aria-label="내 활동"><h3>내 활동</h3>
           <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>내 활동</button>

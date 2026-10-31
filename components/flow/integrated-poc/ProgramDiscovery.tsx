@@ -147,6 +147,8 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   const [choosingVersion, setChoosingVersion] = useState<string | null>(null);
   const [openItems, setOpenItems] = useState<string[]>([]);
   const taskList = useRef<HTMLOListElement>(null); const [clippedItems, setClippedItems] = useState<string[]>([]);
+  // '더 보기' shows only when the two-line summary really cuts text at this width.
+  const summaryRef = useRef<HTMLParagraphElement>(null); const [summaryClipped, setSummaryClipped] = useState(false);
   const [outputVersion, setOutputVersion] = useState<string | null>(null);
   // FC1: the search filters only after a Hangul composition ends (as the R8b document sheet does).
   const [queryDraft, setQueryDraft] = useState(state.query); const composing = useRef(false);
@@ -212,6 +214,15 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     window.scrollTo({ top: 0 });
     if (storageScope === 'account') heading.current?.focus({ preventScroll: true });
   }, [storageScope, selectedFlowId, version?.id, selectedItemId, selectedOutputReturn]);
+  useEffect(() => {
+    const element = summaryRef.current;
+    if (!element) { setSummaryClipped(false); return; }
+    const measure = () => setSummaryClipped(element.scrollHeight > element.clientHeight + 1);
+    measure();
+    const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(measure) : null;
+    observer?.observe(element);
+    return () => observer?.disconnect();
+  }, [version?.id, summaryOpen]);
   const sourceMeta = version ? programCatalogMetadata(version.id) : undefined;
   const detail: ProgramDiscoveryDetailPresentation | undefined = version ? (selectedOutputReturn !== editedReturn.current ? returnedDetail : null) ?? state.details[version.id] ?? { selectedItemIds: version.items.map(item => item.id), anchor: '', format: 'txt' } : undefined;
   const patchDetail = (patch: Partial<NonNullable<typeof detail>>) => {
@@ -302,7 +313,6 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     const undatedStarts = selectedSeries.filter(item => item.schedule.kind === 'recurring' && item.schedule.start.kind === 'undated');
     const outputOpen = outputVersion === version.id || !!selectedOutputReturn;
     const kindLabel = version.source.kind === 'repository-source' ? '기존 출처 자료' : version.source.kind === 'user-text' ? '사용자가 정리한 자료' : null;
-    const longSummary = version.summary.length > 90 || version.summary.includes('\n');
     const importLabel = choosing ? `할 일 ${useItemIds.length}개 가져오기` : '내 계획으로 가져오기';
     // UX 2절 큰 단추: one action per state. An archived or held Flow never starts a new copy.
     const action = existingCopy ? <button type="button" className={styles.primary} data-testid="program-existing-copy-return" disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>내 문서에서 이어보기</button>
@@ -325,23 +335,20 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
       <div className={styles.detailLayout}><div className={styles.detailMain}>
         <header className={styles.detailHeader}><p className={styles.eyebrow}>{[flow.category, ...flow.situations].join(' · ')}</p>
           <h1 ref={heading} tabIndex={-1}>{version.title}</h1>
-          <p className={`${styles.pre} ${summaryOpen === version.id ? '' : styles.summaryClamp}`}>{version.summary}</p>
-          {longSummary && <button type="button" className={styles.linkButton} aria-expanded={summaryOpen === version.id} onClick={() => setSummaryOpen(summaryOpen === version.id ? null : version.id)}>{summaryOpen === version.id ? '접기' : '더 보기'}</button>}
+          <div className={styles.summaryBox}><p ref={summaryRef} id={`${uid}-summary`} className={`${styles.pre} ${styles.summaryText} ${summaryOpen === version.id ? '' : styles.summaryClamp}`}>{version.summary}</p>
+            {(summaryClipped || summaryOpen === version.id) && <button type="button" className={`${styles.linkButton} ${styles.summaryMore}`} data-open={summaryOpen === version.id ? 'true' : undefined} aria-expanded={summaryOpen === version.id} aria-controls={`${uid}-summary`} onClick={() => setSummaryOpen(summaryOpen === version.id ? null : version.id)}>{summaryOpen === version.id ? '접기' : '더 보기'}</button>}</div>
         </header>
         <section className={styles.sourceBlock} aria-label="출처와 판본">
           <p className={styles.sourceLine}>{kindLabel && <>{kindLabel} · </>}{programSourceLine(version.source)}{version.source.url && <> · <a href={version.source.url} target="_blank" rel="noreferrer noopener">원문 열기 ↗</a></>}</p>
           {version.source.checkedAt && <p className={styles.muted}>출처 확인 기록: {version.source.checkedAt} · 지금 원문을 다시 확인한 결과는 아닙니다.</p>}
           {sourceMeta?.sourceNeedsReview && <p className={styles.notice}>이 자료는 출처 재검토가 필요합니다. 현재 조건을 원문에서 확인해 주세요.</p>}
-          {sourceMeta && <details><summary>저장소에 보관된 원문</summary><pre className={styles.raw}>{sourceMeta.originalRawText}</pre></details>}
-          {derived && <button type="button" className={styles.linkButton} onClick={() => navigate({ view: 'flow', id: derived.flowId, versionId: derived.id })}>원본: {derived.title} · 판본 {derived.number}</button>}
-          {children.length > 0 && <details><summary>이 Flow에서 파생된 자료 {children.length}개</summary>{children.map(child => <button type="button" className={styles.linkButton} key={child.id} onClick={() => navigate({ view: 'flow', id: child.id })}>{data.public.versions.find(row => row.id === child.currentVersionId)?.title ?? child.id}</button>)}</details>}
           {existingCopy && copyVersion && existingCopy.baseVersionId !== version.id && <p className={styles.versionLine}>내 사본은 판본 {copyVersion.number}입니다. 원본에 판본 {version.number}이 있습니다. <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>변경 확인</button></p>}
         </section>
         {stateNote && <p className={flow.archived || existingCopy ? styles.muted : styles.notice}>{stateNote}</p>}
-        {anchorUsed && !flow.archived && <label className={`${styles.field} ${styles.anchorRow}`}>{sourceMeta?.anchorLabel ?? '기준일'}<input type="date" value={detail.anchor} disabled={pending} onChange={event => patchDetail({ anchor: event.target.value })} /><small>{sourceMeta?.anchorHint || '넣으면 아래 날짜가 바로 바뀝니다. 고정 날짜는 그대로입니다.'}</small></label>}
-        <section aria-labelledby={`${uid}-items`}><div className={styles.row}><h2 id={`${uid}-items`}>할 일 <span>{choosing ? `${useItemIds.length}/${version.items.length}` : version.items.length}</span></h2>
-          {!flow.archived && !existingCopy && !storedCopy && version.items.length > 1 && <button type="button" className={styles.linkButton} disabled={pending} aria-pressed={choosing}
-            onClick={() => { if (choosing) { setChoosingVersion(null); patchDetail({ selectedItemIds: version.items.map(item => item.id) }); } else setChoosingVersion(version.id); }}>{choosing ? '모두 가져오기' : '할 일 고르기'}</button>}</div>
+        {anchorUsed && !flow.archived && <><label className={`${styles.field} ${styles.anchorRow}`}><span>{sourceMeta?.anchorLabel ?? '기준일'}</span><input type="date" value={detail.anchor} disabled={pending} aria-describedby={`${uid}-anchor-hint`} onChange={event => patchDetail({ anchor: event.target.value })} /></label>
+          {/* The rows already read "기준일 30일 전" and change at once; only a version's own hint is shown. */}
+          <p id={`${uid}-anchor-hint`} className={sourceMeta?.anchorHint ? styles.anchorHint : styles.visuallyHidden}>{sourceMeta?.anchorHint || '넣으면 아래 날짜가 바로 바뀝니다. 고정 날짜는 그대로입니다.'}</p></>}
+        <section aria-labelledby={`${uid}-items`}><h2 id={`${uid}-items`} className={styles.itemsLabel}>할 일 {choosing ? `${useItemIds.length}/${version.items.length}` : version.items.length}개</h2>
           {selectedItemId && !version.items.some(item => item.id === selectedItemId) && <p className={styles.notice} role="status">이 판본에서 연결된 항목을 찾을 수 없습니다. 다른 항목으로 바꾸지 않고 지정된 판본을 표시합니다.</p>}
           <ol ref={taskList} className={styles.taskRows}>{version.items.map((item, index) => {
             const classifiedSource = item.sourceUrl ? classifyProgramUrl(item.sourceUrl, []) : null;
@@ -359,6 +366,11 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
                   onClick={() => setOpenItems(prior => open ? prior.filter(key => key !== detailsKey) : [...prior, detailsKey])}>{open ? '▾' : '▸'}</button>}</div>
               {hasDetails && open && <div id={detailsId} className={styles.itemDetails}>{cut && <p className={styles.taskFull}><strong>{item.title}</strong><br />{dateLabel}</p>}{item.description &&<p className={styles.pre}>{item.description}</p>}{sourceUrl && <p><a href={sourceUrl} target="_blank" rel="noreferrer noopener" aria-label={`${item.title} 원문 열기`}>항목 원문 열기 ↗</a></p>}{item.completionCriteria && <p><strong>완료 기준</strong><br />{item.completionCriteria}</p>}{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</div>}</li>;
           })}</ol>
+          {!flow.archived && !existingCopy && !storedCopy && version.items.length > 1 && <button type="button" className={`${styles.linkButton} ${styles.chooseButton}`} disabled={pending} aria-pressed={choosing}
+            onClick={() => { if (choosing) { setChoosingVersion(null); patchDetail({ selectedItemIds: version.items.map(item => item.id) }); } else setChoosingVersion(version.id); }}>{choosing ? '모두 가져오기' : '할 일 고르기'}</button>}
+          {sourceMeta && <details><summary>저장소에 보관된 원문</summary><pre className={styles.raw}>{sourceMeta.originalRawText}</pre></details>}
+          {derived && <button type="button" className={styles.linkButton} onClick={() => navigate({ view: 'flow', id: derived.flowId, versionId: derived.id })}>원본: {derived.title} · 판본 {derived.number}</button>}
+          {children.length > 0 && <details><summary>이 Flow에서 파생된 자료 {children.length}개</summary>{children.map(child => <button type="button" className={styles.linkButton} key={child.id} onClick={() => navigate({ view: 'flow', id: child.id })}>{data.public.versions.find(row => row.id === child.currentVersionId)?.title ?? child.id}</button>)}</details>}
         </section>
         {outputOpen && !flow.archived && <section className={styles.outputSection} aria-labelledby={`${uid}-output`}><h2 id={`${uid}-output`}>내 도구로 받기</h2>
           <p className={styles.muted}>개인 사본을 만들지 않고 받을 수 있습니다.{choosing ? ' 고른 할 일만 받습니다.' : ''}</p>
