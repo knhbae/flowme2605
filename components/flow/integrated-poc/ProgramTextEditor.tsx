@@ -1443,7 +1443,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         let accepted = false;
         const hold = heldInput(raw, textArea()?.selectionStart, historyType || input?.inputType || '');
         const indentProof = currentIndentAction(raw);
-        if (indentProof) accepted = controller.applyFreshFolderIndent(indentProof, raw);
+        // N5 3b: once the new folder moved, an earlier refusal's reason no longer stands in front of its notice.
+        if (indentProof) { accepted = controller.applyFreshFolderIndent(indentProof, raw); if (accepted) setMessage(current => current === FOLDER_INDENT_NOTICE ? '' : current); }
         else if (pending) {
           accepted = pending.raw === raw && programSame(pending.before, controller.getState().working) && controller.apply(pending.next, '같은 구간 날짜순 정렬');
           if (accepted) orderHistoryRef.current.record(pending.before, pending.next);

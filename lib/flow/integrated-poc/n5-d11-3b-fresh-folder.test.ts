@@ -155,3 +155,9 @@ for (const [name, edit] of [['a space on a blank below', (lines: string[]) => { 
   const next = rows(t); edit(next); write(t, next);
   assert.equal(editorFor(t).touch(2).canOutdent, false);
 });
+
+test('N5 3b: a D11 B move takes down an earlier refusal\'s reason (that one only), so the move notice is the one in front', () => {
+  const text = editor.replace(/\r\n/g, '\n'), at = text.indexOf('const indentProof = currentIndentAction(raw);');
+  assert(at > 0 && text.slice(at).startsWith("const indentProof = currentIndentAction(raw);\n        // N5 3b: once the new folder moved, an earlier refusal's reason no longer stands in front of its notice.\n"
+    + "        if (indentProof) { accepted = controller.applyFreshFolderIndent(indentProof, raw); if (accepted) setMessage(current => current === FOLDER_INDENT_NOTICE ? '' : current); }"));
+});
