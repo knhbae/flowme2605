@@ -50,7 +50,7 @@ function guardFor(draft: Draft, docId: string) {
   const scope = { controller: draft, textarea, props: { docId }, setMessage: (text: string) => messages.push(text), indentRefusal: { current: null },
     composingRef: { current: false }, inputLockedRef: { current: false }, compositionGeneration: { current: 0 }, propsRef: { current: { validateWorkspace: () => true } },
     undoFolderMove: () => false, explainRawFolderUndo: () => {}, currentIndentAction: () => null, heldInput: () => undefined, accessFor: () => undefined,
-    currentDoc: () => M.getDocument(draft.getState().working, docId), programTextProtectionMessage: () => 'PROTECTED', FOLDER_INDENT_NOTICE, textEditTouchesLinkedFolderIndent };
+    currentDoc: () => M.getDocument(draft.getState().working, docId), programTextProtectionMessage: () => 'PROTECTED', FOLDER_INDENT_NOTICE, textEditTouchesLinkedFolderIndent, M };
   const code = ts.transpileModule('const guard = (' + guardSource + ');', { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
   const guard = new Function(...Object.keys(scope), code + '\nreturn guard;')(...Object.values(scope)) as (event: unknown) => void;
   return { messages, press(inputType: string, caret: number, data: string | null = null) {
@@ -129,7 +129,26 @@ test('ordinary edits around a linked folder line still go through', () => {
 
 test('the guard order: the D11 B native proof passes first; the new stop runs before the model check', () => {
   const at = (text: string) => { const index = guardSource.indexOf(text); assert(index > 0, text); return index; };
-  assert(at('if (currentIndentAction(raw)) return;') < at('textEditTouchesLinkedFolderIndent(controller.getState().working, props.docId, start, end, insert)'));
+  assert(at('if (currentIndentAction(raw)) return;') < at('textEditTouchesLinkedFolderIndent(shownState.working, props.docId, start, end, insert)'));
   assert(at('textEditTouchesLinkedFolderIndent(') < at('if (!controller.prepareRaw('));
-  assert(guardSource.includes('textarea.value === controller.getState().raw && textEditTouchesLinkedFolderIndent('));
+  // Review P2: only on a valid draft whose model text is the text shown.
+  assert(guardSource.includes('if (!shownState.invalid && textarea.value === shownState.raw && M.raw(M.getDocument(shownState.working, props.docId)) === textarea.value'));
+});
+
+test('review P2: a draft already refused for a folder line\'s spaces can be typed back; the stop does not block the repair', () => {
+  const { draft, docId } = phoneDoc((d, id) => { pick(d, id, 3, '- /새이름3', false); pick(d, id, 4, '  - /새이름4', false); });
+  const valid = draft.getState().raw, at = offsetOf(valid, 4, 0), broken = valid.slice(0, at) + valid.slice(at + 1);
+  assert.equal(broken.split('\n')[4], ' - /새이름4');
+  // A refused draft (reached without the new stop, e.g. through a composition): the model still holds the older text.
+  assert.equal(draft.updateRaw(broken, '', { inputType: 'insertText' }), false);
+  assert.deepEqual([draft.getState().invalid, draft.getState().raw], [true, broken]);
+  // Typing the space back at the line start goes the usual way: not stopped, no folder notice, and the draft accepts it.
+  const guard = guardFor(draft, docId);
+  assert.equal(guard.press('insertText', at, ' '), false);
+  assert.deepEqual(guard.messages, []);
+  assert(draft.updateRaw(valid, '', { inputType: 'insertText' }));
+  assert.deepEqual([draft.getState().invalid, draft.getState().raw], [false, valid]);
+  // Once valid again, the same kind of edit is stopped as before.
+  assert.equal(guard.press('deleteContentBackward', at + 1), true);
+  assert.deepEqual(guard.messages, [FOLDER_INDENT_NOTICE]);
 });

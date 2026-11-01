@@ -1558,8 +1558,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           if (currentIndentAction(raw)) return;
           // N5 phone (D11 보강): ⌫·Delete or typing in a linked folder line's leading spaces, or joining it to the line
           // above, would move the folder by text. Nothing changes and the reason shows, instead of a refused draft
-          // that blocks saving and keeps a recovery row.
-          if (textarea.value === controller.getState().raw && textEditTouchesLinkedFolderIndent(controller.getState().working, props.docId, start, end, insert)) {
+          // that blocks saving and keeps a recovery row. Only on a valid draft whose model text is the text shown: a draft
+          // already refused (its working model is the older text) goes the usual way, so typing it back can repair it.
+          const shownState = controller.getState();
+          if (!shownState.invalid && textarea.value === shownState.raw && M.raw(M.getDocument(shownState.working, props.docId)) === textarea.value
+            && textEditTouchesLinkedFolderIndent(shownState.working, props.docId, start, end, insert)) {
             event.preventDefault(); event.stopImmediatePropagation();
             setMessage(FOLDER_INDENT_NOTICE); indentRefusal.current = { kind: 'folder' }; return;
           }
