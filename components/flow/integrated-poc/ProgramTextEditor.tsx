@@ -29,7 +29,7 @@ import { applyProgramLinePermutation, createProgramPermutationHistory } from '@/
 import { programSame } from '@/lib/flow/integrated-poc/controller';
 import { readProgramFolderCopyPreview, isProgramFolderCopyPreviewCurrent, copyProgramFolderOccurrence, type ProgramFolderCopyPreview } from '@/lib/flow/integrated-poc/folder-copy';
 import { createAlphaStructuralDraft, type AlphaStructuralDraft } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
-import { indentTouchesLinkedFolder, restoredLineOffset } from '@/lib/flow/integrated-poc/folder-line-hold';
+import { indentTouchesLinkedFolder, restoredLineOffset, textEditTouchesLinkedFolderIndent } from '@/lib/flow/integrated-poc/folder-line-hold';
 import { createProgramTextDraft, FOLDER_INDENT_NOTICE, type ProgramTextCommit, type ProgramTextCommitOptions, type ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
 import { programBarDropNotice, programIndentRefusalNotice, programIndentShape, type ProgramBarDrop, type ProgramIndentRefusal } from '@/lib/flow/integrated-poc/bar-indent-notice';
 import {createProgramDocumentInput,type ProgramDocumentInput} from '@/lib/flow/integrated-poc/program-document-input';
@@ -1556,6 +1556,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           // D11 B: this proof exists only inside this exact synchronous native indentation.
           // Every other beforeinput keeps the ordinary linked-folder/model guard.
           if (currentIndentAction(raw)) return;
+          // N5 phone (D11 보강): ⌫·Delete or typing in a linked folder line's leading spaces, or joining it to the line
+          // above, would move the folder by text. Nothing changes and the reason shows, instead of a refused draft
+          // that blocks saving and keeps a recovery row.
+          if (textarea.value === controller.getState().raw && textEditTouchesLinkedFolderIndent(controller.getState().working, props.docId, start, end, insert)) {
+            event.preventDefault(); event.stopImmediatePropagation();
+            setMessage(FOLDER_INDENT_NOTICE); indentRefusal.current = { kind: 'folder' }; return;
+          }
           if (!controller.prepareRaw(raw,{inputType:type??'',compositionGeneration:compositionGeneration.current,...(type==='insertFromPaste'?{inputSplice:{start,end,text:insert}}:{}),folderHold:heldInput(raw,start+insert.length,type??'')})) {
             event.preventDefault(); event.stopImmediatePropagation();
             const index = textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1;
