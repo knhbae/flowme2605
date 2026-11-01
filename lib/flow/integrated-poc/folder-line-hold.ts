@@ -30,6 +30,15 @@ export function textEditTouchesLinkedFolderIndent(state: TextWorkspaceState, doc
   });
 }
 
+/** A refused D11 action (⇤·⇥ or a text edit) and the lines it was about. */
+export type FolderIndentRefusal = { docId: string; lineIds: string[] };
+/** N5 3b review: a refused D11 action's reason still stands while one of its lines is a linked folder line other than
+ *  the one a D11 B move just moved. Without a record it stands. */
+export function folderRefusalStands(state: TextWorkspaceState, refusal: FolderIndentRefusal | null, movedLineId: string): boolean {
+  return !refusal || refusal.lineIds.some(id => id !== movedLineId && state.bindings.some(binding => binding.kind === 'scope'
+    && binding.docId === refusal.docId && binding.lineId === id && state.folders.some(folder => folder.id === binding.scopeId)));
+}
+
 export function restoredLineOffset(raw: string, index: number, line: string, offset: number): number {
   const lines = raw.split('\n'), old = lines[index] ?? '', start = lines.slice(0, index).join('\n').length + (index ? 1 : 0);
   if (offset < start) return offset;

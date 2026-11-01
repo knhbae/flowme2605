@@ -45,13 +45,14 @@ function nodeOf(match: (node: ts.Node) => boolean) {
   visit(tree); assert.equal(found.length, 1); return found[0];
 }
 const guardSource = (nodeOf(node => ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === 'preventLockedInput') as ts.VariableDeclaration).initializer!.getText(tree);
+const refuseSource = nodeOf(node => ts.isFunctionDeclaration(node) && node.name?.text === 'refuseFolderIndent').getText(tree);
 function guardFor(draft: Draft, docId: string) {
   const messages: string[] = [], textarea = { value: draft.getState().raw, selectionStart: 0, selectionEnd: 0 };
   const scope = { controller: draft, textarea, props: { docId }, setMessage: (text: string) => messages.push(text), indentRefusal: { current: null },
-    composingRef: { current: false }, inputLockedRef: { current: false }, compositionGeneration: { current: 0 }, propsRef: { current: { validateWorkspace: () => true } },
-    undoFolderMove: () => false, explainRawFolderUndo: () => {}, currentIndentAction: () => null, heldInput: () => undefined, accessFor: () => undefined,
+    composingRef: { current: false }, inputLockedRef: { current: false }, compositionGeneration: { current: 0 }, propsRef: { current: { docId, validateWorkspace: () => true } },
+    undoFolderMove: () => false, explainRawFolderUndo: () => {}, currentIndentAction: () => null, heldInput: () => undefined, accessFor: () => undefined, folderRefusal: { current: null },
     currentDoc: () => M.getDocument(draft.getState().working, docId), programTextProtectionMessage: () => 'PROTECTED', FOLDER_INDENT_NOTICE, textEditTouchesLinkedFolderIndent, M };
-  const code = ts.transpileModule('const guard = (' + guardSource + ');', { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
+  const code = ts.transpileModule(refuseSource + '\nconst guard = (' + guardSource + ');', { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
   const guard = new Function(...Object.keys(scope), code + '\nreturn guard;')(...Object.values(scope)) as (event: unknown) => void;
   return { messages, press(inputType: string, caret: number, data: string | null = null) {
     textarea.value = draft.getState().raw; textarea.selectionStart = textarea.selectionEnd = caret;

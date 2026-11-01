@@ -79,7 +79,9 @@ test('an indent over a linked folder line, alone or with other lines, is the cas
 test('the editor skips such an indent in canApplyIndent and keeps Tab in the text', () => {
   const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
   // S5: the bar's own notice stays quiet for this one (kind 'folder'); the folder notice says it.
-  assert.match(editor, /if \(state\.raw === textArea\(\)\?\.value && indentTouchesLinkedFolder\(state\.working, props\.docId, details\.startLine, details\.endLine\)\) \{\r?\n\s*folderIndentSkipped\.current = true; indentRefusal\.current = \{ kind: 'folder' \}; setMessage\(FOLDER_INDENT_NOTICE\); return false;/);
+  assert.match(editor, /if \(state\.raw === textArea\(\)\?\.value && indentTouchesLinkedFolder\(state\.working, props\.docId, details\.startLine, details\.endLine\)\) \{\r?\n\s*folderIndentSkipped\.current = true; indentRefusal\.current = \{ kind: 'folder' \}; refuseFolderIndent\(state\.working, details\.startLine, details\.endLine\); return false;/);
+  // N5 3b review: that notice is the D11 reason, remembered with its lines.
+  assert.match(editor, /function refuseFolderIndent\(state: TextWorkspaceState, from: number, to: number\) \{[\s\S]{0,300}setMessage\(FOLDER_INDENT_NOTICE\);\r?\n  \}/);
   assert.match(editor, /onKeyDown=\{event => \{ if \(event\.key === 'Tab' && folderIndentSkipped\.current\) event\.preventDefault\(\); folderIndentSkipped\.current = false; \}\}/);
   // The bar and a held press reach the same check through the native editor's indent.
   assert.match(editor, /if \(!target\.instance\.indent\(action === 'outdent'\)\) explainIndent\(action, target\.area\);/);

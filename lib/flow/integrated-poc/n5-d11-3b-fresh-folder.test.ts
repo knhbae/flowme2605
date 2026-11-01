@@ -7,7 +7,7 @@ import { createProgramTextDraft, FOLDER_INDENT_NOTICE } from './program-text-dra
 import { createProgramDocumentInput } from './program-document-input';
 import { createEmptyTextWorkspace, textEditorRows, textWorkspaceModel as M } from './text-workspace';
 import { folderBarLine, taskMarkerLock, writingBarLine } from './writing-bar';
-import { indentTouchesLinkedFolder } from './folder-line-hold';
+import { folderRefusalStands, indentTouchesLinkedFolder, textEditTouchesLinkedFolderIndent } from './folder-line-hold';
 import type { FolderIndentPlan } from './folder-operation';
 
 // N5 phone 3b (S4-V11-PHONE-RESULT, 11/2): '폰부모' then '폰부모 › 폰자식2' made at the end of a document whose earlier
@@ -48,29 +48,45 @@ function nodeOf(match: (node: ts.Node) => boolean) {
 }
 const named = (name: string) => (node: ts.Node) => (ts.isPropertyAssignment(node) || ts.isVariableDeclaration(node)) && ts.isIdentifier(node.name) && node.name.text === name;
 const valueOf = (name: string) => ((nodeOf(named(name)) as ts.PropertyAssignment | ts.VariableDeclaration).initializer!).getText(tree);
-const readBarLineSource = nodeOf(node => ts.isFunctionDeclaration(node) && node.name?.text === 'readBarLine').getText(tree);
-const pressSource = ts.transpileModule(`${readBarLineSource}
+const declared = (name: string) => nodeOf(node => ts.isFunctionDeclaration(node) && node.name?.text === name).getText(tree);
+const pressSource = ts.transpileModule(`${declared('readBarLine')}
+${declared('refuseFolderIndent')}
 let indentCandidate = null, indentAction = null;
 const currentIndentAction = (${valueOf('currentIndentAction')});
+const applyFreshIndent = (${valueOf('applyFreshIndent')});
 const adjustIndentPlan = (${valueOf('adjustIndentPlan')});
 const canApplyIndent = (${valueOf('canApplyIndent')});
 const onIndentStart = (${valueOf('onIndentStart')});
-const onIndentEnd = (${valueOf('onIndentEnd')});`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
+const onIndentEnd = (${valueOf('onIndentEnd')});
+const preventLockedInput = (${valueOf('preventLockedInput')});`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
 function editorFor(t: Phone) {
-  const messages: string[] = [], area = { value: '', selectionStart: 0, selectionEnd: 0 };
-  const propsRef = { current: { docId: t.docId, active: true, readOnly: false, folderId: undefined } };
-  const scope = { barEditor: () => ({ instance: {}, area }), textArea: () => area, propsRef, props: propsRef.current, regionPortRef: { current: null },
+  // The editor's message: what was set, and what shows now (a setter function sees the current one).
+  const messages: string[] = [], area = { value: '', selectionStart: 0, selectionEnd: 0 }; let shown = '';
+  const setMessage = (value: string | ((current: string) => string)) => { shown = typeof value === 'function' ? value(shown) : value; if (typeof value === 'string') messages.push(value); };
+  const propsRef = { current: { docId: t.docId, active: true, readOnly: false, folderId: undefined, validateWorkspace: () => true } };
+  const scope = { barEditor: () => ({ instance: {}, area }), textArea: () => area, textarea: area, propsRef, props: propsRef.current, regionPortRef: { current: null },
     currentState: () => t.draft.getState().working, draftRef: { current: t.draft }, controller: t.draft, documentInputRef: { current: t.owner },
     folderNoticeRef: t.notice, alive: true, composingRef: { current: false }, inputLockedRef: { current: false }, indentDisabled: () => false,
-    folderIndentSkipped: { current: false }, indentRefusal: { current: null }, setMessage: (text: string) => messages.push(text), today: () => '2026-11-02',
-    textEditorRows, writingBarLine, taskMarkerLock, folderBarLine, indentTouchesLinkedFolder, FOLDER_INDENT_NOTICE, FOLDER_STRUCTURE_LOCK: 'REGION', M };
-  const run = new Function(...Object.keys(scope), pressSource + '\nreturn { readBarLine, currentIndentAction, adjustIndentPlan, canApplyIndent, onIndentStart, onIndentEnd };')(...Object.values(scope));
-  /** Touch the end of line `index` (the caret lands there; the bar reads it). */
-  const touch = (index: number) => {
-    area.value = t.draft.getState().raw; area.selectionStart = area.selectionEnd = rows(t).slice(0, index + 1).join('\n').length;
+    folderIndentSkipped: { current: false }, indentRefusal: { current: null }, folderRefusal: { current: null }, setMessage, today: () => '2026-11-02',
+    compositionGeneration: { current: 0 }, undoFolderMove: () => false, explainRawFolderUndo: () => {}, heldInput: () => undefined, accessFor: () => undefined,
+    currentDoc: () => M.getDocument(t.draft.getState().working, t.docId), programTextProtectionMessage: () => 'PROTECTED',
+    textEditorRows, writingBarLine, taskMarkerLock, folderBarLine, indentTouchesLinkedFolder, textEditTouchesLinkedFolderIndent, folderRefusalStands,
+    FOLDER_INDENT_NOTICE, FOLDER_STRUCTURE_LOCK: 'REGION', M };
+  const run = new Function(...Object.keys(scope), pressSource
+    + '\nreturn { readBarLine, currentIndentAction, applyFreshIndent, adjustIndentPlan, canApplyIndent, onIndentStart, onIndentEnd, preventLockedInput };')(...Object.values(scope));
+  /** Touch the end of line `index` (the caret lands there; the bar reads it), or `column` in it. */
+  const touch = (index: number, column?: number) => {
+    area.value = t.draft.getState().raw;
+    area.selectionStart = area.selectionEnd = column === undefined ? rows(t).slice(0, index + 1).join('\n').length : rows(t).slice(0, index).join('\n').length + (index ? 1 : 0) + column;
     return run.readBarLine() as { canOutdent: boolean; structureLock?: string };
   };
-  return { messages, touch,
+  return { messages, touch, shown: () => shown,
+    /** A key typed where `touch` left the caret, through the editor's beforeinput guard. True when the guard stopped it. */
+    key(inputType: string, data: string | null = null) {
+      let prevented = false;
+      run.preventLockedInput({ inputType, data, preventDefault: () => { prevented = true; }, stopImmediatePropagation: () => {}, get defaultPrevented() { return prevented; } });
+      return prevented;
+    },
     /** The bar's ⇤ with the caret where `touch` left it, as the vendor's indent() runs it. True when it changed the text. */
     outdent() {
       const selection = { start: area.selectionStart, end: area.selectionEnd, direction: 'none' }, working = t.draft.getState().working;
@@ -81,7 +97,7 @@ function editorFor(t: Phone) {
       run.onIndentStart(plan);
       const proof = run.currentIndentAction(plan!.nextRaw); run.onIndentEnd();
       assert(proof, 'a D11 B move goes through its own proof, never as text');
-      assert(t.draft.applyFreshFolderIndent(proof, plan!.nextRaw));
+      assert(run.applyFreshIndent(proof, plan!.nextRaw));
       t.notice.current = { operationId: t.draft.folderOperation()!.id }; return true;
     } };
 }
@@ -108,6 +124,7 @@ test('N5 3b phone path: new parent, its child renamed then emptied, then 폰자�
   assert.deepEqual(rows(t).slice(1), ['- /폰부모', '- /폰자식2', '    ', '    ', '  ']);
   assert.equal(folderOf(t, '폰자식2').parentId, null); assert.equal(t.draft.getState().folderNotice, '‘폰자식2’를 최상위로 옮겼습니다');
   assert.deepEqual(ids(t), beforeIds); assert.deepEqual(bar.messages, [FOLDER_INDENT_NOTICE], 'no new refusal');
+  assert.equal(bar.shown(), '', 'the earlier reason was about 폰자식, no longer a folder line: the move notice is in front');
   assert(t.draft.undoFolderOperation(t.draft.folderOperation()!.id).ok);
   assert.deepEqual(t.draft.getState().working, before, '되돌리기 restores the exact text, IDs and parent');
 });
@@ -156,8 +173,38 @@ for (const [name, edit] of [['a space on a blank below', (lines: string[]) => { 
   assert.equal(editorFor(t).touch(2).canOutdent, false);
 });
 
-test('N5 3b: a D11 B move takes down an earlier refusal\'s reason (that one only), so the move notice is the one in front', () => {
-  const text = editor.replace(/\r\n/g, '\n'), at = text.indexOf('const indentProof = currentIndentAction(raw);');
-  assert(at > 0 && text.slice(at).startsWith("const indentProof = currentIndentAction(raw);\n        // N5 3b: once the new folder moved, an earlier refusal's reason no longer stands in front of its notice.\n"
-    + "        if (indentProof) { accepted = controller.applyFreshFolderIndent(indentProof, raw); if (accepted) setMessage(current => current === FOLDER_INDENT_NOTICE ? '' : current); }"));
+// Review P2 (11/2): the reason was taken down by its text alone, so a reason about another, still linked folder line went too.
+function oldAndNew() {
+  const t = phone('- /기존부모\n  - /기존자식\n'), bar = editorFor(t);
+  make(t, 2, '- /새부모'); make(t, 3, '  - /새자식');
+  assert.deepEqual(rows(t), ['- /기존부모', '  - /기존자식', '- /새부모', '  - /새자식', '    ']);
+  return { t, bar };
+}
+test('N5 3b review: ⇤ refused on an existing child, then the fresh child moves: the reason about the existing child stays', () => {
+  const { t, bar } = oldAndNew();
+  assert.equal(bar.touch(1).canOutdent, false); assert.equal(bar.outdent(), false); assert.equal(bar.shown(), FOLDER_INDENT_NOTICE);
+  assert.equal(bar.touch(3).canOutdent, true, 'no edit in between: the new child is still fresh');
+  assert(bar.outdent()); assert.equal(folderOf(t, '새자식').parentId, null);
+  assert.equal(bar.shown(), FOLDER_INDENT_NOTICE, '기존자식 still does not move by text');
+  assert.equal(folderOf(t, '기존자식').parentId, folderOf(t, '기존부모').id);
+});
+test('N5 3b review: ⌫ stopped in an existing child\'s spaces, then the fresh child moves: that reason stays too', () => {
+  const { t, bar } = oldAndNew();
+  bar.touch(1, 2); assert.equal(bar.key('deleteContentBackward'), true); assert.equal(bar.shown(), FOLDER_INDENT_NOTICE);
+  bar.touch(3); assert(bar.outdent());
+  assert.equal(bar.shown(), FOLDER_INDENT_NOTICE);
+});
+test('N5 3b review: a reason about the moved line itself is taken down by its move', () => {
+  const { t, bar } = oldAndNew();
+  // A space typed before the fresh child's '- /' is stopped (it would move the folder by text) and leaves the draft as it was.
+  bar.touch(3, 0); assert.equal(bar.key('insertText', ' '), true); assert.equal(bar.shown(), FOLDER_INDENT_NOTICE);
+  bar.touch(3); assert(bar.outdent()); assert.equal(folderOf(t, '새자식').parentId, null);
+  assert.equal(bar.shown(), '');
+});
+test('N5 3b review: a reason whose folder line was emptied since no longer stands; one with any linked line among them does', () => {
+  const { t } = oldAndNew(), working = t.draft.getState().working, lines = M.getDocument(working, t.docId)!.lines;
+  assert.equal(folderRefusalStands(working, { docId: t.docId, lineIds: [lines[1].id, lines[4].id] }, lines[3].id), true);
+  assert.equal(folderRefusalStands(working, { docId: t.docId, lineIds: [lines[3].id, lines[4].id] }, lines[3].id), false);
+  assert.equal(folderRefusalStands(working, { docId: t.docId, lineIds: ['gone', lines[4].id] }, lines[3].id), false);
+  assert.equal(folderRefusalStands(working, null, lines[3].id), true, 'no record: it stays');
 });
