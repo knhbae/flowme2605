@@ -13,6 +13,23 @@ export function indentTouchesLinkedFolder(state: TextWorkspaceState, documentId:
     && binding.docId === documentId && binding.lineId === line.id && state.folders.some(folder => folder.id === binding.scopeId)));
 }
 
+/** N5 phone (D11 보강): whether a text edit replacing `start`..`end` of the document's RAW with `insert` would change a
+ *  linked folder line's indentation or join it to the line above (⌫ at its start or in its spaces, Delete at the end
+ *  of the line above, spaces or letters typed before its "- /"). Editing its name after "- /", an Enter at its very
+ *  start and deleting the whole line are not that. */
+export function textEditTouchesLinkedFolderIndent(state: TextWorkspaceState, documentId: string, start: number, end: number, insert: string): boolean {
+  const lines = M.getDocument(state, documentId)?.lines ?? [];
+  let offset = 0;
+  return lines.some((line, index) => {
+    const at = offset; offset += line.text.length + 1;
+    if (!state.bindings.some(binding => binding.kind === 'scope' && binding.docId === documentId && binding.lineId === line.id
+      && state.folders.some(folder => folder.id === binding.scopeId))) return false;
+    const spaces = /^ */.exec(line.text)![0].length;
+    if (end > start) return start <= at && end >= at + line.text.length ? false : start < at + spaces && end > at - (index ? 1 : 0);
+    return start >= at && start <= at + spaces && !(start === at && insert.endsWith('\n'));
+  });
+}
+
 export function restoredLineOffset(raw: string, index: number, line: string, offset: number): number {
   const lines = raw.split('\n'), old = lines[index] ?? '', start = lines.slice(0, index).join('\n').length + (index ? 1 : 0);
   if (offset < start) return offset;
