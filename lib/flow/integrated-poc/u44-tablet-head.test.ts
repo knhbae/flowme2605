@@ -100,13 +100,16 @@ test('U44 re-review: an open ⋯, its name as typed or selected, and the focus b
   };
   // A name typed in ⋯: the menu opens again with it, its caret where it was.
   const typed = move(head({}, [], { value: '새 이름', defaultValue: '작성한 글' }), head({ head: true }), true, 'title');
-  assert.deepEqual([typed.menu.open, typed.input?.value, typed.log], [true, '새 이름', ['title', 'select 0-5 forward']]);
+  assert.deepEqual([typed.menu.open, typed.input?.value, typed.log], [true, '새 이름', ['select 0-5 forward', 'title', 'select 0-5 forward']]);
   // The name selected but not yet typed over: its selection comes along, so the next letter still replaces it.
   const selected = move(head({}), head({ head: true }), true, 'title');
-  assert.deepEqual([selected.input?.value, selected.log], ['작성한 글', ['title', 'select 0-5 forward']]);
+  assert.deepEqual([selected.input?.value, selected.log], ['작성한 글', ['select 0-5 forward', 'title', 'select 0-5 forward']]);
   // A confirmation step ('삭제 취소') starts over in the new place: the focus goes to ⋯, whose menu is open again.
   const confirm = move(head({}, [{ tagName: 'BUTTON', text: '삭제 취소' }]), head({ head: true }, [{ tagName: 'BUTTON', text: '문서 삭제…', head: true }]), true, '삭제 취소');
-  assert.deepEqual([confirm.menu.open, confirm.log], [true, ['현재 글 작업']]);
+  assert.deepEqual([confirm.menu.open, confirm.log], [true, ['select 0-5 forward', '현재 글 작업']]);
+  // 3rd review: the name selected, then the focus moved to ⋯ only: the selection comes along all the same.
+  const apart = move(head({}), head({ head: true }), true, '현재 글 작업');
+  assert.deepEqual([apart.menu.open, apart.log], [true, ['select 0-5 forward', '현재 글 작업']]);
   // ← 오늘 and the title are found again by their labels; the notice's 확인, not another 확인 in an editor.
   assert.deepEqual(move(head({}), head({ head: true }), false, '오늘 목록으로 돌아가기').log, ['오늘 목록으로 돌아가기']);
   assert.deepEqual(move(head({}), head({ head: true }), false, '작성한 글 · 문서 목록 열기').log, ['작성한 글 · 문서 목록 열기']);

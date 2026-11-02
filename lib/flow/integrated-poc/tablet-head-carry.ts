@@ -21,7 +21,8 @@ function controlKey(element: Element) {
 export interface ProgramHeadCarry {
   documentId: string;
   menuOpen: boolean;
-  /** The name field in ⋯, typed in or focused: its words, with the title they were typed over, and its selection. */
+  /** The name field in ⋯ (open, typed in or focused): its words, with the title they were typed over, and its
+   *  selection, focused or not. */
   name: { title: string; value: string; start: number | null; end: number | null; direction: 'forward' | 'backward' | 'none' | null } | null;
   /** The focused control: the element itself (to tell whether the move took it), what it is, and which of the same. */
   focus: { element: Element; key: string; nth: number; inMenu: boolean } | null;
@@ -30,7 +31,7 @@ export interface ProgramHeadCarry {
 /** Read just before the head moves, while its old place is still drawn. Null when nothing there needs carrying. */
 export function carryProgramHead(documentId: string, root: ParentNode | null, menu: HTMLDetailsElement | null, active: Element | null): ProgramHeadCarry | null {
   const input = menu?.querySelector<HTMLInputElement>('input[name="title"]') ?? null;
-  const name = input && (input.value !== input.defaultValue || active === input)
+  const name = input && (menu?.open || input.value !== input.defaultValue || active === input)
     ? { title: input.defaultValue, value: input.value, start: input.selectionStart, end: input.selectionEnd, direction: input.selectionDirection } : null;
   const controls = root && active ? headControls(root) : [];
   const key = active && controls.includes(active as HTMLElement) ? controlKey(active) : null;
@@ -46,10 +47,13 @@ export function restoreProgramHead(carry: ProgramHeadCarry, documentId: string, 
   if (carry.menuOpen && menu && !menu.open) menu.open = true;
   const input = menu?.querySelector<HTMLInputElement>('input[name="title"]') ?? null;
   if (carry.name && input && input.defaultValue === carry.name.title && input.value === input.defaultValue) input.value = carry.name.value;
+  // The name's words and selection come along whether or not the focus is there (3rd review: kept apart from focus).
+  const select = () => { if (carry.name && input && input.value === carry.name.value) input.setSelectionRange(carry.name.start, carry.name.end, carry.name.direction ?? undefined); };
+  select();
   const focus = carry.focus;
   if (!focus || focus.element.isConnected || active && active !== active.ownerDocument?.body) return;
   const same = root ? headControls(root).filter(control => controlKey(control) === focus.key) : [];
   const target = same[focus.nth] ?? same[0] ?? (focus.inMenu ? menu?.querySelector<HTMLElement>(':scope > summary') : null) ?? title;
   target?.focus({ preventScroll: true });
-  if (carry.name && input && target === input && input.value === carry.name.value) input.setSelectionRange(carry.name.start, carry.name.end, carry.name.direction ?? undefined);
+  if (target === input) select();
 }
