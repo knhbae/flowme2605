@@ -49,7 +49,7 @@ import regionStyles from './ProgramFolderRegionEditor.module.css';
 import { readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { readProgramMemoContext, programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
 import { ProgramProgressForm } from './ProgramProgressForm';
-import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckRevertAll, programCheckSaveOutcome, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
+import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckSaveOutcome, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
 import {ProgramWritingInline} from './ProgramWritingInline';
 import {prepareWritingChild} from '@/lib/flow/integrated-poc/writing-child-command';
 import {planWritingInsertion} from '@/lib/flow/integrated-poc/writing-insertion-command';
@@ -327,13 +327,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [checkNotice, setCheckNoticeState] = useState<ProgramCheckNotice | null>(null);
   const checkNoticeRef = useRef<ProgramCheckNotice | null>(null), checkNoticeKeys = useRef(0);
   const setCheckNotice = (next: ProgramCheckNotice | null) => { checkNoticeRef.current = next; setCheckNoticeState(next); };
-  // C2 re-review: each task's (document + task ID) choice held for a save in flight, or step on its way, kept apart
-  // from the notice: another task's check that replaces the notice never drops it, and each save is settled alone.
-  type CheckWork = { notice: ProgramCheckNotice; step?: ProgramCheckStep; saving?: ProgramCheckNotice['saving'] };
-  const checkWork = useRef(new Map<string, CheckWork>());
+  // C2: what a check left on its way, by task (document + task ID) and apart from the notice, so another task's
+  // notice never drops it: the save each step started, settled on its own, and a choice waiting for a save in flight.
+  type CheckStepToRun = Exclude<ProgramCheckStep, { kind: 'chips' }>;
+  const checkSaves = useRef(new Map<string, { notice: ProgramCheckNotice; percent: number; undo: boolean; quiet: boolean }>());
+  const checkHeld = useRef(new Map<string, { notice: ProgramCheckNotice; step: Extract<CheckStepToRun, { kind: 'undo' | 'percent' }> }>());
   const checkWorkKey = (targetId: string) => propsRef.current.docId + '\n' + targetId;
-  // Final review: the tasks whose save was refused, put back to what is saved together, in one change.
-  const refusedChecks = useRef(new Set<string>());
   // Linked folder lines an edit other than typing (a paste) renamed, by line ID, until they are put back.
   const renamedFolderLinesRef = useRef(new Set<string>());
   const documentInputRef=useRef<ProgramDocumentInput|null>(null);
@@ -1292,56 +1291,56 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
    *  a task supersedes a choice of its still waiting. */
   function noticeCheck(targetId: string, title: string, before: number | null) {
     const work = checkWorkKey(targetId);
+    checkHeld.current.delete(work);
     if (before !== null && before !== 100 && M.currentProgress(currentState(), targetId) === 100) {
-      // Re-review (총괄): the check shows at once; the notice says "완료 저장 중…" until the save settles, and a refused
-      // save turns it into a warning and puts the check back to what is saved.
-      const saving = { percent: 100, undo: false, quiet: true }, notice: ProgramCheckNotice = { stage: 'done', targetId, title, before, after: 100, shownAt: performance.now(), key: ++checkNoticeKeys.current, saving };
-      checkWork.current.set(work, { notice, saving }); setCheckNotice(notice);
+      // 총괄: the check shows at once; the notice says "완료 저장 중…" until the save settles.
+      const notice: ProgramCheckNotice = { stage: 'done', targetId, title, before, after: 100, shownAt: performance.now(), key: ++checkNoticeKeys.current, saving: { percent: 100, undo: false, quiet: true } };
+      checkSaves.current.set(work, { notice, percent: 100, undo: false, quiet: true }); setCheckNotice(notice);
     } else {
-      checkWork.current.delete(work);
+      checkSaves.current.delete(work);
       if (checkNoticeRef.current?.targetId === targetId) setCheckNotice(null);
     }
   }
-  /** C2 review P2: each step on its way is settled off the saved record: saved (only then "기록했습니다"), refused (what
-   *  is saved is said, and the check goes back to it), or everything saved with another value. A refused or overtaken
-   *  step is said even under another task's notice; a saved one updates only its own. */
+  /** C2: each step on its way is settled off the draft: saved (only then "완료했습니다" or "기록했습니다"), refused, saved
+   *  with another value, or overtaken by newer input on the screen (its words no longer apply). 총괄 (11/2): a refused
+   *  save is left to the editor's own handling, which keeps the input and says it did not save; this only says so too,
+   *  and drops the choices that waited for that save. Nothing is put back or saved again here. A failure is said even
+   *  under another task's notice (the shown task's first); a success changes only its own task's notice. */
   function settleCheckSaves() {
     const state = draftRef.current?.getState();
     if (!state) return;
-    // Every outcome is read off this one state; the refused ones are put back together after the pass, and the
-    // notice names the shown task's failure (else the first): a revert started mid-pass would skip the rest.
-    let failure: ProgramCheckNotice | null = null;
-    for (const [work, entry] of [...checkWork.current]) {
-      if (!entry.saving || entry.step) continue;
-      const { percent, undo, quiet } = entry.saving, targetId = entry.notice.targetId, saved = M.currentProgress(state.committed, targetId);
-      const outcome = programCheckSaveOutcome(saved, percent, state);
+    const refused = !state.saving && (!!state.error || state.invalid);
+    let failure: ProgramCheckNotice | null = null, failureShown = false;
+    const fail = (notice: ProgramCheckNotice, mine: boolean, detail: Parameters<typeof programCheckNoticeFailed>[1]) => {
+      if (failureShown) return;
+      failure = programCheckNoticeFailed(notice, detail, performance.now(), ++checkNoticeKeys.current); failureShown = mine;
+    };
+    const dropHeld = (work: string) => {
+      const held = checkHeld.current.get(work);
+      if (!held) return undefined;
+      checkHeld.current.delete(work);
+      return { percent: held.step.kind === 'undo' ? held.notice.before : held.step.percent, undo: held.step.kind === 'undo' };
+    };
+    for (const [work, entry] of [...checkSaves.current]) {
+      const { notice, percent, undo, quiet } = entry, targetId = notice.targetId, saved = M.currentProgress(state.committed, targetId);
+      const outcome = programCheckSaveOutcome(saved, M.currentProgress(state.working, targetId), percent, state);
       if (!outcome) continue;
-      checkWork.current.delete(work);
+      checkSaves.current.delete(work);
       const visible = checkNoticeRef.current, mine = visible?.targetId === targetId ? visible : null;
+      if (outcome === 'overtaken') { if (mine?.saving?.percent === percent && !checkHeld.current.has(work)) setCheckNotice(null); continue; }
       if (outcome === 'saved') {
-        if (mine) setCheckNotice(quiet ? { ...mine, saving: undefined } : undo ? null : programCheckNoticeAfter(mine, percent, performance.now(), ++checkNoticeKeys.current));
+        if (mine && !checkHeld.current.has(work)) setCheckNotice(quiet ? { ...mine, saving: undefined } : undo ? null : programCheckNoticeAfter(mine, percent, performance.now(), ++checkNoticeKeys.current));
         continue;
       }
-      if (mine || !failure) failure = programCheckNoticeFailed(mine ?? entry.notice, percent, saved, outcome === 'refused' ? 'save' : 'changed', performance.now(), ++checkNoticeKeys.current);
-      if (outcome === 'refused') refusedChecks.current.add(targetId);
+      fail(mine ?? notice, !!mine, outcome === 'refused' ? { why: 'save', asked: percent, askedUndo: undo, dropped: refused ? dropHeld(work) : undefined }
+        : { why: 'changed', asked: percent, kept: saved });
+    }
+    // Choices still waiting when a save was refused are dropped too, and said.
+    if (refused) for (const [work, held] of [...checkHeld.current]) {
+      const mine = checkNoticeRef.current?.targetId === held.notice.targetId ? checkNoticeRef.current : null;
+      fail(mine ?? held.notice, !!mine, { why: 'save', dropped: dropHeld(work) });
     }
     if (failure) setCheckNotice(failure);
-    if (refusedChecks.current.size) whenComposed(restoreRefusedChecks)();
-  }
-  /** C2 (총괄): every task whose save was refused goes back to what is saved, all in one change, so the save it starts
-   *  stores them all as the notices say; other unsaved input stays. With a save in flight it waits for that save to
-   *  end; a task that save stored after all is left as it is, and its notice says what was saved. */
-  function restoreRefusedChecks() {
-    const state = draftRef.current?.getState();
-    if (!state || state.saving || state.invalid || !refusedChecks.current.size) return;
-    const { next, agreed } = programCheckRevertAll(state.working, state.committed, [...refusedChecks.current], M.validate);
-    refusedChecks.current.clear();
-    const visible = checkNoticeRef.current;
-    if (visible?.stage === 'failed' && agreed.includes(visible.targetId)) {
-      const value = M.currentProgress(state.committed, visible.targetId);
-      setCheckNotice(value !== null && value === visible.asked ? programCheckNoticeAfter(visible, value, performance.now(), ++checkNoticeKeys.current) : null);
-    }
-    if (next !== state.working) void apply(next, '저장되지 않은 체크 되돌리기');
   }
   /** C2: a tap on a task between 1% and 99% shows the chips, [완료] first, where the tap could have toggled it. */
   function showCheckChips(lineId: string | null) {
@@ -1358,25 +1357,26 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (step.kind === 'chips') { setCheckNotice({ ...notice, stage: 'chips', shownAt: performance.now(), key: ++checkNoticeKeys.current }); return; }
     performCheckStep(notice, step);
   }
-  /** C2: a step on the task `notice` names, now or, while a save is in flight, once it ends (re-review: held by task,
-   *  not by notice). The notice shown is updated only while it is still this task's. */
-  function performCheckStep(notice: ProgramCheckNotice, step: Exclude<ProgramCheckStep, { kind: 'chips' }>) {
+  /** C2: a step on the task `notice` names, now or, while a save is in flight, once it ends (held by task, not by
+   *  notice). The notice shown is updated only while it is still this task's; a save already on its way stays tracked. */
+  function performCheckStep(notice: ProgramCheckNotice, step: CheckStepToRun) {
     const work = checkWorkKey(notice.targetId), shown = () => checkNoticeRef.current?.targetId === notice.targetId ? checkNoticeRef.current : null;
-    const leave = () => { checkWork.current.delete(work); if (shown()) setCheckNotice(null); };
+    const leave = () => { if (shown()) setCheckNotice(null); };
     const lineId = (documentInputRef.current?.rows(currentState()) ?? M.rowMeta(currentState(), propsRef.current.docId)).find(row => row.progressTargetId === notice.targetId)?.id ?? null;
     if (!lineId) { leave(); setMessage('이 할 일을 문서에서 찾지 못했습니다. 현재 내용과 기록은 유지했습니다.'); return; }
+    // Review: [직접] only opens the form; a save on its way keeps being watched, so a refusal is still said.
     if (step.kind === 'direct') { leave(); openProgress(lineId); return; }
     const access = accessFor(lineId);
     if (!access || access.kind !== 'active' || access.reason) { leave(); setPanel({ kind: 'reference', lineId }); return; }
     const percent = step.kind === 'undo' ? notice.before : step.percent, saving = { percent, undo: step.kind === 'undo', quiet: false };
-    // Review P2: a choice made while a save is in flight waits for it, and its notice says so until it is settled;
-    // the clock never ends it (× does, and drops the choice with it).
+    // A choice made while a save is in flight waits for it, and its notice says so until it is settled; the clock never
+    // ends it (× does, and drops the choice with it). If that save is refused, the choice is dropped and said.
     if (draftRef.current?.getState().saving) {
-      checkWork.current.set(work, { notice, step });
+      checkHeld.current.set(work, { notice, step });
       const mine = shown(); if (mine) setCheckNotice({ ...mine, saving });
       return;
     }
-    const unsent = () => { checkWork.current.delete(work); const mine = shown(); if (mine?.saving && !mine.saving.quiet) setCheckNotice({ ...mine, saving: undefined }); };
+    const unsent = () => { const mine = shown(); if (mine?.saving && !mine.saving.quiet) setCheckNotice({ ...mine, saving: undefined }); };
     const current = M.currentProgress(currentState(), notice.targetId);
     if (step.kind === 'undo' && !programCheckUndoable(notice, current)) { leave(); setMessage('그 뒤에 진행률이 바뀌어 되돌리지 않았습니다. 현재 기록은 유지했습니다.'); return; }
     if ((M.latestProgress(currentState(), notice.targetId)?.date ?? '') > today()) {
@@ -1388,14 +1388,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // apply said why when it refused; the notice then stays as it was.
     if (M.currentProgress(currentState(), notice.targetId) !== percent) { unsent(); return; }
     // Saving now: the notice says what was saved once the save has settled.
-    checkWork.current.set(work, { notice, saving });
+    checkSaves.current.set(work, { notice, ...saving });
     const mine = shown(); if (mine) setCheckNotice({ ...mine, saving });
     settleCheckSaves();
   }
   /** × on the notice: it ends, and a choice of its task still waiting for a save goes with it. */
   function closeCheckNotice() {
     const notice = checkNoticeRef.current;
-    if (notice && checkWork.current.get(checkWorkKey(notice.targetId))?.step) checkWork.current.delete(checkWorkKey(notice.targetId));
+    if (notice) checkHeld.current.delete(checkWorkKey(notice.targetId));
     setCheckNotice(null);
   }
   function openProgress(lineId: string | null, kind: 'progress' | 'date' = 'progress') {
@@ -1997,19 +1997,19 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const timer = window.setTimeout(() => { if (checkNoticeRef.current === checkNotice) setCheckNotice(null); }, Math.max(0, ends - performance.now()));
     return () => window.clearTimeout(timer);
   }, [checkNotice, noticeHeld, checkWaiting]);
-  // Choices held for a save run once it ends, one at a time: each starts a save the next one waits for. Refused
-  // checks waiting for a save go back first, together.
+  // Choices held for a save run once it ends well, one at a time: each starts a save the next one waits for. After a
+  // refused save they do not run; the settle that follows drops them and says so.
   useEffect(() => {
-    if (!draft.saving && refusedChecks.current.size) whenComposed(restoreRefusedChecks)();
     for (;;) {
-      if (draftRef.current?.getState().saving) break;
-      const held = [...checkWork.current].find(([, entry]) => entry.step);
+      const state = draftRef.current?.getState();
+      if (!state || state.saving || state.error || state.invalid) break;
+      const held = [...checkHeld.current][0];
       if (!held) break;
-      checkWork.current.delete(held[0]); performCheckStep(held[1].notice, held[1].step as Exclude<ProgramCheckStep, { kind: 'chips' }>);
+      checkHeld.current.delete(held[0]); performCheckStep(held[1].notice, held[1].step);
     }
   }, [draft.saving]);
   useEffect(() => { settleCheckSaves(); }, [draft]);
-  useEffect(() => { checkWork.current.clear(); refusedChecks.current.clear(); setCheckNotice(null); }, [props.docId]);
+  useEffect(() => { checkSaves.current.clear(); checkHeld.current.clear(); setCheckNotice(null); }, [props.docId]);
   // Review P2: a screen or document hiding this retained editor changes none of its props, only its size.
   useEffect(() => {
     const host = hostRef.current; if (!host) return;

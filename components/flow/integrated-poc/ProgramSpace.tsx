@@ -1781,7 +1781,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         return next;
       }, true, undefined, undefined, true);
       const failed = (kept: number | null, why: 'save' | 'changed') => setCheckNotice(shown => shown?.key !== key ? shown
-        : { ...programCheckNoticeFailed(shown, percent, kept, why, Date.now(), ++checkNoticeKeys.current), actorId: shown.actorId });
+        : { ...programCheckNoticeFailed(shown, { why, asked: percent, askedUndo: undo, kept }, Date.now(), ++checkNoticeKeys.current), actorId: shown.actorId });
       if (!result.ok) { if (result.reason === 'busy') setCheckNotice(shown => shown?.key !== key ? shown : { ...shown, saving: undefined }); else failed(progressNow, 'save'); return; }
       if (saved !== percent) { failed(saved, 'changed'); return; }
       if (percent === 100) setTaskNotice(currentNotice => currentNotice?.taskId === task.id ? null : currentNotice);
