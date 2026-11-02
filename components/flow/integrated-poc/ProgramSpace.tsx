@@ -55,7 +55,7 @@ import { resolveAlphaPrivateTaskSchedule } from '@/lib/flow/integrated-poc/alpha
 import styles from './ProgramSpace.module.css';
 import { programRecurrenceFocusId, resolveProgramRecurrencePlanFocus, type ProgramRecurrencePlanFocusRequest } from '@/lib/flow/integrated-poc/recurrence-plan-focus';
 import { programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
-import { restoreProgramDialogFocus } from '@/lib/flow/integrated-poc/dialog-return-focus';
+import { restoreProgramDialogFocus, type ProgramWritingReturn } from '@/lib/flow/integrated-poc/dialog-return-focus';
 import { readProgramTaskOrigin } from '@/lib/flow/integrated-poc/task-origin-presentation';
 import { addDocumentCollection, collectionDocumentIds, setDocumentCollectionLink, type DocumentCollections } from '@/lib/flow/integrated-poc/document-collections';
 import { createProgramWritingEntry } from '@/lib/flow/integrated-poc/writing-entry';
@@ -127,7 +127,7 @@ export type ProgramSpaceProps = {
   onPublishDocument?: (documentId: string) => void;
   onInspectCopy?: (copyId: string) => void;
   onOpenCopySource?: (flowId: string, documentId: string, returnFocus?: HTMLElement) => void;
-  onBrowseFlows?: (documentId?: string, returnFocus?: HTMLElement) => void;
+  onBrowseFlows?: (documentId?: string, returnFocus?: HTMLElement, writing?: ProgramWritingReturn) => void;
   importNotice?: { actorId: string; documentId: string; lineId?: string; text: string; busy: boolean; onCancel?: () => void };
   onRevisionHistory?: (documentId: string) => void;
   onOutputDocument?: (documentId: string) => void;
@@ -334,7 +334,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const libraryComposing = useRef(false);
   const libraryReturn = useRef<{ actorId: string; documentId: string; period: ProgramPeriod; folderId: string;
     element: HTMLElement | null; area: HTMLTextAreaElement | null; raw: string;
-    start: number; end: number; direction: 'forward' | 'backward' | 'none'; top: number; left: number } | null>(null);
+    start: number; end: number; direction: 'forward' | 'backward' | 'none'; top: number; left: number; pageX: number; pageY: number } | null>(null);
   const libraryReveal = useRef({ epoch: 0, frame: null as number | null,
     request: null as LibraryWritingHandoff | null, committedRequest: null as LibraryWritingHandoff | null });
   const [libraryHandoff, setLibraryHandoff] = useState<LibraryWritingHandoff | null>(null);
@@ -580,7 +580,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     libraryReturn.current = { actorId, documentId: selectedRef.current, period: presentation.current.period,
       folderId: presentation.current.folderId, element, area, raw: area?.value ?? '',
       start: area?.selectionStart ?? 0, end: area?.selectionEnd ?? 0,
-      direction: area?.selectionDirection ?? 'none', top: area?.scrollTop ?? 0, left: area?.scrollLeft ?? 0 };
+      direction: area?.selectionDirection ?? 'none', top: area?.scrollTop ?? 0, left: area?.scrollLeft ?? 0,
+      pageX: window.scrollX, pageY: window.scrollY };
   }
   function openFindPanel() {
     if (libraryComposing.current || inputLockCount.current > 0) {
@@ -1878,8 +1879,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       <div className={styles.findHeading}><h2 id="program-find-title">{props.hostMainTabs ? '문서' : '글 찾기'}</h2><button type="button" onClick={() => { if (!libraryComposing.current) { cancelLibraryReveal(); setLibraryOpen(false); } }}>닫기</button></div>
       {props.hostMainTabs && <button type="button" className={styles.sheetNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>＋ 새 글</button>}
       {props.hostMainTabs && props.capabilities?.discovery !== false && props.onBrowseFlows && <button type="button" className={styles.flowEntry} disabled={preparingDocumentAction} onClick={() => {
-        const returnFocus = libraryReturn.current?.area ?? libraryReturn.current?.element ?? titleToggle.current ?? libraryToggle.current ?? undefined;
-        setLibraryOpen(false); void (selectedDoc ? openDocumentAction(id => props.onBrowseFlows!(id, returnFocus)) : props.onBrowseFlows!(undefined, returnFocus));
+        const retained = libraryReturn.current, returnFocus = retained?.area ?? retained?.element ?? titleToggle.current ?? libraryToggle.current ?? undefined;
+        // FC7: this document's writing position rides along, so coming back puts caret and scroll where they were.
+        const writing = retained?.area && selectedDoc && retained.actorId === actorId && retained.documentId === selectedDoc.id
+          ? { documentId: selectedDoc.id, area: retained.area, raw: retained.raw, start: retained.start, end: retained.end, direction: retained.direction,
+            top: retained.top, left: retained.left, pageX: retained.pageX, pageY: retained.pageY } : undefined;
+        setLibraryOpen(false); void (selectedDoc ? openDocumentAction(id => props.onBrowseFlows!(id, returnFocus, writing)) : props.onBrowseFlows!(undefined, returnFocus));
       }}>준비된 Flow에서 시작 ›</button>}
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {libraryOpen && viewChangeNoticeContent}

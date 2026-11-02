@@ -5,7 +5,7 @@ import { remoteTextSparesDocuments } from '@/lib/flow/integrated-poc/remote-text
 import {createWritingCompute,type WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { restoreProgramDialogFocus } from '@/lib/flow/integrated-poc/dialog-return-focus';
+import { restoreProgramDialogFocus, restoreProgramWritingReturn, watchProgramReturnIntent, type ProgramWritingReturn } from '@/lib/flow/integrated-poc/dialog-return-focus';
 import { programFailure } from '@/lib/flow/integrated-poc/contract';
 import type { AlphaAuthConfig } from '@/lib/flow/integrated-poc/alpha-auth/config';
 import type { VerifiedAlphaSession } from '@/lib/flow/integrated-poc/alpha-auth/account-access';
@@ -161,7 +161,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const publisherEditors = useRef<ProgramEditorFlush | null>(null), communityEditors = useRef<ProgramEditorFlush | null>(null), inspectorEditors = useRef<ProgramEditorFlush | null>(null);
   const mediaPort = useMemo(() => createAlphaCommunityMediaPort({ accessToken: () => session.accessToken, fetch: request }), [session.userId, session.accessToken, request]);
   const [output, setOutput] = useState<string | null>(null), [message, setMessage] = useState('');
-  const [flowReturn, setFlowReturn] = useState<{ actorId: string; documentId?: string; kind: 'copy' | 'browse'; returnFocus?: HTMLElement } | null>(null);
+  const [flowReturn, setFlowReturn] = useState<{ actorId: string; documentId?: string; kind: 'copy' | 'browse'; returnFocus?: HTMLElement; writing?: ProgramWritingReturn } | null>(null);
   const [importUndo, setImportUndo] = useState<{ batch: ProgramImportLinks; text: string; done?: boolean } | null>(null);
   const [importUndoBusy, setImportUndoBusy] = useState(false), importUndoLock = useRef(false);
   useEffect(() => {
@@ -1056,24 +1056,32 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const space = currentData.current?.spaces[session.userId];
     return port?.hasPendingInput?.() && !ids.length && space ? [...space.text.documents, ...space.text.flows].map(doc => doc.id) : ids;
   }
-  async function openFlowsFromDocument(documentId?: string, flowId?: string, returnFocus?: HTMLElement) {
+  async function openFlowsFromDocument(documentId?: string, flowId?: string, returnFocus?: HTMLElement, writing?: ProgramWritingReturn) {
     const epoch = sessionEpochRef.current;
     await navigate(flowId ? { view: 'flow', id: flowId } : { view: 'discover' });
     if (epoch === sessionEpochRef.current && currentOwnerRef.current === session.userId
       && ['flow', 'discover'].includes(destinationRef.current.view))
-      setFlowReturn({ actorId: session.userId, documentId, kind: flowId ? 'copy' : 'browse', returnFocus });
+      setFlowReturn({ actorId: session.userId, documentId, kind: flowId ? 'copy' : 'browse', returnFocus,
+        ...(writing && documentId && writing.documentId === documentId ? { writing } : {}) });
   }
   async function returnFromFlows() {
     const returning = flowReturn, epoch = sessionEpochRef.current, opener = document.activeElement;
     if (!returning || returning.actorId !== currentOwnerRef.current) return;
+    // FC7 review: from this press on, the person's own scroll, touch or key keeps their place.
+    const intent = returning.writing ? watchProgramReturnIntent(window) : undefined;
     await navigate({ view: 'space', id: returning.documentId });
-    if (epoch !== sessionEpochRef.current || returning.actorId !== currentOwnerRef.current
-      || destinationRef.current.view !== 'space' || destinationRef.current.id !== returning.documentId) return;
+    const current = () => epoch === sessionEpochRef.current && returning.actorId === currentOwnerRef.current
+      && destinationRef.current.view === 'space' && destinationRef.current.id === returning.documentId;
+    if (!current()) { intent?.stop(); return; }
     setFlowReturn(null);
     requestAnimationFrame(() => {
-      if (epoch === sessionEpochRef.current && returning.actorId === currentOwnerRef.current
-        && destinationRef.current.view === 'space' && destinationRef.current.id === returning.documentId
-        && (document.activeElement === opener || document.activeElement === document.body)) restoreProgramDialogFocus(returning.returnFocus ?? null);
+      const writing = returning.writing;
+      if (current() && (document.activeElement === opener || document.activeElement === document.body)
+        && restoreProgramDialogFocus(returning.returnFocus ?? null) && writing)
+        // FC7: caret and scroll come back too, while account, document and its text are the ones left.
+        restoreProgramWritingReturn(writing, intent, () => current() && !!currentData.current
+          && !programReviewOriginReason(currentData.current, { actorId: returning.actorId, documentId: writing.documentId, raw: writing.raw }));
+      else intent?.stop();
     });
   }
   async function cancelImportLinks() {
@@ -1483,7 +1491,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         }}
         selectedDocumentId={destination.view === 'space' ? destination.id : undefined} onUndo={() => history('undo')} onRedo={() => history('redo')}
         onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} onInputFailureChange={setEditorInputFailed}
-        onOpenCopySource={(flowId, id, focus) => { void openFlowsFromDocument(id, flowId, focus); }} onBrowseFlows={(id, focus) => { void openFlowsFromDocument(id, undefined, focus); }}
+        onOpenCopySource={(flowId, id, focus) => { void openFlowsFromDocument(id, flowId, focus); }} onBrowseFlows={(id, focus, writing) => { void openFlowsFromDocument(id, undefined, focus, writing); }}
         importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } } : undefined}
         onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></ProgramServerStatusContext.Provider></div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} storageScope="account"
