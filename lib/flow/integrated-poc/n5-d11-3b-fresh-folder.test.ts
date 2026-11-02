@@ -18,14 +18,15 @@ import { programNoticeEndsAt } from './program-notice';
 const native = createRequire(import.meta.url)('./text-input-plan.cjs') as { planIndent: (...args: unknown[]) => Omit<FolderIndentPlan, 'selectionBefore'> | null };
 type Draft = ReturnType<typeof createProgramTextDraft>;
 type Phone = { draft: Draft; docId: string; owner: ReturnType<typeof createProgramDocumentInput>; notice: { current: { operationId?: number } | null };
-  /** The editor's notice state (the notice clock renders it into `notice`), its due time, and the clock's time. */
-  state: { current: unknown }; due: { current: unknown }; time: { now: number } };
+  /** The editor's notice state (the notice clock renders it into `notice`), its due time, and the clocks: `now` the
+   *  monotonic one (performance.now), `shift` what the wall clock (Date.now) has been set off it. */
+  state: { current: unknown }; due: { current: unknown }; time: { now: number; shift: number } };
 function phone(raw: string): Phone {
   let state = M.addDocument(createEmptyTextWorkspace(), { title: 'v11 폴더' }); const docId = state.documents.at(-1)!.id;
   state = M.editTextResult(state, docId, raw, { folderText: true }).state;
   const owner = createProgramDocumentInput(state, docId);
   return { draft: createProgramTextDraft(owner.initial, docId, async () => true, () => {}, () => true, owner, true), docId, owner, notice: { current: null },
-    state: { current: null }, due: { current: null }, time: { now: 0 } };
+    state: { current: null }, due: { current: null }, time: { now: 0, shift: 0 } };
 }
 const rows = (t: Phone) => t.draft.getState().raw.split('\n');
 function write(t: Phone, next: string[], extra: object = {}) { assert(t.draft.updateRaw(next.join('\n'), '', { inputType: 'insertText', ...extra } as never), 'typed'); }
@@ -58,6 +59,7 @@ ${declared('refuseFolderIndent')}
 ${declared('freshNoticeHolds')}
 ${declared('syncFreshNotice')}
 ${declared('endFolderNoticeIfOver')}
+${declared('rememberPosition')}
 let indentCandidate = null, indentAction = null;
 const currentIndentAction = (${valueOf('currentIndentAction')});
 const applyFreshIndent = (${valueOf('applyFreshIndent')});
@@ -81,11 +83,12 @@ function editorFor(t: Phone) {
     compositionGeneration: { current: 0 }, undoFolderMove: () => false, explainRawFolderUndo: () => {}, heldInput: () => undefined, accessFor: () => undefined,
     currentDoc: () => M.getDocument(t.draft.getState().working, t.docId), programTextProtectionMessage: () => 'PROTECTED',
     textEditorRows, writingBarLine, taskMarkerLock, folderBarLine, indentTouchesLinkedFolder, textEditTouchesLinkedFolderIndent, linkedFolderLinesTextEditMoves, folderRefusalStands,
-    FOLDER_INDENT_NOTICE, FOLDER_STRUCTURE_LOCK: 'REGION', M, folderNoticeDue: t.due, Date: { now: () => t.time.now },
+    FOLDER_INDENT_NOTICE, FOLDER_STRUCTURE_LOCK: 'REGION', M, folderNoticeDue: t.due, performance: { now: () => t.time.now }, Date: { now: () => t.time.now + t.time.shift },
+    heldFolderLineRef: { current: null }, finishHeldFolderLine: () => {}, finishRenamedFolderLines: () => {}, syncBarLine: () => {},
     setFolderNotice: (value: unknown) => { t.state.current = typeof value === 'function' ? value(t.state.current) : value; },
     setFreshHeld: (value: boolean | ((previous: boolean) => boolean)) => { fresh = typeof value === 'function' ? value(fresh) : value; } };
   const run = new Function(...Object.keys(scope), pressSource
-    + '\nreturn { readBarLine, currentIndentAction, applyFreshIndent, adjustIndentPlan, canApplyIndent, onIndentStart, onIndentEnd, preventLockedInput, freshNoticeHolds, syncFreshNotice };')(...Object.values(scope));
+    + '\nreturn { readBarLine, currentIndentAction, applyFreshIndent, adjustIndentPlan, canApplyIndent, onIndentStart, onIndentEnd, preventLockedInput, freshNoticeHolds, syncFreshNotice, rememberPosition };')(...Object.values(scope));
   /** Touch the end of line `index` (the caret lands there; the bar reads it), or `column` in it. */
   const touch = (index: number, column?: number) => {
     area.value = t.draft.getState().raw;
@@ -95,6 +98,8 @@ function editorFor(t: Phone) {
   return { messages, touch, shown: () => shown, freshHolds: () => run.freshNoticeHolds() as boolean, view: { props: propsRef.current, host },
     /** syncFreshNotice, as rememberPosition, the sync effect and the host's observer run it; and the state it sets. */
     sync: () => { run.syncFreshNotice(); }, held: () => fresh,
+    /** The editor's rememberPosition, as a touch, a key or a selection runs it where the caret now is. */
+    remember: () => { area.value = t.draft.getState().raw; run.rememberPosition(); },
     /** A key typed where `touch` left the caret, through the editor's beforeinput guard. True when the guard stopped it. */
     key(inputType: string, data: string | null = null) {
       let prevented = false;
@@ -250,14 +255,14 @@ const effectOf = (deps: string) => (nodeOf(node => ts.isCallExpression(node) && 
 const clockSource = ts.transpileModule(`const restartFolderNotice = (${valueOf('restartFolderNotice')});
 const release = (${effectOf('[freshHeld]')});
 const life = (${effectOf('[folderNotice, noticeHeld, folderWaiting, freshHeld]')});`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
-type Clock = { show(): void; at(index: number, column?: number, between?: () => void): { canOutdent: boolean }; edit(): void; sync(): void;
-  wait(ms: number): void; lag(ms: number): void; shown(): boolean };
+type Clock = { show(extra?: object): void; at(index: number, column?: number, between?: () => void): { canOutdent: boolean }; edit(): void; sync(): void;
+  wait(ms: number): void; lag(ms: number): void; setWall(shift: number): void; shown(): boolean };
 function clockFor(t: Phone, bar: ReturnType<typeof editorFor>): Clock {
   return new Function('t', 'bar', 'programNoticeEndsAt', `
-    let timer = null, folderNotice = null, freshHeld = false, seen = {}, cleanup;
+    let timer = null, folderNotice = null, freshHeld = false, seen = {}, cleanup, keys = 0;
     const noticeHeld = false, folderWaiting = false, draftRef = { current: t.draft }, freshHeldRef = { current: false };
     const folderNoticeRef = t.notice, folderNoticeDue = t.due, folderNoticeRestarting = { current: null };
-    const Date = { now: () => t.time.now }, window = { setTimeout: (run, ms) => (timer = { run, at: t.time.now + ms }), clearTimeout: id => { if (timer === id) timer = null; } };
+    const performance = { now: () => t.time.now }, Date = { now: () => t.time.now + t.time.shift }, window = { setTimeout: (run, ms) => (timer = { run, at: t.time.now + ms }), clearTimeout: id => { if (timer === id) timer = null; } };
     const setFolderNotice = value => { t.state.current = typeof value === 'function' ? value(t.state.current) : value; };
     ${clockSource}
     // Each round is a render (the state becomes what the editor reads), then the effects whose inputs changed, in
@@ -275,12 +280,13 @@ function clockFor(t: Phone, bar: ReturnType<typeof editorFor>): Clock {
       throw new Error('the notice clock did not settle');
     }
     return {
-      show() { setFolderNotice({ text: 'notice', tone: 'info', shownAt: t.time.now, leftBlockAt: null, operationId: t.draft.folderOperation().id }); settle(); },
-      at(index, column, between) { bar.touch(index, column); bar.sync(); settle(between); return bar.touch(index, column); },
+      show(extra) { setFolderNotice({ text: 'notice', tone: 'info', shownAt: t.time.now, leftBlockAt: null, operationId: t.draft.folderOperation().id, key: ++keys, ...extra }); settle(); },
+      at(index, column, between) { bar.touch(index, column); bar.remember(); settle(between); return bar.touch(index, column); },
       edit() { bar.sync(); settle(); },
       sync() { bar.sync(); settle(); },
       wait(ms) { const end = t.time.now + ms; while (timer && timer.at <= end) { t.time.now = timer.at; const run = timer.run; timer = null; run(); settle(); } t.time.now = end; },
       lag(ms) { t.time.now += ms; },
+      setWall(shift) { t.time.shift = shift; },
       shown: () => !!t.state.current,
     };`)(t, bar, programNoticeEndsAt) as Clock;
 }
@@ -413,7 +419,40 @@ test('N5 3b phone 2 review 2: a tap back landing before the restarted notice ren
   const { t, bar, clock, child } = madeSlowly('메모\n');
   clock.wait(30000); assert(clock.shown());
   // The caret leaves after 30s held; the restart (its 6s from now) is queued, and the tap back lands before it renders.
-  clock.at(0, undefined, () => { bar.touch(child); bar.sync(); });
+  clock.at(0, undefined, () => { bar.touch(child); bar.remember(); });
+  assert(clock.shown()); assert.equal(bar.held(), true);
+  assert.equal(clock.at(child).canOutdent, true); assert(bar.outdent()); assert.equal(folderOf(t, '새자식').parentId, null);
+});
+
+// Review P2 (3, 11/2): two ways a notice outlived its time. A choice notice past its (late) time, its block entered
+// again: rememberPosition copied it before the check ended it, and the end matched the old object only, so the copy
+// stayed with its operation gone (its 되돌리기 failing). And the wall clock set back while away made the time not yet
+// passed. Notices now carry a key through every copy, and their times are read off performance.now().
+test('N5 3b phone 2 review 3: a choice notice past its late time, its block entered again — the copy made of it goes too, never a notice without its operation', () => {
+  const { t, clock, child } = madeSlowly('메모\n');
+  write(t, [...rows(t).slice(0, child + 1), '    x']); clock.edit(); // its operation, no longer fresh
+  const lineId = M.getDocument(t.draft.getState().working, t.docId)!.lines[child].id;
+  clock.show({ tone: 'choose', lineId }); clock.at(child); clock.wait(30000); assert(clock.shown(), 'a choice stays while the caret is in its block');
+  clock.at(0); clock.lag(7000); assert(clock.shown(), 'its timer has not run yet');
+  clock.at(child);
+  assert.equal(clock.shown(), false, 'past its time: it ends, and the copy rememberPosition made goes with it');
+  assert.equal(t.draft.folderOperation(), null);
+  clock.wait(60000); assert.equal(clock.shown(), false);
+});
+for (const [name, away, back] of leaving) {
+  test(`N5 3b phone 2 review 3: ${name}, the timer late and the wall clock set back an hour meanwhile — back after 7s, the notice ends and ⇤ is refused`, () => {
+    const { t, bar, clock, child } = madeSlowly('메모\n');
+    away(bar.view); clock.sync(); clock.lag(7000); clock.setWall(-3600000);
+    back(bar.view); clock.sync(); assert.equal(clock.shown(), false, 'its 6s ran on the monotonic clock');
+    const raw = t.draft.getState().raw;
+    assert.equal(clock.at(child).canOutdent, false); assert.equal(bar.outdent(), false);
+    assert.equal(t.draft.getState().raw, raw); assert.deepEqual(bar.messages, [FOLDER_INDENT_NOTICE]);
+    clock.wait(60000); assert.equal(clock.shown(), false);
+  });
+}
+test('N5 3b phone 2 review 3: the wall clock set forward an hour ends nothing early — back within 4s, still held, ⇤ moves it', () => {
+  const { t, bar, clock, child } = madeSlowly('메모\n');
+  bar.view.host.shown = false; clock.sync(); clock.lag(4000); clock.setWall(3600000); bar.view.host.shown = true; clock.sync();
   assert(clock.shown()); assert.equal(bar.held(), true);
   assert.equal(clock.at(child).canOutdent, true); assert(bar.outdent()); assert.equal(folderOf(t, '새자식').parentId, null);
 });
