@@ -49,7 +49,7 @@ import regionStyles from './ProgramFolderRegionEditor.module.css';
 import { readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { readProgramMemoContext, programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
 import { ProgramProgressForm } from './ProgramProgressForm';
-import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckSaveOutcome, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
+import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckRevert, programCheckSaveOutcome, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
 import {ProgramWritingInline} from './ProgramWritingInline';
 import {prepareWritingChild} from '@/lib/flow/integrated-poc/writing-child-command';
 import {planWritingInsertion} from '@/lib/flow/integrated-poc/writing-insertion-command';
@@ -323,12 +323,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // so the model changes only when the native editor can take the new text.
   const heldNoticeAction = useRef<(() => void) | null>(null);
   const whenComposed = (run: () => void) => () => { if (composingRef.current) { heldNoticeAction.current = run; return; } run(); };
-  // C2: the check notice for one task (by ID): 완료했습니다 [되돌리기] [진행률로], then its percent chips. A step pressed
-  // while the tap's own save is in flight runs once that save ends.
+  // C2: the check notice for one task (by ID): 완료했습니다 [되돌리기] [진행률로], then its percent chips.
   const [checkNotice, setCheckNoticeState] = useState<ProgramCheckNotice | null>(null);
   const checkNoticeRef = useRef<ProgramCheckNotice | null>(null), checkNoticeKeys = useRef(0);
   const setCheckNotice = (next: ProgramCheckNotice | null) => { checkNoticeRef.current = next; setCheckNoticeState(next); };
-  const heldCheckStep = useRef<{ key: number; step: ProgramCheckStep } | null>(null);
+  // C2 re-review: each task's (document + task ID) choice held for a save in flight, or step on its way, kept apart
+  // from the notice: another task's check that replaces the notice never drops it, and each save is settled alone.
+  type CheckWork = { notice: ProgramCheckNotice; step?: ProgramCheckStep; saving?: ProgramCheckNotice['saving'] };
+  const checkWork = useRef(new Map<string, CheckWork>());
+  const checkWorkKey = (targetId: string) => propsRef.current.docId + '\n' + targetId;
   // Linked folder lines an edit other than typing (a paste) renamed, by line ID, until they are put back.
   const renamedFolderLinesRef = useRef(new Set<string>());
   const documentInputRef=useRef<ProgramDocumentInput|null>(null);
@@ -1283,23 +1286,47 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     closePanel();
     await apply(next, '하위 묶음 이동');
   }
-  /** C2: after a check tap, completing shows the check notice; anything else ends the one for that task. */
+  /** C2: after a check tap, completing shows the check notice; anything else ends the one for that task. A newer tap on
+   *  a task supersedes a choice of its still waiting. */
   function noticeCheck(targetId: string, title: string, before: number | null) {
+    const work = checkWorkKey(targetId);
     if (before !== null && before !== 100 && M.currentProgress(currentState(), targetId) === 100) {
-      // It shows at once, and says so if the tap's own save is refused (review P2).
-      setCheckNotice({ stage: 'done', targetId, title, before, after: 100, shownAt: performance.now(), key: ++checkNoticeKeys.current, saving: { percent: 100, undo: false, quiet: true } });
-    } else if (checkNoticeRef.current?.targetId === targetId) setCheckNotice(null);
+      // Re-review (총괄): the check shows at once; the notice says "완료 저장 중…" until the save settles, and a refused
+      // save turns it into a warning and puts the check back to what is saved.
+      const saving = { percent: 100, undo: false, quiet: true }, notice: ProgramCheckNotice = { stage: 'done', targetId, title, before, after: 100, shownAt: performance.now(), key: ++checkNoticeKeys.current, saving };
+      checkWork.current.set(work, { notice, saving }); setCheckNotice(notice);
+    } else {
+      checkWork.current.delete(work);
+      if (checkNoticeRef.current?.targetId === targetId) setCheckNotice(null);
+    }
   }
-  /** C2 review P2: a step's notice follows its save, read off the saved record: the value is saved (only then
-   *  "기록했습니다"), the save was refused (what is saved instead is said), or everything is saved with another value. */
-  function settleCheckSave() {
-    const notice = checkNoticeRef.current, state = draftRef.current?.getState();
-    if (!notice?.saving || !state || heldCheckStep.current?.key === notice.key) return;
-    const { percent, undo, quiet } = notice.saving, saved = M.currentProgress(state.committed, notice.targetId);
-    const outcome = programCheckSaveOutcome(saved, percent, state);
-    if (!outcome) return;
-    if (outcome === 'saved') setCheckNotice(quiet ? { ...notice, saving: undefined } : undo ? null : programCheckNoticeAfter(notice, percent, performance.now(), ++checkNoticeKeys.current));
-    else setCheckNotice(programCheckNoticeFailed(notice, percent, saved, outcome === 'refused' ? 'save' : 'changed', performance.now(), ++checkNoticeKeys.current));
+  /** C2 review P2: each step on its way is settled off the saved record: saved (only then "기록했습니다"), refused (what
+   *  is saved is said, and the check goes back to it), or everything saved with another value. A refused or overtaken
+   *  step is said even under another task's notice; a saved one updates only its own. */
+  function settleCheckSaves() {
+    const state = draftRef.current?.getState();
+    if (!state) return;
+    for (const [work, entry] of [...checkWork.current]) {
+      if (!entry.saving || entry.step) continue;
+      const { percent, undo, quiet } = entry.saving, targetId = entry.notice.targetId, saved = M.currentProgress(state.committed, targetId);
+      const outcome = programCheckSaveOutcome(saved, percent, state);
+      if (!outcome) continue;
+      checkWork.current.delete(work);
+      const visible = checkNoticeRef.current, mine = visible?.targetId === targetId ? visible : null;
+      if (outcome === 'saved') {
+        if (mine) setCheckNotice(quiet ? { ...mine, saving: undefined } : undo ? null : programCheckNoticeAfter(mine, percent, performance.now(), ++checkNoticeKeys.current));
+        continue;
+      }
+      setCheckNotice(programCheckNoticeFailed(mine ?? entry.notice, percent, saved, outcome === 'refused' ? 'save' : 'changed', performance.now(), ++checkNoticeKeys.current));
+      if (outcome === 'refused') whenComposed(() => revertCheck(targetId))();
+    }
+  }
+  /** C2 re-review (총괄): a refused save puts the task's check back to what is saved; other unsaved input stays. */
+  function revertCheck(targetId: string) {
+    const state = draftRef.current?.getState();
+    if (!state || state.saving || state.invalid) return;
+    const next = programCheckRevert(state.working, state.committed, targetId, M.validate);
+    if (next && M.currentProgress(next, targetId) !== M.currentProgress(state.working, targetId)) void apply(next, '저장되지 않은 체크 되돌리기');
   }
   /** C2: a tap on a task between 1% and 99% shows the chips, [완료] first, where the tap could have toggled it. */
   function showCheckChips(lineId: string | null) {
@@ -1310,24 +1337,35 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     return true;
   }
   /** C2: a check notice button. It acts on the task the notice names, wherever its line now is; a replaced notice does nothing. */
-  function runCheckStep(key: number, step: ProgramCheckStep) {
+  function pressCheckStep(key: number, step: ProgramCheckStep) {
     const notice = checkNoticeRef.current;
     if (!notice || notice.key !== key) return;
     if (step.kind === 'chips') { setCheckNotice({ ...notice, stage: 'chips', shownAt: performance.now(), key: ++checkNoticeKeys.current }); return; }
+    performCheckStep(notice, step);
+  }
+  /** C2: a step on the task `notice` names, now or, while a save is in flight, once it ends (re-review: held by task,
+   *  not by notice). The notice shown is updated only while it is still this task's. */
+  function performCheckStep(notice: ProgramCheckNotice, step: Exclude<ProgramCheckStep, { kind: 'chips' }>) {
+    const work = checkWorkKey(notice.targetId), shown = () => checkNoticeRef.current?.targetId === notice.targetId ? checkNoticeRef.current : null;
+    const leave = () => { checkWork.current.delete(work); if (shown()) setCheckNotice(null); };
     const lineId = (documentInputRef.current?.rows(currentState()) ?? M.rowMeta(currentState(), propsRef.current.docId)).find(row => row.progressTargetId === notice.targetId)?.id ?? null;
-    if (!lineId) { setCheckNotice(null); setMessage('이 할 일을 문서에서 찾지 못했습니다. 현재 내용과 기록은 유지했습니다.'); return; }
-    if (step.kind === 'direct') { setCheckNotice(null); openProgress(lineId); return; }
+    if (!lineId) { leave(); setMessage('이 할 일을 문서에서 찾지 못했습니다. 현재 내용과 기록은 유지했습니다.'); return; }
+    if (step.kind === 'direct') { leave(); openProgress(lineId); return; }
     const access = accessFor(lineId);
-    if (!access || access.kind !== 'active' || access.reason) { setCheckNotice(null); setPanel({ kind: 'reference', lineId }); return; }
-    const percent = step.kind === 'undo' ? notice.before : step.percent;
+    if (!access || access.kind !== 'active' || access.reason) { leave(); setPanel({ kind: 'reference', lineId }); return; }
+    const percent = step.kind === 'undo' ? notice.before : step.percent, saving = { percent, undo: step.kind === 'undo', quiet: false };
     // Review P2: a choice made while a save is in flight waits for it, and its notice says so until it is settled;
     // the clock never ends it (× does, and drops the choice with it).
-    if (draftRef.current?.getState().saving) { heldCheckStep.current = { key, step }; setCheckNotice({ ...notice, saving: { percent, undo: step.kind === 'undo', quiet: false } }); return; }
-    const unsent = () => { if (notice.saving && !notice.saving.quiet) setCheckNotice({ ...notice, saving: undefined }); };
+    if (draftRef.current?.getState().saving) {
+      checkWork.current.set(work, { notice, step });
+      const mine = shown(); if (mine) setCheckNotice({ ...mine, saving });
+      return;
+    }
+    const unsent = () => { checkWork.current.delete(work); const mine = shown(); if (mine?.saving && !mine.saving.quiet) setCheckNotice({ ...mine, saving: undefined }); };
     const current = M.currentProgress(currentState(), notice.targetId);
-    if (step.kind === 'undo' && !programCheckUndoable(notice, current)) { setCheckNotice(null); setMessage('그 뒤에 진행률이 바뀌어 되돌리지 않았습니다. 현재 기록은 유지했습니다.'); return; }
+    if (step.kind === 'undo' && !programCheckUndoable(notice, current)) { leave(); setMessage('그 뒤에 진행률이 바뀌어 되돌리지 않았습니다. 현재 기록은 유지했습니다.'); return; }
     if ((M.latestProgress(currentState(), notice.targetId)?.date ?? '') > today()) {
-      setCheckNotice(null); openProgress(lineId); setMessage('미래 날짜의 진행 기록이 있습니다. 기록 날짜를 확인한 뒤 변경해 주세요.'); return;
+      leave(); openProgress(lineId); setMessage('미래 날짜의 진행 기록이 있습니다. 기록 날짜를 확인한 뒤 변경해 주세요.'); return;
     }
     if (!draftRef.current?.flush()) { unsent(); return; }
     const next = M.recordProgress(currentState(), notice.targetId, today(), percent);
@@ -1335,8 +1373,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // apply said why when it refused; the notice then stays as it was.
     if (M.currentProgress(currentState(), notice.targetId) !== percent) { unsent(); return; }
     // Saving now: the notice says what was saved once the save has settled.
-    setCheckNotice({ ...notice, saving: { percent, undo: step.kind === 'undo', quiet: false } });
-    settleCheckSave();
+    checkWork.current.set(work, { notice, saving });
+    const mine = shown(); if (mine) setCheckNotice({ ...mine, saving });
+    settleCheckSaves();
+  }
+  /** × on the notice: it ends, and a choice of its task still waiting for a save goes with it. */
+  function closeCheckNotice() {
+    const notice = checkNoticeRef.current;
+    if (notice && checkWork.current.get(checkWorkKey(notice.targetId))?.step) checkWork.current.delete(checkWorkKey(notice.targetId));
+    setCheckNotice(null);
   }
   function openProgress(lineId: string | null, kind: 'progress' | 'date' = 'progress') {
     const row = currentRow(lineId);
@@ -1937,9 +1982,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const timer = window.setTimeout(() => { if (checkNoticeRef.current === checkNotice) setCheckNotice(null); }, Math.max(0, ends - performance.now()));
     return () => window.clearTimeout(timer);
   }, [checkNotice, noticeHeld, checkWaiting]);
-  useEffect(() => { if (draft.saving || !heldCheckStep.current) return; const held = heldCheckStep.current; heldCheckStep.current = null; runCheckStep(held.key, held.step); }, [draft.saving]);
-  useEffect(() => { settleCheckSave(); }, [draft]);
-  useEffect(() => { heldCheckStep.current = null; setCheckNotice(null); }, [props.docId]);
+  // Choices held for a save run once it ends, one at a time: each starts a save the next one waits for.
+  useEffect(() => {
+    for (;;) {
+      if (draftRef.current?.getState().saving) break;
+      const held = [...checkWork.current].find(([, entry]) => entry.step);
+      if (!held) break;
+      checkWork.current.delete(held[0]); performCheckStep(held[1].notice, held[1].step as Exclude<ProgramCheckStep, { kind: 'chips' }>);
+    }
+  }, [draft.saving]);
+  useEffect(() => { settleCheckSaves(); }, [draft]);
+  useEffect(() => { checkWork.current.clear(); setCheckNotice(null); }, [props.docId]);
   // Review P2: a screen or document hiding this retained editor changes none of its props, only its size.
   useEffect(() => {
     const host = hostRef.current; if (!host) return;
@@ -2424,8 +2477,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // W15: one notice row at a time: an ongoing move, then warnings (the editor's messages, until closed), then
   // choices, then plain notices; the rest wait ("n개 더"). A press or focus inside holds a notice's time.
   function checkNoticeView(notice: ProgramCheckNotice) {
-    const view = programCheckNoticeView(notice), run = (step: ProgramCheckStep) => whenComposed(() => runCheckStep(notice.key, step));
-    return { tone: view.tone, text: view.text, closeLabel: '알림 닫기', close: () => setCheckNotice(null),
+    const view = programCheckNoticeView(notice), run = (step: ProgramCheckStep) => whenComposed(() => pressCheckStep(notice.key, step));
+    return { tone: view.tone, text: view.text, closeLabel: '알림 닫기', close: closeCheckNotice,
       actions: view.actions.map(button => ({ label: button.label, run: run(button.step) })),
       chips: view.chips.map(button => ({ label: button.label, current: button.current, run: run(button.step) })) };
   }

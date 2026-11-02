@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { PROGRAM_CHECK_CHIPS, PROGRAM_CHECK_NOTICE_MS, programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckSaveOutcome, programCheckUndoable, type ProgramCheckNotice } from './check-progress-notice';
+import { PROGRAM_CHECK_CHIPS, PROGRAM_CHECK_NOTICE_MS, programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckRevert, programCheckSaveOutcome, programCheckUndoable, type ProgramCheckNotice } from './check-progress-notice';
 import type { ProgramData, ProgramTransition } from './contract';
 import { createProgramData } from './program-data';
 import { createProgramTextDraft } from './program-text-draft';
@@ -120,11 +120,10 @@ test('the editor: every tap path announces a completion; a partial tap shows the
   assert.match(editor, /const next = M\.recordProgress\(currentState\(\), notice\.targetId, today\(\), percent\);/);
   // The buttons find the task by ID wherever its line is now, and wait out a save in flight.
   assert.match(editor, /\.find\(row => row\.progressTargetId === notice\.targetId\)\?\.id \?\? null;/);
-  assert.match(editor, /if \(draftRef\.current\?\.getState\(\)\.saving\) \{ heldCheckStep\.current = \{ key, step \}; setCheckNotice\(\{ \.\.\.notice, saving: \{ percent, undo: step\.kind === 'undo', quiet: false \} \}\); return; \}/);
 });
 
 test('mid-composition: a notice button keeps the caret and runs once the composition has ended (W15)', () => {
-  assert.match(editor, /run = \(step: ProgramCheckStep\) => whenComposed\(\(\) => runCheckStep\(notice\.key, step\)\)/);
+  assert.match(editor, /run = \(step: ProgramCheckStep\) => whenComposed\(\(\) => pressCheckStep\(notice\.key, step\)\)/);
   assert.match(row, /<button key=\{chip\.label\} type="button" className=\{styles\.chip\} aria-pressed=\{chip\.current \|\| undefined\} disabled=\{chip\.current\} onPointerDown=\{keepFocus\} onClick=\{chip\.run\}>/);
   assert.match(space, /const checkStep = \(key: number, step: ProgramCheckStep\) => whenPageComposed\(\(\) => \{ void runCheckStepRef\.current\(key, step\); \}\);/);
   assert.match(space, /document\.addEventListener\('compositionstart', start, true\); document\.addEventListener\('compositionend', end, true\);/);
@@ -183,15 +182,12 @@ test('review P2 (1): the outcome is read off the saved record, through a real dr
 });
 
 test('review P2 (1)(2): the editor says 기록했습니다 only once the save settles; a held choice waits out the save', () => {
-  const step = editor.slice(editor.indexOf('  function runCheckStep('), editor.indexOf('  function openProgress('));
+  const step = editor.slice(editor.indexOf('  function performCheckStep('), editor.indexOf('  function closeCheckNotice('));
   assert(!step.includes('programCheckNoticeAfter('), 'no success straight after apply');
-  assert.match(step, /setCheckNotice\(\{ \.\.\.notice, saving: \{ percent, undo: step\.kind === 'undo', quiet: false \} \}\);\n    settleCheckSave\(\);/);
-  const settle = editor.slice(editor.indexOf('  function settleCheckSave('), editor.indexOf('  function showCheckChips('));
-  assert.match(settle, /saved = M\.currentProgress\(state\.committed, notice\.targetId\);/);
-  assert.match(settle, /if \(!notice\?\.saving \|\| !state \|\| heldCheckStep\.current\?\.key === notice\.key\) return;/);
-  assert.match(editor, /useEffect\(\(\) => \{ settleCheckSave\(\); \}, \[draft\]\);/);
-  // The tap's own completion is watched quietly, so a refused one says so.
-  assert.match(editor, /saving: \{ percent: 100, undo: false, quiet: true \} \}\);/);
+  assert.match(step, /checkWork\.current\.set\(work, \{ notice, saving \}\);\n    const mine = shown\(\); if \(mine\) setCheckNotice\(\{ \.\.\.mine, saving \}\);\n    settleCheckSaves\(\);/);
+  const settle = editor.slice(editor.indexOf('  function settleCheckSaves('), editor.indexOf('  function revertCheck('));
+  assert.match(settle, /saved = M\.currentProgress\(state\.committed, targetId\);/);
+  assert.match(editor, /useEffect\(\(\) => \{ settleCheckSaves\(\); \}, \[draft\]\);/);
 });
 
 test('review P2 (3): on 오늘 a record dated after today sends a step, and a partial tap, to the form', () => {
@@ -207,4 +203,48 @@ test('review P2 (3): on 오늘 a record dated after today sends a step, and a pa
   // And whatever the save leaves is what the notice says: another value is "바뀌지 않았습니다", not "기록했습니다".
   assert.match(space, /if \(saved !== percent\) \{ failed\(saved, 'changed'\); return; \}/);
   assert.match(space, /if \(after !== 100\) return;/);
+});
+
+// Codex re-review of C2 (11/2), two P2 fixes.
+test('re-review P2 (1): a choice waiting for a save is kept by task (document + task ID), not by the notice', () => {
+  assert.match(editor, /const checkWorkKey = \(targetId: string\) => propsRef\.current\.docId \+ '\\n' \+ targetId;/);
+  const step = editor.slice(editor.indexOf('  function performCheckStep('), editor.indexOf('  function closeCheckNotice('));
+  // Held under the task, whatever notice shows; only that task's notice says it is waiting.
+  assert.match(step, /if \(draftRef\.current\?\.getState\(\)\.saving\) \{\n      checkWork\.current\.set\(work, \{ notice, step \}\);\n      const mine = shown\(\); if \(mine\) setCheckNotice\(\{ \.\.\.mine, saving \}\);/);
+  assert(!/notice\.key !== key/.test(step), 'a held step never checks the notice key');
+  // Once the save ends, each held choice runs from its own snapshot, one save at a time.
+  assert.match(editor, /const held = \[\.\.\.checkWork\.current\]\.find\(\(\[, entry\]\) => entry\.step\);/);
+  assert.match(editor, /checkWork\.current\.delete\(held\[0\]\); performCheckStep\(held\[1\]\.notice, /);
+  // A refused or overtaken step is said even under another task's notice; a saved one touches only its own.
+  const settle = editor.slice(editor.indexOf('  function settleCheckSaves('), editor.indexOf('  function revertCheck('));
+  assert.match(settle, /for \(const \[work, entry\] of \[\.\.\.checkWork\.current\]\) \{/);
+  assert.match(settle, /setCheckNotice\(programCheckNoticeFailed\(mine \?\? entry\.notice, percent, saved,/);
+  // × drops only a choice still waiting for its task; a newer tap on the task supersedes it.
+  assert.match(editor, /if \(notice && checkWork\.current\.get\(checkWorkKey\(notice\.targetId\)\)\?\.step\) checkWork\.current\.delete\(checkWorkKey\(notice\.targetId\)\);/);
+  assert.match(editor, /\} else \{\n      checkWork\.current\.delete\(work\);/);
+});
+
+test('re-review P2 (2), 총괄: the check shows at once, the words wait ("완료 저장 중…"), a refused save puts it back', () => {
+  const quiet = notice({ saving: { percent: 100, undo: false, quiet: true } });
+  assert.equal(programCheckNoticeView(quiet).text, '완료 저장 중… · 장보기');
+  assert.deepEqual(programCheckNoticeView(quiet).actions.map(button => button.label), ['되돌리기', '진행률로']);
+  assert.equal(programCheckNoticeView(notice()).text, '완료했습니다 · 장보기');
+  assert.match(editor, /const saving = \{ percent: 100, undo: false, quiet: true \}, notice: ProgramCheckNotice = \{ stage: 'done',/);
+  assert.match(editor, /if \(outcome === 'refused'\) whenComposed\(\(\) => revertCheck\(targetId\)\)\(\);/);
+  assert.match(editor, /const next = programCheckRevert\(state\.working, state\.committed, targetId, M\.validate\);/);
+  // The revert: the task's mark and records as saved; its renamed title and other edits stay.
+  const saved = written('- [ ] 장보기\n- [ ] 빨래'), [target, other] = textEditorRows(saved, DOC).map(row => row.progressTargetId!);
+  let working = M.recordProgress(saved, target, TODAY, 100);
+  working = M.recordProgress(working, other, TODAY, 100);
+  const renamed = M.editTextResult(working, DOC, '- [x] 장보기 두 개\n- [x] 빨래', { folderText: true });
+  assert.equal(renamed.reason, null);
+  const back = programCheckRevert(renamed.state, saved, target, M.validate)!;
+  assert.equal(M.raw(M.getDocument(back, DOC)), '- [ ] 장보기 두 개\n- [x] 빨래');
+  assert.equal(M.currentProgress(back, target), 0);
+  assert.deepEqual(M.progressHistory(back, target), []);
+  assert.deepEqual(M.progressHistory(back, other), [{ date: TODAY, percent: 100 }], 'the other task keeps its unsaved check');
+  // A partial value comes back as saved too; a line gone from either side gives nothing.
+  const half = M.recordProgress(saved, target, TODAY, 50);
+  assert.equal(M.currentProgress(programCheckRevert(M.recordProgress(half, target, TODAY, 100), half, target, M.validate)!, target), 50);
+  assert.equal(programCheckRevert(renamed.state, saved, 'line-missing', M.validate), null);
 });

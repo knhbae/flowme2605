@@ -1,6 +1,6 @@
 import type { ProgramReferenceAccess } from './reference-execution-guard';
 import type { ProgramNoticeTone } from './program-notice';
-import type { TextEditorRowMeta } from './text-workspace';
+import type { TextDocument, TextEditorRowMeta, TextWorkspaceState } from './text-workspace';
 
 /** C2 (11/2): a check tap still completes at once, and its notice offers [되돌리기] and [진행률로]; 진행률로 turns the
  *  row into percent chips, one of which saves today's cumulative progress for that task (the same record the progress
@@ -20,7 +20,7 @@ export interface ProgramCheckNotice {
   before: number; after: number;
   shownAt: number; key: number;
   /** Review P2: a step on its way, held for a save in flight or saving; its notice says so only once the saved
-   *  record has the value. quiet: a tap's own completion, whose notice keeps showing while it saves. */
+   *  record has the value. quiet: a tap's own completion, whose buttons stay usable while it saves. */
   saving?: { percent: number; undo: boolean; quiet: boolean };
   /** failed: the value asked for, what the task has instead (null: no saved record), and why. */
   asked?: number; kept?: number | null; why?: 'save' | 'changed';
@@ -37,7 +37,8 @@ export function programCheckNoticeView(notice: ProgramCheckNotice): { tone: Prog
     const kept = notice.kept === null || notice.kept === undefined ? '저장된 기록이 없습니다' : `${notice.why === 'save' ? '저장된' : '지금'} 값은 ${notice.kept}%입니다`;
     return { tone: 'warn', text: `${asked}${notice.why === 'save' ? '를 저장하지 못했습니다' : '로 바뀌지 않았습니다'}. ${kept} · ${notice.title}`, actions: [], chips: [] };
   }
-  if (notice.stage === 'done') return { tone: 'choose', text: `완료했습니다 · ${notice.title}`, actions: [undo, { label: '진행률로', step: { kind: 'chips' } }], chips: [] };
+  // Re-review: the check shows at once, but the words wait for the save ("완료 저장 중…", then "완료했습니다").
+  if (notice.stage === 'done') return { tone: 'choose', text: `${notice.saving?.quiet ? '완료 저장 중…' : '완료했습니다'} · ${notice.title}`, actions: [undo, { label: '진행률로', step: { kind: 'chips' } }], chips: [] };
   if (notice.stage === 'saved') return { tone: 'info', text: `진행률 ${notice.after}%로 기록했습니다 · ${notice.title}`, actions: [undo], chips: [] };
   const partial = notice.after > 0 && notice.after < 100;
   const chips: ProgramCheckButton[] = [
@@ -86,4 +87,26 @@ export function programCheckChipsFit(meta: Pick<TextEditorRowMeta, 'kind' | 'isC
   if (meta.kind === 'subcheck' ? !meta.isCanonical : !['task', 'reference'].includes(meta.kind)) return false;
   const percent = meta.progressPercent;
   return percent !== undefined && percent > 0 && percent < 100 && (meta.progressDate ?? '') <= date;
+}
+
+const CHECK_MARK = /^( *-\s+\[)([^\]\r\n]*)(\])/;
+/** C2 re-review (총괄, 11/2): the check shows at once, but a refused save puts it back to what is saved. The task's
+ *  progress records and the mark on its source line come from the committed state; every other unsaved edit, its
+ *  title included, stays. Null when the line or its mark is gone, or the result does not hold. */
+export function programCheckRevert(working: TextWorkspaceState, committed: TextWorkspaceState, targetId: string, validate: (state: TextWorkspaceState) => boolean): TextWorkspaceState | null {
+  const savedLine = [...committed.documents, ...committed.flows].flatMap(doc => doc.lines).find(line => line.id === targetId);
+  const savedMark = savedLine ? CHECK_MARK.exec(savedLine.text) : null;
+  if (!savedMark) return null;
+  let found = false;
+  const put = <T extends TextDocument>(doc: T): T => !doc.lines.some(line => line.id === targetId) ? doc : { ...doc, lines: doc.lines.map(line => {
+    const mark = line.id === targetId ? CHECK_MARK.exec(line.text) : null;
+    if (!mark) return line;
+    found = true;
+    return { ...line, text: mark[1] + savedMark[2] + mark[3] + line.text.slice(mark[0].length) };
+  }) };
+  const documents = working.documents.map(put), flows = working.flows.map(put);
+  if (!found) return null;
+  const progressRecords = [...working.progressRecords.filter(record => record.taskId !== targetId), ...committed.progressRecords.filter(record => record.taskId === targetId)];
+  const next = { ...working, documents, flows, progressRecords };
+  return validate(next) ? next : null;
 }
