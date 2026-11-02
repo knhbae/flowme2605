@@ -1688,7 +1688,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         }
       }
     };
-    const finishOnBlur = () => { finishHeldFolderLine(); finishRenamedFolderLines(true); };
+    // N7 review 6: mid-composition the native editor holds its onChange, so no line is held yet when the blur comes
+    // (a folder name selected and typed over in Hangul). The finish is scheduled anyway, for after compositionend.
+    const finishOnBlur = () => { if (composingRef.current) finishAfterComposition.current = true; finishHeldFolderLine(); finishRenamedFolderLines(true); };
     const observeInput = (event: Event) => {
       const input=event as InputEvent;historyTypeRef.current=input.inputType||historyTypeRef.current;
     };

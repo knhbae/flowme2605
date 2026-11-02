@@ -18,9 +18,14 @@ const scopeOf = (state: TextWorkspaceState, docId: string, lineId: string) =>
 
 /** Documents that use a folder: by a folder line or by being stored in it. */
 export function programFolderUsers(state: TextWorkspaceState, folderId: string): Set<string> {
-  const users = new Set<string>();
+  const users = new Set<string>(), docs = [...state.documents, ...state.flows];
   for (const row of state.bindings) if (row.kind === 'scope' && row.scopeId === folderId) users.add(row.docId);
-  for (const doc of [...state.documents, ...state.flows]) if ((doc as { folderId?: string }).folderId === folderId) users.add(doc.id);
+  for (const doc of docs) if ((doc as { folderId?: string }).folderId === folderId) users.add(doc.id);
+  // N7 review 6: a document whose task or item is classified into the folder (분류) uses it too.
+  for (const scopes of [state.taskScopes, state.itemScopes]) for (const [id, scope] of Object.entries(scopes ?? {})) {
+    const owner = scope === folderId ? docs.find(doc => doc.lines.some(line => line.id === id)) : undefined;
+    if (owner) users.add(owner.id);
+  }
   return users;
 }
 

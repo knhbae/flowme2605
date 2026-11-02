@@ -9,6 +9,8 @@ import { restoredLineOffset } from './folder-line-hold';
 import { createProgramData } from './program-data';
 import { programTextTransition } from './program-text-transition';
 import { programFolderNewUsesElsewhere, programFolderRenamesStillOwn, programFolderUsedElsewhere } from './folder-operation';
+import { setProgramTaskClassification } from './task-classification';
+import { programFolderMoveNotice } from './folder-notice';
 import { createEmptyTextWorkspace, textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 
 // Review n6-phone-3 (11/2): '- /Original' → '- /' → '- /NewTitle' → Enter renamed Original (D3 B: this document alone uses
@@ -54,8 +56,9 @@ function editor(mine: TextWorkspaceState, a: string, latest: TextWorkspaceState 
     { finishHeldFolderLine: (explicit?: boolean) => void; finishLeftAfterComposition: () => boolean };
   const finish = fns.finishHeldFolderLine;
   /** The line typed as the review did, each a held edit, then its finish: Enter on it (beforeEnter's), or, with
-   *  explicit false, the caret leaving it; offAtStart, a line already off its folder's name before these edits. */
-  const typeAndFinish = (options: { explicit?: boolean; offAtStart?: boolean }, ...texts: string[]) => {
+   *  explicit false, the caret leaving it; offAtStart, a line already off its folder's name before these edits;
+   *  finish false, the edits only (a composition's text published, its finish left to the retry). */
+  const typeAndFinish = (options: { explicit?: boolean; offAtStart?: boolean; finish?: boolean }, ...texts: string[]) => {
     const line = M.getDocument(controller.getState().working, a)!.lines[0].id;
     for (const text of texts) {
       const rows = controller.getState().raw.split('\n'); rows[0] = text; const value = rows.join('\n');
@@ -63,7 +66,7 @@ function editor(mine: TextWorkspaceState, a: string, latest: TextWorkspaceState 
       area.value = value; area.selectionStart = area.selectionEnd = text.length;
       heldFolderLineRef.current = { id: line, left: false, offAtStart: options.offAtStart ?? false };
     }
-    finish(options.explicit ?? true);
+    if (options.finish !== false) finish(options.explicit ?? true);
   };
   const typeAndEnter = (...texts: string[]) => typeAndFinish({}, ...texts);
   return { controller, typeAndEnter, typeAndFinish, notices, moves, kept, held: () => heldFolderLineRef.current, area, doc, composingRef,
@@ -316,4 +319,69 @@ test('N7 5: the save — a rename its base already knew others use passes (as �
     return programTextTransition(data, { actorId: data.activeActorId, documentId: a, expected: known, next: renamed });
   };
   assert.equal(save(known).ok, true); assert.equal(save(latest).ok, false);
+});
+
+// N7 re-review 3 (11/2), the reviewer's own data: document B kept in 미분류, only its task classified into Original
+// through the ordinary classification (setProgramTaskClassification). A, knowing that, finished '- /NewTitle': the
+// model saw no other document's folder line or filing, renamed Original, and B's task now sat in 'NewTitle', with no
+// 모든 문서에 적용 offered. Any use outside this document now keeps the rename off: W15's move and its choice.
+function classifiedElsewhere() {
+  const { mine, a, original } = workspaces();
+  let text = M.addDocument(mine, { title: 'B' }); const b = text.documents.at(-1)!.id;
+  text = M.editTextResult(text, b, '- [ ] B 할 일', { folderText: true }).state;
+  const task = M.getDocument(text, b)!.lines[0].id;
+  const data = createProgramData(); const actorId = data.activeActorId; data.spaces[actorId].text = text;
+  const classified = setProgramTaskClassification(data, { actorId, requestId: 'n7-review-6-classify', expectedSpace: data.spaces[actorId], taskId: task, folderId: original.id });
+  assert(classified.ok, 'the ordinary classification takes it');
+  const known = classified.data.spaces[actorId].text;
+  assert.equal(M.getDocument(known, b)!.folderId, 'folder-unfiled', 'B stays kept in 미분류');
+  assert.equal(known.taskScopes[task], original.id); assert(M.validate(known));
+  return { known, a, b, task, original };
+}
+test('N7 6: another document\'s task classified into the folder, known to A — the line moves (W15), the folder keeps its name, 모든 문서에 적용 offered', () => {
+  const { known, a, b, task, original } = classifiedElsewhere();
+  const e = editor(known, a, known);
+  e.typeAndEnter('- /', '- /NewTitle');
+  const after = e.controller.getState().working;
+  assert.equal(titleOf(after, original.id), 'Original', 'not renamed');
+  assert.deepEqual(e.moves, [original.id], 'W15 moved the line'); assert.deepEqual(e.kept, []);
+  const moved = after.folders.find(folder => folder.title === 'NewTitle')!;
+  assert(after.bindings.some(row => row.kind === 'scope' && row.docId === a && row.scopeId === moved.id));
+  assert.equal(after.taskScopes[task], original.id, 'B\'s task stays in Original');
+  const notice = programFolderMoveNotice(known, after, a, M.getDocument(after, a)!.lines[0].id, original.id);
+  assert.equal(notice.kind, 'moved'); assert.equal(notice.tone, 'choose'); assert.equal(notice.others, 1);
+  assert.match(notice.text, /^이 줄만 ‘NewTitle’.* 옮겼습니다 · 다른 문서 1곳은 ‘Original’ 그대로$/);
+  const data = createProgramData(); data.spaces[data.activeActorId].text = known;
+  const saved = programTextTransition(data, { actorId: data.activeActorId, documentId: a, expected: known, next: after });
+  assert(saved.ok); const out = saved.data.spaces[saved.data.activeActorId].text;
+  assert.equal(titleOf(out, original.id), 'Original'); assert.equal(titleOf(out, out.taskScopes[task]), 'Original');
+  assert.equal(M.getDocument(out, b)!.folderId, 'folder-unfiled');
+});
+test('N7 6: the same without the classified task — this document alone uses it, renamed as before', () => {
+  const { mine, a, original } = workspaces();
+  const e = editor(mine, a, mine);
+  e.typeAndEnter('- /', '- /NewTitle');
+  assert.equal(titleOf(e.controller.getState().working, original.id), 'NewTitle');
+});
+
+// N7 re-review 3 (1): a folder name selected and typed over in Hangul, then a blur mid-composition. The native editor
+// holds its onChange while composing, so no line was held at the blur and nothing was scheduled.
+const blurSource = ts.transpileModule('const finishOnBlur = ' + (() => {
+  let found = ''; const visit = (node: ts.Node) => { if (ts.isVariableDeclaration(node) && node.name.getText(tree) === 'finishOnBlur') found = node.initializer!.getText(tree); else ts.forEachChild(node, visit); }; visit(tree); return found;
+})() + ';', { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.None } }).outputText;
+test('N7 6: typed over in Hangul and blurred mid-composition, no line held yet — finished once the composed text is in', () => {
+  const { mine, a, original } = workspaces();
+  const e = editor(mine, a, mine);
+  e.composingRef.current = true;
+  const blur = new Function('composingRef', 'finishAfterComposition', 'finishHeldFolderLine', 'finishRenamedFolderLines', blurSource + '\nreturn finishOnBlur;')(
+    e.composingRef, e.finishAfterComposition, e.finish, () => {}) as () => void;
+  assert.equal(e.held(), null, 'nothing held: the native onChange waits for the composition');
+  e.doc.activeElement = null; blur();
+  assert.equal(e.finishAfterComposition.current, true, 'scheduled at the blur');
+  // compositionend: the native editor publishes the composed text (a held edit of the line), then the retry runs.
+  e.composingRef.current = false;
+  e.typeAndFinish({ finish: false }, '- /한글');
+  assert.equal(titleOf(e.controller.getState().working, original.id), 'Original', 'the edit itself finishes nothing');
+  assert.equal(e.afterComposition(), true);
+  assert.equal(titleOf(e.controller.getState().working, original.id), '한글'); assert.equal(e.held(), null);
 });

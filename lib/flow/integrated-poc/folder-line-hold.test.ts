@@ -178,7 +178,7 @@ test('the editor finishes the held line inside the Enter handler, keeps it held 
   assert.match(editor, /folderHold:heldInput\(raw,start\+insert\.length,/);
   assert.match(editor, /if \(!propsRef\.current\.folderId\) finishHeldFolderLine\(true\);\s+if \(action === 'menu'\)/);
   assert.match(editor, /textarea\.addEventListener\('blur', finishOnBlur\)/);
-  assert.match(editor, /const finishOnBlur = \(\) => \{ finishHeldFolderLine\(\); finishRenamedFolderLines\(true\); \};/);
+  assert.match(editor, /const finishOnBlur = \(\) => \{ if \(composingRef\.current\) finishAfterComposition\.current = true; finishHeldFolderLine\(\); finishRenamedFolderLines\(true\); \};/);
   assert.match(editor, /async function saveNow\(finish = true\)[^]*?if \(finish\) finishHeldFolderLine\(\);/);
   assert.match(editor, /void saveNow\(false\)/);
   assert.match(editor, /controller\.declareFolderLine\(index, !create\)/);
