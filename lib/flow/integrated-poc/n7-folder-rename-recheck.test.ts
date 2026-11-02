@@ -8,6 +8,7 @@ import { programFolderCreatedNotice, programFolderKeptText } from './folder-noti
 import { restoredLineOffset } from './folder-line-hold';
 import { createProgramData } from './program-data';
 import { programTextTransition } from './program-text-transition';
+import { programFolderNewUsesElsewhere, programFolderRenamesStillOwn, programFolderUsedElsewhere } from './folder-operation';
 import { createEmptyTextWorkspace, textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 
 // Review n6-phone-3 (11/2): '- /Original' → '- /' → '- /NewTitle' → Enter renamed Original (D3 B: this document alone uses
@@ -19,7 +20,8 @@ const tree = ts.createSourceFile('ProgramTextEditor.tsx', source, ts.ScriptTarge
 function find(predicate: (node: ts.Node) => boolean): string {
   let result: ts.Node | undefined; const visit = (node: ts.Node) => { if (predicate(node)) result = node; else ts.forEachChild(node, visit); }; visit(tree); assert(result); return result.getText(tree);
 }
-const finishSource = ts.transpileModule(find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'finishHeldFolderLine'),
+const finishSource = ts.transpileModule(find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'finishHeldFolderLine')
+  + '\n' + find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'finishLeftAfterComposition'),
   { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.None } }).outputText;
 
 /** Document A links Original; another tab's document B uses it by a line with a task under it. */
@@ -36,15 +38,21 @@ function workspaces() {
 function editor(mine: TextWorkspaceState, a: string, latest: TextWorkspaceState | undefined, box = true, keeps = true) {
   const owner = createProgramDocumentInput(mine, a);
   const controller = createProgramTextDraft(owner.initial, a, async () => true, () => {}, () => true, owner, true, undefined, () => latest);
-  const area = { value: controller.getState().raw, selectionStart: 0, selectionEnd: 0, selectionDirection: 'none' };
+  const doc = { activeElement: null as unknown };
+  const area = { value: controller.getState().raw, selectionStart: 0, selectionEnd: 0, selectionDirection: 'none', ownerDocument: doc };
+  doc.activeElement = area;
   const heldFolderLineRef = { current: null as null | { id: string; left: boolean; offAtStart: boolean } }, notices: string[] = [], moves: string[] = [];
+  const composingRef = { current: false }, finishAfterComposition = { current: false };
   const kept: { title: string; raw: string }[] = [];
   const scope: Record<string, unknown> = { M, propsRef: { current: { docId: a, readOnly: false, onKeepRefusedInput: box ? (draft: { title: string; raw: string }) => { kept.push(draft); return keeps; } : undefined } }, draftRef: { current: controller }, textArea: () => area,
-    heldFolderLineRef, composingRef: { current: false }, FOLDER_LINE: /^ *- \/(?!.*<!--\s*flowme-folder)/, editorRef: { current: { setValue: () => true } },
+    heldFolderLineRef, composingRef, finishAfterComposition, finishRenamedFolderLines: () => {},
+    currentDoc: () => M.getDocument(controller.getState().working, a), FOLDER_LINE: /^ *- \/(?!.*<!--\s*flowme-folder)/, editorRef: { current: { setValue: () => true } },
     shown: () => true, scheduleSave: () => {}, programFolderKeptText, programFolderCreatedNotice, restoredLineOffset, relinkedNotice: () => null,
     showFolderNotice: (text: string) => notices.push(text), showFolderOperation: (text: string) => notices.push(text),
     showFolderMove: (_before: unknown, _after: unknown, _line: string, fromId: string) => moves.push(fromId) };
-  const finish = new Function(...Object.keys(scope), finishSource + '\nreturn finishHeldFolderLine;')(...Object.values(scope)) as (explicit?: boolean) => void;
+  const fns = new Function(...Object.keys(scope), finishSource + '\nreturn { finishHeldFolderLine, finishLeftAfterComposition };')(...Object.values(scope)) as
+    { finishHeldFolderLine: (explicit?: boolean) => void; finishLeftAfterComposition: () => boolean };
+  const finish = fns.finishHeldFolderLine;
   /** The line typed as the review did, each a held edit, then its finish: Enter on it (beforeEnter's), or, with
    *  explicit false, the caret leaving it; offAtStart, a line already off its folder's name before these edits. */
   const typeAndFinish = (options: { explicit?: boolean; offAtStart?: boolean }, ...texts: string[]) => {
@@ -58,7 +66,8 @@ function editor(mine: TextWorkspaceState, a: string, latest: TextWorkspaceState 
     finish(options.explicit ?? true);
   };
   const typeAndEnter = (...texts: string[]) => typeAndFinish({}, ...texts);
-  return { controller, typeAndEnter, typeAndFinish, notices, moves, kept, held: () => heldFolderLineRef.current, area };
+  return { controller, typeAndEnter, typeAndFinish, notices, moves, kept, held: () => heldFolderLineRef.current, area, doc, composingRef,
+    finishAfterComposition, afterComposition: fns.finishLeftAfterComposition, finish };
 }
 const titleOf = (state: TextWorkspaceState, id: string) => state.folders.find(folder => folder.id === id)?.title;
 
@@ -211,4 +220,100 @@ test('N7 4: a pasted name the 복구함 could not store — the line stays as pa
   const p = pasted(false);
   assert.equal(p.controller.getState().raw.split('\n')[0], '- /PastedName');
   assert.deepEqual(p.notices, []); assert(p.pending.has(p.line));
+});
+
+// N7 re-review 2 (11/2): (1) a blur mid-composition skipped the line's finish and nothing ran it after, so '- /한글'
+// was saved on a line still linked to Original. (2) a folder whose other uses the draft already knew (another
+// document's tasks in it) was refused as 'used-elsewhere' instead of W15's own judgement.
+test('N7 5: left mid-composition — skipped then, finished once the composition has ended (the line renamed)', () => {
+  const { mine, a, original } = workspaces();
+  const e = editor(mine, a, mine);
+  e.composingRef.current = true;
+  e.typeAndFinish({ explicit: false }, '- /', '- /한글');
+  assert.equal(titleOf(e.controller.getState().working, original.id), 'Original', 'skipped while composing');
+  assert.equal(e.finishAfterComposition.current, true, 'remembered');
+  e.doc.activeElement = null;                       // the blur that ended it
+  assert.equal(e.afterComposition(), false, 'still composing: it waits'); assert.equal(e.finishAfterComposition.current, true);
+  e.composingRef.current = false;
+  assert.equal(e.afterComposition(), true);
+  assert.equal(titleOf(e.controller.getState().working, original.id), '한글'); assert.deepEqual(e.moves, [original.id]);
+  assert.equal(e.finishAfterComposition.current, false); assert.equal(e.held(), null);
+});
+test('N7 5: the composition ended with the caret still on the line, the editor focused — nothing finished yet', () => {
+  const { mine, a, original } = workspaces();
+  const e = editor(mine, a, mine);
+  e.composingRef.current = true;
+  e.typeAndFinish({ explicit: false }, '- /한글');
+  e.composingRef.current = false;
+  assert.equal(e.afterComposition(), true);
+  assert.equal(titleOf(e.controller.getState().working, original.id), 'Original'); assert.notEqual(e.held(), null, 'still held, to finish when left');
+});
+test('N7 5: the editor runs it after compositionend, as a held press', () => {
+  assert.match(source, /if \(held && composingRef\.current\) finishAfterComposition\.current = true;/);
+  assert.match(source, /if \(pending\.size && composingRef\.current\) finishAfterComposition\.current = true;/);
+  assert.match(source, /useEffect\(\(\) => \{\s*if \(composing \|\| !finishAfterComposition\.current\) return;[\s\S]*?finishLeftAfterComposition\(\)[\s\S]*?\}, \[composing\]\);/);
+});
+
+/** Document A links Original; another document B is kept in Original, its task with it (no folder line of its own). */
+function taskElsewhere() {
+  const { mine, a, original } = workspaces();
+  let known = M.addDocument(mine, { title: 'B', folderId: original.id }); const b = known.documents.at(-1)!.id;
+  known = M.editTextResult(known, b, '- [ ] B 할 일', { folderText: true }).state;
+  assert.equal(known.taskScopes[M.getDocument(known, b)!.lines[0].id], original.id);
+  return { known, a, b, original };
+}
+const judged = (base: TextWorkspaceState, a: string, latest?: TextWorkspaceState) => {
+  const owner = createProgramDocumentInput(base, a);
+  const draft = createProgramTextDraft(owner.initial, a, async () => true, () => {}, () => true, owner, true, undefined, () => latest);
+  assert(draft.updateRaw('- /NewTitle\n메모', '', { inputType: 'insertText', folderHold: [0] } as never));
+  const moved = draft.moveFolderLine(0);
+  return { moved, working: draft.getState().working };
+};
+test('N7 5: another document kept in the folder, known to the draft and the same in the newest workspace — W15\'s own move, not refused', () => {
+  const { known, a, original } = taskElsewhere();
+  assert.equal(programFolderUsedElsewhere(known, a, original.id), true);
+  const w15 = judged(known, a), now = judged(known, a, known);
+  assert(w15.moved.ok && !w15.moved.renamed, 'W15: the line moves to a folder of the new name');
+  assert(now.moved.ok, 'not refused');
+  assert.deepEqual([now.moved.renamed, now.moved.fromId], [false, original.id]);
+  assert.equal(titleOf(now.working, now.moved.toId), 'NewTitle'); assert.equal(titleOf(now.working, original.id), 'Original');
+});
+// The review's own state: another document's task classified into Original (M.addTask with its scope), no folder
+// line and not kept in it. W15 judges that a rename (only lines and kept documents share a folder); the first N7
+// check refused it because the newest workspace had that use, though the draft had it too.
+test('N7 5: another document\'s task classified into the folder, known to the draft and the same in the newest workspace — W15\'s judgement', () => {
+  const { mine, a, original } = workspaces();
+  let known = M.addDocument(mine, { title: 'B' }); const b = known.documents.at(-1)!.id;
+  known = M.addTask(known, { docId: b, title: 'B 할 일', scopeId: original.id });
+  assert.equal(programFolderUsedElsewhere(known, a, original.id), true, 'used elsewhere, by the task');
+  const w15 = judged(known, a), now = judged(known, a, known);
+  assert(w15.moved.ok); assert(now.moved.ok, 'not refused');
+  assert.deepEqual([now.moved.renamed, now.moved.fromId], [w15.moved.ok && w15.moved.renamed, original.id]);
+});
+test('N7 5: a use only the newest workspace has is new; one the draft knows is not', () => {
+  const { known, a, original } = taskElsewhere();
+  let latest = M.addDocument(known, { title: 'C' }); const c = latest.documents.at(-1)!.id;
+  latest = M.editTextResult(latest, c, '- /Original\n  - [ ] C 할 일', { folderText: true }).state;
+  assert.equal(programFolderNewUsesElsewhere(known, latest, a, original.id), true);
+  assert.equal(programFolderNewUsesElsewhere(known, known, a, original.id), false);
+  // A move (W15) is not a rename: the newest workspace's new use does not refuse it.
+  const moved = judged(known, a, latest).moved;
+  assert(moved.ok && !moved.renamed);
+  // The draft asks for new uses against what it holds itself (its working state), not for any use at all.
+  const draft = readFileSync(new URL('./program-text-draft.ts', import.meta.url), 'utf8');
+  assert.match(draft, /if \(check\.folderMoved\.renamed && latest && programFolderNewUsesElsewhere\(state\.working, latest, docId, binding\.scopeId\)\) return \{ ok: false, reason: 'used-elsewhere' \};/);
+});
+test('N7 5: the save — a rename its base already knew others use passes (as 모든 문서에 적용); a use new since then is refused', () => {
+  const { known, a, original } = taskElsewhere();
+  const renamed = structuredClone(known); renamed.folders.find(folder => folder.id === original.id)!.title = 'NewTitle';
+  for (const doc of renamed.documents) if (doc.folderId === original.id) doc.folder = 'NewTitle'; // a kept document names its folder
+  let latest = M.addDocument(known, { title: 'C' }); const c = latest.documents.at(-1)!.id;
+  latest = M.editTextResult(latest, c, '- /Original', { folderText: true }).state;
+  assert.equal(programFolderRenamesStillOwn(known, renamed, known, a), true);
+  assert.equal(programFolderRenamesStillOwn(known, renamed, latest, a), false);
+  const save = (before: TextWorkspaceState) => {
+    const data = createProgramData(); data.spaces[data.activeActorId].text = before;
+    return programTextTransition(data, { actorId: data.activeActorId, documentId: a, expected: known, next: renamed });
+  };
+  assert.equal(save(known).ok, true); assert.equal(save(latest).ok, false);
 });

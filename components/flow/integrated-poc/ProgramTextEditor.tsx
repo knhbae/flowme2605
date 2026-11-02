@@ -413,6 +413,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!composing && barHold.held()) { const timer = setTimeout(releaseHeldBar, 0); return () => clearTimeout(timer); }
     releaseHeldBar();
   }, [composing, draft.saving, inputLocked, props.readOnly, regionPending]);
+  const finishAfterComposition = useRef(false);
+  // N7 review 5: a line's finish skipped mid-composition runs after compositionend has finished, as a held press
+  // does; a few frames more while the composed text reaches the model.
+  useEffect(() => {
+    if (composing || !finishAfterComposition.current) return;
+    let tries = 0, timer = setTimeout(function retry() { if (!finishLeftAfterComposition() && !composingRef.current && ++tries < 10) timer = setTimeout(retry, 50); }, 0);
+    return () => clearTimeout(timer);
+  }, [composing]);
   // The same for a notice button: after compositionend has finished, so the composed text is in the model first.
   useEffect(() => {
     if (composing || !heldNoticeAction.current) return;
@@ -667,6 +675,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
    * it) links or makes the folder; otherwise only a folder of exactly that name is linked, once per leaving. */
   function finishHeldFolderLine(explicit = false) {
     const held = heldFolderLineRef.current, controller = draftRef.current, area = textArea();
+    if (held && composingRef.current) finishAfterComposition.current = true;
     if (!held || !controller || !area || composingRef.current || propsRef.current.readOnly) return;
     const state = controller.getState();
     if (state.invalid || area.value !== state.raw) return;
@@ -739,6 +748,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
    *  the caret is off it, or all of them on leaving the editor or on Enter. Only those lines change. */
   function finishRenamedFolderLines(all: boolean) {
     const pending = renamedFolderLinesRef.current, controller = draftRef.current, area = textArea();
+    if (pending.size && composingRef.current) finishAfterComposition.current = true;
     if (!pending.size || !controller || !area || composingRef.current || propsRef.current.readOnly) return;
     const state = controller.getState();
     if (state.invalid || area.value !== state.raw) return;
@@ -773,6 +783,21 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     editorRef.current?.setValue(restored, { selection: { start, end, direction: selectionDirection } });
     const notice = controller.getState().folderNotice; if (notice) showFolderNotice(notice, 'choose', lines[indexes[0]]?.id);
     scheduleSave();
+  }
+  /** N7 review 5: a finish skipped because a composition was on (a blur or the caret leaving mid-IME; 천지인
+   *  confirms late) runs once the composition has ended and its text is in: the held line as left when the caret is
+   *  not on it or the editor is not focused, and the pasted lines off the caret (all of them, unfocused). False while
+   *  it should wait (still composing, or the composed text not in yet). */
+  function finishLeftAfterComposition() {
+    const controller = draftRef.current, area = textArea();
+    if (!finishAfterComposition.current) return true;
+    if (composingRef.current || !controller || !area || area.value !== controller.getState().raw) return false;
+    finishAfterComposition.current = false;
+    const held = heldFolderLineRef.current, focused = area.ownerDocument.activeElement === area;
+    const index = held ? currentDoc()?.lines.findIndex(line => line.id === held.id) ?? -1 : -1;
+    if (held && (!focused || index !== area.value.slice(0, area.selectionStart).split('\n').length - 1)) finishHeldFolderLine();
+    finishRenamedFolderLines(!focused);
+    return true;
   }
   /** One ↶ (or the notice's 되돌리기) right after a finished folder line moved puts the whole move back (D3 B). */
   function undoFolderMove() {
