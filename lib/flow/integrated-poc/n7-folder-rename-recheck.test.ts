@@ -33,12 +33,13 @@ function workspaces() {
   return { mine, other, a, b, original };
 }
 /** This tab's editor on A: the draft (with the host's newest workspace), and the editor's own finish of a held line. */
-function editor(mine: TextWorkspaceState, a: string, latest: TextWorkspaceState | undefined) {
+function editor(mine: TextWorkspaceState, a: string, latest: TextWorkspaceState | undefined, box = true) {
   const owner = createProgramDocumentInput(mine, a);
   const controller = createProgramTextDraft(owner.initial, a, async () => true, () => {}, () => true, owner, true, undefined, () => latest);
   const area = { value: controller.getState().raw, selectionStart: 0, selectionEnd: 0, selectionDirection: 'none' };
   const heldFolderLineRef = { current: null as null | { id: string; left: boolean; offAtStart: boolean } }, notices: string[] = [], moves: string[] = [];
-  const scope: Record<string, unknown> = { M, propsRef: { current: { docId: a, readOnly: false } }, draftRef: { current: controller }, textArea: () => area,
+  const kept: { title: string; raw: string }[] = [];
+  const scope: Record<string, unknown> = { M, propsRef: { current: { docId: a, readOnly: false, onKeepRefusedInput: box ? (draft: { title: string; raw: string }) => kept.push(draft) : undefined } }, draftRef: { current: controller }, textArea: () => area,
     heldFolderLineRef, composingRef: { current: false }, FOLDER_LINE: /^ *- \/(?!.*<!--\s*flowme-folder)/, editorRef: { current: { setValue: () => true } },
     shown: () => true, scheduleSave: () => {}, programFolderKeptText, programFolderCreatedNotice, restoredLineOffset, relinkedNotice: () => null,
     showFolderNotice: (text: string) => notices.push(text), showFolderOperation: (text: string) => notices.push(text),
@@ -55,7 +56,7 @@ function editor(mine: TextWorkspaceState, a: string, latest: TextWorkspaceState 
     }
     finish(true);
   };
-  return { controller, typeAndEnter, notices, moves };
+  return { controller, typeAndEnter, notices, moves, kept };
 }
 const titleOf = (state: TextWorkspaceState, id: string) => state.folders.find(folder => folder.id === id)?.title;
 
@@ -67,8 +68,18 @@ test('N7 review counterexample: another tab uses Original — the line\'s rename
   assert.equal(e.controller.getState().raw.split('\n')[0], '- /Original');
   assert.deepEqual(e.moves, []);
   assert.equal(e.notices.length, 1);
-  assert.match(e.notices[0], /^다른 곳에서도 쓰는 폴더라 이름을 바꾸지 않았습니다 · ‘Original’.* 두었습니다\(입력: ‘NewTitle’\)$/);
   assert.equal(e.controller.getState().invalid, false);
+  // N7 review: the typed name is not left in the notice alone; it goes to the tab's 복구함 (saved input).
+  assert.deepEqual(e.kept, [{ title: '‘Original’ 폴더 줄에 쓴 이름', raw: '- /NewTitle' }]);
+  assert.match(e.notices[0], /^다른 곳에서도 쓰는 폴더라 이름을 바꾸지 않았습니다 · ‘Original’.* 두었습니다\. 입력\(‘NewTitle’\)은 복구함에 보관했습니다$/);
+});
+
+test('N7: a host without a 복구함 keeps the earlier words, the typed name in the notice', () => {
+  const { mine, other, a } = workspaces();
+  const e = editor(mine, a, other, false);
+  e.typeAndEnter('- /', '- /NewTitle');
+  assert.deepEqual(e.kept, []);
+  assert.match(e.notices[0], /^다른 곳에서도 쓰는 폴더라 이름을 바꾸지 않았습니다 · ‘Original’.* 두었습니다\(입력: ‘NewTitle’\)$/);
 });
 
 test('N7: nothing else uses Original there — the rename goes as before (D3 B)', () => {
@@ -76,7 +87,7 @@ test('N7: nothing else uses Original there — the rename goes as before (D3 B)'
   const e = editor(mine, a, mine);
   e.typeAndEnter('- /', '- /NewTitle');
   assert.equal(titleOf(e.controller.getState().working, original.id), 'NewTitle');
-  assert.deepEqual(e.moves, [original.id]);
+  assert.deepEqual(e.moves, [original.id]); assert.deepEqual(e.kept, []);
 });
 
 test('N7: the draft says why — moveFolderLine refuses a rename another document uses in the newest workspace', () => {

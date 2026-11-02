@@ -197,3 +197,26 @@ test('a failed last capture keeps the editors, on every rebuild path, and says w
   assert(source.includes("await controller.current?.refresh(); if (!replaceEditors()) setMessage(keptEditorsNotice('서버 자료는 반영했습니다.'));"));
   assert.match(keptEditorsNotice('X.'), /^X\. 지금 입력을 이 탭에 안전하게 보관하지 못해 화면은 그대로 두었습니다/);
 });
+
+// N7 review (11/2): a folder name refused because another document uses the folder was put back on its line and
+// left only in the notice; closed, it was gone. The editor hands it to the shell, which parks it at once.
+test('N7: input an editor refused and put back is parked at once, stored, announced, and kept until cleared', () => {
+  const refusedName = { title: '‘Original’ 폴더 줄에 쓴 이름', raw: '- /NewTitle' };
+  const mergeRecoveryDrafts = evaluate<(parked: typeof typed[], active: typeof typed[]) => typeof typed[]>(functionText('mergeRecoveryDrafts'), {});
+  const stored: unknown[] = [], shown: unknown[] = []; let storageError = false;
+  const refs = { parkedDrafts: { current: [] as typeof typed[] }, activeDrafts: { current: [typed] } };
+  const keep = (ok: boolean) => evaluate<(draft: typeof refusedName) => void>(functionText('keepRefusedInput'), { ...refs, mergeRecoveryDrafts,
+    uiRecovery: { current: { save: (drafts: unknown[]) => { stored.push(drafts); return ok ? { ok: true, value: { drafts } } : { ok: false }; } } },
+    setStorageError: () => { storageError = true; }, setRecoveries: (value: unknown) => shown.push(value) });
+  keep(true)(refusedName as typeof typed);
+  assert.deepEqual(refs.parkedDrafts.current, [refusedName]);
+  assert.deepEqual(stored.at(-1), [refusedName, typed], 'stored with the live capture');
+  assert.equal(shown.length, 1); assert.equal(storageError, false);
+  const announced = announcedRecoveries([refusedName, typed] as typeof typed[], refs.parkedDrafts.current, [typed], false, recoveryDraftIdentity);
+  assert.equal(announced, 1, 'announced although nothing else is at risk');
+  assert.deepEqual(mergeRecoveryDrafts(refs.parkedDrafts.current, [typed]), [refusedName, typed], 'the next capture keeps it');
+  keep(false)(refusedName as typeof typed); assert.equal(storageError, true, 'storage that fails says so');
+  assert(source.includes('onInputFailureChange={setEditorInputFailed} onKeepRefusedInput={keepRefusedInput}'));
+  const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
+  assert(space.includes('onInputFailureChange={failed => inputFailureChanged(id, failed)} onKeepRefusedInput={props.onKeepRefusedInput}'));
+});

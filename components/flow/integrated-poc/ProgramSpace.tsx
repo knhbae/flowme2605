@@ -136,6 +136,8 @@ export type ProgramSpaceProps = {
   onRegisterEditors?: (editors: (ProgramEditorFlush & AlphaStructuralEditorPort) | null) => void;
   /** Some document editor holds input it refused or failed to save. */
   onInputFailureChange?: (failed: boolean) => void;
+  /** N7: input an editor refused and put back, for the tab's 복구함. */
+  onKeepRefusedInput?: (draft: { title: string; raw: string }) => void;
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
   /** R8b: the host draws the main tabs (쓰기·오늘·분류) and chooses one through this port. The space's own
    *  period state stays here; this is not onRegisterNavigation, so source opens keep their focus path. */
@@ -2028,7 +2030,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             if (sourceFocus?.documentId === id && sourceFocus.isCurrent()) return;
             positions.current[id] = { ...position, documentId: id, lineId };
           }}
-          onDirtyChange={value => { editorDirtyChanged(id, actorId, value); }} onInputFailureChange={failed => inputFailureChanged(id, failed)} onUndo={onUndo} onRedo={onRedo}
+          onDirtyChange={value => { editorDirtyChanged(id, actorId, value); }} onInputFailureChange={failed => inputFailureChanged(id, failed)} onKeepRefusedInput={props.onKeepRefusedInput} onUndo={onUndo} onRedo={onRedo}
           onRegisterSave={(save, status) => { saveRequests.current[id] = save; saveStatusReaders.current[id] = status ?? null; }}
           onRegisterSourceFocus={focus => registerSourceFocus(id, focus)}
           onRegisterDraft={read => { draftReaders.current[id] = read; }}

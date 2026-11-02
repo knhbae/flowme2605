@@ -298,6 +298,15 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   }
   /** Input captured from editors that are about to go away is left behind: it stays in the tab's
    * recovery and is announced until a save matches it or the user clears it. */
+  /** N7 review: input an editor refused and put back (a folder name another document uses) is left behind at once, as
+   * an editor's that went away: stored and announced, until the user clears it (no document save matches it). */
+  function keepRefusedInput(draft: AlphaUiDraft) {
+    parkedDrafts.current = mergeRecoveryDrafts(parkedDrafts.current, [draft]);
+    if (!uiRecovery.current) return;
+    const saved = uiRecovery.current.save(mergeRecoveryDrafts(parkedDrafts.current, activeDrafts.current));
+    if (!saved.ok) { setStorageError(true); return; }
+    setRecoveries(saved.value);
+  }
   function parkEditorInput() {
     parkedDrafts.current = mergeRecoveryDrafts(parkedDrafts.current, activeDrafts.current);
     parkedStructural.current = mergeStructuralRecoveryEntries(parkedStructural.current, activeStructural.current);
@@ -1490,7 +1499,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           return !disposed.current && !externalRef.current && !!authority && !authority.pending && !authority.busy && authority.status !== 'conflict';
         }}
         selectedDocumentId={destination.view === 'space' ? destination.id : undefined} onUndo={() => history('undo')} onRedo={() => history('redo')}
-        onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} onInputFailureChange={setEditorInputFailed}
+        onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} onInputFailureChange={setEditorInputFailed} onKeepRefusedInput={keepRefusedInput}
         onOpenCopySource={(flowId, id, focus) => { void openFlowsFromDocument(id, flowId, focus); }} onBrowseFlows={(id, focus, writing) => { void openFlowsFromDocument(id, undefined, focus, writing); }}
         importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } } : undefined}
         onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></ProgramServerStatusContext.Provider></div>
