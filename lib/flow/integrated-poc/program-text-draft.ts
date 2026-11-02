@@ -143,14 +143,18 @@ export function createProgramTextDraft(
     automaticBlank?: { id: string; text: string } } | null = null;
   let folderEnter: { before: TextWorkspaceState; generation: number; lineId: string } | null = null;
   const folderIndentProofs = new WeakSet<object>();
+  // Folders this draft made. S4 v14 phone (11/2): a new folder's line emptied and typed again finds the folder by its
+  // name and only links it; that line is still the new folder's (D11 B), as long as nothing else uses it.
+  const madeFolders = new Set<string>();
   function recordFolder(before: TextWorkspaceState, after: TextWorkspaceState) {
     const change = captureProgramFolderOperation(before, after);
     if (!change) { if (folderOperation) folderOperation.fresh = false; return; }
+    for (const id of change.createdFolders) madeFolders.add(id);
     const previous = folderOperation;
     const grouped = previous?.change.kind === 'scopes' && change.kind === 'scopes' && Date.now() - previous.at <= 3000;
     folderOperation = { id: grouped ? previous.id : ++folderSequence, at: Date.now(),
       change: grouped ? combineProgramFolderScopes(previous.change, change) : change, generation: inputGeneration,
-      fresh: change.kind === 'create' && change.createdLines.length === 1 };
+      fresh: change.createdLines.length === 1 && (change.kind === 'create' || change.kind === 'link' && madeFolders.has(change.createdLines[0].folderId)) };
   }
   let prepared: {state:ProgramTextDraftState;raw:string;signature:string;ownerRevision:number|undefined;context:unknown;value:ReturnType<typeof deriveRaw>}|null=null;
   const basicCheckReady=()=>!state.invalid&&(!state.saving||submitted?.allowBasicChecks===true);

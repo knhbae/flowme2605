@@ -105,7 +105,7 @@ test('the editor: Enter moves, the notice carries 모든 문서에 적용 and �
   assert.match(editor, /\{noticeViews\[0\] && <ProgramNoticeRow notice=\{\{ \.\.\.noticeViews\[0\], more: noticeViews\.length - 1 \}\} onClose=\{noticeViews\[0\]\.close\} \/>\}/);
   assert.match(editor, /const ends = programNoticeEndsAt\(\{ tone: folderNotice\.tone, shownAt: folderNotice\.shownAt, leftBlockAt: folderNotice\.leftBlockAt, held: noticeHeld \|\| freshHeld, waiting: folderWaiting \}\);/);
   // B1: Enter on a new "- /name" line, and a paste, announce the folders they made.
-  assert.match(editor, /const notice = controller\.getState\(\)\.folderNotice \?\? \(declared \? programFolderCreatedNotice\(state\.working, controller\.getState\(\)\.working\) : null\);/);
+  assert.match(editor, /const notice = controller\.getState\(\)\.folderNotice \?\? \(declared \? programFolderCreatedNotice\(state\.working, controller\.getState\(\)\.working\) \?\? relinkedNotice\(lines\[index\]\?\.id\) : null\);/);
   assert.match(editor, /const notice = controller\.getState\(\)\.folderNotice \?\? programFolderCreatedNotice\(beforeText, afterText\);/);
   // The caret leaving the line's block starts a choice notice's 6s.
   assert.match(editor, /const inside = start >= 0 && index >= start && index < Math\.max\(rows\[start\]\.subtreeEndIndex, start \+ 1\);/);

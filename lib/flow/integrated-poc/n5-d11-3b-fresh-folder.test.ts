@@ -10,6 +10,7 @@ import { folderBarLine, taskMarkerLock, writingBarLine } from './writing-bar';
 import { folderRefusalStands, indentTouchesLinkedFolder, linkedFolderLinesTextEditMoves, textEditTouchesLinkedFolderIndent } from './folder-line-hold';
 import type { FolderIndentPlan } from './folder-operation';
 import { programNoticeEndsAt } from './program-notice';
+import { programFolderRelinkedNotice } from './folder-notice';
 
 // N5 phone 3b (S4-V11-PHONE-RESULT, 11/2): '폰부모' then '폰부모 › 폰자식2' made at the end of a document whose earlier
 // steps had left blank lines there. Back on the new child line, the bar ⇤ was off and said the D11 reason. Those
@@ -55,6 +56,7 @@ const named = (name: string) => (node: ts.Node) => (ts.isPropertyAssignment(node
 const valueOf = (name: string) => ((nodeOf(named(name)) as ts.PropertyAssignment | ts.VariableDeclaration).initializer!).getText(tree);
 const declared = (name: string) => nodeOf(node => ts.isFunctionDeclaration(node) && node.name?.text === name).getText(tree);
 const pressSource = ts.transpileModule(`${declared('readBarLine')}
+${declared('relinkedNotice')}
 ${declared('refuseFolderIndent')}
 ${declared('freshNoticeHolds')}
 ${declared('syncFreshNotice')}
@@ -82,20 +84,22 @@ function editorFor(t: Phone) {
     folderIndentSkipped: { current: false }, indentRefusal: { current: null }, folderRefusal: { current: null }, setMessage, today: () => '2026-11-02',
     compositionGeneration: { current: 0 }, undoFolderMove: () => false, explainRawFolderUndo: () => {}, heldInput: () => undefined, accessFor: () => undefined,
     currentDoc: () => M.getDocument(t.draft.getState().working, t.docId), programTextProtectionMessage: () => 'PROTECTED',
-    textEditorRows, writingBarLine, taskMarkerLock, folderBarLine, indentTouchesLinkedFolder, textEditTouchesLinkedFolderIndent, linkedFolderLinesTextEditMoves, folderRefusalStands,
+    programFolderRelinkedNotice, textEditorRows, writingBarLine, taskMarkerLock, folderBarLine, indentTouchesLinkedFolder, textEditTouchesLinkedFolderIndent, linkedFolderLinesTextEditMoves, folderRefusalStands,
     FOLDER_INDENT_NOTICE, FOLDER_STRUCTURE_LOCK: 'REGION', M, folderNoticeDue: t.due, performance: { now: () => t.time.now }, Date: { now: () => t.time.now + t.time.shift },
     heldFolderLineRef: { current: null }, finishHeldFolderLine: () => {}, finishRenamedFolderLines: () => {}, syncBarLine: () => {},
     setFolderNotice: (value: unknown) => { t.state.current = typeof value === 'function' ? value(t.state.current) : value; },
     setFreshHeld: (value: boolean | ((previous: boolean) => boolean)) => { fresh = typeof value === 'function' ? value(fresh) : value; } };
   const run = new Function(...Object.keys(scope), pressSource
-    + '\nreturn { readBarLine, currentIndentAction, applyFreshIndent, adjustIndentPlan, canApplyIndent, onIndentStart, onIndentEnd, preventLockedInput, freshNoticeHolds, syncFreshNotice, rememberPosition };')(...Object.values(scope));
+    + '\nreturn { readBarLine, relinkedNotice, currentIndentAction, applyFreshIndent, adjustIndentPlan, canApplyIndent, onIndentStart, onIndentEnd, preventLockedInput, freshNoticeHolds, syncFreshNotice, rememberPosition };')(...Object.values(scope));
   /** Touch the end of line `index` (the caret lands there; the bar reads it), or `column` in it. */
   const touch = (index: number, column?: number) => {
     area.value = t.draft.getState().raw;
     area.selectionStart = area.selectionEnd = column === undefined ? rows(t).slice(0, index + 1).join('\n').length : rows(t).slice(0, index).join('\n').length + (index ? 1 : 0) + column;
     return run.readBarLine() as { canOutdent: boolean; structureLock?: string };
   };
-  return { messages, touch, shown: () => shown, freshHolds: () => run.freshNoticeHolds() as boolean, view: { props: propsRef.current, host },
+  return { messages, touch, shown: () => shown, freshHolds: () => run.freshNoticeHolds() as boolean,
+    /** The editor's notice for a line linked again to a folder this draft made, or null. */
+    relinked: (lineId: string) => run.relinkedNotice(lineId) as string | null, view: { props: propsRef.current, host },
     /** syncFreshNotice, as rememberPosition, the sync effect and the host's observer run it; and the state it sets. */
     sync: () => { run.syncFreshNotice(); }, held: () => fresh,
     /** The editor's rememberPosition, as a touch, a key or a selection runs it where the caret now is. */
@@ -455,4 +459,49 @@ test('N5 3b phone 2 review 3: the wall clock set forward an hour ends nothing ea
   bar.view.host.shown = false; clock.sync(); clock.lag(4000); clock.setWall(3600000); bar.view.host.shown = true; clock.sync();
   assert(clock.shown()); assert.equal(bar.held(), true);
   assert.equal(clock.at(child).canOutdent, true); assert(bar.outdent()); assert.equal(folderOf(t, '새자식').parentId, null);
+});
+
+// S4 v14 phone (11/2, r_0048–r_0143): '새부모' then '새부모 › 새자식' made; the user deleted 새자식's name and the whole
+// line, then typed '- /새자식' again (twice). Typed again it found the folder by its name and only linked it, with no
+// notice, so D11 B (a new folder's line) no longer held and the bar ⇤ said the D11 reason. A folder this draft made,
+// used nowhere else and with nothing under it, is still the new folder: linked again it is announced, and ⇤ moves it.
+function emptiedAndTyped(raw: string, parent: string, child: string, made: boolean) {
+  const t = phone(raw), bar = editorFor(t);
+  if (made) { make(t, 1, `- /${parent}`); make(t, 2, `  - /${child}`); }
+  const folder = folderOf(t, child), old = ids(t)[2];
+  write(t, [...rows(t).slice(0, 2), '', ...rows(t).slice(3)]);
+  assert.equal(t.draft.getState().working.bindings.some(row => row.lineId === old), false, 'the emptied line lets the folder go');
+  assert(folderOf(t, child), 'the folder itself stays');
+  const next = rows(t); next[2] = `  - /${child}`; write(t, next, { folderHold: [2] });
+  assert(t.draft.declareFolderLine(2, false), 'Enter on it: declared');
+  assert.equal(folderOf(t, child).id, folder.id, 'the same folder, linked again');
+  assert.equal(t.draft.folderOperation()!.kind, 'link');
+  return { t, bar, line: ids(t)[2] };
+}
+test('N5 v14 phone: a new folder\'s line emptied and typed again — announced as linked again, and the bar ⇤ moves it to the top', () => {
+  const { t, bar, line } = emptiedAndTyped('키보드 아래 마지막 줄 확인 26\n', '새부모', '새자식', true);
+  assert.equal(bar.relinked(line), '‘새부모 › 새자식’ 폴더에 다시 연결했습니다');
+  t.notice.current = { operationId: t.draft.folderOperation()!.id }; enter(t, 2);
+  // The emptied line's blank below stays, under the Enter's.
+  assert.deepEqual(rows(t).slice(1), ['- /새부모', '  - /새자식', '    ', '    ']);
+  assert.equal(bar.touch(2).canOutdent, true);
+  assert(bar.outdent());
+  assert.deepEqual(rows(t).slice(1, 3), ['- /새부모', '- /새자식']);
+  assert.equal(folderOf(t, '새자식').parentId, null);
+  assert.deepEqual(bar.messages, []);
+});
+test('N5 v14 phone: a folder this draft did not make, its line emptied and typed again — no notice, ⇤ refused with the D11 reason', () => {
+  const { t, bar, line } = emptiedAndTyped('키보드 아래 마지막 줄 확인 26\n- /옛부모\n  - /옛자식', '옛부모', '옛자식', false);
+  assert.equal(bar.relinked(line), null);
+  t.notice.current = { operationId: t.draft.folderOperation()!.id }; enter(t, 2);
+  const raw = t.draft.getState().raw;
+  assert.equal(bar.touch(2).canOutdent, false); assert.equal(bar.outdent(), false);
+  assert.equal(t.draft.getState().raw, raw); assert.deepEqual(bar.messages, [FOLDER_INDENT_NOTICE]);
+  assert.equal(folderOf(t, '옛자식').parentId, folderOf(t, '옛부모').id);
+});
+test('N5 v14 phone: linked again, then its notice gone — the move waits for the notice as a new folder\'s does', () => {
+  const { t, bar } = emptiedAndTyped('키보드 아래 마지막 줄 확인 26\n', '새부모', '새자식', true);
+  enter(t, 2); // no notice shown (or it ended): D11 B keeps to the notice
+  assert.equal(bar.touch(2).canOutdent, false); assert.equal(bar.outdent(), false);
+  assert.equal(folderOf(t, '새자식').parentId, folderOf(t, '새부모').id);
 });

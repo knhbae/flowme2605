@@ -5,7 +5,7 @@ import ts from 'typescript';
 import { createProgramTextDraft } from './program-text-draft';
 import { createProgramDocumentInput } from './program-document-input';
 import { readFolderPickerCommand } from './folder-picker';
-import { programFolderCreatedNotice } from './folder-notice';
+import { programFolderCreatedNotice, programFolderRelinkedNotice } from './folder-notice';
 import { createEmptyTextWorkspace, textWorkspaceModel as M } from './text-workspace';
 
 // Execute the actual host callback and its actual finish function. Calling the
@@ -16,6 +16,7 @@ function find(predicate: (node: ts.Node) => boolean): ts.Node {
   let result: ts.Node | undefined; const visit = (node: ts.Node) => { if (predicate(node)) result = node; else ts.forEachChild(node, visit); }; visit(tree); assert(result); return result;
 }
 const finish = find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'finishHeldFolderLine').getText(tree);
+const relinked = find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'relinkedNotice').getText(tree);
 const property = find(node => ts.isPropertyAssignment(node) && node.name.getText(tree) === 'beforeEnter') as ts.PropertyAssignment;
 function evaluate<T>(code: string, scope: Record<string, unknown>, result: string): T {
   const js = ts.transpileModule(code, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.None } }).outputText;
@@ -31,9 +32,10 @@ function fixture(raw = '- /운동\n  - /식단\n끝', line = 1, held: boolean | 
   const composingRef = { current: false }, inputLockedRef = { current: false }, draftRef = { current: controller };
   const props = { docId }, propsRef = { current: { docId, readOnly: false, active: true } }; let saves = 0;
   const notices: string[] = [], scope: Record<string, unknown> = { M, props, propsRef, controller, draftRef, textArea: () => area, heldFolderLineRef,
-    composingRef, inputLockedRef, readFolderPickerCommand, programFolderCreatedNotice, FOLDER_LINE: /^ *- \/(?!.*<!--\s*flowme-folder)/,
+    composingRef, inputLockedRef, readFolderPickerCommand, programFolderCreatedNotice, programFolderRelinkedNotice, FOLDER_LINE: /^ *- \/(?!.*<!--\s*flowme-folder)/,
     showFolderOperation: (text: string) => notices.push(text), showFolderNotice: (text: string) => notices.push(text),
     scheduleSave: () => { saves++; }, editorRef: { current: { setValue: () => true } }, finishRenamedFolderLines: () => {} };
+  scope.relinkedNotice = evaluate<(lineId?: string) => string | null>(relinked, scope, 'relinkedNotice');
   scope.finishHeldFolderLine = evaluate<() => void>(finish, scope, 'finishHeldFolderLine');
   const enter = evaluate<() => void>('const callback = ' + property.initializer.getText(tree), scope, 'callback');
   return { area, controller, docId, heldFolderLineRef, composingRef, inputLockedRef, draftRef, propsRef, enter, notices, saves: () => saves };

@@ -70,6 +70,16 @@ export function programFolderCreatedNotice(before: TextWorkspaceState, after: Te
   return same ? `새 폴더 ‘${name}’ · 같은 이름이 다른 곳에 ${same}개` : `새 폴더 ‘${name}’${eul(folder.title)} 만들었습니다`;
 }
 
+/** S4 v14 phone (11/2): a new folder's line emptied and typed again links that folder again (none is made). It is
+ *  announced as the new folder was, so the line's ⇤ (D11 B) has its notice too. Null when the line has no folder. */
+export function programFolderRelinkedNotice(state: TextWorkspaceState, docId: string, lineId: string): string | null {
+  const binding = state.bindings.find(row => row.kind === 'scope' && row.docId === docId && row.lineId === lineId);
+  const folder = binding?.kind === 'scope' ? state.folders.find(entry => entry.id === binding.scopeId) : undefined;
+  if (!folder) return null;
+  const parent = folder.parentId ? state.folders.find(entry => entry.id === folder.parentId) : undefined;
+  return `‘${parent ? `${parent.title} › ${folder.title}` : folder.title}’ 폴더에 다시 연결했습니다`;
+}
+
 /** After [모든 문서에 적용]: the folder renamed everywhere, with the number of documents that use it. */
 export function programFolderRenamedEverywhere(state: TextWorkspaceState, folderId: string, oldName: string): string {
   const name = state.folders.find(folder => folder.id === folderId)?.title ?? '';

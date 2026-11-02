@@ -42,7 +42,7 @@ import { programWritingDialogPlace } from '@/lib/flow/integrated-poc/writing-dia
 import { revealProgramEditorLine } from './editor-reveal';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
 import { programNoticeEndsAt, programNoticeOrder, type ProgramNoticeAction, type ProgramNoticeTone } from '@/lib/flow/integrated-poc/program-notice';
-import { programFolderCreatedNotice, programFolderKeptText, programFolderMoveNotice, programFolderRenamedEverywhere } from '@/lib/flow/integrated-poc/folder-notice';
+import { programFolderCreatedNotice, programFolderKeptText, programFolderMoveNotice, programFolderRelinkedNotice, programFolderRenamedEverywhere } from '@/lib/flow/integrated-poc/folder-notice';
 import { programFolderCreationLocation, programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
 import { ProgramFolderRegionEditor, programRegionError, type ProgramFolderRegionPort, type ProgramFolderRegionSnapshot } from './ProgramFolderRegionEditor';
 import regionStyles from './ProgramFolderRegionEditor.module.css';
@@ -540,7 +540,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       heldFolderLineRef.current = null;
       if (moved?.ok && oldFolder) showFolderMove(moved.before, after.working, lineId, moved.fromId, oldFolder.title);
       else {
-        const notice = after.folderNotice ?? programFolderCreatedNotice(previous.working, after.working);
+        const notice = after.folderNotice ?? programFolderCreatedNotice(previous.working, after.working) ?? relinkedNotice(lineId);
         if (notice) showFolderOperation(notice, 'info', lineId);
       }
       dismissPicker();
@@ -710,7 +710,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const declared = controller.declareFolderLine(index, !create);
     heldFolderLineRef.current = declared || create ? null : { ...held, left: true };
     // B1 (W15): a folder this made is announced too.
-    const notice = controller.getState().folderNotice ?? (declared ? programFolderCreatedNotice(state.working, controller.getState().working) : null);
+    const notice = controller.getState().folderNotice ?? (declared ? programFolderCreatedNotice(state.working, controller.getState().working) ?? relinkedNotice(lines[index]?.id) : null);
     if (notice) showFolderOperation(notice, 'info', lines[index]?.id);
     if (!declared) return;
     const visibleRaw = controller.getState().raw;
@@ -772,6 +772,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     draftRef.current?.endFolderNotice();
     const next = { text, tone, actions, lineId: tone === 'choose' ? lineId : undefined, shownAt: performance.now(), leftBlockAt: null, key: ++folderNoticeKeys.current };
     folderNoticeRef.current = next; setFolderNotice(next);
+  }
+  /** S4 v14 phone: a folder this draft made, its emptied line typed again and linked to it by name: announced as the
+   *  new folder was, so D11 B's ⇤ keeps to the notice. Null for any other link. */
+  function relinkedNotice(lineId: string | undefined) {
+    const controller = draftRef.current, operation = controller?.folderOperation();
+    return controller && lineId && operation?.kind === 'link' && operation.lineId === lineId && controller.freshFolderLine(lineId)
+      ? programFolderRelinkedNotice(controller.getState().working, propsRef.current.docId, lineId) : null;
   }
   function showFolderOperation(text: string, tone: ProgramNoticeTone, lineId?: string, actions: ProgramNoticeAction[] = []) {
     const operation = draftRef.current?.folderOperation();
@@ -1865,6 +1872,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       const bar = barRef.current;
       if (bar) for (const [name, value] of Object.entries(programKeyboardBarPlace(view, visual, bottom))) bar.style.setProperty(name, value);
       const barShown = !!bar?.getClientRects().length;
+      // v14 phone: where it is drawn, not window.innerHeight, decides (an address bar brought back by the keyboard).
+      const settled = barShown ? programKeyboardBarSettle(parseFloat(bar!.style.getPropertyValue('--writing-bar-bottom')), bar!.getBoundingClientRect().bottom, bottom) : null;
+      if (settled !== null) bar!.style.setProperty('--writing-bar-bottom', `${settled}px`);
       // N1 fix 5: room under the body so the page can scroll the body, and its last line, above the bar.
       const room = roomRef.current;
       if (room) { const height = `${programKeyboardRoom(view, programVisibleBottom(view, visual, null), barShown ? bar!.getBoundingClientRect().height + 4 : 0)}px`; if (room.style.height !== height) room.style.height = height; }
@@ -1872,9 +1882,6 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (!host.getClientRects().length) { fitFolderRegion(host.closest('section'), barShown, bottom); return; }
       // W2: the move notice and the last message sit between the body and the bar.
       const notice = noticeRef.current;
-      // v14 phone: where it is drawn, not window.innerHeight, decides (an address bar brought back by the keyboard).
-      const settled = barShown ? programKeyboardBarSettle(parseFloat(bar!.style.getPropertyValue('--writing-bar-bottom')), bar!.getBoundingClientRect().bottom, bottom) : null;
-      if (settled !== null) bar!.style.setProperty('--writing-bar-bottom', `${settled}px`);
       if (notice?.getClientRects().length) bottom -= notice.getBoundingClientRect().height;
       // The 17px fix: while no keyboard is up the page is no taller than the screen, so the body also leaves room
       // for what the page lays out below it (the work pane's and the page's bottom paddings, the notices, fix 5's
