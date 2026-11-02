@@ -97,7 +97,7 @@ export function AlphaPreservationPanel({ account, references, email, accessToken
     if (activeBackup.current || busy || !recoveryReady || pending || !alive.current) return;
     const operation = createBackupRequestBudget(LEGACY_BACKUP_REQUEST.clientMs); activeBackup.current = operation;
     setBackupActive(true); setDownload(null);
-    setBusy(true); setStatus('사진과 저장 기록을 포함해 백업을 만들고 있습니다.');
+    setBusy(true); setStatus('사진과 최근 저장 기록을 포함해 백업을 만들고 있습니다.');
     const slow = setTimeout(() => { if (alive.current && activeBackup.current === operation && !operation.signal.aborted)
       setStatus('백업을 계속 만들고 있습니다. 자료가 많으면 시간이 걸릴 수 있습니다. 기다리거나 백업 요청을 취소할 수 있습니다.'); }, LEGACY_BACKUP_REQUEST.slowMs);
     try { const { file, createdAt } = await operation.run(async () => {
@@ -219,7 +219,7 @@ export function AlphaPreservationPanel({ account, references, email, accessToken
   return <dialog ref={dialog} className={styles.dialog} aria-labelledby="alpha-data-title" onCancel={event => { if (busy) event.preventDefault(); else onClose(); }}>
     <header><h2 id="alpha-data-title">백업 · 복원 · 가져오기</h2><button type="button" disabled={busy} onClick={onClose}>닫기</button></header>
     <p className={styles.owner}>적용할 계정: {email}</p>
-    <section><h3>내 계정 백업</h3><p>현재 개인 자료·원문·기록과 연결된 사진을 파일로 보관합니다. 공개 자료를 되돌리는 서비스 전체 복원은 아닙니다.</p>
+    <section><h3>내 계정 백업</h3><p>현재 개인 자료·원문·최근 기록과 연결된 사진을 파일로 보관합니다. 공개 자료를 되돌리는 서비스 전체 복원은 아닙니다.</p>
       <button type="button" disabled={busy || !recoveryReady || !!pending} onClick={() => void backup()}>사진 포함 백업 만들기</button>
       {backupActive && <button type="button" onClick={() => activeBackup.current?.cancel()}>백업 요청 취소</button>}
       {download && <a href={download.url} download={download.name}>백업 파일 내려받기</a>}

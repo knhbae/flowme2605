@@ -1,7 +1,7 @@
 import { timingSafeEqual } from 'node:crypto';
 import { readAlphaAuthConfig } from '../alpha-auth/config';
 import { alphaInternalMediaRequest, alphaRequestOrigin } from './request-origin';
-import { createAccountBackup, validateAccountBackup, type AccountBackup } from '../alpha-preservation/backup';
+import { createAccountBackup, OPERATION_HEAD_SCHEMA, validateAccountBackup, type AccountBackup } from '../alpha-preservation/backup';
 import { prepareLocalImport } from '../alpha-preservation/import';
 import { PRESERVATION_PROTOCOL, SEALED_BACKUP_SCHEMA, isPreservationCommand, type PreservationPreview } from '../alpha-preservation/contract';
 import { BACKUP_FILE_SCHEMA, decodeBackupFile } from '../alpha-preservation/file-codec';
@@ -34,6 +34,18 @@ const rawHash = (raw: string) => sha256(new TextEncoder().encode(raw));
 const sealText = (ownerId: string, digest: string) => canonicalJson({ schema: SEALED_BACKUP_SCHEMA, ownerId, digest });
 const validProof = (actual: unknown, expected: string) => typeof actual === 'string' && /^[a-f0-9]{64}$/.test(actual)
   && timingSafeEqual(Buffer.from(actual, 'hex'), Buffer.from(expected, 'hex'));
+const MISSING_RPC = Symbol('missing-rpc');
+const count = (value: unknown): value is number => Number.isSafeInteger(value) && (value as number) >= 0;
+const revisionOrNull = (value: unknown) => value === null || Number.isSafeInteger(value) && (value as number) > 0;
+/** read_v2 reply metadata must agree with the rows it came with; the backup builder rechecks the heads. */
+function validReadHistory(history: unknown, mode: 'state' | 'backup', operations: unknown): boolean {
+  if (!programShape(history, ['schema', 'mode', 'totalRows', 'bodyRows', 'fromRevision', 'toRevision']) || history.schema !== 'flowme-alpha-preservation-history/1'
+    || history.mode !== mode || !count(history.totalRows) || !count(history.bodyRows) || !revisionOrNull(history.fromRevision)
+    || !revisionOrNull(history.toRevision) || !Array.isArray(operations)) return false;
+  if (mode === 'state') return operations.length === 0 && history.bodyRows === 0 && history.fromRevision === null;
+  const bodies = operations.filter(row => (row as { command?: { schema?: unknown } })?.command?.schema !== OPERATION_HEAD_SCHEMA).length;
+  return operations.length === history.totalRows && bodies === history.bodyRows && (bodies === 0) === (history.fromRevision === null);
+}
 
 /** Separate writer: restores private data at CURRENT revision, never old server journals/public data. */
 export function createAlphaPreservationHandler(env: Record<string, string | undefined>, fetcher: typeof fetch = fetch) {
@@ -65,10 +77,12 @@ export function createAlphaPreservationHandler(env: Record<string, string | unde
     const backupBudget = backupRequest ? createBackupRequestBudget(LEGACY_BACKUP_REQUEST.serverMs, request.signal) : null;
     const backupFetch: typeof fetch = backupBudget ? (url, init) => backupBudget.run(() => fetcher(url, { ...init,
       signal: init?.signal ? AbortSignal.any([backupBudget.signal, init.signal]) : backupBudget.signal })) : fetcher;
-    const call = async (path: string, payload?: unknown) => {
+    const call = async (path: string, payload?: unknown, allowMissing = false): Promise<unknown> => {
       const response = await backupFetch(`${config.url}${path}`, { method: payload === undefined ? 'GET' : 'POST',
         headers: { apikey: config.publishableKey, Authorization: authorization, 'Content-Type': 'application/json' },
         ...(payload === undefined ? {} : { body: JSON.stringify(payload) }), cache: 'no-store', redirect: 'error', signal: backupBudget?.signal ?? AbortSignal.timeout(30_000) });
+      // PostgREST answers 404 for an RPC that is not installed yet; only the caller that opts in may fall back.
+      if (allowMissing && response.status === 404) { await response.body?.cancel(); return MISSING_RPC; }
       if (!response.ok) throw Error(response.status === 401 || response.status === 403 ? 'unauthenticated' : 'unavailable');
       if (backupBudget) return backupBudget.run(() => readBackupResponse(response, backupBudget.signal, PRESERVATION_PROTOCOL.bytes, parseAlphaJson));
       const reader = response.body?.getReader(); if (!reader) throw Error('unavailable');
@@ -78,12 +92,12 @@ export function createAlphaPreservationHandler(env: Record<string, string | unde
       } } finally { reader.releaseLock(); }
       return parseAlphaJson(Buffer.concat(chunks).toString('utf8'));
     };
-    const rpc = async (path: string, payload: unknown) => {
-      const response: unknown = await call(path, payload);
+    const unwrap = (response: unknown) => {
       if (programShape(response, ['ok', 'reason']) && response.ok === false) throw Error(String(response.reason));
       if (!programShape(response, ['ok', 'value']) || response.ok !== true) throw Error('unavailable');
       return response.value;
     };
+    const rpc = async (path: string, payload: unknown) => unwrap(await call(path, payload));
     try {
       const user = await call('/auth/v1/user');
       if (!user || typeof user !== 'object' || !('id' in user) || typeof user.id !== 'string' || !/^[0-9a-f-]{36}$/.test(user.id) || 'is_anonymous' in user && user.is_anonymous) throw Error('unauthenticated');
@@ -124,15 +138,28 @@ export function createAlphaPreservationHandler(env: Record<string, string | unde
         } catch { return failure('invalid-backup'); }
       }
       if (lookupRequest) return result(await call('/rest/v1/rpc/flowme_alpha_lookup_v1', { request_id: (input as { requestId: string }).requestId }));
-      const readText = canonicalJson({ schema: 'flowme-alpha-preservation-read/1' });
-      const read = async () => {
-        const value = await rpc('/rest/v1/rpc/flowme_alpha_preservation_read_v1', { read_text: readText, proof: signAlphaCommand(owner, readText, key) });
-        if (!programShape(value, ['account', 'context', 'operations', 'importArchives']) || !Array.isArray(value.operations) || !Array.isArray(value.importArchives)) throw Error('invalid');
+      // Preview, import and restore read state only; a backup reads every journal head plus recent bodies.
+      // Without read_v2 installed, v1's complete read keeps the N6 behavior and its 30 MB bound.
+      let legacyRead = false;
+      const read = async (mode: 'state' | 'backup') => {
+        const readText = canonicalJson({ schema: 'flowme-alpha-preservation-read/2', mode });
+        const reply = legacyRead ? MISSING_RPC : await call('/rest/v1/rpc/flowme_alpha_preservation_read_v2', { read_text: readText, proof: signAlphaCommand(owner, readText, key) }, true);
+        let value: unknown;
+        if (reply === MISSING_RPC) {
+          legacyRead = true;
+          const legacyText = canonicalJson({ schema: 'flowme-alpha-preservation-read/1' });
+          value = await rpc('/rest/v1/rpc/flowme_alpha_preservation_read_v1', { read_text: legacyText, proof: signAlphaCommand(owner, legacyText, key) });
+          if (!programShape(value, ['account', 'context', 'operations', 'importArchives'])) throw Error('invalid');
+        } else {
+          value = unwrap(reply);
+          if (!programShape(value, ['account', 'context', 'operations', 'importArchives', 'history']) || !validReadHistory(value.history, mode, value.operations)) throw Error('invalid');
+        }
+        if (!Array.isArray(value.operations) || !Array.isArray(value.importArchives)) throw Error('invalid');
         const parsed = readAlphaSocialResponse({ ok: true, value: { account: value.account, context: value.context } }, owner);
         if (!parsed) throw Error('invalid');
-        return { ...parsed, operations: value.operations, importArchives: value.importArchives };
+        return { ...parsed, operations: mode === 'state' ? [] : value.operations, importArchives: value.importArchives };
       };
-      const current = await read(), references = alphaSocialReferences(current.context, owner);
+      const current = await read(backupRequest ? 'backup' : 'state'), references = alphaSocialReferences(current.context, owner);
       const mediaHandler = createAlphaMediaHandler(env, backupFetch);
       const media = async (id: string) => {
         const response = await mediaHandler(alphaInternalMediaRequest(publicOrigin, id, authorization, !!config.hosting));
@@ -144,7 +171,8 @@ export function createAlphaPreservationHandler(env: Record<string, string | unde
         const backup = await createAccountBackup({ account: current.account, references, operations: current.operations,
           importArchives: current.importArchives, createdAt: new Date().toISOString() }, media);
         // Account/public/archive/journal changes while bytes are read invalidate the whole download.
-        const fresh = await read();
+        // Heads carry stored sizes, so maintenance on an older body also changes this hash.
+        const fresh = await read('backup');
         if (await hashJson(fresh) !== await hashJson(current)) return failure('revision-conflict');
         const sealed = { schema: SEALED_BACKUP_SCHEMA, backup,
           proof: signAlphaCommand(owner, sealText(owner, backup.integrity.payloadSha256), key) };

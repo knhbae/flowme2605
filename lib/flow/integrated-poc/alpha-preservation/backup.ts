@@ -3,13 +3,22 @@ import { canonicalJson, detached, hashJson, parseAlphaJson, sha256 } from '../al
 import { validateAlphaAccount } from '../alpha-persistence/program-adapter';
 import { programShape } from '../program-data';
 
-/** Account evidence, not instructions to publish references or replay server operations. */
-export const ACCOUNT_BACKUP_SCHEMA = 'flowme-alpha-account-backup/2' as const;
-export const ACCOUNT_BACKUP_COVERAGE = Object.freeze({ currentAttachments: 'complete', operationHistory: 'evidence-only-no-attachment-recovery' } as const);
+/** Account evidence, not instructions to publish references or replay server operations.
+ * /3 keeps every journal row, but older rows may be heads without command/inverse bodies.
+ * /2 files stay restorable with their original coverage; new backups are always /3. */
+export const ACCOUNT_BACKUP_SCHEMA = 'flowme-alpha-account-backup/3' as const;
+export const ACCOUNT_BACKUP_COVERAGE = Object.freeze({ currentAttachments: 'complete', operationHistory: 'evidence-heads-all-bodies-recent' } as const);
+export const ACCOUNT_BACKUP_LEGACY_SCHEMA = 'flowme-alpha-account-backup/2' as const;
+export const ACCOUNT_BACKUP_LEGACY_COVERAGE = Object.freeze({ currentAttachments: 'complete', operationHistory: 'evidence-only-no-attachment-recovery' } as const);
+/** Journal row whose body stayed on the server: receipt-derived identity and stored sizes only. */
+export const OPERATION_HEAD_SCHEMA = 'flowme-alpha-command-head/1' as const;
 export const ACCOUNT_BACKUP_LIMITS = Object.freeze({ files: 512, fileBytes: 2_000_000, archives: 128, operations: 100_000 });
 export type AccountBackupFile = { id: string; mime: string; base64: string; bytes: number; sha256: string };
 export type AccountBackupInput = { account: AlphaAccount; references: AlphaReferenceContext; operations: unknown[]; importArchives: unknown[]; createdAt: string };
-export type AccountBackup = AccountBackupInput & { schema: typeof ACCOUNT_BACKUP_SCHEMA; coverage: typeof ACCOUNT_BACKUP_COVERAGE; files: AccountBackupFile[]; integrity: { payloadSha256: string } };
+export type AccountBackupHistory = { totalRows: number; bodyRows: number; fromRevision: number | null; toRevision: number | null };
+type BackupVersion = 2 | 3;
+export type AccountBackup = AccountBackupInput & ({ schema: typeof ACCOUNT_BACKUP_SCHEMA; coverage: typeof ACCOUNT_BACKUP_COVERAGE; history: AccountBackupHistory }
+  | { schema: typeof ACCOUNT_BACKUP_LEGACY_SCHEMA; coverage: typeof ACCOUNT_BACKUP_LEGACY_COVERAGE }) & { files: AccountBackupFile[]; integrity: { payloadSha256: string } };
 export type AccountBackupMediaResolver = (id: string) => Promise<{ mime: string; bytes: Uint8Array }>;
 const mediaId = /^media-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const mimePattern = /^image\/(png|jpeg|webp|gif)$/;
@@ -25,7 +34,7 @@ function decode(value: string): Uint8Array {
 }
 /** Called only with detached(input): descriptor/depth/byte validation already
  * ran before cloning. Keep domain checks here and final envelope checks below. */
-function validateDetachedInput(value: AccountBackupInput) {
+function validateDetachedInput(value: AccountBackupInput, version: BackupVersion) {
   function noSecrets(part: unknown): void {
     if (!part || typeof part !== 'object') return;
     for (const [key, child] of Object.entries(part)) { need(!secretKeys.has(key.toLowerCase())); noSecrets(child); }
@@ -40,6 +49,7 @@ function validateDetachedInput(value: AccountBackupInput) {
   need(Array.isArray(value.importArchives) && value.importArchives.length <= ACCOUNT_BACKUP_LIMITS.archives);
   need(Array.isArray(value.operations) && value.operations.length <= ACCOUNT_BACKUP_LIMITS.operations);
   const ids = new Set<string>(), revisions = new Set<number>();
+  let newestHead = 0, oldestBody = Infinity;
   for (const row of value.operations) {
     need(programShape(row, ['owner_id', 'request_id', 'command', 'receipt', 'inverse', 'undone']));
     const op = row as { owner_id: string; request_id: string; command: Record<string, unknown>; receipt: Record<string, unknown>; inverse: unknown[]; undone: boolean };
@@ -49,7 +59,23 @@ function validateDetachedInput(value: AccountBackupInput) {
     const revision = op.receipt.revision as number;
     need(Number.isSafeInteger(revision) && revision > 0 && revision <= value.account.revision && !revisions.has(revision));
     need(Array.isArray(op.inverse) && typeof op.undone === 'boolean'); ids.add(op.request_id); revisions.add(revision);
+    if (op.command.schema === OPERATION_HEAD_SCHEMA) {
+      // Heads exist only in /3 and describe exactly what the receipt already proves.
+      need(version === 3 && programShape(op.command, ['schema', 'kind', 'requestId', 'expectedRevision', 'commandStoredBytes', 'inverseStoredBytes']));
+      need(typeof op.command.kind === 'string' && op.command.kind === op.receipt.kind && op.command.expectedRevision === revision - 1);
+      need([op.command.commandStoredBytes, op.command.inverseStoredBytes].every(n => Number.isSafeInteger(n) && (n as number) >= 0) && op.inverse.length === 0);
+      newestHead = Math.max(newestHead, revision);
+    } else oldestBody = Math.min(oldestBody, revision);
   }
+  // Bodies are only ever the newest contiguous window; a body older than a head is not a /3 server read.
+  need(newestHead < oldestBody);
+}
+function historyOf(operations: unknown[]): AccountBackupHistory {
+  const rows = operations as { command: { schema: string }; receipt: { revision: number } }[];
+  // reduce, not spread: up to 100,000 rows would exceed the argument limit.
+  const bodies = rows.filter(row => row.command.schema !== OPERATION_HEAD_SCHEMA).map(row => row.receipt.revision);
+  return { totalRows: rows.length, bodyRows: bodies.length, fromRevision: bodies.length ? bodies.reduce((a, b) => Math.min(a, b)) : null,
+    toRevision: rows.length ? rows.reduce((max, row) => Math.max(max, row.receipt.revision), 0) : null };
 }
 async function referencedFiles(value: unknown): Promise<Map<string, { mime: string; bytes: Uint8Array } | null>> {
   const result = new Map<string, { mime: string; bytes: Uint8Array } | null>();
@@ -72,12 +98,12 @@ async function referencedFiles(value: unknown): Promise<Map<string, { mime: stri
   await visit(value); need(result.size <= ACCOUNT_BACKUP_LIMITS.files); return result;
 }
 export async function createAccountBackup(input: AccountBackupInput, resolveMedia: AccountBackupMediaResolver): Promise<AccountBackup> {
-  return buildOwnedBackup(detached(input), resolveMedia);
+  return buildOwnedBackup(detached(input), resolveMedia, 3);
 }
 /** Input is either freshly detached or freshly parsed JSON owned by this call.
  * Both paths still run every domain, attachment and final envelope check. */
-async function buildOwnedBackup(copy: AccountBackupInput, resolveMedia: AccountBackupMediaResolver): Promise<AccountBackup> {
-  validateDetachedInput(copy);
+async function buildOwnedBackup(copy: AccountBackupInput, resolveMedia: AccountBackupMediaResolver, version: BackupVersion): Promise<AccountBackup> {
+  validateDetachedInput(copy, version);
   // Journal inverses retain historical evidence but never resurrect deleted files.
   const referenced = await referencedFiles({ account: copy.account, references: copy.references, importArchives: copy.importArchives }), files: AccountBackupFile[] = [];
   // Archive source strings remain byte-exact. Opaque remote references inside
@@ -94,15 +120,18 @@ async function buildOwnedBackup(copy: AccountBackupInput, resolveMedia: AccountB
     if (!inline) need(file.mime === 'image/webp');
     files.push({ id, mime: file.mime, base64: base64(file.bytes), bytes: file.bytes.length, sha256: await sha256(file.bytes) });
   }
-  const payload = { schema: ACCOUNT_BACKUP_SCHEMA, coverage: ACCOUNT_BACKUP_COVERAGE, ...copy, files };
+  const payload = version === 3 ? { schema: ACCOUNT_BACKUP_SCHEMA, coverage: ACCOUNT_BACKUP_COVERAGE, ...copy, history: historyOf(copy.operations), files }
+    : { schema: ACCOUNT_BACKUP_LEGACY_SCHEMA, coverage: ACCOUNT_BACKUP_LEGACY_COVERAGE, ...copy, files };
   const result = { ...payload, integrity: { payloadSha256: await hashJson(payload) } }; canonicalJson(result); return result;
 }
 export async function validateAccountBackup(raw: string, ownerId: string): Promise<{ ok: true; value: AccountBackup } | { ok: false; reason: 'invalid-backup' }> {
   try {
     const value = parseAlphaJson(raw);
-    need(programShape(value, ['schema', 'coverage', 'account', 'references', 'operations', 'importArchives', 'createdAt', 'files', 'integrity']));
+    // The schema only picks the rebuild rules; the full rebuild below still decides validity.
+    const version: BackupVersion = value && typeof value === 'object' && (value as { schema?: unknown }).schema === ACCOUNT_BACKUP_LEGACY_SCHEMA ? 2 : 3;
+    need(programShape(value, ['schema', 'coverage', 'account', 'references', 'operations', 'importArchives', 'createdAt', 'files', 'integrity', ...(version === 3 ? ['history'] : [])]));
     const backup = value as AccountBackup;
-    need(backup.schema === ACCOUNT_BACKUP_SCHEMA && backup.account?.ownerId === ownerId && Array.isArray(backup.files) && backup.files.length <= ACCOUNT_BACKUP_LIMITS.files);
+    need(backup.schema === (version === 3 ? ACCOUNT_BACKUP_SCHEMA : ACCOUNT_BACKUP_LEGACY_SCHEMA) && backup.account?.ownerId === ownerId && Array.isArray(backup.files) && backup.files.length <= ACCOUNT_BACKUP_LIMITS.files);
     need(programShape(backup.integrity, ['payloadSha256']) && /^[a-f0-9]{64}$/.test(backup.integrity.payloadSha256));
     const supplied = new Map<string, AccountBackupFile>();
     for (const file of backup.files) {
@@ -113,7 +142,7 @@ export async function validateAccountBackup(raw: string, ownerId: string): Promi
     const { account, references, operations, importArchives, createdAt } = backup;
     const expected = await buildOwnedBackup({ account, references, operations, importArchives, createdAt }, async id => {
       const file = supplied.get(id); need(file); return { mime: file!.mime, bytes: decode(file!.base64) };
-    });
+    }, version);
     need(canonicalJson(expected) === canonicalJson(backup)); return { ok: true, value: expected };
   } catch { return { ok: false, reason: 'invalid-backup' }; }
 }
