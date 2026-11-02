@@ -61,6 +61,24 @@ export function programFolderStillFree(state: TextWorkspaceState, docId: string,
 }
 /** N6 review: a save that moves a folder this document alone used (D11 B) is refused when, in the workspace it is
  *  saved into, the folder is gone, moved, or used elsewhere. */
+/** N7 (review n6-phone-3, 11/2): the folder is used outside document `docId` there: a line, task or item of another
+ *  document, or a document filed in it. D3 B renames a linked folder from its line only when this document alone
+ *  uses it; the draft, its input unsaved, may not have taken in another tab's use. Absent there, it is not used. */
+export function programFolderUsedElsewhere(state: TextWorkspaceState, docId: string, folderId: string): boolean {
+  if (!state.folders.some(entry => entry.id === folderId)) return false;
+  const own = new Set(M.getDocument(state, docId)?.lines.map(line => line.id) ?? []);
+  return programFolderUses(state, folderId).some(use => use.startsWith('line:') ? !use.startsWith(`line:${docId}:`)
+    : use.startsWith('document:') ? use !== `document:${docId}` : /^(task|item):/.test(use) && !own.has(use.slice(5)));
+}
+/** N7: a save that renames a folder this document alone used (D3 B) is refused when, in the workspace it is saved
+ *  into, another document uses it. A folder already used elsewhere before (its rename made for all) is not asked. */
+export function programFolderRenamesStillOwn(expected: TextWorkspaceState, next: TextWorkspaceState, before: TextWorkspaceState, docId: string): boolean {
+  return next.folders.every(folder => {
+    const was = expected.folders.find(entry => entry.id === folder.id);
+    if (!was || was.title === folder.title || programFolderUsedElsewhere(expected, docId, folder.id)) return true;
+    return !programFolderUsedElsewhere(before, docId, folder.id);
+  });
+}
 export function programFolderMovesStillFree(expected: TextWorkspaceState, next: TextWorkspaceState, before: TextWorkspaceState, docId: string): boolean {
   return next.folders.every(folder => {
     const was = expected.folders.find(entry => entry.id === folder.id);

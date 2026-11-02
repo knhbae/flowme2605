@@ -114,11 +114,12 @@ export function programFolderRenameBack(state: TextWorkspaceState, folderId: str
 }
 
 /** The words when a typed name went back: left without Enter (b), already off its folder (c), two folders of
- *  that name in the place, or another refusal. */
-export function programFolderKeptText(kept: string, typed: string, why: 'left' | 'off' | 'name-conflict' | 'refused'): string {
+ *  that name in the place, a folder another document uses (N7: known only after this input), or another refusal. */
+export function programFolderKeptText(kept: string, typed: string, why: 'left' | 'off' | 'name-conflict' | 'shared' | 'refused'): string {
   const back = `‘${kept}’${ro(kept)} 두었습니다(입력: ‘${typed}’)`;
   if (why === 'left') return `폴더 이름은 Enter로 마칠 때만 바뀝니다 · ${back}`;
   if (why === 'off') return `이미 폴더 이름과 달랐던 줄은 옮기지 않습니다 · ${back}`;
   if (why === 'name-conflict') return `같은 자리에 ‘${typed}’${iga(typed)} 둘이라 옮기지 않았습니다 · 폴더 관리에서 정리할 수 있습니다`;
+  if (why === 'shared') return `다른 곳에서도 쓰는 폴더라 이름을 바꾸지 않았습니다 · ${back}`;
   return `이 줄은 옮길 수 없습니다 · ${back}`;
 }

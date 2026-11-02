@@ -687,7 +687,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       heldFolderLineRef.current = null;
       const typed = lines[index].text.replace(/^ *- \//, '').trim();
       const finishedHere = explicit && area.value.slice(0, area.selectionStart).split('\n').length - 1 === index;
-      let why: 'left' | 'off' | 'name-conflict' | 'refused' = finishedHere ? held.offAtStart ? 'off' : 'refused' : 'left';
+      let why: 'left' | 'off' | 'name-conflict' | 'shared' | 'refused' = finishedHere ? held.offAtStart ? 'off' : 'refused' : 'left';
       if (finishedHere && !held.offAtStart && linked && linked.id !== 'folder-unfiled') {
         const previous = controller.getState(), moved = controller.moveFolderLine(index);
         if (moved.ok) {
@@ -697,6 +697,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           scheduleSave(); return;
         }
         if (moved.reason === 'name-conflict') why = 'name-conflict';
+        if (moved.reason === 'used-elsewhere') why = 'shared';
       }
       const beforeRaw = area.value, { selectionStart, selectionEnd, selectionDirection } = area;
       if (!controller.restoreFolderLineName(index)) return;
@@ -706,7 +707,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       editorRef.current?.setValue(restored, { selection: { start: restoredLineOffset(beforeRaw, index, line, selectionStart),
         end: restoredLineOffset(beforeRaw, index, line, selectionEnd), direction: selectionDirection } });
       // 미분류 keeps the draft's own words; the others say why the name went back (no buttons).
-      if (linked && linked.id !== 'folder-unfiled') showFolderNotice(programFolderKeptText(linked.title, typed, why), why === 'name-conflict' || why === 'refused' ? 'warn' : 'choose', lines[index].id);
+      if (linked && linked.id !== 'folder-unfiled') showFolderNotice(programFolderKeptText(linked.title, typed, why), why === 'name-conflict' || why === 'shared' || why === 'refused' ? 'warn' : 'choose', lines[index].id);
       else { const notice = controller.getState().folderNotice; if (notice) showFolderNotice(notice, 'warn'); }
       scheduleSave(); return;
     }

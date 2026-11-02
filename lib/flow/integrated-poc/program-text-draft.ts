@@ -7,7 +7,7 @@ import { programSame } from './controller';
 import { programClone } from './contract';
 import { mergeProgramTextWorkspace } from './text-merge';
 import type { ProgramPrivateMutationObserver } from './ui-contract';
-import { captureProgramFolderOperation, undoProgramFolderOperation, combineProgramFolderScopes, planProgramFreshFolderIndent, programFolderStillFree, programFreshFolderAvailable, programFolderOperationNotice, type ProgramFolderOperation, type FolderIndentPlan } from './folder-operation';
+import { captureProgramFolderOperation, undoProgramFolderOperation, combineProgramFolderScopes, planProgramFreshFolderIndent, programFolderStillFree, programFolderUsedElsewhere, programFreshFolderAvailable, programFolderOperationNotice, type ProgramFolderOperation, type FolderIndentPlan } from './folder-operation';
 
 export type ProgramTaskProgressEdit = { taskId: string; date: string; percent: number; correctionAsOfDate?: string };
 export type ProgramTextCommitOptions = {
@@ -382,6 +382,9 @@ export function createProgramTextDraft(
       if (!line || !binding || binding.kind !== 'scope') return { ok: false, reason: null };
       const check = M.editTextResult(state.working, docId, state.raw, { folderText: true, folderMove: [lineIndex] });
       if (check.reason !== null || !check.folderMoved) return { ok: false, reason: check.folderProblem ?? check.reason };
+      // N7: a rename is for a folder this document alone uses, in the host's newest workspace too (another tab's use).
+      const latest = latestWorkspace();
+      if (check.folderMoved.renamed && latest && programFolderUsedElsewhere(latest, docId, binding.scopeId)) return { ok: false, reason: 'used-elsewhere' };
       const before = state.working;
       if (state.folderNotice) state = { ...state, folderNotice: undefined };
       if (!api.updateRaw(state.raw, '', { inputType: 'folderMove', folderMove: [lineIndex] })) return { ok: false, reason: null };
