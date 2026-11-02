@@ -88,6 +88,11 @@ const sourceRecheckedSlugs = new Set([
   'real-gov24-resident-register-copy',
   'real-ohouse-movein-cleaning-check',
   'real-mofa-overseas-travel-prep',
+  // Within their sources, each with a wording follow-up left for approval: the video's current title, the
+  // source's "at least two weeks" against the D-30 title, and naming the record row as a FlowMe aid.
+  'real-fitvely-diet-record-routine',
+  'real-ohouse-moving-d30-prep',
+  'real-childcare-support-application-check',
 ]);
 const now = '2026-05-21T00:00:00.000Z';
 
