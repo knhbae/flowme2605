@@ -4,7 +4,8 @@ import test from 'node:test';
 
 // U44: on a tablet held sideways the writing screen's head took three bands (title row, notices, tools): 149px of a
 // 511px screen. There, and on laptops as short, the document title and ⋯ go into the editor's tool line and the
-// notices under it, above the body; phones, portrait screens and taller screens keep the title row of their own.
+// notices under it, above the body; phones, portrait screens, taller screens and PCs (a fine pointer: 1440×900, 1366×768)
+// keep the title row of their own (총괄, 11/3: the user's decision was tablets held sideways only).
 // Only the head's place changes: the editor keeps its key and mount, so a composition, the caret and ↶ survive a turn.
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const space = read('../../../components/flow/integrated-poc/ProgramSpace.tsx');
@@ -12,8 +13,8 @@ const editor = read('../../../components/flow/integrated-poc/ProgramTextEditor.t
 const spaceCss = read('../../../components/flow/integrated-poc/ProgramSpace.module.css');
 const editorCss = read('../../../components/flow/integrated-poc/ProgramTextEditor.module.css');
 
-test('U44: one line only on a landscape screen at least 1000px wide and at most 900px high, with an open document', () => {
-  assert(space.includes("export const PROGRAM_TABLET_HEAD_QUERY = '(min-width: 1000px) and (max-height: 900px) and (orientation: landscape)';"));
+test('U44: one line only on a landscape touch screen at least 1000px wide and at most 900px high, with an open document', () => {
+  assert(space.includes("export const PROGRAM_TABLET_HEAD_QUERY = '(min-width: 1000px) and (max-height: 900px) and (orientation: landscape) and (pointer: coarse)';"));
   // Read through the media query and its change events; no media match before the page is drawn (the title row).
   assert(space.includes('const tabletLandscape = useSyncExternalStore(watchHead, () => tabletHead().matches, () => false);'));
   assert(space.includes("query.addEventListener('change', change); return () => query.removeEventListener('change', change);"));

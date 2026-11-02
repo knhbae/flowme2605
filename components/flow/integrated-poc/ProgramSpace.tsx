@@ -179,9 +179,9 @@ const mainPeriods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today
 export const PROGRAM_EMPTY_EXAMPLE = '이번 주 준비\n- [ ] 확인할 일\n  - [ ] 먼저 확인할 내용\n자유롭게 적는 메모';
 // A06 / V41-004–005: restore the approved v4.1 touch thresholds, not a new policy.
 export const PROGRAM_MOVE_GESTURE_V1 = Object.freeze({ version: 1, holdMs: 350, cancelDistancePx: 8 });
-// U44: a tablet held sideways, or a laptop as short. The writing screen's title and ⋯ share the editor's tool line
-// there; phones, portrait screens and taller ones keep the title line of their own.
-export const PROGRAM_TABLET_HEAD_QUERY = '(min-width: 1000px) and (max-height: 900px) and (orientation: landscape)';
+// U44: a tablet held sideways (a touch screen; a PC or laptop of the same size keeps its layout). The writing screen's
+// title and ⋯ share the editor's tool line there; phones, portrait screens and taller ones keep the title line.
+export const PROGRAM_TABLET_HEAD_QUERY = '(min-width: 1000px) and (max-height: 900px) and (orientation: landscape) and (pointer: coarse)';
 let tabletHeadQuery: MediaQueryList | null = null;
 const tabletHead = () => tabletHeadQuery ??= window.matchMedia(PROGRAM_TABLET_HEAD_QUERY);
 function watchTabletHead(change: () => void) { const query = tabletHead(); query.addEventListener('change', change); return () => query.removeEventListener('change', change); }
