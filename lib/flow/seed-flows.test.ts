@@ -1369,7 +1369,8 @@ test('reviewed source mismatches stay in preview while corrected routes use curr
     'real-gov24-resident-register-copy',
   ];
   for (const slug of reviewedArchivedSlugs) {
-    assert.equal(bySlug.get(slug)?.flow.source_checked_at, '2026-08-22', slug);
+    // Re-read against the same sources on 2026-11-02; the source-fit audit stays the 08-22 one.
+    assert.equal(bySlug.get(slug)?.flow.source_checked_at, '2026-11-02', slug);
     assert.equal(getSourceFitAudit(slug)?.checkedAt, '2026-08-22', slug);
   }
 
@@ -1390,7 +1391,6 @@ test('reviewed source mismatches stay in preview while corrected routes use curr
     'real-fitvely-video-after-work-nutrition',
     'real-fitvely-video-weight-class-method',
     'real-qnet-application-examday-check',
-    'real-childcare-vaccination-visit-prep',
     'real-mofa-overseas-travel-prep',
   ];
   for (const slug of currentContentVersionSlugs) {
@@ -1400,6 +1400,38 @@ test('reviewed source mismatches stay in preview while corrected routes use curr
     bySlug.get('real-thankyou-bubu-video-daily-stretch-9min')?.flow.updated_at,
     '2026-05-21T00:00:00.000Z',
   );
+});
+
+test('November 2 source recheck corrects only what the sources no longer support', () => {
+  const bySlug = new Map(seedBundles.map((bundle) => [bundle.flow.slug, bundle]));
+  const moving = bySlug.get('real-ohouse-moving-d30-prep');
+  const diet = bySlug.get('real-fitvely-diet-record-routine');
+  const childcare = bySlug.get('real-childcare-support-application-check');
+  const vaccination = bySlug.get('real-childcare-vaccination-visit-prep');
+  assert.ok(moving && diet && childcare && vaccination);
+
+  // The moving guide starts "at least two weeks" ahead and puts the photos and utilities on the moving day itself.
+  assert.doesNotMatch(`${moving.flow.title} ${moving.flow.conversion_note}`, /D-30/);
+  assert.match(moving.flow.title, /2주 전/);
+  assert.deepEqual(moving.items.map((item) => item.day_offset), [-14, -14, -7, 0, 0]);
+
+  // The video is the same one; only its title changed since the 08-22 review.
+  assert.equal(diet.flow.source_title, '다이어트 식단, 구독자 식단 g단위로 뜯어봤습니다 - FITVELY');
+
+  // The after-use record row is FlowMe's own aid, not part of the childcare guide.
+  const recordRow = childcare.itemDetails?.find((detail) => detail.item_id === childcare.items.at(-1)?.id);
+  assert.match(`${recordRow?.why} ${childcare.flow.conversion_note}`, /FlowMe/);
+
+  // The national program page sits next to the childcare page for the four-month vaccination check.
+  const vaccinationRow = vaccination.itemDetails?.find((detail) => detail.item_id === vaccination.items[1]?.id);
+  assert.ok(
+    vaccinationRow?.links.some((link) => link.url === 'https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=131&menuLv=1'),
+  );
+
+  for (const bundle of [moving, diet, childcare, vaccination]) {
+    assert.equal(bundle.flow.source_checked_at, '2026-11-02', bundle.flow.slug);
+    assert.equal(bundle.flow.updated_at, '2026-11-02T00:00:00.000Z', bundle.flow.slug);
+  }
 });
 
 test('September 7 reviewed metadata is reused only for the eight matching source routes', () => {

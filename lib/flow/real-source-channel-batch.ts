@@ -3,6 +3,7 @@ import {
   FlowBundle,
   FlowItem,
   FlowItemDetail,
+  FlowItemLinkType,
   FlowUser,
   PrimaryDestination,
   RiskLevel,
@@ -59,6 +60,49 @@ const sourceFreshnessCorrectedSlugs = new Set([
   'real-childcare-vaccination-visit-prep',
   'real-mofa-overseas-travel-prep',
 ]);
+// Re-read against their sources on this date and still within them. Only source_checked_at moves; the content
+// and its updated_at stay as they were.
+const sourceRecheckDate = '2026-11-02';
+const sourceRecheckedSlugs = new Set([
+  'real-thankyou-bubu-video-full-body-no-jump',
+  'real-thankyou-bubu-video-daily-stretch-9min',
+  'real-thankyou-bubu-video-belly-side-all-in-one',
+  'real-thankyou-bubu-video-no-knee-cardio-strength',
+  'real-thankyou-bubu-video-arm-back-shoulder',
+  'real-thankyou-bubu-video-waist-8cm',
+  'real-thankyou-bubu-video-8min-cardio',
+  'real-thankyou-bubu-video-3min-arm',
+  'real-thankyou-bubu-video-3min-abs',
+  'real-thankyou-bubu-video-lower-belly-8min',
+  'real-thankyou-bubu-home-workout-starter',
+  'real-thankyou-bubu-20min-routine',
+  'real-fitvely-video-body-fat-6kg-method',
+  'real-fitvely-video-carb-reason',
+  'real-fitvely-video-three-week-check',
+  'real-fitvely-video-post-workout-nutrition',
+  'real-fitvely-video-carb-amount-shorts',
+  'real-fitvely-video-after-work-nutrition',
+  'real-fitvely-video-weight-class-method',
+  'real-fitvely-video-bulk-up-method',
+  'real-fitvely-video-workout-order',
+  'real-fitvely-video-workout-split-science',
+  'real-gov24-resident-register-copy',
+  'real-ohouse-movein-cleaning-check',
+  'real-mofa-overseas-travel-prep',
+  // Within their sources once corrected below: the video's current title, the source's "at least two weeks"
+  // instead of D-30, the record row named as a FlowMe aid, and the national program page beside the childcare one.
+  'real-fitvely-diet-record-routine',
+  'real-ohouse-moving-d30-prep',
+  'real-childcare-support-application-check',
+  'real-childcare-vaccination-visit-prep',
+]);
+// Of those, the ones whose wording or schedule was corrected to the source on that date (their content date moves).
+const sourceRecheckCorrectedSlugs = new Set([
+  'real-fitvely-diet-record-routine',
+  'real-ohouse-moving-d30-prep',
+  'real-childcare-support-application-check',
+  'real-childcare-vaccination-visit-prep',
+]);
 const now = '2026-05-21T00:00:00.000Z';
 
 type RealSourceAction = {
@@ -69,6 +113,7 @@ type RealSourceAction = {
   caution?: string;
   link_label?: string;
   link_url?: string;
+  extra_links?: { label: string; url: string }[];
 };
 
 type RealSourceSpec = {
@@ -96,6 +141,8 @@ type RealSourceSpec = {
   tags: string[];
   sections: string[];
   actions: RealSourceAction[];
+  // Days before the end date, per action, when the source sets its own timing.
+  timeline_offsets?: number[];
 };
 
 const channelBySlug = new Map(previewCreatorChannels.map((channel) => [channel.slug, channel]));
@@ -117,7 +164,7 @@ function makeItems(spec: RealSourceSpec, flowId: string, sectionIds: string[]): 
     type: spec.structure_type === 'timeline' ? 'calendar' : 'todo',
     day_offset:
       spec.anchor_type === 'end_date'
-        ? timelineOffsets[index] ?? 0
+        ? (spec.timeline_offsets ?? timelineOffsets)[index] ?? 0
         : spec.anchor_type === 'start_date'
           ? index * 7
           : undefined,
@@ -130,7 +177,7 @@ function makeItems(spec: RealSourceSpec, flowId: string, sectionIds: string[]): 
 }
 
 function makeDetails(spec: RealSourceSpec, items: FlowItem[]): FlowItemDetail[] {
-  const linkType =
+  const linkType: FlowItemLinkType =
     spec.source_type === 'official'
       ? 'official'
       : spec.source_type === 'creator_experience'
@@ -151,6 +198,7 @@ function makeDetails(spec: RealSourceSpec, items: FlowItem[]): FlowItemDetail[] 
           url: action.link_url ?? spec.source_url,
           type: linkType,
         },
+        ...(action.extra_links ?? []).map((link) => ({ ...link, type: linkType })),
       ],
     };
   });
@@ -191,7 +239,11 @@ function buildBundle(spec: RealSourceSpec): FlowBundle {
       source_modified_at: spec.source_modified_at,
       source_checked_at:
         spec.source_checked_at ??
-        (sourceFreshnessReviewedSlugs.has(spec.slug) ? sourceFreshnessReviewDate : checkedAt),
+        (sourceRecheckedSlugs.has(spec.slug)
+          ? sourceRecheckDate
+          : sourceFreshnessReviewedSlugs.has(spec.slug)
+            ? sourceFreshnessReviewDate
+            : checkedAt),
       conversion_note: spec.conversion_note,
       risk_level: spec.risk_level,
       warning: spec.warning,
@@ -203,7 +255,9 @@ function buildBundle(spec: RealSourceSpec): FlowBundle {
       copy_count: 0,
       tags: spec.tags,
       created_at: now,
-      updated_at: sourceFreshnessCorrectedSlugs.has(spec.slug)
+      updated_at: sourceRecheckCorrectedSlugs.has(spec.slug)
+        ? `${sourceRecheckDate}T00:00:00.000Z`
+        : sourceFreshnessCorrectedSlugs.has(spec.slug)
         ? `${sourceFreshnessReviewDate}T00:00:00.000Z`
         : spec.source_checked_at
           ? `${spec.source_checked_at}T00:00:00.000Z`
@@ -759,7 +813,7 @@ const realSourceSpecs: RealSourceSpec[] = [
     category: '다이어트/기록',
     structure_type: 'routine',
     anchor_type: 'start_date',
-    source_title: '【영양학】 다이어트 식단, 이 영상으로 g단위 완벽정리 해드림 - FITVELY',
+    source_title: '다이어트 식단, 구독자 식단 g단위로 뜯어봤습니다 - FITVELY',
     source_url: 'https://www.youtube.com/watch?v=qcTxaFMWzKs',
     source_type: 'creator_experience',
     source_precision: 'exact',
@@ -890,6 +944,7 @@ const realSourceSpecs: RealSourceSpec[] = [
     source_url: 'https://www.q-net.or.kr/rcv001.do?gSite=Q&id=rcv00103',
     source_type: 'official',
     source_precision: 'exact',
+    source_checked_at: '2026-10-31',
     primary_destination: 'memo',
     risk_level: 'medium',
     conversion_note: 'Q-Net 원서접수안내를 날짜를 확정하지 않는 접수·응시 준비 체크로 전환하고 인정 신분증 안내를 해당 항목의 보조 링크로 연결했습니다.',
@@ -1033,7 +1088,7 @@ const realSourceSpecs: RealSourceSpec[] = [
     source_precision: 'exact',
     primary_destination: 'memo',
     risk_level: 'medical_sensitive',
-    conversion_note: '4~6개월 건강검진과 생후 4개월 예방접종 안내를 공식 정보 확인과 최근 상태·질문 메모로 좁혀 전환했습니다.',
+    conversion_note: '4~6개월 건강검진과 생후 4개월 예방접종 안내를 공식 정보 확인과 최근 상태·질문 메모로 좁혀 전환했고, 국가예방접종사업 안내를 보조 링크로 붙였습니다.',
     warning: '검진, 접종, 치료 판단은 의료진 안내를 우선하세요.',
     tags: ['육아', '검진', '공식출처'],
     sections: ['공식 안내 확인', '보호자 메모'],
@@ -1047,8 +1102,11 @@ const realSourceSpecs: RealSourceSpec[] = [
       {
         title: '생후 4개월 예방접종 안내 확인',
         why: '출처는 생후 4개월 예방접종을 안내하지만 실제 접종 가능 여부와 일정은 의료진 판단이 우선입니다.',
-        how: '아이사랑 페이지의 생후 4개월 예방접종 안내를 확인하고, 접종명과 일정은 의료기관에서 다시 확인합니다.',
+        how: '아이사랑 페이지의 생후 4개월 예방접종 안내를 확인하고, 국가 지원 대상 백신은 질병관리청 국가예방접종사업 안내에서 함께 확인합니다. 접종명과 일정은 의료기관에서 다시 확인합니다.',
         completion_criteria: '생후 4개월 예방접종 안내와 의료기관에 추가 확인할 내용을 기록했습니다.',
+        extra_links: [
+          { label: '질병관리청 국가예방접종사업', url: 'https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=131&menuLv=1' },
+        ],
       },
       {
         title: '최근 상태와 보호자 질문 메모',
@@ -1070,7 +1128,7 @@ const realSourceSpecs: RealSourceSpec[] = [
     source_type: 'official',
     source_precision: 'exact',
     risk_level: 'medium',
-    conversion_note: '시간제 보육 이용 안내를 자격 확인, 기관 조회, 예약 실행 체크로 전환했습니다.',
+    conversion_note: '시간제 보육 이용 안내를 자격 확인, 기관 조회, 예약 실행 체크로 전환했습니다. 이용 후 기록은 원문 안내가 아니라 FlowMe가 덧붙인 개인 기록입니다.',
     tags: ['육아', '보육', '공식출처'],
     sections: ['자격 확인', '신청 실행'],
     actions: [
@@ -1100,7 +1158,7 @@ const realSourceSpecs: RealSourceSpec[] = [
       },
       {
         title: '이용 후 증빙과 다음 예약 기록',
-        why: '반복 이용하려면 이용 내역과 아이 반응을 함께 남기는 편이 좋습니다.',
+        why: '원문 안내에 있는 단계가 아니라 FlowMe가 덧붙인 개인 기록입니다. 반복 이용하려면 이용 내역과 아이 반응을 함께 남기는 편이 좋습니다.',
         how: '이용 시간, 결제 내역, 아이 컨디션, 다음 필요 날짜를 적습니다.',
         completion_criteria: '이용 내역과 다음 예약 후보를 기록했습니다.',
       },
@@ -1206,7 +1264,7 @@ const realSourceSpecs: RealSourceSpec[] = [
   {
     channelSlug: 'ohouse-living',
     slug: 'real-ohouse-moving-d30-prep',
-    title: '오늘의집 원룸 이사 D-30 Flow',
+    title: '오늘의집 원룸 이사 2주 전 준비 Flow',
     category: '이사/주거',
     structure_type: 'timeline',
     anchor_type: 'end_date',
@@ -1215,9 +1273,10 @@ const realSourceSpecs: RealSourceSpec[] = [
     source_type: 'reference',
     source_precision: 'exact',
     risk_level: 'financial_sensitive',
-    conversion_note: '원룸 이사 준비 가이드를 D-30 예약, 정리, 당일 확인 순서로 전환했습니다.',
+    conversion_note: '원룸 이사 준비 가이드를 2주 전 예약, 정리, 당일 확인 순서로 전환했습니다.',
     tags: ['이사', '주거', '참고출처'],
     sections: ['이사 전', '이사 당일'],
+    timeline_offsets: [-14, -14, -7, 0, 0],
     actions: [
       {
         title: '이사 방식과 예산 범위 정하기',
