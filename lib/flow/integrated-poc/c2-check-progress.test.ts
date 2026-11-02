@@ -306,3 +306,16 @@ test('re-review (2): on 오늘 a check answered after the view changed brings no
   assert.match(space, /useEffect\(\(\) => \{ setCheckNotice\(null\); \}, \[actorId, period, date, folderId, query\]\);/);
   assert.match(space, /setCheckNotice\(shown => shown\?\.key !== key \? shown : undo \? null/);
 });
+
+// S4 v16 phone (11/2 19:52, 오늘): × on "진행률을 고르세요" was followed by the check going back to 0%. Not reproduced
+// headless (both builds, touch and mouse, the task's document open in 쓰기 first, a composition left open there, 4x
+// slower CPU). × closes the notice only, on both screens; this keeps it so.
+test('v16 phone: × on the check notice only closes it; it changes no value and saves nothing (both screens)', () => {
+  const today = space.slice(space.indexOf('  const checkNoticeContent = '), space.indexOf('  const orderNoticeContent = '));
+  assert.match(today, /onClose=\{\(\) => setCheckNotice\(null\)\} \/>/);
+  assert.equal(today.match(/onClose=/g)?.length, 1);
+  const close = editor.slice(editor.indexOf('  function closeCheckNotice('), editor.indexOf('  function openProgress('));
+  assert(!/apply\(|recordProgress|saveNow|scheduleSave|performCheckStep|pressCheckStep/.test(close), 'closing runs no step');
+  assert.match(close, /if \(notice\) checkHeld\.current\.delete\(checkWorkKey\(notice\.targetId\)\);\n    setCheckNotice\(null\);/);
+  assert.match(editor, /closeLabel: '알림 닫기', close: closeCheckNotice,/);
+});
