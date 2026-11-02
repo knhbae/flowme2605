@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { PROGRAM_CHECK_CHIPS, PROGRAM_CHECK_NOTICE_MS, programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckSaveOutcome, programCheckTaskSignature, programCheckUndoable, type ProgramCheckNotice } from './check-progress-notice';
+import { PROGRAM_CHECK_CHIPS, PROGRAM_CHECK_NOTICE_MS, programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeLive, programCheckNoticeView, programCheckSaveOutcome, programCheckTaskSignature, programCheckUndoable, type ProgramCheckNotice } from './check-progress-notice';
 import type { ProgramData, ProgramTransition } from './contract';
 import { createProgramData } from './program-data';
 import { createProgramTextDraft } from './program-text-draft';
+import { createProgramDocumentInput } from './program-document-input';
 import { addProgramQuickTask, completeProgramTask, createProgramDocument, recordProgramTaskProgress } from './private-space';
 import type { ProgramReferenceAccess } from './reference-execution-guard';
 import { textEditorRows, textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
@@ -173,8 +174,8 @@ function heldDraft(start: TextWorkspaceState) {
   const draft = createProgramTextDraft(start, DOC, () => new Promise<boolean>(resolve => { release = resolve; }), () => {});
   return { draft, release: (accepted: boolean) => release(accepted) };
 }
-const outcome = (state: ReturnType<ReturnType<typeof createProgramTextDraft>['getState']>, target: string, asked: number) =>
-  programCheckSaveOutcome(M.currentProgress(state.committed, target), M.currentProgress(state.working, target), asked, state);
+const outcome = (state: ReturnType<ReturnType<typeof createProgramTextDraft>['getState']>, target: string, asked: number, acked = true) =>
+  programCheckSaveOutcome(M.currentProgress(state.committed, target), M.currentProgress(state.working, target), asked, state, acked);
 
 test('review: outcomes are read off a real draft: on its way, saved, refused, overtaken', async () => {
   const start = written('- [ ] 장보기'), target = textEditorRows(start, DOC)[0].progressTargetId!;
@@ -190,8 +191,8 @@ test('review: outcomes are read off a real draft: on its way, saved, refused, ov
   assert.deepEqual([M.currentProgress(state.working, target), M.currentProgress(state.committed, target)], [50, 100]);
   assert.equal(outcome(state, target, 50), 'refused');
   assert.equal(outcome(state, target, 100), 'overtaken', 'the 100% step no longer matches the screen');
-  assert.equal(programCheckSaveOutcome(75, 50, 50, { saving: false, dirty: false, invalid: false, error: '' }), 'changed');
-  assert.equal(programCheckSaveOutcome(75, 50, 50, { saving: false, dirty: true, invalid: false, error: '' }), null);
+  assert.equal(programCheckSaveOutcome(75, 50, 50, { saving: false, dirty: false, invalid: false, error: '' }, true), 'changed');
+  assert.equal(programCheckSaveOutcome(75, 50, 50, { saving: false, dirty: true, invalid: false, error: '' }, true), null);
 });
 
 test('review P2 (3): on 오늘 a record dated after today sends a step, and a partial tap, to the form', () => {
@@ -318,4 +319,57 @@ test('v16 phone: × on the check notice only closes it; it changes no value and 
   assert(!/apply\(|recordProgress|saveNow|scheduleSave|performCheckStep|pressCheckStep/.test(close), 'closing runs no step');
   assert.match(close, /if \(notice\) checkHeld\.current\.delete\(checkWorkKey\(notice\.targetId\)\);\n    setCheckNotice\(null\);/);
   assert.match(editor, /closeLabel: '알림 닫기', close: closeCheckNotice,/);
+});
+
+// Codex final re-review of C2 (11/2), two P2s; 총괄: a notice's words follow the real state.
+test('final re-review (1): success only on the ack of the save that carried the step, not on an equal value', async () => {
+  const start = written('- [ ] 장보기'), a = textEditorRows(start, DOC)[0].progressTargetId!;
+  // The editor's own setup: a document input, checks taken while a save is on its way, and each accepted save
+  // acknowledging the input generation it carried.
+  const input = createProgramDocumentInput(start, DOC);
+  let release: (accepted: boolean) => void = () => {}, acked = -1;
+  const draft = createProgramTextDraft(input.initial, DOC, (_next, _label, options) => new Promise<boolean>(resolve => {
+    release = accepted => { if (accepted && options?.writingGeneration !== undefined) acked = Math.max(acked, options.writingGeneration); resolve(accepted); };
+  }), () => {}, () => true, input, true);
+  assert(draft.applyCheck(a, TODAY));
+  let flight = draft.save(); release(true); assert.equal(await flight, true);
+  // Saved at 100%. Unchecked (0%, its save on its way), then checked again during that save.
+  assert(draft.applyCheck(a, TODAY));
+  flight = draft.save();
+  assert(draft.applyCheck(a, TODAY));
+  const step = draft.generation();
+  // The saved record still says 100% from before: equal, but not this step's save. On its way, not "완료했습니다".
+  let state = draft.getState();
+  assert.deepEqual([M.currentProgress(state.committed, a), M.currentProgress(state.working, a)], [100, 100]);
+  assert.equal(outcome(state, a, 100, acked >= step), null);
+  assert.equal(outcome(state, a, 100, true), 'saved', 'what an equal value alone would have said');
+  // The 0% save is acked (an earlier generation); the one carrying the re-check goes next and is refused.
+  release(true); await new Promise(resolve => setTimeout(resolve, 0));
+  state = draft.getState();
+  assert.equal(M.currentProgress(state.committed, a), 0);
+  assert(acked < step);
+  assert.equal(outcome(state, a, 100, acked >= step), null, 'still on its way');
+  release(false); assert.equal(await flight, false);
+  assert.equal(outcome(draft.getState(), a, 100, acked >= step), 'refused');
+  // The editor marks each step with its generation and settles it on its own save's ack.
+  assert.match(editor, /if \(accepted && options\?\.writingGeneration !== undefined\) checkAcked\.current = Math\.max\(checkAcked\.current, options\.writingGeneration\);/);
+  assert.match(editor, /const acked = !state\.dirty && !state\.saving \? Math\.max\(checkAcked\.current, draftRef\.current\?\.generation\(\) \?\? -1\) : checkAcked\.current;/);
+  assert.match(editor, /programCheckSaveOutcome\(saved, M\.currentProgress\(state\.working, targetId\), percent, state, acked >= entry\.generation\);/);
+  assert.equal(editor.match(/generation: draftRef\.current\?\.generation\(\) \?\? 0/g)?.length, 2);
+});
+
+test('final re-review (2): a failure says the value the screen shows now, read as it is drawn', () => {
+  // 25%, then 50% chosen; a re-read brought 75% while it waited; the save was refused. The screen shows 75%.
+  const refused = programCheckNoticeFailed(notice({ stage: 'chips', before: 25, after: 25 }), { why: 'save', asked: 50, kept: 25 }, 2000, 2);
+  assert.equal(programCheckNoticeView(programCheckNoticeLive(refused, 75)).text, '진행률 50%가 저장되지 않았습니다. 저장된 값은 75%입니다 · 장보기');
+  assert.equal(programCheckNoticeView(programCheckNoticeLive(programCheckNoticeFailed(notice(), { why: 'changed', asked: 75, kept: 50 }, 2000, 2), 30)).text,
+    '진행률 75%로 바뀌지 않았습니다. 지금 값은 30%입니다 · 장보기');
+  // The editor's refusal names no value (its input stays on the screen), so nothing is read in.
+  const kept = programCheckNoticeFailed(notice(), { why: 'save', asked: 100 }, 2000, 2);
+  assert.equal(programCheckNoticeLive(kept, 0), kept);
+  const plain = notice();
+  assert.equal(programCheckNoticeLive(plain, 0), plain);
+  // Both screens read it at drawing time: 오늘 from what it shows, the editor from its saved state.
+  assert.match(space, /programCheckNoticeView\(programCheckNoticeLive\(checkNotice, M\.currentProgress\(space\.text, checkNotice\.targetId\)\)\)/);
+  assert.match(editor, /programCheckNoticeView\(programCheckNoticeLive\(notice, M\.currentProgress\(draft\.committed, notice\.targetId\)\)\)/);
 });

@@ -13,7 +13,7 @@ import { programManualOrderDays, programOrderedExecutionRows, programTextExecuti
   restoreProgramExecutionDayOrder, type ProgramDayOrder } from '@/lib/flow/integrated-poc/recurrence-order';
 import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
-import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
+import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeLive, programCheckNoticeView, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
 import { ProgramMonthGrid } from './ProgramMonthGrid';
 import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
 import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
@@ -1795,7 +1795,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   const runCheckStepRef = useRef(runCheckStep); runCheckStepRef.current = runCheckStep;
   const releaseCheckNotice = () => { if (!checkNoticeHeld) return; setCheckNoticeHeld(false); setCheckNotice(current => current && { ...current, shownAt: Date.now() }); };
-  const checkNoticeView = checkNotice?.actorId === actorId ? programCheckNoticeView(checkNotice) : null;
+  // A failure's value is the one this screen shows now (a re-read included), read as it is drawn (final review).
+  const checkNoticeView = checkNotice?.actorId === actorId ? programCheckNoticeView(programCheckNoticeLive(checkNotice, M.currentProgress(space.text, checkNotice.targetId))) : null;
   const checkStep = (key: number, step: ProgramCheckStep) => whenPageComposed(() => { void runCheckStepRef.current(key, step); });
   const checkNoticeContent = checkNotice && checkNoticeView && <div className={styles.orderNotice} data-check-notice onPointerDown={() => setCheckNoticeHeld(true)}
     onPointerUp={releaseCheckNotice} onPointerLeave={releaseCheckNotice} onFocus={() => setCheckNoticeHeld(true)} onBlur={releaseCheckNotice}>

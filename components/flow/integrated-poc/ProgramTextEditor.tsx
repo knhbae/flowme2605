@@ -49,7 +49,7 @@ import regionStyles from './ProgramFolderRegionEditor.module.css';
 import { readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { readProgramMemoContext, programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
 import { ProgramProgressForm } from './ProgramProgressForm';
-import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckSaveOutcome, programCheckTaskSignature, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
+import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeLive, programCheckNoticeView, programCheckSaveOutcome, programCheckTaskSignature, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
 import {ProgramWritingInline} from './ProgramWritingInline';
 import {prepareWritingChild} from '@/lib/flow/integrated-poc/writing-child-command';
 import {planWritingInsertion} from '@/lib/flow/integrated-poc/writing-insertion-command';
@@ -330,7 +330,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // C2: what a check left on its way, by task (document + task ID) and apart from the notice, so another task's
   // notice never drops it: the save each step started, settled on its own, and a choice waiting for a save in flight.
   type CheckStepToRun = Exclude<ProgramCheckStep, { kind: 'chips' }>;
-  const checkSaves = useRef(new Map<string, { notice: ProgramCheckNotice; percent: number; undo: boolean; quiet: boolean }>());
+  // Each step keeps the draft's input generation it was applied at; only a save carrying that generation, once
+  // acknowledged, settles it as saved (final review, 총괄). checkAcked is the newest generation a save was acked for.
+  const checkSaves = useRef(new Map<string, { notice: ProgramCheckNotice; percent: number; undo: boolean; quiet: boolean; generation: number }>());
+  const checkAcked = useRef(-1);
   // A held choice keeps what its task's line was then (signature): newer input there wins over it.
   type CheckHeld = { notice: ProgramCheckNotice; step: Extract<CheckStepToRun, { kind: 'undo' | 'percent' }>; signature: string };
   const checkHeld = useRef(new Map<string, CheckHeld>());
@@ -1298,7 +1301,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (before !== null && before !== 100 && M.currentProgress(currentState(), targetId) === 100) {
       // 총괄: the check shows at once; the notice says "완료 저장 중…" until the save settles.
       const notice: ProgramCheckNotice = { stage: 'done', targetId, title, before, after: 100, shownAt: performance.now(), key: ++checkNoticeKeys.current, saving: { percent: 100, undo: false, quiet: true } };
-      checkSaves.current.set(work, { notice, percent: 100, undo: false, quiet: true }); setCheckNotice(notice);
+      checkSaves.current.set(work, { notice, percent: 100, undo: false, quiet: true, generation: draftRef.current?.generation() ?? 0 }); setCheckNotice(notice);
     } else {
       checkSaves.current.delete(work);
       if (checkNoticeRef.current?.targetId === targetId) setCheckNotice(null);
@@ -1324,9 +1327,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       checkHeld.current.delete(work);
       return { percent: held.step.kind === 'undo' ? held.notice.before : held.step.percent, undo: held.step.kind === 'undo' };
     };
+    // Everything saved acknowledges every generation so far; otherwise the newest acked save says how far it went.
+    const acked = !state.dirty && !state.saving ? Math.max(checkAcked.current, draftRef.current?.generation() ?? -1) : checkAcked.current;
     for (const [work, entry] of [...checkSaves.current]) {
       const { notice, percent, undo, quiet } = entry, targetId = notice.targetId, saved = M.currentProgress(state.committed, targetId);
-      const outcome = programCheckSaveOutcome(saved, M.currentProgress(state.working, targetId), percent, state);
+      const outcome = programCheckSaveOutcome(saved, M.currentProgress(state.working, targetId), percent, state, acked >= entry.generation);
       if (!outcome) continue;
       checkSaves.current.delete(work);
       const visible = checkNoticeRef.current, mine = visible?.targetId === targetId ? visible : null;
@@ -1391,7 +1396,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // apply said why when it refused; the notice then stays as it was.
     if (M.currentProgress(currentState(), notice.targetId) !== percent) { unsent(); return; }
     // Saving now: the notice says what was saved once the save has settled.
-    checkSaves.current.set(work, { notice, ...saving });
+    checkSaves.current.set(work, { notice, ...saving, generation: draftRef.current?.generation() ?? 0 });
     const mine = shown(); if (mine) setCheckNotice({ ...mine, saving });
     settleCheckSaves();
   }
@@ -1561,7 +1566,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     checkPendingRef.current=null;setCheckPending(false);
     const documentInput=createProgramDocumentInput(propsRef.current.workspace,props.docId);documentInputRef.current=documentInput;
     const controller = createProgramTextDraft(documentInput.initial, props.docId,
-      (...args) => propsRef.current.onCommit(...args), next => {
+      (next, label, options) => propsRef.current.onCommit(next, label, options).then(accepted => {
+        if (accepted && options?.writingGeneration !== undefined) checkAcked.current = Math.max(checkAcked.current, options.writingGeneration);
+        return accepted;
+      }), next => {
         if (!alive) return;
         setDraft(next); propsRef.current.onDirtyChange?.(!!currentChild()||programTextInputPending(next,textArea()?.value,composingRef.current,regionPendingRef.current,!!checkPendingRef.current));
         queueMicrotask(() => { if (alive) editorRef.current?.refresh(); });
@@ -2506,7 +2514,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // W15: one notice row at a time: an ongoing move, then warnings (the editor's messages, until closed), then
   // choices, then plain notices; the rest wait ("n개 더"). A press or focus inside holds a notice's time.
   function checkNoticeView(notice: ProgramCheckNotice) {
-    const view = programCheckNoticeView(notice), run = (step: ProgramCheckStep) => whenComposed(() => pressCheckStep(notice.key, step));
+    const view = programCheckNoticeView(programCheckNoticeLive(notice, M.currentProgress(draft.committed, notice.targetId))), run = (step: ProgramCheckStep) => whenComposed(() => pressCheckStep(notice.key, step));
     return { tone: view.tone, text: view.text, closeLabel: '알림 닫기', close: closeCheckNotice,
       actions: view.actions.map(button => ({ label: button.label, run: run(button.step) })),
       chips: view.chips.map(button => ({ label: button.label, current: button.current, run: run(button.step) })) };

@@ -27,6 +27,11 @@ export interface ProgramCheckNotice {
   why?: 'save' | 'changed' | 'later'; asked?: number; askedUndo?: boolean; kept?: number | null;
   dropped?: { percent: number; undo: boolean };
 }
+/** Final review (총괄): a failure's value is read when the notice is drawn, off the newest saved state the screen shows
+ *  (a re-read included), never kept from when it was made; so the notice and the screen cannot disagree. */
+export function programCheckNoticeLive(notice: ProgramCheckNotice, current: number | null): ProgramCheckNotice {
+  return notice.stage === 'failed' && notice.kept !== undefined ? { ...notice, kept: current } : notice;
+}
 /** What failed, for programCheckNoticeFailed. */
 export type ProgramCheckFailure = Required<Pick<ProgramCheckNotice, 'why'>> & Pick<ProgramCheckNotice, 'asked' | 'askedUndo' | 'kept' | 'dropped'>;
 export type ProgramCheckStep = { kind: 'undo' } | { kind: 'chips' } | { kind: 'direct' } | { kind: 'percent'; percent: number };
@@ -86,11 +91,12 @@ export function programCheckTaskSignature(state: Pick<TextWorkspaceState, 'docum
 }
 
 /** How a step's save went, read off the draft: overtaken (the screen has a newer value for the task, so this step's
- *  words no longer apply), saved (the record has the value), refused (the save failed and stopped), changed
- *  (everything is saved, with another value), or null while it is on its way. */
-export function programCheckSaveOutcome(saved: number | null, shown: number | null, asked: number, draft: { saving: boolean; dirty: boolean; invalid: boolean; error: string }): 'overtaken' | 'saved' | 'refused' | 'changed' | null {
+ *  words no longer apply), saved (the record has the value and `acked`: a save carrying this step was acknowledged;
+ *  final review, 총괄: a record that only happens to hold the same value, from an earlier save, is not this step's),
+ *  refused (the save failed and stopped), changed (everything is saved, with another value), or null on its way. */
+export function programCheckSaveOutcome(saved: number | null, shown: number | null, asked: number, draft: { saving: boolean; dirty: boolean; invalid: boolean; error: string }, acked: boolean): 'overtaken' | 'saved' | 'refused' | 'changed' | null {
   if (shown !== asked) return 'overtaken';
-  if (saved === asked) return 'saved';
+  if (saved === asked && acked) return 'saved';
   if (draft.saving) return null;
   if (draft.error || draft.invalid) return 'refused';
   return draft.dirty ? null : 'changed';
