@@ -356,3 +356,9 @@
 
 /* R8b: the toolbar opens the Flow·반복 sheet. */
 .toolbar > .repeatButton { white-space: nowrap; color: var(--flowme-b-primary-strong); }
+
+/* U44: on a tablet held sideways the host's title starts this line and its ⋯ ends it (after the status); the line
+   keeps its height. Too narrow, the line wraps as before. The host's notices sit under it, above the body. */
+.toolbar > .headStart { order: -1; display: flex; align-items: center; gap: 4px; flex: 0 1 auto; min-width: 0; margin-right: 4px; }
+.toolbar > .headEnd { order: 9; flex: 0 0 auto; }
+.headBelow { min-width: 0; }

@@ -427,6 +427,10 @@
 .space .titleActions .documentToolsLabel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .space .titleActions > details > summary { display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; list-style: none; }
 .space .titleActions > details > div { right: 0; left: auto; }
+/* U44: in the editor's tool line (a tablet held sideways) the title is at most 220px and shortens with "…"; ⋯ keeps
+   the title row's look. */
+.space [data-editor-head="start"] > h1 { flex: 0 1 auto; min-width: 0; max-width: 220px; margin: 0; padding: 0; font-size: 20px; line-height: 28px; }
+.space [data-editor-head="end"] summary { box-sizing: border-box; padding: 8px; }
 .space .sheetNewWriting { width: 100%; min-height: 48px; margin: 0 0 12px; border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); color: #fff; font-weight: 700; }
 /* N1 fix 3: the empty first screen's own start, styled like the sheet's ＋ 새 글. */
 .space .emptyNewWriting { min-height: 48px; padding-inline: 20px; border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); color: #fff; font-weight: 700; }

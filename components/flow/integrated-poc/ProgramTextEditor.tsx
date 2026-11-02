@@ -148,6 +148,12 @@ export interface ProgramTextEditorProps {
   /** Host-owned status/actions share the existing toolbar, not the input owner. */
   noteStatus?: React.ReactNode;
   noteActions?: React.ReactNode;
+  /** U44: on a tablet held sideways the host's document title (start) and ⋯ (end) share the toolbar's line, and the
+   *  host's notices sit under it (below), above the body. They stay the host's: input and keys there are not this
+   *  editor's typing. Absent, the toolbar is as it was. */
+  headStart?: React.ReactNode;
+  headEnd?: React.ReactNode;
+  headBelow?: React.ReactNode;
   disabledReason?: string;
   validateWorkspace?: (next: TextWorkspaceState) => boolean;
   /** Proposal gate: caller verifies current canonical private ownership and known copy/source exclusions. Absent means refuse. */
@@ -2570,7 +2576,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       onPointerDown={event => event.preventDefault()} onClick={() => { if (picker.enter) pressPicker(picker.enter); }}>↵ {pickerEnterLabel}</button>}
     <small>↓ 폴더 선택 · Esc 닫기{picker.indent && !picker.linked ? ' · Shift+Tab 상위로' : ''}</small>
   </div> : null;
-  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInput={serverView ? markTyping : undefined}
+  const inHead = (target: EventTarget) => target instanceof Element && !!target.closest('[data-editor-head]');
+  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInput={serverView ? event => { if (!inHead(event.target)) markTyping(); } : undefined}
     onKeyDown={event => { if (event.key === 'Tab' && folderIndentSkipped.current) event.preventDefault(); folderIndentSkipped.current = false; }} onKeyDownCapture={event => {
     const imeConsumed = pickerIme.current?.keydown(event.nativeEvent) ?? false;
     const view = pickerRef.current;
@@ -2582,11 +2589,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (action.kind === 'reset' && view.navigation !== -1) presentPicker({ ...view, navigation: -1 });
     }
     if (event.key === 'Tab') folderIndentSkipped.current = false;
+    if (inHead(event.target)) return;
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
   }}>
     {folderPicker}
     <div className={styles.toolbar}>
+      {props.headStart && <div className={styles.headStart} data-editor-head="start">{props.headStart}</div>}
       {mode === 'text' && <button type="button" onClick={event => returnToDocumentMode(event.currentTarget)}>문서로 돌아가기</button>}
       <button type="button" hidden={props.directWriting && !props.noteStatus} disabled={props.folderId ? inputLocked || !!props.readOnly || draft.invalid || composing || checkPending : insertionDisabled}
         onClick={() => { if (props.folderId) { void openRegionInsertMenu(); return; } const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}>＋ 추가</button>
@@ -2621,7 +2630,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {props.noteStatus && <div className={styles.noteStatus}>{props.noteStatus}</div>}
         {draft.error ? editorRecovery(true) : <span className={styles.status} role="status" aria-live="polite">{editorStatus.label}</span>}
       </>}
+      {props.headEnd && <div className={styles.headEnd} data-editor-head="end">{props.headEnd}</div>}
     </div>
+    {props.headBelow && <div className={styles.headBelow} data-editor-head="below">{props.headBelow}</div>}
     {props.folderId && <div className={regionStyles.actions} aria-label="문서 조회 범위"><p>{currentDoc()?.title || '현재 글'} · 분류: {folderView?.folderPath ?? '선택한 분류'} · 하위 분류 포함</p>
       <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || composingRef.current} onClick={props.onContinueWholeDocument ? continueWholeDocument : props.onShowWholeDocument}>전체 문서 보기</button><button type="button" onClick={props.onShowFolderTasks}>폴더 전체 할 일</button>
       {!folderView?.regions.length && <p>이 분류에 맞는 내용이 없습니다. 전체 문서에서 확인할 수 있습니다.</p>}

@@ -8,6 +8,7 @@ const editor = readFileSync(new URL('../../../components/flow/integrated-poc/Pro
 // The commit put the old value back into a controlled field (the child draft) and the folder region
 // reinstalled its old raw, so typed text was lost (QA 6·7: empty child draft, folder new line not kept).
 test('typing is marked on bubbling input, never in an input capture handler', () => {
-  assert.match(editor, /onInput=\{serverView \? markTyping : undefined\}/);
+  // U44: still on bubbling input; a field of the host's head in the tool line (⋯'s rename) is not the editor's typing.
+  assert.match(editor, /onInput=\{serverView \? event => \{ if \(!inHead\(event\.target\)\) markTyping\(\); \} : undefined\}/);
   assert.doesNotMatch(editor, /on(Before)?InputCapture=/);
 });

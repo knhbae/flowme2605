@@ -8,7 +8,9 @@ import test from 'node:test';
 // theirs. Past the page's bottom the browser shows the root background: there, the page's canvas, not the beige body.
 const css = readFileSync(new URL('../../../components/flow/integrated-poc/AlphaWorkspace.module.css', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const block = (query: string) => { const at = css.indexOf(`@media ${query} {`); assert(at >= 0, query); return css.slice(at, css.indexOf('\n}\n', at)); };
-const tablet = block('(min-width: 701px) and (max-width: 1279px)');
+// U44: the larger tablets held sideways (1280×800) and laptops as short, up to 1366×900, take the same paddings; a
+// 1280–1366px screen taller than 900px (a desktop, a tablet's portrait-sized window) keeps its own.
+const tablet = block('(min-width: 701px) and (max-width: 1279px), (min-width: 1280px) and (max-width: 1366px) and (max-height: 900px)');
 const writing = '.page[data-alpha-frame="b"][data-note-layout="true"]:has([data-program-period="documents"][aria-current="page"])';
 
 test('U41: the writing screen of a tablet held sideways keeps thin paddings, so its body reaches the screen\'s bottom', () => {

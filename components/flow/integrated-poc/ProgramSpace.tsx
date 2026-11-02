@@ -2,7 +2,7 @@
 
 import type {OwnedWritingAck} from '@/lib/flow/integrated-poc/writing-ack';
 import type {WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { programClone, programFailure, programId, programResult, type ProgramData, type ProgramPrivateSpace, type ProgramTransition, type ProgramWritingPosition } from '@/lib/flow/integrated-poc/contract';
 import { programDate } from '@/lib/flow/integrated-poc/program-data';
 import { programFolderCopyAccessProblem } from '@/lib/flow/integrated-poc/folder-copy';
@@ -178,6 +178,12 @@ const mainPeriods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today
 export const PROGRAM_EMPTY_EXAMPLE = '이번 주 준비\n- [ ] 확인할 일\n  - [ ] 먼저 확인할 내용\n자유롭게 적는 메모';
 // A06 / V41-004–005: restore the approved v4.1 touch thresholds, not a new policy.
 export const PROGRAM_MOVE_GESTURE_V1 = Object.freeze({ version: 1, holdMs: 350, cancelDistancePx: 8 });
+// U44: a tablet held sideways, or a laptop as short. The writing screen's title and ⋯ share the editor's tool line
+// there; phones, portrait screens and taller ones keep the title line of their own.
+export const PROGRAM_TABLET_HEAD_QUERY = '(min-width: 1000px) and (max-height: 900px) and (orientation: landscape)';
+let tabletHeadQuery: MediaQueryList | null = null;
+const tabletHead = () => tabletHeadQuery ??= window.matchMedia(PROGRAM_TABLET_HEAD_QUERY);
+function watchTabletHead(change: () => void) { const query = tabletHead(); query.addEventListener('change', change); return () => query.removeEventListener('change', change); }
 
 function initialProgramDocumentId(props: ProgramSpaceProps, space: ProgramPrivateSpace) {
   const remembered = props.selectedDocumentId ?? space.position.documentId;
@@ -222,6 +228,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // existing complete writer for this route, without swapping owners on ACKs,
   // host readiness, content changes or composition. The isolated PM stays intact.
   const TextEditor = ProgramTextEditor;
+  const tabletLandscape = useSyncExternalStore(watchTabletHead, () => tabletHead().matches, () => false);
   const dataRef = useRef(data); dataRef.current = data;
   const classificationRequest = useRef(false);
   const [classificationCreating, setClassificationCreating] = useState(false);
@@ -1974,6 +1981,44 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           </li>;
   }
   const copyHeader = useMemo(() => selectedDoc ? programCopyHeader(data, actorId, selectedDoc.id) : null, [data, actorId, selectedDoc?.id]);
+  // U44: on a tablet held sideways the title and ⋯ go into the open document's tool line, and the notices that sat
+  // between them and the tools go under that line, above the body. Only their place changes: the editor keeps its key
+  // and mount, so a composition, the caret and ↶ survive crossing the boundary (the tablet turned, the window sized).
+  const headInToolbar = tabletLandscape && !!props.hostMainTabs && !!props.noteHeader && !!selectedDoc && opened.includes(selectedDoc.id);
+  const docTitle = <>{sourceOriginOpen && <button type="button" className={styles.sourceReturn}
+    aria-label={sourceOrigin?.view.monthView === 'grid' ? `오늘 · ${programMonthTitle(sourceOrigin.view.date, today)} 달력으로 돌아가기` : `${sourceOriginLabel} 목록으로 돌아가기`} onClick={() => void returnToSourceOrigin()}>← {sourceOriginLabel}</button>}<h1>{props.hostMainTabs
+    ? <button ref={titleToggle} type="button" className={styles.titleButton} aria-haspopup="dialog" aria-expanded={libraryOpen} aria-controls="program-library"
+      aria-label={`${documentTitleText} · 문서 목록 열기`} onPointerDown={findPointerDown} onClick={openFindPanel}><span>{documentTitleText}</span><span aria-hidden="true"> ▾</span></button>
+    : documentTitleText}</h1></>;
+  const docActions = <>{props.hostMainTabs ? selectedDocumentTools && <div className={styles.titleActions}>{selectedDocumentTools}</div>
+      : (!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</>;
+  const docNotices = <>
+    {props.noteHeader}
+    {props.importNotice?.actorId === actorId && props.importNotice.documentId === selected && <div className={styles.importNotice}><span role="status">{props.importNotice.text}</span>{props.importNotice.onCancel && <button type="button" disabled={props.importNotice.busy} onClick={props.importNotice.onCancel}>{props.importNotice.busy ? '연결을 빼는 중…' : '이번 가져오기 취소'}</button>}</div>}
+    <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice data-quiet={props.noteNoticeShown ? 'true' : undefined}>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
+    {!selectedDoc && props.noteStatus}
+    {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>
+      {/* A new account starts here with no document; the title row keeps only a document's tools, so the
+          first screen needs its own way to start writing. */}
+      <button type="button" className={styles.emptyNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글 쓰기</button>{props.capabilities?.discovery !== false && <button onClick={() => props.navigate({ view: 'discover' })}>다른 사람의 Flow 둘러보기</button>}</div> : <>
+      {selectedTrashed && <ProgramDocumentTrashAction key={selectedDoc.id} space={space} documentId={selectedDoc.id} disabled={preparingDocumentAction} onChange={changeDocumentTrash} />}
+      <ProgramDocumentProvenance data={data} documentId={selectedDoc.id} disabled={preparingDocumentAction || selectedTrashed} onOpenRevisions={props.capabilities?.revisionHistory !== false && props.onRevisionHistory ? () => void openDocumentAction(props.onRevisionHistory!) : undefined} onOpenCreatorDraft={props.capabilities?.creatorNavigation !== false ? draftId => void openDocumentAction(() => props.navigate({ view: 'creator', id: draftId })) : undefined} />
+      {copyHeader && <div className={styles.copyHeader} data-state={copyHeader.kind}><span>{copyHeader.text}</span>
+        {copyHeader.action === 'inspect' && props.onInspectCopy && props.capabilities?.copyInspection !== false && <button type="button" disabled={preparingDocumentAction} onClick={() => void openDocumentAction(() => props.onInspectCopy!(copyHeader.copyId), { modalReturnFocus: true })}>변경 확인</button>}
+        {copyHeader.action === 'source' && props.onOpenCopySource && props.capabilities?.discovery !== false && <button type="button" disabled={preparingDocumentAction} onClick={event => { const returnFocus = event.currentTarget; void openDocumentAction(id => props.onOpenCopySource!(copyHeader.flowId, id, returnFocus)); }}>원본 보기</button>}
+      </div>}
+      {selectedQualityHold && <p role="status" className={styles.muted}>{selectedQualityHold} 해당 원본 항목과 실행 기록은 읽기 전용으로 남깁니다. 다른 자유 메모는 계속 쓸 수 있습니다.</p>}
+      {retentionSource && <p className={styles.muted}>판본 복구 중 빠진 내용을 보관한 곳입니다. <button onClick={() => void openDocument(retentionSource)}>원래 문서로 돌아가기</button></p>}
+      {collectionMode && !retentionSource && !selectedTrashed && <><details className={styles.collectionDisclosure}>
+        <summary>모음에 정리 · {collectionMode.state.collections.filter(row => row.documentIds.includes(selectedDoc.id)).map(row => row.title).join(', ') || '연결된 모음 없음'}</summary>
+        <fieldset className={styles.collectionMembership}><legend>문서 전체 연결</legend>
+        {collectionMode.state.collections.length ? collectionMode.state.collections.map(row => <label key={row.id}><input type="checkbox" checked={row.documentIds.includes(selectedDoc.id)} onChange={event => { void writeCollections(setDocumentCollectionLink(collectionMode.state, row.id, selectedDoc.id, event.target.checked)); }} />{row.title}</label>) : <p>모음 없이도 작성할 수 있습니다. 필요하면 문서 목록에서 모음을 만드세요.</p>}
+        <small>이 문서 전체를 연결합니다. 체크를 빼도 원문과 할 일은 남습니다.</small>
+      </fieldset></details>
+        {selectedCollection && !selectedCollection.documentIds.includes(selectedDoc.id) && <p role="status" className={styles.muted}>이 문서는 선택한 모음에 없습니다. 원문은 그대로 열려 있습니다.</p>}
+      </>}
+    </>}
+  </>;
   return <section ref={root} className={styles.space} data-note-layout={!!props.noteHeader} data-library-open={libraryOpen} aria-label="내 공간"
     onCompositionStartCapture={() => { libraryComposing.current = true; }} onCompositionEndCapture={() => { libraryComposing.current = false; }}
     onClickCapture={guardOccurrenceDraft} onKeyDownCapture={event => { if (!['Tab', 'Shift', 'Escape'].includes(event.key)) guardOccurrenceDraft(event); }}>
@@ -2034,38 +2079,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {!detail && !sheetOpen && taskNoticeContent}
       <div hidden={period !== 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
-        <div className={styles.docHeading}>{sourceOriginOpen && <button type="button" className={styles.sourceReturn}
-          aria-label={sourceOrigin?.view.monthView === 'grid' ? `오늘 · ${programMonthTitle(sourceOrigin.view.date, today)} 달력으로 돌아가기` : `${sourceOriginLabel} 목록으로 돌아가기`} onClick={() => void returnToSourceOrigin()}>← {sourceOriginLabel}</button>}<h1>{props.hostMainTabs
-          ? <button ref={titleToggle} type="button" className={styles.titleButton} aria-haspopup="dialog" aria-expanded={libraryOpen} aria-controls="program-library"
-            aria-label={`${documentTitleText} · 문서 목록 열기`} onPointerDown={findPointerDown} onClick={openFindPanel}><span>{documentTitleText}</span><span aria-hidden="true"> ▾</span></button>
-          : documentTitleText}</h1>
-          {props.hostMainTabs ? selectedDocumentTools && <div className={styles.titleActions}>{selectedDocumentTools}</div>
-            : (!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</div>
-        {props.noteHeader}
-        {props.importNotice?.actorId === actorId && props.importNotice.documentId === selected && <div className={styles.importNotice}><span role="status">{props.importNotice.text}</span>{props.importNotice.onCancel && <button type="button" disabled={props.importNotice.busy} onClick={props.importNotice.onCancel}>{props.importNotice.busy ? '연결을 빼는 중…' : '이번 가져오기 취소'}</button>}</div>}
-        <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice data-quiet={props.noteNoticeShown ? 'true' : undefined}>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
-        {!selectedDoc && props.noteStatus}
-        {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>
-          {/* A new account starts here with no document; the title row keeps only a document's tools, so the
-              first screen needs its own way to start writing. */}
-          <button type="button" className={styles.emptyNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글 쓰기</button>{props.capabilities?.discovery !== false && <button onClick={() => props.navigate({ view: 'discover' })}>다른 사람의 Flow 둘러보기</button>}</div> : <>
-          {selectedTrashed && <ProgramDocumentTrashAction key={selectedDoc.id} space={space} documentId={selectedDoc.id} disabled={preparingDocumentAction} onChange={changeDocumentTrash} />}
-          <ProgramDocumentProvenance data={data} documentId={selectedDoc.id} disabled={preparingDocumentAction || selectedTrashed} onOpenRevisions={props.capabilities?.revisionHistory !== false && props.onRevisionHistory ? () => void openDocumentAction(props.onRevisionHistory!) : undefined} onOpenCreatorDraft={props.capabilities?.creatorNavigation !== false ? draftId => void openDocumentAction(() => props.navigate({ view: 'creator', id: draftId })) : undefined} />
-          {copyHeader && <div className={styles.copyHeader} data-state={copyHeader.kind}><span>{copyHeader.text}</span>
-            {copyHeader.action === 'inspect' && props.onInspectCopy && props.capabilities?.copyInspection !== false && <button type="button" disabled={preparingDocumentAction} onClick={() => void openDocumentAction(() => props.onInspectCopy!(copyHeader.copyId), { modalReturnFocus: true })}>변경 확인</button>}
-            {copyHeader.action === 'source' && props.onOpenCopySource && props.capabilities?.discovery !== false && <button type="button" disabled={preparingDocumentAction} onClick={event => { const returnFocus = event.currentTarget; void openDocumentAction(id => props.onOpenCopySource!(copyHeader.flowId, id, returnFocus)); }}>원본 보기</button>}
-          </div>}
-          {selectedQualityHold && <p role="status" className={styles.muted}>{selectedQualityHold} 해당 원본 항목과 실행 기록은 읽기 전용으로 남깁니다. 다른 자유 메모는 계속 쓸 수 있습니다.</p>}
-          {retentionSource && <p className={styles.muted}>판본 복구 중 빠진 내용을 보관한 곳입니다. <button onClick={() => void openDocument(retentionSource)}>원래 문서로 돌아가기</button></p>}
-          {collectionMode && !retentionSource && !selectedTrashed && <><details className={styles.collectionDisclosure}>
-            <summary>모음에 정리 · {collectionMode.state.collections.filter(row => row.documentIds.includes(selectedDoc.id)).map(row => row.title).join(', ') || '연결된 모음 없음'}</summary>
-            <fieldset className={styles.collectionMembership}><legend>문서 전체 연결</legend>
-            {collectionMode.state.collections.length ? collectionMode.state.collections.map(row => <label key={row.id}><input type="checkbox" checked={row.documentIds.includes(selectedDoc.id)} onChange={event => { void writeCollections(setDocumentCollectionLink(collectionMode.state, row.id, selectedDoc.id, event.target.checked)); }} />{row.title}</label>) : <p>모음 없이도 작성할 수 있습니다. 필요하면 문서 목록에서 모음을 만드세요.</p>}
-            <small>이 문서 전체를 연결합니다. 체크를 빼도 원문과 할 일은 남습니다.</small>
-          </fieldset></details>
-            {selectedCollection && !selectedCollection.documentIds.includes(selectedDoc.id) && <p role="status" className={styles.muted}>이 문서는 선택한 모음에 없습니다. 원문은 그대로 열려 있습니다.</p>}
-          </>}
-        </>}
+        {!headInToolbar && <><div className={styles.docHeading}>{docTitle}{docActions}</div>{docNotices}</>}
         {props.nativeAuthoringEnabled&&selectedDoc&&!selectedTrashed&&!retentionSource&&(props.hostMainTabs
           ? <dialog ref={authoringSheet} className={`${styles.findDialog} ${styles.authoringSheet}`} aria-labelledby="program-authoring-title" onCancel={event => { event.preventDefault(); authoringSheet.current?.close(); }}>
             <div className={styles.findHeading}><h2 id="program-authoring-title">반복 · Flow</h2><button type="button" onClick={() => authoringSheet.current?.close()}>닫기</button></div>
@@ -2081,6 +2095,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           docId={id} workspace={space.text} active={selected === id && period === 'documents'} initialPosition={positions.current[id] ?? (space.position.documentId === id ? space.position : undefined)}
           noteStatus={selected === id ? props.noteStatus : undefined}
           noteActions={selected === id ? <>{props.noteHeader && !props.hostMainTabs && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}</> : undefined}
+          headStart={headInToolbar && selected === id ? docTitle : undefined} headEnd={headInToolbar && selected === id ? docActions : undefined}
+          headBelow={headInToolbar && selected === id ? docNotices : undefined}
           onWritingExample={selected === id && writingExampleReady ? () => { void applyWritingExample(); } : undefined}
           folderId={collectionMode ? '' : folderId} directWriting={!!collectionMode} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
           onContinueWholeDocument={stage => {
