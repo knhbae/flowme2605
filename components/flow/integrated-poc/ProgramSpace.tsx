@@ -181,6 +181,8 @@ export const PROGRAM_EMPTY_EXAMPLE = '이번 주 준비\n- [ ] 확인할 일\n  
 export const PROGRAM_MOVE_GESTURE_V1 = Object.freeze({ version: 1, holdMs: 350, cancelDistancePx: 8 });
 // U44: a tablet held sideways (a touch screen; a PC or laptop of the same size keeps its layout). The writing screen's
 // title and ⋯ share the editor's tool line there; phones, portrait screens and taller ones keep the title line.
+// A tap on 글 찾기 or the title while a composition or a document action is on: the find waits, and says so until then.
+const FIND_BLOCKED = '입력과 저장을 마친 뒤 글 찾기를 열어 주세요. 현재 입력은 그대로 있습니다.';
 export const PROGRAM_TABLET_HEAD_QUERY = '(min-width: 1000px) and (max-height: 900px) and (orientation: landscape) and (pointer: coarse)';
 let tabletHeadQuery: MediaQueryList | null = null;
 const tabletHead = () => tabletHeadQuery ??= window.matchMedia(PROGRAM_TABLET_HEAD_QUERY);
@@ -380,6 +382,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [noteQuickOpen, setNoteQuickOpen] = useState(false);
   const libraryDialog = useRef<HTMLDialogElement | null>(null);
   const libraryComposing = useRef(false);
+  // The find notice is about that moment: it goes once the composition and the lock are over, or the find opens, and
+  // never takes another message with it (it stayed until another action cleared the message, 70s on a tablet).
+  const findBlocked = useRef(false);
   const libraryReturn = useRef<{ actorId: string; documentId: string; period: ProgramPeriod; folderId: string;
     element: HTMLElement | null; area: HTMLTextAreaElement | null; raw: string;
     start: number; end: number; direction: 'forward' | 'backward' | 'none'; top: number; left: number; pageX: number; pageY: number } | null>(null);
@@ -644,11 +649,16 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       direction: area?.selectionDirection ?? 'none', top: area?.scrollTop ?? 0, left: area?.scrollLeft ?? 0,
       pageX: window.scrollX, pageY: window.scrollY };
   }
+  function clearFindBlocked() {
+    if (!findBlocked.current || libraryComposing.current || inputLockCount.current > 0) return;
+    findBlocked.current = false; setMessage(current => current === FIND_BLOCKED ? '' : current);
+  }
   function openFindPanel() {
     if (libraryComposing.current || inputLockCount.current > 0) {
       libraryReturn.current = null;
-      setMessage('입력과 저장을 마친 뒤 글 찾기를 열어 주세요. 현재 입력은 그대로 있습니다.'); return;
+      findBlocked.current = true; setMessage(FIND_BLOCKED); return;
     }
+    clearFindBlocked();
     cancelLibraryReveal();
     if (!libraryReturn.current) rememberFindFocus();
     setLibraryOpen(true);
@@ -923,6 +933,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         // editors. Resume only this existing source-focus request after unlock.
         const request = pendingSourceFocus.current;
         if (request) requestAnimationFrame(request.attempt);
+        clearFindBlocked();
       }
     };
   }
@@ -2035,7 +2046,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     </>}
   </>;
   return <section ref={root} className={styles.space} data-note-layout={!!props.noteHeader} data-library-open={libraryOpen} aria-label="내 공간"
-    onCompositionStartCapture={() => { libraryComposing.current = true; }} onCompositionEndCapture={() => { libraryComposing.current = false; }}
+    onCompositionStartCapture={() => { libraryComposing.current = true; }} onCompositionEndCapture={() => { libraryComposing.current = false; if (findBlocked.current) setTimeout(clearFindBlocked, 0); }}
     onClickCapture={guardOccurrenceDraft} onKeyDownCapture={event => { if (!['Tab', 'Shift', 'Escape'].includes(event.key)) guardOccurrenceDraft(event); }}>
     <div className={styles.contextActions}>
       <nav ref={viewMenu} className={styles.periods} aria-label="기본 이동" hidden={!!props.hostMainTabs}>{mainPeriods.map(([key, label]) => <button key={key} data-program-period={key} aria-current={period === key || key === 'today' && ['week', 'month', 'undated'].includes(period) ? 'page' : undefined}
