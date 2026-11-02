@@ -136,7 +136,7 @@ test('P2: a notice waiting behind another keeps its time, and starts it once sho
   assert.equal(programNoticeEndsAt({ tone: 'info', shownAt: 0, leftBlockAt: null, held: false, waiting: true }), null);
   assert.equal(programNoticeEndsAt({ tone: 'choose', shownAt: 0, leftBlockAt: 10, held: false, waiting: true }), null);
   assert.equal(programNoticeEndsAt({ tone: 'info', shownAt: 0, leftBlockAt: null, held: false, waiting: false }), 6000);
-  assert.match(editor, /const folderWaiting = !!folderNotice && \(!!moving \|\| !!message && !panel\);/);
+  assert.match(editor, /const folderWaiting = !!folderNotice && \(!!moving \|\| !!message && !panel \|\| checkBeforeFolder\);/);
   assert.match(editor, /held: noticeHeld \|\| freshHeld, waiting: folderWaiting \}\);/);
   // Once the notice ahead goes, its time starts then.
   assert.match(editor, /if \(folderWaiting\) \{ folderWaitedRef\.current = true; return; \}\s*if \(!folderWaitedRef\.current\) return;\s*folderWaitedRef\.current = false; restartFolderNotice\(\);/);

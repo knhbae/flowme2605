@@ -58,8 +58,9 @@ test('W2: the move notice and the last message sit under the body, which gives u
   assert(views.includes("label: '위치 선택'") && views.includes("label: '이동 취소'") && views.includes("text: message"));
   // A press there while typing must not take focus off the body: the bar would go and they would move under it.
   const row = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramNoticeRow.tsx', import.meta.url), 'utf8');
-  assert.equal(row.match(/<button /g)?.length, 2);
-  assert.equal(row.match(/onPointerDown=\{keepFocus\}/g)?.length, 2);
+  // Its actions, its × and (C2) its chips.
+  assert.equal(row.match(/<button /g)?.length, 3);
+  assert.equal(row.match(/onPointerDown=\{keepFocus\}/g)?.length, 3);
   assert.match(row, /const keepFocus = \(event: React\.PointerEvent\) => \{ event\.preventDefault\(\); \};/);
   // The body's visible height ends above them, like it ends above the keyboard bar.
   const update = source.slice(source.indexOf('const update = () => {\n      frame = 0;'), source.indexOf('const schedule = () => { if (!frame)'));

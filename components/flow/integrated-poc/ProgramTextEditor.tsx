@@ -49,6 +49,7 @@ import regionStyles from './ProgramFolderRegionEditor.module.css';
 import { readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { readProgramMemoContext, programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
 import { ProgramProgressForm } from './ProgramProgressForm';
+import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeView, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
 import {ProgramWritingInline} from './ProgramWritingInline';
 import {prepareWritingChild} from '@/lib/flow/integrated-poc/writing-child-command';
 import {planWritingInsertion} from '@/lib/flow/integrated-poc/writing-insertion-command';
@@ -322,6 +323,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // so the model changes only when the native editor can take the new text.
   const heldNoticeAction = useRef<(() => void) | null>(null);
   const whenComposed = (run: () => void) => () => { if (composingRef.current) { heldNoticeAction.current = run; return; } run(); };
+  // C2: the check notice for one task (by ID): 완료했습니다 [되돌리기] [진행률로], then its percent chips. A step pressed
+  // while the tap's own save is in flight runs once that save ends.
+  const [checkNotice, setCheckNoticeState] = useState<ProgramCheckNotice | null>(null);
+  const checkNoticeRef = useRef<ProgramCheckNotice | null>(null), checkNoticeKeys = useRef(0);
+  const setCheckNotice = (next: ProgramCheckNotice | null) => { checkNoticeRef.current = next; setCheckNoticeState(next); };
+  const heldCheckStep = useRef<{ key: number; step: ProgramCheckStep } | null>(null);
   // Linked folder lines an edit other than typing (a paste) renamed, by line ID, until they are put back.
   const renamedFolderLinesRef = useRef(new Set<string>());
   const documentInputRef=useRef<ProgramDocumentInput|null>(null);
@@ -1276,6 +1283,44 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     closePanel();
     await apply(next, '하위 묶음 이동');
   }
+  /** C2: after a check tap, completing shows the check notice; anything else ends the one for that task. */
+  function noticeCheck(targetId: string, title: string, before: number | null) {
+    if (before !== null && before !== 100 && M.currentProgress(currentState(), targetId) === 100) {
+      setCheckNotice({ stage: 'done', targetId, title, before, after: 100, shownAt: performance.now(), key: ++checkNoticeKeys.current });
+    } else if (checkNoticeRef.current?.targetId === targetId) setCheckNotice(null);
+  }
+  /** C2: a tap on a task between 1% and 99% shows the chips, [완료] first, where the tap could have toggled it. */
+  function showCheckChips(lineId: string | null) {
+    const row = currentRow(lineId), target = row?.progressTargetId, value = target ? M.currentProgress(currentState(), target) : null;
+    if (!row || !target || value === null || !programCheckChipsFit({ kind: row.isReference ? 'reference' : row.kind, isCanonical: !!row.isCanonical, progressTargetId: target,
+      progressPercent: value, progressDate: M.latestProgress(currentState(), target)?.date ?? null }, accessFor(lineId), today())) return false;
+    setMessage(''); setCheckNotice({ stage: 'chips', targetId: target, title: row.title || row.task?.title || '할 일', before: value, after: value, shownAt: performance.now(), key: ++checkNoticeKeys.current });
+    return true;
+  }
+  /** C2: a check notice button. It acts on the task the notice names, wherever its line now is; a replaced notice does nothing. */
+  function runCheckStep(key: number, step: ProgramCheckStep) {
+    const notice = checkNoticeRef.current;
+    if (!notice || notice.key !== key) return;
+    if (step.kind === 'chips') { setCheckNotice({ ...notice, stage: 'chips', shownAt: performance.now(), key: ++checkNoticeKeys.current }); return; }
+    const lineId = (documentInputRef.current?.rows(currentState()) ?? M.rowMeta(currentState(), propsRef.current.docId)).find(row => row.progressTargetId === notice.targetId)?.id ?? null;
+    if (!lineId) { setCheckNotice(null); setMessage('이 할 일을 문서에서 찾지 못했습니다. 현재 내용과 기록은 유지했습니다.'); return; }
+    if (step.kind === 'direct') { setCheckNotice(null); openProgress(lineId); return; }
+    const access = accessFor(lineId);
+    if (!access || access.kind !== 'active' || access.reason) { setCheckNotice(null); setPanel({ kind: 'reference', lineId }); return; }
+    if (draftRef.current?.getState().saving) { heldCheckStep.current = { key, step }; return; }
+    const current = M.currentProgress(currentState(), notice.targetId);
+    if (step.kind === 'undo' && !programCheckUndoable(notice, current)) { setCheckNotice(null); setMessage('그 뒤에 진행률이 바뀌어 되돌리지 않았습니다. 현재 기록은 유지했습니다.'); return; }
+    if ((M.latestProgress(currentState(), notice.targetId)?.date ?? '') > today()) {
+      setCheckNotice(null); openProgress(lineId); setMessage('미래 날짜의 진행 기록이 있습니다. 기록 날짜를 확인한 뒤 변경해 주세요.'); return;
+    }
+    if (!draftRef.current?.flush()) return;
+    const percent = step.kind === 'undo' ? notice.before : step.percent;
+    const next = M.recordProgress(currentState(), notice.targetId, today(), percent);
+    if (next !== currentState()) void apply(next, step.kind === 'undo' ? '완료 되돌리기' : percent === 100 ? '할 일 완료' : '날짜별 누적 진행');
+    // apply said why when it refused; the notice then stays as it was.
+    if (M.currentProgress(currentState(), notice.targetId) !== percent) return;
+    setCheckNotice(step.kind === 'undo' ? null : programCheckNoticeAfter(notice, percent, performance.now(), ++checkNoticeKeys.current));
+  }
   function openProgress(lineId: string | null, kind: 'progress' | 'date' = 'progress') {
     const row = currentRow(lineId);
     if (!row?.progressTargetId) return;
@@ -1362,6 +1407,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         || !M.getDocument(currentState(), access.documentId)?.lines.some(line => line.id === target)) {
         setPanel({ kind: 'reference', lineId }); return false;
       }
+      const checkTitle = currentRow(lineId)?.title || currentRow(lineId)?.task?.title || '할 일', checkBefore = M.currentProgress(currentState(), target);
       const controller=draftRef.current,compute=propsRef.current.writingCompute,context=propsRef.current.writingContext?.();
       if(controller&&compute&&context){
         const before=currentState(),selected=writingSelection();
@@ -1375,7 +1421,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           cancelMove();orderHistoryRef.current.clear();orderPositionsRef.current=[];orderEpochRef.current++;
           editorRef.current?.setValue(controller.getState().raw,{preserveSelection:true});
           const returned=selected&&programTextSelectionAfterChange(before,currentState(),propsRef.current.docId,selected);if(returned)restoreWritingSelection(returned);
-          editorRef.current?.refresh();void saveNow();return;
+          editorRef.current?.refresh();noticeCheck(target,checkTitle,checkBefore);void saveNow();return;
         }
         // Unsupported/structural checks cannot borrow a normal save exemption.
         if(controller.getState().saving)return false;
@@ -1390,7 +1436,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
             ||controller.generation()!==generation||currentState()!==before||inputLockedRef.current||propsRef.current.readOnly||composingRef.current
             ||policy!==JSON.stringify(propsRef.current.taskAccess?.(target,currentState()))){setMessage('체크할 문맥이 바뀌어 반영하지 않았습니다. 입력은 유지했습니다.');scheduleSave();return;}
           if(reply.panel){openProgress(lineId);if(reply.panel==='future')setMessage('미래 날짜의 진행 기록이 있습니다. 기록 날짜를 확인한 뒤 변경해 주세요.');}
-          else if(reply.workspace)void apply(reply.workspace,'할 일 체크 변경');
+          else if(reply.workspace){void apply(reply.workspace,'할 일 체크 변경');noticeCheck(target,checkTitle,checkBefore);}
           else setMessage('체크 변경을 반영하지 못했습니다. 현재 내용과 기록은 유지했습니다.');
         }).catch(()=>{if(draftRef.current===controller)setMessage('체크를 확인하지 못했습니다. 현재 입력은 유지했습니다.');}).finally(()=>{
           if(draftRef.current!==controller||propsRef.current.docId!==docId)return;
@@ -1404,11 +1450,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (change.kind === 'panel') {
         openProgress(lineId);
         if (change.reason === 'future') setMessage('미래 날짜의 진행 기록이 있습니다. 기록 날짜를 확인한 뒤 변경해 주세요.');
-      } else if (change.kind === 'apply') void apply(change.next, change.percent === 100 ? '할 일 완료' : '완료 취소');
+      } else if (change.kind === 'apply') { void apply(change.next, change.percent === 100 ? '할 일 완료' : '완료 취소'); noticeCheck(target, checkTitle, checkBefore); }
       else setMessage('체크 변경을 반영하지 못했습니다. 현재 내용과 기록은 유지했습니다.');
       return;
     }
-    if (action.type === 'progress-open') { openProgress(lineId); return; }
+    if (action.type === 'progress-open') { if (!showCheckChips(lineId)) openProgress(lineId); return; }
     if (action.type === 'task-date') { openProgress(lineId, 'date'); return; }
     if (action.type === 'scope-open') {
       const scopeId = currentRow(lineId)?.scopeId;
@@ -1828,7 +1874,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   useEffect(() => { editorRef.current?.setMode(mode); }, [mode, props.docId]);
   // W15: an info notice ends 6s after it shows, a choice 6s after the caret leaves its block; held, neither.
   // Waiting behind the move notice or a message, it has not shown yet (review P2): its time starts once it shows.
-  const folderWaiting = !!folderNotice && (!!moving || !!message && !panel);
+  // C2: the check notice, the newest tap's, goes before a folder notice of its rank or lower (never before a warning).
+  const checkTone = checkNotice ? programCheckNoticeView(checkNotice).tone : null;
+  const checkBeforeFolder = !!checkNotice && !!folderNotice && folderNotice.tone !== 'warn' && !(checkTone === 'info' && folderNotice.tone === 'choose');
+  const folderWaiting = !!folderNotice && (!!moving || !!message && !panel || checkBeforeFolder);
   const folderWaitedRef = useRef(false);
   const restartFolderNotice = () => {
     // Until the restarted notice renders, the one shown has no due time (its old one would be in the past).
@@ -1858,6 +1907,21 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     return () => window.clearTimeout(timer);
   }, [folderNotice, noticeHeld, folderWaiting, freshHeld]);
   useEffect(() => { syncFreshNotice(); syncBarLine(); }, [folderNotice, draft.working, props.authoringMode, props.active, props.folderId]);
+  // C2: the check notice lasts 10s once it shows; held while pressed or focused there, or while it waits behind another.
+  const checkWaiting = !!checkNotice && (!!moving || !!message && !panel || !!folderNotice && !checkBeforeFolder);
+  const checkWaitedRef = useRef(false);
+  const restartCheckNotice = () => { const current = checkNoticeRef.current; if (current) setCheckNotice({ ...current, shownAt: performance.now() }); };
+  useEffect(() => {
+    if (!checkNotice) return;
+    if (checkWaiting) { checkWaitedRef.current = true; return; }
+    if (checkWaitedRef.current) { checkWaitedRef.current = false; restartCheckNotice(); return; }
+    const ends = programCheckNoticeEndsAt(checkNotice, noticeHeld);
+    if (ends === null) return;
+    const timer = window.setTimeout(() => { if (checkNoticeRef.current === checkNotice) setCheckNotice(null); }, Math.max(0, ends - performance.now()));
+    return () => window.clearTimeout(timer);
+  }, [checkNotice, noticeHeld, checkWaiting]);
+  useEffect(() => { if (draft.saving || !heldCheckStep.current) return; const held = heldCheckStep.current; heldCheckStep.current = null; runCheckStep(held.key, held.step); }, [draft.saving]);
+  useEffect(() => { heldCheckStep.current = null; setCheckNotice(null); }, [props.docId]);
   // Review P2: a screen or document hiding this retained editor changes none of its props, only its size.
   useEffect(() => {
     const host = hostRef.current; if (!host) return;
@@ -2341,13 +2405,20 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
    *  Their buttons keep focus where it is, like the bar's: leaving the body would drop the bar and move them. */
   // W15: one notice row at a time: an ongoing move, then warnings (the editor's messages, until closed), then
   // choices, then plain notices; the rest wait ("n개 더"). A press or focus inside holds a notice's time.
+  function checkNoticeView(notice: ProgramCheckNotice) {
+    const view = programCheckNoticeView(notice), run = (step: ProgramCheckStep) => whenComposed(() => runCheckStep(notice.key, step));
+    return { tone: view.tone, text: view.text, closeLabel: '알림 닫기', close: () => setCheckNotice(null),
+      actions: view.actions.map(button => ({ label: button.label, run: run(button.step) })),
+      chips: view.chips.map(button => ({ label: button.label, current: button.current, run: run(button.step) })) };
+  }
   const noticeViews = programNoticeOrder([
     ...(moving ? [{ moving: true, tone: 'choose' as const, text: `${moving.label} · 하위 ${moving.descendantCount}줄`, closeLabel: null, close: undefined,
       actions: [{ label: '위치 선택', run: () => setPanel({ kind: 'move', lineId: moving.lineId }) }, { label: '이동 취소', run: cancelMove }] }] : []),
     ...(message && !panel ? [{ tone: 'warn' as const, text: message, closeLabel: '안내 닫기', close: () => setMessage('') }] : []),
+    ...(checkNotice ? [checkNoticeView(checkNotice)] : []),
     ...(folderNotice ? [{ tone: folderNotice.tone, text: folderNotice.text, actions: folderNotice.actions, closeLabel: '알림 닫기', close: () => setFolderNotice(null) }] : []),
   ]);
-  const releaseNotice = () => { if (!noticeHeld) return; setNoticeHeld(false); restartFolderNotice(); };
+  const releaseNotice = () => { if (!noticeHeld) return; setNoticeHeld(false); restartFolderNotice(); restartCheckNotice(); };
   const notices = <div ref={noticeRef} className={styles.notices} onPointerDown={() => setNoticeHeld(true)} onPointerUp={releaseNotice} onPointerLeave={releaseNotice}
     onFocus={() => setNoticeHeld(true)} onBlur={releaseNotice}>
     {refused && <p className={styles.refusedLine}><span>{refusedLine}번째 줄: {refusedReason}</span></p>}

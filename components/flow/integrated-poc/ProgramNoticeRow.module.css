@@ -20,3 +20,12 @@
   .row:has(.action + .action) { flex-wrap: wrap; align-content: center; row-gap: 0; max-height: none; }
   .row:has(.action + .action) > .text { flex-basis: 100%; -webkit-line-clamp: 1; padding-block: 0; }
 }
+/* C2: the check notice's percent chips, a line of their own under the text and ×. */
+.row:has(.chips) { flex-wrap: wrap; max-height: none; }
+.row:has(.chips) > .text { flex-basis: 0; flex-grow: 1; -webkit-line-clamp: 1; }
+.chips { flex: 1 0 100%; display: flex; gap: 6px; padding: 0 8px 6px 0; }
+.chip { flex: 1 1 0; min-width: 44px; min-height: 44px; margin: 0; padding: 0 6px; border: 1px solid var(--flowme-b-line); border-radius: 8px;
+  background: #fff; color: var(--flowme-b-primary-strong); font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.chip:hover { background: var(--flowme-b-selected); }
+.chip[aria-pressed="true"] { background: var(--flowme-b-selected); color: var(--flowme-b-ink); cursor: default; }
+.chip:focus-visible { outline: 2px solid var(--flowme-b-primary); outline-offset: -2px; }

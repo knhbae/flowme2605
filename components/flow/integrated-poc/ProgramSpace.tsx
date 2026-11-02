@@ -13,6 +13,7 @@ import { programManualOrderDays, programOrderedExecutionRows, programTextExecuti
   restoreProgramExecutionDayOrder, type ProgramDayOrder } from '@/lib/flow/integrated-poc/recurrence-order';
 import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
+import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeView, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
 import { ProgramMonthGrid } from './ProgramMonthGrid';
 import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
 import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
@@ -289,6 +290,33 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const timer = setTimeout(() => setDatesNotice(current => current === datesNotice ? null : current), Math.max(0, ends - Date.now()));
     return () => clearTimeout(timer);
   }, [datesNotice, datesNoticeHeld]);
+  // C2: a check tap still completes at once; its notice offers 되돌리기 and 진행률로 (then the percent chips) for that
+  // task, by ID. 10s, held while pressed or focused. [직접] opens the detail with its 진행 기록 open.
+  type CheckNotice = ProgramCheckNotice & { actorId: string };
+  const [checkNotice, setCheckNotice] = useState<CheckNotice | null>(null), [checkNoticeHeld, setCheckNoticeHeld] = useState(false);
+  const checkNoticeRef = useRef(checkNotice); checkNoticeRef.current = checkNotice;
+  const checkNoticeKeys = useRef(0), checkStepBusy = useRef(false), [directProgress, setDirectProgress] = useState(false);
+  useEffect(() => {
+    if (!checkNotice) return;
+    const ends = programCheckNoticeEndsAt(checkNotice, checkNoticeHeld);
+    if (ends === null) return;
+    const timer = setTimeout(() => setCheckNotice(current => current === checkNotice ? null : current), Math.max(0, ends - Date.now()));
+    return () => clearTimeout(timer);
+  }, [checkNotice, checkNoticeHeld]);
+  // A check notice button pressed while Korean is being composed on the page (the ＋ line, say) runs once that
+  // composition has ended, as the editor's notice buttons do (W15): the composed text stays whole.
+  const pageComposing = useRef(false), heldCheckStep = useRef<(() => void) | null>(null);
+  useEffect(() => {
+    const start = () => { pageComposing.current = true; };
+    const end = () => { pageComposing.current = false; const held = heldCheckStep.current; heldCheckStep.current = null; if (held) setTimeout(held, 0); };
+    document.addEventListener('compositionstart', start, true); document.addEventListener('compositionend', end, true);
+    return () => { document.removeEventListener('compositionstart', start, true); document.removeEventListener('compositionend', end, true); };
+  }, []);
+  const whenPageComposed = (run: () => void) => () => {
+    const focused = document.activeElement as HTMLElement | null;
+    if (pageComposing.current && !!focused && (focused.tagName === 'INPUT' || focused.tagName === 'TEXTAREA' || focused.isContentEditable)) { heldCheckStep.current = run; return; }
+    run();
+  };
   useEffect(() => {
     const top = selectScrollBack.current;
     if (selecting || top === null) return;
@@ -500,6 +528,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   useEffect(() => { stopSelecting(false); }, [actorId, period, date, folderId, query]);
   // C6b: the move's notice goes with a view change (and with another save, in the gate above).
   useEffect(() => { setDatesNotice(null); }, [actorId, period, date, folderId, query]);
+  useEffect(() => { setCheckNotice(null); }, [actorId, period, date, folderId, query]);
   useEffect(() => {
     if (!selecting) return;
     const key = (event: KeyboardEvent) => { if (event.key === 'Escape' && !event.isComposing && !document.querySelector('dialog:modal')) { event.preventDefault(); stopSelecting(); } };
@@ -1147,7 +1176,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   function cancelHold() { if (hold.current) clearTimeout(hold.current); hold.current = null; holdPoint.current = null; }
   function close() {
     executionDraftOwner.current = { dialog: executionDraftOwner.current.dialog + 1, input: 0, taskId: null };
-    dialog.current?.close(); detailExpected.current = null; clearScheduleAcknowledgment(); setDetail(null); setMessage('');
+    dialog.current?.close(); detailExpected.current = null; clearScheduleAcknowledgment(); setDetail(null); setMessage(''); setDirectProgress(false);
     // A scheduled row can leave this period after applying its date. Return to
     // the visible period control instead of focusing that detached opener.
     if (!restoreProgramDialogFocus(previousFocus.current))
@@ -1706,6 +1735,44 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       actions: datesNotice.refused || datesNotice.undone || datesPending ? [] : [{ label: '되돌리기', run: () => void restoreSelectDates(datesNotice) }, ...(datesLeft ? [{ label: '그날 보기', run: () => void showMovedDay(datesNotice.date) }] : [])] }}
       onClose={() => setDatesNotice(null)} />
   </div>;
+  /** C2: after a check tap saved: completing shows the check notice (and not the plain one); reopening ends it. */
+  function checkSaved(taskId: string, title: string, before: number) {
+    if (before === 100) { setCheckNotice(current => current?.targetId === taskId ? null : current); return; }
+    setTaskNotice(current => current?.taskId === taskId ? null : current);
+    setCheckNotice({ actorId, stage: 'done', targetId: taskId, title, before, after: 100, shownAt: Date.now(), key: ++checkNoticeKeys.current });
+  }
+  /** C2: a check notice button. It acts on the task the notice names, wherever its row now is; a replaced notice does nothing. */
+  async function runCheckStep(key: number, step: ProgramCheckStep) {
+    const notice = checkNoticeRef.current;
+    if (!notice || notice.key !== key || notice.actorId !== actorId || checkStepBusy.current) return;
+    if (step.kind === 'chips') { setCheckNotice({ ...notice, stage: 'chips', shownAt: Date.now(), key: ++checkNoticeKeys.current }); return; }
+    const task = programExecutionTasks(dataRef.current.spaces[actorId]).find(item => item.id === notice.targetId);
+    const progressNow = task ? M.currentProgress(dataRef.current.spaces[actorId].text, task.id) : null;
+    if (!task || progressNow === null) { setCheckNotice(null); setMessage(programErrorMessage('missing')); return; }
+    if (step.kind === 'direct') { setCheckNotice(null); setRecordDate(today); setPercent(String(progressNow)); setDirectProgress(true); openDetail({ kind: 'task', id: task.id }); return; }
+    if (step.kind === 'undo' && !programCheckUndoable(notice, progressNow)) { setCheckNotice(null); setMessage('그 뒤에 진행률이 바뀌어 되돌리지 않았습니다. 현재 기록은 유지했습니다.'); return; }
+    const percent = step.kind === 'undo' ? notice.before : step.percent;
+    checkStepBusy.current = true;
+    try {
+      const result = await run(step.kind === 'undo' ? '완료 되돌리기' : percent === 100 ? '완료' : '진행률 기록',
+        current => recordProgramTaskProgress(current, { ...base(current), taskId: task.id, date: today, percent }), true, undefined, undefined, true);
+      if (!result.ok) return;
+      if (percent === 100) setTaskNotice(currentNotice => currentNotice?.taskId === task.id ? null : currentNotice);
+      setCheckNotice(shown => shown?.key !== key ? shown : step.kind === 'undo' ? null
+        : { ...programCheckNoticeAfter(shown, percent, Date.now(), ++checkNoticeKeys.current), actorId: shown.actorId });
+    } finally { checkStepBusy.current = false; }
+  }
+  const runCheckStepRef = useRef(runCheckStep); runCheckStepRef.current = runCheckStep;
+  const releaseCheckNotice = () => { if (!checkNoticeHeld) return; setCheckNoticeHeld(false); setCheckNotice(current => current && { ...current, shownAt: Date.now() }); };
+  const checkNoticeView = checkNotice?.actorId === actorId ? programCheckNoticeView(checkNotice) : null;
+  const checkStep = (key: number, step: ProgramCheckStep) => whenPageComposed(() => { void runCheckStepRef.current(key, step); });
+  const checkNoticeContent = checkNotice && checkNoticeView && <div className={styles.orderNotice} data-check-notice onPointerDown={() => setCheckNoticeHeld(true)}
+    onPointerUp={releaseCheckNotice} onPointerLeave={releaseCheckNotice} onFocus={() => setCheckNoticeHeld(true)} onBlur={releaseCheckNotice}>
+    <ProgramNoticeRow notice={{ tone: checkNoticeView.tone, text: checkNoticeView.text, closeLabel: '알림 닫기',
+      actions: checkNoticeView.actions.map(button => ({ label: button.label, run: checkStep(checkNotice.key, button.step) })),
+      chips: checkNoticeView.chips.map(button => ({ label: button.label, current: button.current, run: checkStep(checkNotice.key, button.step) })) }}
+      onClose={() => setCheckNotice(null)} />
+  </div>;
   const orderNoticeContent = orderNotice?.actorId === actorId && <div className={styles.orderNotice} data-order-notice onPointerDown={() => setOrderNoticeHeld(true)}
     onPointerUp={releaseOrderNotice} onPointerLeave={releaseOrderNotice} onFocus={() => setOrderNoticeHeld(true)} onBlur={releaseOrderNotice}>
     <ProgramNoticeRow notice={{ tone: orderNotice.refused ? 'warn' : 'info', text: orderNoticeText(orderNotice),
@@ -1841,7 +1908,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
             <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskIds.has(task.id) ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskIds.has(task.id) || undefined} onClick={() => {
-              if (value > 0 && value < 100) { setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }
+              if (value > 0 && value < 100) setCheckNotice({ actorId, stage: 'chips', targetId: task.id, title: task.title, before: value, after: value, shownAt: Date.now(), key: ++checkNoticeKeys.current });
               else {
                 // A repeat tap while the first still waits or saves would act on a stale
                 // value, so ignore it; the first tap waits out a refresh by itself.
@@ -1850,7 +1917,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                 ids.add(task.id); setCompletingTaskIds(new Set(ids));
                 const done = () => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); };
                 void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }),
-                  true, undefined, undefined, true).then(done, done);
+                  true, undefined, undefined, true).then(result => { done(); if (result.ok) checkSaved(task.id, task.title, value); }, done);
               }
             }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
               {completingTaskIds.has(task.id) ? '…' : value > 0 && value < 100 ? `${value}%` : ''}</span></button>
@@ -2136,12 +2203,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             onCompositionStart={() => { sheetComposing.current = true; }} onCompositionEnd={endSheetComposing} onBlur={endSheetComposing}
             onClick={event => { const box = event.currentTarget.getBoundingClientRect();
               if (daySheetLook && event.target === event.currentTarget && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) closeDaySheet(); }}>
-            {dayShown && <>{dayGroup(dayShown, daySheetLook ? closeDaySheet : undefined)}{sheetOpen && !detail && taskNoticeContent}{sheetOpen && !detail && orderNoticeContent}</>}
+            {dayShown && <>{dayGroup(dayShown, daySheetLook ? closeDaySheet : undefined)}{sheetOpen && !detail && taskNoticeContent}{sheetOpen && !detail && orderNoticeContent}{sheetOpen && !detail && checkNoticeContent}</>}
           </dialog>
         </div> : <ul className={styles.tasks} onKeyDown={selecting ? moveSelectFocus : undefined}>{executionList.map(renderListItem)}</ul>}
         {selecting && selectNotice && <div className={styles.orderNotice}><ProgramNoticeRow notice={{ tone: 'info', text: selectNotice }} onClose={() => setSelectNotice(null)} /></div>}
         {/* I7: under the list, held at the bottom of the screen (above the bottom tabs on a phone) while it scrolls. */}
         {!detail && !sheetOpen && orderNoticeContent}
+        {!detail && !sheetOpen && checkNoticeContent}
         {!detail && datesNoticeContent}
       </div>
     </div>
@@ -2166,7 +2234,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         <form onSubmit={event => { event.preventDefault(); void applySchedule(detailTask.id); }}><div className={styles.scheduleFields}><label className={styles.field}>실행 날짜<input type="date" value={executionDateDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionDateDraft(event.target.value); }} /></label><label className={styles.field}>시간<input type="time" step="60" value={executionTimeDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionTimeDraft(event.target.value); }} /><small>비워 두면 시간 없음</small></label></div>{detailDateChangeHint && <p className={styles.muted} role="status">{detailDateChangeHint}</p>}<button className={styles.scheduleApply}>날짜·시간 적용</button></form><div className={styles.scheduleShortcuts}><button onClick={() => void dateMove(detailTask.id, today)}>오늘로 이동</button><button onClick={() => void dateMove(detailTask.id, programShiftDate(today, 1))}>내일로 이어하기</button><button onClick={() => void dateMove(detailTask.id, null)}>날짜 미정으로 이동</button></div>
         {detailTask.time && <p className={styles.muted}>날짜만 미정으로 옮기면 시간은 유지됩니다.</p>}
         </section>
-        <details key={`progress-${executionDraftOwner.current.dialog}`} className={styles.detailSection} data-detail-section="progress"><summary>진행 기록</summary>
+        <details key={`progress-${executionDraftOwner.current.dialog}`} className={styles.detailSection} data-detail-section="progress" open={directProgress || undefined}><summary>진행 기록</summary>
         <form onSubmit={async event => { event.preventDefault(); const requested = { dialog: executionDraftOwner.current.dialog, date: recordDate, percent,
           correctionAsOfDate: progressRecordDate === recordDate && recordDate < today && detailTask.inputPercent !== undefined ? today : undefined };
           const result = await run('진행 기록', current => recordProgramTaskProgress(current, { ...base(current), taskId: detailTask.id, date: requested.date, percent: Number(requested.percent), correctionAsOfDate: requested.correctionAsOfDate }));
