@@ -65,43 +65,76 @@ test('U44: typing, keys and focus in the head are the host\'s, not the editor\'s
 
 // Codex review of U44 (11/3): crossing the condition draws the title and ⋯ again in their other place; a name being
 // typed in ⋯ was lost, and a sheet opened from the title gave the focus back to nobody.
-type Fake = { value?: string; defaultValue?: string; selectionStart?: number; selectionEnd?: number; selectionDirection?: string; focus: () => void; setSelectionRange?: (s: number, e: number, d?: string) => void };
-function fakeHead(open: boolean, name: string, title: string) {
-  const log: string[] = [];
-  const summary: Fake = { focus: () => log.push('summary') };
-  const input: Fake = { value: name, defaultValue: title, selectionStart: 2, selectionEnd: 4, selectionDirection: 'forward', focus: () => log.push('input'),
-    setSelectionRange: (s, e, d) => log.push(`select ${s}-${e} ${d}`) };
-  const rename: Fake = { focus: () => log.push('rename') };
-  const menu = { open, querySelector: (selector: string) => selector === 'input[name="title"]' ? input : null, querySelectorAll: () => [summary, input, rename] };
-  const button: Fake = { focus: () => log.push('title') };
-  return { menu: menu as unknown as HTMLDetailsElement, input, button: button as unknown as HTMLElement, log };
+// Codex re-review (11/3), as a rule: focus by what the control is, not its position; a confirmation step starts over
+// and the focus goes to ⋯; only for the same document and only where the move took the focus.
+type FakeControl = { tagName: string; label?: string; name?: string; text?: string; head?: boolean; doc?: boolean; gone?: boolean; value?: string; defaultValue?: string;
+  selectionStart?: number; selectionEnd?: number; selectionDirection?: string };
+function fakeHead(controls: FakeControl[], open: boolean, log: string[]) {
+  const body: { tagName: string; ownerDocument?: unknown } = { tagName: 'BODY' }; body.ownerDocument = { body };
+  const elements = controls.map(control => ({ ...control, ownerDocument: { body },
+    getAttribute: (key: string) => (key === 'aria-label' ? control.label : key === 'name' ? control.name : undefined) ?? null,
+    get textContent() { return control.text ?? ''; }, get isConnected() { return !control.gone; }, getClientRects: () => [1],
+    closest: (selector: string) => selector === '[data-editor-head]' ? (control.head ? {} : null) : selector === '[data-program-document]' ? (control.doc || control.head ? {} : null) : null,
+    focus: () => log.push(control.label ?? control.name ?? control.text ?? control.tagName),
+    setSelectionRange: (from: number, to: number, direction?: string) => log.push(`select ${from}-${to} ${direction}`) }));
+  const find = (match: (control: FakeControl) => boolean) => elements.find(match) ?? null;
+  const summary = find(control => control.label === '현재 글 작업'), input = find(control => control.name === 'title') as (FakeControl & { value: string }) | null;
+  const inMenu = new Set(elements.filter(element => ['현재 글 작업', '삭제 취소', '문서 삭제…'].includes(element.label ?? element.text ?? '') || element.name === 'title'));
+  const menu = { open, querySelector: (selector: string) => selector === 'input[name="title"]' ? input : selector === ':scope > summary' ? summary : null,
+    contains: (element: unknown) => inMenu.has(element as never) };
+  const root = { querySelectorAll: () => elements };
+  return { root: root as unknown as ParentNode, menu: menu as unknown as HTMLDetailsElement, input, body: body as unknown as Element, at: (label: string) => find(control => (control.label ?? control.name ?? control.text) === label) as unknown as Element };
 }
-test('U44 review: an open ⋯, the name typed there, its caret and the focus come along to the head\'s new place', async () => {
+const head = (place: { head?: boolean }, extra: FakeControl[] = [], name = { value: '작성한 글', defaultValue: '작성한 글' }) => [
+  { tagName: 'BUTTON', label: '오늘 목록으로 돌아가기', ...place }, { tagName: 'BUTTON', label: '작성한 글 · 문서 목록 열기', ...place },
+  { tagName: 'SUMMARY', label: '현재 글 작업', ...place }, { tagName: 'INPUT', name: 'title', selectionStart: 0, selectionEnd: 5, selectionDirection: 'forward', ...name, ...place },
+  ...extra, { tagName: 'BUTTON', text: '확인', ...place }, { tagName: 'BUTTON', text: '확인', doc: true }];
+test('U44 re-review: an open ⋯, its name as typed or selected, and the focus by what it is come along to the head\'s new place', async () => {
   const { carryProgramHead, restoreProgramHead } = await import('./tablet-head-carry');
-  const before = fakeHead(true, '새 이름', '작성한 글');
-  const carry = carryProgramHead(before.menu, before.button, before.input as unknown as Element);
-  assert.deepEqual(carry, { menuOpen: true, name: { title: '작성한 글', value: '새 이름', start: 2, end: 4, direction: 'forward' }, focus: 1 });
-  // Drawn again: closed, the saved name in its field.
-  const after = fakeHead(false, '작성한 글', '작성한 글');
-  restoreProgramHead(carry!, after.menu, after.button);
-  assert.equal(after.menu.open, true);
-  assert.equal(after.input.value, '새 이름');
-  assert.deepEqual(after.log, ['input', 'select 2-4 forward']);
-  // A rename saved meanwhile (another title) keeps its own name.
-  const renamed = fakeHead(false, '다른 이름', '다른 이름');
-  restoreProgramHead(carry!, renamed.menu, renamed.button);
-  assert.equal(renamed.input.value, '다른 이름');
-  // The title's focus; nothing open, typed or focused carries nothing.
-  const titled = fakeHead(false, '작성한 글', '작성한 글');
-  assert.deepEqual(carryProgramHead(titled.menu, titled.button, titled.button as unknown as Element), { menuOpen: false, name: null, focus: 'title' });
-  restoreProgramHead({ menuOpen: false, name: null, focus: 'title' }, after.menu, titled.button);
-  assert.deepEqual(titled.log, ['title']);
-  assert.equal(carryProgramHead(titled.menu, titled.button, null), null);
+  const move = (before: FakeControl[], after: FakeControl[], open: boolean, focused: string, documentId = 'doc') => {
+    const log: string[] = [], old = fakeHead(before, open, log), carry = carryProgramHead('doc', old.root, old.menu, old.at(focused));
+    for (const control of before) control.gone = true;
+    const next = fakeHead(after, false, log);
+    restoreProgramHead(carry!, documentId, next.root, next.menu, next.at('작성한 글 · 문서 목록 열기') as unknown as HTMLElement, next.body);
+    return { carry, log, menu: next.menu, input: next.input };
+  };
+  // A name typed in ⋯: the menu opens again with it, its caret where it was.
+  const typed = move(head({}, [], { value: '새 이름', defaultValue: '작성한 글' }), head({ head: true }), true, 'title');
+  assert.deepEqual([typed.menu.open, typed.input?.value, typed.log], [true, '새 이름', ['title', 'select 0-5 forward']]);
+  // The name selected but not yet typed over: its selection comes along, so the next letter still replaces it.
+  const selected = move(head({}), head({ head: true }), true, 'title');
+  assert.deepEqual([selected.input?.value, selected.log], ['작성한 글', ['title', 'select 0-5 forward']]);
+  // A confirmation step ('삭제 취소') starts over in the new place: the focus goes to ⋯, whose menu is open again.
+  const confirm = move(head({}, [{ tagName: 'BUTTON', text: '삭제 취소' }]), head({ head: true }, [{ tagName: 'BUTTON', text: '문서 삭제…', head: true }]), true, '삭제 취소');
+  assert.deepEqual([confirm.menu.open, confirm.log], [true, ['현재 글 작업']]);
+  // ← 오늘 and the title are found again by their labels; the notice's 확인, not another 확인 in an editor.
+  assert.deepEqual(move(head({}), head({ head: true }), false, '오늘 목록으로 돌아가기').log, ['오늘 목록으로 돌아가기']);
+  assert.deepEqual(move(head({}), head({ head: true }), false, '작성한 글 · 문서 목록 열기').log, ['작성한 글 · 문서 목록 열기']);
+  const ok = move(head({}), head({ head: true }), false, '확인');
+  assert.deepEqual([ok.carry?.focus?.nth, ok.log], [0, ['확인']]);
+  // Another document by then: nothing is put back.
+  const other = move(head({}, [], { value: '새 이름', defaultValue: '작성한 글' }), head({ head: true }), true, 'title', 'other');
+  assert.deepEqual([other.menu.open, other.input?.value, other.log], [false, '작성한 글', []]);
+  // Nothing open, typed or focused in the head carries nothing.
+  const log: string[] = [], idle = fakeHead(head({}), false, log);
+  assert.equal(carryProgramHead('doc', idle.root, idle.menu, null), null);
+});
+test('U44 re-review: a focus taken meanwhile, or never taken by the move, is left alone', async () => {
+  const { carryProgramHead, restoreProgramHead } = await import('./tablet-head-carry');
+  const log: string[] = [], before = head({}), old = fakeHead(before, false, log), carry = carryProgramHead('doc', old.root, old.menu, old.at('오늘 목록으로 돌아가기'))!;
+  for (const control of before) control.gone = true;
+  const next = fakeHead(head({ head: true }), false, log);
+  restoreProgramHead(carry, 'doc', next.root, next.menu, null, next.at('확인'));
+  assert.deepEqual(log, []);
+  // Still connected (it did not move): its own focus stands.
+  const kept: string[] = [], still = fakeHead(head({}), false, kept), stay = carryProgramHead('doc', still.root, still.menu, still.at('확인'))!;
+  restoreProgramHead(stay, 'doc', still.root, still.menu, null, still.body);
+  assert.deepEqual(kept, []);
 });
 
 test('U44 review: read just before the change (old place drawn), put back after it; the sheet returns to the new title', () => {
-  assert(space.includes('headCarry.current = carryProgramHead(documentMenu.current, titleToggle.current, document.activeElement); change();'));
+  assert(space.includes('headCarry.current = carryProgramHead(selectedRef.current, root.current, documentMenu.current, document.activeElement); change();'));
   assert(space.includes('const tabletLandscape = useSyncExternalStore(watchHead, () => tabletHead().matches, () => false);'));
-  assert.match(space, /useLayoutEffect\(\(\) => \{\n    const carry = headCarry\.current; headCarry\.current = null;\n    if \(carry\) restoreProgramHead\(carry, documentMenu\.current, titleToggle\.current\);\n  \}, \[tabletLandscape\]\);/);
+  assert.match(space, /useLayoutEffect\(\(\) => \{\n    const carry = headCarry\.current; headCarry\.current = null;\n    if \(carry\) restoreProgramHead\(carry, selectedRef\.current, root\.current, documentMenu\.current, titleToggle\.current, document\.activeElement\);\n  \}, \[tabletLandscape\]\);/);
   assert(space.includes('if (!retained.area && target && !target.isConnected && target.classList.contains(styles.titleButton)) target = titleToggle.current;'));
 });

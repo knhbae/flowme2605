@@ -419,16 +419,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [recurrencePresentation, setRecurrencePresentation] = useState(emptyProgramRecurrencePresentation);
   const root = useRef<HTMLElement | null>(null);
   const documentMenu = useRef<HTMLDetailsElement | null>(null);
-  // U44 review: crossing the condition draws the title and ⋯ again in their other place. Just before that (the old
-  // place still drawn) an open ⋯, the name being typed there and the focus are read, and put back once they are drawn.
+  // U44 review: crossing the condition draws the head (title, ← 오늘, ⋯, notices) again in its other place. Just
+  // before that, the old place still drawn, an open ⋯, the name in it and the focus are read; they are put back once
+  // the new place is drawn (tablet-head-carry.ts says which, and when).
   const headCarry = useRef<ProgramHeadCarry | null>(null);
   const watchHead = useCallback((change: () => void) => watchTabletHead(() => {
-    headCarry.current = carryProgramHead(documentMenu.current, titleToggle.current, document.activeElement); change();
+    headCarry.current = carryProgramHead(selectedRef.current, root.current, documentMenu.current, document.activeElement); change();
   }), []);
   const tabletLandscape = useSyncExternalStore(watchHead, () => tabletHead().matches, () => false);
   useLayoutEffect(() => {
     const carry = headCarry.current; headCarry.current = null;
-    if (carry) restoreProgramHead(carry, documentMenu.current, titleToggle.current);
+    if (carry) restoreProgramHead(carry, selectedRef.current, root.current, documentMenu.current, titleToggle.current, document.activeElement);
   }, [tabletLandscape]);
   const viewMenu = useRef<HTMLElement | null>(null);
   const writingRequest = useRef<string | null>(null);
