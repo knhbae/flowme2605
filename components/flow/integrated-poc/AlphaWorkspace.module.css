@@ -267,6 +267,14 @@
   .page[data-alpha-frame="b"][data-note-layout="true"]:has([data-program-period="documents"][aria-current="page"]) .workPane { padding-block: 12px; }
   .page[data-alpha-frame="b"][data-note-layout="true"]:has([data-program-period="documents"][aria-current="page"]) .sync { margin-bottom: 8px; }
 }
+/* U41: a tablet held sideways is short too. The writing body is sized to the screen minus what lies below it, so the
+   page's and the card's paddings there cost whole lines; on the writing screen they are thin, as on a short phone.
+   Past the page's bottom (a browser's own bar area) the root then shows the page's canvas, not the beige body. */
+@media (min-width: 701px) and (max-width: 1279px) {
+  .page[data-alpha-frame="b"][data-note-layout="true"]:has([data-program-period="documents"][aria-current="page"]) { padding-top: 12px; padding-bottom: 12px; }
+  .page[data-alpha-frame="b"][data-note-layout="true"]:has([data-program-period="documents"][aria-current="page"]) .workPane { padding-block: 12px; }
+  :global(html):has(.page[data-alpha-frame="b"][data-note-layout="true"] [data-program-period="documents"][aria-current="page"]) { background: var(--flowme-b-canvas); }
+}
 
 /* Note layouts lay the "…" menu over the right end of the tab row instead of giving it a line.
    Only when the space follows directly: a panel, recovery, or notice in between turns this off
