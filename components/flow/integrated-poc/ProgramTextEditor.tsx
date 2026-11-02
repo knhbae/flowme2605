@@ -674,7 +674,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const binding = state.working.bindings.find(row => row.docId === docId && row.lineId === held.id);
     const linked = binding?.kind === 'scope' ? state.working.folders.find(folder => folder.id === binding.scopeId) : undefined;
     if (index < 0 || !FOLDER_LINE.test(lines[index].text) || binding && (!linked || lines[index].text.replace(/^ *- \//, '').trim() === linked.title)) {
-      heldFolderLineRef.current = null; return;
+      heldFolderLineRef.current = null;
+      // S4 v14 phone: its name deleted and typed back ('- /' kept). A folder this draft made is linked again (D11 B).
+      if (index >= 0 && linked && FOLDER_LINE.test(lines[index].text) && controller.relinkFolderLine(lines[index].id)) {
+        const notice = relinkedNotice(lines[index].id); if (notice) showFolderOperation(notice, 'info', lines[index].id);
+      }
+      return;
     }
     // D3 B (W15): Enter on a linked line moves it, or renames its folder when only this document uses it.
     // Leaving it (b), a line already off its folder's name (c), 미분류 or a refusal puts the name back.

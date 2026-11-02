@@ -189,6 +189,18 @@ export function createProgramTextDraft(
       return !!operation?.fresh && operation.generation === inputGeneration && created?.lineId === lineId
         && programFreshFolderAvailable(state.working, { ...created, automaticBlank: operation.automaticBlank }) && latestFree(created.folderId);
     },
+    /** S4 v14 phone (r_0049–0059): a new folder's linked line, its name deleted and typed back with '- /' kept. The
+     *  line never let the folder go, so nothing was linked again and D11 B stayed shut. For a folder this draft made
+     *  that nothing else uses, it is taken as let go and typed again: a link of that folder, fresh. False otherwise. */
+    relinkFolderLine(lineId: string) {
+      const binding = state.working.bindings.find(row => row.kind === 'scope' && row.docId === docId && row.lineId === lineId);
+      if (state.invalid || binding?.kind !== 'scope' || !madeFolders.has(binding.scopeId)
+        || !programFreshFolderAvailable(state.working, { docId, lineId, folderId: binding.scopeId }) || !latestFree(binding.scopeId)) return false;
+      const change = captureProgramFolderOperation({ ...state.working, bindings: state.working.bindings.filter(row => row !== binding) }, state.working);
+      if (change?.kind !== 'link' || change.createdLines.length !== 1) return false;
+      folderOperation = { id: ++folderSequence, at: Date.now(), change, generation: inputGeneration, fresh: true }; folderEnter = null;
+      return true;
+    },
     planFreshFolderIndent(plan: FolderIndentPlan, operationId: number) {
       const operation = folderOperation;
       if (!basicCheckReady() || !operation?.fresh || operation.id !== operationId || operation.generation !== inputGeneration) return null;

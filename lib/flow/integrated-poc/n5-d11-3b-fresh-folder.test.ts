@@ -553,3 +553,35 @@ test('N6 review: the save itself — a move of a folder another tab has started 
   assert(free.ok, 'nothing else uses it: saved');
   assert.equal(free.data.spaces[free.data.activeActorId].text.folders.find(entry => entry.id === folder.id)!.parentId, null);
 });
+
+// N6 FIX 2 (11/2): the v14 phone's own path. r_0049–0059 kept '- /' and deleted the name only, then typed it back:
+// the line kept its folder all along, so no link was made and D11 B stayed shut (the typing had ended the creation's).
+// The editor's finish of that held line now asks relinkFolderLine: for a folder this draft made that nothing else
+// uses, it is linked again, announced, and its ⇤ is open on the same terms.
+function nameTypedBack(raw: string, made: boolean) {
+  const t = phone(raw), bar = editorFor(t);
+  if (made) { make(t, 1, '- /새부모'); make(t, 2, '  - /새자식'); }
+  const line = ids(t)[2], title = rows(t)[2].replace(/^ *- \//, '');
+  for (const text of [rows(t)[2].replace(title, ''), rows(t)[2]]) { const next = rows(t); next[2] = text; write(t, next, { folderHold: [2] }); }
+  assert.equal(ids(t)[2], line, 'the same line, linked all along');
+  assert.equal(bar.touch(2).canOutdent, false, 'the typing ended the creation\'s D11 B');
+  return { t, bar, line };
+}
+test('N6 FIX 2: the name deleted and typed back with "- /" kept (the v14 phone) — linked again, announced, and the bar ⇤ moves it', () => {
+  const { t, bar, line } = nameTypedBack('키보드 아래 마지막 줄 확인 26\n', true);
+  assert(t.draft.relinkFolderLine(line), 'its finish links it again');
+  assert.equal(bar.relinked(line), '‘새부모 › 새자식’ 폴더에 다시 연결했습니다');
+  t.notice.current = { operationId: t.draft.folderOperation()!.id }; enter(t, 2);
+  assert.equal(bar.touch(2).canOutdent, true); assert(bar.outdent());
+  assert.equal(folderOf(t, '새자식').parentId, null); assert.deepEqual(bar.messages, []);
+});
+test('N6 FIX 2: typed back for a folder made before this draft, or one another tab has filed a document in — not linked again, ⇤ refused', () => {
+  const old = nameTypedBack('키보드 아래 마지막 줄 확인 26\n- /옛부모\n  - /옛자식', false);
+  assert.equal(old.t.draft.relinkFolderLine(old.line), false);
+  assert.equal(old.bar.touch(2).canOutdent, false); assert.equal(old.bar.outdent(), false);
+  const used = nameTypedBack('키보드 아래 마지막 줄 확인 26\n', true);
+  used.t.latest.current = filedElsewhere(used.t, '새자식');
+  assert.equal(used.t.draft.relinkFolderLine(used.line), false);
+  assert.equal(used.bar.touch(2).canOutdent, false); assert.equal(used.bar.outdent(), false);
+  assert.equal(folderOf(used.t, '새자식').parentId, folderOf(used.t, '새부모').id);
+});

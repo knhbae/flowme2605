@@ -92,3 +92,27 @@ for (const condition of ['composition', 'range', 'middle', 'different-raw', 'dif
 for (const [raw, line] of [['```\n- /코드\n```', 1], ['- /https://example.invalid', 0], ['- /운동\n  - /식단', 0]] as const) test('W17 actual callback preserves fenced/URL/already-bound exclusion: ' + raw, () => {
   const f = fixture(raw, line, !raw.startsWith('- /운동')), before = f.controller.getState(); f.enter(); assert.equal(f.controller.getState(), before); assert.equal(f.saves(), 0);
 });
+
+// S4 v14 phone (r_0049–0059): the new child folder's name deleted and typed back, '- /' kept, then Enter. The line kept
+// its folder all along, so nothing was linked again and D11 B stayed shut. The host's own finish now links it again.
+function typedBack(f: ReturnType<typeof fixture>, line: string) {
+  for (const text of ['  - /', '  - /식단']) {
+    const rows = f.controller.getState().raw.split('\n'); rows[1] = text; const value = rows.join('\n');
+    assert(f.controller.updateRaw(value, '', { inputType: 'insertText', folderHold: [1] }));
+    f.area.value = value; f.area.selectionStart = f.area.selectionEnd = rows.slice(0, 2).join('\n').length;
+    f.heldFolderLineRef.current = { id: line, left: false, offAtStart: false };
+  }
+}
+test('S4 v14 phone path: a new folder\'s name deleted and typed back with "- /" kept, then Enter — announced as linked again, D11 B open', () => {
+  const f = fixture(); f.enter();
+  const line = M.getDocument(f.controller.getState().working, f.docId)!.lines[1].id;
+  typedBack(f, line); f.notices.length = 0; f.enter();
+  assert.deepEqual(f.notices, ['‘운동 › 식단’ 폴더에 다시 연결했습니다']);
+  assert.equal(f.controller.folderOperation()?.kind, 'link'); assert(f.controller.freshFolderLine(line));
+});
+test('S4 v14 phone path: a folder made before this draft, its name typed back — nothing announced, D11 B shut', () => {
+  const f = fixture('- /운동\n  - /식단\n끝', 1, false);
+  const line = M.getDocument(f.controller.getState().working, f.docId)!.lines[1].id;
+  typedBack(f, line); f.enter();
+  assert.deepEqual(f.notices, []); assert.equal(f.controller.freshFolderLine(line), false);
+});
