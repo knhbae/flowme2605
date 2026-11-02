@@ -29,7 +29,7 @@ import { applyProgramLinePermutation, createProgramPermutationHistory } from '@/
 import { programSame } from '@/lib/flow/integrated-poc/controller';
 import { readProgramFolderCopyPreview, isProgramFolderCopyPreviewCurrent, copyProgramFolderOccurrence, type ProgramFolderCopyPreview } from '@/lib/flow/integrated-poc/folder-copy';
 import { createAlphaStructuralDraft, type AlphaStructuralDraft } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
-import { indentTouchesLinkedFolder, restoredLineOffset, textEditTouchesLinkedFolderIndent } from '@/lib/flow/integrated-poc/folder-line-hold';
+import { folderRefusalStands, indentTouchesLinkedFolder, linkedFolderLinesTextEditMoves, restoredLineOffset, textEditTouchesLinkedFolderIndent, type FolderIndentRefusal } from '@/lib/flow/integrated-poc/folder-line-hold';
 import { createProgramTextDraft, FOLDER_INDENT_NOTICE, type ProgramTextCommit, type ProgramTextCommitOptions, type ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
 import { programBarDropNotice, programIndentRefusalNotice, programIndentShape, type ProgramBarDrop, type ProgramIndentRefusal } from '@/lib/flow/integrated-poc/bar-indent-notice';
 import {createProgramDocumentInput,type ProgramDocumentInput} from '@/lib/flow/integrated-poc/program-document-input';
@@ -368,6 +368,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [barHold] = useState(() => createWritingBarHold<WritingBarTarget>()), [heldBar, setHeldBar] = useState<WritingBarAction | null>(null);
   // S5: why the last ⇤·⇥ was refused inside the editor's own check (the model's reason, or a linked folder line).
   const indentRefusal = useRef<ProgramIndentRefusal | null>(null);
+  // N5 3b review: which lines the shown D11 reason is about, so a later D11 B move takes down only a reason that ended.
+  const folderRefusal = useRef<FolderIndentRefusal | null>(null);
   const barRef = useRef<HTMLDivElement>(null), barLockId = useId(), roomRef = useRef<HTMLDivElement>(null), noticeRef = useRef<HTMLDivElement>(null);
   const [picker, setPicker] = useState<FolderPickerView | null>(null), pickerRef = useRef<FolderPickerView | null>(null);
   const pickerCompositionOwner = useRef<FolderPickerCompositionOwner | null>(null);
@@ -820,6 +822,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (!target.instance.indent(action === 'outdent')) explainIndent(action, target.area);
     }
     syncBarLine();
+  }
+  /** D11: say why these folder lines do not move by text, and remember which ones it was about (N5 3b review). */
+  function refuseFolderIndent(lineIds: string[]) {
+    folderRefusal.current = { docId: propsRef.current.docId, lineIds };
+    setMessage(FOLDER_INDENT_NOTICE);
   }
   /** S5: a refused ⇤·⇥ says why: the editor's state, the model's reason, or the line's own shape. A linked folder
    *  line or a protection rule already showed its notice, and a folder region shows its structure lock. */
@@ -1345,6 +1352,16 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       && propsRef.current.active !== false && !propsRef.current.folderId && !composingRef.current && !inputLockedRef.current && !propsRef.current.readOnly
       && folderNoticeRef.current?.operationId === indentAction.operationId && controller.getState().working === indentAction.before
       && controller.generation() === indentAction.generation && indentAction.plan.nextRaw === raw ? indentAction : null;
+    // N5 3b: once the new folder moved, an earlier D11 reason stops standing in front of its notice, but only when it
+    // no longer holds (its lines were this one, or are no longer linked folder lines); one about another folder line stays.
+    const applyFreshIndent = (proof: FreshIndent, raw: string) => {
+      const moved = M.getDocument(proof.before, props.docId)?.lines[proof.plan.startLine]?.id ?? '';
+      if (!controller.applyFreshFolderIndent(proof, raw)) return false;
+      if (!folderRefusalStands(controller.getState().working, folderRefusal.current, moved)) {
+        folderRefusal.current = null; setMessage(current => current === FOLDER_INDENT_NOTICE ? '' : current);
+      }
+      return true;
+    };
     const instance = nativeEditor.create(host, {
       value: controller.getState().raw, label: '문서 내용', taskSplitEnabled: !!propsRef.current.authorizeTaskSplit,
       getCheckAction: (_index, meta) => programCheckboxAction(meta,
@@ -1382,7 +1399,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         if (indentCandidate && indentCandidate.before === state.working && indentCandidate.generation === controller.generation()
           && indentCandidate.plan.nextRaw === raw && folderNoticeRef.current?.operationId === indentCandidate.operationId) return true;
         if (state.raw === textArea()?.value && indentTouchesLinkedFolder(state.working, props.docId, details.startLine, details.endLine)) {
-          folderIndentSkipped.current = true; indentRefusal.current = { kind: 'folder' }; setMessage(FOLDER_INDENT_NOTICE); return false;
+          folderIndentSkipped.current = true; indentRefusal.current = { kind: 'folder' };
+          refuseFolderIndent((M.getDocument(state.working, props.docId)?.lines ?? []).slice(details.startLine, details.endLine + 1).map(line => line.id)); return false;
         }
         // The model's own reason is kept for the bar's notice (S5).
         const result = M.editTextResult(state.working, props.docId, raw, { progressDate: today() });
@@ -1443,7 +1461,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         let accepted = false;
         const hold = heldInput(raw, textArea()?.selectionStart, historyType || input?.inputType || '');
         const indentProof = currentIndentAction(raw);
-        if (indentProof) accepted = controller.applyFreshFolderIndent(indentProof, raw);
+        if (indentProof) accepted = applyFreshIndent(indentProof, raw);
         else if (pending) {
           accepted = pending.raw === raw && programSame(pending.before, controller.getState().working) && controller.apply(pending.next, '같은 구간 날짜순 정렬');
           if (accepted) orderHistoryRef.current.record(pending.before, pending.next);
@@ -1564,7 +1582,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           if (!shownState.invalid && textarea.value === shownState.raw && M.raw(M.getDocument(shownState.working, props.docId)) === textarea.value
             && textEditTouchesLinkedFolderIndent(shownState.working, props.docId, start, end, insert)) {
             event.preventDefault(); event.stopImmediatePropagation();
-            setMessage(FOLDER_INDENT_NOTICE); indentRefusal.current = { kind: 'folder' }; return;
+            refuseFolderIndent(linkedFolderLinesTextEditMoves(shownState.working, props.docId, start, end, insert));
+            indentRefusal.current = { kind: 'folder' }; return;
           }
           if (!controller.prepareRaw(raw,{inputType:type??'',compositionGeneration:compositionGeneration.current,...(type==='insertFromPaste'?{inputSplice:{start,end,text:insert}}:{}),folderHold:heldInput(raw,start+insert.length,type??'')})) {
             event.preventDefault(); event.stopImmediatePropagation();

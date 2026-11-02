@@ -292,16 +292,20 @@ export function createProgramTextDraft(
       if (!invalid) {
         const oldDoc = M.getDocument(before, docId), newDoc = M.getDocument(state.working, docId);
         const at = oldDoc?.lines.findIndex(line => line.id === enter?.lineId) ?? -1;
-        const blank = newDoc?.lines[at + 1];
+        // The Enter's line goes right under the folder line. Above blank lines just like it (left there before), the
+        // model gives the new id to the last of them (N5 3b); it is the same text either way.
+        const oldIds = new Set(oldDoc?.lines.map(line => line.id)), added = newDoc?.lines.findIndex(line => !oldIds.has(line.id)) ?? -1;
+        const blank = newDoc?.lines[added];
         const automatic = enter && enter.before === before && enter.generation === inputGeneration - 1 && folderOperation
-          && oldDoc && newDoc && at >= 0 && newDoc.lines.length === oldDoc.lines.length + 1 && blank
-          && blank.text === /^ */.exec(oldDoc.lines[at].text)![0] + '  '
-          && oldDoc.lines.every((line, index) => programSame(line, newDoc.lines[index <= at ? index : index + 1]))
+          && oldDoc && newDoc && at >= 0 && added > at && newDoc.lines.length === oldDoc.lines.length + 1 && blank
+          && newDoc.lines.slice(at + 1, added + 1).every(line => line.text === /^ */.exec(oldDoc.lines[at].text)![0] + '  ')
+          && oldDoc.lines.every((line, index) => programSame(line, newDoc.lines[index < added ? index : index + 1]))
           && onlyBlankLinesAdded(before, state.working);
         if (automatic && folderOperation) {
           folderOperation.automaticBlank = { ...blank }; folderOperation.generation = inputGeneration;
+          const previousId = newDoc.lines[added - 1].id;
           for (const region of folderOperation.change.regions) if (region.docId === docId && region.ids.includes(enter.lineId)) {
-            const index = region.ids.indexOf(enter.lineId); region.ids.splice(index + 1, 0, blank.id);
+            const index = region.ids.indexOf(region.ids.includes(previousId) ? previousId : enter.lineId); region.ids.splice(index + 1, 0, blank.id);
           }
           folderOperation.change.lines.push({ docId, lineId: blank.id, expected: blank.text, restore: blank.text, order: newDoc.lines.map(line => line.id) });
         } else recordFolder(before, state.working);

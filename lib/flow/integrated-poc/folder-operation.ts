@@ -222,20 +222,31 @@ export function combineProgramFolderScopes(first: ProgramFolderOperation, second
 export type FolderIndentPlan = { start: number; end: number; text: string; nextRaw: string; selectionBefore: { start: number; end: number; direction?: string };
   selectionAfter: { start: number; end: number; direction?: string }; startLine: number; endLine: number; outdent: boolean };
 type CreatedFolder = { docId: string; lineId: string; folderId: string; automaticBlank?: TextLine };
+/** Under the new line, only its automatic blank or blank lines already below it (an earlier Enter's, a line emptied
+ *  there): those are no content of the folder (N5 3b). The ⇤ leaves them as they are. */
+function nothingUnder(current: TextWorkspaceState, created: CreatedFolder, lines: TextLine[]): boolean {
+  return lines.every(line => line.id === created.automaticBlank?.id
+    || !line.text.trim() && !current.bindings.some(row => row.docId === created.docId && row.lineId === line.id));
+}
+/** The automatic blank: right under the line, or the last of the same blank lines there (the draft says why). */
+function automaticBlankAt(doc: { lines: TextLine[] }, at: number, blank: TextLine): number {
+  const index = doc.lines.findIndex(line => line.id === blank.id);
+  return index > at && doc.lines.slice(at + 1, index + 1).every(line => line.text === blank.text) ? index : -1;
+}
 export function programFreshFolderAvailable(current: TextWorkspaceState, created: CreatedFolder): boolean {
   const doc = M.getDocument(current, created.docId), at = doc?.lines.findIndex(line => line.id === created.lineId) ?? -1;
   if (!doc || at < 0 || programFolderUses(current, created.folderId, created).length) return false;
   const binding = current.bindings.find(row => row.kind === 'scope' && row.docId === created.docId && row.lineId === created.lineId);
   if (binding?.kind !== 'scope' || binding.scopeId !== created.folderId || !current.folders.some(folder => folder.id === created.folderId)) return false;
   const under = doc.lines.slice(at + 1, M.rowMeta(current, created.docId)[at]?.subtreeEndIndex ?? at + 1);
-  return !under.some(line => line.id !== created.automaticBlank?.id)
-    && (!created.automaticBlank || doc.lines[at + 1]?.id === created.automaticBlank.id && doc.lines[at + 1].text === created.automaticBlank.text && !created.automaticBlank.text.trim());
+  return nothingUnder(current, created, under)
+    && (!created.automaticBlank || automaticBlankAt(doc, at, created.automaticBlank) > at && !created.automaticBlank.text.trim());
 }
 /** D11 B: explicit native-action proof only; generic text/model indentation remains locked. */
 export function planProgramFreshFolderIndent(current: TextWorkspaceState, created: CreatedFolder, plan: FolderIndentPlan): { next: TextWorkspaceState; plan: FolderIndentPlan } | null {
   const doc = M.getDocument(current, created.docId), at = doc?.lines.findIndex(line => line.id === created.lineId) ?? -1;
   if (!doc || at < 0 || plan.startLine !== at || plan.selectionBefore.start !== plan.selectionBefore.end || plan.selectionBefore.start < 0
-    || plan.selectionBefore.start > M.raw(doc).length || plan.endLine > at + (created.automaticBlank ? 1 : 0)) return null;
+    || plan.selectionBefore.start > M.raw(doc).length || plan.endLine >= doc.lines.length || !nothingUnder(current, created, doc.lines.slice(at + 1, plan.endLine + 1))) return null;
   if (!programFreshFolderAvailable(current, created)) return null;
   const folder = current.folders.find(folder => folder.id === created.folderId)!;
   const oldRaw = M.raw(doc), original = oldRaw.split('\n'), moved = plan.nextRaw.split('\n');
@@ -243,7 +254,7 @@ export function planProgramFreshFolderIndent(current: TextWorkspaceState, create
   const expectedHead = plan.outdent ? original[at].slice(2) : '  ' + original[at];
   if (moved[at] !== expectedHead || plan.outdent && !original[at].startsWith('  ')) return null;
   for (let index = 0; index < original.length; index++) if (index !== at && moved[index] !== original[index]) return null;
-  if (created.automaticBlank) moved[at + 1] = plan.outdent ? created.automaticBlank.text.slice(2) : '  ' + created.automaticBlank.text;
+  if (created.automaticBlank) moved[automaticBlankAt(doc, at, created.automaticBlank)] = plan.outdent ? created.automaticBlank.text.slice(2) : '  ' + created.automaticBlank.text;
   const next = detached(current), nextDoc = M.getDocument(next, created.docId)!;
   nextDoc.lines = nextDoc.lines.map((line, index) => ({ id: line.id, text: moved[index] }));
   const nextRow = M.rowMeta(next, created.docId)[at], parentId = nextRow?.ancestorScopeId ?? null;

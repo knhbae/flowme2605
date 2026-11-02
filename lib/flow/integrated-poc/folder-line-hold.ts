@@ -18,16 +18,29 @@ export function indentTouchesLinkedFolder(state: TextWorkspaceState, documentId:
  *  of the line above, spaces or letters typed before its "- /"). Editing its name after "- /", an Enter at its very
  *  start and deleting the whole line are not that. */
 export function textEditTouchesLinkedFolderIndent(state: TextWorkspaceState, documentId: string, start: number, end: number, insert: string): boolean {
+  return linkedFolderLinesTextEditMoves(state, documentId, start, end, insert).length > 0;
+}
+/** The linked folder lines such an edit would move: the ones its stop is about (N5 3b review; not the line above a join). */
+export function linkedFolderLinesTextEditMoves(state: TextWorkspaceState, documentId: string, start: number, end: number, insert: string): string[] {
   const lines = M.getDocument(state, documentId)?.lines ?? [];
   let offset = 0;
-  return lines.some((line, index) => {
+  return lines.filter((line, index) => {
     const at = offset; offset += line.text.length + 1;
     if (!state.bindings.some(binding => binding.kind === 'scope' && binding.docId === documentId && binding.lineId === line.id
       && state.folders.some(folder => folder.id === binding.scopeId))) return false;
     const spaces = /^ */.exec(line.text)![0].length;
     if (end > start) return start <= at && end >= at + line.text.length ? false : start < at + spaces && end > at - (index ? 1 : 0);
     return start >= at && start <= at + spaces && !(start === at && insert.endsWith('\n'));
-  });
+  }).map(line => line.id);
+}
+
+/** A refused D11 action (⇤·⇥ or a text edit) and the lines it was about. */
+export type FolderIndentRefusal = { docId: string; lineIds: string[] };
+/** N5 3b review: a refused D11 action's reason still stands while one of its lines is a linked folder line other than
+ *  the one a D11 B move just moved. Without a record it stands. */
+export function folderRefusalStands(state: TextWorkspaceState, refusal: FolderIndentRefusal | null, movedLineId: string): boolean {
+  return !refusal || refusal.lineIds.some(id => id !== movedLineId && state.bindings.some(binding => binding.kind === 'scope'
+    && binding.docId === refusal.docId && binding.lineId === id && state.folders.some(folder => folder.id === binding.scopeId)));
 }
 
 export function restoredLineOffset(raw: string, index: number, line: string, offset: number): number {
