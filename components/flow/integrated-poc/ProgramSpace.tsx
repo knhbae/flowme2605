@@ -2,7 +2,7 @@
 
 import type {OwnedWritingAck} from '@/lib/flow/integrated-poc/writing-ack';
 import type {WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
-import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { programClone, programFailure, programId, programResult, type ProgramData, type ProgramPrivateSpace, type ProgramTransition, type ProgramWritingPosition } from '@/lib/flow/integrated-poc/contract';
 import { programDate } from '@/lib/flow/integrated-poc/program-data';
 import { programFolderCopyAccessProblem } from '@/lib/flow/integrated-poc/folder-copy';
@@ -13,6 +13,7 @@ import { programManualOrderDays, programOrderedExecutionRows, programTextExecuti
   restoreProgramExecutionDayOrder, type ProgramDayOrder } from '@/lib/flow/integrated-poc/recurrence-order';
 import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
+import { carryProgramHead, restoreProgramHead, type ProgramHeadCarry } from '@/lib/flow/integrated-poc/tablet-head-carry';
 import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeLive, programCheckNoticeView, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
 import { ProgramMonthGrid } from './ProgramMonthGrid';
 import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
@@ -228,7 +229,6 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // existing complete writer for this route, without swapping owners on ACKs,
   // host readiness, content changes or composition. The isolated PM stays intact.
   const TextEditor = ProgramTextEditor;
-  const tabletLandscape = useSyncExternalStore(watchTabletHead, () => tabletHead().matches, () => false);
   const dataRef = useRef(data); dataRef.current = data;
   const classificationRequest = useRef(false);
   const [classificationCreating, setClassificationCreating] = useState(false);
@@ -419,6 +419,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [recurrencePresentation, setRecurrencePresentation] = useState(emptyProgramRecurrencePresentation);
   const root = useRef<HTMLElement | null>(null);
   const documentMenu = useRef<HTMLDetailsElement | null>(null);
+  // U44 review: crossing the condition draws the title and ⋯ again in their other place. Just before that (the old
+  // place still drawn) an open ⋯, the name being typed there and the focus are read, and put back once they are drawn.
+  const headCarry = useRef<ProgramHeadCarry | null>(null);
+  const watchHead = useCallback((change: () => void) => watchTabletHead(() => {
+    headCarry.current = carryProgramHead(documentMenu.current, titleToggle.current, document.activeElement); change();
+  }), []);
+  const tabletLandscape = useSyncExternalStore(watchHead, () => tabletHead().matches, () => false);
+  useLayoutEffect(() => {
+    const carry = headCarry.current; headCarry.current = null;
+    if (carry) restoreProgramHead(carry, documentMenu.current, titleToggle.current);
+  }, [tabletLandscape]);
   const viewMenu = useRef<HTMLElement | null>(null);
   const writingRequest = useRef<string | null>(null);
   const [writingFocus, setWritingFocus] = useState<{ id: string; actorId: string; focusOwner: Element | null; managedReturnFocus?: Element | null } | null>(null);
@@ -679,6 +690,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       || selectedRef.current !== retained.documentId || presentation.current.period !== retained.period
       || presentation.current.folderId !== retained.folderId || libraryComposing.current) return;
     let target = retained.area ?? retained.element ?? libraryToggle.current;
+    // U44 review: the tablet turned while the sheet was open, so the title it was opened from is drawn in its other
+    // place now; that one takes the focus back.
+    if (!retained.area && target && !target.isConnected && target.classList.contains(styles.titleButton)) target = titleToggle.current;
     // Only the same Find opener may fall back to its now-closed note menu.
     // A hidden editor or an unrelated removed owner must never transfer focus.
     if (!retained.area && target === libraryToggle.current && target?.isConnected

@@ -15,7 +15,7 @@ const editorCss = read('../../../components/flow/integrated-poc/ProgramTextEdito
 test('U44: one line only on a landscape screen at least 1000px wide and at most 900px high, with an open document', () => {
   assert(space.includes("export const PROGRAM_TABLET_HEAD_QUERY = '(min-width: 1000px) and (max-height: 900px) and (orientation: landscape)';"));
   // Read through the media query and its change events; no media match before the page is drawn (the title row).
-  assert(space.includes('const tabletLandscape = useSyncExternalStore(watchTabletHead, () => tabletHead().matches, () => false);'));
+  assert(space.includes('const tabletLandscape = useSyncExternalStore(watchHead, () => tabletHead().matches, () => false);'));
   assert(space.includes("query.addEventListener('change', change); return () => query.removeEventListener('change', change);"));
   // The host's writing tab only (its main tabs and note layout), and only while the document's editor is there.
   assert(space.includes('const headInToolbar = tabletLandscape && !!props.hostMainTabs && !!props.noteHeader && !!selectedDoc && opened.includes(selectedDoc.id);'));
@@ -48,11 +48,60 @@ test('U44: the editor\'s tool line starts with the title and ends with ⋯; the 
   assert.match(spaceCss, /\.space \.titleActions > details > summary \{[^}]*min-width: 44px; min-height: 44px;/);
 });
 
-test('U44: typing or keys in the head are the host\'s, not the editor\'s', () => {
-  assert(editor.includes("const inHead = (target: EventTarget) => target instanceof Element && !!target.closest('[data-editor-head]');"));
-  assert(editor.includes('onInput={serverView ? event => { if (!inHead(event.target)) markTyping(); } : undefined}'));
+test('U44: typing, keys and focus in the head are the host\'s, not the editor\'s, as on their own row', () => {
+  assert(editor.includes("return target instanceof Element && !!target.closest('[data-editor-head]');"));
+  assert(editor.includes('onInput={serverView ? event => { if (!inEditorHead(event.target)) markTyping(); } : undefined}'));
   // Its undo keys and Escape are left alone there (the rename field in ⋯ keeps its own undo during a save).
   const capture = editor.slice(editor.indexOf('onKeyDownCapture={event => {'), editor.indexOf("if (event.key === 'Escape' && (panelRef.current"));
-  assert(capture.indexOf('if (inHead(event.target)) return;') > capture.indexOf("if (event.key === 'Tab') folderIndentSkipped.current = false;"));
-  assert(capture.indexOf('if (inHead(event.target)) return;') < capture.indexOf("['z', 'y'].includes"));
+  assert(capture.indexOf('if (inEditorHead(event.target)) return;') > capture.indexOf("if (event.key === 'Tab') folderIndentSkipped.current = false;"));
+  assert(capture.indexOf('if (inEditorHead(event.target)) return;') < capture.indexOf("['z', 'y'].includes"));
+  // A held bar press: typing or a composition in the head does not touch it, and focus moving into the head leaves.
+  const hold = editor.slice(editor.indexOf('const typed = (event: Event) => {'), editor.indexOf("root.addEventListener('beforeinput', typed, true);"));
+  assert.equal(hold.match(/if \(inEditorHead\(event\.target\)\) return;/g)?.length, 3);
+  assert(hold.includes("root.contains(event.relatedTarget)) || inEditorHead(event.relatedTarget)) cancel('left');"));
+  // A deferred caret move does not take the caret from a field in the head (⋯'s rename).
+  assert(editor.includes("&& (!hostRef.current?.closest('section')?.contains(active) || inEditorHead(active)));"));
+});
+
+// Codex review of U44 (11/3): crossing the condition draws the title and ⋯ again in their other place; a name being
+// typed in ⋯ was lost, and a sheet opened from the title gave the focus back to nobody.
+type Fake = { value?: string; defaultValue?: string; selectionStart?: number; selectionEnd?: number; selectionDirection?: string; focus: () => void; setSelectionRange?: (s: number, e: number, d?: string) => void };
+function fakeHead(open: boolean, name: string, title: string) {
+  const log: string[] = [];
+  const summary: Fake = { focus: () => log.push('summary') };
+  const input: Fake = { value: name, defaultValue: title, selectionStart: 2, selectionEnd: 4, selectionDirection: 'forward', focus: () => log.push('input'),
+    setSelectionRange: (s, e, d) => log.push(`select ${s}-${e} ${d}`) };
+  const rename: Fake = { focus: () => log.push('rename') };
+  const menu = { open, querySelector: (selector: string) => selector === 'input[name="title"]' ? input : null, querySelectorAll: () => [summary, input, rename] };
+  const button: Fake = { focus: () => log.push('title') };
+  return { menu: menu as unknown as HTMLDetailsElement, input, button: button as unknown as HTMLElement, log };
+}
+test('U44 review: an open ⋯, the name typed there, its caret and the focus come along to the head\'s new place', async () => {
+  const { carryProgramHead, restoreProgramHead } = await import('./tablet-head-carry');
+  const before = fakeHead(true, '새 이름', '작성한 글');
+  const carry = carryProgramHead(before.menu, before.button, before.input as unknown as Element);
+  assert.deepEqual(carry, { menuOpen: true, name: { title: '작성한 글', value: '새 이름', start: 2, end: 4, direction: 'forward' }, focus: 1 });
+  // Drawn again: closed, the saved name in its field.
+  const after = fakeHead(false, '작성한 글', '작성한 글');
+  restoreProgramHead(carry!, after.menu, after.button);
+  assert.equal(after.menu.open, true);
+  assert.equal(after.input.value, '새 이름');
+  assert.deepEqual(after.log, ['input', 'select 2-4 forward']);
+  // A rename saved meanwhile (another title) keeps its own name.
+  const renamed = fakeHead(false, '다른 이름', '다른 이름');
+  restoreProgramHead(carry!, renamed.menu, renamed.button);
+  assert.equal(renamed.input.value, '다른 이름');
+  // The title's focus; nothing open, typed or focused carries nothing.
+  const titled = fakeHead(false, '작성한 글', '작성한 글');
+  assert.deepEqual(carryProgramHead(titled.menu, titled.button, titled.button as unknown as Element), { menuOpen: false, name: null, focus: 'title' });
+  restoreProgramHead({ menuOpen: false, name: null, focus: 'title' }, after.menu, titled.button);
+  assert.deepEqual(titled.log, ['title']);
+  assert.equal(carryProgramHead(titled.menu, titled.button, null), null);
+});
+
+test('U44 review: read just before the change (old place drawn), put back after it; the sheet returns to the new title', () => {
+  assert(space.includes('headCarry.current = carryProgramHead(documentMenu.current, titleToggle.current, document.activeElement); change();'));
+  assert(space.includes('const tabletLandscape = useSyncExternalStore(watchHead, () => tabletHead().matches, () => false);'));
+  assert.match(space, /useLayoutEffect\(\(\) => \{\n    const carry = headCarry\.current; headCarry\.current = null;\n    if \(carry\) restoreProgramHead\(carry, documentMenu\.current, titleToggle\.current\);\n  \}, \[tabletLandscape\]\);/);
+  assert(space.includes('if (!retained.area && target && !target.isConnected && target.classList.contains(styles.titleButton)) target = titleToggle.current;'));
 });

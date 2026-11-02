@@ -135,12 +135,15 @@ test('a deferred caret move after an insertion never takes over newer input', ()
   const check = (active: unknown, composing = false, inside = false) => evaluate<() => boolean>(fn('revealAllowed'), {
     document: { activeElement: active }, composingRef: { current: composing },
     hostRef: { current: { closest: () => ({ contains: () => inside }) } }, HTMLElement: Object,
+    inEditorHead: (target: { head?: boolean } | null) => !!target?.head,
   })();
   const field = { matches: () => true }, button = { matches: () => false };
   assert.equal(check(button), true);
   assert.equal(check(field, false, true), true);
   assert.equal(check(field, false, false), false);
   assert.equal(check(button, true), false);
+  // U44 review: a field of the host's head in the editor's line (⋯'s rename on a tablet held sideways) is outside input.
+  assert.equal(check({ matches: () => true, head: true }, false, true), false);
   assert.match(source, /if\(folderId\)requestAnimationFrame\(\(\)=>\{if\(revealAllowed\(\)\)regionPortRef/);
   assert.match(source, /requestAnimationFrame\(\(\)=>\{if\(lineId&&revealAllowed\(\)\)regionPortRef/);
 });

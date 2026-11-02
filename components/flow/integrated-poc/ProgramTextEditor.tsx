@@ -198,6 +198,12 @@ function BarIcon({ name }: { name: WritingBarAction }) {
 }
 const BAR_COMPOSING_NOTICE = '입력 중인 글자가 아직 끝나지 않아 실행하지 않았습니다. 글자를 마친 뒤 다시 눌러 주세요.';
 
+/** U44: the host's title, ⋯ and notices in the toolbar's line (a tablet held sideways) stay outside the editor for its
+ *  typing, keys and focus, as they are on their own row elsewhere. */
+function inEditorHead(target: EventTarget | null) {
+  return target instanceof Element && !!target.closest('[data-editor-head]');
+}
+
 function today() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -460,6 +466,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // S5: a press let go here says so; it used to vanish without a word.
     const cancel = (why: ProgramBarDrop) => { const action = barHold.held(); if (action) { barHold.cancel(); setHeldBar(null); setMessage(programBarDropNotice(action, why)); } };
     const typed = (event: Event) => {
+      if (inEditorHead(event.target)) return;
       const type = (event as InputEvent).inputType;
       // The lease ends on newer ordinary input. Only mutate its ref here;
       // render after native/bubble input, never over the incoming DOM value.
@@ -468,13 +475,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         || composedJustNow && type === 'insertText') return;
       cancel('typed');
     };
-    const composed = () => { compositionAnchorRef.current = null; composedJustNow = true; if (settle) clearTimeout(settle); settle = setTimeout(() => { composedJustNow = false; settle = null; }, 0); };
+    const composed = (event: Event) => { if (inEditorHead(event.target)) return; compositionAnchorRef.current = null; composedJustNow = true; if (settle) clearTimeout(settle); settle = setTimeout(() => { composedJustNow = false; settle = null; }, 0); };
     const started = (event: Event) => {
+      if (inEditorHead(event.target)) return;
       if (pickerHold.pending()) { pickerHold.cancel(); queueMicrotask(() => setPickerHeld(false)); }
       const area = event.target instanceof HTMLTextAreaElement ? event.target : null;
       compositionAnchorRef.current = area ? { area, offset: area.selectionStart } : null;
     };
-    const left = (event: FocusEvent) => { if (!(event.relatedTarget instanceof Node && root.contains(event.relatedTarget))) cancel('left'); };
+    const left = (event: FocusEvent) => { if (!(event.relatedTarget instanceof Node && root.contains(event.relatedTarget)) || inEditorHead(event.relatedTarget)) cancel('left'); };
     root.addEventListener('beforeinput', typed, true); root.addEventListener('compositionstart', started, true); root.addEventListener('compositionend', composed, true); root.addEventListener('focusout', left);
     return () => { if (settle) clearTimeout(settle); root.removeEventListener('beforeinput', typed, true); root.removeEventListener('compositionstart', started, true); root.removeEventListener('compositionend', composed, true); root.removeEventListener('focusout', left); };
   }, [barHold, pickerHold]);
@@ -1061,7 +1069,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function revealAllowed() {
     const active = document.activeElement;
     return !composingRef.current && !(active instanceof HTMLElement && active.matches('input, textarea, select, [contenteditable="true"]')
-      && !hostRef.current?.closest('section')?.contains(active));
+      && (!hostRef.current?.closest('section')?.contains(active) || inEditorHead(active)));
   }
   function indentFromMenu(outdent: boolean) {
     const lineId = panel?.lineId ?? null, index = currentRow(lineId)?.index;
@@ -2576,8 +2584,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       onPointerDown={event => event.preventDefault()} onClick={() => { if (picker.enter) pressPicker(picker.enter); }}>↵ {pickerEnterLabel}</button>}
     <small>↓ 폴더 선택 · Esc 닫기{picker.indent && !picker.linked ? ' · Shift+Tab 상위로' : ''}</small>
   </div> : null;
-  const inHead = (target: EventTarget) => target instanceof Element && !!target.closest('[data-editor-head]');
-  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInput={serverView ? event => { if (!inHead(event.target)) markTyping(); } : undefined}
+  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInput={serverView ? event => { if (!inEditorHead(event.target)) markTyping(); } : undefined}
     onKeyDown={event => { if (event.key === 'Tab' && folderIndentSkipped.current) event.preventDefault(); folderIndentSkipped.current = false; }} onKeyDownCapture={event => {
     const imeConsumed = pickerIme.current?.keydown(event.nativeEvent) ?? false;
     const view = pickerRef.current;
@@ -2589,7 +2596,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (action.kind === 'reset' && view.navigation !== -1) presentPicker({ ...view, navigation: -1 });
     }
     if (event.key === 'Tab') folderIndentSkipped.current = false;
-    if (inHead(event.target)) return;
+    if (inEditorHead(event.target)) return;
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
   }}>

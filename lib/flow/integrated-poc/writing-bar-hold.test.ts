@@ -225,11 +225,13 @@ test('IME end order: the final insertText right after compositionend keeps the h
   const root = { addEventListener: (type: string, listener: (event: unknown) => void) => listeners.set(type, listener), removeEventListener: () => {}, contains: () => true };
   const barHold = createWritingBarHold<WritingBarTarget>(), pickerHold = createFolderPickerHold(), composing = { current: false }, anchor = { current: null as unknown };
   class FakeArea { selectionStart = 7; }
+  class FakeNode { constructor(readonly head = false) {} }
   evaluate<() => void>((effect as ts.CallExpression).arguments[0].getText(tree), {
     hostRef: { current: { closest: () => root } }, barHold, pickerHold, setPickerHeld: () => {}, queueMicrotask: (callback: () => void) => callback(),
     setHeldBar: () => {}, composingRef: composing, compositionAnchorRef: anchor,
-    setMessage: (text: string) => messages.push(text), programBarDropNotice, Node: class {},
+    setMessage: (text: string) => messages.push(text), programBarDropNotice, Node: FakeNode,
     HTMLTextAreaElement: FakeArea, setTimeout: (callback: () => void) => { timers.push(callback); return timers.length; }, clearTimeout: () => {},
+    inEditorHead: (target: { head?: boolean } | null) => !!target?.head,
   })();
   const input = (inputType: string) => listeners.get('beforeinput')!({ inputType });
   // compositionstart records where composition began; compositionend forgets it.
@@ -254,6 +256,14 @@ test('IME end order: the final insertText right after compositionend keeps the h
   barHold.press('task', true, null);
   listeners.get('focusout')!({ relatedTarget: null });
   assert.deepEqual([barHold.held(), messages.at(-1)], [null, programBarDropNotice('task', 'left')]);
+  // U44 review: the host's head in the editor's line (a tablet held sideways) is outside, as on its own row: typing
+  // there leaves the hold alone, and focus moving there leaves the editor.
+  barHold.press('enter', true, null);
+  listeners.get('beforeinput')!({ inputType: 'insertText', target: new FakeNode(true) });
+  listeners.get('focusout')!({ relatedTarget: new FakeNode() });
+  assert.equal(barHold.held(), 'enter');
+  listeners.get('focusout')!({ relatedTarget: new FakeNode(true) });
+  assert.deepEqual([barHold.held(), messages.at(-1)], [null, programBarDropNotice('enter', 'left')]);
 });
 
 function regionFixture() {
