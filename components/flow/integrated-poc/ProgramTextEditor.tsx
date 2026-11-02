@@ -306,6 +306,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const folderNoticeRef = useRef<FolderNotice | null>(null); folderNoticeRef.current = folderNotice;
   const folderRawUndoRef = useRef(false);
   const [noticeHeld, setNoticeHeld] = useState(false);
+  // N5 3b phone: a new folder's notice held while its D11 B ⇤ is open and the caret is on that folder's block.
+  const [freshHeld, setFreshHeld] = useState(false);
   // W15 review P1-4: a notice button pressed during a composition runs once it has ended, like a held bar press,
   // so the model changes only when the native editor can take the new text.
   const heldNoticeAction = useRef<(() => void) | null>(null);
@@ -625,8 +627,20 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       return leftBlockAt === current.leftBlockAt ? current : { ...current, leftBlockAt };
     });
     propsRef.current.onPosition?.({ start: textarea.selectionStart, end: textarea.selectionEnd, scrollTop: textarea.scrollTop }, currentDoc()?.lines[index]?.id ?? null);
-    syncBarLine();
+    syncFreshNotice(); syncBarLine();
   }
+  /** N5 3b (phone): D11 B's ⇤ lasts only while the new folder's notice shows, and on a phone getting back onto that
+   *  line takes longer than an info notice's 6s. So, like a choice, that notice stays while the ⇤ is still open
+   *  (nothing edited since) and the caret is on the new line or under it; once either ends, its 6s start. */
+  function freshNoticeHolds() {
+    const controller = draftRef.current, operation = controller?.folderOperation(), area = textArea();
+    if (propsRef.current.folderId || !controller || !area || !operation?.lineId || folderNoticeRef.current?.operationId !== operation.id
+      || !controller.freshFolderLine(operation.lineId)) return false;
+    const rows = textEditorRows(controller.getState().working, propsRef.current.docId), start = rows.findIndex(row => row.id === operation.lineId);
+    const index = area.value.slice(0, area.selectionStart).split('\n').length - 1;
+    return start >= 0 && index >= start && index < Math.max(rows[start].subtreeEndIndex, start + 1);
+  }
+  function syncFreshNotice() { const holds = freshNoticeHolds(); setFreshHeld(previous => previous === holds ? previous : holds); }
   /** B0: judge the held "- /name" line by its whole name. Explicit (Enter or a bar action with the caret on
    * it) links or makes the folder; otherwise only a folder of exactly that name is linked, once per leaving. */
   function finishHeldFolderLine(explicit = false) {
@@ -1733,15 +1747,22 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!folderWaitedRef.current) return;
     folderWaitedRef.current = false; restartFolderNotice();
   }, [folderWaiting]);
+  // N5 3b phone: a new folder's notice held for its ⇤ has its 6s from when that hold ends.
+  const freshHeldRef = useRef(false);
+  useEffect(() => {
+    if (freshHeld) { freshHeldRef.current = true; return; }
+    if (!freshHeldRef.current) return;
+    freshHeldRef.current = false; restartFolderNotice();
+  }, [freshHeld]);
   useEffect(() => {
     if (!folderNotice) draftRef.current?.endFolderNotice();
     if (!folderNotice) return;
-    const ends = programNoticeEndsAt({ tone: folderNotice.tone, shownAt: folderNotice.shownAt, leftBlockAt: folderNotice.leftBlockAt, held: noticeHeld, waiting: folderWaiting });
+    const ends = programNoticeEndsAt({ tone: folderNotice.tone, shownAt: folderNotice.shownAt, leftBlockAt: folderNotice.leftBlockAt, held: noticeHeld || freshHeld, waiting: folderWaiting });
     if (ends === null) return;
     const timer = window.setTimeout(() => setFolderNotice(current => current === folderNotice ? null : current), Math.max(0, ends - Date.now()));
     return () => window.clearTimeout(timer);
-  }, [folderNotice, noticeHeld, folderWaiting]);
-  useEffect(() => { syncBarLine(); }, [folderNotice, draft.working, props.authoringMode]);
+  }, [folderNotice, noticeHeld, folderWaiting, freshHeld]);
+  useEffect(() => { syncFreshNotice(); syncBarLine(); }, [folderNotice, draft.working, props.authoringMode]);
   useEffect(() => {
     if (props.active !== false) return;
     const tools = hostRef.current?.closest('section')?.querySelector<HTMLDetailsElement>('[data-editor-tools]');

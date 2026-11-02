@@ -9,6 +9,7 @@ import { createEmptyTextWorkspace, textEditorRows, textWorkspaceModel as M } fro
 import { folderBarLine, taskMarkerLock, writingBarLine } from './writing-bar';
 import { folderRefusalStands, indentTouchesLinkedFolder, linkedFolderLinesTextEditMoves, textEditTouchesLinkedFolderIndent } from './folder-line-hold';
 import type { FolderIndentPlan } from './folder-operation';
+import { programNoticeEndsAt } from './program-notice';
 
 // N5 phone 3b (S4-V11-PHONE-RESULT, 11/2): '폰부모' then '폰부모 › 폰자식2' made at the end of a document whose earlier
 // steps had left blank lines there. Back on the new child line, the bar ⇤ was off and said the D11 reason. Those
@@ -51,6 +52,7 @@ const valueOf = (name: string) => ((nodeOf(named(name)) as ts.PropertyAssignment
 const declared = (name: string) => nodeOf(node => ts.isFunctionDeclaration(node) && node.name?.text === name).getText(tree);
 const pressSource = ts.transpileModule(`${declared('readBarLine')}
 ${declared('refuseFolderIndent')}
+${declared('freshNoticeHolds')}
 let indentCandidate = null, indentAction = null;
 const currentIndentAction = (${valueOf('currentIndentAction')});
 const applyFreshIndent = (${valueOf('applyFreshIndent')});
@@ -73,14 +75,14 @@ function editorFor(t: Phone) {
     textEditorRows, writingBarLine, taskMarkerLock, folderBarLine, indentTouchesLinkedFolder, textEditTouchesLinkedFolderIndent, linkedFolderLinesTextEditMoves, folderRefusalStands,
     FOLDER_INDENT_NOTICE, FOLDER_STRUCTURE_LOCK: 'REGION', M };
   const run = new Function(...Object.keys(scope), pressSource
-    + '\nreturn { readBarLine, currentIndentAction, applyFreshIndent, adjustIndentPlan, canApplyIndent, onIndentStart, onIndentEnd, preventLockedInput };')(...Object.values(scope));
+    + '\nreturn { readBarLine, currentIndentAction, applyFreshIndent, adjustIndentPlan, canApplyIndent, onIndentStart, onIndentEnd, preventLockedInput, freshNoticeHolds };')(...Object.values(scope));
   /** Touch the end of line `index` (the caret lands there; the bar reads it), or `column` in it. */
   const touch = (index: number, column?: number) => {
     area.value = t.draft.getState().raw;
     area.selectionStart = area.selectionEnd = column === undefined ? rows(t).slice(0, index + 1).join('\n').length : rows(t).slice(0, index).join('\n').length + (index ? 1 : 0) + column;
     return run.readBarLine() as { canOutdent: boolean; structureLock?: string };
   };
-  return { messages, touch, shown: () => shown,
+  return { messages, touch, shown: () => shown, freshHolds: () => run.freshNoticeHolds() as boolean,
     /** A key typed where `touch` left the caret, through the editor's beforeinput guard. True when the guard stopped it. */
     key(inputType: string, data: string | null = null) {
       let prevented = false;
@@ -224,4 +226,92 @@ test('N5 3b review: a reason whose folder line was emptied since no longer stand
   assert.equal(folderRefusalStands(working, { docId: t.docId, lineIds: [lines[3].id, lines[4].id] }, lines[3].id), false);
   assert.equal(folderRefusalStands(working, { docId: t.docId, lineIds: ['gone', lines[4].id] }, lines[3].id), false);
   assert.equal(folderRefusalStands(working, null, lines[3].id), true, 'no record: it stays');
+});
+
+// N5 3b phone 2 (S4-V13-PHONE-RESULT, 11/2 13:05): the same path passed synthetic QA but not on the phone. There the
+// child line was touched again after its creation notice had gone (an info notice lasts 6s), and D11 B lives only
+// while that notice shows. Here the editor's own notice clock runs on a virtual clock: syncFreshNotice's
+// freshNoticeHolds, the effect that restarts a released hold, and the notice's life effect, each re-run when its
+// inputs change, as React runs them.
+const effectOf = (deps: string) => (nodeOf(node => ts.isCallExpression(node) && node.expression.getText(tree) === 'useEffect'
+  && node.arguments[1]?.getText(tree) === deps) as ts.CallExpression).arguments[0].getText(tree);
+const clockSource = ts.transpileModule(`const restartFolderNotice = (${valueOf('restartFolderNotice')});
+const release = (${effectOf('[freshHeld]')});
+const life = (${effectOf('[folderNotice, noticeHeld, folderWaiting, freshHeld]')});`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
+type Clock = { show(): void; at(index: number, column?: number): { canOutdent: boolean }; edit(): void; wait(ms: number): void; shown(): boolean };
+function clockFor(t: Phone, bar: ReturnType<typeof editorFor>): Clock {
+  return new Function('t', 'bar', 'programNoticeEndsAt', `
+    let now = 0, timer = null, folderNotice = null, freshHeld = false, seen = {}, cleanup;
+    const noticeHeld = false, folderWaiting = false, draftRef = { current: t.draft }, freshHeldRef = { current: false };
+    const Date = { now: () => now }, window = { setTimeout: (run, ms) => (timer = { run, at: now + ms }), clearTimeout: id => { if (timer === id) timer = null; } };
+    const setFolderNotice = value => { folderNotice = typeof value === 'function' ? value(folderNotice) : value; t.notice.current = folderNotice; };
+    ${clockSource}
+    function settle() {
+      for (let round = 0; round < 6; round++) {
+        freshHeld = bar.freshHolds();
+        const fresh = freshHeld !== seen.fresh, notice = folderNotice !== seen.notice;
+        if (!fresh && !notice) return;
+        seen = { fresh: freshHeld, notice: folderNotice };
+        if (fresh) release();
+        if (cleanup) cleanup(); cleanup = life();
+      }
+      throw new Error('the notice clock did not settle');
+    }
+    return {
+      show() { setFolderNotice({ text: 'notice', tone: 'info', shownAt: now, leftBlockAt: null, operationId: t.draft.folderOperation().id }); settle(); },
+      at(index, column) { const line = bar.touch(index, column); settle(); return line; },
+      edit() { settle(); },
+      wait(ms) { const end = now + ms; while (timer && timer.at <= end) { now = timer.at; const run = timer.run; timer = null; run(); settle(); } now = end; },
+      shown: () => !!folderNotice,
+    };`)(t, bar, programNoticeEndsAt) as Clock;
+}
+/** A new parent, then its new child, each with its notice; the caret where the child's Enter left it. */
+function madeSlowly(head: string) {
+  const t = phone(head), bar = editorFor(t), clock = clockFor(t, bar), at = rows(t).length - 1;
+  make(t, at, '- /새부모'); clock.show(); make(t, at + 1, '  - /새자식'); clock.show(); clock.at(at + 2);
+  return { t, bar, clock, child: at + 1 };
+}
+
+test('N5 3b phone 2: the v13 phone path — touched again after 7s, by way of the blank below, the child still moves with ⇤; 되돌리기 restores it', () => {
+  const t = phone('키보드 아래 마지막 줄 확인 26\n- /운동\n  - /폰새폴더'), bar = editorFor(t), clock = clockFor(t, bar);
+  // Enter at the end of 폰새폴더, the new line's spaces taken away; '- /새부모' Enter, '- /새자식' Enter.
+  enter(t, 2); write(t, [...rows(t).slice(0, 3), '']);
+  make(t, 3, '- /새부모'); clock.show(); make(t, 4, '  - /새자식'); clock.show(); clock.at(5);
+  assert.deepEqual(rows(t).slice(1), ['- /운동', '  - /폰새폴더', '- /새부모', '  - /새자식', '    ']);
+  clock.wait(7000); assert(clock.shown(), 'the caret is under the new line and nothing was edited: the notice stays');
+  clock.at(5); assert.equal(clock.at(4).canOutdent, true, 'back at the end of the child line, ⇤ is on');
+  const before = t.draft.getState().working, beforeIds = ids(t);
+  assert(bar.outdent());
+  assert.deepEqual(rows(t).slice(1), ['- /운동', '  - /폰새폴더', '- /새부모', '- /새자식', '  ']);
+  assert.equal(folderOf(t, '새자식').parentId, null); assert.deepEqual(ids(t), beforeIds); assert.deepEqual(bar.messages, []);
+  assert(t.draft.undoFolderOperation(t.draft.folderOperation()!.id).ok);
+  assert.deepEqual(t.draft.getState().working, before, '되돌리기 restores the exact text, IDs and parent');
+});
+
+test('N5 3b phone 2: the caret off the new folder starts its notice\'s 6s; back in time it stays, after them D11 B has ended', () => {
+  const { t, bar, clock, child } = madeSlowly('메모\n');
+  clock.at(0); clock.wait(5000); assert(clock.shown());
+  assert.equal(clock.at(child).canOutdent, true); clock.wait(30000); assert(clock.shown(), 'on its line again, it stays');
+  clock.at(0); clock.wait(5999); assert(clock.shown()); clock.wait(1); assert.equal(clock.shown(), false, '6s after the caret left, as a choice');
+  const raw = t.draft.getState().raw;
+  assert.equal(clock.at(child).canOutdent, false); assert.equal(bar.outdent(), false);
+  assert.equal(t.draft.getState().raw, raw); assert.deepEqual(bar.messages, [FOLDER_INDENT_NOTICE], 'the spec: no notice, no D11 B');
+});
+
+test('N5 3b phone 2: a letter typed under the new folder ends the hold: D11 B is off and the notice goes 6s after the edit', () => {
+  const { t, clock, child } = madeSlowly('메모\n');
+  clock.wait(10000); assert(clock.shown());
+  write(t, [...rows(t).slice(0, child + 1), '    메모']); clock.edit();
+  assert.equal(clock.at(child).canOutdent, false);
+  clock.wait(5999); assert(clock.shown()); clock.wait(1); assert.equal(clock.shown(), false);
+});
+
+test('N5 3b phone 2: only a new folder\'s notice is held; its move notice ends 6s after it shows, and typing under a new parent ends its hold', () => {
+  const { bar, clock, child } = madeSlowly('메모\n');
+  assert.equal(clock.at(child).canOutdent, true); assert(bar.outdent()); clock.show(); clock.at(child);
+  clock.wait(5999); assert(clock.shown()); clock.wait(1); assert.equal(clock.shown(), false, 'the move notice, caret still on the line');
+  const p = phone('메모\n'), pc = clockFor(p, editorFor(p));
+  make(p, 1, '- /새부모'); pc.show(); pc.at(2); pc.wait(5999); assert(pc.shown(), 'the caret under the new parent: held');
+  write(p, [...rows(p).slice(0, 2), '  - /새자']); pc.edit(); pc.wait(5999); assert(pc.shown()); pc.wait(1);
+  assert.equal(pc.shown(), false, 'typing under it ends the hold; its 6s run from there');
 });
