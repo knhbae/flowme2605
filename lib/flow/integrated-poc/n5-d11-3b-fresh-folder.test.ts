@@ -65,8 +65,10 @@ function editorFor(t: Phone) {
   // The editor's message: what was set, and what shows now (a setter function sees the current one).
   const messages: string[] = [], area = { value: '', selectionStart: 0, selectionEnd: 0 }; let shown = '';
   const setMessage = (value: string | ((current: string) => string)) => { shown = typeof value === 'function' ? value(shown) : value; if (typeof value === 'string') messages.push(value); };
-  const propsRef = { current: { docId: t.docId, active: true, readOnly: false, folderId: undefined, validateWorkspace: () => true } };
-  const scope = { barEditor: () => ({ instance: {}, area }), textArea: () => area, textarea: area, propsRef, props: propsRef.current, regionPortRef: { current: null },
+  const propsRef = { current: { docId: t.docId, active: true, readOnly: false, folderId: undefined as string | undefined, validateWorkspace: () => true } };
+  // The editor's host: laid out while its document is the one shown (another document, a folder view or another screen hides it).
+  const host = { shown: true, getClientRects() { return this.shown ? [{}] : []; } };
+  const scope = { barEditor: () => ({ instance: {}, area }), textArea: () => area, textarea: area, propsRef, props: propsRef.current, regionPortRef: { current: null }, hostRef: { current: host },
     currentState: () => t.draft.getState().working, draftRef: { current: t.draft }, controller: t.draft, documentInputRef: { current: t.owner },
     folderNoticeRef: t.notice, alive: true, composingRef: { current: false }, inputLockedRef: { current: false }, indentDisabled: () => false,
     folderIndentSkipped: { current: false }, indentRefusal: { current: null }, folderRefusal: { current: null }, setMessage, today: () => '2026-11-02',
@@ -82,7 +84,7 @@ function editorFor(t: Phone) {
     area.selectionStart = area.selectionEnd = column === undefined ? rows(t).slice(0, index + 1).join('\n').length : rows(t).slice(0, index).join('\n').length + (index ? 1 : 0) + column;
     return run.readBarLine() as { canOutdent: boolean; structureLock?: string };
   };
-  return { messages, touch, shown: () => shown, freshHolds: () => run.freshNoticeHolds() as boolean,
+  return { messages, touch, shown: () => shown, freshHolds: () => run.freshNoticeHolds() as boolean, view: { props: propsRef.current, host },
     /** A key typed where `touch` left the caret, through the editor's beforeinput guard. True when the guard stopped it. */
     key(inputType: string, data: string | null = null) {
       let prevented = false;
@@ -238,7 +240,7 @@ const effectOf = (deps: string) => (nodeOf(node => ts.isCallExpression(node) && 
 const clockSource = ts.transpileModule(`const restartFolderNotice = (${valueOf('restartFolderNotice')});
 const release = (${effectOf('[freshHeld]')});
 const life = (${effectOf('[folderNotice, noticeHeld, folderWaiting, freshHeld]')});`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
-type Clock = { show(): void; at(index: number, column?: number): { canOutdent: boolean }; edit(): void; wait(ms: number): void; shown(): boolean };
+type Clock = { show(): void; at(index: number, column?: number): { canOutdent: boolean }; edit(): void; sync(): void; wait(ms: number): void; shown(): boolean };
 function clockFor(t: Phone, bar: ReturnType<typeof editorFor>): Clock {
   return new Function('t', 'bar', 'programNoticeEndsAt', `
     let now = 0, timer = null, folderNotice = null, freshHeld = false, seen = {}, cleanup;
@@ -261,6 +263,7 @@ function clockFor(t: Phone, bar: ReturnType<typeof editorFor>): Clock {
       show() { setFolderNotice({ text: 'notice', tone: 'info', shownAt: now, leftBlockAt: null, operationId: t.draft.folderOperation().id }); settle(); },
       at(index, column) { const line = bar.touch(index, column); settle(); return line; },
       edit() { settle(); },
+      sync() { settle(); },
       wait(ms) { const end = now + ms; while (timer && timer.at <= end) { now = timer.at; const run = timer.run; timer = null; run(); settle(); } now = end; },
       shown: () => !!folderNotice,
     };`)(t, bar, programNoticeEndsAt) as Clock;
@@ -314,4 +317,43 @@ test('N5 3b phone 2: only a new folder\'s notice is held; its move notice ends 6
   make(p, 1, '- /새부모'); pc.show(); pc.at(2); pc.wait(5999); assert(pc.shown(), 'the caret under the new parent: held');
   write(p, [...rows(p).slice(0, 2), '  - /새자']); pc.edit(); pc.wait(5999); assert(pc.shown()); pc.wait(1);
   assert.equal(pc.shown(), false, 'typing under it ends the hold; its 6s run from there');
+});
+
+// Review P2 (11/2): the hold looked only at the caret, so a retained editor hidden behind another document, a
+// folder view or another screen kept its notice — and its ⇤ — for as long as the person stayed away. Leaving
+// starts the notice's 6s; once they have run, coming back finds no notice and the ⇤ refused, as the spec says.
+type View = { props: { active: boolean; folderId: string | undefined }; host: { shown: boolean } };
+const leaving: [string, (view: View) => void, (view: View) => void][] = [
+  ['a folder view of this document', view => { view.props.folderId = 'folder-x'; view.host.shown = false; }, view => { view.props.folderId = undefined; view.host.shown = true; }],
+  ['another document (this editor retained, hidden)', view => { view.props.active = false; view.host.shown = false; }, view => { view.props.active = true; view.host.shown = true; }],
+  ['the 오늘 screen (the space hidden, this editor still its document)', view => { view.host.shown = false; }, view => { view.host.shown = true; }],
+];
+for (const [name, away, back] of leaving) {
+  test(`N5 3b phone 2 review: ${name} for 6s — the notice goes, and back on the child line ⇤ is refused; nothing comes back`, () => {
+    const { t, bar, clock, child } = madeSlowly('메모\n');
+    clock.wait(10000); assert(clock.shown(), 'held while shown');
+    away(bar.view); clock.sync(); clock.wait(5999); assert(clock.shown()); clock.wait(1); assert.equal(clock.shown(), false);
+    back(bar.view); clock.sync();
+    const raw = t.draft.getState().raw, parent = folderOf(t, '새부모').id;
+    assert.equal(clock.at(child).canOutdent, false); assert.equal(bar.outdent(), false);
+    assert.equal(t.draft.getState().raw, raw); assert.equal(folderOf(t, '새자식').parentId, parent);
+    assert.deepEqual(bar.messages, [FOLDER_INDENT_NOTICE]);
+    clock.wait(60000); assert.equal(clock.shown(), false, 'no notice comes back');
+    assert.equal(bar.freshHolds(), false);
+  });
+  test(`N5 3b phone 2 review: ${name} for less than 6s — back in time, the notice and its ⇤ are still there`, () => {
+    const { t, bar, clock, child } = madeSlowly('메모\n');
+    away(bar.view); clock.sync(); clock.wait(4000); back(bar.view); clock.sync(); assert(clock.shown());
+    clock.wait(20000); assert(clock.shown(), 'shown again with the caret under it: held');
+    assert.equal(clock.at(child).canOutdent, true); assert(bar.outdent()); assert.equal(folderOf(t, '새자식').parentId, null);
+  });
+}
+
+test('N5 3b phone 2 review: the editor looks again when it is shown, hidden, made inactive or set on a folder', () => {
+  const sync = nodeOf(node => ts.isCallExpression(node) && node.expression.getText(tree) === 'useEffect'
+    && /syncFreshNotice\(\); syncBarLine\(\);/.test(node.arguments[0].getText(tree))) as ts.CallExpression;
+  assert.deepEqual(sync.arguments[1].getText(tree).slice(1, -1).split(', '), ['folderNotice', 'draft.working', 'props.authoringMode', 'props.active', 'props.folderId']);
+  const resize = nodeOf(node => ts.isCallExpression(node) && node.expression.getText(tree) === 'useEffect'
+    && /new ResizeObserver\(\(\) => syncFreshNotice\(\)\); observer\.observe\(host\);/.test(node.arguments[0].getText(tree))) as ts.CallExpression;
+  assert.match(resize.arguments[0].getText(tree), /const host = hostRef\.current;/);
 });

@@ -631,10 +631,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   /** N5 3b (phone): D11 B's ⇤ lasts only while the new folder's notice shows, and on a phone getting back onto that
    *  line takes longer than an info notice's 6s. So, like a choice, that notice stays while the ⇤ is still open
-   *  (nothing edited since) and the caret is on the new line or under it; once either ends, its 6s start. */
+   *  (nothing edited since) and the caret is on the new line or under it; once either ends, its 6s start.
+   *  Review P2: only while this editor is the one shown — another document, a folder view or another screen
+   *  starts them too, so a long stay there never brings the ⇤ back. */
   function freshNoticeHolds() {
     const controller = draftRef.current, operation = controller?.folderOperation(), area = textArea();
-    if (propsRef.current.folderId || !controller || !area || !operation?.lineId || folderNoticeRef.current?.operationId !== operation.id
+    if (propsRef.current.folderId || propsRef.current.active === false || !hostRef.current?.getClientRects().length
+      || !controller || !area || !operation?.lineId || folderNoticeRef.current?.operationId !== operation.id
       || !controller.freshFolderLine(operation.lineId)) return false;
     const rows = textEditorRows(controller.getState().working, propsRef.current.docId), start = rows.findIndex(row => row.id === operation.lineId);
     const index = area.value.slice(0, area.selectionStart).split('\n').length - 1;
@@ -1762,7 +1765,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const timer = window.setTimeout(() => setFolderNotice(current => current === folderNotice ? null : current), Math.max(0, ends - Date.now()));
     return () => window.clearTimeout(timer);
   }, [folderNotice, noticeHeld, folderWaiting, freshHeld]);
-  useEffect(() => { syncFreshNotice(); syncBarLine(); }, [folderNotice, draft.working, props.authoringMode]);
+  useEffect(() => { syncFreshNotice(); syncBarLine(); }, [folderNotice, draft.working, props.authoringMode, props.active, props.folderId]);
+  // Review P2: a screen or document hiding this retained editor changes none of its props, only its size.
+  useEffect(() => {
+    const host = hostRef.current; if (!host) return;
+    const observer = new ResizeObserver(() => syncFreshNotice()); observer.observe(host);
+    return () => observer.disconnect();
+  }, [props.docId]);
   useEffect(() => {
     if (props.active !== false) return;
     const tools = hostRef.current?.closest('section')?.querySelector<HTMLDetailsElement>('[data-editor-tools]');
