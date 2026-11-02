@@ -699,11 +699,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           scheduleSave(); return;
         }
         if (moved.reason === 'name-conflict') why = 'name-conflict';
-        // N7 review: the typed name, refused and put back, goes to the 복구함 and can be had again from there.
-        if (moved.reason === 'used-elsewhere') {
-          why = 'shared'; boxed = !!propsRef.current.onKeepRefusedInput;
-          propsRef.current.onKeepRefusedInput?.({ title: `‘${linked.title}’ 폴더 줄에 쓴 이름`, raw: (area.value.split('\n')[index] ?? lines[index].text).trim() });
-        }
+        if (moved.reason === 'used-elsewhere') why = 'shared';
+      }
+      // N7 review: every name put back (left, off, two of it there, used elsewhere, refused) keeps what was typed in
+      // the 복구함, where it can be had again; a notice alone was lost once closed. Nothing typed, nothing kept.
+      if (linked && linked.id !== 'folder-unfiled' && typed && propsRef.current.onKeepRefusedInput) {
+        boxed = true; propsRef.current.onKeepRefusedInput({ title: `‘${linked.title}’ 폴더 줄에 쓴 이름`, raw: (area.value.split('\n')[index] ?? lines[index].text).trim() });
       }
       const beforeRaw = area.value, { selectionStart, selectionEnd, selectionDirection } = area;
       if (!controller.restoreFolderLineName(index)) return;

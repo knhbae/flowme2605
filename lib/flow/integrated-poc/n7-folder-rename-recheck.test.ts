@@ -45,18 +45,20 @@ function editor(mine: TextWorkspaceState, a: string, latest: TextWorkspaceState 
     showFolderNotice: (text: string) => notices.push(text), showFolderOperation: (text: string) => notices.push(text),
     showFolderMove: (_before: unknown, _after: unknown, _line: string, fromId: string) => moves.push(fromId) };
   const finish = new Function(...Object.keys(scope), finishSource + '\nreturn finishHeldFolderLine;')(...Object.values(scope)) as (explicit?: boolean) => void;
-  /** The line typed as the review did, each a held edit, then Enter on it (beforeEnter's finish). */
-  const typeAndEnter = (...texts: string[]) => {
+  /** The line typed as the review did, each a held edit, then its finish: Enter on it (beforeEnter's), or, with
+   *  explicit false, the caret leaving it; offAtStart, a line already off its folder's name before these edits. */
+  const typeAndFinish = (options: { explicit?: boolean; offAtStart?: boolean }, ...texts: string[]) => {
     const line = M.getDocument(controller.getState().working, a)!.lines[0].id;
     for (const text of texts) {
       const rows = controller.getState().raw.split('\n'); rows[0] = text; const value = rows.join('\n');
       assert(controller.updateRaw(value, '', { inputType: 'insertText', folderHold: [0] } as never));
       area.value = value; area.selectionStart = area.selectionEnd = text.length;
-      heldFolderLineRef.current = { id: line, left: false, offAtStart: false };
+      heldFolderLineRef.current = { id: line, left: false, offAtStart: options.offAtStart ?? false };
     }
-    finish(true);
+    finish(options.explicit ?? true);
   };
-  return { controller, typeAndEnter, notices, moves, kept };
+  const typeAndEnter = (...texts: string[]) => typeAndFinish({}, ...texts);
+  return { controller, typeAndEnter, typeAndFinish, notices, moves, kept };
 }
 const titleOf = (state: TextWorkspaceState, id: string) => state.folders.find(folder => folder.id === id)?.title;
 
@@ -119,4 +121,46 @@ test('N7: the save itself — a rename of a folder another tab has started using
   const all = structuredClone(other); all.folders.find(folder => folder.id === original.id)!.title = 'NewTitle';
   assert.equal(save(other, other, all).ok, true);
   assert.equal(M.getDocument(other, b)!.lines[0].text, '- /Original');
+});
+
+// N7 review 3 (11/2): every other D3 B refusal put the name back with the typed one in its notice only (since N4):
+// left without Enter, a line already off its folder's name, two of the new name there. Each keeps it in the 복구함 too.
+const keptName = [{ title: '‘Original’ 폴더 줄에 쓴 이름', raw: '- /NewTitle' }];
+test('N7 3: left without Enter — the name goes back, the typed one is kept in the 복구함 and the notice says so', () => {
+  const { mine, a, original } = workspaces();
+  const e = editor(mine, a, mine);
+  e.typeAndFinish({ explicit: false }, '- /', '- /NewTitle');
+  assert.equal(titleOf(e.controller.getState().working, original.id), 'Original');
+  assert.equal(e.controller.getState().raw.split('\n')[0], '- /Original');
+  assert.deepEqual(e.kept, keptName);
+  assert.match(e.notices[0], /^폴더 이름은 Enter로 마칠 때만 바뀝니다 · ‘Original’.* 두었습니다\. 입력\(‘NewTitle’\)은 복구함에 보관했습니다$/);
+});
+test('N7 3: a line already off its folder\'s name, finished with Enter — kept in the 복구함 too', () => {
+  const { mine, a } = workspaces();
+  const e = editor(mine, a, mine);
+  e.typeAndFinish({ offAtStart: true }, '- /NewTitle');
+  assert.deepEqual(e.kept, keptName);
+  assert.match(e.notices[0], /^이미 폴더 이름과 달랐던 줄은 옮기지 않습니다 · ‘Original’.* 두었습니다\. 입력\(‘NewTitle’\)은 복구함에 보관했습니다$/);
+});
+test('N7 3: two folders of the new name in its place (old data) — kept in the 복구함, the notice says so', () => {
+  const { mine, a, original } = workspaces();
+  const doubled = structuredClone(mine);
+  doubled.folders.push({ ...original, id: 'folder-n7-twin-1', title: 'NewTitle' }, { ...original, id: 'folder-n7-twin-2', title: 'NewTitle' });
+  const e = editor(doubled, a, doubled);
+  e.typeAndEnter('- /NewTitle');
+  assert.equal(titleOf(e.controller.getState().working, original.id), 'Original');
+  assert.deepEqual(e.kept, keptName);
+  assert.equal(e.notices[0], '같은 자리에 ‘NewTitle’가 둘이라 옮기지 않았습니다 · 폴더 관리에서 정리할 수 있습니다 · 입력은 복구함에 보관했습니다');
+});
+test('N7 3: the name only emptied and left — nothing typed, nothing kept', () => {
+  const { mine, a } = workspaces();
+  const e = editor(mine, a, mine);
+  e.typeAndFinish({ explicit: false }, '- /');
+  assert.deepEqual(e.kept, []);
+  assert.equal(e.controller.getState().raw.split('\n')[0], '- /Original');
+});
+test('N7 3: the words without a 복구함 stay as they were', () => {
+  assert.equal(programFolderKeptText('Original', 'NewTitle', 'left'), '폴더 이름은 Enter로 마칠 때만 바뀝니다 · ‘Original’로 두었습니다(입력: ‘NewTitle’)');
+  assert.equal(programFolderKeptText('Original', 'NewTitle', 'name-conflict'), '같은 자리에 ‘NewTitle’가 둘이라 옮기지 않았습니다 · 폴더 관리에서 정리할 수 있습니다');
+  assert.equal(programFolderKeptText('Original', 'NewTitle', 'refused', true), '이 줄은 옮길 수 없습니다 · ‘Original’로 두었습니다. 입력(‘NewTitle’)은 복구함에 보관했습니다');
 });
