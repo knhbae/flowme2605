@@ -7,7 +7,7 @@ import { createProgramTextDraft, FOLDER_INDENT_NOTICE } from './program-text-dra
 import { createProgramDocumentInput } from './program-document-input';
 import { createEmptyTextWorkspace, textEditorRows, textWorkspaceModel as M } from './text-workspace';
 import { folderBarLine, taskMarkerLock, writingBarLine } from './writing-bar';
-import { folderRefusalStands, indentTouchesLinkedFolder, textEditTouchesLinkedFolderIndent } from './folder-line-hold';
+import { folderRefusalStands, indentTouchesLinkedFolder, linkedFolderLinesTextEditMoves, textEditTouchesLinkedFolderIndent } from './folder-line-hold';
 import type { FolderIndentPlan } from './folder-operation';
 
 // N5 phone 3b (S4-V11-PHONE-RESULT, 11/2): '폰부모' then '폰부모 › 폰자식2' made at the end of a document whose earlier
@@ -70,7 +70,7 @@ function editorFor(t: Phone) {
     folderIndentSkipped: { current: false }, indentRefusal: { current: null }, folderRefusal: { current: null }, setMessage, today: () => '2026-11-02',
     compositionGeneration: { current: 0 }, undoFolderMove: () => false, explainRawFolderUndo: () => {}, heldInput: () => undefined, accessFor: () => undefined,
     currentDoc: () => M.getDocument(t.draft.getState().working, t.docId), programTextProtectionMessage: () => 'PROTECTED',
-    textEditorRows, writingBarLine, taskMarkerLock, folderBarLine, indentTouchesLinkedFolder, textEditTouchesLinkedFolderIndent, folderRefusalStands,
+    textEditorRows, writingBarLine, taskMarkerLock, folderBarLine, indentTouchesLinkedFolder, textEditTouchesLinkedFolderIndent, linkedFolderLinesTextEditMoves, folderRefusalStands,
     FOLDER_INDENT_NOTICE, FOLDER_STRUCTURE_LOCK: 'REGION', M };
   const run = new Function(...Object.keys(scope), pressSource
     + '\nreturn { readBarLine, currentIndentAction, applyFreshIndent, adjustIndentPlan, canApplyIndent, onIndentStart, onIndentEnd, preventLockedInput };')(...Object.values(scope));
@@ -200,6 +200,23 @@ test('N5 3b review: a reason about the moved line itself is taken down by its mo
   bar.touch(3, 0); assert.equal(bar.key('insertText', ' '), true); assert.equal(bar.shown(), FOLDER_INDENT_NOTICE);
   bar.touch(3); assert(bar.outdent()); assert.equal(folderOf(t, '새자식').parentId, null);
   assert.equal(bar.shown(), '');
+});
+// Re-review P2 (11/2): a join at the fresh child's start was remembered with the line above it too (the new parent,
+// still linked), so its reason stayed after the child moved. Only the line the stop protects is remembered now.
+for (const [name, line, column, inputType] of [['⌫ at the fresh child line\'s start', 3, 0, 'deleteContentBackward'],
+  ['Delete at the end of the new parent line', 2, undefined, 'deleteContentForward']] as const) test(`N5 3b re-review: ${name} is stopped; the child then moves and that reason goes`, () => {
+  const { t, bar } = oldAndNew(), raw = t.draft.getState().raw;
+  bar.touch(line, column); assert.equal(bar.key(inputType), true); assert.equal(bar.shown(), FOLDER_INDENT_NOTICE); assert.equal(t.draft.getState().raw, raw);
+  bar.touch(3); assert(bar.outdent()); assert.equal(folderOf(t, '새자식').parentId, null);
+  assert.equal(bar.shown(), '', 'the stop was about the child only');
+  assert.equal(folderOf(t, '새부모').parentId, null);
+});
+test('N5 3b re-review: the stop remembers only the folder line it protects', () => {
+  const { t } = oldAndNew(), working = t.draft.getState().working, lines = M.getDocument(working, t.docId)!.lines, raw = t.draft.getState().raw;
+  const childStart = raw.split('\n').slice(0, 3).join('\n').length + 1;
+  assert.deepEqual(linkedFolderLinesTextEditMoves(working, t.docId, childStart - 1, childStart, ''), [lines[3].id], '⌫ joining the child to the parent');
+  assert.deepEqual(linkedFolderLinesTextEditMoves(working, t.docId, childStart + 1, childStart + 1, ' '), [lines[3].id], 'a space in its spaces');
+  assert.deepEqual(linkedFolderLinesTextEditMoves(working, t.docId, childStart + 5, childStart + 5, 'x'), [], 'its name is not that');
 });
 test('N5 3b review: a reason whose folder line was emptied since no longer stands; one with any linked line among them does', () => {
   const { t } = oldAndNew(), working = t.draft.getState().working, lines = M.getDocument(working, t.docId)!.lines;

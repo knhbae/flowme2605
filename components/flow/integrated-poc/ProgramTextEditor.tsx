@@ -29,7 +29,7 @@ import { applyProgramLinePermutation, createProgramPermutationHistory } from '@/
 import { programSame } from '@/lib/flow/integrated-poc/controller';
 import { readProgramFolderCopyPreview, isProgramFolderCopyPreviewCurrent, copyProgramFolderOccurrence, type ProgramFolderCopyPreview } from '@/lib/flow/integrated-poc/folder-copy';
 import { createAlphaStructuralDraft, type AlphaStructuralDraft } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
-import { folderRefusalStands, indentTouchesLinkedFolder, restoredLineOffset, textEditTouchesLinkedFolderIndent, type FolderIndentRefusal } from '@/lib/flow/integrated-poc/folder-line-hold';
+import { folderRefusalStands, indentTouchesLinkedFolder, linkedFolderLinesTextEditMoves, restoredLineOffset, textEditTouchesLinkedFolderIndent, type FolderIndentRefusal } from '@/lib/flow/integrated-poc/folder-line-hold';
 import { createProgramTextDraft, FOLDER_INDENT_NOTICE, type ProgramTextCommit, type ProgramTextCommitOptions, type ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
 import { programBarDropNotice, programIndentRefusalNotice, programIndentShape, type ProgramBarDrop, type ProgramIndentRefusal } from '@/lib/flow/integrated-poc/bar-indent-notice';
 import {createProgramDocumentInput,type ProgramDocumentInput} from '@/lib/flow/integrated-poc/program-document-input';
@@ -823,14 +823,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     }
     syncBarLine();
   }
-  /** S5: a refused ⇤·⇥ says why: the editor's state, the model's reason, or the line's own shape. A linked folder
-   *  line or a protection rule already showed its notice, and a folder region shows its structure lock. */
-  /** D11: say why lines `from`..`to` do not move by text, and remember them (N5 3b review). */
-  function refuseFolderIndent(state: TextWorkspaceState, from: number, to: number) {
-    const docId = propsRef.current.docId;
-    folderRefusal.current = { docId, lineIds: (M.getDocument(state, docId)?.lines ?? []).slice(Math.max(0, from), to + 1).map(line => line.id) };
+  /** D11: say why these folder lines do not move by text, and remember which ones it was about (N5 3b review). */
+  function refuseFolderIndent(lineIds: string[]) {
+    folderRefusal.current = { docId: propsRef.current.docId, lineIds };
     setMessage(FOLDER_INDENT_NOTICE);
   }
+  /** S5: a refused ⇤·⇥ says why: the editor's state, the model's reason, or the line's own shape. A linked folder
+   *  line or a protection rule already showed its notice, and a folder region shows its structure lock. */
   function explainIndent(action: 'indent' | 'outdent', area: HTMLTextAreaElement) {
     const recorded = indentRefusal.current; indentRefusal.current = null;
     if (recorded?.kind === 'folder' || recorded?.kind === 'protected') return;
@@ -1400,7 +1399,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         if (indentCandidate && indentCandidate.before === state.working && indentCandidate.generation === controller.generation()
           && indentCandidate.plan.nextRaw === raw && folderNoticeRef.current?.operationId === indentCandidate.operationId) return true;
         if (state.raw === textArea()?.value && indentTouchesLinkedFolder(state.working, props.docId, details.startLine, details.endLine)) {
-          folderIndentSkipped.current = true; indentRefusal.current = { kind: 'folder' }; refuseFolderIndent(state.working, details.startLine, details.endLine); return false;
+          folderIndentSkipped.current = true; indentRefusal.current = { kind: 'folder' };
+          refuseFolderIndent((M.getDocument(state.working, props.docId)?.lines ?? []).slice(details.startLine, details.endLine + 1).map(line => line.id)); return false;
         }
         // The model's own reason is kept for the bar's notice (S5).
         const result = M.editTextResult(state.working, props.docId, raw, { progressDate: today() });
@@ -1582,7 +1582,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           if (!shownState.invalid && textarea.value === shownState.raw && M.raw(M.getDocument(shownState.working, props.docId)) === textarea.value
             && textEditTouchesLinkedFolderIndent(shownState.working, props.docId, start, end, insert)) {
             event.preventDefault(); event.stopImmediatePropagation();
-            refuseFolderIndent(shownState.working, textarea.value.slice(0, start).split('\n').length - 1, textarea.value.slice(0, end).split('\n').length - 1);
+            refuseFolderIndent(linkedFolderLinesTextEditMoves(shownState.working, props.docId, start, end, insert));
             indentRefusal.current = { kind: 'folder' }; return;
           }
           if (!controller.prepareRaw(raw,{inputType:type??'',compositionGeneration:compositionGeneration.current,...(type==='insertFromPaste'?{inputSplice:{start,end,text:insert}}:{}),folderHold:heldInput(raw,start+insert.length,type??'')})) {
