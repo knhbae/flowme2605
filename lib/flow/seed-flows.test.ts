@@ -1369,7 +1369,8 @@ test('reviewed source mismatches stay in preview while corrected routes use curr
     'real-gov24-resident-register-copy',
   ];
   for (const slug of reviewedArchivedSlugs) {
-    assert.equal(bySlug.get(slug)?.flow.source_checked_at, '2026-08-22', slug);
+    // Re-read against the same sources on 2026-11-02; the source-fit audit stays the 08-22 one.
+    assert.equal(bySlug.get(slug)?.flow.source_checked_at, '2026-11-02', slug);
     assert.equal(getSourceFitAudit(slug)?.checkedAt, '2026-08-22', slug);
   }
 

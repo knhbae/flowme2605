@@ -318,7 +318,7 @@ const sourceReviewMeta: Record<
   'family-certificate-issue': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-08-22',
+    source_checked_at: '2026-11-02',
     conversion_note: '대한민국 법원 전자가족관계등록시스템을 정본으로 바꾸고 제출처별 요구 범위는 개인 메모로 분리했습니다.',
     primary_destination: 'memo',
   },

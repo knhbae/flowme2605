@@ -59,6 +59,36 @@ const sourceFreshnessCorrectedSlugs = new Set([
   'real-childcare-vaccination-visit-prep',
   'real-mofa-overseas-travel-prep',
 ]);
+// Re-read against their sources on this date and still within them. Only source_checked_at moves; the content
+// and its updated_at stay as they were.
+const sourceRecheckDate = '2026-11-02';
+const sourceRecheckedSlugs = new Set([
+  'real-thankyou-bubu-video-full-body-no-jump',
+  'real-thankyou-bubu-video-daily-stretch-9min',
+  'real-thankyou-bubu-video-belly-side-all-in-one',
+  'real-thankyou-bubu-video-no-knee-cardio-strength',
+  'real-thankyou-bubu-video-arm-back-shoulder',
+  'real-thankyou-bubu-video-waist-8cm',
+  'real-thankyou-bubu-video-8min-cardio',
+  'real-thankyou-bubu-video-3min-arm',
+  'real-thankyou-bubu-video-3min-abs',
+  'real-thankyou-bubu-video-lower-belly-8min',
+  'real-thankyou-bubu-home-workout-starter',
+  'real-thankyou-bubu-20min-routine',
+  'real-fitvely-video-body-fat-6kg-method',
+  'real-fitvely-video-carb-reason',
+  'real-fitvely-video-three-week-check',
+  'real-fitvely-video-post-workout-nutrition',
+  'real-fitvely-video-carb-amount-shorts',
+  'real-fitvely-video-after-work-nutrition',
+  'real-fitvely-video-weight-class-method',
+  'real-fitvely-video-bulk-up-method',
+  'real-fitvely-video-workout-order',
+  'real-fitvely-video-workout-split-science',
+  'real-gov24-resident-register-copy',
+  'real-ohouse-movein-cleaning-check',
+  'real-mofa-overseas-travel-prep',
+]);
 const now = '2026-05-21T00:00:00.000Z';
 
 type RealSourceAction = {
@@ -191,7 +221,11 @@ function buildBundle(spec: RealSourceSpec): FlowBundle {
       source_modified_at: spec.source_modified_at,
       source_checked_at:
         spec.source_checked_at ??
-        (sourceFreshnessReviewedSlugs.has(spec.slug) ? sourceFreshnessReviewDate : checkedAt),
+        (sourceRecheckedSlugs.has(spec.slug)
+          ? sourceRecheckDate
+          : sourceFreshnessReviewedSlugs.has(spec.slug)
+            ? sourceFreshnessReviewDate
+            : checkedAt),
       conversion_note: spec.conversion_note,
       risk_level: spec.risk_level,
       warning: spec.warning,
