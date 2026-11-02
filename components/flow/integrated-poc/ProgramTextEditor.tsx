@@ -9,7 +9,7 @@ import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { readChildDrafts, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
 import { createWritingBarHold, folderBarLine, heldTargetVerdict, taskMarkerLock, toggleTaskLine, writingBarLine, writingBarTarget, type WritingBarAction, type WritingBarLine, type WritingBarTarget } from '@/lib/flow/integrated-poc/writing-bar';
-import { programFlowBelow, programKeyboardBarCramped, programKeyboardBarPlace, programKeyboardRoom, programVisibleBottom } from '@/lib/flow/integrated-poc/keyboard-bar-place';
+import { programFlowBelow, programKeyboardBarCramped, programKeyboardBarPlace, programKeyboardBarSettle, programKeyboardRoom, programVisibleBottom } from '@/lib/flow/integrated-poc/keyboard-bar-place';
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
 import { createFolderPickerDismissal, createFolderPickerHold, createFolderPickerIndex, folderPickerKey, folderPickerNavigation, folderPickerSignature, folderPickerTarget,
@@ -1872,6 +1872,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (!host.getClientRects().length) { fitFolderRegion(host.closest('section'), barShown, bottom); return; }
       // W2: the move notice and the last message sit between the body and the bar.
       const notice = noticeRef.current;
+      // v14 phone: where it is drawn, not window.innerHeight, decides (an address bar brought back by the keyboard).
+      const settled = barShown ? programKeyboardBarSettle(parseFloat(bar!.style.getPropertyValue('--writing-bar-bottom')), bar!.getBoundingClientRect().bottom, bottom) : null;
+      if (settled !== null) bar!.style.setProperty('--writing-bar-bottom', `${settled}px`);
       if (notice?.getClientRects().length) bottom -= notice.getBoundingClientRect().height;
       // The 17px fix: while no keyboard is up the page is no taller than the screen, so the body also leaves room
       // for what the page lays out below it (the work pane's and the page's bottom paddings, the notices, fix 5's

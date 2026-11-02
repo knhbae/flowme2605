@@ -18,6 +18,15 @@ export function programKeyboardBarPlace(view: View, visual: Visual | null | unde
   };
 }
 
+/** v14 phone: that bottom is measured from window.innerHeight, but the fixed bar's containing block can be taller.
+ *  Scrolled down with the browser's address bar hidden, an opening keyboard brings the address bar back; the
+ *  bar then sat that much lower, under the keyboard, until the keyboard was closed and opened again. So the bar
+ *  drawn is measured: its bottom off the visible bottom by more than a pixel moves it by that much. */
+export function programKeyboardBarSettle(barBottom: number, drawnBottom: number, visibleBottom: number): number | null {
+  const off = drawnBottom - visibleBottom;
+  return Number.isFinite(off) && Number.isFinite(barBottom) && Math.abs(off) > 1 ? Math.max(0, barBottom + off) : null;
+}
+
 /** N1 fix 5: room under the body while writing on a phone, so the page can scroll the body (and its last line)
  *  above the fixed bar. With a keyboard up (the visual viewport ends above the screen's bottom) it is a whole
  *  screen, so the scroll range does not change as the page scrolls; without one it is the bar's height. */
