@@ -142,7 +142,7 @@ export function createProgramTextDraft(
   let lastMove: { before: TextWorkspaceState; after: TextWorkspaceState; lineIds: string[] } | null = null;
   let folderSequence = 0;
   let folderOperation: { id: number; at: number; change: ProgramFolderOperation; generation: number; fresh: boolean;
-    automaticBlank?: { id: string; text: string } } | null = null;
+    automaticBlank?: { id: string; text: string }; relinked?: true } | null = null;
   let folderEnter: { before: TextWorkspaceState; generation: number; lineId: string } | null = null;
   const folderIndentProofs = new WeakSet<object>();
   // Folders this draft made. S4 v14 phone (11/2): a new folder's line emptied and typed again finds the folder by its
@@ -150,9 +150,10 @@ export function createProgramTextDraft(
   const madeFolders = new Set<string>();
   // N6 review (11/2): D11 B also asks the host's newest workspace. Another tab may have filed a document in the folder,
   // linked it or moved it while this input, unsaved, keeps the folder as it was; then the line stays where it is.
+  // N7 (review n6-fix): so too for another task or item of this document filed in it there, one this draft does not know.
   const latestFree = (folderId: string) => {
     const latest = latestWorkspace(), parent = state.working.folders.find(folder => folder.id === folderId)?.parentId ?? null;
-    return !latest || programFolderStillFree(latest, docId, folderId, parent);
+    return !latest || programFolderStillFree(latest, docId, folderId, parent, [state.committed, state.working]);
   };
   function recordFolder(before: TextWorkspaceState, after: TextWorkspaceState) {
     const change = captureProgramFolderOperation(before, after);
@@ -171,7 +172,7 @@ export function createProgramTextDraft(
     generation:()=>inputGeneration,
     folderOperation: () => folderOperation && { id: folderOperation.id, kind: folderOperation.change.kind, at: folderOperation.at,
       lineId: folderOperation.change.createdLines[0]?.lineId ?? folderOperation.change.lines[0]?.lineId,
-      notice: programFolderOperationNotice(state.working, folderOperation.change) },
+      notice: programFolderOperationNotice(state.working, folderOperation.change), undoable: !folderOperation.relinked },
     endFolderNotice(id?: number) { if (folderOperation && (id === undefined || folderOperation.id === id)) { folderOperation = null; folderEnter = null; } },
     noteFolderEnter(lineId: string) {
       if (folderOperation && folderOperation.generation === inputGeneration && !folderOperation.automaticBlank
@@ -198,7 +199,8 @@ export function createProgramTextDraft(
         || !programFreshFolderAvailable(state.working, { docId, lineId, folderId: binding.scopeId }) || !latestFree(binding.scopeId)) return false;
       const change = captureProgramFolderOperation({ ...state.working, bindings: state.working.bindings.filter(row => row !== binding) }, state.working);
       if (change?.kind !== 'link' || change.createdLines.length !== 1) return false;
-      folderOperation = { id: ++folderSequence, at: Date.now(), change, generation: inputGeneration, fresh: true }; folderEnter = null;
+      // N7 (review n6-fix, 11/2): the line never let the folder go, so this link has nothing to undo; undone, it unlinks.
+      folderOperation = { id: ++folderSequence, at: Date.now(), change, generation: inputGeneration, fresh: true, relinked: true }; folderEnter = null;
       return true;
     },
     planFreshFolderIndent(plan: FolderIndentPlan, operationId: number) {
@@ -230,6 +232,7 @@ export function createProgramTextDraft(
     },
     undoFolderOperation(id: number) {
       if (!basicCheckReady() || folderOperation?.id !== id) return { ok: false as const, reason: '이 폴더 동작의 알림이 끝났습니다. 현재 입력은 유지했습니다.' };
+      if (folderOperation.relinked) return { ok: false as const, reason: '다시 연결한 폴더 줄은 되돌릴 폴더 동작이 없습니다. 현재 입력은 유지했습니다.' };
       const result = undoProgramFolderOperation(state.working, folderOperation.change);
       if (!result.ok) return result;
       if (!validateWorkspace(result.next)) return { ok: false as const, reason: '현재 문서의 보존 조건이 바뀌어 되돌리지 않았습니다. 현재 입력은 유지했습니다.' };

@@ -51,13 +51,17 @@ export function programFolderUses(state: TextWorkspaceState, folderId: string, e
 }
 /** N6 review (11/2): the folder is used by document `docId` alone there (its lines, their tasks and items), under
  *  `parentId`. A draft kept from syncing (its input unsaved) holds the folder as it was; another tab may have filed
- *  a document in it, linked it from another document or moved it since. Absent there (not saved yet), it is free. */
-export function programFolderStillFree(state: TextWorkspaceState, docId: string, folderId: string, parentId: string | null): boolean {
+ *  a document in it, linked it from another document or moved it since. Absent there (not saved yet), it is free.
+ *  N7 (review n6-fix, 11/2): each of those uses is one of `known` too (the draft's base and its input). Another tab
+ *  may have filed another task or item of this same document in it; the move would take that along. */
+export function programFolderStillFree(state: TextWorkspaceState, docId: string, folderId: string, parentId: string | null, known: TextWorkspaceState[]): boolean {
   const folder = state.folders.find(entry => entry.id === folderId);
   if (!folder) return true;
   if ((folder.parentId ?? null) !== parentId) return false;
   const own = new Set(M.getDocument(state, docId)?.lines.map(line => line.id) ?? []);
-  return programFolderUses(state, folderId).every(use => use.startsWith(`line:${docId}:`) || /^(task|item):/.test(use) && own.has(use.slice(5)));
+  const seen = new Set(known.flatMap(entry => programFolderUses(entry, folderId)));
+  return programFolderUses(state, folderId).every(use => seen.has(use)
+    && (use.startsWith(`line:${docId}:`) || /^(task|item):/.test(use) && own.has(use.slice(5))));
 }
 /** N7 (review n6-phone-3, 11/2): the folder's uses outside document `docId` there: a line, task or item of another
  *  document, or a document filed in it. Absent there, none. */
@@ -86,12 +90,12 @@ export function programFolderRenamesStillOwn(expected: TextWorkspaceState, next:
   });
 }
 /** N6 review: a save that moves a folder this document alone used (D11 B) is refused when, in the workspace it is
- *  saved into, the folder is gone, moved, or used elsewhere. */
+ *  saved into, the folder is gone, moved, or used elsewhere, or (N7) by anything of this document the save does not know. */
 export function programFolderMovesStillFree(expected: TextWorkspaceState, next: TextWorkspaceState, before: TextWorkspaceState, docId: string): boolean {
   return next.folders.every(folder => {
     const was = expected.folders.find(entry => entry.id === folder.id);
-    if (!was || (was.parentId ?? null) === (folder.parentId ?? null) || !programFolderStillFree(expected, docId, folder.id, was.parentId ?? null)) return true;
-    return before.folders.some(entry => entry.id === folder.id) && programFolderStillFree(before, docId, folder.id, was.parentId ?? null);
+    if (!was || (was.parentId ?? null) === (folder.parentId ?? null) || !programFolderStillFree(expected, docId, folder.id, was.parentId ?? null, [expected])) return true;
+    return before.folders.some(entry => entry.id === folder.id) && programFolderStillFree(before, docId, folder.id, was.parentId ?? null, [expected, next]);
   });
 }
 function regionIds(state: TextWorkspaceState, region: Region): string[] | null {

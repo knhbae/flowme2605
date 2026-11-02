@@ -28,7 +28,7 @@ function fixture(raw = '- /운동\n  - /식단\n끝', line = 1, held: boolean | 
   const owner = createProgramDocumentInput(text, docId), controller = createProgramTextDraft(owner.initial, docId, async () => true, () => {}, () => true, owner, true);
   const caret = raw.split('\n').slice(0, line + 1).join('\n').length;
   const area = { value: raw, selectionStart: caret, selectionEnd: caret, readOnly: false };
-  const heldFolderLineRef = { current: null as null | { id: string; left: boolean; offAtStart: boolean } };
+  const heldFolderLineRef = { current: null as null | { id: string; left: boolean; offAtStart: boolean; named?: boolean } };
   const composingRef = { current: false }, inputLockedRef = { current: false }, draftRef = { current: controller };
   const props = { docId }, propsRef = { current: { docId, readOnly: false, active: true } }; let saves = 0;
   const offered: string[][] = [];
@@ -145,4 +145,39 @@ test('S4 v16 phone path: the editor marks a held line named only when an edit ch
   assert.match(source, /named: !!same\?\.named \|\| nameOf\(beforeText\) !== nameOf\(afterText\) \};/);
   assert.match(source, /if \(index >= 0 && linked && held\.named && FOLDER_LINE\.test\(lines\[index\]\.text\) && controller\.relinkFolderLine\(lines\[index\]\.id\)\)/);
   assert.match(source, /showFolderOperation\(notice, 'info', lines\[index\]\.id, \[\], false\);/);
+});
+
+// N7 (review n6-fix, 11/2): that notice lost its button but kept its operation, and ↶ (the bar's, or historyUndo) still
+// undid the link: '/식단' became plain '식단', unlinked. The editor's own ↶ step (undoFolderMove) now leaves such a link
+// to the text's undo, and the draft refuses to undo it for anyone else.
+const undoMove = find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'undoFolderMove').getText(tree);
+function undoFor(f: ReturnType<typeof fixture>, operationId: number | undefined) {
+  const warned: string[] = [];
+  const undo = evaluate<() => boolean>(undoMove, { draftRef: f.draftRef, folderNoticeRef: { current: { operationId } }, composingRef: f.composingRef,
+    inputLockedRef: f.inputLockedRef, propsRef: f.propsRef, shown: () => true, folderRawUndoRef: { current: true },
+    showFolderNotice: (text: string) => warned.push(text), scheduleSave: () => {} }, 'undoFolderMove');
+  return { undo, warned };
+}
+test('N7 review n6-fix: a name typed back, linked again — ↶ and historyUndo leave it to the text undo; the line stays linked', () => {
+  const f = fixture(); f.enter();
+  const line = M.getDocument(f.controller.getState().working, f.docId)!.lines[1].id;
+  typedBack(f, line); f.enter();
+  const operation = f.controller.folderOperation()!;
+  assert.equal(operation.kind, 'link'); assert.equal(operation.undoable, false);
+  const { undo, warned } = undoFor(f, operation.id), before = f.controller.getState();
+  assert.equal(undo(), false, 'not taken: the bar\'s ↶ and historyUndo go on to the text undo');
+  assert.equal(f.controller.getState(), before); assert.deepEqual(warned, []);
+  assert.equal(f.controller.undoFolderOperation(operation.id).ok, false, 'the draft refuses it too');
+  assert.equal(f.controller.getState(), before);
+  assert.equal(M.getDocument(f.controller.getState().working, f.docId)!.lines[1].text, '  - /식단');
+  assert(f.controller.getState().working.bindings.some(row => row.kind === 'scope' && row.lineId === line), 'still linked');
+  assert(f.controller.freshFolderLine(line), 'D11 B still keeps to that notice');
+});
+test('N7 review n6-fix: a new folder\'s own ↶ (its creation) still undoes', () => {
+  const f = fixture(); f.enter();
+  const operation = f.controller.folderOperation()!;
+  assert.equal(operation.kind, 'create'); assert.equal(operation.undoable, true);
+  const { undo, warned } = undoFor(f, operation.id);
+  assert.equal(undo(), true); assert.deepEqual(warned, ['폴더 동작을 되돌렸습니다'], 'its own notice, no warning');
+  assert(!f.controller.getState().working.folders.some(folder => folder.title === '식단'));
 });

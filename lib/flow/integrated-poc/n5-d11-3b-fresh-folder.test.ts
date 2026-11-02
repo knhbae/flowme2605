@@ -13,6 +13,7 @@ import { programNoticeEndsAt } from './program-notice';
 import { programFolderRelinkedNotice } from './folder-notice';
 import { createProgramData } from './program-data';
 import { programTextTransition } from './program-text-transition';
+import { setProgramTaskClassification } from './task-classification';
 import type { TextWorkspaceState } from './text-workspace';
 
 // N5 phone 3b (S4-V11-PHONE-RESULT, 11/2): '폰부모' then '폰부모 › 폰자식2' made at the end of a document whose earlier
@@ -584,4 +585,59 @@ test('N6 FIX 2: typed back for a folder made before this draft, or one another t
   assert.equal(used.t.draft.relinkFolderLine(used.line), false);
   assert.equal(used.bar.touch(2).canOutdent, false); assert.equal(used.bar.outdent(), false);
   assert.equal(folderOf(used.t, '새자식').parentId, folderOf(used.t, '새부모').id);
+});
+test('N7 review n6-fix: typed back and linked again, then ⇤ — that move\'s own 되돌리기 still puts it back', () => {
+  const { t, bar, line } = nameTypedBack('키보드 아래 마지막 줄 확인 26\n', true);
+  assert(t.draft.relinkFolderLine(line)); assert.equal(t.draft.folderOperation()!.undoable, false, 'the link itself has nothing to undo');
+  t.notice.current = { operationId: t.draft.folderOperation()!.id }; enter(t, 2);
+  bar.touch(2); assert(bar.outdent());
+  const moved = t.draft.folderOperation()!; assert.equal(moved.undoable, true);
+  assert(t.draft.undoFolderOperation(moved.id).ok);
+  assert.equal(folderOf(t, '새자식').parentId, folderOf(t, '새부모').id);
+  assert(t.draft.getState().working.bindings.some(row => row.kind === 'scope' && row.lineId === line && row.scopeId === folderOf(t, '새자식').id), 'still linked');
+});
+
+// N7 (review n6-fix, 11/2): tab B classified another task of this same document into the empty child. A, its input
+// unsaved, did not know; its ⇤ and save took every use of this document as its own and passed, so the move took that
+// task's folder path along. The newest workspace's uses must now be ones A knows (its base or its input).
+function classifiedHere(t: Phone, title: string) {
+  const text = t.draft.getState().working, task = M.getDocument(text, t.docId)!.lines.find(line => line.text.includes('다른 할 일'))!.id;
+  const data = createProgramData(), actorId = data.activeActorId; data.spaces[actorId].text = text;
+  const done = setProgramTaskClassification(data, { actorId, requestId: 'n7-fix-classify', expectedSpace: data.spaces[actorId], taskId: task, folderId: folderOf(t, title).id });
+  assert(done.ok, 'the ordinary classification takes it');
+  const latest = done.data.spaces[actorId].text; assert.equal(latest.taskScopes[task], folderOf(t, title).id); assert(M.validate(latest));
+  return latest;
+}
+const withTask = '- [ ] 다른 할 일\n';
+test('N7 review n6-fix: another tab files another task of this document in the new child — ⇤ refused, the folder keeps its parent', () => {
+  const t = phone(withTask), bar = editorFor(t);
+  make(t, 1, '- /새부모'); make(t, 2, '  - /새자식');
+  assert.equal(bar.touch(2).canOutdent, true, 'free while nothing else uses it');
+  t.latest.current = classifiedHere(t, '새자식');
+  const raw = t.draft.getState().raw;
+  assert.equal(bar.touch(2).canOutdent, false); assert.equal(bar.outdent(), false);
+  assert.equal(t.draft.getState().raw, raw); assert.deepEqual(bar.messages, [FOLDER_INDENT_NOTICE]);
+  assert.equal(folderOf(t, '새자식').parentId, folderOf(t, '새부모').id);
+});
+test('N7 review n6-fix: the same for a name typed back — not linked again, ⇤ refused', () => {
+  const { t, bar, line } = nameTypedBack(withTask, true);
+  t.latest.current = classifiedHere(t, '새자식');
+  assert.equal(t.draft.relinkFolderLine(line), false);
+  assert.equal(bar.touch(2).canOutdent, false); assert.equal(bar.outdent(), false);
+  assert.equal(folderOf(t, '새자식').parentId, folderOf(t, '새부모').id);
+});
+test('N7 review n6-fix: the save itself — a move of the child another tab has filed this document\'s task in is refused; unknown to neither, it saves', () => {
+  const t = phone(withTask), bar = editorFor(t);
+  make(t, 1, '- /새부모'); make(t, 2, '  - /새자식');
+  const expected = t.draft.getState().working, folder = folderOf(t, '새자식'), latest = classifiedHere(t, '새자식');
+  bar.touch(2); assert(bar.outdent(), 'moved in this tab (it did not know)');
+  const next = t.draft.getState().working;
+  const save = (before: TextWorkspaceState) => {
+    const data = createProgramData(); data.spaces[data.activeActorId].text = before;
+    return programTextTransition(data, { actorId: data.activeActorId, documentId: t.docId, expected, next });
+  };
+  assert.equal(save(latest).ok, false, 'filed meanwhile: refused');
+  const free = save(expected);
+  assert(free.ok, 'nothing else uses it: saved');
+  assert.equal(free.data.spaces[free.data.activeActorId].text.folders.find(entry => entry.id === folder.id)!.parentId, null);
 });

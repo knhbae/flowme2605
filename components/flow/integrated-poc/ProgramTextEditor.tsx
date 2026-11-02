@@ -805,8 +805,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   /** One ↶ (or the notice's 되돌리기) right after a finished folder line moved puts the whole move back (D3 B). */
   function undoFolderMove() {
     const controller = draftRef.current;
-    const id = folderNoticeRef.current?.operationId;
-    if (!controller || id === undefined || composingRef.current || inputLockedRef.current || propsRef.current.readOnly) return false;
+    const id = folderNoticeRef.current?.operationId, operation = controller?.folderOperation();
+    // N7 (review n6-fix): a name typed back, linked again, has no folder step to undo; ↶ is the text's own.
+    if (!controller || id === undefined || operation?.id === id && !operation.undoable
+      || composingRef.current || inputLockedRef.current || propsRef.current.readOnly) return false;
     const previous = controller.getState();
     const result = controller.undoFolderOperation(id);
     if (!result.ok) { showFolderNotice(result.reason, 'warn'); return true; }
@@ -842,7 +844,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (folderNoticeRef.current?.operationId !== operation.id) { showFolderNotice('이 폴더 동작의 알림이 끝났습니다. 현재 입력은 유지했습니다.', 'warn'); return; }
       undoFolderMove();
     }) };
-    folderRawUndoRef.current = true;
+    folderRawUndoRef.current = undoable;
     const next: FolderNotice = { text: operation.kind === 'scopes' ? operation.notice : text + (operation.notice ? ' · ' + operation.notice : ''), tone, actions: undoable ? [...actions, undo] : actions, lineId: tone === 'choose' ? lineId : undefined,
       shownAt: performance.now(), leftBlockAt: null, operationId: operation.id, key: ++folderNoticeKeys.current };
     folderNoticeRef.current = next; setFolderNotice(next);
