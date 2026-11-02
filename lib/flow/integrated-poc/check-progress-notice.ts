@@ -1,6 +1,6 @@
 import type { ProgramReferenceAccess } from './reference-execution-guard';
 import type { ProgramNoticeTone } from './program-notice';
-import type { TextDocument, TextEditorRowMeta, TextWorkspaceState } from './text-workspace';
+import { textWorkspaceModel as M, type TextDocument, type TextEditorRowMeta, type TextWorkspaceState } from './text-workspace';
 
 /** C2 (11/2): a check tap still completes at once, and its notice offers [되돌리기] and [진행률로]; 진행률로 turns the
  *  row into percent chips, one of which saves today's cumulative progress for that task (the same record the progress
@@ -109,4 +109,17 @@ export function programCheckRevert(working: TextWorkspaceState, committed: TextW
   const progressRecords = [...working.progressRecords.filter(record => record.taskId !== targetId), ...committed.progressRecords.filter(record => record.taskId === targetId)];
   const next = { ...working, documents, flows, progressRecords };
   return validate(next) ? next : null;
+}
+
+/** C2 final review: every refused task goes back at once, in one change. One at a time, the first revert started a
+ *  save that skipped the rest, so a refused B was saved at 100% while its notice said 0%. A task whose saved value
+ *  already agrees with the screen (a later save stored it after all) needs nothing and is listed in `agreed`. */
+export function programCheckRevertAll(working: TextWorkspaceState, committed: TextWorkspaceState, targetIds: string[], validate: (state: TextWorkspaceState) => boolean): { next: TextWorkspaceState; agreed: string[] } {
+  let next = working;
+  const agreed: string[] = [];
+  for (const targetId of targetIds) {
+    if (M.currentProgress(committed, targetId) === M.currentProgress(next, targetId)) { agreed.push(targetId); continue; }
+    next = programCheckRevert(next, committed, targetId, validate) ?? next;
+  }
+  return { next, agreed };
 }

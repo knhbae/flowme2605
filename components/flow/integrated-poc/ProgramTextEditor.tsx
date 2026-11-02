@@ -49,7 +49,7 @@ import regionStyles from './ProgramFolderRegionEditor.module.css';
 import { readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { readProgramMemoContext, programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
 import { ProgramProgressForm } from './ProgramProgressForm';
-import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckRevert, programCheckSaveOutcome, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
+import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckRevertAll, programCheckSaveOutcome, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
 import {ProgramWritingInline} from './ProgramWritingInline';
 import {prepareWritingChild} from '@/lib/flow/integrated-poc/writing-child-command';
 import {planWritingInsertion} from '@/lib/flow/integrated-poc/writing-insertion-command';
@@ -332,6 +332,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   type CheckWork = { notice: ProgramCheckNotice; step?: ProgramCheckStep; saving?: ProgramCheckNotice['saving'] };
   const checkWork = useRef(new Map<string, CheckWork>());
   const checkWorkKey = (targetId: string) => propsRef.current.docId + '\n' + targetId;
+  // Final review: the tasks whose save was refused, put back to what is saved together, in one change.
+  const refusedChecks = useRef(new Set<string>());
   // Linked folder lines an edit other than typing (a paste) renamed, by line ID, until they are put back.
   const renamedFolderLinesRef = useRef(new Set<string>());
   const documentInputRef=useRef<ProgramDocumentInput|null>(null);
@@ -1306,6 +1308,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function settleCheckSaves() {
     const state = draftRef.current?.getState();
     if (!state) return;
+    // Every outcome is read off this one state; the refused ones are put back together after the pass, and the
+    // notice names the shown task's failure (else the first): a revert started mid-pass would skip the rest.
+    let failure: ProgramCheckNotice | null = null;
     for (const [work, entry] of [...checkWork.current]) {
       if (!entry.saving || entry.step) continue;
       const { percent, undo, quiet } = entry.saving, targetId = entry.notice.targetId, saved = M.currentProgress(state.committed, targetId);
@@ -1317,16 +1322,26 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         if (mine) setCheckNotice(quiet ? { ...mine, saving: undefined } : undo ? null : programCheckNoticeAfter(mine, percent, performance.now(), ++checkNoticeKeys.current));
         continue;
       }
-      setCheckNotice(programCheckNoticeFailed(mine ?? entry.notice, percent, saved, outcome === 'refused' ? 'save' : 'changed', performance.now(), ++checkNoticeKeys.current));
-      if (outcome === 'refused') whenComposed(() => revertCheck(targetId))();
+      if (mine || !failure) failure = programCheckNoticeFailed(mine ?? entry.notice, percent, saved, outcome === 'refused' ? 'save' : 'changed', performance.now(), ++checkNoticeKeys.current);
+      if (outcome === 'refused') refusedChecks.current.add(targetId);
     }
+    if (failure) setCheckNotice(failure);
+    if (refusedChecks.current.size) whenComposed(restoreRefusedChecks)();
   }
-  /** C2 re-review (총괄): a refused save puts the task's check back to what is saved; other unsaved input stays. */
-  function revertCheck(targetId: string) {
+  /** C2 (총괄): every task whose save was refused goes back to what is saved, all in one change, so the save it starts
+   *  stores them all as the notices say; other unsaved input stays. With a save in flight it waits for that save to
+   *  end; a task that save stored after all is left as it is, and its notice says what was saved. */
+  function restoreRefusedChecks() {
     const state = draftRef.current?.getState();
-    if (!state || state.saving || state.invalid) return;
-    const next = programCheckRevert(state.working, state.committed, targetId, M.validate);
-    if (next && M.currentProgress(next, targetId) !== M.currentProgress(state.working, targetId)) void apply(next, '저장되지 않은 체크 되돌리기');
+    if (!state || state.saving || state.invalid || !refusedChecks.current.size) return;
+    const { next, agreed } = programCheckRevertAll(state.working, state.committed, [...refusedChecks.current], M.validate);
+    refusedChecks.current.clear();
+    const visible = checkNoticeRef.current;
+    if (visible?.stage === 'failed' && agreed.includes(visible.targetId)) {
+      const value = M.currentProgress(state.committed, visible.targetId);
+      setCheckNotice(value !== null && value === visible.asked ? programCheckNoticeAfter(visible, value, performance.now(), ++checkNoticeKeys.current) : null);
+    }
+    if (next !== state.working) void apply(next, '저장되지 않은 체크 되돌리기');
   }
   /** C2: a tap on a task between 1% and 99% shows the chips, [완료] first, where the tap could have toggled it. */
   function showCheckChips(lineId: string | null) {
@@ -1982,8 +1997,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const timer = window.setTimeout(() => { if (checkNoticeRef.current === checkNotice) setCheckNotice(null); }, Math.max(0, ends - performance.now()));
     return () => window.clearTimeout(timer);
   }, [checkNotice, noticeHeld, checkWaiting]);
-  // Choices held for a save run once it ends, one at a time: each starts a save the next one waits for.
+  // Choices held for a save run once it ends, one at a time: each starts a save the next one waits for. Refused
+  // checks waiting for a save go back first, together.
   useEffect(() => {
+    if (!draft.saving && refusedChecks.current.size) whenComposed(restoreRefusedChecks)();
     for (;;) {
       if (draftRef.current?.getState().saving) break;
       const held = [...checkWork.current].find(([, entry]) => entry.step);
@@ -1992,7 +2009,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     }
   }, [draft.saving]);
   useEffect(() => { settleCheckSaves(); }, [draft]);
-  useEffect(() => { checkWork.current.clear(); setCheckNotice(null); }, [props.docId]);
+  useEffect(() => { checkWork.current.clear(); refusedChecks.current.clear(); setCheckNotice(null); }, [props.docId]);
   // Review P2: a screen or document hiding this retained editor changes none of its props, only its size.
   useEffect(() => {
     const host = hostRef.current; if (!host) return;

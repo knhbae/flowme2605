@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { PROGRAM_CHECK_CHIPS, PROGRAM_CHECK_NOTICE_MS, programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckRevert, programCheckSaveOutcome, programCheckUndoable, type ProgramCheckNotice } from './check-progress-notice';
+import { PROGRAM_CHECK_CHIPS, PROGRAM_CHECK_NOTICE_MS, programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckRevert, programCheckRevertAll, programCheckSaveOutcome, programCheckUndoable, type ProgramCheckNotice } from './check-progress-notice';
 import type { ProgramData, ProgramTransition } from './contract';
 import { createProgramData } from './program-data';
 import { createProgramTextDraft } from './program-text-draft';
@@ -185,7 +185,7 @@ test('review P2 (1)(2): the editor says 기록했습니다 only once the save se
   const step = editor.slice(editor.indexOf('  function performCheckStep('), editor.indexOf('  function closeCheckNotice('));
   assert(!step.includes('programCheckNoticeAfter('), 'no success straight after apply');
   assert.match(step, /checkWork\.current\.set\(work, \{ notice, saving \}\);\n    const mine = shown\(\); if \(mine\) setCheckNotice\(\{ \.\.\.mine, saving \}\);\n    settleCheckSaves\(\);/);
-  const settle = editor.slice(editor.indexOf('  function settleCheckSaves('), editor.indexOf('  function revertCheck('));
+  const settle = editor.slice(editor.indexOf('  function settleCheckSaves('), editor.indexOf('  function restoreRefusedChecks('));
   assert.match(settle, /saved = M\.currentProgress\(state\.committed, targetId\);/);
   assert.match(editor, /useEffect\(\(\) => \{ settleCheckSaves\(\); \}, \[draft\]\);/);
 });
@@ -216,9 +216,9 @@ test('re-review P2 (1): a choice waiting for a save is kept by task (document + 
   assert.match(editor, /const held = \[\.\.\.checkWork\.current\]\.find\(\(\[, entry\]\) => entry\.step\);/);
   assert.match(editor, /checkWork\.current\.delete\(held\[0\]\); performCheckStep\(held\[1\]\.notice, /);
   // A refused or overtaken step is said even under another task's notice; a saved one touches only its own.
-  const settle = editor.slice(editor.indexOf('  function settleCheckSaves('), editor.indexOf('  function revertCheck('));
+  const settle = editor.slice(editor.indexOf('  function settleCheckSaves('), editor.indexOf('  function restoreRefusedChecks('));
   assert.match(settle, /for \(const \[work, entry\] of \[\.\.\.checkWork\.current\]\) \{/);
-  assert.match(settle, /setCheckNotice\(programCheckNoticeFailed\(mine \?\? entry\.notice, percent, saved,/);
+  assert.match(settle, /if \(mine \|\| !failure\) failure = programCheckNoticeFailed\(mine \?\? entry\.notice, percent, saved,/);
   // × drops only a choice still waiting for its task; a newer tap on the task supersedes it.
   assert.match(editor, /if \(notice && checkWork\.current\.get\(checkWorkKey\(notice\.targetId\)\)\?\.step\) checkWork\.current\.delete\(checkWorkKey\(notice\.targetId\)\);/);
   assert.match(editor, /\} else \{\n      checkWork\.current\.delete\(work\);/);
@@ -230,8 +230,8 @@ test('re-review P2 (2), 총괄: the check shows at once, the words wait ("완료
   assert.deepEqual(programCheckNoticeView(quiet).actions.map(button => button.label), ['되돌리기', '진행률로']);
   assert.equal(programCheckNoticeView(notice()).text, '완료했습니다 · 장보기');
   assert.match(editor, /const saving = \{ percent: 100, undo: false, quiet: true \}, notice: ProgramCheckNotice = \{ stage: 'done',/);
-  assert.match(editor, /if \(outcome === 'refused'\) whenComposed\(\(\) => revertCheck\(targetId\)\)\(\);/);
-  assert.match(editor, /const next = programCheckRevert\(state\.working, state\.committed, targetId, M\.validate\);/);
+  assert.match(editor, /if \(outcome === 'refused'\) refusedChecks\.current\.add\(targetId\);/);
+  assert.match(editor, /const \{ next, agreed \} = programCheckRevertAll\(state\.working, state\.committed, \[\.\.\.refusedChecks\.current\], M\.validate\);/);
   // The revert: the task's mark and records as saved; its renamed title and other edits stay.
   const saved = written('- [ ] 장보기\n- [ ] 빨래'), [target, other] = textEditorRows(saved, DOC).map(row => row.progressTargetId!);
   let working = M.recordProgress(saved, target, TODAY, 100);
@@ -247,4 +247,43 @@ test('re-review P2 (2), 총괄: the check shows at once, the words wait ("완료
   const half = M.recordProgress(saved, target, TODAY, 50);
   assert.equal(M.currentProgress(programCheckRevert(M.recordProgress(half, target, TODAY, 100), half, target, M.validate)!, target), 50);
   assert.equal(programCheckRevert(renamed.state, saved, 'line-missing', M.validate), null);
+});
+
+// Codex final review of C2 (11/2): one P2.
+test('final review: tasks whose save was refused go back together, so what is saved is what their notices say', async () => {
+  const start = written('- [ ] 장보기\n- [ ] 빨래'), [a, b] = textEditorRows(start, DOC).map(row => row.progressTargetId!);
+  let accept = false;
+  const draft = createProgramTextDraft(start, DOC, async () => accept, () => {});
+  // A checked, then B checked while A's save was on its way: one save carries both, and it is refused.
+  assert(draft.apply(M.recordProgress(start, a, TODAY, 100), '할 일 완료'));
+  assert(draft.apply(M.recordProgress(draft.getState().working, b, TODAY, 100), '할 일 완료'));
+  assert.equal(await draft.save(), false);
+  let state = draft.getState();
+  for (const target of [a, b]) assert.equal(programCheckSaveOutcome(M.currentProgress(state.committed, target), 100, state), 'refused');
+  // One at a time (the bug): putting A back alone leaves B at 100%, which the save that revert starts would store
+  // while B's notice said "저장된 값은 0%".
+  assert.equal(M.currentProgress(programCheckRevert(state.working, state.committed, a, M.validate)!, b), 100);
+  // Together: both back in one change; the save it starts stores both as their notices say.
+  const { next, agreed } = programCheckRevertAll(state.working, state.committed, [a, b], M.validate);
+  assert.deepEqual(agreed, []);
+  assert.equal(M.raw(M.getDocument(next, DOC)), '- [ ] 장보기\n- [ ] 빨래');
+  assert(draft.apply(next, '저장되지 않은 체크 되돌리기'));
+  accept = true;
+  assert.equal(await draft.save(), true);
+  state = draft.getState();
+  assert.deepEqual([M.currentProgress(state.committed, a), M.currentProgress(state.committed, b)], [0, 0]);
+  // A task a later save stored after all is left as it is, and named so its notice can say what was saved.
+  const stored = M.recordProgress(start, a, TODAY, 100);
+  assert.deepEqual(programCheckRevertAll(stored, stored, [a], M.validate), { next: stored, agreed: [a] });
+});
+
+test('final review: the editor collects the refused tasks in one pass and puts them back with one change', () => {
+  const settle = editor.slice(editor.indexOf('  function settleCheckSaves('), editor.indexOf('  function restoreRefusedChecks('));
+  assert(!/apply\(|revert\w*\(\w+\)/.test(settle.replace('whenComposed(restoreRefusedChecks)()', '')), 'no revert inside the pass');
+  assert.match(settle, /if \(failure\) setCheckNotice\(failure\);\n    if \(refusedChecks\.current\.size\) whenComposed\(restoreRefusedChecks\)\(\);\n  \}/);
+  const revert = editor.slice(editor.indexOf('  function restoreRefusedChecks('), editor.indexOf('  function showCheckChips('));
+  assert.equal(revert.match(/void apply\(/g)?.length, 1);
+  assert.match(revert, /if \(!state \|\| state\.saving \|\| state\.invalid \|\| !refusedChecks\.current\.size\) return;/);
+  // Waiting for a save in flight: tried again once it ends, before any held choice.
+  assert.match(editor, /if \(!draft\.saving && refusedChecks\.current\.size\) whenComposed\(restoreRefusedChecks\)\(\);\n    for \(;;\) \{/);
 });
