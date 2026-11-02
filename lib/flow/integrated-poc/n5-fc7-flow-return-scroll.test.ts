@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import * as ts from 'typescript';
-import { restoreProgramDialogFocus, restoreProgramWritingReturn, type ProgramWritingReturn } from './dialog-return-focus';
+import { restoreProgramDialogFocus, restoreProgramWritingReturn, watchProgramReturnIntent, type ProgramWritingReturn } from './dialog-return-focus';
 import { programReviewOriginReason } from './review-return';
 
 // N5 FC7: a long document's caret → title ▾ → 준비된 Flow에서 시작 → a Flow → ← Flow 찾기 → ← 내 문서. The editor was hidden
@@ -17,12 +17,14 @@ class FakeTextArea extends FakeElement {}
 /** A page with one editor. `maxTop` is how far the editor scrolls now: on a phone the writing bar comes a frame after the
  *  focus and shortens the editor, so until `barShown()` the editor's limit is lower (390: 812 − 358 = 454, then 532). */
 function page(width: 390 | 1280) {
-  const frames: (() => void)[] = [];
+  const frames: (() => void)[] = [], listeners = new Map<string, Set<() => void>>();
   const doc = { activeElement: null as unknown, body: {}, defaultView: null as unknown };
   const view = {
     scrollX: 0, scrollY: 0, maxY: 400,
     scrollTo({ left, top }: { left: number; top: number }) { view.scrollX = left; view.scrollY = Math.min(top, view.maxY); },
     requestAnimationFrame(callback: () => void) { frames.push(callback); return frames.length; },
+    addEventListener(type: string, listener: () => void) { if (!listeners.has(type)) listeners.set(type, new Set()); listeners.get(type)!.add(listener); },
+    removeEventListener(type: string, listener: () => void) { listeners.get(type)?.delete(listener); },
   };
   doc.defaultView = view;
   // 812 high; 358 shown without the bar (1280 always), 280 with it (390 once the bar is there).
@@ -37,7 +39,10 @@ function page(width: 390 | 1280) {
   return { area: area as unknown as HTMLTextAreaElement & { focus(): void }, raw: area as typeof area & { scrollTop: number }, view, doc, frames,
     barShown: () => { if (width === 390) maxTop = 532; },
     /** Run the frames queued so far (a frame may queue the next one). */
-    frame: () => { for (const callback of frames.splice(0)) callback(); } };
+    frame: () => { for (const callback of frames.splice(0)) callback(); },
+    /** An event reaching the window (the person's wheel or key, or a scroll the page made itself). */
+    fire: (type: string) => { for (const listener of [...listeners.get(type) ?? []]) listener(); },
+    listening: () => [...listeners.values()].reduce((sum, set) => sum + set.size, 0) };
 }
 
 const left = (area: HTMLTextAreaElement, pageX = 0, pageY = 0, top = 467): ProgramWritingReturn =>
@@ -106,9 +111,9 @@ function data(raw = RAW, actor = ACTOR) {
 function host(p: ReturnType<typeof page>) {
   const scope = {
     session: { userId: ACTOR }, sessionEpochRef: { current: 1 }, currentOwnerRef: { current: ACTOR }, destinationRef: { current: { view: 'space', id: DOC } as { view: string; id?: string } },
-    currentData: { current: data() as unknown }, document: p.doc, requestAnimationFrame: p.view.requestAnimationFrame,
+    currentData: { current: data() as unknown }, document: p.doc, window: p.view, requestAnimationFrame: p.view.requestAnimationFrame,
     navigate: async (next: { view: string; id?: string }) => { scope.destinationRef.current = next; },
-    restoreProgramDialogFocus, restoreProgramWritingReturn, programReviewOriginReason,
+    restoreProgramDialogFocus, restoreProgramWritingReturn, watchProgramReturnIntent, programReviewOriginReason,
   };
   // The state the host keeps between leaving and coming back.
   const run = new Function(...Object.keys(scope), `let flowReturn = null; const setFlowReturn = value => { flowReturn = value; };
@@ -120,6 +125,7 @@ return { openFlowsFromDocument, returnFromFlows, kept: () => flowReturn };`);
 }
 /** Leave for the Flow screen (the editor hidden: scroll 0, focus gone), then come back with ← 내 문서. */
 async function journey(p: ReturnType<typeof page>, h: ReturnType<typeof host>, writing = left(p.area, 0, 0, 467)) {
+  p.raw.setSelectionRange(379, 379);
   await h.openFlowsFromDocument(DOC, undefined, p.area, writing);
   p.raw.scrollTop = 0; p.doc.activeElement = p.doc.body; p.view.scrollY = 70;
   return h;
@@ -134,6 +140,7 @@ test('FC7 host: ← 내 문서 back to the same account, document and text resto
     assert.equal(p.doc.activeElement, p.area, `${width}: focus back`);
     if (width === 390) { p.barShown(); p.frame(); }
     assert.deepEqual([p.area.selectionStart, p.area.scrollTop, p.view.scrollY], [379, top, 0], `${width}`);
+    assert.deepEqual([p.frames.length, p.listening()], [0, 0], `${width}: done, and no longer listening for the person`);
   }
 });
 
@@ -152,6 +159,81 @@ test('FC7 host: text changed while away, another account, or a position for anot
   const other = page(1280), h3 = host(other);
   await h3.openFlowsFromDocument(DOC, undefined, other.area, { ...left(other.area), documentId: OTHER });
   assert.equal(h3.kept()?.writing, undefined, 'a position for another document is not kept');
+  assert.deepEqual([changed.listening(), switched.listening(), other.listening()], [0, 0, 0]);
+});
+
+// FC7 review P2: between ← 내 문서 and the first frame (and on to the last placement) the person may already have moved on.
+test('FC7 review: the person\'s own wheel, touch, pointer or key before the first frame keeps their page and caret', async () => {
+  for (const width of [390, 1280] as const) for (const move of ['wheel', 'touchstart', 'touchmove', 'pointerdown', 'mousedown', 'keydown']) {
+    const p = page(width), h = host(p);
+    await journey(p, h);
+    await h.returnFromFlows();
+    assert.equal(p.frames.length, 1, 'the first frame waits');
+    p.view.scrollY = 200; p.fire(move);
+    p.frame(); p.barShown(); p.frame();
+    const label = `${width} ${move}`;
+    assert.equal(p.doc.activeElement, p.area, `${label}: focus still comes back, without scrolling`);
+    assert.deepEqual([p.view.scrollY, p.area.scrollTop, p.area.selectionStart], [200, 0, 379], `${label}: their page, the caret the editor kept`);
+    assert.deepEqual([p.frames.length, p.listening()], [0, 0], label);
+  }
+});
+
+test('FC7 review: a move after the first placement stops the next one, even one that changes no value', async () => {
+  for (const [move, scrolled] of [['keydown', false], ['wheel', true], ['touchstart', true]] as const) {
+    const p = page(390), h = host(p);
+    await journey(p, h); await h.returnFromFlows(); p.frame();
+    assert.deepEqual([p.area.scrollTop, p.frames.length], [454, 1], 'clamped; the next frame would place it again');
+    if (scrolled) p.view.scrollY = 150;
+    p.fire(move); p.barShown(); p.frame();
+    assert.deepEqual([p.area.scrollTop, p.view.scrollY, p.frames.length, p.listening()], [454, scrolled ? 150 : 0, 0, 0], move);
+  }
+});
+
+test('FC7 review: with no move of the person\'s, scrolls the page makes itself do not stop the 390 correction', async () => {
+  const p = page(390), h = host(p);
+  await journey(p, h); await h.returnFromFlows();
+  p.fire('scroll'); p.frame(); p.fire('scroll'); p.fire('resize'); p.barShown(); p.frame();
+  assert.deepEqual([p.area.scrollTop, p.view.scrollY, p.area.selectionStart, p.frames.length, p.listening()], [467, 0, 379, 0, 0]);
+});
+
+test('FC7 review: a stopped or cancelled placement does not come back (account, document, text, focus, 원본 보기, another document)', async () => {
+  // Changed between the first placement and the next frame: nothing more is placed, and listening ends.
+  const changes: [string, (p: ReturnType<typeof page>, h: ReturnType<typeof host>) => void][] = [
+    ['account', (_, h) => { h.scope.currentOwnerRef.current = 'actor-2'; }],
+    ['document', (_, h) => { h.scope.destinationRef.current = { view: 'space', id: OTHER }; }],
+    ['text', (_, h) => { h.scope.currentData.current = data(RAW + '\n추가'); }],
+    ['focus', p => { p.doc.activeElement = p.doc.body; }],
+  ];
+  for (const [name, change] of changes) {
+    const p = page(390), h = host(p);
+    await journey(p, h); await h.returnFromFlows(); p.frame();
+    change(p, h); p.barShown(); p.frame(); p.frame();
+    assert.deepEqual([p.area.scrollTop, p.frames.length, p.listening()], [454, 0, 0], name);
+    if (name === 'focus') p.doc.activeElement = p.area;
+    h.scope.currentOwnerRef.current = ACTOR; h.scope.destinationRef.current = { view: 'discover' };
+    await h.returnFromFlows(); p.frame(); p.frame();
+    assert.equal(p.area.scrollTop, 454, `${name}: the used return is gone`);
+  }
+
+  // Another document opened before the first frame: no focus, no placement.
+  const moved = page(1280), h1 = host(moved);
+  await journey(moved, h1); await h1.returnFromFlows();
+  h1.scope.destinationRef.current = { view: 'space', id: OTHER }; moved.frame();
+  assert.deepEqual([moved.doc.activeElement, moved.area.scrollTop, moved.view.scrollY, moved.listening()], [moved.doc.body, 0, 70, 0]);
+
+  // 원본 보기 after the browse: that return carries no writing position, so coming back is focus-only.
+  const source = page(1280), h2 = host(source);
+  await journey(source, h2);
+  await h2.openFlowsFromDocument(DOC, 'flow-1', source.area);
+  assert.equal(h2.kept()?.writing, undefined);
+  await h2.returnFromFlows(); source.frame();
+  assert.deepEqual([source.doc.activeElement, source.area.scrollTop, source.view.scrollY, source.listening()], [source.area, 0, 70, 0]);
+
+  // Cancelled by a wheel: later frames and later presses bring nothing back.
+  const wheeled = page(390), h3 = host(wheeled);
+  await journey(wheeled, h3); await h3.returnFromFlows(); wheeled.fire('wheel');
+  wheeled.frame(); wheeled.barShown(); wheeled.frame(); await h3.returnFromFlows(); wheeled.frame();
+  assert.deepEqual([wheeled.area.scrollTop, wheeled.view.scrollY, wheeled.listening()], [0, 70, 0]);
 });
 
 // ProgramSpace's side: the find opener remembers the page scroll too, and 준비된 Flow에서 시작 hands this document's position on.

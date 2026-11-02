@@ -5,7 +5,7 @@ import { remoteTextSparesDocuments } from '@/lib/flow/integrated-poc/remote-text
 import {createWritingCompute,type WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { restoreProgramDialogFocus, restoreProgramWritingReturn, type ProgramWritingReturn } from '@/lib/flow/integrated-poc/dialog-return-focus';
+import { restoreProgramDialogFocus, restoreProgramWritingReturn, watchProgramReturnIntent, type ProgramWritingReturn } from '@/lib/flow/integrated-poc/dialog-return-focus';
 import { programFailure } from '@/lib/flow/integrated-poc/contract';
 import type { AlphaAuthConfig } from '@/lib/flow/integrated-poc/alpha-auth/config';
 import type { VerifiedAlphaSession } from '@/lib/flow/integrated-poc/alpha-auth/account-access';
@@ -1067,18 +1067,21 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   async function returnFromFlows() {
     const returning = flowReturn, epoch = sessionEpochRef.current, opener = document.activeElement;
     if (!returning || returning.actorId !== currentOwnerRef.current) return;
+    // FC7 review: from this press on, the person's own scroll, touch or key keeps their place.
+    const intent = returning.writing ? watchProgramReturnIntent(window) : undefined;
     await navigate({ view: 'space', id: returning.documentId });
-    if (epoch !== sessionEpochRef.current || returning.actorId !== currentOwnerRef.current
-      || destinationRef.current.view !== 'space' || destinationRef.current.id !== returning.documentId) return;
+    const current = () => epoch === sessionEpochRef.current && returning.actorId === currentOwnerRef.current
+      && destinationRef.current.view === 'space' && destinationRef.current.id === returning.documentId;
+    if (!current()) { intent?.stop(); return; }
     setFlowReturn(null);
     requestAnimationFrame(() => {
-      if (epoch === sessionEpochRef.current && returning.actorId === currentOwnerRef.current
-        && destinationRef.current.view === 'space' && destinationRef.current.id === returning.documentId
-        && (document.activeElement === opener || document.activeElement === document.body)
-        && restoreProgramDialogFocus(returning.returnFocus ?? null) && returning.writing && currentData.current
+      const writing = returning.writing;
+      if (current() && (document.activeElement === opener || document.activeElement === document.body)
+        && restoreProgramDialogFocus(returning.returnFocus ?? null) && writing)
         // FC7: caret and scroll come back too, while account, document and its text are the ones left.
-        && !programReviewOriginReason(currentData.current, { actorId: returning.actorId, documentId: returning.writing.documentId, raw: returning.writing.raw }))
-        restoreProgramWritingReturn(returning.writing);
+        restoreProgramWritingReturn(writing, intent, () => current() && !!currentData.current
+          && !programReviewOriginReason(currentData.current, { actorId: returning.actorId, documentId: writing.documentId, raw: writing.raw }));
+      else intent?.stop();
     });
   }
   async function cancelImportLinks() {
