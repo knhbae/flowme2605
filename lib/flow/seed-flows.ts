@@ -261,7 +261,7 @@ const sourceReviewMeta: Record<
   'year-end-tax-docs': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-08-22',
+    source_checked_at: '2026-10-31',
     conversion_note: '2025년 귀속·2026년 처리 국세청 공지를 기준으로 간소화 자료 수집과 회사별 제출 메모, 개인별 공제 판단을 분리했습니다.',
     primary_destination: 'sheet',
   },
@@ -282,21 +282,21 @@ const sourceReviewMeta: Record<
   'business-registration-basic': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-08-22',
+    source_checked_at: '2026-10-31',
     conversion_note: '국세청 사업자등록 신청·제출서류 안내를 기준으로 신청 준비와 세무서 확인 질문을 분리했습니다.',
     primary_destination: 'memo',
   },
   'driver-license-renewal-check': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-08-22',
+    source_checked_at: '2026-10-31',
     conversion_note: '일반 적성검사·면허갱신 안내를 기준으로 개인별 갱신기간 조회와 준비물 확인을 분리했습니다.',
     primary_destination: 'sheet',
   },
   'happy-birth-service-check': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-08-22',
+    source_checked_at: '2026-10-31',
     conversion_note: '정부24 출산 관련 서비스 통합처리 신청(행복출산)의 신청 경로와 조건부 서류를 재확인했습니다.',
     primary_destination: 'memo',
   },
@@ -311,7 +311,7 @@ const sourceReviewMeta: Record<
   'vaccination-certificate-issue': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-08-22',
+    source_checked_at: '2026-10-31',
     conversion_note: '정부24 예방접종증명 발급 경로와 본인·보호자 준비를 기준으로 삼고 제출처별 요구사항은 개인 메모로 분리했습니다.',
     primary_destination: 'memo',
   },
@@ -325,14 +325,14 @@ const sourceReviewMeta: Record<
   'resident-register-copy-issue': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-08-22',
+    source_checked_at: '2026-10-31',
     conversion_note: '주민등록표 등본/초본 안내 기반 Flow입니다. 표시 항목 선택과 증빙 보관 UX 검토가 필요합니다.',
     primary_destination: 'memo',
   },
   'industrial-accident-claim-docs': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-08-22',
+    source_checked_at: '2026-10-31',
     conversion_note: '산재보험 요양비청구 안내 기반 Flow입니다. 재정/노무 민감성 검토가 필요합니다.',
     primary_destination: 'sheet',
   },
@@ -374,7 +374,7 @@ const sourceReviewMeta: Record<
   'qnet-exam-application-prep': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-08-22',
+    source_checked_at: '2026-10-31',
     conversion_note: 'Q-Net 원서접수 안내를 기준으로 고정 D-day를 제거하고 실제 시험 공고·접수 내역·인정 신분증 확인으로 좁혔습니다.',
     primary_destination: 'memo',
   },

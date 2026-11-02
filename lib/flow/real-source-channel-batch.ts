@@ -890,6 +890,7 @@ const realSourceSpecs: RealSourceSpec[] = [
     source_url: 'https://www.q-net.or.kr/rcv001.do?gSite=Q&id=rcv00103',
     source_type: 'official',
     source_precision: 'exact',
+    source_checked_at: '2026-10-31',
     primary_destination: 'memo',
     risk_level: 'medium',
     conversion_note: 'Q-Net 원서접수안내를 날짜를 확정하지 않는 접수·응시 준비 체크로 전환하고 인정 신분증 안내를 해당 항목의 보조 링크로 연결했습니다.',
