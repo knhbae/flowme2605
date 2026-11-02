@@ -300,12 +300,21 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // line whose text was already off its folder's name when this edit began (D3 B c: it is never moved).
   const heldFolderLineRef = useRef<{ id: string; left: boolean; offAtStart: boolean } | null>(null);
   // W15: the folder notice in the notice row, with how long it stays (info 6s; a choice while the caret is in
-  // its line's block, then 6s); `held` while pressed or focused.
-  type FolderNotice = { text: string; tone: ProgramNoticeTone; actions?: ProgramNoticeAction[]; lineId?: string; shownAt: number; leftBlockAt: number | null; operationId?: number };
+  // its line's block, then 6s); `held` while pressed or focused. N5 3b review P2 (3): its `key` stays through
+  // every copy of it (a restart, a choice's block), and its times are read off performance.now(), a monotonic
+  // clock, so a wall clock set back never lengthens it.
+  type FolderNotice = { text: string; tone: ProgramNoticeTone; actions?: ProgramNoticeAction[]; lineId?: string; shownAt: number; leftBlockAt: number | null; operationId?: number; key: number };
   const [folderNotice, setFolderNotice] = useState<FolderNotice | null>(null);
   const folderNoticeRef = useRef<FolderNotice | null>(null); folderNoticeRef.current = folderNotice;
+  // N5 3b review P2 (2): when the shown notice is due to end, as its timer was set (none while it stays). A timer
+  // can run late (a hidden tab, a phone in the background), so a return and a ⇤ read the clock themselves.
+  const folderNoticeDue = useRef<{ notice: FolderNotice; at: number } | null>(null);
+  const folderNoticeRestarting = useRef<FolderNotice | null>(null);
+  const folderNoticeKeys = useRef(0);
   const folderRawUndoRef = useRef(false);
   const [noticeHeld, setNoticeHeld] = useState(false);
+  // N5 3b phone: a new folder's notice held while its D11 B ⇤ is open and the caret is on that folder's block.
+  const [freshHeld, setFreshHeld] = useState(false);
   // W15 review P1-4: a notice button pressed during a composition runs once it has ended, like a held bar press,
   // so the model changes only when the native editor can take the new text.
   const heldNoticeAction = useRef<(() => void) | null>(null);
@@ -621,11 +630,36 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (!current || current.tone !== 'choose' || !current.lineId) return current;
       const rows = textEditorRows(currentState(), propsRef.current.docId), start = rows.findIndex(row => row.id === current.lineId);
       const inside = start >= 0 && index >= start && index < Math.max(rows[start].subtreeEndIndex, start + 1);
-      const leftBlockAt = inside ? null : current.leftBlockAt ?? Date.now();
+      const leftBlockAt = inside ? null : current.leftBlockAt ?? performance.now();
       return leftBlockAt === current.leftBlockAt ? current : { ...current, leftBlockAt };
     });
     propsRef.current.onPosition?.({ start: textarea.selectionStart, end: textarea.selectionEnd, scrollTop: textarea.scrollTop }, currentDoc()?.lines[index]?.id ?? null);
-    syncBarLine();
+    syncFreshNotice(); syncBarLine();
+  }
+  /** N5 3b (phone): D11 B's ⇤ lasts only while the new folder's notice shows, and on a phone getting back onto that
+   *  line takes longer than an info notice's 6s. So, like a choice, that notice stays while the ⇤ is still open
+   *  (nothing edited since) and the caret is on the new line or under it; once either ends, its 6s start.
+   *  Review P2: only while this editor is the one shown — another document, a folder view or another screen
+   *  starts them too, so a long stay there never brings the ⇤ back. */
+  function freshNoticeHolds() {
+    const controller = draftRef.current, operation = controller?.folderOperation(), area = textArea();
+    if (propsRef.current.folderId || propsRef.current.active === false || !hostRef.current?.getClientRects().length
+      || !controller || !area || !operation?.lineId || folderNoticeRef.current?.operationId !== operation.id
+      || !controller.freshFolderLine(operation.lineId)) return false;
+    const rows = textEditorRows(controller.getState().working, propsRef.current.docId), start = rows.findIndex(row => row.id === operation.lineId);
+    const index = area.value.slice(0, area.selectionStart).split('\n').length - 1;
+    return start >= 0 && index >= start && index < Math.max(rows[start].subtreeEndIndex, start + 1);
+  }
+  function syncFreshNotice() { endFolderNoticeIfOver(); const holds = freshNoticeHolds(); setFreshHeld(previous => previous === holds ? previous : holds); }
+  /** Review P2 (2): a notice past its due time ends now, with its folder operation, as its late timer would have;
+   *  so coming back, or a ⇤, after its 6s never holds it again. */
+  function endFolderNoticeIfOver() {
+    const due = folderNoticeDue.current, over = folderNoticeRef.current;
+    if (!due || !over || due.notice.key !== over.key || due.at > performance.now()) return false;
+    folderNoticeDue.current = null; folderNoticeRef.current = null; draftRef.current?.endFolderNotice();
+    // Review P2 (3): by its key, so a copy already made of it (a choice's block, entered again) goes too.
+    setFolderNotice(current => current?.key === over.key ? null : current);
+    return true;
   }
   /** B0: judge the held "- /name" line by its whole name. Explicit (Enter or a bar action with the caret on
    * it) links or makes the folder; otherwise only a folder of exactly that name is linked, once per leaving. */
@@ -736,7 +770,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   /** W15: show a folder notice in the notice row. A choice notice remembers its line, for its lifetime. */
   function showFolderNotice(text: string, tone: ProgramNoticeTone, lineId?: string, actions?: ProgramNoticeAction[]) {
     draftRef.current?.endFolderNotice();
-    const next = { text, tone, actions, lineId: tone === 'choose' ? lineId : undefined, shownAt: Date.now(), leftBlockAt: null };
+    const next = { text, tone, actions, lineId: tone === 'choose' ? lineId : undefined, shownAt: performance.now(), leftBlockAt: null, key: ++folderNoticeKeys.current };
     folderNoticeRef.current = next; setFolderNotice(next);
   }
   function showFolderOperation(text: string, tone: ProgramNoticeTone, lineId?: string, actions: ProgramNoticeAction[] = []) {
@@ -748,7 +782,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     }) };
     folderRawUndoRef.current = true;
     const next: FolderNotice = { text: operation.kind === 'scopes' ? operation.notice : text + (operation.notice ? ' · ' + operation.notice : ''), tone, actions: [...actions, undo], lineId: tone === 'choose' ? lineId : undefined,
-      shownAt: Date.now(), leftBlockAt: null, operationId: operation.id };
+      shownAt: performance.now(), leftBlockAt: null, operationId: operation.id, key: ++folderNoticeKeys.current };
     folderNoticeRef.current = next; setFolderNotice(next);
   }
   function explainRawFolderUndo() { if (folderRawUndoRef.current) { folderRawUndoRef.current = false; setMessage('글만 돌아갑니다'); } }
@@ -1381,7 +1415,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       getAddAnchor:index=>propsRef.current.authoringMode?{parentIndex:index,bottomIndex:index}:null,
       isCheckDisabled: checkActionsDisabled,
       adjustIndentPlan: plan => {
-        indentCandidate = null;
+        indentCandidate = null; endFolderNoticeIfOver();
         const area = textArea(), operationId = folderNoticeRef.current?.operationId;
         if (!alive || draftRef.current !== controller || propsRef.current.active === false || propsRef.current.folderId || composingRef.current
           || inputLockedRef.current || propsRef.current.readOnly || operationId === undefined || area?.value !== controller.getState().raw
@@ -1727,21 +1761,40 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // Waiting behind the move notice or a message, it has not shown yet (review P2): its time starts once it shows.
   const folderWaiting = !!folderNotice && (!!moving || !!message && !panel);
   const folderWaitedRef = useRef(false);
-  const restartFolderNotice = () => setFolderNotice(current => current && { ...current, shownAt: Date.now(), leftBlockAt: current.leftBlockAt === null ? null : Date.now() });
+  const restartFolderNotice = () => {
+    // Until the restarted notice renders, the one shown has no due time (its old one would be in the past).
+    folderNoticeRestarting.current = folderNoticeRef.current;
+    setFolderNotice(current => current && { ...current, shownAt: performance.now(), leftBlockAt: current.leftBlockAt === null ? null : performance.now() });
+  };
   useEffect(() => {
     if (folderWaiting) { folderWaitedRef.current = true; return; }
     if (!folderWaitedRef.current) return;
     folderWaitedRef.current = false; restartFolderNotice();
   }, [folderWaiting]);
+  // N5 3b phone: a new folder's notice held for its ⇤ has its 6s from when that hold ends.
+  const freshHeldRef = useRef(false);
+  useEffect(() => {
+    if (freshHeld) { freshHeldRef.current = true; return; }
+    if (!freshHeldRef.current) return;
+    freshHeldRef.current = false; restartFolderNotice();
+  }, [freshHeld]);
   useEffect(() => {
     if (!folderNotice) draftRef.current?.endFolderNotice();
-    if (!folderNotice) return;
-    const ends = programNoticeEndsAt({ tone: folderNotice.tone, shownAt: folderNotice.shownAt, leftBlockAt: folderNotice.leftBlockAt, held: noticeHeld, waiting: folderWaiting });
+    if (!folderNotice) { folderNoticeDue.current = folderNoticeRestarting.current = null; return; }
+    const ends = programNoticeEndsAt({ tone: folderNotice.tone, shownAt: folderNotice.shownAt, leftBlockAt: folderNotice.leftBlockAt, held: noticeHeld || freshHeld, waiting: folderWaiting });
+    const restarting = folderNoticeRestarting.current === folderNotice; if (!restarting) folderNoticeRestarting.current = null;
+    folderNoticeDue.current = ends === null || restarting ? null : { notice: folderNotice, at: ends };
     if (ends === null) return;
-    const timer = window.setTimeout(() => setFolderNotice(current => current === folderNotice ? null : current), Math.max(0, ends - Date.now()));
+    const timer = window.setTimeout(() => setFolderNotice(current => current === folderNotice ? null : current), Math.max(0, ends - performance.now()));
     return () => window.clearTimeout(timer);
-  }, [folderNotice, noticeHeld, folderWaiting]);
-  useEffect(() => { syncBarLine(); }, [folderNotice, draft.working, props.authoringMode]);
+  }, [folderNotice, noticeHeld, folderWaiting, freshHeld]);
+  useEffect(() => { syncFreshNotice(); syncBarLine(); }, [folderNotice, draft.working, props.authoringMode, props.active, props.folderId]);
+  // Review P2: a screen or document hiding this retained editor changes none of its props, only its size.
+  useEffect(() => {
+    const host = hostRef.current; if (!host) return;
+    const observer = new ResizeObserver(() => syncFreshNotice()); observer.observe(host);
+    return () => observer.disconnect();
+  }, [props.docId]);
   useEffect(() => {
     if (props.active !== false) return;
     const tools = hostRef.current?.closest('section')?.querySelector<HTMLDetailsElement>('[data-editor-tools]');

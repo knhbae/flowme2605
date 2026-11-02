@@ -103,7 +103,7 @@ test('the editor: Enter moves, the notice carries 모든 문서에 적용 and �
   assert.match(editor, /const next = M\.renameScope\(original, fromId, title\);\s*if \(next === original \|\| !\(await apply\(next, '폴더 이름 바꾸기', undefined, undefined, original\)\)\) return;/);
   assert.match(editor, /if \(!controller \|\| !controller\.canUndoFolderMove\(\) \|\| composingRef\.current\)/);
   assert.match(editor, /\{noticeViews\[0\] && <ProgramNoticeRow notice=\{\{ \.\.\.noticeViews\[0\], more: noticeViews\.length - 1 \}\} onClose=\{noticeViews\[0\]\.close\} \/>\}/);
-  assert.match(editor, /const ends = programNoticeEndsAt\(\{ tone: folderNotice\.tone, shownAt: folderNotice\.shownAt, leftBlockAt: folderNotice\.leftBlockAt, held: noticeHeld, waiting: folderWaiting \}\);/);
+  assert.match(editor, /const ends = programNoticeEndsAt\(\{ tone: folderNotice\.tone, shownAt: folderNotice\.shownAt, leftBlockAt: folderNotice\.leftBlockAt, held: noticeHeld \|\| freshHeld, waiting: folderWaiting \}\);/);
   // B1: Enter on a new "- /name" line, and a paste, announce the folders they made.
   assert.match(editor, /const notice = controller\.getState\(\)\.folderNotice \?\? \(declared \? programFolderCreatedNotice\(state\.working, controller\.getState\(\)\.working\) : null\);/);
   assert.match(editor, /const notice = controller\.getState\(\)\.folderNotice \?\? programFolderCreatedNotice\(beforeText, afterText\);/);
