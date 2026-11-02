@@ -32,15 +32,17 @@ test('deduplicates exact remote and inline images including nested archives', as
   assert.equal(calls, 1); assert.equal(backup.files.length, 2); assert((await validateAccountBackup(canonicalJson(backup), owner)).ok);
 });
 test('own server operations preserved as evidence without fake-server replay', async () => {
-  const input = seed(); input.account.revision = 7;
+  // /3 holds the whole journal, so the single evidence row is revision 1 of 1.
+  const input = seed(); input.account.revision = 1;
   input.operations = [{ owner_id: owner, request_id: 'cleanup-7', command: { schema: 'flowme-alpha-test-cleanup/1', requestId: 'cleanup-7', kind: 'social' },
-    receipt: { requestId: 'cleanup-7', revision: 7, changed: true, kind: 'social', publicRevision: 4 }, inverse: [], undone: true }];
+    receipt: { requestId: 'cleanup-7', revision: 1, changed: true, kind: 'social', publicRevision: 4 }, inverse: [], undone: true }];
   const backup = await createAccountBackup(input, resolver); assert.deepEqual(backup.operations, input.operations); assert((await validateAccountBackup(canonicalJson(backup), owner)).ok);
 });
 test('historical deleted media remains exact journal evidence without resurrection or mandatory bytes', async () => {
-  const input = seed(); input.account.revision = 7;
+  // /3 holds the whole journal, so the single evidence row is revision 1 of 1.
+  const input = seed(); input.account.revision = 1;
   input.operations = [{ owner_id: owner, request_id: 'cleanup-7', command: { schema: 'flowme-alpha-test-cleanup/1', requestId: 'cleanup-7', kind: 'social', publicBefore: { media: [{ id: media, dataUrl: `flowme-media:${media}` }] }, productUndoAllowed: false },
-    receipt: { requestId: 'cleanup-7', revision: 7, changed: true, kind: 'social', publicRevision: 4, resultId: 'test-fixture-cleanup' }, inverse: [{ field: 'participationDrafts', present: true, value: [{ media: [{ id: media, dataUrl: `flowme-media:${media}` }] }] }], undone: true }];
+    receipt: { requestId: 'cleanup-7', revision: 1, changed: true, kind: 'social', publicRevision: 4, resultId: 'test-fixture-cleanup' }, inverse: [{ field: 'participationDrafts', present: true, value: [{ media: [{ id: media, dataUrl: `flowme-media:${media}` }] }] }], undone: true }];
   const backup = await createAccountBackup(input, async () => { throw Error('historical bytes unavailable'); });
   assert.deepEqual(backup.coverage, ACCOUNT_BACKUP_COVERAGE); assert.deepEqual(backup.operations, input.operations); assert.deepEqual(backup.files, []);
   assert((await validateAccountBackup(canonicalJson(backup), owner)).ok);
@@ -252,4 +254,19 @@ test('a /2 backup made by unmodified N6 code still validates with its own covera
   assert.deepEqual(await validateAccountBackup(await resign(withHead), owner), { ok: false, reason: 'invalid-backup' });
   const asV3 = detached(sealed.backup); asV3.schema = ACCOUNT_BACKUP_SCHEMA; asV3.coverage = ACCOUNT_BACKUP_COVERAGE;
   assert.deepEqual(await validateAccountBackup(await resign(asV3), owner), { ok: false, reason: 'invalid-backup' }, 'a /3 file needs its derived history');
+});
+test('v3 requires the whole journal: revisions 1..account.revision in order, none missing', async () => {
+  const shapes: [number, any[]][] = [
+    [3, [bodyRow(1), bodyRow(3)]],
+    [3, [bodyRow(3), bodyRow(2), bodyRow(1)]],
+    [3, [headRow(3), headRow(1), bodyRow(2)]],
+    [3, [bodyRow(2), bodyRow(3)]],
+    [2, [headRow(1), bodyRow(2), bodyRow(3)]],
+  ];
+  for (const [revision, rows] of shapes) {
+    const input = seed(); input.account.revision = revision; input.operations = rows;
+    await assert.rejects(createAccountBackup(input, resolver), /invalid-account-backup/, JSON.stringify(rows.map(row => row.receipt.revision)));
+  }
+  const whole = seed(); whole.account.revision = 3; whole.operations = [headRow(1), bodyRow(2), bodyRow(3)];
+  assert((await validateAccountBackup(canonicalJson(await createAccountBackup(whole, resolver)), owner)).ok);
 });

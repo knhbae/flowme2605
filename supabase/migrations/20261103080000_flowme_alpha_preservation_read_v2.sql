@@ -7,10 +7,10 @@
 --   mode 'backup' -> every journal row of the owner. Bodies (command, inverse) only for the newest
 --                    contiguous rows within 200 rows and 5,000,000 bytes; every older row is a head:
 --                    command {schema:'flowme-alpha-command-head/1', kind, requestId, expectedRevision,
---                    commandStoredBytes, inverseStoredBytes} and inverse []. Heads read only receipt,
---                    request_id and pg_column_size, so old bodies are never detoasted.
+--                    commandStoredBytes, inverseStoredBytes} and inverse []. Rows outside the newest
+--                    200 are never detoasted: their heads read receipt, request_id and pg_column_size.
 -- Both modes keep v1's signature check, live-session checks, owner/shared locks
--- (alpha_social_read_internal_v1) and the 30,000,000-byte reply bound.
+-- (alpha_social_read_internal_v1) and the 30,000,000-byte bound, checked on the complete reply text.
 -- No table, column, row, index, policy or existing grant changes.
 --
 -- Written against the repository originals (3e5d3a3a: M5 social read, M6 preservation read) and the
@@ -22,7 +22,7 @@ create function flowme_private.alpha_preservation_read_v2(read_text text, proof 
 returns jsonb language plpgsql security definer set search_path = '' set plan_cache_mode = 'force_generic_plan'
 as $$
 declare actor uuid := auth.uid(); signing_key bytea; input_value jsonb; read_mode text; paired jsonb;
-  paired_bytes bigint; archive_bytes bigint; operation_values jsonb := '[]'::jsonb; archive_values jsonb;
+  paired_bytes bigint; archive_bytes bigint; operation_values jsonb := '[]'::jsonb; archive_values jsonb; reply jsonb;
   body_ids text[] := '{}'; total_rows bigint; body_rows bigint := 0; from_revision bigint; to_revision bigint;
 begin
   if actor is null or not flowme_private.live_session_v1() then return '{"ok":false,"reason":"unauthenticated"}'::jsonb; end if;
@@ -80,11 +80,14 @@ begin
   end if;
   select coalesce(jsonb_agg(to_jsonb(a) order by a.created_at,a.source_sha256),'[]'::jsonb)
     into archive_values from flowme_private.alpha_preservation_archives_v1 a where a.owner_id = actor;
-  if not flowme_private.live_session_v1() then return '{"ok":false,"reason":"unauthenticated"}'::jsonb; end if;
-  return jsonb_build_object('ok',true,'value',(paired->'value') ||
+  reply := jsonb_build_object('ok',true,'value',(paired->'value') ||
     jsonb_build_object('operations',operation_values,'importArchives',archive_values,
       'history',jsonb_build_object('schema','flowme-alpha-preservation-history/1','mode',read_mode,
         'totalRows',total_rows,'bodyRows',body_rows,'fromRevision',from_revision,'toRevision',to_revision)));
+  -- The estimates above only bound allocation; this is the exact text the caller receives.
+  if octet_length(reply::text) > 30000000 then return '{"ok":false,"reason":"limit"}'::jsonb; end if;
+  if not flowme_private.live_session_v1() then return '{"ok":false,"reason":"unauthenticated"}'::jsonb; end if;
+  return reply;
 end;
 $$;
 revoke all on function flowme_private.alpha_preservation_read_v2(text,text) from public, anon, authenticated, service_role;

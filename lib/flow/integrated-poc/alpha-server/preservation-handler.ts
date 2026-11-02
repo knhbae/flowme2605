@@ -37,14 +37,21 @@ const validProof = (actual: unknown, expected: string) => typeof actual === 'str
 const MISSING_RPC = Symbol('missing-rpc');
 const count = (value: unknown): value is number => Number.isSafeInteger(value) && (value as number) >= 0;
 const revisionOrNull = (value: unknown) => value === null || Number.isSafeInteger(value) && (value as number) > 0;
-/** read_v2 reply metadata must agree with the rows it came with; the backup builder rechecks the heads. */
-function validReadHistory(history: unknown, mode: 'state' | 'backup', operations: unknown): boolean {
+/** read_v2 reply metadata must equal what its own rows say; the backup builder rechecks every row. */
+function validReadHistory(history: unknown, mode: 'state' | 'backup', operations: unknown, accountRevision: unknown): boolean {
   if (!programShape(history, ['schema', 'mode', 'totalRows', 'bodyRows', 'fromRevision', 'toRevision']) || history.schema !== 'flowme-alpha-preservation-history/1'
     || history.mode !== mode || !count(history.totalRows) || !count(history.bodyRows) || !revisionOrNull(history.fromRevision)
-    || !revisionOrNull(history.toRevision) || !Array.isArray(operations)) return false;
+    || !revisionOrNull(history.toRevision) || !Array.isArray(operations) || !count(accountRevision)) return false;
+  const newest = history.toRevision as number | null;
+  if ((history.totalRows === 0) !== (newest === null) || newest !== null && newest > accountRevision) return false;
   if (mode === 'state') return operations.length === 0 && history.bodyRows === 0 && history.fromRevision === null;
-  const bodies = operations.filter(row => (row as { command?: { schema?: unknown } })?.command?.schema !== OPERATION_HEAD_SCHEMA).length;
-  return operations.length === history.totalRows && bodies === history.bodyRows && (bodies === 0) === (history.fromRevision === null);
+  const rows = operations as { command?: { schema?: unknown }; receipt?: { revision?: unknown } }[];
+  if (!rows.every(row => Number.isSafeInteger(row?.receipt?.revision))) return false;
+  const revisions = rows.map(row => row.receipt!.revision as number);
+  const bodies = rows.filter(row => row.command?.schema !== OPERATION_HEAD_SCHEMA).map(row => row.receipt!.revision as number);
+  return rows.length === history.totalRows && bodies.length === history.bodyRows
+    && history.fromRevision === (bodies.length ? bodies.reduce((a, b) => Math.min(a, b)) : null)
+    && history.toRevision === (revisions.length ? revisions.reduce((a, b) => Math.max(a, b)) : null);
 }
 
 /** Separate writer: restores private data at CURRENT revision, never old server journals/public data. */
@@ -81,8 +88,13 @@ export function createAlphaPreservationHandler(env: Record<string, string | unde
       const response = await backupFetch(`${config.url}${path}`, { method: payload === undefined ? 'GET' : 'POST',
         headers: { apikey: config.publishableKey, Authorization: authorization, 'Content-Type': 'application/json' },
         ...(payload === undefined ? {} : { body: JSON.stringify(payload) }), cache: 'no-store', redirect: 'error', signal: backupBudget?.signal ?? AbortSignal.timeout(30_000) });
-      // PostgREST answers 404 for an RPC that is not installed yet; only the caller that opts in may fall back.
-      if (allowMissing && response.status === 404) { await response.body?.cancel(); return MISSING_RPC; }
+      // PostgREST answers 404 PGRST202 for an RPC that is not installed yet; only the caller that opts in may
+      // fall back, and any other 404 is a failure like the rest.
+      if (allowMissing && response.status === 404) {
+        const body: unknown = await response.json().catch(() => null);
+        if (body && typeof body === 'object' && (body as { code?: unknown }).code === 'PGRST202') return MISSING_RPC;
+        throw Error('unavailable');
+      }
       if (!response.ok) throw Error(response.status === 401 || response.status === 403 ? 'unauthenticated' : 'unavailable');
       if (backupBudget) return backupBudget.run(() => readBackupResponse(response, backupBudget.signal, PRESERVATION_PROTOCOL.bytes, parseAlphaJson));
       const reader = response.body?.getReader(); if (!reader) throw Error('unavailable');
@@ -152,7 +164,8 @@ export function createAlphaPreservationHandler(env: Record<string, string | unde
           if (!programShape(value, ['account', 'context', 'operations', 'importArchives'])) throw Error('invalid');
         } else {
           value = unwrap(reply);
-          if (!programShape(value, ['account', 'context', 'operations', 'importArchives', 'history']) || !validReadHistory(value.history, mode, value.operations)) throw Error('invalid');
+          if (!programShape(value, ['account', 'context', 'operations', 'importArchives', 'history'])
+            || !validReadHistory(value.history, mode, value.operations, (value.account as { revision?: unknown } | null)?.revision)) throw Error('invalid');
         }
         if (!Array.isArray(value.operations) || !Array.isArray(value.importArchives)) throw Error('invalid');
         const parsed = readAlphaSocialResponse({ ok: true, value: { account: value.account, context: value.context } }, owner);

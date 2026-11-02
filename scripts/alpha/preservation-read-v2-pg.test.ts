@@ -223,6 +223,33 @@ commit;`);
   assert.equal(denied('anon'), 'denied'); assert.equal(denied('service_role'), 'denied');
   edge = { capped: capped.value.history, allHeads: allHeads.value.history, state: state.value.history, refused: 'mode, extra key, wrong proof, dead session', roles: 'anon and service_role denied' };
   console.log(JSON.stringify({ edge }));
+  // Exact byte edges, each on its own synthetic owner. Reply text from psql equals reply::text.
+  const owner4 = '99999999-9999-4999-8999-999999999999', session4 = 'aaaaaaaa-0000-4000-8000-000000000004';
+  const owner5 = 'bbbbbbbb-0000-4000-8000-000000000005', session5 = 'aaaaaaaa-0000-4000-8000-000000000005';
+  seedOwner(owner4, session4, 'member-dddddddd-dddd-4ddd-8ddd-dddddddddddd', 0, false);
+  seedOwner(owner5, session5, 'member-eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', 1, false);
+  const four = as(owner4, session4), five = as(owner5, session5);
+  const archive = (n: number) => psql(`delete from flowme_private.alpha_preservation_archives_v1 where owner_id='${owner4}';
+insert into flowme_private.alpha_preservation_archives_v1(owner_id,source_sha256,source_raw,source_actor_id,receipt)
+select '${owner4}',encode(extensions.digest(convert_to(repeat('x',${n}),'UTF8'),'sha256'),'hex'),repeat('x',${n}),'synthetic-actor','{"requestId":"edge-archive"}'::jsonb;`);
+  const stateText = canonicalJson({ schema: 'flowme-alpha-preservation-read/2', mode: 'state' });
+  const stateReply = () => rpc('flowme_alpha_preservation_read_v2', { read_text: stateText, proof: signAlphaCommand(owner4, stateText, key) }, four).body;
+  archive(1); const base = Buffer.byteLength(stateReply());
+  archive(30_000_000 - base + 1); const atLimit = stateReply();
+  assert.equal(Buffer.byteLength(atLimit), 30_000_000); assert(atLimit.startsWith('{"ok": true'));
+  archive(30_000_000 - base + 2); const overLimit = stateReply();
+  assert.equal(overLimit, '{"ok": false, "reason": "limit"}');
+  psql(`delete from flowme_private.alpha_preservation_archives_v1 where owner_id='${owner4}';`);
+  const rowBytes = () => Number(psql(`select octet_length(to_jsonb(o)::text) from flowme_private.alpha_operations_v1 o where owner_id='${owner5}';`));
+  const pad = (k: number) => psql(`update flowme_private.alpha_operations_v1 set command=jsonb_set(command,'{changes}',jsonb_build_array(to_jsonb(repeat('y',${k})))) where owner_id='${owner5}';`);
+  pad(0); const empty = rowBytes();
+  pad(4_999_998 - empty);
+  assert.equal(rowBytes() + 2, 5_000_000); assert.equal(read('backup', five, owner5).value.history.bodyRows, 1);
+  pad(4_999_998 - empty + 1);
+  assert.equal(rowBytes() + 2, 5_000_001); assert.equal(read('backup', five, owner5).value.history.bodyRows, 0);
+  pad(0);
+  edge = { ...(edge as object), replyAt30000000: 'ok', replyAt30000001: 'limit', budgetAt5000000: 'body', budgetAt5000001: 'head' };
+  console.log(JSON.stringify({ boundaries: edge }));
 }
 
 // 7. Optional: the service DR package over the same tables (only when it fits the 30 MB JSON tools).

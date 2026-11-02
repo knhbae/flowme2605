@@ -69,6 +69,9 @@ function validateDetachedInput(value: AccountBackupInput, version: BackupVersion
   }
   // Bodies are only ever the newest contiguous window; a body older than a head is not a /3 server read.
   need(newestHead < oldestBody);
+  // A /3 server read is the owner's whole journal: revisions 1..account.revision, in order, none missing.
+  if (version === 3) need(value.operations.length === value.account.revision
+    && value.operations.every((row, index) => (row as { receipt: { revision: number } }).receipt.revision === index + 1));
 }
 function historyOf(operations: unknown[]): AccountBackupHistory {
   const rows = operations as { command: { schema: string }; receipt: { revision: number } }[];

@@ -336,7 +336,11 @@ test('preservation restores exact owned missing private bytes atomically and ret
   const f=fixture(),id='media-dddddddd-dddd-4ddd-8ddd-dddddddddddd';
   f.state.account.space.participationDrafts=[{...newProgramParticipationDraft(),body:'Private photo',media:[{id,dataUrl:`flowme-media:${id}`,alt:'Private synthetic image',synthetic:true}]}];
   f.state.files.set(id,await sharp({create:{width:2,height:2,channels:3,background:'blue'}}).webp().toBuffer());
-  const backup=await f.send({kind:'backup'});assert(backup.ok);f.state.account.space=createProgramPrivateSpace();f.state.account.revision=1;f.state.files.clear();
+  const backup=await f.send({kind:'backup'});assert(backup.ok);f.state.account.space=createProgramPrivateSpace();
+  // A real revision always has its journal row; /3 backups check the journal is whole.
+  f.state.operations.push({owner_id:owner,request_id:'edit-1',receipt:{requestId:'edit-1',revision:1,changed:true,kind:'change-private'},inverse:[],undone:false,
+    command:{schema:'flowme-alpha-command/1',requestId:'edit-1',expectedRevision:0,kind:'change-private',changes:[]} as unknown as PreservationCommand});
+  f.state.account.revision=1;f.state.files.clear();
   const sourceRaw=canonicalJson(backup.value),sourceSha256=await sha256(new TextEncoder().encode(sourceRaw));
   const result=await f.send({kind:'commit',command:command(sourceSha256,'missing-private-restore','restore',1),sourceRaw,actorId:owner});
   assert.equal(result.ok,true);assert.equal(f.state.writes,1);assert.equal(f.state.commits.length,1);
@@ -508,5 +512,45 @@ test('read_v2: an installed function that fails is never hidden behind the v1 re
     const response=await(await handler(f.request({client:PRESERVATION_PROTOCOL.client,kind:'backup'}))).json();
     assert.deepEqual(response,{ok:false,reason:status===401?'unauthenticated':'unavailable'});
     assert(!f.state.calls.includes('/rest/v1/rpc/flowme_alpha_preservation_read_v1'));assert.equal(f.state.writes,0);
+  }
+});
+test('read_v2: history revisions must equal the rows; a state read may not claim more than the account',async()=>{
+  const tampers=[(v:any)=>{v.history.fromRevision=99;},(v:any)=>{v.history.toRevision=999;},(v:any)=>{v.history.fromRevision=null;},(v:any)=>{v.history.toRevision=null;},(v:any)=>{v.history.toRevision=2;}];
+  for(const tamper of tampers){
+    const f=fixture();journal(f,3,10);const fetcher=f.fetcher;
+    const handler=createAlphaPreservationHandler(env,async(url,init)=>{
+      const response=await fetcher(url,init);if(!String(url).endsWith('preservation_read_v2'))return response;
+      const body=await response.json();tamper(body.value);return Response.json(body);
+    });
+    assert.deepEqual(await(await handler(f.request({client:PRESERVATION_PROTOCOL.client,kind:'backup'}))).json(),{ok:false,reason:'invalid'});
+  }
+  for(const tamper of [(v:any)=>{v.history.toRevision=v.account.revision+1;},(v:any)=>{v.history.totalRows=0;}]){
+    const f=fixture();journal(f,3,10);const fetcher=f.fetcher,raw=await source(f);
+    const handler=createAlphaPreservationHandler(env,async(url,init)=>{
+      const response=await fetcher(url,init);if(!String(url).endsWith('preservation_read_v2'))return response;
+      const body=await response.json();tamper(body.value);return Response.json(body);
+    });
+    const response=await(await handler(f.request({client:PRESERVATION_PROTOCOL.client,kind:'preview',mode:'import',sourceRaw:raw.sourceRaw,actorId:raw.actorId}))).json();
+    assert.deepEqual(response,{ok:false,reason:'invalid'});
+  }
+});
+test('read_v2: only a PGRST202 404 means the function is missing',async()=>{
+  for(const body of [{code:'PGRST125',message:'Invalid path'},{message:'not found'},null]){
+    const f=fixture();const fetcher=f.fetcher;
+    const handler=createAlphaPreservationHandler(env,async(url,init)=>String(url).endsWith('preservation_read_v2')
+      ?new Response(body===null?'not json':JSON.stringify(body),{status:404}):fetcher(url,init));
+    assert.deepEqual(await(await handler(f.request({client:PRESERVATION_PROTOCOL.client,kind:'backup'}))).json(),{ok:false,reason:'unavailable'});
+    assert(!f.state.calls.includes('/rest/v1/rpc/flowme_alpha_preservation_read_v1'));
+  }
+});
+test('read_v2: a change to an old head between the two backup reads invalidates the download',async()=>{
+  for(const change of [(row:Operation)=>{row.undone=!row.undone;},(row:Operation)=>{row.inverse=[];},(row:Operation)=>{(row.receipt as any).kind='social';}]){
+    const f=fixture();journal(f,250,5_000);const fetcher=f.fetcher;let reads=0;
+    const handler=createAlphaPreservationHandler(env,async(url,init)=>{
+      if(String(url).endsWith('preservation_read_v2')&&++reads===2)change(f.state.operations[0]);
+      return fetcher(url,init);
+    });
+    const response=await(await handler(f.request({client:PRESERVATION_PROTOCOL.client,kind:'backup'}))).json();
+    assert.deepEqual(response,{ok:false,reason:'revision-conflict'});
   }
 });
