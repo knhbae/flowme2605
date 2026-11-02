@@ -205,17 +205,20 @@ test('N7: input an editor refused and put back is parked at once, stored, announ
   const mergeRecoveryDrafts = evaluate<(parked: typeof typed[], active: typeof typed[]) => typeof typed[]>(functionText('mergeRecoveryDrafts'), {});
   const stored: unknown[] = [], shown: unknown[] = []; let storageError = false;
   const refs = { parkedDrafts: { current: [] as typeof typed[] }, activeDrafts: { current: [typed] } };
-  const keep = (ok: boolean) => evaluate<(draft: typeof refusedName) => void>(functionText('keepRefusedInput'), { ...refs, mergeRecoveryDrafts,
+  const keep = (ok: boolean) => evaluate<(draft: typeof refusedName) => boolean>(functionText('keepRefusedInput'), { ...refs, mergeRecoveryDrafts,
     uiRecovery: { current: { save: (drafts: unknown[]) => { stored.push(drafts); return ok ? { ok: true, value: { drafts } } : { ok: false }; } } },
     setStorageError: () => { storageError = true; }, setRecoveries: (value: unknown) => shown.push(value) });
-  keep(true)(refusedName as typeof typed);
+  assert.equal(keep(true)(refusedName as typeof typed), true);
   assert.deepEqual(refs.parkedDrafts.current, [refusedName]);
   assert.deepEqual(stored.at(-1), [refusedName, typed], 'stored with the live capture');
   assert.equal(shown.length, 1); assert.equal(storageError, false);
   const announced = announcedRecoveries([refusedName, typed] as typeof typed[], refs.parkedDrafts.current, [typed], false, recoveryDraftIdentity);
   assert.equal(announced, 1, 'announced although nothing else is at risk');
   assert.deepEqual(mergeRecoveryDrafts(refs.parkedDrafts.current, [typed]), [refusedName, typed], 'the next capture keeps it');
-  keep(false)(refusedName as typeof typed); assert.equal(storageError, true, 'storage that fails says so');
+  // N7 review 4: storage that fails says so, parks nothing, and tells the editor (which then keeps the line as typed).
+  refs.parkedDrafts.current = [];
+  assert.equal(keep(false)(refusedName as typeof typed), false); assert.equal(storageError, true);
+  assert.deepEqual(refs.parkedDrafts.current, []);
   assert(source.includes('onInputFailureChange={setEditorInputFailed} onKeepRefusedInput={keepRefusedInput}'));
   const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
   assert(space.includes('onInputFailureChange={failed => inputFailureChanged(id, failed)} onKeepRefusedInput={props.onKeepRefusedInput}'));

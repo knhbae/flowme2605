@@ -33,13 +33,13 @@ function workspaces() {
   return { mine, other, a, b, original };
 }
 /** This tab's editor on A: the draft (with the host's newest workspace), and the editor's own finish of a held line. */
-function editor(mine: TextWorkspaceState, a: string, latest: TextWorkspaceState | undefined, box = true) {
+function editor(mine: TextWorkspaceState, a: string, latest: TextWorkspaceState | undefined, box = true, keeps = true) {
   const owner = createProgramDocumentInput(mine, a);
   const controller = createProgramTextDraft(owner.initial, a, async () => true, () => {}, () => true, owner, true, undefined, () => latest);
   const area = { value: controller.getState().raw, selectionStart: 0, selectionEnd: 0, selectionDirection: 'none' };
   const heldFolderLineRef = { current: null as null | { id: string; left: boolean; offAtStart: boolean } }, notices: string[] = [], moves: string[] = [];
   const kept: { title: string; raw: string }[] = [];
-  const scope: Record<string, unknown> = { M, propsRef: { current: { docId: a, readOnly: false, onKeepRefusedInput: box ? (draft: { title: string; raw: string }) => kept.push(draft) : undefined } }, draftRef: { current: controller }, textArea: () => area,
+  const scope: Record<string, unknown> = { M, propsRef: { current: { docId: a, readOnly: false, onKeepRefusedInput: box ? (draft: { title: string; raw: string }) => { kept.push(draft); return keeps; } : undefined } }, draftRef: { current: controller }, textArea: () => area,
     heldFolderLineRef, composingRef: { current: false }, FOLDER_LINE: /^ *- \/(?!.*<!--\s*flowme-folder)/, editorRef: { current: { setValue: () => true } },
     shown: () => true, scheduleSave: () => {}, programFolderKeptText, programFolderCreatedNotice, restoredLineOffset, relinkedNotice: () => null,
     showFolderNotice: (text: string) => notices.push(text), showFolderOperation: (text: string) => notices.push(text),
@@ -58,7 +58,7 @@ function editor(mine: TextWorkspaceState, a: string, latest: TextWorkspaceState 
     finish(options.explicit ?? true);
   };
   const typeAndEnter = (...texts: string[]) => typeAndFinish({}, ...texts);
-  return { controller, typeAndEnter, typeAndFinish, notices, moves, kept };
+  return { controller, typeAndEnter, typeAndFinish, notices, moves, kept, held: () => heldFolderLineRef.current, area };
 }
 const titleOf = (state: TextWorkspaceState, id: string) => state.folders.find(folder => folder.id === id)?.title;
 
@@ -126,14 +126,31 @@ test('N7: the save itself — a rename of a folder another tab has started using
 // N7 review 3 (11/2): every other D3 B refusal put the name back with the typed one in its notice only (since N4):
 // left without Enter, a line already off its folder's name, two of the new name there. Each keeps it in the 복구함 too.
 const keptName = [{ title: '‘Original’ 폴더 줄에 쓴 이름', raw: '- /NewTitle' }];
-test('N7 3: left without Enter — the name goes back, the typed one is kept in the 복구함 and the notice says so', () => {
+// N7 review 4 (the orchestrator's decision, within B0's one judgement once the line is finished): leaving the line
+// finishes it as Enter does. A typo fixed and left renames a folder this document alone uses: nothing put back or kept.
+test('N7 4: a name fixed and left — renamed as on Enter (this document alone uses it), nothing put back or kept', () => {
   const { mine, a, original } = workspaces();
   const e = editor(mine, a, mine);
   e.typeAndFinish({ explicit: false }, '- /', '- /NewTitle');
+  assert.equal(titleOf(e.controller.getState().working, original.id), 'NewTitle');
+  assert.deepEqual(e.moves, [original.id]); assert.deepEqual(e.kept, []); assert.deepEqual(e.notices, []);
+});
+test('N7 4: left while another tab uses the folder — refused as on Enter, kept in the 복구함', () => {
+  const { mine, other, a, original } = workspaces();
+  const e = editor(mine, a, other);
+  e.typeAndFinish({ explicit: false }, '- /NewTitle');
   assert.equal(titleOf(e.controller.getState().working, original.id), 'Original');
-  assert.equal(e.controller.getState().raw.split('\n')[0], '- /Original');
   assert.deepEqual(e.kept, keptName);
-  assert.match(e.notices[0], /^폴더 이름은 Enter로 마칠 때만 바뀝니다 · ‘Original’.* 두었습니다\. 입력\(‘NewTitle’\)은 복구함에 보관했습니다$/);
+  assert.match(e.notices[0], /^다른 곳에서도 쓰는 폴더라 이름을 바꾸지 않았습니다 · ‘Original’.* 입력\(‘NewTitle’\)은 복구함에 보관했습니다$/);
+});
+test('N7 4: the 복구함 could not store it — the line is not put back, nothing says it was kept, the line stays held', () => {
+  const { mine, other, a, original } = workspaces();
+  const e = editor(mine, a, other, true, false);
+  e.typeAndEnter('- /', '- /NewTitle');
+  assert.deepEqual(e.kept, keptName, 'asked once');
+  assert.equal(e.controller.getState().raw.split('\n')[0], '- /NewTitle', 'the input as typed');
+  assert.equal(titleOf(e.controller.getState().working, original.id), 'Original');
+  assert.deepEqual(e.notices, []); assert.notEqual(e.held(), null);
 });
 test('N7 3: a line already off its folder\'s name, finished with Enter — kept in the 복구함 too', () => {
   const { mine, a } = workspaces();
@@ -152,7 +169,7 @@ test('N7 3: two folders of the new name in its place (old data) — kept in the 
   assert.deepEqual(e.kept, keptName);
   assert.equal(e.notices[0], '같은 자리에 ‘NewTitle’가 둘이라 옮기지 않았습니다 · 폴더 관리에서 정리할 수 있습니다 · 입력은 복구함에 보관했습니다');
 });
-test('N7 3: the name only emptied and left — nothing typed, nothing kept', () => {
+test('N7 3: the name only emptied and finished — nothing typed, nothing kept', () => {
   const { mine, a } = workspaces();
   const e = editor(mine, a, mine);
   e.typeAndFinish({ explicit: false }, '- /');
@@ -163,4 +180,35 @@ test('N7 3: the words without a 복구함 stay as they were', () => {
   assert.equal(programFolderKeptText('Original', 'NewTitle', 'left'), '폴더 이름은 Enter로 마칠 때만 바뀝니다 · ‘Original’로 두었습니다(입력: ‘NewTitle’)');
   assert.equal(programFolderKeptText('Original', 'NewTitle', 'name-conflict'), '같은 자리에 ‘NewTitle’가 둘이라 옮기지 않았습니다 · 폴더 관리에서 정리할 수 있습니다');
   assert.equal(programFolderKeptText('Original', 'NewTitle', 'refused', true), '이 줄은 옮길 수 없습니다 · ‘Original’로 두었습니다. 입력(‘NewTitle’)은 복구함에 보관했습니다');
+});
+
+// N7 review 4: a paste over a linked line's name is put back by finishRenamedFolderLines (N1 fix 2), which did not keep
+// what was pasted. It keeps it in the 복구함 the same way; not kept, the lines stay as pasted for a later finish.
+const renamedSource = ts.transpileModule(find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'finishRenamedFolderLines'),
+  { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.None } }).outputText;
+function pasted(keeps: boolean) {
+  const { mine, a, original } = workspaces();
+  const owner = createProgramDocumentInput(mine, a);
+  const controller = createProgramTextDraft(owner.initial, a, async () => true, () => {}, () => true, owner, true);
+  const line = M.getDocument(controller.getState().working, a)!.lines[0].id;
+  assert(controller.updateRaw('- /PastedName\n메모', '', { inputType: 'insertFromPaste' } as never));
+  const area = { value: controller.getState().raw, selectionStart: 0, selectionEnd: 0, selectionDirection: 'none' };
+  const pending = new Set([line]), kept: { title: string; raw: string }[] = [], notices: string[] = [];
+  const scope: Record<string, unknown> = { M, renamedFolderLinesRef: { current: pending }, draftRef: { current: controller }, textArea: () => area,
+    composingRef: { current: false }, propsRef: { current: { docId: a, readOnly: false, onKeepRefusedInput: (draft: { title: string; raw: string }) => { kept.push(draft); return keeps; } } },
+    restoredLineOffset, editorRef: { current: { setValue: () => true } }, showFolderNotice: (text: string) => notices.push(text), scheduleSave: () => {} };
+  const finish = new Function(...Object.keys(scope), renamedSource + '\nreturn finishRenamedFolderLines;')(...Object.values(scope)) as (all: boolean) => void;
+  finish(true);
+  return { controller, kept, notices, pending, line, original };
+}
+test('N7 4: a pasted name put back — kept in the 복구함, and the notice says so', () => {
+  const p = pasted(true);
+  assert.deepEqual(p.kept, [{ title: '‘Original’ 폴더 줄에 쓴 이름', raw: '- /PastedName' }]);
+  assert.equal(p.controller.getState().raw.split('\n')[0], '- /Original');
+  assert.match(p.notices[0], /^폴더 이름은 Enter로 마칠 때만 바뀝니다 · ‘Original’.* 두었습니다\. 입력\(‘PastedName’\)은 복구함에 보관했습니다$/);
+});
+test('N7 4: a pasted name the 복구함 could not store — the line stays as pasted, still to finish', () => {
+  const p = pasted(false);
+  assert.equal(p.controller.getState().raw.split('\n')[0], '- /PastedName');
+  assert.deepEqual(p.notices, []); assert(p.pending.has(p.line));
 });

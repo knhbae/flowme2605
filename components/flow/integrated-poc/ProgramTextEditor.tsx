@@ -120,7 +120,7 @@ export interface ProgramTextEditorProps {
   /** The input was refused here (kept, not saved) or its save failed; false once it saves or is reverted. */
   onInputFailureChange?: (failed: boolean) => void;
   /** N7: a line's input this editor refused and put back is kept in the tab's 복구함 (W11 saved input). */
-  onKeepRefusedInput?: (draft: { title: string; raw: string }) => void;
+  onKeepRefusedInput?: (draft: { title: string; raw: string }) => boolean;
   onRegisterSave?: (save: (() => Promise<boolean>) | null, status?: (() => ProgramTextSaveStatus) | null) => void;
   onRegisterSourceFocus?: (focus: ProgramSourceFocus | null) => void;
   onRegisterInputLock?: (lock: ((locked: boolean) => void) | null) => void;
@@ -683,14 +683,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       }
       return;
     }
-    // D3 B (W15): Enter on a linked line moves it, or renames its folder when only this document uses it.
-    // Leaving it (b), a line already off its folder's name (c), 미분류 or a refusal puts the name back.
+    // D3 B (W15): a linked line finished with a new name moves, or renames its folder when only this document uses it.
+    // N7 review 4 (총괄 decision, within B0's one judgement once the line is finished): leaving the line finishes it
+    // as Enter does, so a typo fixed and left is renamed, not put back and kept. A line already off its folder's name
+    // (c), 미분류 or a refusal puts the name back.
     if (binding) {
       heldFolderLineRef.current = null;
       const typed = lines[index].text.replace(/^ *- \//, '').trim();
-      const finishedHere = explicit && area.value.slice(0, area.selectionStart).split('\n').length - 1 === index;
-      let why: 'left' | 'off' | 'name-conflict' | 'shared' | 'refused' = finishedHere ? held.offAtStart ? 'off' : 'refused' : 'left', boxed = false;
-      if (finishedHere && !held.offAtStart && linked && linked.id !== 'folder-unfiled') {
+      let why: 'off' | 'name-conflict' | 'shared' | 'refused' = held.offAtStart ? 'off' : 'refused', boxed = false;
+      if (!held.offAtStart && linked && linked.id !== 'folder-unfiled') {
         const previous = controller.getState(), moved = controller.moveFolderLine(index);
         if (moved.ok) {
           const after = controller.getState();
@@ -701,10 +702,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         if (moved.reason === 'name-conflict') why = 'name-conflict';
         if (moved.reason === 'used-elsewhere') why = 'shared';
       }
-      // N7 review: every name put back (left, off, two of it there, used elsewhere, refused) keeps what was typed in
-      // the 복구함, where it can be had again; a notice alone was lost once closed. Nothing typed, nothing kept.
+      // N7 review: every name put back (off, two of it there, used elsewhere, refused) keeps what was typed in the
+      // 복구함, where it can be had again; a notice alone was lost once closed. Nothing typed, nothing kept. Not kept
+      // (the tab's storage failed, and says so), the line is not put back: the input stays as typed.
       if (linked && linked.id !== 'folder-unfiled' && typed && propsRef.current.onKeepRefusedInput) {
-        boxed = true; propsRef.current.onKeepRefusedInput({ title: `‘${linked.title}’ 폴더 줄에 쓴 이름`, raw: (area.value.split('\n')[index] ?? lines[index].text).trim() });
+        if (!propsRef.current.onKeepRefusedInput({ title: `‘${linked.title}’ 폴더 줄에 쓴 이름`, raw: (area.value.split('\n')[index] ?? lines[index].text).trim() })) {
+          heldFolderLineRef.current = held; return;
+        }
+        boxed = true;
       }
       const beforeRaw = area.value, { selectionStart, selectionEnd, selectionDirection } = area;
       if (!controller.restoreFolderLineName(index)) return;
@@ -746,9 +751,18 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (index >= 0) indexes.push(index);
     }
     if (!indexes.length) return;
+    // N7 review 4: pasted names put back are kept in the 복구함 too; not kept, the lines stay as pasted.
+    const keep = propsRef.current.onKeepRefusedInput, rows = area.value.split('\n');
+    const drafts = keep ? indexes.flatMap(index => {
+      const binding = state.working.bindings.find(row => row.kind === 'scope' && row.docId === propsRef.current.docId && row.lineId === lines[index].id);
+      const folder = binding?.kind === 'scope' ? state.working.folders.find(entry => entry.id === binding.scopeId) : undefined;
+      const typed = (rows[index] ?? '').replace(/^ *- \//, '').trim();
+      return folder && folder.id !== 'folder-unfiled' && typed && typed !== folder.title ? [{ title: `‘${folder.title}’ 폴더 줄에 쓴 이름`, raw: rows[index].trim() }] : [];
+    }) : [];
+    if (!drafts.every(draft => keep!(draft))) { for (const index of indexes) pending.add(lines[index].id); return; }
     const { selectionStart, selectionEnd, selectionDirection } = area;
     let raw = area.value, start = selectionStart, end = selectionEnd;
-    if (!controller.restoreFolderLineNames(indexes)) return;
+    if (!controller.restoreFolderLineNames(indexes, drafts.length > 0)) return;
     // The caret is carried through each restored line, the last line first so each step reads the raw it changes.
     const restored = controller.getState().raw, restoredLines = restored.split('\n');
     for (const index of [...indexes].sort((a, b) => b - a)) {

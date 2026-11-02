@@ -396,7 +396,7 @@ export function createProgramTextDraft(
      * text back to its folder's name. Nothing is renamed or moved; the status row names the typed name. */
     restoreFolderLineName(lineIndex: number) { return api.restoreFolderLineNames([lineIndex]); },
     /** The same for several lines at once (a paste that renamed more than one), in one edit; only those lines change. */
-    restoreFolderLineNames(lineIndexes: number[]) {
+    restoreFolderLineNames(lineIndexes: number[], boxed = false) {
       if (state.invalid) return false;
       const lines = M.getDocument(state.working, docId)?.lines ?? [], raws = state.raw.split('\n'), typed: string[] = [], kept: string[] = [];
       let unfiled = false;
@@ -414,7 +414,8 @@ export function createProgramTextDraft(
       if (!typed.length || !api.updateRaw(raws.join('\n'), '', { inputType: 'folderRestore' })) return false;
       state = { ...state, folderNotice: unfiled ? `미분류 폴더의 이름은 바꿀 수 없습니다(입력: ${typed.join(', ')})`
         // W15 (D12): the 4th edition words; a name changes only when its line is finished with Enter.
-        : `폴더 이름은 Enter로 마칠 때만 바뀝니다 · ${kept.length === 1 ? `‘${kept[0]}’${ro(kept[0])}` : '원래 이름으로'} 두었습니다(입력: ${typed.join(', ')})` }; report(); return true;
+        // N7 review 4: boxed, the typed names were also kept in the 복구함, and the words say so.
+        : `폴더 이름은 Enter로 마칠 때만 바뀝니다 · ${kept.length === 1 ? `‘${kept[0]}’${ro(kept[0])}` : '원래 이름으로'} 두었습니다${boxed ? `. 입력(${typed.join(', ')})은 복구함에 보관했습니다` : `(입력: ${typed.join(', ')})`}` }; report(); return true;
     },
     canUndoFolderMove: () => !!lastMove && !state.invalid && state.working === lastMove.after,
     /** Compatibility port for existing picker callers; W18 uses the same selective forward inverse. */

@@ -58,7 +58,7 @@ test('the editor tracks every renamed linked line of an edit and puts them back 
   assert.match(editor, /else finishHeldFolderLine\(\); \}\r?\n\s*finishRenamedFolderLines\(false\);/, 'when the caret moves');
   assert.match(editor, /const finishOnBlur = \(\) => \{ finishHeldFolderLine\(\); finishRenamedFolderLines\(true\); \};/);
   assert.match(editor, /beforeEnter: \(\) => \{[\s\S]*?finishHeldFolderLine\(true\); finishRenamedFolderLines\(true\);/);
-  assert.match(editor, /if \(!controller\.restoreFolderLineNames\(indexes\)\) return;/);
+  assert.match(editor, /if \(!controller\.restoreFolderLineNames\(indexes, drafts\.length > 0\)\) return;/);
 });
 
 // Block 1: after a dated add from 오늘, the first press on the new row's 원문 was lost. The empty add line closed

@@ -299,13 +299,14 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   /** Input captured from editors that are about to go away is left behind: it stays in the tab's
    * recovery and is announced until a save matches it or the user clears it. */
   /** N7 review: input an editor refused and put back (a folder name another document uses) is left behind at once, as
-   * an editor's that went away: stored and announced, until the user clears it (no document save matches it). */
+   * an editor's that went away: stored and announced, until the user clears it (no document save matches it).
+   * False when it could not be stored (storage says so); the editor then leaves the input as typed. */
   function keepRefusedInput(draft: AlphaUiDraft) {
-    parkedDrafts.current = mergeRecoveryDrafts(parkedDrafts.current, [draft]);
-    if (!uiRecovery.current) return;
-    const saved = uiRecovery.current.save(mergeRecoveryDrafts(parkedDrafts.current, activeDrafts.current));
-    if (!saved.ok) { setStorageError(true); return; }
-    setRecoveries(saved.value);
+    if (!uiRecovery.current) return false;
+    const parked = mergeRecoveryDrafts(parkedDrafts.current, [draft]);
+    const saved = uiRecovery.current.save(mergeRecoveryDrafts(parked, activeDrafts.current));
+    if (!saved.ok) { setStorageError(true); return false; }
+    parkedDrafts.current = parked; setRecoveries(saved.value); return true;
   }
   function parkEditorInput() {
     parkedDrafts.current = mergeRecoveryDrafts(parkedDrafts.current, activeDrafts.current);

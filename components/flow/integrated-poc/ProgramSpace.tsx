@@ -137,7 +137,7 @@ export type ProgramSpaceProps = {
   /** Some document editor holds input it refused or failed to save. */
   onInputFailureChange?: (failed: boolean) => void;
   /** N7: input an editor refused and put back, for the tab's 복구함. */
-  onKeepRefusedInput?: (draft: { title: string; raw: string }) => void;
+  onKeepRefusedInput?: (draft: { title: string; raw: string }) => boolean;
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
   /** R8b: the host draws the main tabs (쓰기·오늘·분류) and chooses one through this port. The space's own
    *  period state stays here; this is not onRegisterNavigation, so source opens keep their focus path. */
