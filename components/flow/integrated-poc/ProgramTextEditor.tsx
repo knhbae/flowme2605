@@ -300,7 +300,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const draftRef = useRef<ReturnType<typeof createProgramTextDraft> | null>(null);
   // The "- /name" line typed last; `left` once leaving it found no folder of that name. `offAtStart`: a linked
   // line whose text was already off its folder's name when this edit began (D3 B c: it is never moved).
-  const heldFolderLineRef = useRef<{ id: string; left: boolean; offAtStart: boolean } | null>(null);
+  // named: an edit while held changed the line's folder name (not only its indent, as the bar's ⇤ does).
+  const heldFolderLineRef = useRef<{ id: string; left: boolean; offAtStart: boolean; named?: boolean } | null>(null);
   // W15: the folder notice in the notice row, with how long it stays (info 6s; a choice while the caret is in
   // its line's block, then 6s); `held` while pressed or focused. N5 3b review P2 (3): its `key` stays through
   // every copy of it (a restart, a choice's block), and its times are read off performance.now(), a monotonic
@@ -687,8 +688,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (index < 0 || !FOLDER_LINE.test(lines[index].text) || binding && (!linked || lines[index].text.replace(/^ *- \//, '').trim() === linked.title)) {
       heldFolderLineRef.current = null;
       // S4 v14 phone: its name deleted and typed back ('- /' kept). A folder this draft made is linked again (D11 B).
-      if (index >= 0 && linked && FOLDER_LINE.test(lines[index].text) && controller.relinkFolderLine(lines[index].id)) {
-        const notice = relinkedNotice(lines[index].id); if (notice) showFolderOperation(notice, 'info', lines[index].id);
+      // S4 v16 phone: only when the name was edited; ⇤ then Enter is no typing back. Nothing changed, so no 되돌리기
+      // (it undid a link the line never lost, leaving '- 새자식' as plain text).
+      if (index >= 0 && linked && held.named && FOLDER_LINE.test(lines[index].text) && controller.relinkFolderLine(lines[index].id)) {
+        const notice = relinkedNotice(lines[index].id); if (notice) showFolderOperation(notice, 'info', lines[index].id, [], false);
       }
       return;
     }
@@ -832,7 +835,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     return controller && lineId && operation?.kind === 'link' && operation.lineId === lineId && controller.freshFolderLine(lineId)
       ? programFolderRelinkedNotice(controller.getState().working, propsRef.current.docId, lineId) : null;
   }
-  function showFolderOperation(text: string, tone: ProgramNoticeTone, lineId?: string, actions: ProgramNoticeAction[] = []) {
+  function showFolderOperation(text: string, tone: ProgramNoticeTone, lineId?: string, actions: ProgramNoticeAction[] = [], undoable = true) {
     const operation = draftRef.current?.folderOperation();
     if (!operation) { showFolderNotice(text, tone, lineId, actions); return; }
     const undo: ProgramNoticeAction = { label: '되돌리기', run: whenComposed(() => {
@@ -840,7 +843,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       undoFolderMove();
     }) };
     folderRawUndoRef.current = true;
-    const next: FolderNotice = { text: operation.kind === 'scopes' ? operation.notice : text + (operation.notice ? ' · ' + operation.notice : ''), tone, actions: [...actions, undo], lineId: tone === 'choose' ? lineId : undefined,
+    const next: FolderNotice = { text: operation.kind === 'scopes' ? operation.notice : text + (operation.notice ? ' · ' + operation.notice : ''), tone, actions: undoable ? [...actions, undo] : actions, lineId: tone === 'choose' ? lineId : undefined,
       shownAt: performance.now(), leftBlockAt: null, operationId: operation.id, key: ++folderNoticeKeys.current };
     folderNoticeRef.current = next; setFolderNotice(next);
   }
@@ -1593,7 +1596,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
             if (line) {
               // D3 B c: a linked line already off its folder's name before this edit stays off the move.
               const same = heldFolderLineRef.current?.id === line.id ? heldFolderLineRef.current : null;
-              heldFolderLineRef.current = { id: line.id, left: false, offAtStart: same ? same.offAtStart : folderLineOff(beforeText, line.id) };
+              // S4 v16 phone: ⇤ holds the line too, its name unchanged; only a name edited makes it 'typed back' below.
+              const nameOf = (text: TextWorkspaceState) => M.getDocument(text, props.docId)?.lines.find(row => row.id === line.id)?.text.replace(/^ *- \//, '').trim();
+              heldFolderLineRef.current = { id: line.id, left: false, offAtStart: same ? same.offAtStart : folderLineOff(beforeText, line.id),
+                named: !!same?.named || nameOf(beforeText) !== nameOf(afterText) };
             }
           } else {
             // A paste over linked folder lines' names is finished like typing: every line it renamed goes back.

@@ -99,7 +99,8 @@ test('why a name went back: left without Enter (b), already off (c), two of the 
 test('the editor: Enter moves, the notice carries 모든 문서에 적용 and 되돌리기, and the row replaces the old notices', () => {
   const editor = read('../../../components/flow/integrated-poc/ProgramTextEditor.tsx');
   assert.match(editor, /showFolderOperation\(notice\.text, notice\.tone, lineId, notice\.kind === 'moved' \? \[everywhere\] : \[\]\);/);
-  assert.match(editor, /actions: \[\.\.\.actions, undo\]/, 'all folder notices share the same forward undo');
+  // S4 v16 phone: all folder notices share the same forward undo, but a name typed back changed nothing and offers none.
+  assert.match(editor, /actions: undoable \? \[\.\.\.actions, undo\] : actions/, 'all folder notices share the same forward undo');
   assert.match(editor, /const next = M\.renameScope\(original, fromId, title\);\s*if \(next === original \|\| !\(await apply\(next, '폴더 이름 바꾸기', undefined, undefined, original\)\)\) return;/);
   assert.match(editor, /if \(!controller \|\| !controller\.canUndoFolderMove\(\) \|\| composingRef\.current\)/);
   assert.match(editor, /\{noticeViews\[0\] && <ProgramNoticeRow notice=\{\{ \.\.\.noticeViews\[0\], more: noticeViews\.length - 1 \}\} onClose=\{noticeViews\[0\]\.close\} \/>\}/);
@@ -109,7 +110,7 @@ test('the editor: Enter moves, the notice carries 모든 문서에 적용 and �
   assert.match(editor, /const notice = controller\.getState\(\)\.folderNotice \?\? programFolderCreatedNotice\(beforeText, afterText\);/);
   // The caret leaving the line's block starts a choice notice's 6s.
   assert.match(editor, /const inside = start >= 0 && index >= start && index < Math\.max\(rows\[start\]\.subtreeEndIndex, start \+ 1\);/);
-  assert.match(editor, /heldFolderLineRef\.current = \{ id: line\.id, left: false, offAtStart: same \? same\.offAtStart : folderLineOff\(beforeText, line\.id\) \};/);
+  assert.match(editor, /heldFolderLineRef\.current = \{ id: line\.id, left: false, offAtStart: same \? same\.offAtStart : folderLineOff\(beforeText, line\.id\),\s*named: !!same\?\.named \|\| nameOf\(beforeText\) !== nameOf\(afterText\) \};/);
 });
 
 test('F21: the 분류 rename says how many documents\' folder lines change too', () => {

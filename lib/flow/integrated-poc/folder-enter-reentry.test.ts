@@ -31,14 +31,16 @@ function fixture(raw = '- /운동\n  - /식단\n끝', line = 1, held: boolean | 
   const heldFolderLineRef = { current: null as null | { id: string; left: boolean; offAtStart: boolean } };
   const composingRef = { current: false }, inputLockedRef = { current: false }, draftRef = { current: controller };
   const props = { docId }, propsRef = { current: { docId, readOnly: false, active: true } }; let saves = 0;
+  const offered: string[][] = [];
   const notices: string[] = [], scope: Record<string, unknown> = { M, props, propsRef, controller, draftRef, textArea: () => area, heldFolderLineRef,
     composingRef, inputLockedRef, readFolderPickerCommand, programFolderCreatedNotice, programFolderRelinkedNotice, FOLDER_LINE: /^ *- \/(?!.*<!--\s*flowme-folder)/,
-    showFolderOperation: (text: string) => notices.push(text), showFolderNotice: (text: string) => notices.push(text),
+    showFolderOperation: (text: string, _tone: unknown, _line: unknown, actions: unknown[] = [], undoable = true) => { notices.push(text); offered.push(undoable && !actions.length ? ['되돌리기'] : undoable ? ['…', '되돌리기'] : []); },
+    showFolderNotice: (text: string) => notices.push(text),
     scheduleSave: () => { saves++; }, editorRef: { current: { setValue: () => true } }, finishRenamedFolderLines: () => {} };
   scope.relinkedNotice = evaluate<(lineId?: string) => string | null>(relinked, scope, 'relinkedNotice');
   scope.finishHeldFolderLine = evaluate<() => void>(finish, scope, 'finishHeldFolderLine');
   const enter = evaluate<() => void>('const callback = ' + property.initializer.getText(tree), scope, 'callback');
-  return { area, controller, docId, heldFolderLineRef, composingRef, inputLockedRef, draftRef, propsRef, enter, notices, saves: () => saves };
+  return { area, controller, docId, heldFolderLineRef, composingRef, inputLockedRef, draftRef, propsRef, enter, notices, offered, saves: () => saves };
 }
 
 test('W17 restored unbound end Enter reaches actual host declaration, notice and one save without typing history', () => {
@@ -100,7 +102,8 @@ function typedBack(f: ReturnType<typeof fixture>, line: string) {
     const rows = f.controller.getState().raw.split('\n'); rows[1] = text; const value = rows.join('\n');
     assert(f.controller.updateRaw(value, '', { inputType: 'insertText', folderHold: [1] }));
     f.area.value = value; f.area.selectionStart = f.area.selectionEnd = rows.slice(0, 2).join('\n').length;
-    f.heldFolderLineRef.current = { id: line, left: false, offAtStart: false };
+    // The editor's onChange marks it named: the edit changed the line's folder name.
+    f.heldFolderLineRef.current = { id: line, left: false, offAtStart: false, named: true };
   }
 }
 test('S4 v14 phone path: a new folder\'s name deleted and typed back with "- /" kept, then Enter — announced as linked again, D11 B open', () => {
@@ -115,4 +118,31 @@ test('S4 v14 phone path: a folder made before this draft, its name typed back �
   const line = M.getDocument(f.controller.getState().working, f.docId)!.lines[1].id;
   typedBack(f, line); f.enter();
   assert.deepEqual(f.notices, []); assert.equal(f.controller.freshFolderLine(line), false);
+});
+
+// S4 v16 phone (11/2, r_0300–0311): 새부모 › 새자식 made, the bar's ⇤ moved it to the top, then Enter at the end of
+// that line said "‘새자식’ 폴더에 다시 연결했습니다", and its 되돌리기 left '- 새자식' as plain text. ⇤ holds the line too,
+// its name unchanged, so finishing it took the 'typed back' path (c582a055). Only a name edited while held does now,
+// and that notice offers no 되돌리기: the line never lost its folder.
+test('S4 v16 phone path: held with its name unchanged (as the bar\'s ⇤ leaves it), then Enter — not linked again, nothing said', () => {
+  const f = fixture(); f.enter();
+  const line = M.getDocument(f.controller.getState().working, f.docId)!.lines[1].id, operation = f.controller.folderOperation();
+  f.heldFolderLineRef.current = { id: line, left: false, offAtStart: false };
+  f.notices.length = 0; f.enter();
+  assert.deepEqual(f.notices, []);
+  assert.equal(f.controller.folderOperation()?.id, operation?.id, 'no operation made');
+  assert.equal(M.getDocument(f.controller.getState().working, f.docId)!.lines[1].text, '  - /식단', 'the folder line stays a folder line');
+});
+test('S4 v16 phone path: a name typed back is announced with no 되돌리기', () => {
+  const f = fixture(); f.enter();
+  const line = M.getDocument(f.controller.getState().working, f.docId)!.lines[1].id;
+  typedBack(f, line); f.notices.length = 0; f.offered.length = 0; f.enter();
+  assert.deepEqual(f.notices, ['‘운동 › 식단’ 폴더에 다시 연결했습니다']);
+  assert.deepEqual(f.offered, [[]]);
+});
+test('S4 v16 phone path: the editor marks a held line named only when an edit changed its name', () => {
+  assert.match(source, /const nameOf = \(text: TextWorkspaceState\) => M\.getDocument\(text, props\.docId\)\?\.lines\.find\(row => row\.id === line\.id\)\?\.text\.replace\(\/\^ \*- \\\/\/, ''\)\.trim\(\);/);
+  assert.match(source, /named: !!same\?\.named \|\| nameOf\(beforeText\) !== nameOf\(afterText\) \};/);
+  assert.match(source, /if \(index >= 0 && linked && held\.named && FOLDER_LINE\.test\(lines\[index\]\.text\) && controller\.relinkFolderLine\(lines\[index\]\.id\)\)/);
+  assert.match(source, /showFolderOperation\(notice, 'info', lines\[index\]\.id, \[\], false\);/);
 });
