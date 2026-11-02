@@ -13,7 +13,7 @@ import { programManualOrderDays, programOrderedExecutionRows, programTextExecuti
   restoreProgramExecutionDayOrder, type ProgramDayOrder } from '@/lib/flow/integrated-poc/recurrence-order';
 import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
-import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeView, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
+import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
 import { ProgramMonthGrid } from './ProgramMonthGrid';
 import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
 import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
@@ -1746,9 +1746,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       actions: datesNotice.refused || datesNotice.undone || datesPending ? [] : [{ label: '되돌리기', run: () => void restoreSelectDates(datesNotice) }, ...(datesLeft ? [{ label: '그날 보기', run: () => void showMovedDay(datesNotice.date) }] : [])] }}
       onClose={() => setDatesNotice(null)} />
   </div>;
-  /** C2: after a check tap saved: completing shows the check notice (and not the plain one); reopening ends it. */
-  function checkSaved(taskId: string, title: string, before: number) {
+  /** C2: after a check tap saved: completing shows the check notice (and not the plain one); reopening ends it. A task
+   *  the save left at another value (a record dated later wins) keeps the plain notice: nothing says 완료 wrongly. */
+  function checkSaved(taskId: string, title: string, before: number, after: number | null) {
     if (before === 100) { setCheckNotice(current => current?.targetId === taskId ? null : current); return; }
+    if (after !== 100) return;
     setTaskNotice(current => current?.taskId === taskId ? null : current);
     setCheckNotice({ actorId, stage: 'done', targetId: taskId, title, before, after: 100, shownAt: Date.now(), key: ++checkNoticeKeys.current });
   }
@@ -1762,14 +1764,28 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (!task || progressNow === null) { setCheckNotice(null); setMessage(programErrorMessage('missing')); return; }
     if (step.kind === 'direct') { setCheckNotice(null); setRecordDate(today); setPercent(String(progressNow)); setDirectProgress(true); openDetail({ kind: 'task', id: task.id }); return; }
     if (step.kind === 'undo' && !programCheckUndoable(notice, progressNow)) { setCheckNotice(null); setMessage('그 뒤에 진행률이 바뀌어 되돌리지 않았습니다. 현재 기록은 유지했습니다.'); return; }
-    const percent = step.kind === 'undo' ? notice.before : step.percent;
+    // Review P2: a record dated after today decides the current value, so today's would not show; the form, as in the editor.
+    if ((M.latestProgress(dataRef.current.spaces[actorId].text, task.id)?.date ?? '') > today) {
+      setCheckNotice(null); setRecordDate(today); setPercent(String(progressNow)); openDetail({ kind: 'task', id: task.id });
+      setMessage('미래 날짜의 진행 기록이 있습니다. 기록 날짜를 확인한 뒤 변경해 주세요.'); return;
+    }
+    const percent = step.kind === 'undo' ? notice.before : step.percent, undo = step.kind === 'undo';
+    // The value the save leaves, read off the data it commits; the notice says what was saved only when that matches.
+    let saved: number | null = null;
     checkStepBusy.current = true;
+    setCheckNotice({ ...notice, saving: { percent, undo, quiet: false } });
     try {
-      const result = await run(step.kind === 'undo' ? '완료 되돌리기' : percent === 100 ? '완료' : '진행률 기록',
-        current => recordProgramTaskProgress(current, { ...base(current), taskId: task.id, date: today, percent }), true, undefined, undefined, true);
-      if (!result.ok) return;
+      const result = await run(undo ? '완료 되돌리기' : percent === 100 ? '완료' : '진행률 기록', current => {
+        const next = recordProgramTaskProgress(current, { ...base(current), taskId: task.id, date: today, percent });
+        if (next.ok) saved = M.currentProgress(next.data.spaces[actorId].text, task.id);
+        return next;
+      }, true, undefined, undefined, true);
+      const failed = (kept: number | null, why: 'save' | 'changed') => setCheckNotice(shown => shown?.key !== key ? shown
+        : { ...programCheckNoticeFailed(shown, percent, kept, why, Date.now(), ++checkNoticeKeys.current), actorId: shown.actorId });
+      if (!result.ok) { if (result.reason === 'busy') setCheckNotice(shown => shown?.key !== key ? shown : { ...shown, saving: undefined }); else failed(progressNow, 'save'); return; }
+      if (saved !== percent) { failed(saved, 'changed'); return; }
       if (percent === 100) setTaskNotice(currentNotice => currentNotice?.taskId === task.id ? null : currentNotice);
-      setCheckNotice(shown => shown?.key !== key ? shown : step.kind === 'undo' ? null
+      setCheckNotice(shown => shown?.key !== key ? shown : undo ? null
         : { ...programCheckNoticeAfter(shown, percent, Date.now(), ++checkNoticeKeys.current), actorId: shown.actorId });
     } finally { checkStepBusy.current = false; }
   }
@@ -1919,7 +1935,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
             <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskIds.has(task.id) ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskIds.has(task.id) || undefined} onClick={() => {
-              if (value > 0 && value < 100) setCheckNotice({ actorId, stage: 'chips', targetId: task.id, title: task.title, before: value, after: value, shownAt: Date.now(), key: ++checkNoticeKeys.current });
+              // A record dated after today keeps the form (review P2): today's record would not change what shows.
+              if (value > 0 && value < 100 && (progress?.date ?? '') > today) { setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }
+              else if (value > 0 && value < 100) setCheckNotice({ actorId, stage: 'chips', targetId: task.id, title: task.title, before: value, after: value, shownAt: Date.now(), key: ++checkNoticeKeys.current });
               else {
                 // A repeat tap while the first still waits or saves would act on a stale
                 // value, so ignore it; the first tap waits out a refresh by itself.
@@ -1927,8 +1945,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                 if (ids.has(task.id)) return;
                 ids.add(task.id); setCompletingTaskIds(new Set(ids));
                 const done = () => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); };
-                void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }),
-                  true, undefined, undefined, true).then(result => { done(); if (result.ok) checkSaved(task.id, task.title, value); }, done);
+                let after: number | null = null;
+                void run(value === 100 ? '다시 열기' : '완료', current => {
+                  const next = completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 });
+                  if (next.ok) after = M.currentProgress(next.data.spaces[actorId].text, task.id);
+                  return next;
+                }, true, undefined, undefined, true).then(result => { done(); if (result.ok) checkSaved(task.id, task.title, value, after); }, done);
               }
             }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
               {completingTaskIds.has(task.id) ? '…' : value > 0 && value < 100 ? `${value}%` : ''}</span></button>

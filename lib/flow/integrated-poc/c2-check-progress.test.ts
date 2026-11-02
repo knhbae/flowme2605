@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { PROGRAM_CHECK_CHIPS, PROGRAM_CHECK_NOTICE_MS, programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeView, programCheckUndoable, type ProgramCheckNotice } from './check-progress-notice';
+import { PROGRAM_CHECK_CHIPS, PROGRAM_CHECK_NOTICE_MS, programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckSaveOutcome, programCheckUndoable, type ProgramCheckNotice } from './check-progress-notice';
 import type { ProgramData, ProgramTransition } from './contract';
 import { createProgramData } from './program-data';
+import { createProgramTextDraft } from './program-text-draft';
 import { addProgramQuickTask, completeProgramTask, createProgramDocument, recordProgramTaskProgress } from './private-space';
 import type { ProgramReferenceAccess } from './reference-execution-guard';
 import { textEditorRows, textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
@@ -119,7 +120,7 @@ test('the editor: every tap path announces a completion; a partial tap shows the
   assert.match(editor, /const next = M\.recordProgress\(currentState\(\), notice\.targetId, today\(\), percent\);/);
   // The buttons find the task by ID wherever its line is now, and wait out a save in flight.
   assert.match(editor, /\.find\(row => row\.progressTargetId === notice\.targetId\)\?\.id \?\? null;/);
-  assert.match(editor, /if \(draftRef\.current\?\.getState\(\)\.saving\) \{ heldCheckStep\.current = \{ key, step \}; return; \}/);
+  assert.match(editor, /if \(draftRef\.current\?\.getState\(\)\.saving\) \{ heldCheckStep\.current = \{ key, step \}; setCheckNotice\(\{ \.\.\.notice, saving: \{ percent, undo: step\.kind === 'undo', quiet: false \} \}\); return; \}/);
 });
 
 test('mid-composition: a notice button keeps the caret and runs once the composition has ended (W15)', () => {
@@ -131,10 +132,79 @@ test('mid-composition: a notice button keeps the caret and runs once the composi
 
 test('오늘: the check tap completes and announces; a partial task gets the chips, not the detail', () => {
   assert.match(space, /if \(value > 0 && value < 100\) setCheckNotice\(\{ actorId, stage: 'chips', targetId: task\.id,/);
-  assert.match(space, /true, undefined, undefined, true\)\.then\(result => \{ done\(\); if \(result\.ok\) checkSaved\(task\.id, task\.title, value\); \}, done\);/);
-  assert.match(space, /current => recordProgramTaskProgress\(current, \{ \.\.\.base\(current\), taskId: task\.id, date: today, percent \}\), true, undefined, undefined, true\);/);
+  assert.match(space, /\}, true, undefined, undefined, true\)\.then\(result => \{ done\(\); if \(result\.ok\) checkSaved\(task\.id, task\.title, value, after\); \}, done\);/);
+  assert.match(space, /const next = recordProgramTaskProgress\(current, \{ \.\.\.base\(current\), taskId: task\.id, date: today, percent \}\);/);
   // [직접] opens the task's detail with its 진행 기록 open.
   assert.match(space, /data-detail-section="progress" open=\{directProgress \|\| undefined\}>/);
   // The notice sits at the screen's bottom; the row it names is scrolled up above it (headless 390: it covered it).
   assert.match(space, /if \(over > 0\) \(line\?\.closest\('dialog'\) \?\? window\)\.scrollBy\(\{ top: over \+ 8, behavior: 'instant' \}\);/);
+});
+
+// Codex review of C2 (11/2), three P2 fixes.
+test('review P2: a step on its way says it is saving; a failure says what is saved; the clock leaves both alone', () => {
+  const saving = notice({ stage: 'chips', saving: { percent: 50, undo: false, quiet: false } });
+  assert.deepEqual(programCheckNoticeView(saving), { tone: 'info', text: '진행률 50% 저장 중… · 장보기', actions: [], chips: [] });
+  assert.equal(programCheckNoticeView(notice({ saving: { percent: 0, undo: true, quiet: false } })).text, '되돌리는 중… · 장보기');
+  // A tap's own completion saves quietly: its notice and buttons stay, and so does its clock.
+  const quiet = notice({ saving: { percent: 100, undo: false, quiet: true } });
+  assert.deepEqual(programCheckNoticeView(quiet).actions.map(button => button.label), ['되돌리기', '진행률로']);
+  assert.equal(programCheckNoticeEndsAt(quiet, false), 11000);
+  // P2 (2): a choice held for a save in flight never ends with the clock.
+  assert.equal(programCheckNoticeEndsAt(saving, false), null);
+  const refused = programCheckNoticeFailed(saving, 50, 100, 'save', 2000, 2);
+  assert.equal(refused.saving, undefined);
+  assert.deepEqual(programCheckNoticeView(refused), { tone: 'warn', text: '진행률 50%를 저장하지 못했습니다. 저장된 값은 100%입니다 · 장보기', actions: [], chips: [] });
+  assert.equal(programCheckNoticeEndsAt(refused, false), null, 'a failure stays until closed');
+  assert.equal(programCheckNoticeView(programCheckNoticeFailed(quiet, 100, 0, 'save', 2000, 2)).text, '완료를 저장하지 못했습니다. 저장된 값은 0%입니다 · 장보기');
+  assert.equal(programCheckNoticeView(programCheckNoticeFailed(saving, 75, 50, 'changed', 2000, 2)).text, '진행률 75%로 바뀌지 않았습니다. 지금 값은 50%입니다 · 장보기');
+  assert.equal(programCheckNoticeView(programCheckNoticeFailed(saving, 50, null, 'save', 2000, 2)).text, '진행률 50%를 저장하지 못했습니다. 저장된 기록이 없습니다 · 장보기');
+  assert.equal(programCheckNoticeAfter(saving, 50, 2000, 2).saving, undefined);
+});
+
+test('review P2 (1): the outcome is read off the saved record, through a real draft whose second save is refused', async () => {
+  const start = written('- [ ] 장보기'), target = textEditorRows(start, DOC)[0].progressTargetId!;
+  let accept = true;
+  const draft = createProgramTextDraft(start, DOC, async () => accept, () => {});
+  assert(draft.apply(M.recordProgress(start, target, TODAY, 100), '할 일 완료'));
+  assert.equal(await draft.save(), true);
+  assert.equal(programCheckSaveOutcome(M.currentProgress(draft.getState().committed, target), 100, draft.getState()), 'saved');
+  accept = false;
+  assert(draft.apply(M.recordProgress(draft.getState().working, target, TODAY, 50), '날짜별 누적 진행'));
+  const flight = draft.save();
+  assert.equal(programCheckSaveOutcome(M.currentProgress(draft.getState().committed, target), 50, draft.getState()), null, 'on its way');
+  assert.equal(await flight, false);
+  const state = draft.getState(), saved = M.currentProgress(state.committed, target);
+  assert.equal(M.currentProgress(state.working, target), 50, 'the screen still has 50%');
+  assert.equal(saved, 100, 'the saved record still has 100%');
+  assert.equal(programCheckSaveOutcome(saved, 50, state), 'refused');
+  // Everything saved, but with another value (changed since): not "기록했습니다" either.
+  assert.equal(programCheckSaveOutcome(75, 50, { saving: false, dirty: false, invalid: false, error: '' }), 'changed');
+  assert.equal(programCheckSaveOutcome(75, 50, { saving: false, dirty: true, invalid: false, error: '' }), null);
+});
+
+test('review P2 (1)(2): the editor says 기록했습니다 only once the save settles; a held choice waits out the save', () => {
+  const step = editor.slice(editor.indexOf('  function runCheckStep('), editor.indexOf('  function openProgress('));
+  assert(!step.includes('programCheckNoticeAfter('), 'no success straight after apply');
+  assert.match(step, /setCheckNotice\(\{ \.\.\.notice, saving: \{ percent, undo: step\.kind === 'undo', quiet: false \} \}\);\n    settleCheckSave\(\);/);
+  const settle = editor.slice(editor.indexOf('  function settleCheckSave('), editor.indexOf('  function showCheckChips('));
+  assert.match(settle, /saved = M\.currentProgress\(state\.committed, notice\.targetId\);/);
+  assert.match(settle, /if \(!notice\?\.saving \|\| !state \|\| heldCheckStep\.current\?\.key === notice\.key\) return;/);
+  assert.match(editor, /useEffect\(\(\) => \{ settleCheckSave\(\); \}, \[draft\]\);/);
+  // The tap's own completion is watched quietly, so a refused one says so.
+  assert.match(editor, /saving: \{ percent: 100, undo: false, quiet: true \} \}\);/);
+});
+
+test('review P2 (3): on 오늘 a record dated after today sends a step, and a partial tap, to the form', () => {
+  let data = createProgramData();
+  const doc = ok(createProgramDocument(data, { ...base(data), title: 'C2 미래' })); data = doc.data;
+  const added = ok(addProgramQuickTask(data, { ...base(data), documentId: doc.result, title: '운동', date: TODAY })); data = added.data;
+  data = ok(recordProgramTaskProgress(data, { ...base(data), taskId: added.result, date: '2026-11-03', percent: 50 })).data;
+  // Why: today's 75% is recorded, yet the later record still decides what shows.
+  const after = ok(recordProgramTaskProgress(data, { ...base(data), taskId: added.result, date: TODAY, percent: 75 })).data;
+  assert.equal(M.currentProgress(after.spaces[after.activeActorId].text, added.result), 50);
+  assert.match(space, /if \(\(M\.latestProgress\(dataRef\.current\.spaces\[actorId\]\.text, task\.id\)\?\.date \?\? ''\) > today\) \{\n      setCheckNotice\(null\); setRecordDate\(today\); setPercent\(String\(progressNow\)\); openDetail\(\{ kind: 'task', id: task\.id \}\);/);
+  assert.match(space, /if \(value > 0 && value < 100 && \(progress\?\.date \?\? ''\) > today\) \{ setRecordDate\(today\); setPercent\(String\(value\)\); openDetail\(\{ kind: 'task', id: task\.id \}\); \}/);
+  // And whatever the save leaves is what the notice says: another value is "바뀌지 않았습니다", not "기록했습니다".
+  assert.match(space, /if \(saved !== percent\) \{ failed\(saved, 'changed'\); return; \}/);
+  assert.match(space, /if \(after !== 100\) return;/);
 });

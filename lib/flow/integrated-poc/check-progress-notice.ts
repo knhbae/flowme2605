@@ -11,13 +11,19 @@ export const PROGRAM_CHECK_CHIPS = [25, 50, 75] as const;
 export const PROGRAM_CHECK_NOTICE_MS = 10000;
 
 export interface ProgramCheckNotice {
-  /** done: a tap (or [완료]) just completed it; chips: a percent to choose; saved: a chip just saved one. */
-  stage: 'done' | 'chips' | 'saved';
+  /** done: a tap (or [완료]) just completed it; chips: a percent to choose; saved: a chip's value is saved;
+   *  failed: the value a step asked for is not what the task has (refused, or changed since). */
+  stage: 'done' | 'chips' | 'saved' | 'failed';
   /** The task the buttons act on, by ID, so they still point at it once it has moved in the list. */
   targetId: string; title: string;
   /** Its progress before this began (what 되돌리기 puts back) and what the last step left. */
   before: number; after: number;
   shownAt: number; key: number;
+  /** Review P2: a step on its way, held for a save in flight or saving; its notice says so only once the saved
+   *  record has the value. quiet: a tap's own completion, whose notice keeps showing while it saves. */
+  saving?: { percent: number; undo: boolean; quiet: boolean };
+  /** failed: the value asked for, what the task has instead (null: no saved record), and why. */
+  asked?: number; kept?: number | null; why?: 'save' | 'changed';
 }
 export type ProgramCheckStep = { kind: 'undo' } | { kind: 'chips' } | { kind: 'direct' } | { kind: 'percent'; percent: number };
 export interface ProgramCheckButton { label: string; step: ProgramCheckStep; current?: boolean }
@@ -25,6 +31,12 @@ export interface ProgramCheckButton { label: string; step: ProgramCheckStep; cur
 /** What the notice says and offers at each stage. */
 export function programCheckNoticeView(notice: ProgramCheckNotice): { tone: ProgramNoticeTone; text: string; actions: ProgramCheckButton[]; chips: ProgramCheckButton[] } {
   const undo: ProgramCheckButton = { label: '되돌리기', step: { kind: 'undo' } };
+  if (notice.saving && !notice.saving.quiet) return { tone: 'info', text: `${notice.saving.undo ? '되돌리는 중…' : `진행률 ${notice.saving.percent}% 저장 중…`} · ${notice.title}`, actions: [], chips: [] };
+  if (notice.stage === 'failed') {
+    const asked = notice.asked === 100 ? '완료' : `진행률 ${notice.asked}%`;
+    const kept = notice.kept === null || notice.kept === undefined ? '저장된 기록이 없습니다' : `${notice.why === 'save' ? '저장된' : '지금'} 값은 ${notice.kept}%입니다`;
+    return { tone: 'warn', text: `${asked}${notice.why === 'save' ? '를 저장하지 못했습니다' : '로 바뀌지 않았습니다'}. ${kept} · ${notice.title}`, actions: [], chips: [] };
+  }
   if (notice.stage === 'done') return { tone: 'choose', text: `완료했습니다 · ${notice.title}`, actions: [undo, { label: '진행률로', step: { kind: 'chips' } }], chips: [] };
   if (notice.stage === 'saved') return { tone: 'info', text: `진행률 ${notice.after}%로 기록했습니다 · ${notice.title}`, actions: [undo], chips: [] };
   const partial = notice.after > 0 && notice.after < 100;
@@ -36,14 +48,30 @@ export function programCheckNoticeView(notice: ProgramCheckNotice): { tone: Prog
   return { tone: 'choose', text: partial ? `진행률 ${notice.after}% · ${notice.title}` : `진행률을 고르세요 · ${notice.title}`, actions: [], chips };
 }
 
-/** When the notice ends (on the clock its shownAt was read from), or null while it stays. */
-export function programCheckNoticeEndsAt(notice: Pick<ProgramCheckNotice, 'shownAt'>, held: boolean, waiting = false): number | null {
-  return held || waiting ? null : notice.shownAt + PROGRAM_CHECK_NOTICE_MS;
+/** When the notice ends (on the clock its shownAt was read from), or null while it stays: held, waiting, a step on its
+ *  way (review P2: a choice held for a save is never dropped by the clock; a tap's own quiet save keeps the clock), or
+ *  a failure, which stays until closed. */
+export function programCheckNoticeEndsAt(notice: Pick<ProgramCheckNotice, 'shownAt'> & Partial<Pick<ProgramCheckNotice, 'stage' | 'saving'>>, held: boolean, waiting = false): number | null {
+  return held || waiting || notice.saving && !notice.saving.quiet || notice.stage === 'failed' ? null : notice.shownAt + PROGRAM_CHECK_NOTICE_MS;
 }
 
 /** The notice after a step saved `percent`: completing offers 되돌리기·진행률로 again; another value says what it saved. */
 export function programCheckNoticeAfter(notice: ProgramCheckNotice, percent: number, shownAt: number, key: number): ProgramCheckNotice {
-  return { ...notice, stage: percent === 100 ? 'done' : 'saved', after: percent, shownAt, key };
+  return { ...notice, stage: percent === 100 ? 'done' : 'saved', after: percent, saving: undefined, shownAt, key };
+}
+
+/** The notice when the value a step asked for is not what the task has: the save was refused, or it changed since. */
+export function programCheckNoticeFailed(notice: ProgramCheckNotice, asked: number, kept: number | null, why: 'save' | 'changed', shownAt: number, key: number): ProgramCheckNotice {
+  return { ...notice, stage: 'failed', asked, kept, why, saving: undefined, shownAt, key };
+}
+
+/** How a step's save went, read off the saved record and the draft: saved (the record has the value), refused (the
+ *  save failed and stopped), changed (everything is saved, but with another value), or null while it is on its way. */
+export function programCheckSaveOutcome(saved: number | null, asked: number, draft: { saving: boolean; dirty: boolean; invalid: boolean; error: string }): 'saved' | 'refused' | 'changed' | null {
+  if (saved === asked) return 'saved';
+  if (draft.saving) return null;
+  if (draft.error || draft.invalid) return 'refused';
+  return draft.dirty ? null : 'changed';
 }
 
 /** 되돌리기 puts `before` back only while the task still has what this notice left; anything since keeps it. */
