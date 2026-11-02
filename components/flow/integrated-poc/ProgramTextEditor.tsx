@@ -1375,7 +1375,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         if (!alive) return;
         setDraft(next); propsRef.current.onDirtyChange?.(!!currentChild()||programTextInputPending(next,textArea()?.value,composingRef.current,regionPendingRef.current,!!checkPendingRef.current));
         queueMicrotask(() => { if (alive) editorRef.current?.refresh(); });
-      }, next => propsRef.current.validateWorkspace?.(next) ?? true,documentInput,!!propsRef.current.writingCompute,()=>propsRef.current.validateWorkspace);
+      }, next => propsRef.current.validateWorkspace?.(next) ?? true,documentInput,!!propsRef.current.writingCompute,()=>propsRef.current.validateWorkspace,()=>propsRef.current.workspace);
     draftRef.current = controller; setDraft(controller.getState());
     propsRef.current.onRegisterConfirmedSave?.((before, next, ack) => {
       if (!alive || composingRef.current || inputLockedRef.current || textArea()?.value !== controller.getState().raw) return false;

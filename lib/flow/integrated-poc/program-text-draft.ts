@@ -7,7 +7,7 @@ import { programSame } from './controller';
 import { programClone } from './contract';
 import { mergeProgramTextWorkspace } from './text-merge';
 import type { ProgramPrivateMutationObserver } from './ui-contract';
-import { captureProgramFolderOperation, undoProgramFolderOperation, combineProgramFolderScopes, planProgramFreshFolderIndent, programFreshFolderAvailable, programFolderOperationNotice, type ProgramFolderOperation, type FolderIndentPlan } from './folder-operation';
+import { captureProgramFolderOperation, undoProgramFolderOperation, combineProgramFolderScopes, planProgramFreshFolderIndent, programFolderStillFree, programFreshFolderAvailable, programFolderOperationNotice, type ProgramFolderOperation, type FolderIndentPlan } from './folder-operation';
 
 export type ProgramTaskProgressEdit = { taskId: string; date: string; percent: number; correctionAsOfDate?: string };
 export type ProgramTextCommitOptions = {
@@ -67,6 +67,8 @@ export function createProgramTextDraft(
   documentInput?: ProgramDocumentInput,
   backgroundSave = false,
   validationContext: () => unknown = () => validateWorkspace,
+  /** The newest workspace the host holds (another tab's saves reach it while this input stays unsaved). */
+  latestWorkspace: () => TextWorkspaceState | undefined = () => undefined,
 ) {
   let state: ProgramTextDraftState = { committed: workspace, working: workspace, raw: M.raw(M.getDocument(workspace, docId)), dirty: false, saving: false, invalid: false, error: '' };
   let flight: Promise<boolean> | null = null;
@@ -146,6 +148,12 @@ export function createProgramTextDraft(
   // Folders this draft made. S4 v14 phone (11/2): a new folder's line emptied and typed again finds the folder by its
   // name and only links it; that line is still the new folder's (D11 B), as long as nothing else uses it.
   const madeFolders = new Set<string>();
+  // N6 review (11/2): D11 B also asks the host's newest workspace. Another tab may have filed a document in the folder,
+  // linked it or moved it while this input, unsaved, keeps the folder as it was; then the line stays where it is.
+  const latestFree = (folderId: string) => {
+    const latest = latestWorkspace(), parent = state.working.folders.find(folder => folder.id === folderId)?.parentId ?? null;
+    return !latest || programFolderStillFree(latest, docId, folderId, parent);
+  };
   function recordFolder(before: TextWorkspaceState, after: TextWorkspaceState) {
     const change = captureProgramFolderOperation(before, after);
     if (!change) { if (folderOperation) folderOperation.fresh = false; return; }
@@ -179,12 +187,12 @@ export function createProgramTextDraft(
     freshFolderLine(lineId: string) {
       const operation = folderOperation, created = operation?.change.createdLines[0];
       return !!operation?.fresh && operation.generation === inputGeneration && created?.lineId === lineId
-        && programFreshFolderAvailable(state.working, { ...created, automaticBlank: operation.automaticBlank });
+        && programFreshFolderAvailable(state.working, { ...created, automaticBlank: operation.automaticBlank }) && latestFree(created.folderId);
     },
     planFreshFolderIndent(plan: FolderIndentPlan, operationId: number) {
       const operation = folderOperation;
       if (!basicCheckReady() || !operation?.fresh || operation.id !== operationId || operation.generation !== inputGeneration) return null;
-      const created = operation.change.createdLines[0]; if (!created || created.docId !== docId) return null;
+      const created = operation.change.createdLines[0]; if (!created || created.docId !== docId || !latestFree(created.folderId)) return null;
       const proof = planProgramFreshFolderIndent(state.working, { ...created, automaticBlank: operation.automaticBlank }, plan);
       if (!proof) return null;
       const owned = { ...proof, plan: programClone(proof.plan), before: state.working, generation: inputGeneration, operationId };
@@ -196,7 +204,8 @@ export function createProgramTextDraft(
       if (!folderIndentProofs.has(proof)) return false;
       folderIndentProofs.delete(proof);
       if (!basicCheckReady() || proof.before !== state.working || proof.generation !== inputGeneration || folderOperation?.id !== proof.operationId
-        || !folderOperation.fresh || M.raw(M.getDocument(proof.next, docId)) !== raw || !M.validate(proof.next) || !validateWorkspace(proof.next)) return false;
+        || !folderOperation.fresh || M.raw(M.getDocument(proof.next, docId)) !== raw || !M.validate(proof.next) || !validateWorkspace(proof.next)
+        || !latestFree(folderOperation.change.createdLines[0]?.folderId ?? '')) return false;
       const before = state.working, automaticBlank = folderOperation.automaticBlank;
       const folder = proof.next.folders.find(folder => folder.id === folderOperation!.change.createdLines[0]?.folderId)!;
       const place = folder.parentId ? `‘${proof.next.folders.find(parent => parent.id === folder.parentId)!.title}’ 아래` : '최상위';

@@ -11,6 +11,9 @@ import { folderRefusalStands, indentTouchesLinkedFolder, linkedFolderLinesTextEd
 import type { FolderIndentPlan } from './folder-operation';
 import { programNoticeEndsAt } from './program-notice';
 import { programFolderRelinkedNotice } from './folder-notice';
+import { createProgramData } from './program-data';
+import { programTextTransition } from './program-text-transition';
+import type { TextWorkspaceState } from './text-workspace';
 
 // N5 phone 3b (S4-V11-PHONE-RESULT, 11/2): '폰부모' then '폰부모 › 폰자식2' made at the end of a document whose earlier
 // steps had left blank lines there. Back on the new child line, the bar ⇤ was off and said the D11 reason. Those
@@ -21,13 +24,15 @@ type Draft = ReturnType<typeof createProgramTextDraft>;
 type Phone = { draft: Draft; docId: string; owner: ReturnType<typeof createProgramDocumentInput>; notice: { current: { operationId?: number } | null };
   /** The editor's notice state (the notice clock renders it into `notice`), its due time, and the clocks: `now` the
    *  monotonic one (performance.now), `shift` what the wall clock (Date.now) has been set off it. */
-  state: { current: unknown }; due: { current: unknown }; time: { now: number; shift: number } };
+  state: { current: unknown }; due: { current: unknown }; time: { now: number; shift: number };
+  /** The host's newest workspace (another tab's saves), which this unsaved input does not take in. */
+  latest: { current: TextWorkspaceState | undefined } };
 function phone(raw: string): Phone {
   let state = M.addDocument(createEmptyTextWorkspace(), { title: 'v11 폴더' }); const docId = state.documents.at(-1)!.id;
   state = M.editTextResult(state, docId, raw, { folderText: true }).state;
-  const owner = createProgramDocumentInput(state, docId);
-  return { draft: createProgramTextDraft(owner.initial, docId, async () => true, () => {}, () => true, owner, true), docId, owner, notice: { current: null },
-    state: { current: null }, due: { current: null }, time: { now: 0, shift: 0 } };
+  const owner = createProgramDocumentInput(state, docId), latest = { current: undefined as TextWorkspaceState | undefined };
+  return { draft: createProgramTextDraft(owner.initial, docId, async () => true, () => {}, () => true, owner, true, undefined, () => latest.current), docId, owner, notice: { current: null },
+    state: { current: null }, due: { current: null }, time: { now: 0, shift: 0 }, latest };
 }
 const rows = (t: Phone) => t.draft.getState().raw.split('\n');
 function write(t: Phone, next: string[], extra: object = {}) { assert(t.draft.updateRaw(next.join('\n'), '', { inputType: 'insertText', ...extra } as never), 'typed'); }
@@ -504,4 +509,47 @@ test('N5 v14 phone: linked again, then its notice gone — the move waits for th
   enter(t, 2); // no notice shown (or it ended): D11 B keeps to the notice
   assert.equal(bar.touch(2).canOutdent, false); assert.equal(bar.outdent(), false);
   assert.equal(folderOf(t, '새자식').parentId, folderOf(t, '새부모').id);
+});
+
+// N6 review FIX (11/2): 새자식 made and saved; tab A empties its line; tab B files another document in 새자식; A types
+// the line again, Enter, ⇤. A, its input unsaved, kept the folder as it was, so it passed "used by this document
+// alone" and the save merged in, moving a folder B's document uses. D11 B now also asks the newest workspace the host
+// holds, and a save that would move such a folder is refused there too.
+const filedElsewhere = (t: Phone, title: string) => M.addDocument(t.draft.getState().working, { title: '다른 탭 문서', folderId: folderOf(t, title).id });
+test('N6 review: typed again, then another tab files a document in that folder — ⇤ refused, the line stays, the folder keeps its parent', () => {
+  const { t, bar } = emptiedAndTyped('키보드 아래 마지막 줄 확인 26\n', '새부모', '새자식', true);
+  t.notice.current = { operationId: t.draft.folderOperation()!.id }; enter(t, 2);
+  assert.equal(bar.touch(2).canOutdent, true, 'free while nothing else uses it');
+  t.latest.current = filedElsewhere(t, '새자식');
+  const raw = t.draft.getState().raw;
+  assert.equal(bar.touch(2).canOutdent, false); assert.equal(bar.outdent(), false);
+  assert.equal(t.draft.getState().raw, raw, 'the line stays where it is'); assert.deepEqual(bar.messages, [FOLDER_INDENT_NOTICE]);
+  assert.equal(folderOf(t, '새자식').parentId, folderOf(t, '새부모').id);
+});
+test('N6 review: the same for a folder just made (D11 B): filed elsewhere or moved there meanwhile', () => {
+  for (const change of [
+    (t: Phone) => filedElsewhere(t, '새자식'),
+    (t: Phone) => { const next = structuredClone(t.draft.getState().working); next.folders.find(folder => folder.title === '새자식')!.parentId = null; return next; },
+  ]) {
+    const t = phone('키보드 아래 마지막 줄 확인 26\n'), bar = editorFor(t);
+    make(t, 1, '- /새부모'); make(t, 2, '  - /새자식');
+    t.latest.current = change(t);
+    assert.equal(bar.touch(2).canOutdent, false); assert.equal(bar.outdent(), false);
+    assert.equal(folderOf(t, '새자식').parentId, folderOf(t, '새부모').id);
+  }
+});
+test('N6 review: the save itself — a move of a folder another tab has started using is refused; unused, it saves', () => {
+  const t = phone('키보드 아래 마지막 줄 확인 26\n'), bar = editorFor(t);
+  make(t, 1, '- /새부모'); make(t, 2, '  - /새자식');
+  const expected = t.draft.getState().working, folder = folderOf(t, '새자식');
+  bar.touch(2); assert(bar.outdent(), 'moved in this tab');
+  const next = t.draft.getState().working;
+  const save = (before: TextWorkspaceState) => {
+    const data = createProgramData(); data.spaces[data.activeActorId].text = before;
+    return programTextTransition(data, { actorId: data.activeActorId, documentId: t.docId, expected, next });
+  };
+  assert.equal(save(M.addDocument(expected, { title: '다른 탭 문서', folderId: folder.id })).ok, false, 'filed elsewhere meanwhile: refused');
+  const free = save(expected);
+  assert(free.ok, 'nothing else uses it: saved');
+  assert.equal(free.data.spaces[free.data.activeActorId].text.folders.find(entry => entry.id === folder.id)!.parentId, null);
 });
