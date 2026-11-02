@@ -1,6 +1,6 @@
 import type { ProgramReferenceAccess } from './reference-execution-guard';
 import type { ProgramNoticeTone } from './program-notice';
-import type { TextEditorRowMeta } from './text-workspace';
+import type { TextEditorRowMeta, TextWorkspaceState } from './text-workspace';
 
 /** C2 (11/2): a check tap still completes at once, and its notice offers [되돌리기] and [진행률로]; 진행률로 turns the
  *  row into percent chips, one of which saves today's cumulative progress for that task (the same record the progress
@@ -24,7 +24,7 @@ export interface ProgramCheckNotice {
   saving?: { percent: number; undo: boolean; quiet: boolean };
   /** failed: why, the value asked for (askedUndo: by 되돌리기), what is saved (null: no saved record; left out where the
    *  editor keeps the unsaved input on the screen), and a choice that waited for that save and was dropped with it. */
-  why?: 'save' | 'changed'; asked?: number; askedUndo?: boolean; kept?: number | null;
+  why?: 'save' | 'changed' | 'later'; asked?: number; askedUndo?: boolean; kept?: number | null;
   dropped?: { percent: number; undo: boolean };
 }
 /** What failed, for programCheckNoticeFailed. */
@@ -71,10 +71,18 @@ const valueWords = (percent: number, undo?: boolean) => undo ? '되돌리기' : 
  *  nothing here puts a value back or saves again. A choice that waited for that save is dropped and said. */
 function programCheckFailureText(notice: ProgramCheckNotice): string {
   const dropped = notice.dropped && valueWords(notice.dropped.percent, notice.dropped.undo);
+  if (notice.why === 'later') return dropped ? `그 뒤 입력이 있어 ${dropped}는 적용하지 않았습니다` : '그 뒤 입력이 있어 고른 값은 적용하지 않았습니다';
   if (notice.asked === undefined) return dropped ? `저장되지 않아 ${dropped}를 적용하지 않았습니다` : '저장되지 않았습니다';
   const kept = notice.kept === undefined ? '입력은 남아 있습니다' : notice.kept === null ? '저장된 기록이 없습니다' : `${notice.why === 'save' ? '저장된' : '지금'} 값은 ${notice.kept}%입니다`;
   if (notice.why === 'changed') return `${valueWords(notice.asked)}로 바뀌지 않았습니다. ${kept}`;
   return `${valueWords(notice.asked, notice.askedUndo)}가 저장되지 않았습니다. ${kept}${dropped ? ` · ${dropped}는 적용하지 않았습니다` : ''}`;
+}
+
+/** Re-review: what a choice waiting for a save expects of its task, its line as written and its value. Input on that
+ *  line since the choice (a paste, typing) changes it; the newer input wins, and the choice is dropped. */
+export function programCheckTaskSignature(state: Pick<TextWorkspaceState, 'documents' | 'flows'>, targetId: string, value: number | null): string {
+  const line = [...state.documents, ...state.flows].flatMap(doc => doc.lines).find(entry => entry.id === targetId);
+  return `${line?.text ?? ''}\n${value ?? ''}`;
 }
 
 /** How a step's save went, read off the draft: overtaken (the screen has a newer value for the task, so this step's

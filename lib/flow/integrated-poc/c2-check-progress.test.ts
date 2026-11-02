@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { PROGRAM_CHECK_CHIPS, PROGRAM_CHECK_NOTICE_MS, programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckSaveOutcome, programCheckUndoable, type ProgramCheckNotice } from './check-progress-notice';
+import { PROGRAM_CHECK_CHIPS, PROGRAM_CHECK_NOTICE_MS, programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckSaveOutcome, programCheckTaskSignature, programCheckUndoable, type ProgramCheckNotice } from './check-progress-notice';
 import type { ProgramData, ProgramTransition } from './contract';
 import { createProgramData } from './program-data';
 import { createProgramTextDraft } from './program-text-draft';
@@ -131,7 +131,7 @@ test('mid-composition: a notice button keeps the caret and runs once the composi
 
 test('오늘: the check tap completes and announces; a partial task gets the chips, not the detail', () => {
   assert.match(space, /if \(value > 0 && value < 100\) setCheckNotice\(\{ actorId, stage: 'chips', targetId: task\.id,/);
-  assert.match(space, /\}, true, undefined, undefined, true\)\.then\(result => \{ done\(\); if \(result\.ok\) checkSaved\(task\.id, task\.title, value, after\); \}, done\);/);
+  assert.match(space, /\}, true, undefined, undefined, true\)\.then\(result => \{ done\(\); if \(result\.ok && checkViewOwns\(view\)\) checkSaved\(task\.id, task\.title, value, after\); \}, done\);/);
   assert.match(space, /const next = recordProgramTaskProgress\(current, \{ \.\.\.base\(current\), taskId: task\.id, date: today, percent \}\);/);
   // [직접] opens the task's detail with its 진행 기록 open.
   assert.match(space, /data-detail-section="progress" open=\{directProgress \|\| undefined\}>/);
@@ -265,11 +265,44 @@ test('final: A then B checked in one refused save: both kept on the screen, both
 
 test('final: a choice waiting for a save runs after a good one, and is dropped and said after a refused one', () => {
   assert.match(editor, /const checkWorkKey = \(targetId: string\) => propsRef\.current\.docId \+ '\\n' \+ targetId;/);
-  assert.match(editor, /if \(draftRef\.current\?\.getState\(\)\.saving\) \{\n      checkHeld\.current\.set\(work, \{ notice, step \}\);/);
+  assert.match(editor, /if \(draftRef\.current\?\.getState\(\)\.saving\) \{\n      checkHeld\.current\.set\(work, \{ notice, step, signature: checkSignature\(currentState\(\), notice\.targetId\) \}\);/);
   assert.match(editor, /if \(!state \|\| state\.saving \|\| state\.error \|\| state\.invalid\) break;/);
   const settle = editor.slice(editor.indexOf('  function settleCheckSaves('), editor.indexOf('  function showCheckChips('));
   assert.match(settle, /if \(refused\) for \(const \[work, held\] of \[\.\.\.checkHeld\.current\]\) \{/);
   // × drops only a choice still waiting for its task; a newer tap on the task supersedes it.
   assert.match(editor, /if \(notice\) checkHeld\.current\.delete\(checkWorkKey\(notice\.targetId\)\);/);
   assert.match(editor, /const work = checkWorkKey\(targetId\);\n    checkHeld\.current\.delete\(work\);/);
+});
+
+// Codex re-review of the simplified C2 (11/2): two P2s.
+test('re-review (1): a choice that waited for a save gives way to newer input on its task line, and says so', async () => {
+  const start = written('- [ ] 장보기'), a = textEditorRows(start, DOC)[0].progressTargetId!;
+  const signature = (state: TextWorkspaceState) => programCheckTaskSignature(state, a, M.currentProgress(state, a));
+  const { draft, release } = heldDraft(start);
+  assert(draft.apply(M.recordProgress(start, a, TODAY, 100), '할 일 완료'));
+  const flight = draft.save();
+  // 50% chosen while A's completion saves: held, with what A's line was then.
+  const held = signature(draft.getState().working);
+  // Then [75%] pasted over A's mark; both saves go through.
+  draft.updateRaw('- [75%] 장보기', TODAY);
+  release(true); await new Promise(resolve => setTimeout(resolve, 0)); release(true);
+  assert.equal(await flight, true);
+  const state = draft.getState();
+  assert.equal(M.currentProgress(state.working, a), 75, 'the latest input stays');
+  assert.notEqual(signature(state.working), held, 'so the held 50% is dropped, not run over it');
+  // Untouched, the line keeps its signature and the choice runs.
+  assert.equal(signature(M.recordProgress(start, a, TODAY, 100)), signature(M.recordProgress(start, a, TODAY, 100)));
+  assert.notEqual(programCheckTaskSignature(start, a, 0), programCheckTaskSignature(start, a, 50), 'a value changed elsewhere counts too');
+  assert.equal(programCheckNoticeView(programCheckNoticeFailed(notice(), { why: 'later', dropped: { percent: 50, undo: false } }, 2000, 2)).text,
+    '그 뒤 입력이 있어 진행률 50%는 적용하지 않았습니다 · 장보기');
+  // The runner checks before it runs anything.
+  assert.match(editor, /checkHeld\.current\.delete\(held\[0\]\);\n      if \(checkSignature\(state\.working, held\[1\]\.notice\.targetId\) !== held\[1\]\.signature\) \{ dropLaterCheck\(held\[1\]\); continue; \}\n      performCheckStep\(held\[1\]\.notice, held\[1\]\.step\);/);
+});
+
+test('re-review (2): on 오늘 a check answered after the view changed brings no notice back to the new view', () => {
+  assert.match(space, /const view = presentation\.current;\n                void run\(value === 100 \? '다시 열기' : '완료', current => \{/);
+  assert.match(space, /const checkViewOwns = \(view: typeof presentation\.current\) => dataRef\.current\.activeActorId === actorId && view\.period === presentation\.current\.period\n    && view\.date === presentation\.current\.date && view\.folderId === presentation\.current\.folderId && view\.query === presentation\.current\.query;/);
+  // A chip's answer already keeps to its notice, which a change of view clears.
+  assert.match(space, /useEffect\(\(\) => \{ setCheckNotice\(null\); \}, \[actorId, period, date, folderId, query\]\);/);
+  assert.match(space, /setCheckNotice\(shown => shown\?\.key !== key \? shown : undo \? null/);
 });

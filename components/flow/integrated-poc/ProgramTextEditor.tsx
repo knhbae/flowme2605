@@ -49,7 +49,7 @@ import regionStyles from './ProgramFolderRegionEditor.module.css';
 import { readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { readProgramMemoContext, programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
 import { ProgramProgressForm } from './ProgramProgressForm';
-import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckSaveOutcome, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
+import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeView, programCheckSaveOutcome, programCheckTaskSignature, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
 import {ProgramWritingInline} from './ProgramWritingInline';
 import {prepareWritingChild} from '@/lib/flow/integrated-poc/writing-child-command';
 import {planWritingInsertion} from '@/lib/flow/integrated-poc/writing-insertion-command';
@@ -331,7 +331,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // notice never drops it: the save each step started, settled on its own, and a choice waiting for a save in flight.
   type CheckStepToRun = Exclude<ProgramCheckStep, { kind: 'chips' }>;
   const checkSaves = useRef(new Map<string, { notice: ProgramCheckNotice; percent: number; undo: boolean; quiet: boolean }>());
-  const checkHeld = useRef(new Map<string, { notice: ProgramCheckNotice; step: Extract<CheckStepToRun, { kind: 'undo' | 'percent' }> }>());
+  // A held choice keeps what its task's line was then (signature): newer input there wins over it.
+  type CheckHeld = { notice: ProgramCheckNotice; step: Extract<CheckStepToRun, { kind: 'undo' | 'percent' }>; signature: string };
+  const checkHeld = useRef(new Map<string, CheckHeld>());
+  const checkSignature = (state: TextWorkspaceState, targetId: string) => programCheckTaskSignature(state, targetId, M.currentProgress(state, targetId));
   const checkWorkKey = (targetId: string) => propsRef.current.docId + '\n' + targetId;
   // Linked folder lines an edit other than typing (a paste) renamed, by line ID, until they are put back.
   const renamedFolderLinesRef = useRef(new Set<string>());
@@ -1372,7 +1375,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // A choice made while a save is in flight waits for it, and its notice says so until it is settled; the clock never
     // ends it (× does, and drops the choice with it). If that save is refused, the choice is dropped and said.
     if (draftRef.current?.getState().saving) {
-      checkHeld.current.set(work, { notice, step });
+      checkHeld.current.set(work, { notice, step, signature: checkSignature(currentState(), notice.targetId) });
       const mine = shown(); if (mine) setCheckNotice({ ...mine, saving });
       return;
     }
@@ -1391,6 +1394,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     checkSaves.current.set(work, { notice, ...saving });
     const mine = shown(); if (mine) setCheckNotice({ ...mine, saving });
     settleCheckSaves();
+  }
+  /** Re-review: a choice that waited for a save while newer input (a paste, typing) changed its task's line is dropped,
+   *  and said: the latest input wins. */
+  function dropLaterCheck(held: CheckHeld) {
+    const mine = checkNoticeRef.current?.targetId === held.notice.targetId ? checkNoticeRef.current : null;
+    const dropped = { percent: held.step.kind === 'undo' ? held.notice.before : held.step.percent, undo: held.step.kind === 'undo' };
+    setCheckNotice(programCheckNoticeFailed(mine ?? held.notice, { why: 'later', dropped }, performance.now(), ++checkNoticeKeys.current));
   }
   /** × on the notice: it ends, and a choice of its task still waiting for a save goes with it. */
   function closeCheckNotice() {
@@ -2005,7 +2015,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (!state || state.saving || state.error || state.invalid) break;
       const held = [...checkHeld.current][0];
       if (!held) break;
-      checkHeld.current.delete(held[0]); performCheckStep(held[1].notice, held[1].step);
+      checkHeld.current.delete(held[0]);
+      if (checkSignature(state.working, held[1].notice.targetId) !== held[1].signature) { dropLaterCheck(held[1]); continue; }
+      performCheckStep(held[1].notice, held[1].step);
     }
   }, [draft.saving]);
   useEffect(() => { settleCheckSaves(); }, [draft]);

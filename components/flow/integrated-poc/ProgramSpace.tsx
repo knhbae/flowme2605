@@ -1748,6 +1748,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   </div>;
   /** C2: after a check tap saved: completing shows the check notice (and not the plain one); reopening ends it. A task
    *  the save left at another value (a record dated later wins) keeps the plain notice: nothing says 완료 wrongly. */
+  /** Re-review: the view a check was made in is still the one shown (person, period, date, folder, search); a later
+   *  view keeps its own notices, so a slow save's answer never brings back the one the change of view cleared. */
+  const checkViewOwns = (view: typeof presentation.current) => dataRef.current.activeActorId === actorId && view.period === presentation.current.period
+    && view.date === presentation.current.date && view.folderId === presentation.current.folderId && view.query === presentation.current.query;
   function checkSaved(taskId: string, title: string, before: number, after: number | null) {
     if (before === 100) { setCheckNotice(current => current?.targetId === taskId ? null : current); return; }
     if (after !== 100) return;
@@ -1946,11 +1950,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                 ids.add(task.id); setCompletingTaskIds(new Set(ids));
                 const done = () => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); };
                 let after: number | null = null;
+                const view = presentation.current;
                 void run(value === 100 ? '다시 열기' : '완료', current => {
                   const next = completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 });
                   if (next.ok) after = M.currentProgress(next.data.spaces[actorId].text, task.id);
                   return next;
-                }, true, undefined, undefined, true).then(result => { done(); if (result.ok) checkSaved(task.id, task.title, value, after); }, done);
+                }, true, undefined, undefined, true).then(result => { done(); if (result.ok && checkViewOwns(view)) checkSaved(task.id, task.title, value, after); }, done);
               }
             }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
               {completingTaskIds.has(task.id) ? '…' : value > 0 && value < 100 ? `${value}%` : ''}</span></button>
