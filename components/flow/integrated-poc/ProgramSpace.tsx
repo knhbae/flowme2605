@@ -303,6 +303,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const timer = setTimeout(() => setCheckNotice(current => current === checkNotice ? null : current), Math.max(0, ends - Date.now()));
     return () => clearTimeout(timer);
   }, [checkNotice, checkNoticeHeld]);
+  // The notice sits at the bottom of the screen (the list's sticky place), so the row it names is scrolled up above it.
+  useEffect(() => {
+    if (!checkNotice) return;
+    const frame = requestAnimationFrame(() => {
+      const box = root.current?.querySelector<HTMLElement>('[data-check-notice]');
+      const line = Array.from(root.current?.querySelectorAll<HTMLElement>('[data-task-id]') ?? []).find(element => element.dataset.taskId === checkNotice.targetId);
+      const over = box && line ? line.getBoundingClientRect().bottom - box.getBoundingClientRect().top : 0;
+      if (over > 0) (line?.closest('dialog') ?? window).scrollBy({ top: over + 8, behavior: 'instant' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [checkNotice?.key]);
   // A check notice button pressed while Korean is being composed on the page (the ＋ line, say) runs once that
   // composition has ended, as the editor's notice buttons do (W15): the composed text stays whole.
   const pageComposing = useRef(false), heldCheckStep = useRef<(() => void) | null>(null);

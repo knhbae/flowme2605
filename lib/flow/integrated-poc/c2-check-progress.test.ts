@@ -135,4 +135,6 @@ test('오늘: the check tap completes and announces; a partial task gets the chi
   assert.match(space, /current => recordProgramTaskProgress\(current, \{ \.\.\.base\(current\), taskId: task\.id, date: today, percent \}\), true, undefined, undefined, true\);/);
   // [직접] opens the task's detail with its 진행 기록 open.
   assert.match(space, /data-detail-section="progress" open=\{directProgress \|\| undefined\}>/);
+  // The notice sits at the screen's bottom; the row it names is scrolled up above it (headless 390: it covered it).
+  assert.match(space, /if \(over > 0\) \(line\?\.closest\('dialog'\) \?\? window\)\.scrollBy\(\{ top: over \+ 8, behavior: 'instant' \}\);/);
 });
