@@ -148,6 +148,12 @@ export interface ProgramTextEditorProps {
   /** Host-owned status/actions share the existing toolbar, not the input owner. */
   noteStatus?: React.ReactNode;
   noteActions?: React.ReactNode;
+  /** U44: on a tablet held sideways the host's document title (start) and ⋯ (end) share the toolbar's line, and the
+   *  host's notices sit under it (below), above the body. They stay the host's: input and keys there are not this
+   *  editor's typing. Absent, the toolbar is as it was. */
+  headStart?: React.ReactNode;
+  headEnd?: React.ReactNode;
+  headBelow?: React.ReactNode;
   disabledReason?: string;
   validateWorkspace?: (next: TextWorkspaceState) => boolean;
   /** Proposal gate: caller verifies current canonical private ownership and known copy/source exclusions. Absent means refuse. */
@@ -191,6 +197,12 @@ function BarIcon({ name }: { name: WritingBarAction }) {
   return <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d={path} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
 const BAR_COMPOSING_NOTICE = '입력 중인 글자가 아직 끝나지 않아 실행하지 않았습니다. 글자를 마친 뒤 다시 눌러 주세요.';
+
+/** U44: the host's title, ⋯ and notices in the toolbar's line (a tablet held sideways) stay outside the editor for its
+ *  typing, keys and focus, as they are on their own row elsewhere. */
+function inEditorHead(target: EventTarget | null) {
+  return target instanceof Element && !!target.closest('[data-editor-head]');
+}
 
 function today() {
   const now = new Date();
@@ -454,6 +466,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // S5: a press let go here says so; it used to vanish without a word.
     const cancel = (why: ProgramBarDrop) => { const action = barHold.held(); if (action) { barHold.cancel(); setHeldBar(null); setMessage(programBarDropNotice(action, why)); } };
     const typed = (event: Event) => {
+      if (inEditorHead(event.target)) return;
       const type = (event as InputEvent).inputType;
       // The lease ends on newer ordinary input. Only mutate its ref here;
       // render after native/bubble input, never over the incoming DOM value.
@@ -462,13 +475,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         || composedJustNow && type === 'insertText') return;
       cancel('typed');
     };
-    const composed = () => { compositionAnchorRef.current = null; composedJustNow = true; if (settle) clearTimeout(settle); settle = setTimeout(() => { composedJustNow = false; settle = null; }, 0); };
+    const composed = (event: Event) => { if (inEditorHead(event.target)) return; compositionAnchorRef.current = null; composedJustNow = true; if (settle) clearTimeout(settle); settle = setTimeout(() => { composedJustNow = false; settle = null; }, 0); };
     const started = (event: Event) => {
+      if (inEditorHead(event.target)) return;
       if (pickerHold.pending()) { pickerHold.cancel(); queueMicrotask(() => setPickerHeld(false)); }
       const area = event.target instanceof HTMLTextAreaElement ? event.target : null;
       compositionAnchorRef.current = area ? { area, offset: area.selectionStart } : null;
     };
-    const left = (event: FocusEvent) => { if (!(event.relatedTarget instanceof Node && root.contains(event.relatedTarget))) cancel('left'); };
+    const left = (event: FocusEvent) => { if (!(event.relatedTarget instanceof Node && root.contains(event.relatedTarget)) || inEditorHead(event.relatedTarget)) cancel('left'); };
     root.addEventListener('beforeinput', typed, true); root.addEventListener('compositionstart', started, true); root.addEventListener('compositionend', composed, true); root.addEventListener('focusout', left);
     return () => { if (settle) clearTimeout(settle); root.removeEventListener('beforeinput', typed, true); root.removeEventListener('compositionstart', started, true); root.removeEventListener('compositionend', composed, true); root.removeEventListener('focusout', left); };
   }, [barHold, pickerHold]);
@@ -1055,7 +1069,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function revealAllowed() {
     const active = document.activeElement;
     return !composingRef.current && !(active instanceof HTMLElement && active.matches('input, textarea, select, [contenteditable="true"]')
-      && !hostRef.current?.closest('section')?.contains(active));
+      && (!hostRef.current?.closest('section')?.contains(active) || inEditorHead(active)));
   }
   function indentFromMenu(outdent: boolean) {
     const lineId = panel?.lineId ?? null, index = currentRow(lineId)?.index;
@@ -2570,7 +2584,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       onPointerDown={event => event.preventDefault()} onClick={() => { if (picker.enter) pressPicker(picker.enter); }}>↵ {pickerEnterLabel}</button>}
     <small>↓ 폴더 선택 · Esc 닫기{picker.indent && !picker.linked ? ' · Shift+Tab 상위로' : ''}</small>
   </div> : null;
-  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInput={serverView ? markTyping : undefined}
+  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInput={serverView ? event => { if (!inEditorHead(event.target)) markTyping(); } : undefined}
     onKeyDown={event => { if (event.key === 'Tab' && folderIndentSkipped.current) event.preventDefault(); folderIndentSkipped.current = false; }} onKeyDownCapture={event => {
     const imeConsumed = pickerIme.current?.keydown(event.nativeEvent) ?? false;
     const view = pickerRef.current;
@@ -2582,11 +2596,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (action.kind === 'reset' && view.navigation !== -1) presentPicker({ ...view, navigation: -1 });
     }
     if (event.key === 'Tab') folderIndentSkipped.current = false;
+    if (inEditorHead(event.target)) return;
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
   }}>
     {folderPicker}
     <div className={styles.toolbar}>
+      {props.headStart && <div className={styles.headStart} data-editor-head="start">{props.headStart}</div>}
       {mode === 'text' && <button type="button" onClick={event => returnToDocumentMode(event.currentTarget)}>문서로 돌아가기</button>}
       <button type="button" hidden={props.directWriting && !props.noteStatus} disabled={props.folderId ? inputLocked || !!props.readOnly || draft.invalid || composing || checkPending : insertionDisabled}
         onClick={() => { if (props.folderId) { void openRegionInsertMenu(); return; } const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}>＋ 추가</button>
@@ -2621,7 +2637,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {props.noteStatus && <div className={styles.noteStatus}>{props.noteStatus}</div>}
         {draft.error ? editorRecovery(true) : <span className={styles.status} role="status" aria-live="polite">{editorStatus.label}</span>}
       </>}
+      {props.headEnd && <div className={styles.headEnd} data-editor-head="end">{props.headEnd}</div>}
     </div>
+    {props.headBelow && <div className={styles.headBelow} data-editor-head="below">{props.headBelow}</div>}
     {props.folderId && <div className={regionStyles.actions} aria-label="문서 조회 범위"><p>{currentDoc()?.title || '현재 글'} · 분류: {folderView?.folderPath ?? '선택한 분류'} · 하위 분류 포함</p>
       <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || composingRef.current} onClick={props.onContinueWholeDocument ? continueWholeDocument : props.onShowWholeDocument}>전체 문서 보기</button><button type="button" onClick={props.onShowFolderTasks}>폴더 전체 할 일</button>
       {!folderView?.regions.length && <p>이 분류에 맞는 내용이 없습니다. 전체 문서에서 확인할 수 있습니다.</p>}

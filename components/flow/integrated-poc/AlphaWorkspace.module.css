@@ -269,8 +269,10 @@
 }
 /* U41: a tablet held sideways is short too. The writing body is sized to the screen minus what lies below it, so the
    page's and the card's paddings there cost whole lines; on the writing screen they are thin, as on a short phone.
-   Past the page's bottom (a browser's own bar area) the root then shows the page's canvas, not the beige body. */
-@media (min-width: 701px) and (max-width: 1279px) {
+   Past the page's bottom (a browser's own bar area) the root then shows the page's canvas, not the beige body.
+   U44: the larger tablets held sideways (1280×800), up to 1366px wide and 900px high, too: touch screens only, so a
+   PC or laptop of that size keeps its paddings. */
+@media (min-width: 701px) and (max-width: 1279px), (min-width: 1280px) and (max-width: 1366px) and (max-height: 900px) and (pointer: coarse) {
   .page[data-alpha-frame="b"][data-note-layout="true"]:has([data-program-period="documents"][aria-current="page"]) { padding-top: 12px; padding-bottom: 12px; }
   .page[data-alpha-frame="b"][data-note-layout="true"]:has([data-program-period="documents"][aria-current="page"]) .workPane { padding-block: 12px; }
   :global(html):has(.page[data-alpha-frame="b"][data-note-layout="true"] [data-program-period="documents"][aria-current="page"]) { background: var(--flowme-b-canvas); }
