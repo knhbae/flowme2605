@@ -222,8 +222,28 @@
 /* The check box, fold and folder-open controls are as tall as their line (36px on touch), so none reaches into the
    next row. The date cells on the right keep 44px for their two lines; on a phone they sit in the title's line, one line high. */
 .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-check-hit, .tle-fold-toggle, .tle-scope-open)) { height: var(--tle-line); min-height: 0; }
-@media (max-width: 600px) {
-  .editor .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-task-date-open, .tle-task-origin-open, .tle-reference-open)) { height: var(--tle-line); min-height: var(--tle-line); vertical-align: top; }
+/* U45 review: the progress pill spans its RAW marker ('- [50%]'), wider than 44px; its button covers all of it. */
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-progress-hit) { width: max(44px, calc(var(--tle-progress-width, 0px) + 20px)); }
+/* U45 review: the date, origin and reference cells sit at their row's top in the right gutter, one line high, out of
+   the title's flow, so reading wraps every title as writing does (where they are hidden) at any width, and no cell
+   reaches into the next row. The date alone shows: the kind is the cell's label. */
+.editor .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-task-date-open, .tle-task-origin-open, .tle-reference-open)) {
+  position: absolute; top: 0; right: calc(8px - var(--tle-pad-right)); left: auto; display: inline-flex; flex-direction: row; align-items: center;
+  justify-content: center; gap: 2px; width: 44px; min-width: 44px; height: var(--tle-line); min-height: 0; margin: 0; padding: 0; font: inherit;
+}
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-date-open .tle-row-date-kind), .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scheduled-date-open svg) { display: none; }
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-date-open .tle-row-date) { max-width: 44px; font-size: 12px; line-height: 16px; }
+/* U45 review: a folder row is as high as its RAW line, as in writing; the name and its lanes are drawn over it. The
+   name's first line starts after the lanes and later lines at the row's start, as the RAW text wraps, so it rarely
+   needs more lines than the RAW one; a longer one is cut at the row's height rather than moving the rows below. */
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-date-source) { position: static; max-width: none; overflow: visible; white-space: inherit; }
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-scope-label) {
+  position: absolute; inset: 0 0 auto 0; display: block; min-height: 0; max-height: 100%; overflow: hidden; margin-left: 0; padding-left: 0;
+  text-indent: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 75px);
+}
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-scope-label > .tle-scope-place) { margin-right: 6px; text-indent: 0; }
+@media (pointer: coarse) {
+  .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-scope-label) { text-indent: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 87px); }
 }
 /* U45: reading and writing share this one ruler. On touch it is 36px (a row a finger can hit, still more rows than
    44px); --program-touch-line, unset in the product, lets a check page try 32px or 40px. A move keeps its 44px. */

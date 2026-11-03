@@ -55,3 +55,22 @@ test('U45: the body is sized in whole lines of the ruler it has', () => {
   assert.equal(programEditorVisibleHeight(89, 495, 0), 384, 'no ruler read: the old step');
   assert(editor.includes("const ruler = host.querySelector('.tle-root'), line = ruler ? parseFloat(view.getComputedStyle(ruler).getPropertyValue('--tle-line')) : NaN;"));
 });
+
+// Codex review (11/3): reading's own controls must not undo the one layout.
+test('U45 review: the pill\'s button covers the pill; date cells sit in the gutter, one line high; folders keep their RAW height', () => {
+  const block = css.slice(css.indexOf('/* U45: one layout for reading and writing.'), css.indexOf('/* U45: reading and writing share this one ruler.'));
+  const rule = (body: string) => assert(block.includes(`.host :global(${reading} ${body}`), body);
+  // The progress pill spans its RAW marker (measured into --tle-progress-width); its button covers all of it.
+  rule('.tle-progress-hit) { width: max(44px, calc(var(--tle-progress-width, 0px) + 20px)); }');
+  // Date, origin and reference cells: at the row's top, in the right gutter, one line high, out of the title's flow.
+  const cells = block.slice(block.indexOf(`.editor .host :global(${reading} :is(.tle-task-date-open, .tle-task-origin-open, .tle-reference-open)) {`));
+  for (const piece of ['position: absolute; top: 0; right: calc(8px - var(--tle-pad-right));', 'height: var(--tle-line); min-height: 0;'])
+    assert(cells.slice(0, cells.indexOf('}')).includes(piece), piece);
+  rule('.tle-date-open .tle-row-date-kind), .host :global(');
+  // A folder row: its RAW text in the flow sets the height, as in writing; the name is drawn over it.
+  rule('.tle-line-scope > .tle-date-source) { position: static; max-width: none; overflow: visible; white-space: inherit; }');
+  const label = block.slice(block.indexOf(`.host :global(${reading} .tle-line-scope > .tle-scope-label) {`));
+  for (const piece of ['position: absolute; inset: 0 0 auto 0; display: block;', 'max-height: 100%; overflow: hidden;', 'text-indent: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 75px);'])
+    assert(label.slice(0, label.indexOf('}')).includes(piece), piece);
+  assert(block.includes('+ 87px); }'), 'touch keeps the 12px wider lanes');
+});
