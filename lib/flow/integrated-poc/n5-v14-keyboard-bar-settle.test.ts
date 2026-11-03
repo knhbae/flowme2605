@@ -29,7 +29,7 @@ function phone(box: number, inner: number, visible: number, shown = true) {
   const bar = { style: style(), getClientRects: () => shown ? [{}] : [],
     getBoundingClientRect() { const bottom = box - parseFloat(bar.style.getPropertyValue('--writing-bar-bottom') || '0'); return { top: bottom - 44, bottom, height: 44 }; } };
   const host = { style: style(), getClientRects: () => [{}], getBoundingClientRect: () => ({ top: 120, bottom: 300, height: 180 }),
-    closest: () => null, scrollIntoView() {}, ownerDocument: { body: {} } };
+    closest: () => null, querySelector: () => null, scrollIntoView() {}, ownerDocument: { body: {} } };
   const view = { innerWidth: 390, innerHeight: inner, scrollY: 0, performance: { now: () => 0 }, getComputedStyle: () => ({}) };
   const env = { shell: { querySelector: () => null }, view, visual: { width: 390, height: visible, offsetTop: 0, offsetLeft: 0 },
     barRef: { current: bar }, roomRef: { current: { style: { height: '' } } }, noticeRef: { current: null }, editorRef: { current: { refreshViewport() {} } },

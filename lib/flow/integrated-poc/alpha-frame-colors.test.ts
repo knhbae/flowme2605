@@ -127,7 +127,9 @@ test('the size changes leave the line ruler and the body height alone', () => {
   assert(editor.indexOf('.status { font-size: 13px; line-height: 20px; color: var(--flowme-b-muted); }') > editor.indexOf('.status { flex-basis: 100%;'));
   // Body height is still whole 26px rows below the measured top; nothing above the host changed size.
   const tsx = readFileSync(new URL('ProgramTextEditor.tsx', dir), 'utf8');
-  assert(tsx.includes('return Math.max(64, 20 + Math.floor((available - 20) / 26) * 26);'));
+  // U45: whole lines of the ruler the editor reads (36px on touch); 26px stays the default.
+  assert(tsx.includes('export function programEditorVisibleHeight(top: number, bottom: number, line = 26) {'));
+  assert(tsx.includes('return Math.max(64, 20 + Math.floor((available - 20) / step) * step);'));
 });
 
 test('the swapped pairs meet WCAG on their surfaces; the field boundaries and focus rings that failed now pass', () => {
