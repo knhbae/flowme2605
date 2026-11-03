@@ -19,7 +19,8 @@ const reading = '.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-m
 
 test('U45: one ruler, 36px on touch (one value a check page may override), 26px with a mouse, 44px while moving', () => {
   assert(css.includes('.host :global(.tle-root) { min-height: 64px; --tle-line: 26px; }'));
-  const touch = css.indexOf('@media (pointer: coarse) {\n  .host :global(.tle-root) { --tle-line: var(--program-touch-line, 36px); }\n}');
+  // A folded document keeps its own reading; :where() keeps the rule as specific as the 26px one, under the move's 44px.
+  const touch = css.indexOf('@media (pointer: coarse) {\n  .host :global(.tle-root:where(:not(.tle-folded-view))) { --tle-line: var(--program-touch-line, 36px); }\n}');
   assert(touch > css.indexOf('--tle-line: 26px;'), 'after the mouse ruler, so it wins on touch');
   // The move keeps 44px: its selectors are more specific than the touch one.
   assert(css.includes('.host :global(.tle-root[data-move-phase="dragging"]) { --tle-line: 44px; }'));

@@ -251,9 +251,10 @@
   .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-scope-label) { text-indent: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 87px); }
 }
 /* U45: reading and writing share this one ruler. On touch it is 36px (a row a finger can hit, still more rows than
-   44px); --program-touch-line, unset in the product, lets a check page try 32px or 40px. A move keeps its 44px. */
+   44px); --program-touch-line, unset in the product, lets a check page try 32px or 40px. A move keeps its 44px (its
+   rules stay the more specific); a folded document keeps its own reading (3rd review). */
 @media (pointer: coarse) {
-  .host :global(.tle-root) { --tle-line: var(--program-touch-line, 36px); }
+  .host :global(.tle-root:where(:not(.tle-folded-view))) { --tle-line: var(--program-touch-line, 36px); }
 }
 
 /* Reserve the note's server status independently of the local input controls.
