@@ -20,14 +20,26 @@ function harness(){
     saveExplicit:async()=>saveOK,
     navigate:(next:any,options:any)=>{calls.push({next,options});c.destinationRef.current=next;c.selectedDraftId=next.id;},
     setChoice:(next:any)=>{c.choice=next;},setBuffer:()=>{},setBusy:()=>{}};
-  for(const name of ['blankSourceFocus','historyRequest','structureHistory','orderHistory','nativeHandoffRef','nativeHandoffRequest','nativeLineageRef','lineageRequest'])c[name]=ref(null);
-  for(const name of ['setMount','setNativeItem','setComparison','setReplacement','setHistoryPreview','setHistoryEntry','setNativeHandoff','setNativeHandoffChoices','setTab','setMessage','setNativeLineage','setLineageMapping'])c[name]=()=>{};
+  for(const name of ['blankSourceFocus','historyRequest','structureHistory','orderHistory','nativeHandoffRef','nativeHandoffRequest','nativeLineageRef','lineageRequest','updateReviewRef'])c[name]=ref(null);
+  c.updateChoicesRef=ref({});c.propertyInput=ref({line:'',key:'date',value:''});
+  for(const name of ['setMount','setNativeItem','setComparison','setReplacement','setHistoryPreview','setHistoryEntry','setNativeHandoff','setNativeHandoffChoices','setTab','setMessage','setNativeLineage','setLineageMapping','setUpdateReview','setUpdateChoices','setPropertyLine','setPropertyKey','setPropertyValue'])c[name]=()=>{};
   c.captureCreatorRoute=run(expression(app,'captureCreatorRoute'),c);c.props.captureRoute=c.captureCreatorRoute;
-  for(const name of ['captureSelectionRoute','restoreSelectionRoute','cancelChoice','saveChoice','switchWorking','choose'])c[name]=run(expression(source,name),c);
+  for(const name of ['blockRawAuxiliary','clearUpdateReview','clearProperty','captureSelectionRoute','restoreSelectionRoute','cancelChoice','saveChoice','switchWorking','choose'])c[name]=run(expression(source,name),c);
   const ast=ts.createSourceFile('w.tsx',source,ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);let effect='';function visit(n:ts.Node){if(ts.isCallExpression(n)&&n.expression.getText(ast)==='useEffect'&&n.arguments[0]?.getText(ast).includes("if(props.active===false"))effect=n.arguments[0].getText(ast);ts.forEachChild(n,visit);}visit(ast);c.effect=run(effect,c);
   return{c,calls,writes:()=>writes,fail:(v=true)=>{fail=v;},dirty:()=>{dirty=true;},saveFail:()=>{saveOK=false;}};
 }
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
+
+test('preview anchor follows current draft handoff fallback, not a different draft or a null anchor',()=>{
+ const workspace={nativeExecutionSources:{a:{revisions:[{anchor:'2026-09-01'},{anchor:'2026-10-01'}]},b:{revisions:[{anchor:null}]}}};
+ for(const [draftId,entered,expected]of [['a','','2026-10-01'],['a','2028-02-29','2028-02-29'],['b','',undefined],['missing','',undefined]] as const){
+  const context={workspace,buffer:{draftId},nativeAnchor:entered,lastNativeAnchor:undefined as unknown};
+  context.lastNativeAnchor=run(expression(source,'lastNativeAnchor'),context);
+  assert.equal(run(expression(source,'nativePreviewAnchor'),context),expected);
+ }
+ assert(source.includes('anchor={nativePreviewAnchor}'));
+ assert(source.includes('마지막 인계 기준일 ${lastNativeAnchor}'));
+});
 
 test('actual selection success synchronizes blank and existing IDs; clean same-ID reentry is no write',async()=>{
   const h=harness();h.c.choose(fresh);await tick();assert.equal(h.c.bufferRef.current,fresh);assert.deepEqual(h.calls,[{next:{view:'creator',id:'new'},options:{replace:false}}]);

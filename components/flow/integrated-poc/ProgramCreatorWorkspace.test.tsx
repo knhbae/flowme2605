@@ -41,7 +41,7 @@ test('template replacement explicitly covers existing raw while insertion preser
 });
 test('creator uses existing live editor, explicit templates/properties, result presenter and management',()=>{
   const p=existing(),html=renderToStaticMarkup(<ProgramCreatorWorkspace {...p}/>);
-  for(const label of ['제작 원문','작성 틀·예시 선택','빈 틀 확인','예시 확인','항목 속성 편집','제작 초안 저장','원문 결과 확인','별도 초안 복제','이름 변경','보관'])assert.ok(html.includes(label),label);
+  for(const label of ['제작 원문','작성 틀·예시 선택','빈 틀 넣기','예시 확인','항목 속성 편집','제작 초안 저장','원문 결과 확인','별도 초안 복제','이름 변경','보관'])assert.ok(html.includes(label),label);
   assert.ok(html.includes('가방 확인'));assert.ok(html.includes('지퍼 닫기'));
   assert.ok(source.includes('PersonalWorkspacePocLiveEditor'));assert.ok(source.includes('PersonalWorkspacePocResultPresenter'));
 });

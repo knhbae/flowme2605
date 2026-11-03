@@ -84,6 +84,9 @@ export interface TextWorkspaceModel {
   insertionContext(state: TextWorkspaceState, docId: string, index: number, depth?: number): TextContext;
   insertionOptions(state: TextWorkspaceState, docId: string, lineId: string): TextInsertion[];
   editText(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string }): TextWorkspaceState;
+  editTextResult(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string }): {
+    state: TextWorkspaceState; reason: 'identity-ambiguous' | 'invalid-format' | 'blocked' | null;
+  };
   addDocument(state: TextWorkspaceState, input: { title: string; folder?: string; folderId?: string }): TextWorkspaceState;
   addTask(state: TextWorkspaceState, input: { docId: string; title: string; date?: string | null; scopeId?: string }): TextWorkspaceState;
   updateTask(state: TextWorkspaceState, taskId: string, patch: { title?: string; done?: boolean; date?: string | null; note?: string; time?: string }): TextWorkspaceState;

@@ -62,12 +62,19 @@ export function createProgramTextDraft(
     },
     updateRaw(raw: string, progressDate: string) {
       const baseRaw = M.raw(M.getDocument(state.committed, docId));
-      const next = raw === baseRaw ? state.committed : M.editText(state.working, docId, raw, { progressDate });
+      const edit = raw === baseRaw ? { state: state.committed, reason: null }
+        : M.editTextResult(state.working, docId, raw, { progressDate });
+      const next = edit.state;
       const protectedChange = !validateWorkspace(next);
       const invalid = protectedChange || M.raw(M.getDocument(next, docId)) !== raw;
       state = { ...state, raw, working: invalid ? state.working : next, invalid,
         dirty: state.saving || raw !== baseRaw || next !== state.committed,
-        error: protectedChange ? '보관·휴지통·복구 문서나 반복 규칙·보류 항목의 원문 표시는 여기서 바꿀 수 없습니다. 해당 줄을 원래대로 되돌리면 일반 할 일과 메모를 계속 편집할 수 있습니다. 입력은 보관 중입니다.' : invalid ? '아직 반영할 수 없는 입력입니다. 날짜·진행률·들여쓰기를 확인해 주세요. 입력은 그대로 남아 있습니다.' : '' };
+        error: protectedChange ? '보관·휴지통·복구 문서나 반복 규칙·보류 항목의 원문 표시는 여기서 바꿀 수 없습니다. 해당 줄을 원래대로 되돌리면 일반 할 일과 메모를 계속 편집할 수 있습니다. 입력은 보관 중입니다.'
+          : !invalid ? '' : edit.reason === 'identity-ambiguous'
+            ? '여러 줄의 변경을 기존 항목과 연결하지 못해 반영하지 않았습니다. 제목 수정과 줄 이동은 나누고, 여러 제목은 한 줄씩 수정해 저장해 주세요. 입력은 그대로 남아 있습니다.'
+            : edit.reason === 'invalid-format'
+              ? '날짜·진행률·들여쓰기 형식을 확인해 주세요. 입력은 그대로 남아 있습니다.'
+              : '입력을 안전하게 반영하지 못했습니다. 변경을 나눠서 다시 시도해 주세요. 입력은 그대로 남아 있습니다.' };
       label = '문서 편집'; groupId = `text:${docId}`; report();
       return !invalid;
     },

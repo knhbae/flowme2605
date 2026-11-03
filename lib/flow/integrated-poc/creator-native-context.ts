@@ -1,5 +1,5 @@
 import { readNativeCreatorSourceDocument, validateNativeCreatorDocumentOwner } from './native-creator-document';
-import {isNativeCreatorRecoverySource,nativeCreatorSourceIdentity,type NativeCreatorDocumentOwner,type NativeCreatorDocumentProvenance} from './native-creator-document-contract';
+import {isNativeCreatorRecoverySource,isNativeCreatorCatalogContentSource,nativeCreatorSourceIdentity,type NativeCreatorDocumentOwner,type NativeCreatorDocumentProvenance} from './native-creator-document-contract';
 import {stableAuthoringJson} from './native-creator-vendor/text-authoring/identity';
 
 /** Original saved identity, not a Program revision number. Same-document versions
@@ -20,6 +20,6 @@ export function validateProgramCreatorNativeContext(owner: unknown, selection: u
   if(known.some(source=>nativeCreatorSourceIdentity(source)===nativeCreatorSourceIdentity(s)&&source.documentJson!==s.documentJson))return false;
   // Recovery selection must be the actual immutable imported recovery, not a
   // freshly forged sibling or a saved version with the same string identifier.
-  if(isNativeCreatorRecoverySource(s)&&!known.some(source=>stableAuthoringJson(source)===stableAuthoringJson(s)))return false;
+  if((isNativeCreatorRecoverySource(s)||isNativeCreatorCatalogContentSource(s))&&!known.some(source=>stableAuthoringJson(source)===stableAuthoringJson(s)))return false;
   return s.storageKey === owner.source.storageKey && s.draftId === owner.source.draftId && document.documentId === owner.document.documentId;
 }

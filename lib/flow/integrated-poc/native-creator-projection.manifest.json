@@ -1,0 +1,97 @@
+{
+  "version": 2,
+  "contract": "program-native-creator-projection-v2",
+  "source": "native-creator-vendor/text-authoring/artifact-projection.ts",
+  "sourceSha256": "3867ffece55aae7c24dc959b5538aa69548cba0774b1b25dd0271a5b466b41f0",
+  "derived": "native-creator-projection.ts",
+  "lineEnding": "LF",
+  "header": "/** Program-owned projection v2. Derived from the pinned D2 projector.\n * Exact source and deltas: native-creator-projection.manifest.json.\n * Never edits raw/canonical/identity or the original 26-file vendor snapshot.\n */\n",
+  "changes": [
+    {
+      "from": "} from \"../flow-experience-projection\";",
+      "to": "} from \"./native-creator-vendor/flow-experience-projection\";"
+    },
+    {
+      "from": "  parseAuthoringRecurrenceRule,",
+      "to": "  isValidAuthoringDate,\n  parseAuthoringRecurrenceRule,"
+    },
+    {
+      "from": "} from \"./recurrence\";",
+      "to": "} from \"./native-creator-vendor/text-authoring/recurrence\";"
+    },
+    {
+      "from": "} from \"./types\";",
+      "to": "} from \"./native-creator-vendor/text-authoring/types\";"
+    },
+    {
+      "from": "} from \"./flow-bundle-adapter\";",
+      "to": "} from \"./native-creator-vendor/text-authoring/flow-bundle-adapter\";"
+    },
+    {
+      "from": "function recurrenceStartDate(item: UnknownRecord): string | undefined {",
+      "to": "function recurrenceStartDate(item: UnknownRecord, anchor?: string): string | undefined {"
+    },
+    {
+      "from": "    item.schedule as unknown as AuthoringSchedule,",
+      "to": "    (item.schedule.kind === \"relative\" && anchor\n      ? { ...item.schedule, anchorLabel: anchor }\n      : item.schedule) as unknown as AuthoringSchedule,"
+    },
+    {
+      "from": "function recurrenceIsInvalid(\n  document: TextAuthoringDocument,\n  item: UnknownRecord,\n",
+      "to": "function recurrenceIsInvalid(\n  document: TextAuthoringDocument,\n  item: UnknownRecord,\n  anchor?: string,\n"
+    },
+    {
+      "from": "  const startDate = recurrenceStartDate(item);",
+      "to": "  const startDate = recurrenceStartDate(item, anchor);"
+    },
+    {
+      "from": "recurrenceIsInvalid(document, item)",
+      "to": "recurrenceIsInvalid(document, item, options.anchor)"
+    },
+    {
+      "from": "const startDate = recurrenceStartDate(item) as string;",
+      "to": "const startDate = recurrenceStartDate(item, options.anchor) as string;"
+    },
+    {
+      "from": "export function buildAuthoringArtifactProjection(",
+      "to": "export function buildProgramAuthoringArtifactProjection("
+    },
+    {
+      "from": "  const anchor = rawAnchorDate(document);",
+      "to": "  if (options.anchor !== undefined && !isValidAuthoringDate(options.anchor)) {\n    throw new RangeError(\"Invalid personal projection anchor\");\n  }\n  const anchor = options.anchor ?? rawAnchorDate(document);"
+    },
+    {
+      "from": "function itemIssues(\n  document: TextAuthoringDocument,\n  item: UnknownRecord,\n",
+      "to": "function itemIssues(\n  document: TextAuthoringDocument,\n  item: UnknownRecord,\n  anchor?: string,\n"
+    },
+    {
+      "from": "  return (document.parseResult.issues as unknown as UnknownRecord[]).filter(",
+      "to": "  // Resolve only the missing-start diagnostic in this read context; retain all\n  // other source diagnostics and never edit the saved parse result.\n  return (document.parseResult.issues as unknown as UnknownRecord[]).filter(issue =>\n    !(anchor && isRecord(item.schedule) && item.schedule.kind === \"relative\"\n      && recurrenceStartDate(item, anchor) && canonicalRecurrenceRule(item)\n      && issue.type === \"invalid_recurrence\"\n      && issue.messageKey === \"authoring.recurrence_requires_start_date\")\n  ).filter("
+    },
+    {
+      "from": "function itemValidations(\n  document: TextAuthoringDocument,\n  item: UnknownRecord | undefined,\n",
+      "to": "function itemValidations(\n  document: TextAuthoringDocument,\n  item: UnknownRecord | undefined,\n  anchor?: string,\n"
+    },
+    {
+      "from": "itemIssues(document, item)",
+      "to": "itemIssues(document, item, anchor)"
+    },
+    {
+      "from": "  stepById: Map<string, UnknownRecord>,\n): AuthoringArtifactRow {",
+      "to": "  stepById: Map<string, UnknownRecord>,\n  anchor?: string,\n): AuthoringArtifactRow {"
+    },
+    {
+      "from": "const validations = itemValidations(document, item);",
+      "to": "const validations = itemValidations(document, item, anchor);"
+    },
+    {
+      "from": "makeArtifactRow(document, row, itemById.get(row.sourceItemId), stepById),",
+      "to": "makeArtifactRow(document, row, itemById.get(row.sourceItemId), stepById, options.anchor),"
+    }
+  ],
+  "semantics": {
+    "explicitAnchor": "Personal preview anchor overrides source header without writing the document.",
+    "absentAnchor": "Retains the entire pinned projection output, including source-header behavior.",
+    "recurrence": "Explicit personal anchor resolves relative starts and only the missing-start diagnostic.",
+    "storage": "No schema, source fingerprint, write, or catalog capability changes."
+  }
+}

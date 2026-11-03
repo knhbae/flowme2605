@@ -3,9 +3,11 @@ import {
   type ProgramPrivateSpace, type ProgramPublicItem, type ProgramPublicRepository,
 } from './contract';
 import { createEmptyTextWorkspace, textWorkspaceModel } from './text-workspace';
+import { isProgramStoredMedia } from './community-media';
 import { validateProgramLegacySnapshotPayload } from './legacy-snapshot';
 import { validateProgramCreatorDraftImports } from './creator-draft-provenance';
 import { validateProgramCreatorWorkspace } from './creator-workspace-validation';
+import { validateCatalogLibrarySnapshot } from './catalog-library';
 import { isProgramRecurrenceExecutionState } from './recurrence-state-validation';
 import { validateProgramRecurrencePlans } from './program-recurrence-plan-state-validation';
 import { isProgramExecutionTimelineOrders } from './recurrence-order-contract';
@@ -110,7 +112,8 @@ export function validateProgramProposalChecks(value: unknown): value is ProgramP
 export function validateProgramMedia(value: unknown): boolean {
   return programShape(value, ['id', 'dataUrl', 'alt', 'synthetic']) && programIdentifier(value.id)
     && programString(value.dataUrl, Math.ceil(PROGRAM_LIMITS.mediaBytes * 4 / 3) + 100, true)
-    && /^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/]+={0,2}$/.test(value.dataUrl)
+    && (/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/]+={0,2}$/.test(value.dataUrl)
+      || isProgramStoredMedia({ id: value.id, dataUrl: value.dataUrl }))
     && programString(value.alt, 500, true) && typeof value.synthetic === 'boolean';
 }
 export function validateProgramPublicRepository(value: unknown, actorIds: string[]): value is ProgramPublicRepository {
@@ -193,7 +196,7 @@ export function createProgramEnvelope(data = createProgramData()): ProgramEnvelo
 }
 function privateSpace(value: unknown, data: ProgramData, actorId: string): value is ProgramPrivateSpace {
   const required = ['text', 'archivedDocumentIds', 'copies', 'savedBindings', 'draftRevisions', 'participationDrafts', 'publicationDrafts', 'publications', 'position', 'timelineOrders', 'legacySnapshot', 'legacyQuickItemLines', 'legacyTimelinePolicies'];
-  const extensions = ['retentionDocuments', 'creatorDraftImports', 'creatorWorkspace', 'proposalReviewDrafts', 'recurrenceExecution', 'recurrencePlans', 'executionTimelineOrders', 'documentTrash'];
+  const extensions = ['retentionDocuments', 'creatorDraftImports', 'creatorWorkspace', 'catalogLibrary', 'proposalReviewDrafts', 'recurrenceExecution', 'recurrencePlans', 'executionTimelineOrders', 'documentTrash'];
   if (!programRecord(value) || !required.every(key => own(value, key))
     || Object.keys(value).some(key => !required.includes(key) && !extensions.includes(key)) || !textWorkspaceModel.validate(value.text)) return false;
   const text = value.text, docs = [...text.documents, ...text.flows];
@@ -241,7 +244,8 @@ function privateSpace(value: unknown, data: ProgramData, actorId: string): value
     && (!own(row, 'identity') || revisionIdentity(row.identity, row.raw)), 1000) || !unique(value.draftRevisions)) return false;
   if (own(value, 'creatorDraftImports') && !validateProgramCreatorDraftImports(value.creatorDraftImports, { text, draftRevisions: value.draftRevisions as ProgramPrivateSpace['draftRevisions'] })) return false;
   if (own(value, 'creatorWorkspace') && !validateProgramCreatorWorkspace(value.creatorWorkspace, { text })) return false;
-  if(Object.values((value.creatorWorkspace as ProgramPrivateSpace['creatorWorkspace'])?.sourceUpdateSessions??{}).some(entry=>entry.session.actorId!==actorId))return false;
+  if (own(value, 'catalogLibrary') && !validateCatalogLibrarySnapshot(value.catalogLibrary)) return false;
+  if(Object.values((value.creatorWorkspace as ProgramPrivateSpace['creatorWorkspace'])?.sourceUpdateSessions??{}).some(entry=>(entry.session.version===2?entry.session.ownerMapping?.targetActorId:entry.session.actorId)!==actorId))return false;
   if (own(value, 'recurrenceExecution') && !isProgramRecurrenceExecutionState(value.recurrenceExecution)) return false;
   if (own(value, 'recurrencePlans') && (!validateProgramRecurrencePlans(value.recurrencePlans)
     || Object.values(value.recurrencePlans.owners).some(owner => owner.actorId !== actorId))) return false;
@@ -291,8 +295,9 @@ function privateSpace(value: unknown, data: ProgramData, actorId: string): value
 }
 export function validateProgramData(value: unknown): value is ProgramData {
   try {
-    if (!programShape(value, ['actors', 'activeActorId', 'spaces', 'public', 'receipts'])) return false;
-    if (!list(value.actors, row => programShape(row, ['id', 'name', 'simulated']) && programIdentifier(row.id) && programString(row.name, 80, true) && row.simulated === true, PROGRAM_LIMITS.actors)
+    const service = programRecord(value) && value.projection === 'alpha-social-v1';
+    if (!programShape(value, ['actors', 'activeActorId', 'spaces', 'public', 'receipts', ...(service ? ['projection'] : [])])) return false;
+    if (!list(value.actors, row => programShape(row, ['id', 'name', 'simulated']) && programIdentifier(row.id) && programString(row.name, 80, true) && row.simulated === true, service ? PROGRAM_ALPHA_PROJECTION_ACTOR_LIMIT : PROGRAM_LIMITS.actors)
       || !value.actors.length || !unique(value.actors)) return false;
     const actorIds = (value.actors as Row[]).map(row => row.id as string);
     if (!actorIds.includes(value.activeActorId as string) || !programShape(value.spaces, actorIds) || !validateProgramPublicRepository(value.public, actorIds)) return false;
@@ -303,10 +308,13 @@ export function validateProgramData(value: unknown): value is ProgramData {
     return new Set((value.receipts as Row[]).map(row => JSON.stringify([row.actorId, row.id]))).size === value.receipts.length;
   } catch { return false; }
 }
-export function validateProgramEnvelope(value: unknown): value is ProgramEnvelope {
+/** Replaceable DEV projection budget, not the local PoC actor creation policy. */
+export const PROGRAM_ALPHA_PROJECTION_ACTOR_LIMIT = 512;
+export function validateProgramEnvelope(value: unknown, options: { allowAlphaProjection?: boolean } = {}): value is ProgramEnvelope {
   try {
     if (!programShape(value, ['schema', 'revision', 'data', 'undo']) || value.schema !== PROGRAM_SCHEMA
-      || !Number.isSafeInteger(value.revision) || (value.revision as number) < 0 || !validateProgramData(value.data)) return false;
+      || !Number.isSafeInteger(value.revision) || (value.revision as number) < 0 || !validateProgramData(value.data)
+      || value.data.projection !== undefined && !options.allowAlphaProjection) return false;
     if (!programShape(value.undo, value.data.actors.map(actor => actor.id))) return false;
     const data = value.data;
     return Object.entries(value.undo).every(([actorId,history]) => list(history, entry => programShape(entry, ['label', 'groupId', 'workspace'])

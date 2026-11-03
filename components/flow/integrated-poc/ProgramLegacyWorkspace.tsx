@@ -25,7 +25,7 @@ import { ProgramLegacySourceReview } from './ProgramLegacySourceReview';
 import { readProgramLegacyMapReview, programLegacyMapQualityHold, type ProgramLegacyMapReviewAction } from '@/lib/flow/integrated-poc/legacy-map-review';
 import styles from './ProgramLegacyWorkspace.module.css';
 
-export type ProgramLegacyWorkspaceProps = { data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate; onUndo: () => Promise<void>; today: string; selectedFlowId?: string; onRegisterEditors?: (api: ProgramEditorFlush | null) => void };
+export type ProgramLegacyWorkspaceProps = { data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate; onUndo: () => Promise<void>; today: string; selectedFlowId?: string; onRegisterEditors?: (api: ProgramEditorFlush | null) => void; capabilities?: { sourceReview?: boolean } };
 export type ProgramLegacyEdit = { kind: 'flow' | 'item' | 'date'; flowRef: string; itemRef?: string; title: string; memo: string; date: string };
 export type ProgramLegacyEditor = { actorId: string; documentId: string; view: ProgramLegacyView; draft: ProgramLegacyEdit };
 type Editor = ProgramLegacyEditor;
@@ -202,7 +202,7 @@ export function createProgramLegacyMapEditor(read: () => ProgramLegacyMapDraft |
   };
 }
 
-export function ProgramLegacyWorkspace({ data, mutate, navigate, onUndo, today, selectedFlowId, onRegisterEditors }: ProgramLegacyWorkspaceProps) {
+export function ProgramLegacyWorkspace({ data, mutate, navigate, onUndo, today, selectedFlowId, onRegisterEditors, capabilities }: ProgramLegacyWorkspaceProps) {
   const actorId = data.activeActorId, dataRef = useRef(data); dataRef.current = data;
   const mutateRef = useRef(mutate); mutateRef.current = mutate;
   const port = useMemo(() => createProgramLegacyPort({ actorId, readData: () => dataRef.current, mutate: (label, build, options) => mutateRef.current(label, build, options) }), [actorId]);
@@ -328,7 +328,7 @@ export function ProgramLegacyWorkspace({ data, mutate, navigate, onUndo, today, 
           {!catalog.flows.length && <p>연결한 저장 Flow가 없습니다.</p>}{model?.tasks.some(task => task.kind === 'quick_item') && <p className={styles.muted}>기존 빠른 할 일은 내 공간의 개인 문서에서 이어서 사용할 수 있습니다.</p>}
         </aside>
         <div className={styles.content}>
-          <ProgramLegacySourceReview data={data} port={port} flowRef={selected} blocked={busy || locked || !!editor || !!mapDraft || membershipPending} canStart={() => coordinator.canAct() && !mapDraftRef.current && !planEditor.current?.hasPendingInput?.() && !membershipEditor.current?.hasPendingInput?.()} onRegisterEditors={registerSourceEditor} onPendingChange={setSourcePending} />
+          {capabilities?.sourceReview !== false && <ProgramLegacySourceReview data={data} port={port} flowRef={selected} blocked={busy || locked || !!editor || !!mapDraft || membershipPending} canStart={() => coordinator.canAct() && !mapDraftRef.current && !planEditor.current?.hasPendingInput?.() && !membershipEditor.current?.hasPendingInput?.()} onRegisterEditors={registerSourceEditor} onPendingChange={setSourcePending} />}
           {mapReview && <details key={`${mapReview.groupRef}:${mapPresentation?.confirmed}`} className={styles.source} open={mapPresentation?.required || executionHeld || !!mapDraft}><summary>Map 원문·실행 조건 검토{mapPresentation?.confirmed && <span className={styles.reviewState}>개인 검토 완료</span>}{!executionHeld && !!mapReview.blockers.length && <span className={styles.reviewState}>원문 연결 보완 필요</span>}</summary>
             <h3>{mapReview.title}</h3><p>개인 실행을 위한 확인입니다. 제작자의 공개 판본 승인이나 공식 정보의 검증을 대신하지 않습니다.</p>
             {!executionHeld && !!mapReview.blockers.length && <p>아래 내용은 원본 검토를 위한 보완 사항입니다. 기존 개인 실행은 보류되지 않았습니다.</p>}

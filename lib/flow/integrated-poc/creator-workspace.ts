@@ -59,6 +59,15 @@ export function creatorWorkingFromRecord(workspace: ProgramCreatorWorkspaceState
     ...(record.templateId ? { templateId: record.templateId } : {}) } : null;
 }
 /** Autosave is a working source only, not an explicit saved CreatorDraft revision. */
+export function importedCreatorWorking(workspace:ProgramCreatorWorkspaceState,candidateId:string):ProgramCreatorWorking|null{
+  const candidate=workspace.importedWorkingCandidates?.candidates[candidateId];
+  if(!candidate||candidate.readOnly)return null;
+  const working=programClone(candidate.working),record=workspace.library.records[working.draftId];
+  if(record?.status==='archived')return null;
+  working.baseRecordRevision=record?.recordRevision??null;
+  return working;
+}
+/** Autosave is a working source only, not an explicit saved CreatorDraft revision. */
 export function setProgramCreatorWorking(data: ProgramData, input: { actorId: string; expectedWorking: ProgramCreatorWorking | null; working: ProgramCreatorWorking | null }, now: string): ProgramTransition<string> {
   if (!allowed(data, input.actorId, now) || input.working !== null && !validateProgramCreatorWorking(input.working)) return programFailure(data, 'invalid');
   const current = data.spaces[input.actorId].creatorWorkspace;

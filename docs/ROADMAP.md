@@ -3,7 +3,15 @@
 <!-- alpha-transition-20260920:start -->
 ## 격리 PoC 이후의 현재 경로 (2026-09-20)
 
-[실사용 알파 전환 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md)의 M0–M7을 격리 작업 순서로 삼는다. M1 전에 [PR #203의 충돌·요구·회귀 정합화](./specs/2026-09-12-flowme-integrated-product-poc-program/merge-readiness-2026-09-20.md)를 먼저 검증한다. 이후 구현 묶음은 M1 저장·권한·복구 계약과 무손실 fixture 검증이다. 실제 인증/개발 DB 연결, 개인 동기화, 제작·공유·커뮤니티, 보존/복원, 실사용 gate를 차례로 검증한다. 외부 변경·유료 설정·발행은 단계별 승인 경계를 따른다.
+9/24 최신 순서: [제한 PC 사용](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m7-2-personal-trial.md#924-현재--제한-pc-사용을-먼저-시작) → 다기기 접속 환경 준비/별도 배포 승인/대표 왕복 확인 → 사용 중 필요한 콘텐츠·복원·성능 개선. 모든 잔여를 PC 시작의 선행 조건으로 묶지 않는다. 아래 순서는 이전 시점의 이력이다.
+
+9/23 현재: **기존 콘텐츠 전체의 비공개 보존·열람 완료, 전체 편집·실행 연결은 미완료**. [전체 반입·판정·잔여](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m7-2-full-catalog.md): 002에 Flow177·Item957·구간371·Map26 및 현재 다른 판본2개를 원본 구조로 보존했다. 계정 r74→75 명령1건, 001·기존 제작 사본2개·개인 기록·공유 자료 불변. 표적70/70·통합2188/2188·npm2255/2255·빌드/타입 통과, 실제 브라우저34/34 및 독립 재검사37/37·다섯 해상도 확인. 반입 후 압축 백업1.67MB와 서버 preview 검증을 마쳤다. 다음은 반복·기간·표·Map 의미를 유지한 편집/개인 실행 사본 연결이며, 독립 사본·실제 복원·일상 사용·실기기와 M7-2 전체는 남는다. 공개·배포는 하지 않았다. 아래는 이전 단계 이력이다.
+
+9/23 최신 순서: M1–M6 개발계 완료 → [M7-1 안전성 강화·운영 준비](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m7-1-readiness.md) 완료 → D03/D04 선택 뒤 M7-2 제한 실자료 시험 → 공개 정책·가입 메일·관측·호스트/복구·별도 배포 승인. M7-1의 자동/DEV QA를 실제 기기·관찰 사용자나 출시 완료로 세지 않는다. 아래 ‘다음 M7’은 M6 종료 당시 기록이다.
+
+9/23 현재 M6 자료 이관·백업·복원·업데이트 호환의 **개발계 목표를 완료했다**. [M6 실행 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m6-preservation.md)의 종료 근거와 잔여 M6-R01–08을 이어받아 다음은 M7 실사용 준비다. 강화 검사·실기기·관찰 사용자·정책/배포 gate는 아직 남는다. 아래의 ‘다음은 M6’은 M5 완료 시점의 순서다.
+
+[실사용 알파 전환 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md)의 M0–M7을 격리 작업 순서로 삼는다. M1–M4에 이어 [M5 공개 탐색·공유·커뮤니티](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m5-social.md)의 개발계 구현·검증을 완료했다. 다음은 M6 실제 이관·전체 백업/복원·업데이트 호환, 이어 M7 실사용 gate다. 실제 자료 유일본 투입 전 복원 검증이 필요하며 운영 정책·유료 설정·배포는 별도 승인 경계를 따른다.
 
 아래 9/7 운영 roadmap은 보존된 이력이며 이 알파의 현재 gate나 발행 승인을 대신하지 않는다. 상태 체크리스트는 여기 복제하지 않는다.
 <!-- alpha-transition-20260920:end -->

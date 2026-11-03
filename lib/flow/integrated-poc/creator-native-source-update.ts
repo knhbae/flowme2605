@@ -31,7 +31,8 @@ function validEnvelope(owner:NativeCreatorDocumentOwner,value:unknown):value is 
 export function createCreatorNativeSourceEnvelope(owner:NativeCreatorDocumentOwner,input:{rawText:string;externalVersion:string;providedBy:string;sourceOwnerClaim:string;collectedAt:string;receivedAt:string;eventId?:string;candidateId?:string;mediaType?:'text/plain'|'text/markdown'}):Result<Envelope>{
  try{if(!validateNativeCreatorDocumentOwner(owner)||!isProgramCreatorDraftJson(input))return fail('invalid');const sid=sourceId(owner),rawByteHash=utf8Hash(input.rawText),candidateId=input.candidateId??stableAuthoringId('source-candidate',sid,input.externalVersion,rawByteHash),e:Envelope={envelopeVersion:1,adapter:'LOCAL_SYNTHETIC_HOST_ADAPTER',collectorKind:'local_synthetic',eventId:input.eventId??stableAuthoringId('source-event',candidateId,input.receivedAt),candidateId,contentId:owner.document.documentId,sourceId:sid,externalVersion:input.externalVersion,baseSnapshotId:active(owner).snapshotId,baseWorkingRevisionId:owner.document.revision.revisionId,rawText:input.rawText,rawByteLength:new TextEncoder().encode(input.rawText).byteLength,rawByteHash,contentHash:stableAuthoringHash(input.rawText),mediaType:input.mediaType??'text/markdown',charset:'utf-8',collectedAt:input.collectedAt,receivedAt:input.receivedAt,providedBy:input.providedBy,sourceOwnerClaim:input.sourceOwnerClaim,idempotencyKey:stableAuthoringId('source-idempotency',sid,input.externalVersion,rawByteHash)};return validEnvelope(owner,e)?good(e):fail('invalid-envelope');}catch{return fail('invalid-envelope');}
 }
-function canRead(s:Session,a:Authority){return a.actorId===s.actorId&&a.draftId===s.draftId;}
+export function creatorNativeSourceAuthorityActor(s:Session){return s.version===2?s.ownerMapping?.targetActorId:s.actorId;}
+function canRead(s:Session,a:Authority){return a.actorId===creatorNativeSourceAuthorityActor(s)&&a.draftId===s.draftId;}
 function authorized(s:Session,a:Authority){return canRead(s,a)&&a.lane==='creator'&&a.permission===true&&!a.archived&&s.authorityConstraint==='creator_required'&&s.baseOwner.document.ownership==='creator'&&s.baseOwner.document.lifecycleStatus!=='archived';}
 function sourceChanges(owner:NativeCreatorDocumentOwner):ProgramNativeSourceChange[]{const state=owner.document.sourceState;if(!state||state.status==='current')throw Error('invalid-candidate');return [...state.changes,...(owner.sourceRecurrences?.pending?.changes??[]),...(owner.sourceSubchecks?.pending?.changes??[])];}
 /** Match the existing session's comparison-wide status, including the typed
@@ -40,8 +41,8 @@ function sourceChanges(owner:NativeCreatorDocumentOwner):ProgramNativeSourceChan
 function comparisonStatus(staged:NativeCreatorDocumentOwner):'conflict'|'comparing'{
  return staged.document.sourceState?.status==='conflict_source_vs_user'||[...(staged.sourceRecurrences?.pending?.changes??[]),...(staged.sourceSubchecks?.pending?.changes??[])].some(change=>!same(change.oldSourceValue,change.userValue))?'conflict':'comparing';
 }
-function unwrap(result:ReturnType<typeof applyNativeCreatorDocumentOperation>){if(!result.ok)throw Error(result.reason==='history-capacity'?'history-capacity':'invalid-candidate');return result.owner;}
-function stageOwner(s:Session){const candidate=createAuthoringSourceUpdateCandidate(s.candidateDocument,{capturedAt:s.envelope.collectedAt,externalVersion:s.envelope.externalVersion,matches:s.matches});const result=applyNativeCreatorDocumentOperation(s.baseOwner,{expectedOwner:s.baseOwner,requestId:`${s.sessionId}:stage`,operation:{type:'stage_source_update',candidate}},s.createdAt);if(!result.ok)throw Error(result.reason==='history-capacity'?'history-capacity':'invalid-candidate');if(!result.changed)throw Error('no-new-source');sourceChanges(result.owner);return result.owner;}
+function unwrap(result:ReturnType<typeof applyNativeCreatorDocumentOperation>){if(!result.ok)throw Error(result.reason==='history-capacity'||result.reason==='document-capacity'?result.reason:'invalid-candidate');return result.owner;}
+function stageOwner(s:Session){const candidate=createAuthoringSourceUpdateCandidate(s.candidateDocument,{capturedAt:s.envelope.collectedAt,externalVersion:s.envelope.externalVersion,matches:s.matches});const result=applyNativeCreatorDocumentOperation(s.baseOwner,{expectedOwner:s.baseOwner,requestId:`${s.sessionId}:stage`,operation:{type:'stage_source_update',candidate}},s.createdAt);if(!result.ok)throw Error(result.reason==='history-capacity'||result.reason==='document-capacity'?result.reason:'invalid-candidate');if(!result.changed)throw Error('no-new-source');sourceChanges(result.owner);return result.owner;}
 type Chosen={changeId:string;decision:Decision;at:string;requestId:string};
 function decidedOwner(s:Session,staged:NativeCreatorDocumentOwner,chosen:Chosen[]){let owner=staged;for(const d of chosen.filter(d=>d.decision!=='later').sort((a,b)=>a.at.localeCompare(b.at)||a.requestId.localeCompare(b.requestId))){owner=unwrap(applyNativeCreatorSourceDecision(owner,{expectedOwner:owner,requestId:`${s.sessionId}:decide:${d.requestId}`,decision:{decisionVersion:1,changeId:d.changeId,decision:d.decision as 'keep_working'|'use_incoming'}},d.at));}return owner;}
 function receiptFor(s:Session,decided:NativeCreatorDocumentOwner,result:NativeCreatorDocumentOwner,at:string):Receipt{
@@ -54,7 +55,23 @@ function applyDecided(s:Session,decided:NativeCreatorDocumentOwner,chosen:readon
  const result=unwrap(applyNativeCreatorSourceSession(decided,{expectedOwner:decided,requestId:`${s.sessionId}:apply:${event.requestId}`},event.at,event.applyVersion??1));if(result.document.sourceState?.status!=='current'||active(result).snapshotId===s.envelope.baseSnapshotId)throw Error('invalid-candidate');
  return{result,decided,receipt:receiptFor(s,decided,result,event.at)};
 }
+function originalSessionPrefix(s:Session,revision:number):Session{
+ const {ownerMapping:_,...original}=s;
+ return {...original,version:1,revision,events:copy(s.events.slice(0,revision-1))};
+}
+function validOwnerMapping(s:Session):boolean{
+ const mapping=s.ownerMapping;
+ return !!mapping&&shape(mapping,['version','targetActorId','sourceRevision','sourceHash'])&&mapping.version===1
+  &&id(mapping.targetActorId)&&mapping.targetActorId!==s.actorId&&Number.isSafeInteger(mapping.sourceRevision)
+  &&mapping.sourceRevision>=1&&mapping.sourceRevision<=s.revision&&Array.isArray(s.events)
+  &&mapping.sourceHash===hash(originalSessionPrefix(s,mapping.sourceRevision));
+}
 function validSessionBase(value:unknown):value is Session{
+ if(object(value)&&value.version===2){
+  const mapped=value as Session;
+  return shape(value,['version','sessionId','actorId','draftId','revision','createdAt','authorityConstraint','baseOwner','envelope','candidateDocument','matches','projectionOptions','events','ownerMapping'])
+   &&validOwnerMapping(mapped)&&validSessionBase(originalSessionPrefix(mapped,mapped.revision));
+ }
  if(!isProgramCreatorDraftJson(value)||!shape(value,['version','sessionId','actorId','draftId','revision','createdAt','authorityConstraint','baseOwner','envelope','candidateDocument','matches','projectionOptions','events'])||!object(value))return false;
  const s=value as Session;
  if(!Array.isArray(s.matches)||s.matches.some(m=>!shape(m,['activeItemId','incomingItemId','basis'])||!id(m.activeItemId)||!id(m.incomingItemId)||!['explicit','stable_entity_id'].includes(m.basis)))return false;
@@ -80,9 +97,20 @@ function replay(s:Session):View{
  const stagedOwner=getDecided(),changes=sourceChanges(stagedOwner);
  return{workingAbsences:changes.flatMap(c=>c.kind==='changed'&&(c.field==='completion'||c.field==='schedule')&&s.baseOwner.effectiveAbsences?.entries.some(e=>e.itemId===c.activeItemId&&e.field===c.field)?[{changeId:c.changeId,itemId:c.activeItemId,field:c.field,effectiveValue:null}]:[]),status,creatorCanApply:false,changes:copy(changes),decisions:[...chosen.values()].map(({requestId:_,...d})=>d),selectedChangeId,scrollTop,unresolvedCount:changes.filter(c=>c.state!=='resolved'||!chosen.has(c.changeId)||chosen.get(c.changeId)?.decision==='later').length,comparison:{baseRawText:active(s.baseOwner).rawText??null,workingRawText:s.baseOwner.document.rawText,candidateRawText:s.envelope.rawText},...(receipt?{receipt}:{}),stagedOwner,resultOwner};
 }
-function reason(error:unknown):Failure{const text=error instanceof Error?error.message:'';return ['invalid','history-capacity','invalid-candidate','no-new-source','unresolved','forbidden'].includes(text)?text as Failure:'invalid';}
+function reason(error:unknown):Failure{const text=error instanceof Error?error.message:'';return ['invalid','history-capacity','document-capacity','invalid-candidate','no-new-source','unresolved','forbidden'].includes(text)?text as Failure:'invalid';}
 const validatedSessions=createNativeSourceValidationCache(value=>{try{replay(value as Session);return true;}catch{return false;}});
 export function validateCreatorNativeSourceSession(value:unknown):value is Session{return validatedSessions.validate(value);}
+/** Caller must have explicitly selected this source actor and the destination account. */
+export function mapCreatorNativeSourceOwner(s:Session,selectedActorId:string,targetActorId:string):Result<Session>{
+ try{
+  if(!validateCreatorNativeSourceSession(s)||creatorNativeSourceAuthorityActor(s)!==selectedActorId||!id(targetActorId))return fail('forbidden');
+  if(selectedActorId===targetActorId)return good(copy(s));
+  // A second account transfer needs its own provenance chain; never silently replace one.
+  if(s.version!==1)return fail('forbidden');
+  const next:Session={...copy(s),version:2,ownerMapping:{version:1,targetActorId,sourceRevision:s.revision,sourceHash:hash(s)}};
+  return validateCreatorNativeSourceSession(next)?good(next):fail('invalid');
+ }catch{return fail('invalid');}
+}
 export function stageCreatorNativeSourceCandidate(owner:NativeCreatorDocumentOwner,input:{envelope:Envelope;candidateDocument:TextAuthoringDocument;matches?:AuthoringSourceItemMatch[];projectionOptions?:BuildAuthoringArtifactProjectionOptions;authority:Authority},now:string):Result<Session>{
  try{if(!validateNativeCreatorDocumentOwner(owner)||!validEnvelope(owner,input.envelope))return fail('invalid-envelope');if(requiresNativeCreatorAbsenceUpgrade(owner))return fail('explicit-absence-upgrade-required');if(owner.document.sourceState&&owner.document.sourceState.status!=='current')return fail('conflict');if(!id(input.authority.actorId)||input.authority.draftId!==owner.id)return fail('forbidden');const s:Session={version:1,sessionId:stableAuthoringId('native-source-session',input.authority.actorId,owner.id,input.envelope.idempotencyKey,hash(owner)),actorId:input.authority.actorId,draftId:owner.id,revision:1,createdAt:now,authorityConstraint:input.authority.permission&&input.authority.lane==='creator'&&!input.authority.archived?'creator_required':'denied',baseOwner:copy(owner),envelope:copy(input.envelope),candidateDocument:copy(input.candidateDocument),matches:copy(input.matches??[]),projectionOptions:copy(input.projectionOptions??{}),events:[]};replay(s);return good(s);}catch(e){return fail(reason(e));}
 }

@@ -7,7 +7,7 @@ test('NOR02 descriptor-safe checks precede a hit and never invoke getters',()=>{
 test('NOR03 key order change is a miss, not a canonical hash collision',()=>{let calls=0;const cache=createNativeOwnerReplayCache(v=>{calls++;return {v}});cache.read({a:1,b:2});cache.read({b:2,a:1});assert.equal(calls,2);cache.read({a:1,b:2});assert.equal(calls,2);assert.equal(cache.stats().hits,1);});
 test('NOR04 LRU/count/byte bounds and oversized values keep full validation',()=>{let calls=0;const cache=createNativeOwnerReplayCache(()=>{calls++;return {ok:true}});for(let i=0;i<20;i++)assert(cache.read({i,text:'x'.repeat(120000)}));assert(cache.stats().entries<=8);assert(cache.stats().bytes<=NATIVE_OWNER_CACHE_MAX_TOTAL_BYTES);const before=calls,large={text:'x'.repeat(NATIVE_OWNER_CACHE_MAX_ENTRY_BYTES)};assert(cache.read(large));assert(cache.read(large));assert.equal(calls,before+2);});
 test('NOR05 genuine parser owner survives canonical reload; forged current/history stays invalid after warm hit',()=>{const now='2026-09-12T08:00:00.000Z',document=createTextAuthoringDocument('# 원문\n- [ ] 준비\n  - 날짜: 2026-09-20',{documentId:'cache-source',ownership:'creator',now});const created=createNativeCreatorDocumentOwner({id:'cache-owner',source:{storageKey:'flow:text-authoring:drafts:v1',draftId:'cache-draft',versionId:'saved-fixture-1',revisionId:document.revision.revisionId,documentJson:JSON.stringify(document)}},now);assert(created.ok);const owner=created.owner,original=JSON.stringify(owner);assert(validateNativeCreatorDocumentOwner(owner));const reorder=(v:any):any=>Array.isArray(v)?v.map(reorder):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,reorder(v[k])])):v;assert(validateNativeCreatorDocumentOwner(JSON.parse(JSON.stringify(reorder(owner)))));owner.document.parseResult.canonical.items[0].title='forged';assert.equal(validateNativeCreatorDocumentOwner(owner),false);const restored=JSON.parse(original);assert(validateNativeCreatorDocumentOwner(restored));restored.revision++;assert.equal(validateNativeCreatorDocumentOwner(restored),false);const read=readNativeCreatorDocument(JSON.parse(original));assert(read.ok);assert.equal(JSON.stringify(created.owner.source),JSON.stringify(JSON.parse(original).source));});
-test('NOR06 an applied source owner and its replay result reuse validation within the unchanged total budget',()=>{
+test('NOR06 an applied source owner and its replay result reuse validation within the bounded budget',()=>{
  let calls=0;const cache=createNativeOwnerReplayCache((value:any)=>{calls++;return value.valid?{text:'r'.repeat(128_068)}:null;});
  // Genuine post-apply source/private owner: 168126 chars + replay 128068 chars.
  // The former 512 KiB per-entry limit caused every retained Undo to replay it.
@@ -17,4 +17,22 @@ test('NOR06 an applied source owner and its replay result reuse validation withi
  assert.equal(calls,1);assert.equal(cache.stats().hits,2);
  assert(cache.stats().bytes>512*1024);assert(cache.stats().bytes<=NATIVE_OWNER_CACHE_MAX_TOTAL_BYTES);
  input.valid=false;assert.equal(cache.read(input),null);assert.equal(calls,2);
+});
+test('NOR07 multi-megabyte valid pairs reuse exact verification but mutation still replays',()=>{
+ let calls=0;const cache=createNativeOwnerReplayCache((v:any)=>{calls++;return v.valid?{text:'r'.repeat(1_000_000)}:null;});
+ const input={valid:true,text:'s'.repeat(1_100_000)};
+ const first=cache.read(input)!;first.text='tampered output';
+ assert.equal(cache.read(structuredClone(input))!.text.length,1_000_000);
+ assert.equal(calls,1);assert.equal(cache.stats().hits,1);
+ assert(cache.stats().bytes>2*1024*1024);assert(cache.stats().bytes<=NATIVE_OWNER_CACHE_MAX_TOTAL_BYTES);
+ input.valid=false;assert.equal(cache.read(input),null);assert.equal(calls,2);
+});
+test('NOR08 large entries evict by total byte budget and evicted inputs replay again',()=>{
+ let calls=0;const cache=createNativeOwnerReplayCache((v:any)=>{calls++;return {id:v.id,text:'r'.repeat(2_400_000)};});
+ const input=(id:number)=>({id,text:'s'.repeat(2_400_000)});
+ for(let i=0;i<4;i++)assert(cache.read(input(i)));
+ assert.equal(calls,4);assert.equal(cache.stats().entries,3);
+ assert(cache.stats().bytes<=NATIVE_OWNER_CACHE_MAX_TOTAL_BYTES);
+ assert(cache.read(input(0)));assert.equal(calls,5);
+ assert.equal(cache.stats().entries,3);assert(cache.stats().bytes<=NATIVE_OWNER_CACHE_MAX_TOTAL_BYTES);
 });

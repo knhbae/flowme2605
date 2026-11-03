@@ -1,0 +1,22 @@
+.dialog { width: min(680px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); margin: auto; padding: 20px; overflow: auto; border: 1px solid var(--flowme-control-border); border-radius: 14px; color: var(--flowme-text); background: var(--flowme-surface); overflow-wrap: anywhere; }
+.dialog::backdrop { background: rgb(0 0 0 / .4); }
+.dialog header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dialog h2 { font-size: 20px; font-weight: 750; }
+.dialog h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.dialog section { border-top: 1px solid var(--flowme-border); margin-top: 20px; padding-top: 16px; }
+.dialog p { line-height: 1.6; margin-block: 8px; }
+.dialog small { display: block; line-height: 1.6; color: var(--flowme-text-secondary); margin-top: 8px; }
+.dialog button, .dialog a { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 9px 14px; margin: 6px 8px 6px 0; border: 1px solid var(--flowme-control-border); border-radius: 8px; background: var(--flowme-surface); color: var(--flowme-action); }
+.dialog button:disabled { opacity: .55; }
+.dialog button:focus-visible, .dialog a:focus-visible, .dialog input:focus-visible, .dialog select:focus-visible { outline: var(--flowme-focus-outline); outline-offset: 3px; }
+.dialog label { display: block; margin: 10px 0; min-height: 48px; }
+.dialog input:not([type='checkbox']), .dialog select { display: block; width: 100%; min-width: 0; min-height: 48px; padding: 8px; font-size: 16px; }
+.confirm { display: flex !important; align-items: center; gap: 10px; line-height: 1.5; }
+.confirm input { width: 24px; height: 24px; flex-shrink: 0; }
+.owner { color: var(--flowme-text-secondary); }
+.status { min-height: 24px; }
+.summary { width: 100%; table-layout: fixed; border-collapse: collapse; margin-block: 12px; font-variant-numeric: tabular-nums; }
+.summary caption { text-align: left; line-height: 1.5; margin-bottom: 8px; }
+.summary th, .summary td { padding: 8px 4px; border-bottom: 1px solid var(--flowme-border); text-align: right; vertical-align: top; }
+.summary th:first-child { width: 52%; text-align: left; font-weight: 600; }
+@media(max-width: 420px) { .dialog { padding: 14px; } }

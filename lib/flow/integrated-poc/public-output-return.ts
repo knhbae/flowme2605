@@ -8,8 +8,9 @@ export type ProgramPublicOutputReturn = { version: 1; origin: string; flowId: st
 export function programPublicOutputBase(input: string): string | null {
   try {
     const url = new URL(input);
-    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.pathname !== '/my'
-      || url.search !== '?personalWorkspacePoc=v1') return null;
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) return null;
+    if (url.pathname === '/alpha' && url.search === '') return `${url.origin}/alpha`;
+    if (url.pathname !== '/my' || url.search !== '?personalWorkspacePoc=v1') return null;
     return `${url.origin}/my?personalWorkspacePoc=v1`;
   } catch { return null; }
 }

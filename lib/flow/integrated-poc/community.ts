@@ -4,6 +4,7 @@ import {
   type ProgramReply, type ProgramTransition, type ProgramProposal,
 } from './contract';
 import { programIdentifier, validateProgramData, validateProgramMedia } from './program-data';
+import { isProgramStoredMedia } from './community-media';
 
 type PostContent = { title: string; body: string; topic: string; media?: ProgramMedia[] };
 type EditExpectation = { expectedUpdatedAt?: string; expectedContent?: string };
@@ -38,6 +39,11 @@ function publicMedia(input: ProgramMedia[] | undefined): ProgramMedia[] | null {
   for (const media of input) {
     if (!media || !programIdentifier(media.id) || ids.has(media.id) || !text(media.alt, 500)
       || typeof media.synthetic !== 'boolean' || typeof media.dataUrl !== 'string') return null;
+    if (isProgramStoredMedia(media)) {
+      const selected = { id: media.id, dataUrl: media.dataUrl, alt: media.alt, synthetic: media.synthetic };
+      if (!validateProgramMedia(selected)) return null;
+      ids.add(media.id); result.push(selected); continue;
+    }
     const match = /^data:image\/(png|jpeg|webp|gif);base64,([A-Za-z0-9+/]+={0,2})$/.exec(media.dataUrl);
     if (!match || match[2].length % 4 !== 0) return null;
     const bytes = match[2].length / 4 * 3 - (match[2].endsWith('==') ? 2 : match[2].endsWith('=') ? 1 : 0);

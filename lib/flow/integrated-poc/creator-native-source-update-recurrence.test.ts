@@ -52,7 +52,7 @@ test('NSR03 incoming recurrence uses real finite projection; end-only change ind
  const keptItem=kept.document.parseResult.canonical.items[0];for(const id of keptItem.recurrence!.sourceRowIds){assert(keptItem.sourceRowIds.includes(id));assert(kept.document.parseResult.canonical.sourceRows.some(row=>row.sourceRowId===id));}
  const d=stage(kept,raw(7),'d'),next=d.owner.sourceRecurrences!.pending!.changes[0];same(next.oldSourceValue,c.doc.parseResult.canonical.items[0].recurrence);same(next.userValue,b.doc.parseResult.canonical.items[0].recurrence);
  const adopted=apply(decide(d.owner,'use_incoming','accept-d'),'apply-d');assert.equal(projected(adopted).projection.artifacts.calendar.rows.length,7);assert(!Object.hasOwn(adopted.sourceRecurrences!.sourceRules[0],'workingRule'));
- const source=initial().source;assert('versionId' in source);const restored=restoreNativeCreatorDocument(adopted,{expectedOwner:adopted,requestId:'restore-a',source},NOW);assert(restored.ok);assert.equal(restored.owner.sourceRecurrences,undefined);
+ const source=initial().source;assert('versionId' in source&&source.storageKey==='flow:text-authoring:drafts:v1');const restored=restoreNativeCreatorDocument(adopted,{expectedOwner:adopted,requestId:'restore-a',source},NOW);assert(restored.ok);assert.equal(restored.owner.sourceRecurrences,undefined);
 });
 test('NSR04 unresolved recurrence, stale current edit, malformed match, unrelated semantics and forged derived state fail closed',()=>{
  const base=initial(),f=stage(base,raw());let ordinary=f.owner;

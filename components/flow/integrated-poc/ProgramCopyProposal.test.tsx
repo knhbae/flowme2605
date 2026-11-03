@@ -15,6 +15,7 @@ import { programRecurringScheduleFromDraft } from '../../../lib/flow/integrated-
 import { ProgramPublicationRecurrence } from './ProgramPublicationRecurrence';
 import type { ProgramEditorFlush } from '../../../lib/flow/integrated-poc/document-action';
 import type { ProgramCopyProposalProps } from './ProgramCopyProposal';
+import { isAlphaSocialIntent, type AlphaSocialIntent } from '../../../lib/flow/integrated-poc/alpha-social/contract';
 
 // Real component handlers + domain transitions, not browser/IME evidence.
 function harness(checks: { id: string; title: string }[] = []) {
@@ -26,6 +27,7 @@ function harness(checks: { id: string; title: string }[] = []) {
     source: { kind: 'simulated-example', label: '가상 자료', url: null, checkedAt: null }, createdBy: 'creator-minji', createdAt: now });
   const imported = importProgramPublicVersion(data, { actorId: 'local-user', requestId: 'ui-import', expectedSpace: data.spaces['local-user'], versionId: 'ui-v1', itemIds: ['first'], anchor: null }); assert(imported.ok); const copyId = imported.result; data = imported.data;
   let cursor = 0, port: ProgramEditorFlush | null = null, fail = false, pending = false, mutations = 0, writes = 0;
+  let socialIntent: AlphaSocialIntent | null = null;
   const slots: any[] = [], cleanups: (() => void)[] = [];
   const react = { ...React, useState: (initial: any) => { const i = cursor++; if (!(i in slots)) slots[i] = initial; return [slots[i], (value: any) => { slots[i] = typeof value === 'function' ? value(slots[i]) : value; }]; },
     useRef: (initial: any) => { const i = cursor++; if (!(i in slots)) slots[i] = { current: initial }; return slots[i]; },
@@ -38,7 +40,8 @@ function harness(checks: { id: string; title: string }[] = []) {
   let versionId = 'ui-v1';
   function render() {
     cursor = 0; const tree = loaded.exports.ProgramCopyProposal({ data, copyId, version: data.public.versions.find(v => v.id === versionId)!, disabled: false,
-      onRegisterEditors: p => { port = p; }, onPendingChange: value => { pending = value; }, mutate: async (_label, build) => {
+      onRegisterEditors: p => { port = p; }, onPendingChange: value => { pending = value; }, mutate: async (_label, build, options) => {
+        socialIntent = typeof options?.alphaSocial === 'function' ? options.alphaSocial() : options?.alphaSocial ?? null;
         mutations++; if (fail) return { ok: false, reason: 'quota' }; const result = build(data);
         if (!result.ok) return { ok: false, reason: result.reason }; if (result.changed) writes++; data = result.data; return { ok: true, changed: result.changed, result: result.result };
       } });
@@ -48,7 +51,7 @@ function harness(checks: { id: string; title: string }[] = []) {
       button: (name: string) => nodes.find(n => n.type === 'button' && n.props.children === name) };
   }
   const open = (field = 'schedule') => { render().control('원문 항목').props.onChange({ target: { value: 'first' } }); render().control('제안할 필드').props.onChange({ target: { value: field } }); return render(); };
-  return { render, open, get port() { return port!; }, get pending() { return pending; }, get data() { return data; }, get writes() { return writes; }, get mutations() { return mutations; }, setFail(value: boolean) { fail = value; },
+  return { render, open, get socialIntent() { return socialIntent; }, get port() { return port!; }, get pending() { return pending; }, get data() { return data; }, get writes() { return writes; }, get mutations() { return mutations; }, setFail(value: boolean) { fail = value; },
     newVersion() { const v = programClone(data.public.versions[0]); v.id = 'ui-v2'; v.number = 2; v.parentVersionId = 'ui-v1'; data.public.versions.push(v); data.public.flows[0].currentVersionId = v.id; },
     selectVersion(value: string) { versionId = value; }, cleanup() { cleanups.forEach(fn => fn()); } };
 }
@@ -57,6 +60,20 @@ test('CPU01 existing recurrence initializes every source field; proposal-only co
   assert.deepEqual(input, { version: 1, raw: '매주 화, 목', end: '8회', startKind: 'fixed', startValue: '2026-12-01', time: '07:00', timeZone: 'Asia/Seoul' });
   const html = renderToStaticMarkup(<ProgramPublicationRecurrence value={{ ...input, raw: '알 수 없는 반복' }} disabled={false} styles={{}} onChange={() => {}} purpose="proposal" />);
   assert.match(html, /제안할 반복 일정/); assert.match(html, /아직 제안을 보내지 않았습니다/); assert.doesNotMatch(html, /비공개 초안에 보관합니다/); assert.equal(h.writes, 0); h.cleanup();
+});
+
+test('account proposal sends only the pinned public item intent, never its private copy aggregate', async () => {
+  const h = harness(); let view = h.open();
+  view.recurrence().props.onChange({ ...view.recurrence().props.value, raw: '매일' });
+  h.render().control('제안 이유').props.onChange({ target: { value: '정확한 구판 기준 제안' } });
+  h.newVersion(); view = h.render();
+  await view.form().props.onSubmit({ preventDefault() {} });
+  const intent = h.socialIntent;
+  assert(isAlphaSocialIntent(intent)); assert.equal(intent.type, 'proposal-create');
+  if (intent.type !== 'proposal-create') assert.fail('wrong intent');
+  assert.equal(intent.baseVersionId, 'ui-v1'); assert.equal(intent.itemId, 'first');
+  assert.deepEqual(Object.keys(intent).sort(), ['type','copyId','flowId','baseVersionId','itemId','reason','patch'].sort());
+  assert.equal(h.writes, 1); h.cleanup();
 });
 test('CPU02 edited recurring inputs lock target selection, join navigation barrier, and retain exact context in recovery', async () => {
   const h = harness(); let v = h.open(); v.recurrence().props.onChange({ ...v.recurrence().props.value, raw: '매주 수, 금' }); v = h.render();
