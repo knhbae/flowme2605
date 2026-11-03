@@ -85,20 +85,25 @@ test('복구함 열기 opens the menu and the box and puts focus on it', () => {
 });
 
 test('a move to another screen from 더보기 closes the menu and leaves focus on the 더보기 tab; a refused move keeps it', async () => {
-  const source = pick(node => ts.isFunctionDeclaration(node) && node.name?.text === 'navigateFromMenu');
-  const run = async (moves: boolean) => {
+  const file = source;
+  const move = pick(node => ts.isFunctionDeclaration(node) && node.name?.text === 'navigateFromMenu');
+  const run = async (moves: boolean, turnWhileWaiting = false) => {
     const calls: string[] = [], menu = { open: true, querySelector: () => ({ focus: () => calls.push('summary') }) };
-    const destinationRef: { current: unknown } = { current: { view: 'space' } };
+    const destinationRef: { current: unknown } = { current: { view: 'space' } }, menuTurns = { current: 3 };
     const tab = { focus: (options: unknown) => calls.push(`tab ${JSON.stringify(options)}`) };
-    const go = evaluate<(next: unknown) => Promise<void>>(source, {
-      navigate: async (next: unknown) => { calls.push('navigate'); if (moves) destinationRef.current = next; },
-      managementMenu: { current: menu }, destinationRef, document: { querySelector: () => tab },
+    const go = evaluate<(next: unknown) => Promise<void>>(move, {
+      navigate: async (next: unknown) => { calls.push('navigate'); if (turnWhileWaiting) menuTurns.current += 2; if (moves) destinationRef.current = next; },
+      managementMenu: { current: menu }, destinationRef, menuTurns, document: { querySelector: () => tab },
     });
     await go({ view: 'discover' });
     return { open: menu.open, calls };
   };
   assert.deepEqual(await run(true), { open: false, calls: ['navigate', 'tab {"preventScroll":true}'] });
   assert.deepEqual(await run(false), { open: true, calls: ['navigate'] });
+  // Closed and opened again (or its 복구함 opened) while the save before the move ran: the menu is left as it is.
+  assert.deepEqual(await run(true, true), { open: true, calls: ['navigate'] });
+  // The menu and its 복구함 count their turns.
+  for (const ref of ['managementMenu', 'recoveryBox']) { const at = file.indexOf(`<details ref={${ref}}`); assert(at > 0 && file.slice(at, at + 200).includes('onToggle={() => { menuTurns.current++; }}'), ref); }
   // Every move in the menu goes through it; the menu's other actions are not moves.
   const menu = element('aria-label="계정 및 자료 관리"');
   for (const view of ['community', 'discover', 'activity', 'legacy']) assert(menu.includes(`onClick={() => void navigateFromMenu({ view: '${view}' })}`), view);

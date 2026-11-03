@@ -151,6 +151,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const preservationOpener = useRef<HTMLElement | null>(null);
   // R8a: the "…" menu and its 복구함, and the total the user last closed the saved-input notice at.
   const managementMenu = useRef<HTMLDetailsElement | null>(null), recoveryBox = useRef<HTMLDetailsElement | null>(null);
+  // Every open or close of the 더보기 menu or its 복구함 (see navigateFromMenu).
+  const menuTurns = useRef(0);
   // R8b: the bottom tabs 쓰기·오늘·분류 drive the space through its main-tab port; 더보기 opens the menu.
   const mainTabs = useRef<{ choose(tab: ProgramMainTab): Promise<boolean> } | null>(null);
   const [mainTab, setMainTab] = useState<ProgramMainTab>('documents');
@@ -1347,11 +1349,13 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (menu.open) requestAnimationFrame(() => menu.querySelector<HTMLElement>(':scope > div :is(button, summary)')?.focus());
   }
   // A move to another screen from 더보기 closes the menu, which otherwise stayed open over the new screen and took its
-  // presses. Focus goes to the 더보기 tab, as Escape leaves it. A move that is refused (saving, held input) keeps it.
+  // presses. Focus goes to the 더보기 tab, as Escape leaves it. A move that is refused (saving, held input) keeps it, and
+  // so does one whose wait (the save before it) saw the menu or its 복구함 opened or closed: that is the person's menu now.
   async function navigateFromMenu(next: ProgramDestination) {
+    const turns = menuTurns.current;
     await navigate(next);
     const menu = managementMenu.current;
-    if (!menu?.open || destinationRef.current !== next) return;
+    if (!menu?.open || destinationRef.current !== next || menuTurns.current !== turns) return;
     menu.open = false;
     (document.querySelector<HTMLElement>('[data-main-tab="more"]') ?? menu.querySelector<HTMLElement>(':scope > summary'))?.focus({ preventScroll: true });
   }
@@ -1438,7 +1442,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     {!usesNoteChrome && (browse && savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice)}
     <section className={styles.sync} aria-label="서버 저장 상태">
       {!usesNoteChrome && (!browse || browseStatusShown) && serverStatus}
-      <details ref={managementMenu} className={styles.management} aria-label="계정 및 자료 관리" onKeyDown={event => {
+      <details ref={managementMenu} className={styles.management} aria-label="계정 및 자료 관리" onToggle={() => { menuTurns.current++; }} onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
         // The 더보기 tab opened it; its own summary is hidden under the tabs.
@@ -1460,7 +1464,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
             {data.spaces[session.userId].savedBindings.length > 0 && <button type="button" aria-current={destination.view === 'legacy' ? 'page' : undefined} onClick={() => void navigateFromMenu({ view: 'legacy' })}>개인 Flow 상세</button>}</div>
         </section>}
         <section className={styles.menuGroup} aria-label="자료"><h3>자료</h3>
-          <details ref={recoveryBox} className={styles.recoveryBox} open={!!storedTotal && (unavailable || external || snapshot?.status === 'conflict')}>
+          <details ref={recoveryBox} className={styles.recoveryBox} onToggle={() => { menuTurns.current++; }} open={!!storedTotal && (unavailable || external || snapshot?.status === 'conflict')}>
             <summary>복구함{storedTotal ? ` (${storedTotal})` : ''}</summary>
             {storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <p>보관한 입력이 없습니다.</p>}
           </details>
