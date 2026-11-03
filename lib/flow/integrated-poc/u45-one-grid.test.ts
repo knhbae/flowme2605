@@ -84,6 +84,8 @@ test('U45 folder rows: one drawing in place over RAW in every state; ▾ in the 
   assert.equal(vendor.match(/button\.classList\.add\('tle-scope-control'\)/g)?.length, 2);
   assert(vendor.includes("const scopeHidden = (metaRow, top, local) => metaRow.hidden || metaRow.classList.contains('tle-line-raw') ||"));
   assert(vendor.includes("left: start - (local ? rect(metaRow) : rootBox).left + 'px', width: width + 'px' };"));
+  // Review (11/3): up to the name's first character, measured on that character (a wrapped name's box starts at the row's start).
+  assert(vendor.includes("const first = doc.createRange(); first.setStart(name.firstChild, 0); first.setEnd(name.firstChild, 1); firstBox = first.getClientRects()[0] || null;"));
   assert(vendor.includes("left: rect(foldRow).right + 2 - (local ? rect(foldRow) : rootBox).left + 'px' };"));
   // Both come before the 'hidden while writing' rule of the other row controls.
   const rows = vendor.slice(vendor.indexOf('const rowPlans = rowButtons.map('), vendor.indexOf('// No layout reads in this per-control commit phase.'));
