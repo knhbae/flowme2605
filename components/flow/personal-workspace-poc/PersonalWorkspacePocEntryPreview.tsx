@@ -6,7 +6,7 @@ import { readPersonalWorkspacePocEntryPreview, type PersonalWorkspacePocEntryRea
 import type { PersonalWorkspacePocEntryNavigationPresentation } from '@/lib/flow/personal-workspace-poc-entry-navigation';
 import { PersonalWorkspacePocResultPresenter, type PersonalWorkspacePocResultOpenItemIntent } from './PersonalWorkspacePocResultPresenter';
 
-const control = 'min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none focus-visible:ring-2 focus-visible:ring-teal-700';
+const control = 'min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700';
 function fieldText(field: PersonalWorkspacePocEntryReadField<string>, missing: string) {
   return field.availability === 'present' ? field.value : missing;
 }
@@ -115,7 +115,7 @@ export function PersonalWorkspacePocEntryPreview({ packet, flowRef, localToday, 
     {detail ? <section data-testid="personal-workspace-entry-item-detail" aria-labelledby="personal-workspace-entry-detail-heading"
       className="mt-4 min-w-0 rounded-md border border-teal-700 bg-teal-50 p-4 text-sm leading-6 text-slate-800">
       <div className="flex min-w-0 items-start justify-between gap-3">
-        <h4 id="personal-workspace-entry-detail-heading" ref={detailHeading} tabIndex={-1} className="min-w-0 break-words font-semibold outline-none focus-visible:ring-2 focus-visible:ring-teal-700 [overflow-wrap:anywhere]">{title}</h4>
+        <h4 id="personal-workspace-entry-detail-heading" ref={detailHeading} tabIndex={-1} className="min-w-0 break-words font-semibold outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700 [overflow-wrap:anywhere]">{title}</h4>
         <button type="button" className={`${control} shrink-0`} onClick={close}>상세 닫기</button>
       </div>
       <dl className="mt-3 min-w-0"><SourceDetails item={detail} />

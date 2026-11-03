@@ -122,7 +122,7 @@ export function MyFlowSortMenu({
       <button
         ref={triggerRef}
         type="button"
-        className="inline-flex min-h-12 min-w-12 items-center justify-center gap-1 rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 text-xs font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+        className="inline-flex min-h-12 min-w-12 items-center justify-center gap-1 rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 text-xs font-semibold text-[var(--flowme-text)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}

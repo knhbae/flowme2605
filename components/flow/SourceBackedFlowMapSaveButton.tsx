@@ -114,7 +114,7 @@ export function SourceBackedFlowMapAnchorInput({
         aria-describedby={`${descriptionId}${required ? ` ${errorId}` : ''}`}
         aria-errormessage={required ? errorId : undefined}
         aria-invalid={required || undefined}
-        className={`min-h-11 rounded-lg border bg-[#FAFAF8] px-3 py-2 text-base font-semibold text-slate-950 outline-none focus:bg-white focus:ring-2 ${required ? 'border-red-500 ring-2 ring-red-100 focus:border-red-500 focus:ring-red-100' : 'border-[#E7E4DD] focus:border-[#3654FF] focus:ring-[#3654FF]/10'}`}
+        className={`min-h-11 rounded-lg border bg-[#FAFAF8] px-3 py-2 text-base font-semibold text-slate-950 outline-hidden focus:bg-white focus:ring-2 ${required ? 'border-red-500 ring-2 ring-red-100 focus:border-red-500 focus:ring-red-100' : 'border-[#E7E4DD] focus:border-[#3654FF] focus:ring-[#3654FF]/10'}`}
         data-testid="flow-map-anchor-input"
         ref={inputRef}
         type="date"

@@ -369,7 +369,7 @@ export function FlowExportPanel({
         data-recommendation-role={role}
         data-recommendation-visible={!hidden}
         data-action-priority={role === 'primary' ? 'primary' : 'secondary'}
-        className={`min-h-16 scroll-mb-[var(--flowme-mobile-tab-clearance)] border-b border-r border-[var(--flowme-border)] px-3 py-2 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-[var(--flowme-surface-subtle)] disabled:text-[var(--flowme-text-tertiary)] sm:border-b-0 last:border-r-0 ${
+        className={`min-h-16 scroll-mb-[var(--flowme-mobile-tab-clearance)] border-b border-r border-[var(--flowme-border)] px-3 py-2 text-left transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-[var(--flowme-surface-subtle)] disabled:text-[var(--flowme-text-tertiary)] sm:border-b-0 last:border-r-0 ${
           role === 'primary'
             ? 'bg-[var(--flowme-action-soft)] hover:bg-blue-100'
             : 'bg-[var(--flowme-surface)] hover:bg-[var(--flowme-surface-subtle)]'
@@ -411,7 +411,7 @@ export function FlowExportPanel({
         data-testid={`my-flow-transfer-tab-${destination}`}
         data-export-destination={destination}
         data-export-format={SAVED_PLAN_TRANSFER_FORMAT_BY_DESTINATION[destination]}
-        className={`min-h-12 border-r border-[var(--flowme-border)] px-2 py-2 text-sm font-semibold last:border-r-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:text-[var(--flowme-text-tertiary)] ${
+        className={`min-h-12 border-r border-[var(--flowme-border)] px-2 py-2 text-sm font-semibold last:border-r-0 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:text-[var(--flowme-text-tertiary)] ${
           selected
             ? 'bg-[var(--flowme-action-soft)] text-[var(--flowme-action)]'
             : 'bg-[var(--flowme-surface)] text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-surface-subtle)]'
@@ -519,7 +519,7 @@ export function FlowExportPanel({
                   type="button"
                   data-testid="my-flow-export-scope-flow"
                   aria-pressed={scope === 'flow'}
-                  className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${scope === 'flow' ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
+                  className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${scope === 'flow' ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
                   onClick={() => onScopeChange('flow')}
                 >
                   {q3CopyEnabled ? '계획 전체' : 'Flow 전체'}<span className="sr-only"> · {flowPlan.includedCount}개</span>
@@ -528,7 +528,7 @@ export function FlowExportPanel({
                   type="button"
                   data-testid="my-flow-export-scope-selected"
                   aria-pressed={scope === 'selected'}
-                  className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${scope === 'selected' ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
+                  className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${scope === 'selected' ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
                   onClick={() => onScopeChange('selected')}
                 >
                   직접 선택<span className="sr-only"> · {selectedCount}개</span>
@@ -663,7 +663,7 @@ export function FlowExportPanel({
 
             {!approvedSavedTransfer && exportRecommendation.additional.length > 0 ? (
               <details data-testid="my-flow-export-more-formats" className="border-b border-[var(--flowme-border)]">
-                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
                   <span>형식 {exportRecommendation.visible.length + exportRecommendation.additional.length}개 중 {exportRecommendation.additional.length}개 더</span>
                   <span aria-hidden="true">⌄</span>
                 </summary>
@@ -720,7 +720,7 @@ export function FlowExportPanel({
                   <div
                     ref={(node) => { approvedPreviewBodyRef.current = node; }}
                     tabIndex={-1}
-                    className="mt-2 max-w-full overflow-x-auto rounded-lg border border-[var(--flowme-border)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                    className="mt-2 max-w-full overflow-x-auto rounded-lg border border-[var(--flowme-border)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                   >
                     <table data-testid="my-flow-export-xlsx-preview" className="min-w-max border-collapse text-left text-xs">
                       <caption className="sr-only">저장된 계획 Excel 미리보기</caption>
@@ -776,7 +776,7 @@ export function FlowExportPanel({
                     <button
                       type="button"
                       data-testid="my-flow-export-calendar-review"
-                      className="min-h-12 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border-strong)] bg-white px-3 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                      className="min-h-12 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border-strong)] bg-white px-3 text-sm font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                       onClick={() => {
                         approvedPreviewBodyRef.current?.focus({ preventScroll: true });
                         approvedPreviewBodyRef.current?.scrollIntoView({ block: 'nearest' });
@@ -792,7 +792,7 @@ export function FlowExportPanel({
                     data-export-format={SAVED_PLAN_TRANSFER_FORMAT_BY_DESTINATION[previewDestination]}
                     disabled={selectedSavedTransferUnavailable || pendingDestination !== null}
                     aria-busy={pendingDestination === previewDestination || undefined}
-                    className="min-h-12 w-full rounded-[var(--flowme-radius-control)] bg-[var(--flowme-action)] px-3 text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="min-h-12 w-full rounded-[var(--flowme-radius-control)] bg-[var(--flowme-action)] px-3 text-sm font-semibold text-white focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:opacity-50"
                     onClick={() => runExport(previewDestination)}
                   >
                     {pendingDestination === previewDestination

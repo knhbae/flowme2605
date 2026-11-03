@@ -41,8 +41,8 @@ const FOCUSABLE_SELECTOR = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
-const CONTROL_CLASS = 'min-h-12 rounded-md border border-slate-300 bg-white px-3 text-base text-slate-900 outline-none focus:border-teal-700 focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2';
-const SECONDARY_ACTION_CLASS = 'min-h-12 cursor-pointer rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 outline-none hover:border-teal-700 active:bg-slate-100 focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2';
+const CONTROL_CLASS = 'min-h-12 rounded-md border border-slate-300 bg-white px-3 text-base text-slate-900 outline-hidden focus:border-teal-700 focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2';
+const SECONDARY_ACTION_CLASS = 'min-h-12 cursor-pointer rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 outline-hidden hover:border-teal-700 active:bg-slate-100 focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2';
 
 export function buildPersonalWorkspacePocValidationExampleExplorerView(
   entries: readonly PersonalWorkspacePocValidationExample[],
@@ -307,7 +307,7 @@ export function PersonalWorkspacePocValidationExampleExplorer({
                         data-example-id={entry.exampleId}
                         aria-pressed={selected}
                         aria-controls={previewHeadingId}
-                        className={`min-h-12 w-full min-w-0 cursor-pointer px-4 py-3 text-left outline-none active:bg-slate-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-700 sm:px-5 ${selected ? 'bg-teal-50' : 'bg-white hover:bg-slate-50'}`}
+                        className={`min-h-12 w-full min-w-0 cursor-pointer px-4 py-3 text-left outline-hidden active:bg-slate-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-700 sm:px-5 ${selected ? 'bg-teal-50' : 'bg-white hover:bg-slate-50'}`}
                         onClick={() => selectEntry(entry)}
                       >
                         <span className="block break-words text-sm font-semibold text-slate-950 [overflow-wrap:anywhere]">
@@ -347,7 +347,7 @@ export function PersonalWorkspacePocValidationExampleExplorer({
                     ref={detailHeadingRef}
                     id={previewHeadingId}
                     tabIndex={-1}
-                    className="mt-1 break-words text-xl font-semibold tracking-[-0.02em] outline-none focus-visible:ring-2 focus-visible:ring-teal-700 [overflow-wrap:anywhere]"
+                    className="mt-1 break-words text-xl font-semibold tracking-[-0.02em] outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700 [overflow-wrap:anywhere]"
                   >
                     {selectedEntry.label}
                   </h3>
@@ -391,7 +391,7 @@ export function PersonalWorkspacePocValidationExampleExplorer({
                   <button
                     type="button"
                     data-testid="validation-example-apply"
-                    className="min-h-12 w-full cursor-pointer rounded-md bg-teal-700 px-4 py-3 text-base font-semibold text-white outline-none hover:bg-teal-800 active:bg-teal-900 focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-600"
+                    className="min-h-12 w-full cursor-pointer rounded-md bg-teal-700 px-4 py-3 text-base font-semibold text-white outline-hidden hover:bg-teal-800 active:bg-teal-900 focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-600"
                     disabled={!sourceEmpty}
                     aria-describedby={!sourceEmpty ? sourcePreservationReasonId : undefined}
                     onClick={() => {

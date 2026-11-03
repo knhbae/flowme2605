@@ -101,7 +101,7 @@ export function MyPlanExecutionSurface<Data = unknown>({
                 type="button"
                 data-testid="my-plan-library-back"
                 aria-label="저장한 계획 목록으로 돌아가기"
-                className="inline-flex min-h-12 min-w-12 shrink-0 items-center justify-center rounded-md text-xl font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                className="inline-flex min-h-12 min-w-12 shrink-0 items-center justify-center rounded-md text-xl font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={actions.onBackToLibrary}
               >
                 <span aria-hidden="true">‹</span>
@@ -111,7 +111,7 @@ export function MyPlanExecutionSurface<Data = unknown>({
               <Heading
                 id={headingId}
                 tabIndex={headingTabIndex}
-                className="break-words text-xl font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                className="break-words text-xl font-semibold text-[var(--flowme-text)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
               >
                 {flowTitle}
               </Heading>
@@ -150,7 +150,7 @@ export function MyPlanExecutionSurface<Data = unknown>({
               <button
                 type="button"
                 data-testid="my-plan-edit"
-                className="inline-flex min-h-12 items-center justify-center rounded-md border border-[var(--flowme-border-strong)] bg-white px-4 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                className="inline-flex min-h-12 items-center justify-center rounded-md border border-[var(--flowme-border-strong)] bg-white px-4 text-sm font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={actions.onEditPlan}
               >
                 수정
@@ -162,7 +162,7 @@ export function MyPlanExecutionSurface<Data = unknown>({
                 data-testid="my-flow-export-entry"
                 data-action-role="transfer-to-own-tool"
                 aria-expanded={effectiveTransferOpen}
-                className="inline-flex min-h-12 items-center justify-center rounded-md bg-[var(--flowme-action)] px-4 text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                className="inline-flex min-h-12 items-center justify-center rounded-md bg-[var(--flowme-action)] px-4 text-sm font-semibold text-white focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={actions.onToggleTransfer}
               >
                 내 도구로 옮기기 · {transferItemCount}개

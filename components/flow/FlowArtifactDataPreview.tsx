@@ -100,7 +100,7 @@ function RowEditButton({
       data-flow-row-slot="secondary-action"
       data-testid="public-flow-artifact-preview-row-edit"
       data-item-id={row.id}
-      className="min-h-[var(--flowme-control-height)] shrink-0 rounded-[var(--flowme-radius-control)] px-2 text-xs font-semibold text-[var(--flowme-text-secondary)] transition hover:bg-[var(--flowme-soft)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+      className="min-h-[var(--flowme-control-height)] shrink-0 rounded-[var(--flowme-radius-control)] px-2 text-xs font-semibold text-[var(--flowme-text-secondary)] transition hover:bg-[var(--flowme-soft)] hover:text-[var(--flowme-text)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
       aria-label={`${row.title} 내용과 날짜 수정`}
       onClick={() => onRowEdit(row, getRowEditReturnFocusSelector(row.id))}
     >
@@ -501,7 +501,7 @@ function ShapeRows({
         <details className="border-t border-[var(--flowme-border)]">
           <summary
             data-testid={expandTestId}
-            className="flex min-h-[var(--flowme-control-height)] cursor-pointer list-none items-center justify-between gap-3 px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
+            className="flex min-h-[var(--flowme-control-height)] cursor-pointer list-none items-center justify-between gap-3 px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
           >
             <span>나머지 {remainingRows.length}개 보기</span>
             <span aria-hidden="true">⌄</span>
@@ -662,7 +662,7 @@ export function FlowArtifactDataPreview({
                   data-artifact-shape={shape}
                   data-recommendation-role={candidateRecommendation?.role}
                   data-recommendation-count={candidateRecommendation?.count}
-                  className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2.5 text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                  className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2.5 text-xs font-semibold transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
                     selectedCandidate
                       ? 'border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] text-[var(--flowme-action-strong)]'
                       : 'border-[var(--flowme-border)] bg-white text-[var(--flowme-text-secondary)] hover:border-[var(--flowme-action)]'

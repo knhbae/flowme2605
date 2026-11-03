@@ -1,6 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Keep v3's unlayered cascade: existing global form/font rules must not outrank utilities. */
+@import "tailwindcss/theme.css";
+@import "tailwindcss/preflight.css";
+@import "tailwindcss/utilities.css" source(none);
+@import "./tailwind-v3-compat.css";
+@source "./";
+@source "../components";
 :root {
   --flowme-bg: #f5f3ec;
   --flowme-surface: #ffffff;

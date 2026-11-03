@@ -89,7 +89,7 @@ const FOCUSABLE_SELECTOR = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
-const ACTION_CLASS = 'min-h-11 rounded-[var(--flowme-radius-control)] px-3 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60';
+const ACTION_CLASS = 'min-h-11 rounded-[var(--flowme-radius-control)] px-3 py-2 text-sm font-semibold outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60';
 const SECONDARY_ACTION_CLASS = `${ACTION_CLASS} border border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] text-[var(--flowme-action-strong)] hover:border-[var(--flowme-action)]`;
 const PRIMARY_ACTION_CLASS = `${ACTION_CLASS} bg-[var(--flowme-action)] text-white hover:bg-[var(--flowme-action-hover)]`;
 
@@ -526,7 +526,7 @@ export function PersonalWorkspacePocSourceUpdateReview({
                               data-change-id={change.changeId}
                               aria-current={selected ? 'step' : undefined}
                               aria-label={`변경 ${index + 1}: ${change.label}, ${decided ? '결정 완료' : '결정 필요'}`}
-                              className={`min-h-11 w-full rounded-[var(--flowme-radius-control)] border px-3 py-2 text-left text-xs font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${selected
+                              className={`min-h-11 w-full rounded-[var(--flowme-radius-control)] border px-3 py-2 text-left text-xs font-semibold outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${selected
                                 ? 'border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] text-[var(--flowme-action-strong)]'
                                 : 'border-[var(--flowme-border)] bg-[var(--flowme-surface)] text-[var(--flowme-text-secondary)]'}`}
                               onClick={() => onSelectChange(change.changeId)}

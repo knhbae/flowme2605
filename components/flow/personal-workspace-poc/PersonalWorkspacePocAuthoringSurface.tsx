@@ -254,7 +254,7 @@ const TEMPLATE_EXAMPLE_PREVIEW_ID = 'personal-workspace-authoring-template-examp
 const DEFAULT_TEMPLATE_PREVIEW_ID: PersonalWorkspacePocAuthoringTemplateId = 'exercise-phased-4w-v1';
 const ENTRY_AUTHORING_HISTORY = '__flowmePocEntryAuthoringConfirmV1';
 const PREVIEW_COMMITTED_AT = '2000-01-01T00:00:00.000Z';
-const CONTROL_CLASS = 'min-h-12 rounded-md px-3 py-2 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:opacity-50';
+const CONTROL_CLASS = 'min-h-12 rounded-md px-3 py-2 text-sm font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:opacity-50';
 const SECONDARY_CLASS = `${CONTROL_CLASS} border border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] text-[var(--flowme-text)] hover:border-[var(--flowme-action)]`;
 const PRIMARY_CLASS = `${CONTROL_CLASS} bg-[var(--flowme-action)] text-white hover:bg-[var(--flowme-action-hover)]`;
 
@@ -2938,7 +2938,7 @@ export function PersonalWorkspacePocAuthoringSurface({
       <p className="text-xs font-bold tracking-[0.12em] text-teal-800">한 곳에서 시작</p>
       {authoringWasStarted.current || initialAuthoringDraft ? <button type="button" data-testid="personal-workspace-entry-resume-authoring" className={`${SECONDARY_CLASS} mb-3`}
         onClick={resumeEntryAuthoring}>작성으로 돌아가기</button> : null}
-      <h2 id="personal-workspace-authoring-write-heading" tabIndex={-1} className="mt-1 scroll-mt-24 text-xl font-semibold tracking-[-0.02em] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
+      <h2 id="personal-workspace-authoring-write-heading" tabIndex={-1} className="mt-1 scroll-mt-24 text-xl font-semibold tracking-[-0.02em] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
         무엇을 준비하고 있나요?
       </h2>
       <p className="mt-2 break-keep text-sm leading-6 text-slate-600">
@@ -2953,7 +2953,7 @@ export function PersonalWorkspacePocAuthoringSurface({
         spellCheck="false"
         onCompositionStart={() => { entryComposing.current = true; setEntryCompositionActive(true); }}
         onCompositionEnd={() => { entryComposing.current = false; setEntryCompositionActive(false); }}
-        className="mt-5 min-h-36 w-full resize-y rounded-lg border border-slate-300 bg-white px-4 py-3 text-base leading-6 outline-none placeholder:text-slate-500 focus:border-[var(--flowme-focus)] focus:ring-2 focus:ring-[var(--flowme-focus)]"
+        className="mt-5 min-h-36 w-full resize-y rounded-lg border border-slate-300 bg-white px-4 py-3 text-base leading-6 outline-hidden placeholder:text-slate-500 focus:border-[var(--flowme-focus)] focus:ring-2 focus:ring-[var(--flowme-focus)]"
         placeholder="예: 이사 준비, https://…, 이번 주말 캠핑 준비"
         onChange={(event) => {
           entryReturnApplied.current = true;
@@ -2986,7 +2986,7 @@ export function PersonalWorkspacePocAuthoringSurface({
                   type="button"
                   data-testid="personal-workspace-entry-result"
                   data-entry-group-ref={group.groupRef}
-                  className="flex min-h-14 w-full items-center justify-between gap-3 rounded-md border border-slate-200 px-3 py-2 text-left hover:border-teal-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                  className="flex min-h-14 w-full items-center justify-between gap-3 rounded-md border border-slate-200 px-3 py-2 text-left hover:border-teal-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                   onClick={() => chooseEntryGroup(group.groupRef)}
                 >
                     <span className="min-w-0">
@@ -3044,7 +3044,7 @@ export function PersonalWorkspacePocAuthoringSurface({
           ? 'personal-workspace-entry-authoring-confirm' : 'personal-workspace-entry-authoring-feedback'}
           data-state={entryAuthoringPanel.kind} aria-labelledby="personal-workspace-entry-authoring-heading"
           className="min-w-0 border-l-2 border-teal-600 bg-teal-50 p-3">
-          <h3 id="personal-workspace-entry-authoring-heading" tabIndex={-1} className="text-lg font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
+          <h3 id="personal-workspace-entry-authoring-heading" tabIndex={-1} className="text-lg font-semibold outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
             {entryAuthoringPanel.kind === 'confirm' ? '새 입력으로 바꿀까요?' : entryAuthoringPanel.kind === 'saving' ? '새 원문 보관 중' : '새 작성을 마치지 못했어요'}
           </h3>
           <label className="mt-3 grid min-w-0 gap-2 text-sm font-semibold">새로 작성할 원문
@@ -3141,7 +3141,7 @@ export function PersonalWorkspacePocAuthoringSurface({
                   : entry.valueKind === 'url'
                     ? 'https://… 또는 [이름](https://…)'
                     : undefined}
-              className="min-h-12 min-w-0 rounded-md border border-slate-300 bg-white px-3 text-base outline-none focus:border-[var(--flowme-focus)] focus:ring-2 focus:ring-[var(--flowme-focus)]"
+              className="min-h-12 min-w-0 rounded-md border border-slate-300 bg-white px-3 text-base outline-hidden focus:border-[var(--flowme-focus)] focus:ring-2 focus:ring-[var(--flowme-focus)]"
               onKeyDown={blockComposingPropertySubmit}
               onChange={(event) => setPropertyEditor((current) => current?.kind === 'single'
                 ? { ...current, value: event.target.value }
@@ -3190,7 +3190,7 @@ export function PersonalWorkspacePocAuthoringSurface({
         data-testid="personal-workspace-authoring-validation-examples-open"
         aria-haspopup="dialog"
         aria-expanded={validationExamplesOpen}
-        className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+        className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
         onClick={openValidationExamples}
       >
         <span><span aria-hidden="true" className="mr-2 text-teal-700">◎</span>검증 예시 찾아보기</span>
@@ -3206,7 +3206,7 @@ export function PersonalWorkspacePocAuthoringSurface({
           data-testid="personal-workspace-authoring-template-picker-toggle"
           aria-expanded={templatePickerOpen}
           aria-controls={TEMPLATE_PICKER_ID}
-          className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+          className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
           onPointerDown={preserveEditorSelection}
           onClick={toggleTemplatePicker}
         >
@@ -3223,7 +3223,7 @@ export function PersonalWorkspacePocAuthoringSurface({
                   data-testid={`personal-workspace-authoring-template-${template.templateId}`}
                   data-preview-active={templatePreviewId === template.templateId ? 'true' : 'false'}
                   aria-controls={TEMPLATE_EXAMPLE_PREVIEW_ID}
-                  className={`min-h-14 rounded-md border px-3 py-2 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${templatePreviewId === template.templateId ? 'border-teal-700 bg-teal-50/60' : 'border-slate-200 hover:border-teal-700'}`}
+                  className={`min-h-14 rounded-md border px-3 py-2 text-left focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${templatePreviewId === template.templateId ? 'border-teal-700 bg-teal-50/60' : 'border-slate-200 hover:border-teal-700'}`}
                   onPointerMove={() => setTemplatePreviewId(template.templateId)}
                   onFocus={() => setTemplatePreviewId(template.templateId)}
                   onPointerDown={preserveEditorSelection}
@@ -3260,9 +3260,9 @@ export function PersonalWorkspacePocAuthoringSurface({
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
           <p className="text-xs font-bold tracking-[0.12em] text-teal-800">원문</p>
-          <h2 id={authoringStarted ? 'personal-workspace-authoring-write-heading' : 'personal-workspace-authoring-write-heading-retained'} tabIndex={-1} className="mt-1 scroll-mt-24 text-xl font-semibold tracking-[-0.02em] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">메모하듯 작성하세요</h2>
+          <h2 id={authoringStarted ? 'personal-workspace-authoring-write-heading' : 'personal-workspace-authoring-write-heading-retained'} tabIndex={-1} className="mt-1 scroll-mt-24 text-xl font-semibold tracking-[-0.02em] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">메모하듯 작성하세요</h2>
         </div>
-        <button type="button" data-testid="personal-workspace-authoring-find-existing" className="min-h-11 rounded-md px-3 text-xs font-semibold text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]" onClick={() => {
+        <button type="button" data-testid="personal-workspace-authoring-find-existing" className="min-h-11 rounded-md px-3 text-xs font-semibold text-slate-600 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]" onClick={() => {
           if (pending.current || entryAttempt.current || entryHistoryConsuming.current || sourceHelperRecoveryRequired.current) return;
           if (!lastDraftPersistenceOk.current) {
             setStatus({ kind: 'failure', message: '원문 저장을 확인하지 못해 검색을 열지 않았어요. 현재 원문은 그대로 남아 있습니다.' }); return;
@@ -3355,7 +3355,7 @@ export function PersonalWorkspacePocAuthoringSurface({
             <select
               data-testid="personal-workspace-entry-map-child"
               value={selectedFlow.ref}
-              className="min-h-12 rounded-md border border-slate-300 bg-white px-3 text-base outline-none focus:border-[var(--flowme-focus)] focus:ring-2 focus:ring-[var(--flowme-focus)]"
+              className="min-h-12 rounded-md border border-slate-300 bg-white px-3 text-base outline-hidden focus:border-[var(--flowme-focus)] focus:ring-2 focus:ring-[var(--flowme-focus)]"
               onChange={(event) => chooseMapChild(event.target.value)}
             >
               {selectedGroup.children.map((child) => (
@@ -3366,7 +3366,7 @@ export function PersonalWorkspacePocAuthoringSurface({
             </select>
           </label>
         ) : null}
-        <h3 id="personal-workspace-entry-result-heading" tabIndex={-1} className="break-words text-xl font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">{entryFlowDisplayTitle(selectedFlow.ref, selectedFlow.title)}</h3>
+        <h3 id="personal-workspace-entry-result-heading" tabIndex={-1} className="break-words text-xl font-semibold outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">{entryFlowDisplayTitle(selectedFlow.ref, selectedFlow.title)}</h3>
         <PersonalWorkspacePocEntryPreview key={selectedFlow.ref} packet={entryPacket.packet} flowRef={selectedFlow.ref}
           localToday={entryToday} beforeReadAction={entryIsCurrent} presentation={entryPreview} onPresentationChange={next => { entryReturnApplied.current = true; setEntryPreview(next); }} />
         <Link prefetch={false} data-testid="personal-workspace-entry-open-flow" data-product-primary="existing-flow-open" href={getPersonalWorkspacePocAuthoringOpenHref(selectedFlow.ref)}
@@ -3417,7 +3417,7 @@ export function PersonalWorkspacePocAuthoringSurface({
               <button
                 type="button"
                 data-testid={`personal-workspace-authoring-property-focus-${entry.key}`}
-                className="min-h-11 rounded-md border border-slate-300 px-2 text-xs font-semibold text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                className="min-h-11 rounded-md border border-slate-300 px-2 text-xs font-semibold text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onPointerDown={preserveEditorSelection}
                 onClick={() => focusPropertyValue(entry.key, helperItemSourceLine)}
               >
@@ -3429,7 +3429,7 @@ export function PersonalWorkspacePocAuthoringSurface({
                 type="button"
                 data-testid={`personal-workspace-authoring-property-edit-${entry.key}`}
                 disabled={pending.current || (helperIsStale && !chooser?.drafts[entry.key])}
-                className="min-h-11 rounded-md border border-teal-700 px-2 text-xs font-semibold text-teal-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                className="min-h-11 rounded-md border border-teal-700 px-2 text-xs font-semibold text-teal-900 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onPointerDown={preserveEditorSelection}
                 onClick={(event) => openPropertyEditor(entry.key, helperItemSourceLine, event.currentTarget)}
               >
@@ -3454,7 +3454,7 @@ export function PersonalWorkspacePocAuthoringSurface({
       className="mx-auto max-w-xl border-y border-emerald-200 py-6 lg:mt-8"
     >
       <p className="text-sm font-semibold text-emerald-800">저장했어요</p>
-      <h2 id="personal-workspace-authoring-receipt-title" tabIndex={-1} className="mt-1 break-words text-2xl font-semibold tracking-[-0.02em] text-slate-950 outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">{receipt.title}</h2>
+      <h2 id="personal-workspace-authoring-receipt-title" tabIndex={-1} className="mt-1 break-words text-2xl font-semibold tracking-[-0.02em] text-slate-950 outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">{receipt.title}</h2>
       <p className="mt-2 text-sm leading-6 text-slate-600">{receipt.itemCount}개 할 일을 개인공간에 저장했습니다. 폴더와 실행 날짜는 개인공간에서 바꿀 수 있어요.</p>
       <dl className="mt-4 grid gap-3 border-y border-slate-200 py-4 text-sm sm:grid-cols-2">
         <div><dt className="text-xs font-semibold text-slate-500">날짜</dt><dd className="mt-1 font-semibold text-slate-900">{receipt.dateRange ?? '날짜 미정'}</dd></div>
@@ -3531,7 +3531,7 @@ export function PersonalWorkspacePocAuthoringSurface({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-bold tracking-[0.12em] text-teal-800">미리보기</p>
-          <h2 id="personal-workspace-authoring-result-heading" tabIndex={-1} className="mt-1 scroll-mt-24 text-xl font-semibold tracking-[-0.02em] outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">저장할 내용</h2>
+          <h2 id="personal-workspace-authoring-result-heading" tabIndex={-1} className="mt-1 scroll-mt-24 text-xl font-semibold tracking-[-0.02em] outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">저장할 내용</h2>
         </div>
         <button type="button" data-testid="personal-workspace-authoring-review-open" aria-label={`원문과 실행 항목 검토, ${issues.length > 0 ? issues.length : parsedItems.length}개`} aria-expanded={reviewOpen} aria-controls="personal-workspace-authoring-review" aria-haspopup="dialog" className={`${SECONDARY_CLASS} shrink-0`} onClick={(event) => openReview(event.currentTarget)}>
           항목 검토 {issues.length > 0 ? issues.length : parsedItems.length}
@@ -3591,7 +3591,7 @@ export function PersonalWorkspacePocAuthoringSurface({
       </div>
 
       {issues.length > 0 ? (
-        <button type="button" data-testid="personal-workspace-authoring-issues" aria-expanded={reviewOpen} aria-controls="personal-workspace-authoring-review" aria-haspopup="dialog" className="mt-4 min-h-12 w-full border-l-2 border-rose-600 bg-rose-50 px-3 py-3 text-left text-sm font-semibold text-rose-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-700" onClick={(event) => openReview(event.currentTarget)}>
+        <button type="button" data-testid="personal-workspace-authoring-issues" aria-expanded={reviewOpen} aria-controls="personal-workspace-authoring-review" aria-haspopup="dialog" className="mt-4 min-h-12 w-full border-l-2 border-rose-600 bg-rose-50 px-3 py-3 text-left text-sm font-semibold text-rose-950 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-700" onClick={(event) => openReview(event.currentTarget)}>
           저장 전 원문에서 고칠 내용 {issues.length}개
         </button>
       ) : null}
@@ -3614,7 +3614,7 @@ export function PersonalWorkspacePocAuthoringSurface({
       ) : (
         <form className="mt-5 grid gap-4" onSubmit={commitHandoff}>
           <label className="grid gap-2 text-sm font-semibold">저장할 폴더
-            <select data-testid="personal-workspace-authoring-folder" value={folderId} className="min-h-12 rounded-md border border-slate-300 bg-white px-3 text-base outline-none focus:border-[var(--flowme-focus)] focus:ring-2 focus:ring-[var(--flowme-focus)]" onChange={(event) => setFolderId(event.target.value)}>
+            <select data-testid="personal-workspace-authoring-folder" value={folderId} className="min-h-12 rounded-md border border-slate-300 bg-white px-3 text-base outline-hidden focus:border-[var(--flowme-focus)] focus:ring-2 focus:ring-[var(--flowme-focus)]" onChange={(event) => setFolderId(event.target.value)}>
               <option value="">미분류</option>
               {sortedFolders.map((folder) => <option key={folder.folderId} value={folder.folderId}>{folderLabel(state, folder.folderId)}</option>)}
             </select>
@@ -3722,7 +3722,7 @@ export function PersonalWorkspacePocAuthoringSurface({
           .personal-workspace-authoring-inline-property-active [data-testid="personal-workspace-authoring-column"] { height: auto; overflow: visible; }
         }
       `}</style>
-      <div id="personal-workspace-authoring-content" tabIndex={-1} data-testid="personal-workspace-authoring-content" className="mx-auto max-w-[1240px] pb-10 focus:outline-none">
+      <div id="personal-workspace-authoring-content" tabIndex={-1} data-testid="personal-workspace-authoring-content" className="mx-auto max-w-[1240px] pb-10 focus:outline-hidden">
         <header data-testid="personal-workspace-authoring-local-header" className="mt-3 flex items-start justify-between gap-3 border-b border-slate-200 pb-4">
           <div className="min-w-0">
             <h1 className="break-keep text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">새 Flow 만들기</h1>
@@ -3777,7 +3777,7 @@ export function PersonalWorkspacePocAuthoringSurface({
               {!authoringStarted ? renderEntryInput() : null}
             </div>
             <section data-testid="personal-workspace-authoring-column" aria-labelledby="personal-workspace-authoring-result-heading" inert={Boolean(entryAuthoringPanel)} aria-hidden={entryAuthoringPanel ? true : undefined} style={entryAuthoringPanel ? { visibility: 'hidden' } : undefined} className={`${mobileStep === 'result' ? 'block' : 'hidden'} min-w-0 lg:block lg:border-l lg:border-slate-200 lg:pl-8`}>
-              {authoringStarted ? renderAuthoringResult() : <><p className="text-xs font-bold tracking-[0.12em] text-teal-800">결과</p><h2 id="personal-workspace-authoring-result-heading" tabIndex={-1} className="mt-1 text-xl font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">기존 Flow 미리보기</h2><div className="mt-4">{renderExistingResult()}</div></>}
+              {authoringStarted ? renderAuthoringResult() : <><p className="text-xs font-bold tracking-[0.12em] text-teal-800">결과</p><h2 id="personal-workspace-authoring-result-heading" tabIndex={-1} className="mt-1 text-xl font-semibold outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">기존 Flow 미리보기</h2><div className="mt-4">{renderExistingResult()}</div></>}
             </section>
           </div>
         )}
@@ -3804,7 +3804,7 @@ export function PersonalWorkspacePocAuthoringSurface({
           className="fixed inset-x-2 z-50 overflow-y-auto rounded-xl border border-slate-300 bg-white p-4 shadow-2xl"
           style={overlayStyle}
         >
-          <div className="flex items-center justify-between gap-3"><div className="min-w-0"><p className="text-xs font-semibold text-teal-800">{overlay.target.kind === 'root-item' ? '현재 할 일 안에' : '현재 위치에'}</p><h2 ref={overlayHeadingRef} id="personal-workspace-authoring-helper-heading" tabIndex={-1} className="mt-1 break-words text-lg font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">{chooserView?.stage === 'structure' ? '무엇을 추가할까요?' : overlay.itemTitle ?? '항목 정보'}</h2></div><button type="button" aria-label="원문 작성 도움 닫기" className={`${SECONDARY_CLASS} shrink-0`} disabled={pending.current} onClick={() => closeOverlay('내용을 추가하지 않았어요. 원문은 그대로입니다.')}>닫기</button></div>
+          <div className="flex items-center justify-between gap-3"><div className="min-w-0"><p className="text-xs font-semibold text-teal-800">{overlay.target.kind === 'root-item' ? '현재 할 일 안에' : '현재 위치에'}</p><h2 ref={overlayHeadingRef} id="personal-workspace-authoring-helper-heading" tabIndex={-1} className="mt-1 break-words text-lg font-semibold outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">{chooserView?.stage === 'structure' ? '무엇을 추가할까요?' : overlay.itemTitle ?? '항목 정보'}</h2></div><button type="button" aria-label="원문 작성 도움 닫기" className={`${SECONDARY_CLASS} shrink-0`} disabled={pending.current} onClick={() => closeOverlay('내용을 추가하지 않았어요. 원문은 그대로입니다.')}>닫기</button></div>
           {chooserView?.stage !== 'structure' ? <button type="button" data-testid="personal-workspace-authoring-chooser-back" className={`${SECONDARY_CLASS} mt-3`} disabled={pending.current} onClick={() => navigateChooser({ type: 'back' })}>뒤로</button> : null}
           {helperIsStale ? <p data-testid="personal-workspace-authoring-chooser-stale" className="mt-3 text-sm leading-6 text-amber-950">원문이 바뀌었어요. 입력하던 값은 다시 열어 항목을 재선택할 수 있습니다. 새 정보를 넣으려면 도움을 닫고 항목을 다시 선택해 주세요.</p> : null}
           {sourceHelperFeedback.message ? <p data-testid="personal-workspace-authoring-helper-feedback" tabIndex={sourceHelperFeedback.kind === 'recovery-required' ? -1 : undefined} className="mt-3 text-sm leading-6 text-amber-950">{sourceHelperFeedback.message}</p> : null}
@@ -3812,7 +3812,7 @@ export function PersonalWorkspacePocAuthoringSurface({
             const actions = helperActions.filter((action) => action.groupId === group.groupId);
             if (overlay.target.kind === 'root-item' && group.groupId === 'item-information') return null;
             if (actions.length === 0) return null;
-            return <section key={group.groupId} className="mt-4"><h3 className="text-xs font-semibold text-slate-500">{group.label}</h3><div className="mt-1 grid gap-1">{actions.map((action) => <button key={action.actionId} type="button" data-testid={`personal-workspace-authoring-helper-${action.actionId}`} disabled={pending.current || action.availability !== 'enabled'} className="min-h-12 rounded-md border border-slate-200 px-3 py-2 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:bg-slate-50 disabled:text-slate-400" onPointerDown={preserveEditorSelection} onClick={() => applyHelper(action.actionId)}><span aria-hidden="true" className="font-mono text-xs text-teal-800">{action.syntax}</span><strong className="ml-3 text-sm">{action.label}</strong>{action.blockedReason ? <span className="mt-1 block text-xs leading-5">{action.blockedReason}</span> : null}</button>)}</div></section>;
+            return <section key={group.groupId} className="mt-4"><h3 className="text-xs font-semibold text-slate-500">{group.label}</h3><div className="mt-1 grid gap-1">{actions.map((action) => <button key={action.actionId} type="button" data-testid={`personal-workspace-authoring-helper-${action.actionId}`} disabled={pending.current || action.availability !== 'enabled'} className="min-h-12 rounded-md border border-slate-200 px-3 py-2 text-left focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:bg-slate-50 disabled:text-slate-400" onPointerDown={preserveEditorSelection} onClick={() => applyHelper(action.actionId)}><span aria-hidden="true" className="font-mono text-xs text-teal-800">{action.syntax}</span><strong className="ml-3 text-sm">{action.label}</strong>{action.blockedReason ? <span className="mt-1 block text-xs leading-5">{action.blockedReason}</span> : null}</button>)}</div></section>;
           }) : null}
           {chooserView?.stage === 'structure' && helperItemSourceLine ? <button type="button" data-testid="personal-workspace-authoring-chooser-information" className={`${SECONDARY_CLASS} mt-3 w-full text-left`} disabled={pending.current} onClick={() => navigateChooser({ type: 'show-groups' })}><span className="block">항목 정보</span><span className="mt-1 block text-xs font-normal">날짜 · 시간 · 장소 · 반복 · 자료 · 완료 기준</span></button> : null}
           {chooserView?.stage === 'groups' ? <PersonalWorkspacePocAuthoringChooserGroups groups={chooserView.groups} disabled={pending.current || sourceHelperRecoveryRequired.current} onChoose={(group) => navigateChooser({ type: 'choose-group', group })} /> : null}
@@ -3842,7 +3842,7 @@ export function PersonalWorkspacePocAuthoringSurface({
         </aside>
       ) : overlay?.kind === 'review' ? (
         <aside id="personal-workspace-authoring-review" ref={overlayDialogRef} data-testid="personal-workspace-authoring-review" data-authoring-overlay="review" role="dialog" aria-labelledby="personal-workspace-authoring-review-heading" className="fixed inset-x-2 z-50 overflow-y-auto rounded-xl border border-slate-300 bg-white p-4 shadow-2xl" style={overlayStyle}>
-          <div className="flex items-center justify-between gap-3"><div><p className="text-xs font-semibold text-teal-800">선택형 검토</p><h2 ref={overlayHeadingRef} id="personal-workspace-authoring-review-heading" tabIndex={-1} className="mt-1 text-lg font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">원문과 실행 항목</h2></div><button type="button" aria-label="원문과 실행 항목 검토 닫기" className={`${SECONDARY_CLASS} shrink-0`} onClick={() => closeOverlay()}>닫기</button></div>
+          <div className="flex items-center justify-between gap-3"><div><p className="text-xs font-semibold text-teal-800">선택형 검토</p><h2 ref={overlayHeadingRef} id="personal-workspace-authoring-review-heading" tabIndex={-1} className="mt-1 text-lg font-semibold outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">원문과 실행 항목</h2></div><button type="button" aria-label="원문과 실행 항목 검토 닫기" className={`${SECONDARY_CLASS} shrink-0`} onClick={() => closeOverlay()}>닫기</button></div>
           {nearMissTargets.length > 0 ? (
             <section data-testid="personal-workspace-authoring-near-miss-recovery" className="mt-4 rounded-lg border border-amber-300 bg-amber-50 p-3" aria-labelledby="personal-workspace-authoring-near-miss-heading">
               <h3 id="personal-workspace-authoring-near-miss-heading" className="text-sm font-semibold text-amber-950">할 일과 거의 같은 줄 {nearMissTargets.length}개</h3>
@@ -3857,7 +3857,7 @@ export function PersonalWorkspacePocAuthoringSurface({
               </ul>
             </section>
           ) : null}
-          {issues.length > 0 ? <ul className="mt-4 grid gap-2">{issues.map((issue, index) => <li key={`${issue.code}-${issue.line}-${index}`}><button type="button" className="min-h-12 w-full border-l-2 border-rose-600 bg-rose-50 px-3 py-2 text-left text-sm leading-6 text-rose-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-700" onClick={() => focusIssue(issue.line)}><strong className="block">{issueLocationLabel(issue.line)}</strong>{issue.message}</button></li>)}</ul> : <ol data-testid="personal-workspace-authoring-preview" className="mt-4 divide-y divide-slate-200">{parsedItems.map((item) => <li key={`${item.sourceLine}-${item.sourceOrder}`} className="py-3"><strong className="block text-sm">{item.title}</strong><span className="mt-1 block text-xs text-slate-500">원문 {item.sourceLine}행 · {[item.sectionTitle, item.resolvedDate].filter(Boolean).join(' · ') || '날짜 미정'}</span></li>)}</ol>}
+          {issues.length > 0 ? <ul className="mt-4 grid gap-2">{issues.map((issue, index) => <li key={`${issue.code}-${issue.line}-${index}`}><button type="button" className="min-h-12 w-full border-l-2 border-rose-600 bg-rose-50 px-3 py-2 text-left text-sm leading-6 text-rose-950 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-700" onClick={() => focusIssue(issue.line)}><strong className="block">{issueLocationLabel(issue.line)}</strong>{issue.message}</button></li>)}</ul> : <ol data-testid="personal-workspace-authoring-preview" className="mt-4 divide-y divide-slate-200">{parsedItems.map((item) => <li key={`${item.sourceLine}-${item.sourceOrder}`} className="py-3"><strong className="block text-sm">{item.title}</strong><span className="mt-1 block text-xs text-slate-500">원문 {item.sourceLine}행 · {[item.sectionTitle, item.resolvedDate].filter(Boolean).join(' · ') || '날짜 미정'}</span></li>)}</ol>}
         </aside>
       ) : overlay?.kind === 'draft-switch' ? (
         <aside
@@ -3871,7 +3871,7 @@ export function PersonalWorkspacePocAuthoringSurface({
           style={overlayStyle}
         >
           <p className="text-xs font-semibold text-teal-800">저장하지 않은 변경</p>
-          <h2 ref={overlayHeadingRef} id="creator-draft-switch-heading" tabIndex={-1} className="mt-1 text-lg font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
+          <h2 ref={overlayHeadingRef} id="creator-draft-switch-heading" tabIndex={-1} className="mt-1 text-lg font-semibold outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
             현재 내용을 어떻게 할까요?
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
@@ -3896,7 +3896,7 @@ export function PersonalWorkspacePocAuthoringSurface({
           style={overlayStyle}
         >
           <div className="flex items-center justify-between gap-3">
-            <div><p className="text-xs font-semibold text-teal-800">원문 {propertyEditor.itemSourceLine}행</p><h2 ref={overlayHeadingRef} id="personal-workspace-authoring-dependent-property-heading" tabIndex={-1} className="mt-1 text-lg font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">함께 설정할 값</h2></div>
+            <div><p className="text-xs font-semibold text-teal-800">원문 {propertyEditor.itemSourceLine}행</p><h2 ref={overlayHeadingRef} id="personal-workspace-authoring-dependent-property-heading" tabIndex={-1} className="mt-1 text-lg font-semibold outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">함께 설정할 값</h2></div>
             <button type="button" aria-label="항목 정보 편집 닫기" className={`${SECONDARY_CLASS} shrink-0`} onClick={closePropertyEditor}>닫기</button>
           </div>
           {renderPropertyEditorForm('dependent')}

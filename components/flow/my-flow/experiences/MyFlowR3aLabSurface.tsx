@@ -79,7 +79,7 @@ export function MyFlowR3aLabSurface({
           <button
             type="button"
             data-testid="my-flow-r3a-lab-back"
-            className="inline-flex min-h-11 shrink-0 items-center rounded-md px-2 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+            className="inline-flex min-h-11 shrink-0 items-center rounded-md px-2 text-sm font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
             aria-label="저장한 계획 목록으로 돌아가기"
             onClick={intents.returnToLibrary}
           >
@@ -125,7 +125,7 @@ export function MyFlowR3aLabSurface({
               placeholder="계획 이름 검색"
               aria-label="저장한 계획 검색"
               data-testid="my-flow-r3a-lab-search"
-              className="min-h-11 w-full rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 py-2 text-sm text-[var(--flowme-text)] outline-none focus:border-[var(--flowme-action)] focus:ring-2 focus:ring-[var(--flowme-focus)]"
+              className="min-h-11 w-full rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 py-2 text-sm text-[var(--flowme-text)] outline-hidden focus:border-[var(--flowme-action)] focus:ring-2 focus:ring-[var(--flowme-focus)]"
               onChange={(event) => intents.replaceLibraryControls({
                 query: event.currentTarget.value,
                 filter: snapshot.library.filter,
@@ -140,7 +140,7 @@ export function MyFlowR3aLabSurface({
                   type="button"
                   aria-pressed={snapshot.library.filter === option.id}
                   data-testid={`my-flow-r3a-lab-filter-${option.id}`}
-                  className={`min-h-10 rounded-md px-3 py-2 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                  className={`min-h-10 rounded-md px-3 py-2 text-sm font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
                     snapshot.library.filter === option.id
                       ? 'bg-[var(--flowme-action)] text-white'
                       : 'bg-[var(--flowme-surface-subtle)] text-[var(--flowme-text-secondary)]'
@@ -176,7 +176,7 @@ export function MyFlowR3aLabSurface({
               data-testid="my-flow-r3a-lab-row"
               data-flow-slug={flow.identity.savedFlowSlug}
               data-source-flow-slug={flow.identity.sourceFlowSlug}
-              className="flex min-h-20 items-center justify-between gap-4 border-b border-[var(--flowme-border)] px-4 py-3 text-left last:border-b-0 hover:bg-[var(--flowme-surface-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] md:border-r md:last:border-b"
+              className="flex min-h-20 items-center justify-between gap-4 border-b border-[var(--flowme-border)] px-4 py-3 text-left last:border-b-0 hover:bg-[var(--flowme-surface-subtle)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] md:border-r md:last:border-b"
               aria-label={`${flow.title} 열기, ${getProgressLabel(flow)}`}
               onClick={() => intents.openFlow(flow.identity.savedFlowSlug)}
             >
