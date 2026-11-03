@@ -14,6 +14,7 @@ import { AlphaAuthenticatedWritingWorkspace } from './AlphaAuthenticatedWritingW
 import type { AlphaAuthenticatedWritingPorts } from '@/lib/flow/integrated-poc/alpha-sync/authenticated-writing-shell';
 import {AlphaAppWritingWorkspace} from './AlphaAppWritingWorkspace';
 import { AlphaPrivacyNotice } from './AlphaPrivacyNotice';
+import { readPrivacyContact } from '@/lib/flow/integrated-poc/privacy-notice';
 import { forgetProgramReturn, rememberProgramReturn, takeProgramReturn } from '@/lib/flow/integrated-poc/program-share-link';
 /** This tab's storage, which survives the sign-in redirect; null where the browser refuses it. */
 const tabStorage = () => { try { return window.sessionStorage; } catch { return null; } };
@@ -39,7 +40,7 @@ function authError(code?: string) {
 }
 
 export function AlphaAuthPanel({ config, callback = false, writing, appWriting=false, nativeAuthoringEnabled=false, readProbe=false, privacyContact }: { config: AlphaAuthConfig | null; callback?: boolean; writing?: AlphaAuthenticatedWritingPorts;appWriting?:boolean;nativeAuthoringEnabled?:boolean;readProbe?:boolean;privacyContact?:string }) {
-  const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false), privacyAddress = readPrivacyContact(privacyContact);
   const [view, setView] = useState(initial), [mode, setMode] = useState<Mode>('login');
   const [email, setEmail] = useState(''), [password, setPassword] = useState(''), [confirm, setConfirm] = useState('');
   const [message, setMessage] = useState(''), [busy, setBusy] = useState(false), [ready, setReady] = useState(false);
@@ -305,11 +306,11 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
           </nav>
         </>}
       {(!recoveryBlocked && callbackPhase === 'ready' || logoutPending || !config) && <div className={styles.status} role="status" aria-live="polite">{message || statuses[view.status] || ''}</div>}
-      {/* R7: what is stored and who sees it, under the sign-in. */}
-      <p className={styles.privacy}><span>저장과 공개 안내</span><button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></p>
+      {/* R7: what is stored and who sees it, under the sign-in, once the server names the contact address. */}
+      {privacyAddress && <p className={styles.privacy}><span>저장과 공개 안내</span><button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></p>}
       <a className={styles.back} href="/my?personalWorkspacePoc=v1">기존 로컬 PoC 열기 <span>로그인 계정과 별도 저장</span></a>
     </section>
-    {privacyOpen && <AlphaPrivacyNotice contact={privacyContact} onClose={() => setPrivacyOpen(false)} />}
+    {privacyOpen && privacyAddress && <AlphaPrivacyNotice contact={privacyAddress} onClose={() => setPrivacyOpen(false)} />}
   </main>;
   // The isolated app candidate opts in through appWriting; other callers keep
   // the existing legacy or explicitly injected writing branch.

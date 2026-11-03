@@ -58,6 +58,7 @@ import type { DocumentCollections } from '@/lib/flow/integrated-poc/document-col
 import { AlphaConflictReview } from './AlphaConflictReview';
 import { AlphaCatalogPanels } from './AlphaCatalogPanels';
 import { AlphaPrivacyNotice } from './AlphaPrivacyNotice';
+import { readPrivacyContact } from '@/lib/flow/integrated-poc/privacy-notice';
 import styles from './AlphaWorkspace.module.css';
 
 const SLOT_KEY = 'flow:poc:personal-workspace:v1:alpha-m3:tab';
@@ -1351,12 +1352,14 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     requestAnimationFrame(() => recoveryBox.current?.querySelector<HTMLElement>(':scope > summary')?.focus());
   }
   const usesNoteChrome = destination.view === 'space' && !unavailable;
-  // R7: every place that shows the development notice ends with 자세히, which opens 저장과 공개 안내.
-  const privacyMore = <button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button>;
+  // R7: once the server names the contact address, every place that shows the development notice ends with 자세히,
+  // and 더보기 › 계정 has 저장과 공개 안내. Without the address none of them shows.
+  const privacyAddress = readPrivacyContact(privacyContact);
+  const privacyMore = privacyAddress && <> <button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></>;
   // Once acknowledged, keep an element: ProgramSpace reads a truthy noteHeader as the note layout.
   const publicNotice = devNoticeSeen ? <span hidden data-dev-notice="acknowledged" /> : <div className={styles.devNotice}>
     <details className={styles.notice} aria-label="개발계 안내"><summary>공개한 내용은 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 넣지 마세요.</summary>
-      <p>{DEV_NOTICE_TEXT} {privacyMore}</p></details>
+      <p>{DEV_NOTICE_TEXT}{privacyMore}</p></details>
     <button type="button" onClick={() => { if (markDevNoticeSeen(devNoticeStorage(), session.userId)) setDevNoticeSeen(true); }}>확인</button></div>;
   const savedNotice = savedNoticeShown && <p className={styles.savedNotice} role="status"><span>확인이 필요한 입력 {savedTotal}개</span>
     <button type="button" onClick={openRecoveryBox}>복구함 열기</button>
@@ -1420,7 +1423,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           {savedTotal > 0 && <span className={styles.navBadge} aria-hidden="true">{savedTotal}</span>}</button>
       </nav>}
       <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1>
-      <details className={styles.development}><summary>{syntheticRuntime ? '합성 검증' : '개발계'}</summary><p>{DEV_NOTICE_TEXT} {privacyMore}</p></details></header>
+      <details className={styles.development}><summary>{syntheticRuntime ? '합성 검증' : '개발계'}</summary><p>{DEV_NOTICE_TEXT}{privacyMore}</p></details></header>
     {browse && <nav className={styles.browseNavigation} aria-label="둘러보기 종류"><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({view:'community'})}>경험·질문·지식</button><button aria-current={['discover','flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({view:'discover'})}>Flow 찾기</button></nav>}
     <div className={styles.workPane} data-testid="alpha-work-pane">
     {!usesNoteChrome && (browse && savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice)}
@@ -1463,7 +1466,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         <section className={styles.menuGroup} aria-label="계정"><h3>계정</h3>
           <div className={styles.account}><p>{email}</p></div>
           <div className={styles.managementActions}><button type="button" onClick={() => { captureInput(); if (hasInput() || pending) setLeave(true); else void signOut(); }}>로그아웃 · 계정 바꾸기</button>
-            <button type="button" onClick={() => setPrivacyOpen(true)}>저장과 공개 안내</button></div>
+            {privacyAddress && <button type="button" onClick={() => setPrivacyOpen(true)}>저장과 공개 안내</button>}</div>
         </section>
         <section className={styles.menuGroup} aria-label="문제 해결"><h3>문제 해결</h3>
           <div className={styles.managementActions}><button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button></div>
@@ -1474,7 +1477,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
             onClick={() => void switchCollectionsMode()}>{collectionsMode ? '기존 폴더로 보기' : '문서·모음 시험'}</button></div>
         </section>}
         <section className={styles.menuGroup} aria-label="개발계 안내"><h3>개발계 안내</h3>
-          <details className={styles.menuNote}><summary>개발계 안내</summary><p>{DEV_NOTICE_TEXT} {privacyMore}</p></details>
+          <details className={styles.menuNote}><summary>개발계 안내</summary><p>{DEV_NOTICE_TEXT}{privacyMore}</p></details>
         </section>
         </div></details>
     </section>
@@ -1486,7 +1489,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     {destination.view !== 'space' && inputProtectionFor(true)}
     {leave && <section className={styles.problem} aria-label="로그아웃 전 입력 확인"><p>저장하지 않은 입력을 이 탭에 보관한 뒤 로그아웃할 수 있습니다. 같은 계정으로 돌아와 복구하세요.</p>
       <button type="button" onClick={() => { if (captureInput() && canReleaseInput()) void signOut(); }}>입력 보관 후 로그아웃</button><button type="button" onClick={() => setLeave(false)}>계속 작성</button></section>}
-    {privacyOpen && <AlphaPrivacyNotice contact={privacyContact} onClose={() => setPrivacyOpen(false)} returnFocus={() => document.querySelector<HTMLElement>('[data-main-tab="more"]')} />}
+    {privacyOpen && privacyAddress && <AlphaPrivacyNotice contact={privacyAddress} onClose={() => setPrivacyOpen(false)} returnFocus={() => document.querySelector<HTMLElement>('[data-main-tab="more"]')} />}
     {destination.view !== 'space' && message && !participationMessage && <p className={styles.message} role="status">{message}</p>}
     {unavailable ? <section className={styles.empty}><p>{snapshot?.status === 'session-expired' ? '계정을 다시 확인한 뒤 개인공간을 열 수 있습니다.' : '서버에서 개인공간을 확인하고 있습니다.'}</p></section> : <>
       {['activity', 'creator'].includes(destination.view) && <nav className={styles.tabs} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={openCreatorEntry}>Flow 만들기</button></nav>}
