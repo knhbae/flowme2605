@@ -451,3 +451,6 @@
 .copyHeader[data-state="changed"] { background:#edf0fa; }
 .copyHeader[data-state="unverified"] { border:1px dashed #986209; background:#fcf8ed; color:#795008; }
 .importNotice { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:6px 0; font-size:13px; }
+/* S4 v19: the find notice takes no room; it floats over the head row, above the editor's toolbar, under dialogs. */
+.floatingNotice { position:relative; z-index:20; height:0; }
+.floatingNotice > .error { position:absolute; top:0; left:0; right:0; margin:0; box-shadow:0 4px 16px var(--flowme-b-shadow); }

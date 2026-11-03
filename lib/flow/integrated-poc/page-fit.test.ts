@@ -41,7 +41,7 @@ test('the editor fits the body to the screen while no keyboard is up, measured f
   assert.match(update, /const keyboard = programVisibleBottom\(view, visual, null\) < view\.innerHeight;/);
   assert.match(update, /const below = keyboard \? null : programFlowBelow\(host, host\.ownerDocument\.body, node => view\.getComputedStyle\(node as Element\)\);/);
   assert.match(update, /const top = host\.getBoundingClientRect\(\)\.top \+ \(keyboard \? 0 : view\.scrollY\);/);
-  assert.match(update, /const height = programEditorVisibleHeight\(top, below === null \? bottom : Math\.min\(bottom, view\.innerHeight - below \+ 12\)\);/);
+  assert.match(update, /const height = programEditorVisibleHeight\(top, below === null \? bottom : Math\.min\(bottom, view\.innerHeight - below \+ 12\), Number\.isFinite\(line\) \? line : undefined\);/);
   // The W2 notices still come off the bottom first; fix 5's room is set before (it is below the body too).
   assert(update.indexOf('bottom -= notice') < update.indexOf('const height = programEditorVisibleHeight('));
   assert(update.indexOf('room.style.height = height') < update.indexOf('const below = '));

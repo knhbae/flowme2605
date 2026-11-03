@@ -209,11 +209,12 @@ function today() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 
-/** Size only the existing surface; warnings remain in normal document flow. */
-export function programEditorVisibleHeight(top: number, bottom: number) {
+/** Size only the existing surface; warnings remain in normal document flow. Whole lines of the ruler (U45: 36px on
+ *  touch, 26px with a mouse) below the 20px top padding, so the last line is never cut. */
+export function programEditorVisibleHeight(top: number, bottom: number, line = 26) {
   if (!Number.isFinite(top) || !Number.isFinite(bottom)) return null;
-  const available = Math.max(64, bottom - Math.max(0, top) - 12);
-  return Math.max(64, 20 + Math.floor((available - 20) / 26) * 26);
+  const available = Math.max(64, bottom - Math.max(0, top) - 12), step = line > 0 ? line : 26;
+  return Math.max(64, 20 + Math.floor((available - 20) / step) * step);
 }
 
 /** Promote a checked local fragment into the whole editor, never into a writer.
@@ -2138,7 +2139,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       const keyboard = programVisibleBottom(view, visual, null) < view.innerHeight;
       const below = keyboard ? null : programFlowBelow(host, host.ownerDocument.body, node => view.getComputedStyle(node as Element));
       const top = host.getBoundingClientRect().top + (keyboard ? 0 : view.scrollY);
-      const height = programEditorVisibleHeight(top, below === null ? bottom : Math.min(bottom, view.innerHeight - below + 12));
+      const ruler = host.querySelector('.tle-root'), line = ruler ? parseFloat(view.getComputedStyle(ruler).getPropertyValue('--tle-line')) : NaN;
+      const height = programEditorVisibleHeight(top, below === null ? bottom : Math.min(bottom, view.innerHeight - below + 12), Number.isFinite(line) ? line : undefined);
       if (height !== null && host.style.getPropertyValue('--program-editor-visible-height') !== `${height}px`) {
         host.style.setProperty('--program-editor-visible-height', `${height}px`);
         // ResizeObserver ordering must not leave the caret at the previous height.
