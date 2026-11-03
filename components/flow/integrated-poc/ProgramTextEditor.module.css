@@ -233,23 +233,35 @@
 }
 .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-date-open .tle-row-date-kind), .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scheduled-date-open svg) { display: none; }
 .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-date-open .tle-row-date) { max-width: 44px; font-size: 12px; line-height: 16px; }
-/* U45 review, as a rule: a reading row is as high as its RAW line, folder rows too; the name and its lanes are drawn
-   over it, the first line after the lanes and later lines from the row's start as the RAW text wraps. A name that
-   needs more lines than that ends with "…" on the last one (the editor counts the RAW lines into --tle-scope-lines);
-   a tap shows it whole, in RAW. */
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-date-source) { position: static; max-width: none; overflow: visible; white-space: inherit; }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-scope-label) {
-  position: absolute; inset: 0 0 auto 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--tle-scope-lines, 1);
-  min-height: 0; max-height: 100%; overflow: hidden; margin-left: 0; padding-left: 0;
-  text-indent: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 75px);
-}
 /* U45 review, as a rule: reading has no row menu at any width (phones never had it): the gutter is the date cells',
    and a tap on a row gives that row its menu, in writing. */
 .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-row-menu) { display: none; }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-scope-label > .tle-scope-place) { margin-right: 6px; text-indent: 0; }
+/* U45 folder rows (UX decision, 11/3): '[📁] name … [▾]' in reading, writing (rows off the caret) and folded alike. The
+   name and its icon are drawn in place over the RAW line (the icon in its unseen '- /'); the name is bold by a stroke that
+   adds no width, so it wraps as RAW does. The RAW stays under it, unseen, so a tap on the name puts the caret on that
+   character. The open button covers the line's start up to the name, ▾ the right gutter, one line high (the editor
+   places both). The caret's row is RAW with its ⋮; a move keeps its lanes. */
+.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-native-scope > .tle-active-paint) { display: block; }
+.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-native-scope :is(.tle-scope-label, .tle-passive-scope)) { display: none; }
+.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope.tle-line-native-scope > .tle-date-source) { position: static; visibility: visible; color: transparent; max-width: none; overflow: visible; white-space: inherit; }
+.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-native-scope .tle-active-scope-icon) { left: calc(var(--tle-indent, 0px) - 10px); height: var(--tle-line); }
+.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-native-scope .tle-active-scope-name) { color: var(--flowme-b-primary-strong); -webkit-text-stroke: 0.6px currentColor; }
+.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-fold-toggle, .tle-scope-open).tle-scope-control) { display: flex; align-items: center; justify-content: center; height: var(--tle-line); min-height: 0; margin: 0; padding: 0; }
+.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-fold-toggle.tle-scope-control) { width: 44px; }
+.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-fold-toggle.tle-scope-control::before) { margin: 0; }
+/* On touch ▾ is the drawn chevron (fold tap A) in writing too, so a tap elsewhere changes nothing in the row. */
 @media (pointer: coarse) {
-  .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-scope-label) { text-indent: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 87px); }
+  .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-fold-toggle.tle-scope-control) { font-size: 0; color: var(--flowme-b-ink); }
+  .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-fold-toggle.tle-scope-control::before) {
+    content: ''; flex: none; box-sizing: border-box; width: 9px; height: 9px; border: solid currentColor; border-width: 0 2px 2px 0; opacity: .72; transform: rotate(45deg);
+  }
+  .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-fold-toggle.tle-scope-control[aria-expanded="false"]::before) { transform: rotate(-45deg); }
 }
+.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scope-open.tle-scope-control) { min-width: 0; background: transparent; }
+.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scope-open.tle-scope-control svg) { visibility: hidden; }
+/* A folded document has no caret, so no row menu either (as in reading): ▾ keeps the gutter; a tap on a row unfolds it
+   into writing, with its menu. */
+.host :global(.tle-root.tle-folded-view:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-row-menu) { display: none; }
 /* U45: reading and writing share this one ruler. On touch it is 36px (a row a finger can hit, still more rows than
    44px); --program-touch-line, unset in the product, lets a check page try 32px or 40px. A move keeps its 44px (its
    rules stay the more specific); a folded document keeps its own reading (3rd review). */

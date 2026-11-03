@@ -2140,11 +2140,6 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       const below = keyboard ? null : programFlowBelow(host, host.ownerDocument.body, node => view.getComputedStyle(node as Element));
       const top = host.getBoundingClientRect().top + (keyboard ? 0 : view.scrollY);
       const ruler = host.querySelector('.tle-root'), line = ruler ? parseFloat(view.getComputedStyle(ruler).getPropertyValue('--tle-line')) : NaN;
-      // U45 review: a folder name in reading has as many lines as its RAW row and no more (CSS ends it with "…").
-      if (line > 0) for (const label of Array.from(host.querySelectorAll<HTMLElement>('.tle-reading-view .tle-line-scope > .tle-scope-label'))) {
-        const lines = String(Math.max(1, Math.round((label.parentElement?.getBoundingClientRect().height ?? line) / line)));
-        if (label.style.getPropertyValue('--tle-scope-lines') !== lines) label.style.setProperty('--tle-scope-lines', lines);
-      }
       const height = programEditorVisibleHeight(top, below === null ? bottom : Math.min(bottom, view.innerHeight - below + 12), Number.isFinite(line) ? line : undefined);
       if (height !== null && host.style.getPropertyValue('--program-editor-visible-height') !== `${height}px`) {
         host.style.setProperty('--program-editor-visible-height', `${height}px`);

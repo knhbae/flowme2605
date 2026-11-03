@@ -28,7 +28,7 @@ test('U45: one ruler, 36px on touch (one value a check page may override), 26px 
 });
 
 test('U45: reading takes writing\'s layout (RAW prefix in the flow, marks over it, one line per row); folded keeps its own', () => {
-  const block = css.slice(css.indexOf('/* U45: one layout for reading and writing.'), css.indexOf('/* U45: reading and writing share this one ruler.'));
+  const block = css.slice(css.indexOf('/* U45: one layout for reading and writing.'), css.indexOf('/* U45 folder rows (UX decision, 11/3)'));
   const rule = (body: string) => assert(block.includes(`.host :global(${reading} ${body}`), body);
   rule('.tle-line-task) { padding-left: 0; }');
   rule('.tle-line-task .tle-hidden-syntax) { position: static; max-width: none; overflow: visible; white-space: inherit; }');
@@ -59,7 +59,7 @@ test('U45: the body is sized in whole lines of the ruler it has', () => {
 
 // Codex review (11/3): reading's own controls must not undo the one layout.
 test('U45 review: the pill\'s button covers the pill; date cells sit in the gutter, one line high; folders keep their RAW height', () => {
-  const block = css.slice(css.indexOf('/* U45: one layout for reading and writing.'), css.indexOf('/* U45: reading and writing share this one ruler.'));
+  const block = css.slice(css.indexOf('/* U45: one layout for reading and writing.'), css.indexOf('/* U45 folder rows (UX decision, 11/3)'));
   const rule = (body: string) => assert(block.includes(`.host :global(${reading} ${body}`), body);
   // The progress pill spans its RAW marker (measured into --tle-progress-width); its button covers all of it.
   rule('.tle-progress-hit) { width: max(44px, calc(var(--tle-progress-width, 0px) + 20px)); }');
@@ -68,15 +68,41 @@ test('U45 review: the pill\'s button covers the pill; date cells sit in the gutt
   for (const piece of ['position: absolute; top: 0; right: calc(8px - var(--tle-pad-right));', 'height: var(--tle-line); min-height: 0;'])
     assert(cells.slice(0, cells.indexOf('}')).includes(piece), piece);
   rule('.tle-date-open .tle-row-date-kind), .host :global(');
-  // A folder row: its RAW text in the flow sets the height, as in writing; the name is drawn over it.
-  rule('.tle-line-scope > .tle-date-source) { position: static; max-width: none; overflow: visible; white-space: inherit; }');
-  const label = block.slice(block.indexOf(`.host :global(${reading} .tle-line-scope > .tle-scope-label) {`));
-  for (const piece of ['position: absolute; inset: 0 0 auto 0;', '-webkit-line-clamp: var(--tle-scope-lines, 1);', 'max-height: 100%; overflow: hidden;',
-    'text-indent: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 75px);']) assert(label.slice(0, label.indexOf('}')).includes(piece), piece);
-  assert(block.includes('+ 87px); }'), 'touch keeps the 12px wider lanes');
-  // 2nd review, as rules: a longer folder name ends with "…" in as many lines as its RAW row (the editor counts them);
-  // reading has no row menu at any width, so the gutter is the date cells'.
-  assert(editor.includes("for (const label of Array.from(host.querySelectorAll<HTMLElement>('.tle-reading-view .tle-line-scope > .tle-scope-label'))) {"));
-  assert(editor.includes("const lines = String(Math.max(1, Math.round((label.parentElement?.getBoundingClientRect().height ?? line) / line)));"));
+  // 2nd review, as a rule: reading has no row menu at any width, so the gutter is the date cells' (and ▾'s).
   rule('.tle-row-menu) { display: none; }');
+});
+
+// UX decision on folder rows (11/3): '[📁] name … [▾]' in reading, writing (rows off the caret) and folded alike.
+const vendor = read('./vendor/text-editor.cjs');
+const live = '.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"])';
+test('U45 folder rows: one drawing in place over RAW in every state; ▾ in the gutter and 📁 before the name, the editor placing both', () => {
+  // The editor draws a folder row's name and icon in place over RAW in reading, writing and folded; a move keeps its lanes.
+  assert(vendor.includes("if (!gesture && !moveState && ['folder', 'flow'].includes(safeMeta.scopeKind)) {"));
+  assert(!vendor.includes("if (!readingView && !foldedIds.size && !gesture && !moveState && ['folder', 'flow'].includes(safeMeta.scopeKind)) {"));
+  // Its open and fold buttons are marked, and placed alike: 📁 from the line's start to the name, ▾ just past the row's
+  // right edge (the gutter); every folder row but the caret's (RAW) shows them, writing included.
+  assert.equal(vendor.match(/button\.classList\.add\('tle-scope-control'\)/g)?.length, 2);
+  assert(vendor.includes("const scopeHidden = (metaRow, top, local) => metaRow.hidden || metaRow.classList.contains('tle-line-raw') ||"));
+  assert(vendor.includes("left: start - (local ? rect(metaRow) : rootBox).left + 'px', width: width + 'px' };"));
+  assert(vendor.includes("left: rect(foldRow).right + 2 - (local ? rect(foldRow) : rootBox).left + 'px' };"));
+  // Both come before the 'hidden while writing' rule of the other row controls.
+  const rows = vendor.slice(vendor.indexOf('const rowPlans = rowButtons.map('), vendor.indexOf('// No layout reads in this per-control commit phase.'));
+  for (const part of rows.split('if (compactControls) return').slice(0, 2)) assert(part.includes("button.classList.contains('tle-scope-control')"));
+  // A tap on a drawn folder name in reading lands on its RAW text: the caret goes to that character.
+  assert(vendor.includes("if (span.classList.contains('tle-date-source')) return at;"));
+  const block = css.slice(css.indexOf('/* U45 folder rows (UX decision, 11/3)'), css.indexOf('/* U45: reading and writing share this one ruler.'));
+  const rule = (body: string) => assert(block.includes(`.host :global(${live} ${body}`), body);
+  rule('.tle-line-native-scope > .tle-active-paint) { display: block; }');
+  rule('.tle-line-native-scope :is(.tle-scope-label, .tle-passive-scope)) { display: none; }');
+  // As specific as reading's own scope rules (and later), so the RAW stays in the flow there too.
+  rule('.tle-line-scope.tle-line-native-scope > .tle-date-source) { position: static; visibility: visible; color: transparent;');
+  rule('.tle-line-native-scope .tle-active-scope-icon) { left: calc(var(--tle-indent, 0px) - 10px); height: var(--tle-line); }');
+  // Bold by a stroke that adds no width, so the name wraps as RAW does.
+  rule('.tle-line-native-scope .tle-active-scope-name) { color: var(--flowme-b-primary-strong); -webkit-text-stroke: 0.6px currentColor; }');
+  rule(':is(.tle-fold-toggle, .tle-scope-open).tle-scope-control) { display: flex; align-items: center; justify-content: center; height: var(--tle-line);');
+  rule('.tle-fold-toggle.tle-scope-control) { width: 44px; }');
+  // A folded document has no caret and no row menu, so the menu never covers ▾ there either.
+  assert(block.includes('.host :global(.tle-root.tle-folded-view:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-row-menu) { display: none; }'));
+  // The reading-only name clamp is gone with the reading label.
+  assert(!css.includes('--tle-scope-lines') && !editor.includes('--tle-scope-lines'));
 });
