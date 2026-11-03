@@ -203,39 +203,40 @@
 /* Wrapped prose keeps the RAW ruler rather than a second hanging-indent ruler. */
 .host :global(.tle-root:is(.tle-reading-view,.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-line-prose,.tle-line-property:not(.tle-line-date-property))) { padding-left: 0; text-indent: 0; }
 /* Reserve the existing scope control lane, but let a long name wrap fully. */
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-date-source) { position: absolute; top: 0; left: 0; max-width: 100%; overflow: hidden; white-space: pre; }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-scope-label) { position: relative; inset: auto; margin-left: clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)); height: auto; min-height: var(--tle-line); white-space: normal; align-items: flex-start; }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scope-name) { overflow: visible; text-overflow: clip; white-space: normal; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-date-source) { position: absolute; top: 0; left: 0; max-width: 100%; overflow: hidden; white-space: pre; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-scope-label) { position: relative; inset: auto; margin-left: clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)); height: auto; min-height: var(--tle-line); white-space: normal; align-items: flex-start; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scope-name) { overflow: visible; text-overflow: clip; white-space: normal; }
 /* U45: one layout for reading and writing. The body shown (not focused) lays its rows out as writing does: the RAW
    prefix stays in the flow, unseen, with the check box, the progress pill and the title over it where writing puts
-   them, every row one line of the ruler. A tap turns the caret's row into RAW, and nothing else moves. Folded
-   documents keep their reading lanes; folder rows keep their ▾ and open lanes, at the line's height. */
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-task) { padding-left: 0; }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-task .tle-hidden-syntax) { position: static; max-width: none; overflow: visible; white-space: inherit; }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-task-title, .tle-task-title-complete)) { display: inline; }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-line-task, .tle-line-scope)) { min-height: var(--tle-line); }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-indent-guide, .tle-check-anchor, .tle-scope-anchor, .tle-fold-anchor)) { height: var(--tle-line); }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-anchor) { left: clamp(0px, var(--tle-indent, 0px), calc(100% - 32px)); }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-glyph) { left: 0; top: calc((var(--tle-line) - 20px) / 2); }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-passive-progress) { display: inline-flex; }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-hit > .tle-progress-badge) { visibility: hidden; }
-/* The check box, fold and folder-open controls are as tall as their line (36px on touch), so none reaches into the
+   them, every row one line of the ruler. A tap turns the caret's row into RAW, and nothing else moves. A folded
+   document is laid out the same (S4 v19, 11/3): folding hides the folded rows and moves nothing else. */
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-task) { padding-left: 0; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-task .tle-hidden-syntax) { position: static; max-width: none; overflow: visible; white-space: inherit; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-task-title, .tle-task-title-complete)) { display: inline; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line) { min-height: var(--tle-line); }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-indent-guide, .tle-check-anchor, .tle-scope-anchor, .tle-fold-anchor)) { height: var(--tle-line); }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-anchor) { left: clamp(0px, var(--tle-indent, 0px), calc(100% - 32px)); }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-glyph) { left: 0; top: calc((var(--tle-line) - 20px) / 2); }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-passive-progress) { display: inline-flex; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-hit > .tle-progress-badge) { visibility: hidden; }
+/* The check box, fold and folder-open controls are as tall as their line (32px on touch), so none reaches into the
    next row. The date cells on the right keep 44px for their two lines; on a phone they sit in the title's line, one line high. */
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-check-hit, .tle-fold-toggle, .tle-scope-open)) { height: var(--tle-line); min-height: 0; }
-/* U45 review: the progress pill spans its RAW marker ('- [50%]'), wider than 44px; its button covers all of it. */
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-progress-hit) { width: max(44px, calc(var(--tle-progress-width, 0px) + 20px)); }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-check-hit, .tle-fold-toggle, .tle-scope-open)) { height: var(--tle-line); min-height: 0; }
+/* U45 review: the progress pill spans its RAW marker ('- [ ]', or '- [50%]' when typed), wider than 44px; its button
+   covers all of it. */
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-progress-hit) { width: max(44px, calc(var(--tle-progress-width, 0px) + 20px)); }
 /* U45 review: the date, origin and reference cells sit at their row's top in the right gutter, one line high, out of
    the title's flow, so reading wraps every title as writing does (where they are hidden) at any width, and no cell
    reaches into the next row. The date alone shows: the kind is the cell's label. */
-.editor .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-task-date-open, .tle-task-origin-open, .tle-reference-open)) {
+.editor .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-task-date-open, .tle-task-origin-open, .tle-reference-open)) {
   position: absolute; top: 0; right: calc(8px - var(--tle-pad-right)); left: auto; display: inline-flex; flex-direction: row; align-items: center;
   justify-content: center; gap: 2px; width: 44px; min-width: 44px; height: var(--tle-line); min-height: 0; margin: 0; padding: 0; font: inherit;
 }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-date-open .tle-row-date-kind), .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scheduled-date-open svg) { display: none; }
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-date-open .tle-row-date) { max-width: 44px; font-size: 12px; line-height: 16px; }
-/* U45 review, as a rule: reading has no row menu at any width (phones never had it): the gutter is the date cells',
-   and a tap on a row gives that row its menu, in writing. */
-.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-row-menu) { display: none; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-date-open .tle-row-date-kind), .host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scheduled-date-open svg) { display: none; }
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-date-open .tle-row-date) { max-width: 44px; font-size: 12px; line-height: 16px; }
+/* U45 review, as a rule: reading and folded have no row menu at any width (phones never had it): the gutter is the date
+   cells' and ▾'s, and a tap on a row gives that row its menu, in writing. */
+.host :global(.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-row-menu) { display: none; }
 /* U45 folder rows (UX decision, 11/3): '[📁] name … [▾]' in reading, writing (rows off the caret) and folded alike. The
    name and its icon are drawn in place over the RAW line (the icon in its unseen '- /'); the name is bold by a stroke that
    adds no width, so it wraps as RAW does. The RAW stays under it, unseen, so a tap on the name puts the caret on that
@@ -259,14 +260,11 @@
 }
 .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scope-open.tle-scope-control) { min-width: 0; background: transparent; }
 .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scope-open.tle-scope-control svg) { visibility: hidden; }
-/* A folded document has no caret, so no row menu either (as in reading): ▾ keeps the gutter; a tap on a row unfolds it
-   into writing, with its menu. */
-.host :global(.tle-root.tle-folded-view:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-row-menu) { display: none; }
-/* U45: reading and writing share this one ruler. On touch it is 36px (a row a finger can hit, still more rows than
-   44px); --program-touch-line, unset in the product, lets a check page try 32px or 40px. A move keeps its 44px (its
-   rules stay the more specific); a folded document keeps its own reading (3rd review). */
+/* U45: reading, writing and folded share this one ruler. On touch it is 32px (the user's pick after trying 32, 36 and
+   40px in S4 v19); --program-touch-line, unset in the product, lets a check page try another. A move keeps its 44px
+   (its rules stay the more specific). */
 @media (pointer: coarse) {
-  .host :global(.tle-root:where(:not(.tle-folded-view))) { --tle-line: var(--program-touch-line, 36px); }
+  .host :global(.tle-root) { --tle-line: var(--program-touch-line, 32px); }
 }
 
 /* Reserve the note's server status independently of the local input controls.

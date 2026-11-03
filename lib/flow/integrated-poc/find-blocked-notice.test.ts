@@ -36,4 +36,9 @@ test('the find notice goes when its moment ends, and only it', () => {
   const open = space.slice(space.indexOf('  function openFindPanel() {'), space.indexOf('  useEffect(', space.indexOf('  function openFindPanel() {')));
   assert(open.includes('findBlocked.current = true; setMessage(FIND_BLOCKED); return;'));
   assert(open.indexOf('clearFindBlocked();') > open.indexOf('return;') && open.indexOf('clearFindBlocked();') < open.indexOf('setLibraryOpen(true);'));
+  // S4 v19: it floats over the head row and takes no room, so the body does not drop while it shows.
+  assert(space.includes('? <div className={styles.floatingNotice}><p role="alert" className={styles.error}>{message}</p></div>'));
+  const styles = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.module.css', import.meta.url), 'utf8');
+  assert(styles.includes('.floatingNotice { position:relative; z-index:20; height:0; }'));
+  assert(styles.includes('.floatingNotice > .error { position:absolute; top:0; left:0; right:0; margin:0;'));
 });

@@ -2100,7 +2100,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {/* C6a review: hidden while picking (it saves), kept mounted with what it holds. */}
       {props.outputReturn && <div hidden={!!selecting}><ProgramOutputReturn key={`${actorId}:${props.outputReturn.executionKey}`} data={data} destination={props.outputReturn} today={today} mutate={mutate}
         onOpenSource={(id, line) => void openDocument(id, line)} onRegisterEditors={(port, key) => { recurrencePorts.current[key] = port; }} onUndo={onUndo} onRedo={onRedo} /></div>}
-      {message && <p role="alert" className={styles.error}>{message}</p>}
+      {/* S4 v19: the find notice floats over the head row (it goes once input ends), so the body does not move. */}
+      {message && (message === FIND_BLOCKED
+        ? <div className={styles.floatingNotice}><p role="alert" className={styles.error}>{message}</p></div>
+        : <p role="alert" className={styles.error}>{message}</p>)}
       {!libraryOpen && !detail && viewChangeNoticeContent}
       {!detail && !sheetOpen && taskNoticeContent}
       <div hidden={period !== 'documents'}>
