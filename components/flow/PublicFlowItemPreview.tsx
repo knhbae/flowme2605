@@ -63,7 +63,7 @@ export function PublicFlowItemPreview({
           <button
             type="button"
             data-testid="public-flow-item-preview-edit"
-            className="inline-flex min-h-12 items-center justify-center rounded-md border border-[var(--flowme-border-strong)] bg-white px-4 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+            className="inline-flex min-h-12 items-center justify-center rounded-md border border-[var(--flowme-border-strong)] bg-white px-4 text-sm font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
             onClick={onEdit}
           >
             수정

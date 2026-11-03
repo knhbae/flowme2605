@@ -55,7 +55,7 @@ export function FlowDiscoveryCard({
         </span>
       </div>
 
-      <h2 className={`mt-2 break-keep font-semibold leading-snug tracking-[-0.015em] text-[var(--flowme-text)] ${isPrimary ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'}`}>
+      <h2 className={`mt-2 break-keep font-semibold leading-snug tracking-[-0.015em] text-[var(--flowme-text)] ${isPrimary ? 'text-xl sm:text-2xl sm:leading-8' : 'text-base sm:text-lg sm:leading-7'}`}>
         {view.title}
       </h2>
 

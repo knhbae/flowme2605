@@ -216,7 +216,7 @@ export function SourceBackedFlowMapCreatorEditor({ publishPackage }: CreatorEdit
 
   return (
     <main data-testid="flow-map-creator" className="mx-auto max-w-7xl px-4 py-5 pb-16 sm:px-5 sm:py-8">
-      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-blue-700">제작자 편집</p>
@@ -268,7 +268,7 @@ export function SourceBackedFlowMapCreatorEditor({ publishPackage }: CreatorEdit
       </section>
 
       <section className="mt-5 grid gap-5 lg:grid-cols-[360px_minmax(0,1fr)_300px]">
-        <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
               <p className="text-sm font-semibold text-slate-500">원문 행</p>
@@ -316,7 +316,7 @@ export function SourceBackedFlowMapCreatorEditor({ publishPackage }: CreatorEdit
         {selectedSourceRow && selectedDraft ? (
           <section
             ref={editorRef}
-            className="scroll-mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+            className="scroll-mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-xs sm:p-5"
             data-testid="creator-row-editor"
           >
             <div className="grid gap-4 xl:grid-cols-2">
@@ -349,7 +349,7 @@ export function SourceBackedFlowMapCreatorEditor({ publishPackage }: CreatorEdit
                 <label className="mt-3 grid gap-1 text-sm font-semibold text-slate-800">
                   Step 제목
                   <input
-                    className="min-h-10 rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-950 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                    className="min-h-10 rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-950 outline-hidden focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                     value={selectedDraft.stepTitle}
                     onChange={(event) => updateDraftRow(selectedSourceRow.stepId, 'stepTitle', event.target.value)}
                   />
@@ -357,7 +357,7 @@ export function SourceBackedFlowMapCreatorEditor({ publishPackage }: CreatorEdit
                 <label className="mt-3 grid gap-1 text-sm font-semibold text-slate-800">
                   저장 위치
                   <select
-                    className="min-h-10 rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-950 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                    className="min-h-10 rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-950 outline-hidden focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                     value={selectedDraft.destination}
                     onChange={(event) =>
                       updateDraftRow(selectedSourceRow.stepId, 'destination', event.target.value as SourceBackedStepDestination)
@@ -373,7 +373,7 @@ export function SourceBackedFlowMapCreatorEditor({ publishPackage }: CreatorEdit
                 <label className="mt-3 grid gap-1 text-sm font-semibold text-slate-800">
                   원문 링크
                   <input
-                    className="min-h-10 rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-950 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                    className="min-h-10 rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-950 outline-hidden focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                     value={selectedDraft.sourceUrl}
                     onChange={(event) => updateDraftRow(selectedSourceRow.stepId, 'sourceUrl', event.target.value)}
                   />
@@ -381,7 +381,7 @@ export function SourceBackedFlowMapCreatorEditor({ publishPackage }: CreatorEdit
                 <label className="mt-3 grid gap-1 text-sm font-semibold text-slate-800">
                   Item fallback
                   <textarea
-                    className="min-h-36 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm leading-6 text-slate-950 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                    className="min-h-36 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm leading-6 text-slate-950 outline-hidden focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                     value={selectedDraft.itemFallbackText}
                     onChange={(event) => updateDraftRow(selectedSourceRow.stepId, 'itemFallbackText', event.target.value)}
                   />
@@ -389,7 +389,7 @@ export function SourceBackedFlowMapCreatorEditor({ publishPackage }: CreatorEdit
                 <label className="mt-3 grid gap-1 text-sm font-semibold text-slate-800">
                   제작자 메모
                   <textarea
-                    className="min-h-20 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm leading-6 text-slate-950 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                    className="min-h-20 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm leading-6 text-slate-950 outline-hidden focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                     data-testid="creator-draft-note"
                     placeholder="사용자 화면에는 바로 노출하지 않는 내부 메모"
                     value={selectedDraft.creatorNote}
@@ -402,7 +402,7 @@ export function SourceBackedFlowMapCreatorEditor({ publishPackage }: CreatorEdit
         ) : null}
 
         <aside className="space-y-4">
-          <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
             <p className="text-sm font-semibold text-slate-500">공개 전 확인</p>
             <div className="mt-3 grid grid-cols-3 gap-2 text-center text-sm font-semibold">
               <div className="rounded-lg bg-emerald-50 px-2 py-3 text-emerald-800">
@@ -430,7 +430,7 @@ export function SourceBackedFlowMapCreatorEditor({ publishPackage }: CreatorEdit
             ) : null}
           </section>
 
-          <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
             <p className="text-sm font-semibold text-slate-500">저장 후 사용자 화면</p>
             <h2 className="mt-1 text-lg font-semibold text-slate-950">{myFlow.groupedAs}</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">

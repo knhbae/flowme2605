@@ -260,7 +260,7 @@ export function FlowEditorSurface({
         <button
           type="button"
           data-testid={`${testId}-skip-to-actions`}
-          className="sr-only z-30 rounded-md bg-[var(--flowme-action)] px-3 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+          className="sr-only z-30 rounded-md bg-[var(--flowme-action)] px-3 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
           onClick={() => {
             const headerCancelAction = cancelPlacement === 'header'
               ? document.querySelector<HTMLElement>(

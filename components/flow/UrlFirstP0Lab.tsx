@@ -105,7 +105,7 @@ function ExportPreview({ result, activeTab, onTabChange }: { result: UrlFirstLoo
   const selectedFilename = activeTab === 'calendar' ? result.preview.calendarFilename : activeTab === 'markdown' ? result.preview.markdownFilename : undefined;
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm" data-testid="url-first-export-preview">
+    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-xs" data-testid="url-first-export-preview">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs font-black uppercase tracking-normal text-blue-700">export preview</p>
@@ -207,7 +207,7 @@ export function UrlFirstP0Lab() {
           </p>
         </header>
 
-        <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-xs">
           <div className="flex flex-wrap gap-2">
             <SampleButton onClick={() => loadSample('url', AJD_MOVING_SOURCE_URL)}>AJD 이사 URL</SampleButton>
             <SampleButton onClick={() => loadSample('url', vehicleNeedsReviewUrl)}>자동차검사 needs_review</SampleButton>
@@ -235,7 +235,7 @@ export function UrlFirstP0Lab() {
               <textarea
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                className="mt-2 min-h-28 w-full resize-y rounded-md border border-slate-300 bg-slate-50 p-3 text-sm font-medium text-slate-950 outline-none transition focus:border-blue-600 focus:bg-white"
+                className="mt-2 min-h-28 w-full resize-y rounded-md border border-slate-300 bg-slate-50 p-3 text-sm font-medium text-slate-950 outline-hidden transition focus:border-blue-600 focus:bg-white"
               />
             </label>
           </div>
@@ -246,7 +246,7 @@ export function UrlFirstP0Lab() {
         <Recommendation result={result} />
         <ExportPreview result={result} activeTab={activeTab} onTabChange={setActiveTab} />
 
-        <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm" data-testid="url-first-my-flow-calendar-preview">
+        <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-xs" data-testid="url-first-my-flow-calendar-preview">
           <p className="text-xs font-black uppercase tracking-normal text-blue-700">My Flow / Calendar preview only</p>
           <h2 className="mt-1 text-xl font-black tracking-normal text-slate-950">저장 후 예상 화면</h2>
           <p className="mt-2 text-sm text-slate-600">실제 저장 없음. My Flow와 Calendar에는 쓰지 않고 예상 row만 보여줍니다.</p>

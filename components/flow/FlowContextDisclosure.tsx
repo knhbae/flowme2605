@@ -255,7 +255,7 @@ export function FlowContextDisclosure({
         <button
           type="button"
           data-testid={`${testId}-desktop-close`}
-          className="inline-flex h-12 w-12 min-h-12 min-w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--flowme-border)] bg-[var(--flowme-surface)] text-sm font-semibold text-[var(--flowme-text-secondary)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+          className="inline-flex h-12 w-12 min-h-12 min-w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--flowme-border)] bg-[var(--flowme-surface)] text-sm font-semibold text-[var(--flowme-text-secondary)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
           aria-label={`${title} 닫기`}
           onClick={() => setOpen(false)}
         >
@@ -282,7 +282,7 @@ export function FlowContextDisclosure({
         data-flow-context-trigger={triggerId}
         data-flow-context-kind={kind}
         data-flow-context-semantics={kind === 'caution' ? 'warning' : 'optional-help'}
-        className={`inline-flex h-12 w-12 min-h-12 min-w-12 shrink-0 items-center justify-center rounded-full border text-base font-bold leading-none transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] focus-visible:ring-offset-2 ${triggerToneClass} ${className}`}
+        className={`inline-flex h-12 w-12 min-h-12 min-w-12 shrink-0 items-center justify-center rounded-full border text-base font-bold leading-none transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] focus-visible:ring-offset-2 ${triggerToneClass} ${className}`}
         aria-label={label}
         aria-haspopup="dialog"
         aria-expanded={isOpen}

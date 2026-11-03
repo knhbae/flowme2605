@@ -202,7 +202,7 @@ export function FlowOutlineRow({
           data-testid={toggleTestId}
           aria-expanded={open}
           aria-controls={contentId}
-          className="flex min-h-12 w-full items-center justify-between gap-3 px-2 py-2 text-left transition hover:bg-[var(--flowme-surface-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
+          className="flex min-h-12 w-full items-center justify-between gap-3 px-2 py-2 text-left transition hover:bg-[var(--flowme-surface-subtle)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
           onClick={onToggle}
         >
           {heading}

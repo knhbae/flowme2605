@@ -199,7 +199,7 @@ export function CalendarFlowScopePicker({
                   ref={searchRef}
                   type="search"
                   data-testid="calendar-flow-scope-picker-search"
-                  className="mt-1 min-h-11 w-full rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 text-base text-[var(--flowme-text)] outline-none focus:border-[var(--flowme-action)] focus:ring-2 focus:ring-[var(--flowme-focus)] sm:text-sm"
+                  className="mt-1 min-h-11 w-full rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 text-base text-[var(--flowme-text)] outline-hidden focus:border-[var(--flowme-action)] focus:ring-2 focus:ring-[var(--flowme-focus)] sm:text-sm"
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                 />
@@ -213,7 +213,7 @@ export function CalendarFlowScopePicker({
                       data-testid="calendar-flow-scope-picker-other-disclosure"
                       data-scope-group={group.id}
                     >
-                      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 border-b border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-2 py-2 text-xs font-semibold text-[var(--flowme-text-secondary)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
+                      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 border-b border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-2 py-2 text-xs font-semibold text-[var(--flowme-text-secondary)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
                         <span>{group.label}</span>
                         <span>{group.options.length}개 보기</span>
                       </summary>
