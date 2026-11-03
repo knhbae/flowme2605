@@ -70,7 +70,12 @@ test('U45 review: the pill\'s button covers the pill; date cells sit in the gutt
   // A folder row: its RAW text in the flow sets the height, as in writing; the name is drawn over it.
   rule('.tle-line-scope > .tle-date-source) { position: static; max-width: none; overflow: visible; white-space: inherit; }');
   const label = block.slice(block.indexOf(`.host :global(${reading} .tle-line-scope > .tle-scope-label) {`));
-  for (const piece of ['position: absolute; inset: 0 0 auto 0; display: block;', 'max-height: 100%; overflow: hidden;', 'text-indent: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 75px);'])
-    assert(label.slice(0, label.indexOf('}')).includes(piece), piece);
+  for (const piece of ['position: absolute; inset: 0 0 auto 0;', '-webkit-line-clamp: var(--tle-scope-lines, 1);', 'max-height: 100%; overflow: hidden;',
+    'text-indent: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 75px);']) assert(label.slice(0, label.indexOf('}')).includes(piece), piece);
   assert(block.includes('+ 87px); }'), 'touch keeps the 12px wider lanes');
+  // 2nd review, as rules: a longer folder name ends with "…" in as many lines as its RAW row (the editor counts them);
+  // reading has no row menu at any width, so the gutter is the date cells'.
+  assert(editor.includes("for (const label of Array.from(host.querySelectorAll<HTMLElement>('.tle-reading-view .tle-line-scope > .tle-scope-label'))) {"));
+  assert(editor.includes("const lines = String(Math.max(1, Math.round((label.parentElement?.getBoundingClientRect().height ?? line) / line)));"));
+  rule('.tle-row-menu) { display: none; }');
 });

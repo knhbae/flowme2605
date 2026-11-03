@@ -233,14 +233,19 @@
 }
 .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-date-open .tle-row-date-kind), .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-scheduled-date-open svg) { display: none; }
 .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-date-open .tle-row-date) { max-width: 44px; font-size: 12px; line-height: 16px; }
-/* U45 review: a folder row is as high as its RAW line, as in writing; the name and its lanes are drawn over it. The
-   name's first line starts after the lanes and later lines at the row's start, as the RAW text wraps, so it rarely
-   needs more lines than the RAW one; a longer one is cut at the row's height rather than moving the rows below. */
+/* U45 review, as a rule: a reading row is as high as its RAW line, folder rows too; the name and its lanes are drawn
+   over it, the first line after the lanes and later lines from the row's start as the RAW text wraps. A name that
+   needs more lines than that ends with "…" on the last one (the editor counts the RAW lines into --tle-scope-lines);
+   a tap shows it whole, in RAW. */
 .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-date-source) { position: static; max-width: none; overflow: visible; white-space: inherit; }
 .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-scope-label) {
-  position: absolute; inset: 0 0 auto 0; display: block; min-height: 0; max-height: 100%; overflow: hidden; margin-left: 0; padding-left: 0;
+  position: absolute; inset: 0 0 auto 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--tle-scope-lines, 1);
+  min-height: 0; max-height: 100%; overflow: hidden; margin-left: 0; padding-left: 0;
   text-indent: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 75px);
 }
+/* U45 review, as a rule: reading has no row menu at any width (phones never had it): the gutter is the date cells',
+   and a tap on a row gives that row its menu, in writing. */
+.host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-row-menu) { display: none; }
 .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-scope-label > .tle-scope-place) { margin-right: 6px; text-indent: 0; }
 @media (pointer: coarse) {
   .host :global(.tle-root.tle-reading-view:not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope > .tle-scope-label) { text-indent: calc(clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)) + 87px); }
