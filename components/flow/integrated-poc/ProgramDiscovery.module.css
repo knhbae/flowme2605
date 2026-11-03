@@ -21,6 +21,9 @@
 .listFilters{display:grid;gap:8px;margin:8px 0 16px}.searchField input{width:100%;min-height:48px;font-size:16px}
 .filterRow{display:flex;align-items:center;gap:8px}.filterSelect{flex:0 1 160px;min-width:0}.filterSelect select{width:100%}.filterRow .resultCount{margin:0 0 0 auto;white-space:nowrap}
 .flowCards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+/* A card never widens its column: its one-line title, first task, meta and source are cut with … inside the card,
+   however long (a source URL had made the phone column 681px). */
+.flowCards>li{min-width:0}
 .flowCard{display:flex;flex-direction:column;gap:2px;width:100%;min-height:0;padding:12px;text-align:left;background:#fff;border:1px solid #d7e1db;border-radius:12px;color:#20342f;font:inherit;cursor:pointer}
 .flowCard:hover{border-color:#9fbcb2}.flowCard>span{display:block;min-width:0}
 .cardTitleRow{display:flex!important;align-items:center;gap:8px}.cardTitle{flex:1 1 auto;min-width:0;font-size:16px;line-height:24px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -45,7 +48,7 @@
 .destinationChoices{border:0;margin:0;padding:0;display:grid;gap:8px}.destinationChoice{display:flex;gap:12px;align-items:flex-start;padding:12px;border:2px solid #176d59;border-radius:12px}.destinationChoice span{display:grid}.destinationChoice small{color:#5b6b66}
 .sheetBody>.primary{width:100%}
 @media(max-width:900px){.detailLayout{grid-template-columns:minmax(0,1fr) 260px;gap:20px}}
-@media(max-width:700px){.flowCards{grid-template-columns:1fr}
+@media(max-width:700px){.flowCards{grid-template-columns:minmax(0,1fr)}
 .detailLayout{display:block}.flowDetail[data-has-action]{padding-bottom:calc(48px + 72px)}
 .actionBox{position:fixed;left:0;right:0;top:auto;bottom:calc(76px + env(safe-area-inset-bottom));z-index:30;display:flex;align-items:center;height:64px;padding:8px 16px;border:0;border-top:1px solid #d7e1db;border-radius:0}.actionMeta{display:none}
 .importSheet{width:100%;max-width:100%;margin:auto 0 0;border-radius:16px 16px 0 0;max-height:calc(100dvh - 24px)}}
