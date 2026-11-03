@@ -57,6 +57,7 @@ test('P2: the note\'s today shows its day heading while picking, so [모두]/[�
 
 test('N8 UX check: 글 찾기 and 고르기 keep their words on one line beside the status on phones', () => {
   const css = read('ProgramSpace.module.css');
-  assert(css.includes('.space[data-note-layout="true"] .periodStatus .findActions > button { flex: none; white-space: nowrap; }'));
+  // width: auto over the phone rule that makes 글 찾기 full width (it pushed 고르기 off the screen).
+  assert(css.includes('.space[data-note-layout="true"] .periodStatus .findActions > button { flex: none; width: auto; white-space: nowrap; }'));
   assert(css.includes('.space[data-note-layout="true"] .periodStatus { display: flex; align-items: center; justify-content: space-between; gap: 8px; }'));
 });
