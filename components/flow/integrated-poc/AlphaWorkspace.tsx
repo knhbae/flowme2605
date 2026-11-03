@@ -1346,6 +1346,15 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     menu.open = !menu.open;
     if (menu.open) requestAnimationFrame(() => menu.querySelector<HTMLElement>(':scope > div :is(button, summary)')?.focus());
   }
+  // A move to another screen from 더보기 closes the menu, which otherwise stayed open over the new screen and took its
+  // presses. Focus goes to the 더보기 tab, as Escape leaves it. A move that is refused (saving, held input) keeps it.
+  async function navigateFromMenu(next: ProgramDestination) {
+    await navigate(next);
+    const menu = managementMenu.current;
+    if (!menu?.open || destinationRef.current !== next) return;
+    menu.open = false;
+    (document.querySelector<HTMLElement>('[data-main-tab="more"]') ?? menu.querySelector<HTMLElement>(':scope > summary'))?.focus({ preventScroll: true });
+  }
   function openRecoveryBox() {
     if (managementMenu.current) managementMenu.current.open = true;
     if (recoveryBox.current) recoveryBox.current.open = true;
@@ -1439,16 +1448,16 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       }}><summary aria-current={['activity', 'legacy'].includes(destination.view) ? 'page' : undefined} aria-label={`${destination.view === 'activity' ? '보조 메뉴 · 현재 위치: 내 활동' : destination.view === 'legacy' ? '보조 메뉴 · 현재 위치: 개인 Flow 상세' : '보조 메뉴 · 내 활동, 계정·자료 관리'}${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`}><span className={styles.auxiliaryLabel}>{destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : '더보기'}</span>{savedTotal > 0 && <span className={styles.menuBadge} aria-hidden="true">{savedTotal}</span>}</summary><div className={styles.managementBody}>
         <h2>더보기</h2>
         {!unavailable && <section className={styles.menuGroup} aria-label="둘러보기"><h3>둘러보기</h3>
-          <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}>경험·질문·지식</button>
-            <button type="button" aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>Flow 찾기</button></div>
+          <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigateFromMenu({ view: 'community' })}>경험·질문·지식</button>
+            <button type="button" aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigateFromMenu({ view: 'discover' })}>Flow 찾기</button></div>
         </section>}
         <section className={styles.menuGroup} aria-label="편집"><h3>편집</h3>
           <div className={styles.managementActions}>{serverUndo}<button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external} aria-disabled={browseHistory('redo') ? undefined : true}>다시 실행</button></div>
           {browse && historyHint && <p className={styles.menuHint} role="status">{historyHint === 'undo' ? '쓰기 화면에서 되돌릴 수 있어요.' : '쓰기 화면에서 다시 실행할 수 있어요.'}</p>}
         </section>
         {!unavailable && data && <section className={styles.menuGroup} aria-label="내 활동"><h3>내 활동</h3>
-          <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>내 활동</button>
-            {data.spaces[session.userId].savedBindings.length > 0 && <button type="button" aria-current={destination.view === 'legacy' ? 'page' : undefined} onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>}</div>
+          <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigateFromMenu({ view: 'activity' })}>내 활동</button>
+            {data.spaces[session.userId].savedBindings.length > 0 && <button type="button" aria-current={destination.view === 'legacy' ? 'page' : undefined} onClick={() => void navigateFromMenu({ view: 'legacy' })}>개인 Flow 상세</button>}</div>
         </section>}
         <section className={styles.menuGroup} aria-label="자료"><h3>자료</h3>
           <details ref={recoveryBox} className={styles.recoveryBox} open={!!storedTotal && (unavailable || external || snapshot?.status === 'conflict')}>

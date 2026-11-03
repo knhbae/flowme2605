@@ -83,3 +83,24 @@ test('복구함 열기 opens the menu and the box and puts focus on it', () => {
   })();
   assert.deepEqual([menu.open, box.open, calls], [true, true, ['focus']]);
 });
+
+test('a move to another screen from 더보기 closes the menu and leaves focus on the 더보기 tab; a refused move keeps it', async () => {
+  const source = pick(node => ts.isFunctionDeclaration(node) && node.name?.text === 'navigateFromMenu');
+  const run = async (moves: boolean) => {
+    const calls: string[] = [], menu = { open: true, querySelector: () => ({ focus: () => calls.push('summary') }) };
+    const destinationRef: { current: unknown } = { current: { view: 'space' } };
+    const tab = { focus: (options: unknown) => calls.push(`tab ${JSON.stringify(options)}`) };
+    const go = evaluate<(next: unknown) => Promise<void>>(source, {
+      navigate: async (next: unknown) => { calls.push('navigate'); if (moves) destinationRef.current = next; },
+      managementMenu: { current: menu }, destinationRef, document: { querySelector: () => tab },
+    });
+    await go({ view: 'discover' });
+    return { open: menu.open, calls };
+  };
+  assert.deepEqual(await run(true), { open: false, calls: ['navigate', 'tab {"preventScroll":true}'] });
+  assert.deepEqual(await run(false), { open: true, calls: ['navigate'] });
+  // Every move in the menu goes through it; the menu's other actions are not moves.
+  const menu = element('aria-label="계정 및 자료 관리"');
+  for (const view of ['community', 'discover', 'activity', 'legacy']) assert(menu.includes(`onClick={() => void navigateFromMenu({ view: '${view}' })}`), view);
+  assert(!menu.includes('void navigate('));
+});
