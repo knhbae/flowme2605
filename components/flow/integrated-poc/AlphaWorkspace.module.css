@@ -366,3 +366,7 @@
 /* FC head review P1: on 둘러보기 a history step made elsewhere is shown off, and pressing it says where to undo. */
 .managementActions button[aria-disabled="true"] { opacity: .55; }
 .menuHint { margin: 4px 0 0; font-size: 13px; line-height: 20px; color: var(--flowme-text-secondary); }
+/* R7: 자세히 after the development notice reads as a link in its sentence; the padding widens the press area without
+   moving the line. Two classes, so the menu's, the header's and the note head's button looks do not reach it. */
+.page .privacyMore { display: inline; min-width: 0; min-height: 0; margin: 0 0 0 2px; padding: 10px 4px; border: 0; border-radius: 4px; background: none; color: var(--flowme-action-strong); font: inherit; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.page .privacyMore:hover, .page .privacyMore:active { background: none; }

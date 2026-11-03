@@ -21,3 +21,6 @@
 .panel .identity { overflow-wrap: anywhere; word-break: break-all; }
 @media (max-width: 420px) { .panel { padding: 22px 18px; } .header { margin-bottom: 20px; } }
 @media (max-height: 500px) { .header { margin-bottom: 8px; } .page { padding-top: 8px; } }
+/* R7: what is stored and who sees it, under the sign-in. */
+.panel .privacy { display: flex; align-items: center; flex-wrap: wrap; gap: 0 4px; margin: 16px 0 0; color: var(--flowme-text-secondary); font-size: 14px; line-height: 1.5; }
+.panel .privacyMore { width: auto; min-height: 44px; padding: 0 8px; background: transparent; color: var(--flowme-action-strong); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }

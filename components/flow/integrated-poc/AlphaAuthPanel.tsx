@@ -13,6 +13,7 @@ import {createAlphaLegacyWritingTransport} from '@/lib/flow/integrated-poc/alpha
 import { AlphaAuthenticatedWritingWorkspace } from './AlphaAuthenticatedWritingWorkspace';
 import type { AlphaAuthenticatedWritingPorts } from '@/lib/flow/integrated-poc/alpha-sync/authenticated-writing-shell';
 import {AlphaAppWritingWorkspace} from './AlphaAppWritingWorkspace';
+import { AlphaPrivacyNotice } from './AlphaPrivacyNotice';
 import { forgetProgramReturn, rememberProgramReturn, takeProgramReturn } from '@/lib/flow/integrated-poc/program-share-link';
 /** This tab's storage, which survives the sign-in redirect; null where the browser refuses it. */
 const tabStorage = () => { try { return window.sessionStorage; } catch { return null; } };
@@ -37,7 +38,8 @@ function authError(code?: string) {
   return '요청을 완료하지 못했습니다. 연결 상태를 확인하고 다시 시도해 주세요.';
 }
 
-export function AlphaAuthPanel({ config, callback = false, writing, appWriting=false, nativeAuthoringEnabled=false, readProbe=false }: { config: AlphaAuthConfig | null; callback?: boolean; writing?: AlphaAuthenticatedWritingPorts;appWriting?:boolean;nativeAuthoringEnabled?:boolean;readProbe?:boolean }) {
+export function AlphaAuthPanel({ config, callback = false, writing, appWriting=false, nativeAuthoringEnabled=false, readProbe=false, privacyContact }: { config: AlphaAuthConfig | null; callback?: boolean; writing?: AlphaAuthenticatedWritingPorts;appWriting?:boolean;nativeAuthoringEnabled?:boolean;readProbe?:boolean;privacyContact?:string }) {
+  const [privacyOpen, setPrivacyOpen] = useState(false);
   const [view, setView] = useState(initial), [mode, setMode] = useState<Mode>('login');
   const [email, setEmail] = useState(''), [password, setPassword] = useState(''), [confirm, setConfirm] = useState('');
   const [message, setMessage] = useState(''), [busy, setBusy] = useState(false), [ready, setReady] = useState(false);
@@ -262,9 +264,9 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
   if (config && workspaceSession && workspaceOwner === workspaceSession.userId && signedIn
     && mode !== 'new-password' && !recoveryBlocked && callbackPhase === 'ready') {
     legacy = writing
-      ?legacyTransport?<AlphaWorkspaceLegacyWriting key={workspaceSession.userId} config={config} session={workspaceSession} email={accountEmail} onSignOut={signOut} transport={legacyTransport}/>
+      ?legacyTransport?<AlphaWorkspaceLegacyWriting key={workspaceSession.userId} config={config} session={workspaceSession} email={accountEmail} onSignOut={signOut} transport={legacyTransport} privacyContact={privacyContact}/>
         :<p role="alert">기존 작성 연결을 확인하지 못했습니다. 입력을 다른 계정에 옮기지 않았습니다.</p>
-      :<AlphaWorkspace key={workspaceSession.userId} config={config} session={workspaceSession} email={accountEmail} onSignOut={signOut} pmWriting={appWriting?'v11-pm/1':undefined} nativeAuthoringEnabled={nativeAuthoringEnabled} readProbe={readProbe} />;
+      :<AlphaWorkspace key={workspaceSession.userId} config={config} session={workspaceSession} email={accountEmail} onSignOut={signOut} pmWriting={appWriting?'v11-pm/1':undefined} nativeAuthoringEnabled={nativeAuthoringEnabled} readProbe={readProbe} privacyContact={privacyContact} />;
   } else legacy = <main className={styles.page}>
     <header className={styles.header}><a href="/alpha" className={styles.brand}>FlowMe</a><span>개발계 · 로그인 검증</span></header>
     <section className={styles.panel} aria-labelledby="alpha-heading">
@@ -303,8 +305,11 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
           </nav>
         </>}
       {(!recoveryBlocked && callbackPhase === 'ready' || logoutPending || !config) && <div className={styles.status} role="status" aria-live="polite">{message || statuses[view.status] || ''}</div>}
+      {/* R7: what is stored and who sees it, under the sign-in. */}
+      <p className={styles.privacy}><span>저장과 공개 안내</span><button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></p>
       <a className={styles.back} href="/my?personalWorkspacePoc=v1">기존 로컬 PoC 열기 <span>로그인 계정과 별도 저장</span></a>
     </section>
+    {privacyOpen && <AlphaPrivacyNotice contact={privacyContact} onClose={() => setPrivacyOpen(false)} />}
   </main>;
   // The isolated app candidate opts in through appWriting; other callers keep
   // the existing legacy or explicitly injected writing branch.
