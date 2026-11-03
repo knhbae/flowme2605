@@ -51,3 +51,12 @@ test('entry points: 더보기 › 계정, the development notice in its three pl
   assert(signIn.includes('{privacyAddress && <p className={styles.privacy}><span>저장과 공개 안내</span><button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></p>}'));
   assert(signIn.includes('{privacyOpen && privacyAddress && <AlphaPrivacyNotice contact={privacyAddress}'));
 });
+
+test('자세히 and the mail link have 44px press areas without changing their lines', () => {
+  const workspaceCss = read('components/flow/integrated-poc/AlphaWorkspace.module.css'), sheetCss = read('components/flow/integrated-poc/AlphaPrivacyNotice.module.css');
+  assert(workspaceCss.includes('.page .privacyMore { display: inline-flex; align-items: center; justify-content: center; vertical-align: baseline; min-width: 44px; min-height: 44px; margin: -12px 0 -12px 2px;'));
+  assert(sheetCss.includes('.body a { display: inline-flex; align-items: center; min-height: 44px; margin-block: -10px;'));
+  assert(sheetCss.includes('.body { flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 4px 20px 20px; font-size: 15px; line-height: 1.6; }'), 'the 24px line the margins keep');
+  // The sign-in screen's 자세히 was already 44px high.
+  assert(read('components/flow/integrated-poc/AlphaAuthPanel.module.css').includes('.panel .privacyMore { width: auto; min-height: 44px;'));
+});

@@ -13,5 +13,6 @@
 .body h3 { margin: 0 0 4px; font-size: 16px; line-height: 24px; font-weight: 700; }
 .body ul { margin: 0; padding-left: 1.2em; list-style: disc; }
 .body li + li { margin-top: 4px; }
-.body a { color: var(--flowme-action-strong); text-decoration: underline; }
+/* The mail link: a 44px-high press area; the negative margins keep the 24px line. */
+.body a { display: inline-flex; align-items: center; min-height: 44px; margin-block: -10px; color: var(--flowme-action-strong); text-decoration: underline; }
 .dialog .closing { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--flowme-border); font-weight: 650; }

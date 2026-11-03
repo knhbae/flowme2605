@@ -54,3 +54,9 @@ test('P2: a view change ends 고르기 the way 취소 does (the calendar comes b
 test('P2: the note\'s today shows its day heading while picking, so [모두]/[풀기] are there', () => {
   assert.match(space, /const hideDayHeadings = !selecting && !!props\.noteHeader && period === 'today' && date === today/);
 });
+
+test('N8 UX check: 글 찾기 and 고르기 keep their words on one line beside the status on phones', () => {
+  const css = read('ProgramSpace.module.css');
+  assert(css.includes('.space[data-note-layout="true"] .periodStatus .findActions > button { flex: none; white-space: nowrap; }'));
+  assert(css.includes('.space[data-note-layout="true"] .periodStatus { display: flex; align-items: center; justify-content: space-between; gap: 8px; }'));
+});
