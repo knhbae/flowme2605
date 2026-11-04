@@ -133,6 +133,8 @@
 .task > button { background: transparent; border-radius: 6px; }
 .task > .check { margin-top: 0; }
 .taskTitle { min-width: 0; padding: 8px; }
+/* N10: a repeat line shows its title and the chip, not the marker it was written with. */
+.repeatChip { margin-inline-start: 6px; padding: 0 6px; border-radius: 999px; background: #eef2ff; color: var(--flowme-b-primary); font-size: 0.85em; font-weight: 500; white-space: nowrap; }
 .taskTitleText { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; word-break: keep-all; overflow-wrap: anywhere; }
 .taskTitle small { margin-top: 4px; }
 .taskTitle small { color: var(--flowme-b-muted); font-size: 12px; line-height: 20px; font-weight: 400; }

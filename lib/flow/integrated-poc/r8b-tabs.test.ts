@@ -82,7 +82,9 @@ test('title rows: the writing title opens the document sheet, ⋯ keeps document
 test('toolbar: ↶ ↷ and 반복 N; the Flow·반복 box is a sheet that stays mounted, and the "…" keeps editing tools', () => {
   const editor = read('ProgramTextEditor.tsx');
   assert(editor.includes("{props.authoringMode && <button type=\"button\" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId} title=\"입력 다시 하기 · Ctrl+Y\" aria-label=\"입력 다시 하기\""));
-  assert(editor.includes('{props.repeatLabel && props.onOpenPersonalAuthoring && <button type="button" className={styles.repeatButton} aria-haspopup="dialog" onClick={() => props.onOpenPersonalAuthoring?.()}>{props.repeatLabel}</button>}'));
+  // N10 (SPEC 5): [반복] opens 이 줄 반복 beside 반복·Flow 만들기; with no repeat context it opens the sheet as before.
+  assert(editor.includes('{props.repeatLabel && props.onOpenPersonalAuthoring && <button type="button" className={styles.repeatButton} aria-haspopup="dialog" onClick={() => {'));
+  assert(editor.includes('if (!props.repeatContext) { props.onOpenPersonalAuthoring?.(); return; }') && editor.includes('반복·Flow 만들기…<small>여러 할 일과 단계</small>'));
   assert(editor.includes('{!props.authoringMode && (props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" hidden={!!props.folderId}'));
   assert(space.includes('if (props.hostMainTabs) { const sheet = authoringSheet.current; if (sheet && !sheet.open) sheet.showModal(); return; }'));
   assert(space.includes('className={`${styles.findDialog} ${styles.authoringSheet}`} aria-labelledby="program-authoring-title"'));

@@ -1,4 +1,5 @@
 import model from './vendor/text-model.cjs';
+import { readProgramRepeatMarker } from './repeat-line';
 
 export interface TextLine { id: string; text: string }
 export interface TextFolder { id: string; title: string; parentId: string | null }
@@ -77,6 +78,8 @@ export interface TextEditorRowMeta {
   scopeMismatch?: string; dateMismatch?: string; scopePlace?: string;
   /** W17: presentation only. This slash line is still plain text, with no binding. */
   folderPending?: boolean;
+  /** N10: a repeat line's chip ('↻ 매주 월·목', or '반복 멈춤' once [x]) and where its marker starts in the title. */
+  repeatLabel?: string; repeatAt?: number;
 }
 export interface TextWorkspaceModel {
   MAX_DEPTH: number;
@@ -178,7 +181,12 @@ export function projectTextEditorRows(state: TextWorkspaceState, rows: TextRow[]
       scopes ??= model.scopes(state);
       meta.scopeMismatch = scopes.find(scope => scope.id === row.scopeId)?.title ?? '';
     }
-    if (targetId && row.date !== row.groupDate) meta.dateMismatch = row.date?.slice(5).replace('-', '.') ?? '미정';
+    // N10: a repeat line's date moves on each round, so it never reads as out of its date section (SPEC 4). A line
+    // with children or a progress number keeps its marker as plain text (SPEC 1).
+    const marker = row.kind === 'task' && row.title && row.progressPercent === undefined
+      && !rows.some(child => child.parentTaskId === row.id && ['task', 'subcheck'].includes(child.kind)) ? readProgramRepeatMarker(row.title) : null;
+    if (marker) Object.assign(meta, { repeatLabel: row.done ? '반복 멈춤' : `↻ ${marker.label}`, repeatAt: marker.start });
+    if (targetId && !marker && row.date !== row.groupDate) meta.dateMismatch = row.date?.slice(5).replace('-', '.') ?? '미정';
     return meta;
   });
 }

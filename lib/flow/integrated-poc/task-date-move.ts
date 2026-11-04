@@ -7,6 +7,7 @@ import { programCalendarDate } from './date-label';
 import { ALPHA_TASK_DATE_MOVE_LIMIT, isAlphaTaskDateMoves, type AlphaTaskDateMove } from './alpha-social/contract';
 import { resolveAlphaPrivateTaskSchedule } from './alpha-social/private-task-schedule';
 import { detached } from './alpha-persistence/json';
+import { readProgramRepeatMarker } from './repeat-line';
 
 /** C6b 날짜 한꺼번에 바꾸기 (C6-C9-I7 2-4~2-6): one task of the list, its date and time when picked, its new date. */
 export type ProgramTaskDateMove = AlphaTaskDateMove;
@@ -16,6 +17,14 @@ const copyOf = (space: ProgramPrivateSpace, taskId: string) => space.copies.find
 /** A task its repeat owns: a personal repeat's source or a round it made, a copy's item in its repeat, or any other
  *  series line. They move one by one (occurrence by occurrence), never in a list (C6a, and again in the command). */
 export function programTaskRepeatMember(space: ProgramPrivateSpace, taskId: string): boolean {
+  if (programTaskSeriesMember(space, taskId)) return true;
+  // N10 (SPEC 4): a repeat line moves one at a time too; its date is its current round.
+  const task = M.tasks(space.text).find(item => item.id === taskId);
+  return !!task && !task.done && !!readProgramRepeatMarker(task.title);
+}
+/** The repeats that existed before repeat lines: a personal repeat, a copy's repeat, a series line. A repeat line may
+ *  not be one of these too (N10 SPEC 1). */
+export function programTaskSeriesMember(space: ProgramPrivateSpace, taskId: string): boolean {
   if (space.personalAuthoring?.series.some(series => !series.stopped && series.source.kind === 'task' && series.source.taskId === taskId
     || series.rounds.some(round => Object.values(round.taskIds).includes(taskId)))) return true;
   if (space.copies.some(copy => (copy.recurrence?.itemIds ?? []).some(itemId => copy.itemLines[itemId] === taskId))) return true;

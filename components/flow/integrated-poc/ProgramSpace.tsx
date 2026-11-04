@@ -21,6 +21,9 @@ import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocia
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
 import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
+import { completeProgramRepeat, convertProgramLegacyRepeat, programLegacyRepeatSeries, programRepeatLine, readProgramRepeatCheck, undoProgramRepeat,
+  PROGRAM_LEGACY_REPEAT_CARD, PROGRAM_LEGACY_REPEAT_DONE, PROGRAM_LEGACY_REPEAT_REFUSED, PROGRAM_REPEAT_UNDO_REFUSED, type ProgramRepeatCheck } from '@/lib/flow/integrated-poc/repeat-commands';
+import { programRepeatTitle } from '@/lib/flow/integrated-poc/repeat-line';
 import { programViewScope } from '@/lib/flow/integrated-poc/view-scope';
 import { ProgramGroupAddRow } from './ProgramGroupAddRow';
 import { mergeProgramTextWorkspace } from '@/lib/flow/integrated-poc/text-merge';
@@ -291,7 +294,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // C6b: the date sheet, the one save it makes (pressed once), and its notice with 되돌리기.
   type DatesNotice = { actorId: string; count: number; date: string | null; undo: ProgramTaskDateMove[]; taskIds: string[]; shownAt: number; refused?: string; undone?: boolean };
   const datesSheet = useRef<HTMLDialogElement>(null), datesBusy = useRef(false), [datesPending, setDatesPending] = useState(false);
-  const [datesNotice, setDatesNotice] = useState<DatesNotice | null>(null), [datesNoticeHeld, setDatesNoticeHeld] = useState(false);
+  // N10: a repeat round finished from 오늘 ('다음은 …' with 되돌리기), and the old one-task repeat's card.
+  const [repeatNotice, setRepeatNotice] = useState<{ actorId: string; text: string; check: ProgramRepeatCheck | null; refused?: boolean } | null>(null);
+  const [legacyRepeatLater, setLegacyRepeatLater] = useState(false), [legacyRepeatNotice, setLegacyRepeatNotice] = useState<string | null>(null);
+  const [datesNotice, setDatesNotice] = useState<DatesNotice | null>(null), [datesNoticeHeld, setDatesNoticeHeld] =useState(false);
   useEffect(() => {
     if (!datesNotice) return;
     const ends = programNoticeEndsAt({ tone: datesNotice.refused ? 'warn' : datesNotice.undone ? 'info' : 'choose', shownAt: datesNotice.shownAt, leftBlockAt: null, held: datesNoticeHeld });
@@ -1796,6 +1802,46 @@ export function ProgramSpace(props: ProgramSpaceProps) {
    *  the save left at another value (a record dated later wins) keeps the plain notice: nothing says 완료 wrongly. */
   /** Re-review: the view a check was made in is still the one shown (person, period, date, folder, search); a later
    *  view keeps its own notices, so a slow save's answer never brings back the one the change of view cleared. */
+  /** N10 (SPEC 2): finishing a repeat line's round, from 오늘 or from an open document: one command on the space as it
+   *  is now; the round the screen showed (`expected`) keeps a second tab from moving it twice. */
+  async function finishRepeatRound(taskId: string, expected: string | null): Promise<ProgramRepeatCheck | 'refused' | null> {
+    const result = await run('반복 회차 완료', current => completeProgramRepeat(current, { actorId, requestId: programId('repeat'), expectedSpace: current.spaces[actorId],
+      taskId, today, expected }), true, undefined, undefined, true);
+    return result.ok ? readProgramRepeatCheck(result.result) : result.reason === 'conflict' ? 'refused' : null;
+  }
+  /** SPEC 3: 되돌리기 takes the whole check back, only while the line is as it left it. */
+  async function undoRepeatRound(check: ProgramRepeatCheck): Promise<boolean> {
+    const result = await run('반복 되돌리기', current => undoProgramRepeat(current, { actorId, requestId: programId('repeat-undo'), expectedSpace: current.spaces[actorId], check }));
+    return result.ok;
+  }
+  const repeatNextText = (title: string, check: ProgramRepeatCheck) => `${programRepeatTitle(title)} · 다음은 ${programCalendarDate(check.after, today)}`;
+  async function finishRepeatFromList(taskId: string, title: string, expected: string | null) {
+    const check = await finishRepeatRound(taskId, expected);
+    setRepeatNotice(check && check !== 'refused' ? { actorId, text: repeatNextText(title, check), check }
+      : { actorId, text: check === 'refused' ? '다른 곳에서 이 반복을 먼저 바꿨습니다. 지금 날짜를 확인해 주세요' : '반복 회차를 저장하지 못했습니다', check: null, refused: true });
+  }
+  async function undoRepeatFromList(check: ProgramRepeatCheck) {
+    const done = await undoRepeatRound(check);
+    setRepeatNotice(done ? null : { actorId, text: PROGRAM_REPEAT_UNDO_REFUSED, check: null, refused: true });
+  }
+  const repeatNoticeContent = repeatNotice?.actorId === actorId && <div className={styles.orderNotice} data-repeat-notice>
+    <ProgramNoticeRow notice={{ tone: repeatNotice.refused ? 'warn' : 'choose', text: repeatNotice.text, closeLabel: '알림 닫기',
+      actions: repeatNotice.check ? [{ label: '되돌리기', run: () => void undoRepeatFromList(repeatNotice.check!) }] : [] }} onClose={() => setRepeatNotice(null)} />
+  </div>;
+  // SPEC 6: an old one-task repeat ('내 반복') becomes a repeat line by one press of the person's; nothing converts by itself.
+  const legacyRepeat = programLegacyRepeatSeries(space)[0];
+  async function convertLegacyRepeat() {
+    if (!legacyRepeat) return;
+    const result = await run('예전 반복 바꾸기', current => convertProgramLegacyRepeat(current, { actorId, requestId: `legacy-repeat-${legacyRepeat.id}`,
+      expectedSpace: current.spaces[actorId], seriesId: legacyRepeat.id, today }));
+    setLegacyRepeatNotice(result.ok ? PROGRAM_LEGACY_REPEAT_DONE : PROGRAM_LEGACY_REPEAT_REFUSED);
+    if (!result.ok) setLegacyRepeatLater(true);
+  }
+  const legacyRepeatContent = (legacyRepeatNotice || legacyRepeat && !legacyRepeatLater && period === 'today') && <div className={styles.orderNotice} data-legacy-repeat>
+    <ProgramNoticeRow notice={legacyRepeatNotice ? { tone: 'info', text: legacyRepeatNotice, closeLabel: '알림 닫기' }
+      : { tone: 'choose', text: PROGRAM_LEGACY_REPEAT_CARD, closeLabel: null, actions: [{ label: '바꾸기', run: () => void convertLegacyRepeat() }, { label: '나중에', run: () => setLegacyRepeatLater(true) }] }}
+      onClose={() => setLegacyRepeatNotice(null)} />
+  </div>;
   const checkViewOwns = (view: typeof presentation.current) => dataRef.current.activeActorId === actorId && view.period === presentation.current.period
     && view.date === presentation.current.date && view.folderId === presentation.current.folderId && view.query === presentation.current.query;
   function checkSaved(taskId: string, title: string, before: number, after: number | null) {
@@ -1990,6 +2036,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
             <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskIds.has(task.id) ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskIds.has(task.id) || undefined} onClick={() => {
+              // N10: a repeat line's tap finishes its round (the box stays empty, the date moves on); no chips.
+              const repeat = programRepeatLine(space, task.id);
+              if (repeat && !repeat.block) {
+                const ids = completingInSession(completingTasks, sourceSession.current);
+                if (ids.has(task.id)) return;
+                ids.add(task.id); setCompletingTaskIds(new Set(ids));
+                void finishRepeatFromList(task.id, task.title, task.date).finally(() => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); });
+                return;
+              }
               // A record dated after today keeps the form (review P2): today's record would not change what shows.
               if (value > 0 && value < 100 && (progress?.date ?? '') > today) { setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }
               else if (value > 0 && value < 100) setCheckNotice({ actorId, stage: 'chips', targetId: task.id, title: task.title, before: value, after: value, shownAt: Date.now(), key: ++checkNoticeKeys.current });
@@ -2010,7 +2065,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               }
             }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
               {completingTaskIds.has(task.id) ? '…' : value > 0 && value < 100 ? `${value}%` : ''}</span></button>
-            <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} aria-busy={sourceWaitingTask === task.id || undefined} onClick={event => moving ? void moveBefore(moving, entry.key) : openFromList(task, event.currentTarget)}><span className={styles.taskTitleText}>{task.title}</span>
+            <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} aria-busy={sourceWaitingTask === task.id || undefined} onClick={event => moving ? void moveBefore(moving, entry.key) : openFromList(task, event.currentTarget)}>{(line => line && (!line.block || line.block === 'done') ? <span className={styles.taskTitleText}>{programRepeatTitle(task.title)}<span className={styles.repeatChip}>{line.block ? '반복 멈춤' : `↻ ${line.marker.label}`}</span></span>
+              : <span className={styles.taskTitleText}>{task.title}</span>)(programRepeatLine(space, task.id))}
               {/* R4's waits, now visible on the row. The title's aria-busy and the host notice still do the announcing. */}
               <small>{sourceWaitingTask === task.id ? <span className={styles.rowBusy}>원문 여는 중…</span> : <>
                 {completingTaskIds.has(task.id) && <><span className={styles.rowBusy}>{value === 100 ? '다시 열기 대기 중' : '완료 대기 중'}</span> · </>}
@@ -2198,7 +2254,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             if (sourceFocus?.documentId === id && sourceFocus.isCurrent()) return;
             positions.current[id] = { ...position, documentId: id, lineId };
           }}
-          onDirtyChange={value => { editorDirtyChanged(id, actorId, value); }} onInputFailureChange={failed => inputFailureChanged(id, failed)} onKeepRefusedInput={props.onKeepRefusedInput} onUndo={onUndo} onRedo={onRedo}
+          onDirtyChange={value => { editorDirtyChanged(id, actorId, value); }} onInputFailureChange={failed => inputFailureChanged(id, failed)} onKeepRefusedInput={props.onKeepRefusedInput} repeatContext={() => dataRef.current.spaces[actorId] ?? space} onRepeatFinish={finishRepeatRound} onRepeatUndo={undoRepeatRound} onUndo={onUndo} onRedo={onRedo}
           onRegisterSave={(save, status) => { saveRequests.current[id] = save; saveStatusReaders.current[id] = status ?? null; }}
           onRegisterSourceFocus={focus => registerSourceFocus(id, focus)}
           onRegisterDraft={read => { draftReaders.current[id] = read; }}
@@ -2314,7 +2370,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {selecting && selectNotice && <div className={styles.orderNotice}><ProgramNoticeRow notice={{ tone: 'info', text: selectNotice }} onClose={() => setSelectNotice(null)} /></div>}
         {/* I7: under the list, held at the bottom of the screen (above the bottom tabs on a phone) while it scrolls. */}
         {!detail && !sheetOpen && orderNoticeContent}
-        {!detail && !sheetOpen && checkNoticeContent}
+        {!detail && !sheetOpen && checkNoticeContent}{!detail && !sheetOpen && repeatNoticeContent}{!detail && legacyRepeatContent}
         {!detail && datesNoticeContent}
       </div>
     </div>

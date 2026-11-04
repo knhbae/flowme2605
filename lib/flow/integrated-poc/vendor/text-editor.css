@@ -122,6 +122,15 @@
 .tle-line-complete { color: var(--flowme-b-muted); }
 .tle-task-title-complete { text-decoration: line-through; text-decoration-color: var(--flowme-b-control); }
 .tle-hidden-syntax { color: transparent; }
+/* N10: the repeat chip over a repeat line's unseen marker ("@매주 월 목" reads "↻ 매주 월·목"). */
+.tle-repeat-source { position: relative; color: transparent; text-decoration: none; white-space: nowrap; }
+.tle-repeat-source::after {
+  content: attr(data-repeat-label);
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  padding: 0 6px; border-radius: 999px; background: #eef2ff; color: var(--flowme-b-primary);
+  font-size: 0.85em; line-height: 1.6; white-space: nowrap; text-decoration: none;
+}
+.tle-line-complete .tle-repeat-source::after { background: #f1f5f9; color: var(--flowme-b-muted); }
 .tle-date-source { visibility: hidden; }
 .tle-date-label {
   position: absolute;

@@ -8,6 +8,10 @@ import { ProgramServerStatusContext } from './program-status-context';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
+import type { ProgramPrivateSpace } from '@/lib/flow/integrated-poc/contract';
+import { programRepeatLine, settleProgramRepeatLines, PROGRAM_REPEAT_BLOCK_TEXT, PROGRAM_REPEAT_UNDO_REFUSED, type ProgramRepeatCheck } from '@/lib/flow/integrated-poc/repeat-commands';
+import { parseProgramRepeatWords, programRepeatTitle, readProgramRepeatMarker } from '@/lib/flow/integrated-poc/repeat-line';
+import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
 import { readChildDrafts, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
 import { createWritingBarHold, folderBarLine, heldTargetVerdict, taskMarkerLock, toggleTaskLine, writingBarLine, writingBarTarget, type WritingBarAction, type WritingBarLine, type WritingBarTarget } from '@/lib/flow/integrated-poc/writing-bar';
 import { programFlowBelow, programKeyboardBarCramped, programKeyboardBarPlace, programKeyboardBarSettle, programKeyboardRoom, programVisibleBottom } from '@/lib/flow/integrated-poc/keyboard-bar-place';
@@ -123,6 +127,11 @@ export interface ProgramTextEditorProps {
   onInputFailureChange?: (failed: boolean) => void;
   /** N7: a line's input this editor refused and put back is kept in the tab's 복구함 (W11 saved input). */
   onKeepRefusedInput?: (draft: { title: string; raw: string }) => boolean;
+  /** N10: the space's repeat context (copies, repeats) for judging a repeat line, and the host's one command for
+   *  finishing a round and taking it back; the editor then takes the saved document as any outside change. */
+  repeatContext?: () => Pick<ProgramPrivateSpace, 'copies' | 'personalAuthoring' | 'savedBindings' | 'legacySnapshot' | 'recurrenceExecution'>;
+  onRepeatFinish?: (taskId: string, expected: string | null) => Promise<ProgramRepeatCheck | 'refused' | null>;
+  onRepeatUndo?: (check: ProgramRepeatCheck) => Promise<boolean>;
   onRegisterSave?: (save: (() => Promise<boolean>) | null, status?: (() => ProgramTextSaveStatus) | null) => void;
   onRegisterSourceFocus?: (focus: ProgramSourceFocus | null) => void;
   onRegisterInputLock?: (lock: ((locked: boolean) => void) | null) => void;
@@ -246,7 +255,7 @@ export function stageProgramRegionInput(controller: ReturnType<typeof createProg
 }
 
 type ChildTarget={documentId:string;parentId:string;workspace:TextWorkspaceState;raw:string;title:string;date:string|null;scope:string;memo:string;kind?:'memo'|'task'};
-type Panel = { kind: 'insert' | 'child' | 'progress' | 'date' | 'folder' | 'folder-copy' | 'move' | 'reference' | 'order'; lineId: string | null; child?:ChildTarget; folderLinkPreview?: ProgramFolderLinkPreview; folderCopyPreview?: ProgramFolderCopyPreview } | null;
+type Panel = { kind: 'insert' | 'child' | 'progress' | 'date' | 'folder' | 'folder-copy' | 'move' | 'reference' | 'order' | 'repeat'; lineId: string | null; child?:ChildTarget; folderLinkPreview?: ProgramFolderLinkPreview; folderCopyPreview?: ProgramFolderCopyPreview } | null;
 type Moving = TextMoveSelection & { targets: TextMoveTarget[] };
 
 export function programTextProtectionMessage(access?: ProgramReferenceAccess): string {
@@ -324,6 +333,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   type FolderNotice = { text: string; tone: ProgramNoticeTone; actions?: ProgramNoticeAction[]; lineId?: string; shownAt: number; leftBlockAt: number | null; operationId?: number; key: number };
   const [folderNotice, setFolderNotice] = useState<FolderNotice | null>(null);
   const folderNoticeRef = useRef<FolderNotice | null>(null); folderNoticeRef.current = folderNotice;
+  // N10: a repeat round finished here ('다음은 …' with 되돌리기), a first round written for an interval line (with
+  // 날짜 고르기), or why a marker stays plain text. Each refusal is said once per line text.
+  const [repeatNotice, setRepeatNotice] = useState<{ text: string; tone: ProgramNoticeTone; actions?: ProgramNoticeAction[] } | null>(null);
+  const repeatToldRef = useRef(new Set<string>()), repeatBusyRef = useRef(false);
+  // N10 (SPEC 5): the 이 줄 반복 form, for keyboards where "@" is hard to reach; it writes the same marker.
+  type RepeatForm = { kind: 'daily' | 'weekdays-only' | 'weekend' | 'days-of-week' | 'days' | 'weeks' | 'month-day' | 'month-last' | 'yearly' | 'months';
+    days: number[]; every: string; monthDay: string; month: string; day: string };
+  const [repeatForm, setRepeatForm] = useState<RepeatForm>({ kind: 'daily', days: [1], every: '2', monthDay: '1', month: '1', day: '1' });
   // N5 3b review P2 (2): when the shown notice is due to end, as its timer was set (none while it stays). A timer
   // can run late (a hidden tab, a phone in the background), so a return and a ⇤ read the clock themselves.
   const folderNoticeDue = useRef<{ notice: FolderNotice; at: number } | null>(null);
@@ -660,6 +677,100 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         &&!!M.getDocument(state.working,access.documentId)?.lines.some(source=>source.id===target);
     });
   };
+
+  /** N10: the repeat line a row's box acts on (a reference acts on its original), or null. */
+  function repeatLineFor(lineId: string | null) {
+    const context = propsRef.current.repeatContext?.(), row = currentRow(lineId), target = row?.progressTargetId;
+    return context && target && row?.kind !== 'subcheck' ? programRepeatLine({ ...context, text: currentState() }, target) : null;
+  }
+  /** N10 (SPEC 1, 첫 회차): repeat lines the caret has left (all of them on leaving the editor) get their first round's
+   *  "- 날짜:" once; a marker that may not repeat says why once. Never mid-composition, never over unsaved screen input. */
+  function settleRepeatLines(all: boolean) {
+    const controller = draftRef.current, area = textArea(), context = propsRef.current.repeatContext?.();
+    if (!controller || !area || !context || composingRef.current || propsRef.current.readOnly || propsRef.current.folderId || repeatBusyRef.current) return;
+    const state = controller.getState();
+    if (state.invalid || state.saving || area.value !== state.raw || actionsDisabled()) return;
+    const lines = M.getDocument(state.working, propsRef.current.docId)?.lines ?? [], focused = area.ownerDocument.activeElement === area;
+    const caret = all || !focused ? null : lines[area.value.slice(0, area.selectionStart).split('\n').length - 1]?.id ?? null;
+    const result = settleProgramRepeatLines({ ...context, text: state.working }, propsRef.current.docId, today(), caret);
+    const told = repeatToldRef.current, block = result.blocked.find(entry => !told.has(`${entry.taskId}:${entry.block}`));
+    if (block) { told.add(`${block.taskId}:${block.block}`); setRepeatNotice({ tone: 'warn', text: PROGRAM_REPEAT_BLOCK_TEXT[block.block] }); }
+    if (!result.settled.length) return;
+    void apply(result.text, '반복 첫 회차').then(saved => {
+      // An interval line's first round is a guess (today plus the interval): say it, with a way to change it.
+      const first = result.settled.find(entry => !entry.fixed);
+      if (saved && first) setRepeatNotice({ tone: 'choose', text: `${programRepeatTitle(first.title)} · 첫 회차 ${programCalendarDate(first.date, today())}`,
+        actions: [{ label: '날짜 고르기', run: () => openProgress(first.taskId, 'date') }] });
+    });
+  }
+  /** N10 (SPEC 2): a repeat line's tap finishes its round by the host's one command, once this editor's input is saved;
+   *  the saved document comes back as any outside change does. Its notice offers 되돌리기 (SPEC 3). */
+  const lastRepeatCheck = useRef<ProgramRepeatCheck | null>(null);
+  async function finishRepeatHere(taskId: string, title: string, expected: string | null) {
+    const finish = propsRef.current.onRepeatFinish;
+    if (!finish || repeatBusyRef.current || composingRef.current) return;
+    repeatBusyRef.current = true;
+    try {
+      if (draftRef.current?.getState().dirty && !await saveNow()) return;
+      const check = await finish(taskId, expected);
+      if (check && check !== 'refused') {
+        lastRepeatCheck.current = check;
+        setRepeatNotice({ tone: 'choose', text: `${programRepeatTitle(title)} · 다음은 ${programCalendarDate(check.after, today())}`,
+          actions: [{ label: '되돌리기', run: () => void undoRepeatHere(check) }] });
+      } else setRepeatNotice({ tone: 'warn', text: check === 'refused' ? '다른 곳에서 이 반복을 먼저 바꿨습니다. 지금 날짜를 확인해 주세요' : '반복 회차를 저장하지 못했습니다' });
+    } finally { repeatBusyRef.current = false; }
+  }
+  async function undoRepeatHere(check: ProgramRepeatCheck) {
+    const undo = propsRef.current.onRepeatUndo;
+    if (!undo || repeatBusyRef.current || composingRef.current) return;
+    repeatBusyRef.current = true;
+    try {
+      if (draftRef.current?.getState().dirty && !await saveNow()) return;
+      lastRepeatCheck.current = null;
+      setRepeatNotice(await undo(check) ? null : { tone: 'warn', text: PROGRAM_REPEAT_UNDO_REFUSED });
+    } finally { repeatBusyRef.current = false; }
+  }
+  /** SPEC 5: the task a repeat form acts on, its marker if any, and why it may not repeat (judged as if it had one). */
+  function repeatTarget(lineId: string | null) {
+    const context = propsRef.current.repeatContext?.(), row = currentRow(lineId), taskId = row?.kind === 'task' ? row.progressTargetId : undefined;
+    const task = taskId ? M.tasks(currentState()).find(item => item.id === taskId) : undefined;
+    if (!context || !task || row?.isReference) return { task: null, block: 'reference' as const, marker: null };
+    const marker = readProgramRepeatMarker(task.title), trial = marker ? currentState() : M.updateTask(currentState(), task.id, { title: `${task.title} @매일` });
+    return { task, marker, block: programRepeatLine({ ...context, text: trial }, task.id)?.block ?? null };
+  }
+  function openRepeatPanel(lineId: string | null) {
+    const rule = repeatTarget(lineId).marker?.rule;
+    if (rule) setRepeatForm(form => ({ ...form, ...(rule.kind === 'daily' ? { kind: 'daily' } : rule.kind === 'weekdays'
+      ? (rule.days.length === 5 && !rule.days.includes(0) && !rule.days.includes(6) ? { kind: 'weekdays-only' } : rule.days.length === 2 && rule.days.includes(0) && rule.days.includes(6) ? { kind: 'weekend' } : { kind: 'days-of-week', days: rule.days })
+      : rule.kind === 'days' ? { kind: 'days', every: String(rule.every) } : rule.kind === 'weeks' ? { kind: 'weeks', every: String(rule.every) }
+      : rule.kind === 'months' ? { kind: 'months', every: String(rule.every) } : rule.kind === 'month-day' ? (rule.day === 'last' ? { kind: 'month-last' } : { kind: 'month-day', monthDay: String(rule.day) })
+      : { kind: 'yearly', month: String(rule.month), day: String(rule.day) }) } as RepeatForm));
+    setMessage(''); setPanel({ kind: 'repeat', lineId });
+  }
+  /** The marker words the form names, or null while it names none (they go through the same reader as typed ones). */
+  function repeatWords(form: RepeatForm): string | null {
+    const names = ['일', '월', '화', '수', '목', '금', '토'];
+    const words = form.kind === 'daily' ? '매일' : form.kind === 'weekdays-only' ? '평일' : form.kind === 'weekend' ? '주말'
+      : form.kind === 'days-of-week' ? `매주 ${[1, 2, 3, 4, 5, 6, 0].filter(day => form.days.includes(day)).map(day => names[day]).join(' ')}`
+      : form.kind === 'days' ? `${form.every}일마다` : form.kind === 'weeks' ? (form.every === '1' ? '매주' : `${form.every}주마다`)
+      : form.kind === 'months' ? `${form.every}개월마다` : form.kind === 'month-last' ? '매달 말일' : form.kind === 'month-day' ? `매달 ${form.monthDay}일`
+      : `매년 ${form.month}/${form.day}`;
+    return parseProgramRepeatWords(words) ? words : null;
+  }
+  async function applyRepeatForm(lineId: string | null, stop = false) {
+    const target = repeatTarget(lineId), words = repeatWords(repeatForm);
+    if (!target.task || target.block || !stop && !words) return;
+    const title = stop ? programRepeatTitle(target.task.title) : `${programRepeatTitle(target.task.title)} @${words}`;
+    const next = M.updateTask(currentState(), target.task.id, { title });
+    closePanel();
+    if (next !== currentState() && await apply(next, stop ? '반복 그만하기' : '반복 표시') && !stop) settleRepeatLines(true);
+  }
+  /** ↶ right after a finished round, with nothing typed since (any input forgets it), is that round's 되돌리기 (SPEC 3). */
+  function undoRepeatCheck() {
+    const last = lastRepeatCheck.current, state = draftRef.current?.getState();
+    if (!last || !state || state.dirty) return false;
+    void undoRepeatHere(last); return true;
+  }
 
   function rememberPosition() {
     if (propsRef.current.folderId) return;
@@ -1515,6 +1626,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         || !M.getDocument(currentState(), access.documentId)?.lines.some(line => line.id === target)) {
         setPanel({ kind: 'reference', lineId }); return false;
       }
+      // N10: a repeat line's tap finishes its round (the box stays empty, its date moves on); no C2 chips.
+      const repeat = repeatLineFor(lineId);
+      if (repeat && !repeat.block) { void finishRepeatHere(repeat.task.id, repeat.task.title, repeat.task.date); return; }
       const checkTitle = currentRow(lineId)?.title || currentRow(lineId)?.task?.title || '할 일', checkBefore = M.currentProgress(currentState(), target);
       const controller=draftRef.current,compute=propsRef.current.writingCompute,context=propsRef.current.writingContext?.();
       if(controller&&compute&&context){
@@ -1856,8 +1970,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // N7 review 6: mid-composition the native editor holds its onChange, so no line is held yet when the blur comes
     // (a folder name selected and typed over in Hangul). The finish is scheduled anyway, for after compositionend.
     const finishOnBlur = () => { if (composingRef.current) finishAfterComposition.current = true; finishHeldFolderLine(); finishRenamedFolderLines(true); };
+    // N10 (SPEC 1): the caret leaving a line (or the editor) settles the repeat lines it has left.
+    const settleOnMove = () => settleRepeatLines(false), settleOnBlur = () => settleRepeatLines(true);
     const observeInput = (event: Event) => {
-      const input=event as InputEvent;historyTypeRef.current=input.inputType||historyTypeRef.current;
+      const input=event as InputEvent;historyTypeRef.current=input.inputType||historyTypeRef.current;lastRepeatCheck.current=null;
     };
     if (textarea) {
       textarea.id = `program-text-${encodeURIComponent(props.docId)}`;
@@ -1869,6 +1985,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       }
       for (const event of ['select', 'scroll', 'keyup', 'click', 'blur']) textarea.addEventListener(event, rememberPosition);
       textarea.addEventListener('blur', finishOnBlur);
+      for (const event of ['select', 'keyup', 'click']) textarea.addEventListener(event, settleOnMove);
+      textarea.addEventListener('blur', settleOnBlur);
       textarea.addEventListener('beforeinput', preventLockedInput, true);
       textarea.addEventListener('input', observeInput, true);
     }
@@ -1888,6 +2006,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (timerRef.current) clearTimeout(timerRef.current);
       if (textarea) for (const event of ['select', 'scroll', 'keyup', 'click', 'blur']) textarea.removeEventListener(event, rememberPosition);
       textarea?.removeEventListener('blur', finishOnBlur);
+      if (textarea) for (const event of ['select', 'keyup', 'click']) textarea.removeEventListener(event, settleOnMove);
+      textarea?.removeEventListener('blur', settleOnBlur);
       textarea?.removeEventListener('beforeinput', preventLockedInput, true);
       textarea?.removeEventListener('input', observeInput, true);
       checkPendingRef.current=null;
@@ -2464,7 +2584,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // W5: the ＋ menu's head is its target line in one line ("‘…’ 아래에", or 새 줄 for an empty line or a typed "/").
   // A registered task's menu also holds its 진행·날짜, so its head is the task alone and the add choices get "추가".
   const menuTargetText = row ? memoContext?.label || row.title || row.task?.title || row.text : '';
-  const title = panel?.kind==='child' ? childTarget?.kind==='task' ? `‘${childTarget.title}’ 아래 하위 할 일` : childTarget?.kind==='memo' ? `‘${childTarget.title}’ 메모` : programInsertMenuTitle(childTarget?.title) :protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'progress' ? '진행 기록' : panel?.kind === 'date' ? '날짜·시간' : panel?.kind === 'folder-copy' ? '폴더 사본 만들기' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : panel?.kind === 'insert' && row?.progressTargetId ? `‘${menuTargetText.trim()}’` : programInsertMenuTitle(menuTargetText);
+  const title = panel?.kind==='child' ? childTarget?.kind==='task' ? `‘${childTarget.title}’ 아래 하위 할 일` : childTarget?.kind==='memo' ? `‘${childTarget.title}’ 메모` : programInsertMenuTitle(childTarget?.title) :protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'repeat' ? '반복' : panel?.kind === 'progress' ? '진행 기록' : panel?.kind === 'date' ? '날짜·시간' : panel?.kind === 'folder-copy' ? '폴더 사본 만들기' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : panel?.kind === 'insert' && row?.progressTargetId ? `‘${menuTargetText.trim()}’` : programInsertMenuTitle(menuTargetText);
   const folderView = props.folderId ? readProgramFolderRegions(draft.working, props.docId, props.folderId) : null;
   const progressConflict = progressConflictToView();
   const inputPending=!!childTarget||programTextInputPending(draft,textArea()?.value,composing,regionPending,checkPending);
@@ -2553,6 +2673,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     ...(message && !panel ? [{ tone: 'warn' as const, text: message, closeLabel: '안내 닫기', close: () => setMessage('') }] : []),
     ...(checkNotice ? [checkNoticeView(checkNotice)] : []),
     ...(folderNotice ? [{ tone: folderNotice.tone, text: folderNotice.text, actions: folderNotice.actions, closeLabel: '알림 닫기', close: () => setFolderNotice(null) }] : []),
+    ...(repeatNotice ? [{ tone: repeatNotice.tone, text: repeatNotice.text, actions: repeatNotice.actions, closeLabel: '알림 닫기', close: () => setRepeatNotice(null) }] : []),
   ]);
   const releaseNotice = () => { if (!noticeHeld) return; setNoticeHeld(false); restartFolderNotice(); restartCheckNotice(); };
   const notices = <div ref={noticeRef} className={styles.notices} onPointerDown={() => setNoticeHeld(true)} onPointerUp={releaseNotice} onPointerLeave={releaseNotice}
@@ -2624,10 +2745,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       {props.authoringMode && <span className={styles.toolbarSep} aria-hidden="true" />}
       {props.authoringMode && barButtons('toolbar')}
       {props.authoringMode && <span className={styles.toolbarSep} aria-hidden="true" />}
-      <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기 · Ctrl+Z'} aria-label="입력 되돌리기" onClick={() => { if (undoFolderMove()) return; if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if(props.authoringMode&&!props.folderId)editorRef.current?.undo(); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
+      <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기 · Ctrl+Z'} aria-label="입력 되돌리기" onClick={() => { if (undoFolderMove() || undoRepeatCheck()) return; if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if(props.authoringMode&&!props.folderId)editorRef.current?.undo(); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
       {props.authoringMode && <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId} title="입력 다시 하기 · Ctrl+Y" aria-label="입력 다시 하기"
         onClick={() => { if (orderHistoryRef.current.hasEntries() || props.authoringMode) nativeHistory('historyRedo'); else if (props.onRedo && !draft.dirty) void props.onRedo(); }}>↷</button>}
-      {props.repeatLabel && props.onOpenPersonalAuthoring && <button type="button" className={styles.repeatButton} aria-haspopup="dialog" onClick={() => props.onOpenPersonalAuthoring?.()}>{props.repeatLabel}</button>}
+      {/* N10 (SPEC 5): [반복] offers 이 줄 반복 (the caret's line) and 반복·Flow 만들기 in one small panel. */}
+      {props.repeatLabel && props.onOpenPersonalAuthoring && <button type="button" className={styles.repeatButton} aria-haspopup="dialog" onClick={() => {
+        if (!props.repeatContext) { props.onOpenPersonalAuthoring?.(); return; }
+        const area = textArea(), index = area ? area.value.slice(0, area.selectionStart).split('\n').length - 1 : -1;
+        openRepeatPanel(currentDoc()?.lines[index]?.id ?? null);
+      }}>{props.repeatLabel}</button>}
       <details ref={toolsRef} className={styles.editorTools} data-editor-tools onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; event.currentTarget.querySelector('summary')?.focus();
@@ -2686,6 +2812,30 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <button type="button" onClick={closePanel}>취소</button>
         <button type="button" disabled={disabled || orderPreview?.plan.status !== 'ready'} onClick={applyOrder}>원문에 날짜순 적용</button>
       </div>}
+      {panel.kind === 'repeat' && (target => <div className={styles.choices} data-repeat-panel>
+        {/* N10 (SPEC 5): 이 줄 반복 writes the same "@…" marker a person can type; 반복·Flow 만들기 is the old sheet. */}
+        <h4>이 줄 반복</h4>
+        {!target.task ? <p role="status">할 일 줄에 커서를 두고 다시 눌러 주세요.</p>
+          : target.block ? <p role="status">{PROGRAM_REPEAT_BLOCK_TEXT[target.block]}</p> : <>
+          <p className={styles.dateTarget}>‘{programRepeatTitle(target.task.title)}’{target.marker ? ` · 지금 ${target.marker.label}` : ''}</p>
+          <label>주기<select value={repeatForm.kind} onChange={event => setRepeatForm(form => ({ ...form, kind: event.target.value as RepeatForm['kind'] }))}>
+            <option value="daily">매일</option><option value="weekdays-only">평일</option><option value="weekend">주말</option><option value="days-of-week">요일 고르기</option>
+            <option value="days">며칠마다</option><option value="weeks">몇 주마다</option><option value="month-day">매달 그 날</option><option value="month-last">매달 말일</option>
+            <option value="yearly">매년 그 날</option><option value="months">몇 달마다</option></select></label>
+          {repeatForm.kind === 'days-of-week' && <div className={styles.dateChips} role="group" aria-label="요일">{[1, 2, 3, 4, 5, 6, 0].map(day =>
+            <button type="button" key={day} aria-pressed={repeatForm.days.includes(day)} onClick={() => setRepeatForm(form => ({ ...form,
+              days: form.days.includes(day) ? form.days.filter(value => value !== day) : [...form.days, day] }))}>{['일', '월', '화', '수', '목', '금', '토'][day]}</button>)}</div>}
+          {['days', 'weeks', 'months'].includes(repeatForm.kind) && <label>{repeatForm.kind === 'days' ? '며칠마다 (2~365)' : repeatForm.kind === 'weeks' ? '몇 주마다 (1~52)' : '몇 달마다 (1~24)'}
+            <input inputMode="numeric" value={repeatForm.every} onChange={event => setRepeatForm(form => ({ ...form, every: event.target.value.trim() }))} /></label>}
+          {repeatForm.kind === 'month-day' && <label>며칠 (1~31)<input inputMode="numeric" value={repeatForm.monthDay} onChange={event => setRepeatForm(form => ({ ...form, monthDay: event.target.value.trim() }))} /></label>}
+          {repeatForm.kind === 'yearly' && <><label>월<input inputMode="numeric" value={repeatForm.month} onChange={event => setRepeatForm(form => ({ ...form, month: event.target.value.trim() }))} /></label>
+            <label>일<input inputMode="numeric" value={repeatForm.day} onChange={event => setRepeatForm(form => ({ ...form, day: event.target.value.trim() }))} /></label></>}
+          <button type="button" disabled={!repeatWords(repeatForm) || actionsDisabled()} onClick={() => void applyRepeatForm(panel.lineId)}>
+            {repeatWords(repeatForm) ? `${target.marker ? '반복 바꾸기' : '반복 적용'} · @${repeatWords(repeatForm)}` : '주기를 확인해 주세요'}</button>
+          {target.marker && <button type="button" disabled={actionsDisabled()} onClick={() => void applyRepeatForm(panel.lineId, true)}>반복 그만하기</button>}
+        </>}
+        {props.onOpenPersonalAuthoring && <><h4>묶음 반복</h4><button type="button" onClick={() => { closePanel(); props.onOpenPersonalAuthoring?.(); }}>반복·Flow 만들기…<small>여러 할 일과 단계</small></button></>}
+      </div>)(repeatTarget(panel.lineId))}
       {panel.kind === 'insert' && <div className={styles.choices}>
         {memoContext && <p className={styles.contextHint}>{memoContext.continuation}</p>}
         {row?.kind === 'subcheck' && row.isCanonical === true && !row.isReference && <small className={styles.registeredNotice}>이 하위 항목은 별도 할 일로 등록돼 있습니다. 들여쓰기를 바꿔도 등록과 진행 기록은 유지됩니다.</small>}
@@ -2698,6 +2848,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
               <button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜 고르기</button></div>}
             <button type="button" onClick={() => openProgress(panel.lineId)}>진행 기록</button>
             {!chipTask && <button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜·시간</button>}
+            {chipTask && props.repeatContext && row?.kind === 'task' && <button type="button" onClick={() => openRepeatPanel(panel.lineId)}>반복…</button>}
           </>)(M.tasks(currentState()).find(item => item.id === row.progressTargetId))}
         </section>}
         <section className={styles.menuSection} aria-label="이 위치에 추가">{row?.progressTargetId && <h4>추가</h4>}
