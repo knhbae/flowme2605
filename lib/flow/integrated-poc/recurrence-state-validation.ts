@@ -5,6 +5,7 @@ import { creatorExecutionItemRef } from './creator-execution-contract';
 import {validateNativeOccurrenceIdentity} from './creator-native-execution-recurrence';
 import { validateProgramStructuredOccurrence } from './structured-map-execution';
 import { validateProgramPublicCopyOccurrenceIdentity } from './public-copy-recurrence';
+import { isProgramRepeatLog } from './repeat-log-shape';
 const record = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value)
   && [Object.prototype, null].includes(Object.getPrototypeOf(value))
   && !Object.getOwnPropertySymbols(value).length && Object.values(Object.getOwnPropertyDescriptors(value)).every(descriptor => 'value' in descriptor && descriptor.enumerable);
@@ -52,6 +53,7 @@ export function isProgramOccurrenceExecution(value: unknown): value is ProgramOc
 }
 /** Stale source entries remain valid retained history; writers check current source separately. */
 export function isProgramRecurrenceExecutionState(value: unknown): value is ProgramRecurrenceExecutionState {
-  if (!record(value) || !keys(value, 'version,entries') || value.version !== 1 || !record(value.entries) || Object.keys(value.entries).length > 2000) return false;
+  if (!record(value) || !keys(value, Object.hasOwn(value, 'lines') ? 'version,entries,lines' : 'version,entries') || value.version !== 1
+    || !record(value.entries) || Object.keys(value.entries).length > 2000 || Object.hasOwn(value, 'lines') && !isProgramRepeatLog(value.lines)) return false;
   return Object.entries(value.entries).every(([key, entry]) => isProgramOccurrenceExecution(entry) && key === programOccurrenceExecutionKey(entry));
 }

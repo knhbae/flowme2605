@@ -31,7 +31,6 @@ const fieldLabels: Record<Exclude<AlphaPrivateField, 'text'>, string> = {
   legacySnapshot: '저장한 계획의 상세 내용', legacyQuickItemLines: '빠른 할 일 연결', legacyTimelinePolicies: '기간 목록의 포함 범위',
   retentionDocuments: '복구 중 보관한 문서', creatorDraftImports: '가져온 제작 초안', creatorWorkspace: '제작 초안', catalogLibrary: '기존 Flow 콘텐츠',
   proposalReviewDrafts: '변경 제안 검토', recurrenceExecution: '반복 회차의 완료·진행 기록', recurrencePlans: '반복 일정',
-  repeatLog: '반복 줄의 끝낸 날',
 };
 function safeText(value: unknown): TextWorkspaceState | null {
   try { const text = detached(value); return M.validate(text) ? text : null; } catch { return null; }

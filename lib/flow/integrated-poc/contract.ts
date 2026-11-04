@@ -204,10 +204,7 @@ export type ProgramPrivateSpace = {
   /** Private reviewer input; only an explicit decision exposes its note. */
   proposalReviewDrafts?: Record<string, { note: string; expectedProposalToken: string }>;
   recurrenceExecution?: ProgramRecurrenceExecutionState;
-  recurrencePlans?: ProgramRecurrencePlans;
-  /** N10 repeat lines: line ID -> the days it was finished (program-data isProgramRepeatLog). N9 reads and keeps it only. */
-  repeatLog?: Record<string, string[]>;
-};
+  recurrencePlans?: ProgramRecurrencePlans;};
 export type ProgramRequestReceipt = { id: string; actorId: string; fingerprint: string; resultId: string; kind: string };
 export type ProgramData = {
   /** Ephemeral Alpha adapter marker; the local PoC envelope never persists it. */

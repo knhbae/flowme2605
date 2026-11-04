@@ -15,7 +15,8 @@ export interface ProgramOccurrenceExecution extends ProgramOccurrenceIdentity {
   completion: { status: 'unrecorded' | 'open' | 'completed'; completedAt: string | null };
   participation: 'included' | 'excluded' | 'held';
 }
-export interface ProgramRecurrenceExecutionState { version: 1; entries: Record<string, ProgramOccurrenceExecution> }
+/** N10: `lines` holds repeat lines' finished days (repeat-log.ts); it lives here because the account check allows this field. */
+export interface ProgramRecurrenceExecutionState { version: 1; entries: Record<string, ProgramOccurrenceExecution>; lines?: Record<string, string[]> }
 export const programOccurrenceExecutionKey = (entry: ProgramOccurrenceIdentity): string => entry.publicOwner ? programPublicCopyOccurrenceKey(entry) : entry.nativeOwner ? JSON.stringify(['native-creator',entry.nativeOwner.ownerId,entry.nativeOwner.itemId,entry.seriesId,entry.occurrenceId,entry.originalDate]) : entry.creatorOwner ? JSON.stringify([
   'creator', entry.creatorOwner.ownerId, entry.creatorOwner.rowId, entry.seriesId, entry.occurrenceId,
 ]) : JSON.stringify([

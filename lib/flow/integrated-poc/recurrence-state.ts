@@ -97,7 +97,8 @@ export function updateProgramOccurrenceExecution(data: ProgramData, input: Progr
   if (!isProgramOccurrenceExecution(updated)) return programFailure(data, 'invalid');
   if (programSame(updated, baseline)) return { ok: true, data, changed: false, result: key };
   const next = programClone(data), target = next.spaces[input.actorId] as Space;
-  target.recurrenceExecution = { version: 1, entries: { ...target.recurrenceExecution?.entries, [key]: updated } };
+  // N10: the repeat lines' days kept beside the entries stay as they are.
+  target.recurrenceExecution = { ...target.recurrenceExecution, version: 1, entries: { ...target.recurrenceExecution?.entries, [key]: updated } };
   return validateProgramData(next) ? programResult(data, next, key) : programFailure(data, 'invalid');
 }
 
