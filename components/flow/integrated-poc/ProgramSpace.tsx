@@ -21,7 +21,7 @@ import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocia
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
 import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
-import { completeProgramRepeat, convertProgramLegacyRepeat, programLegacyRepeatSeries, programRepeatLine, readProgramRepeatCheck, undoProgramRepeat,
+import { completeProgramRepeat, convertProgramLegacyRepeat, programLegacyRepeatSeries, programRepeatLine, programRepeatSeen, readProgramRepeatCheck, undoProgramRepeat,
   PROGRAM_LEGACY_REPEAT_CARD, PROGRAM_LEGACY_REPEAT_DONE, PROGRAM_LEGACY_REPEAT_REFUSED, PROGRAM_REPEAT_UNDO_REFUSED, type ProgramRepeatCheck } from '@/lib/flow/integrated-poc/repeat-commands';
 import { programRepeatTitle } from '@/lib/flow/integrated-poc/repeat-line';
 import { programViewScope } from '@/lib/flow/integrated-poc/view-scope';
@@ -1804,10 +1804,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
    *  view keeps its own notices, so a slow save's answer never brings back the one the change of view cleared. */
   /** N10 (SPEC 2): finishing a repeat line's round, from 오늘 or from an open document: one command on the space as it
    *  is now; the round the screen showed (`expected`) keeps a second tab from moving it twice. Another device's save
-   *  that got in first is read and the check built again on it (QA F2), so both days are kept and the date moves once. */
-  async function finishRepeatRound(taskId: string, expected: string | null): Promise<ProgramRepeatCheck | 'refused' | null> {
+   *  that got in first is read and the check built again on it (QA F2), so both days are kept and the date moves once.
+   *  `seen` is the line's log as that screen showed it, so a date only moved by hand is never taken for that (QA N1). */
+  async function finishRepeatRound(taskId: string, expected: string | null, seen: string): Promise<ProgramRepeatCheck | 'refused' | null> {
     const result = await run('반복 회차 완료', current => completeProgramRepeat(current, { actorId, requestId: programId('repeat'), expectedSpace: current.spaces[actorId],
-      taskId, today, expected }), true, undefined, undefined, true, true);
+      taskId, today, expected, seen }), true, undefined, undefined, true, true);
     return result.ok ? readProgramRepeatCheck(result.result) : result.reason === 'conflict' ? 'refused' : null;
   }
   /** SPEC 3: 되돌리기 takes the whole check back, only while the line is as it left it. */
@@ -1818,7 +1819,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const repeatNextText = (title: string, check: ProgramRepeatCheck) => `${programRepeatTitle(title)} · ${check.applied ? '' : '다른 곳에서 이미 끝낸 회차입니다 · '}다음은 ${programCalendarDate(check.after, today)}`;
   // QA P3: as with C2/C6, a slow save's answer speaks only in the view the tap was made in.
   async function finishRepeatFromList(taskId: string, title: string, expected: string | null) {
-    const view = presentation.current, check = await finishRepeatRound(taskId, expected);
+    const view = presentation.current, check = await finishRepeatRound(taskId, expected, programRepeatSeen(space, taskId));
     if (!checkViewOwns(view)) return;
     // QA F1: a check that changed nothing here (the round was finished elsewhere first) offers no 되돌리기.
     setRepeatNotice(check && check !== 'refused' ? { actorId, text: repeatNextText(title, check), check: check.applied ? check : null }

@@ -8,7 +8,7 @@ import { setPersonalRepeat, startPersonalRound } from './personal-authoring-comm
 import { moveProgramTaskDates, programTaskRepeatMember } from './task-date-move';
 import { textEditorRows, textWorkspaceModel as M } from './text-workspace';
 import { programRepeatFirstDate, programRepeatNextDate, programRepeatTitle, readProgramRepeatMarker } from './repeat-line';
-import { completeProgramRepeat, convertProgramLegacyRepeat, programRepeatLine, readProgramRepeatCheck, settleProgramRepeatLines, undoProgramRepeat } from './repeat-commands';
+import { completeProgramRepeat, convertProgramLegacyRepeat, programRepeatLine, programRepeatSeen, readProgramRepeatCheck, settleProgramRepeatLines, undoProgramRepeat } from './repeat-commands';
 import { programRepeatDays } from './repeat-log';
 import { captureAlphaAccount, commandFromProgramTransition } from './alpha-persistence/program-adapter';
 import { isM3Command } from './alpha-sync/contract';
@@ -136,13 +136,14 @@ test('two tabs: the same round checked twice moves once and keeps one day; 되�
   const taskId = firstTask(data).id;
   const a = ok(completeProgramRepeat(data, { ...base(data), taskId, today: '2026-11-09', expected: '2026-11-09' }));
   // The second tab still showed the 11/9 round; on the saved space its press changes nothing.
-  const b = ok(completeProgramRepeat(a.data, { ...base(a.data), taskId, today: '2026-11-09', expected: '2026-11-09' }));
+  const seen = programRepeatSeen(space(data), taskId);
+  const b = ok(completeProgramRepeat(a.data, { ...base(a.data), taskId, today: '2026-11-09', expected: '2026-11-09', seen }));
   assert.equal(b.changed, false);
   assert.equal(rawOf(b.data, docId), '- [ ] 운동 @매주 월 목\n  - 날짜: 2026-11-12');
   assert.deepEqual(programRepeatDays(space(b.data), taskId), ['2026-11-09']);
   assert.equal(readProgramRepeatCheck(b.result)!.applied, false, 'QA F1: nothing of its own to take back');
   // QA F2: the same stale round finished on another day keeps the one move and adds that day.
-  const c = ok(completeProgramRepeat(a.data, { ...base(a.data), taskId, today: '2026-11-10', expected: '2026-11-09' }));
+  const c = ok(completeProgramRepeat(a.data, { ...base(a.data), taskId, today: '2026-11-10', expected: '2026-11-09', seen }));
   assert.equal(rawOf(c.data, docId), '- [ ] 운동 @매주 월 목\n  - 날짜: 2026-11-12');
   assert.deepEqual(programRepeatDays(space(c.data), taskId), ['2026-11-09', '2026-11-10']);
   // The line changed after the check (another tab moved its date): the first tab's 되돌리기 is refused.

@@ -62,31 +62,42 @@ export function settleProgramRepeatLines(space: RepeatSpace, docId: string, toda
  *  length is fixed (QA F4): the days go in as their count and a hash, never as the list, so a check's result stays far
  *  inside a receipt's 1,200 characters however many days a line keeps. */
 export function programRepeatState(space: RepeatSpace & Pick<ProgramPrivateSpace, 'recurrenceExecution'>, taskId: string): string | null {
-  const state = programTaskDateState(space as ProgramPrivateSpace, taskId), days = programRepeatDays(space, taskId);
-  return state === null ? null : `${state}:${days.length}:${programStateHash(days.join(','))}`;
+  const state = programTaskDateState(space as ProgramPrivateSpace, taskId);
+  return state === null ? null : `${state}:${repeatDaysProof(programRepeatDays(space, taskId))}`;
+}
+const repeatDaysProof = (days: readonly string[]) => `${days.length}:${programStateHash(days.join(','))}`;
+/** The line's log as the screen knew it when its check was pressed, as the same short count and hash (QA N1). */
+export function programRepeatSeen(space: Pick<ProgramPrivateSpace, 'recurrenceExecution'> | undefined, taskId: string): string {
+  return repeatDaysProof(space ? programRepeatDays(space, taskId) : []);
 }
 /** What a check did. `applied`: this request changed the account, so its 되돌리기 may take back exactly that; a request
  *  that found its work already done elsewhere changed nothing and gets no 되돌리기 (QA F1). */
 export type ProgramRepeatCheck = { taskId: string; before: string | null; after: string; day: string; inserted: boolean; state: string; applied: boolean };
 
-/** The round the screen showed (`expected`) was finished elsewhere: the line's date is where finishing that round on one
- *  of its kept days moves it. A date changed any other way is not this round's. */
-function programRepeatRoundDone(line: ProgramRepeatLine, expected: string | null, days: readonly string[]): boolean {
-  return line.task.date !== null && days.some(day => programRepeatNextDate(line.marker.rule, expected, day) === line.task.date);
+/** The round the screen showed (`expected`) was finished elsewhere: the line's date is where finishing that round on a
+ *  day added to the log since the screen's `seen` moves it. A day kept before proves nothing (QA N1: with a fixed rule
+ *  any earlier day gives the same next round, so a date moved by hand would pass), and neither does a log that is not
+ *  the seen one with days after it. */
+function programRepeatRoundDone(line: ProgramRepeatLine, expected: string | null, days: readonly string[], seen: string | undefined): boolean {
+  const count = seen === undefined ? NaN : Number(seen.slice(0, seen.indexOf(':')));
+  if (line.task.date === null || !Number.isInteger(count) || count > days.length || repeatDaysProof(days.slice(0, count)) !== seen) return false;
+  return days.slice(count).some(day => programRepeatNextDate(line.marker.rule, expected, day) === line.task.date);
 }
 
 /** SPEC 2: finishing a round. The box stays empty, the "- 날짜:" property moves to the next round and the day is kept
- *  in the log; progressRecords are untouched. `expected` is the round as the screen showed it. That round finished
- *  elsewhere first (two tabs or devices, SPEC 7) keeps its one move: this day joins the log beside the other one, or
- *  changes nothing when it is already there. Any other change since is a conflict. */
-export function completeProgramRepeat(data: ProgramData, input: ProgramPrivateMutationBase & { taskId: string; today: string; expected: string | null }): ProgramTransition<string> {
-  return transitionProgramPrivateSpace(data, input, 'private-task-repeat', { taskId: input.taskId, today: input.today, expected: input.expected }, space => {
+ *  in the log; progressRecords are untouched. `expected` is the round as the screen showed it, `seen` its log
+ *  (programRepeatSeen). That round finished elsewhere first (two tabs or devices, SPEC 7) keeps its one move: this day
+ *  joins the log beside the other one, or changes nothing when it is already there. Any other change since is a
+ *  conflict, and so is any change at all for a press that does not say what it saw. */
+export function completeProgramRepeat(data: ProgramData, input: ProgramPrivateMutationBase & { taskId: string; today: string; expected: string | null; seen?: string }): ProgramTransition<string> {
+  return transitionProgramPrivateSpace(data, input, 'private-task-repeat', { taskId: input.taskId, today: input.today, expected: input.expected, ...(input.seen === undefined ? {} : { seen: input.seen }) }, space => {
     const line = programRepeatLine(space, input.taskId);
-    if (!programDate(input.today) || input.expected !== null && !programDate(input.expected)) return { result: input.taskId, reason: 'invalid' };
+    if (!programDate(input.today) || input.expected !== null && !programDate(input.expected)
+      || input.seen !== undefined && !/^\d{1,5}:[0-9a-z]{1,12}$/.test(input.seen)) return { result: input.taskId, reason: 'invalid' };
     if (!line) return { result: input.taskId, reason: 'missing' };
     if (line.block) return { result: input.taskId, reason: 'unresolved' };
     const before = line.task.date, moves = before === input.expected;
-    if (!moves && !programRepeatRoundDone(line, input.expected, programRepeatDays(space, input.taskId))) return { result: input.taskId, reason: 'conflict' };
+    if (!moves && !programRepeatRoundDone(line, input.expected, programRepeatDays(space, input.taskId), input.seen)) return { result: input.taskId, reason: 'conflict' };
     const after = moves ? programRepeatNextDate(line.marker.rule, before, input.today) : before!;
     if (moves) {
       const text = after ? M.updateTask(space.text, input.taskId, { date: after }) : space.text;

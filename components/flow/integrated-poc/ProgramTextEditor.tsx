@@ -9,7 +9,7 @@ import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
 import type { ProgramPrivateSpace } from '@/lib/flow/integrated-poc/contract';
-import { programRepeatLine, settleProgramRepeatLines, PROGRAM_REPEAT_BLOCK_TEXT, PROGRAM_REPEAT_UNDO_REFUSED, type ProgramRepeatCheck } from '@/lib/flow/integrated-poc/repeat-commands';
+import { programRepeatLine, programRepeatSeen, settleProgramRepeatLines, PROGRAM_REPEAT_BLOCK_TEXT, PROGRAM_REPEAT_UNDO_REFUSED, type ProgramRepeatCheck } from '@/lib/flow/integrated-poc/repeat-commands';
 import { parseProgramRepeatWords, programRepeatTitle, readProgramRepeatMarker } from '@/lib/flow/integrated-poc/repeat-line';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
 import { readChildDrafts, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
@@ -130,7 +130,7 @@ export interface ProgramTextEditorProps {
   /** N10: the space's repeat context (copies, repeats) for judging a repeat line, and the host's one command for
    *  finishing a round and taking it back; the editor then takes the saved document as any outside change. */
   repeatContext?: () => Pick<ProgramPrivateSpace, 'copies' | 'personalAuthoring' | 'savedBindings' | 'legacySnapshot' | 'recurrenceExecution'>;
-  onRepeatFinish?: (taskId: string, expected: string | null) => Promise<ProgramRepeatCheck | 'refused' | null>;
+  onRepeatFinish?: (taskId: string, expected: string | null, seen: string) => Promise<ProgramRepeatCheck | 'refused' | null>;
   onRepeatUndo?: (check: ProgramRepeatCheck) => Promise<boolean>;
   onRegisterSave?: (save: (() => Promise<boolean>) | null, status?: (() => ProgramTextSaveStatus) | null) => void;
   onRegisterSourceFocus?: (focus: ProgramSourceFocus | null) => void;
@@ -721,10 +721,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   async function finishRepeatHere(taskId: string, title: string, expected: string | null) {
     const finish = propsRef.current.onRepeatFinish;
     if (!finish || repeatBusyRef.current || composingRef.current) return;
+    // The log as shown at the press, before the save below lets a newer account in (QA N1).
+    const seen = programRepeatSeen(propsRef.current.repeatContext?.(), taskId);
     repeatBusyRef.current = true;
     try {
       if (draftRef.current?.getState().dirty && !await saveNow()) return;
-      const check = await finish(taskId, expected);
+      const check = await finish(taskId, expected, seen);
       if (check && check !== 'refused') {
         // QA F1: a check that changed nothing here (finished elsewhere first) has nothing of its own to take back.
         lastRepeatCheck.current = check.applied ? check : null;

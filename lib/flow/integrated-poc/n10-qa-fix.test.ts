@@ -5,8 +5,8 @@ import { PROGRAM_SCHEMA, type ProgramData, type ProgramTransition } from './cont
 import { createProgramEnvelope, createProgramPrivateSpace, validateProgramData } from './program-data';
 import { createProgramDocument } from './private-space';
 import { textWorkspaceModel as M } from './text-workspace';
-import { completeProgramRepeat, programRepeatState, readProgramRepeatCheck, settleProgramRepeatLines, undoProgramRepeat, type ProgramRepeatCheck } from './repeat-commands';
-import { addProgramRepeatDay, programRepeatDayCount, programRepeatDays } from './repeat-log';
+import { completeProgramRepeat, programRepeatSeen, programRepeatState, readProgramRepeatCheck, settleProgramRepeatLines, undoProgramRepeat, type ProgramRepeatCheck } from './repeat-commands';
+import { addProgramRepeatDay, programRepeatDayCount, programRepeatDays, removeProgramRepeatDay } from './repeat-log';
 import { PROGRAM_REPEAT_LOG_DAYS } from './repeat-log-shape';
 import { ALPHA_SCHEMA, type AlphaAccount } from './alpha-persistence/contract';
 import { captureAlphaAccount, materializeAccount } from './alpha-persistence/program-adapter';
@@ -18,6 +18,8 @@ import { emptyAlphaReferences } from './alpha-social/projection';
 // another tab's round; F2 two devices' different days were not kept after a revision conflict; F3 a folder view never
 // gave a repeat line its first date; F4 the check's result grew with every kept day until a receipt refused it; F5 the
 // old repeat card's press was refused without reaching the server; P3 a slow check's notice outlived its view.
+// QA2 (NO_GO, 11/4) N1: a date only moved by hand was taken for another device's check, because a day kept long before
+// gives the same next round, and a stale press was saved on top of it after the conflict.
 const owner = '22222222-2222-4222-8222-222222222222';
 let request = 0;
 const ok = <T,>(result: ProgramTransition<T>) => { assert(result.ok, result.ok ? '' : result.reason); return result; };
@@ -31,7 +33,8 @@ function fixture(raw = '- [ ] 운동 @매주 월 목\n  - 날짜: 2026-11-09') {
   const tasks = M.tasks(space(created.data).text);
   return { data: created.data, docId: created.result, taskId: tasks[0].id, tasks };
 }
-const complete = (data: ProgramData, taskId: string, today: string, expected: string | null) => completeProgramRepeat(data, { ...base(data), taskId, today, expected });
+const complete = (data: ProgramData, taskId: string, today: string, expected: string | null, seen?: string) =>
+  completeProgramRepeat(data, { ...base(data), taskId, today, expected, ...(seen === undefined ? {} : { seen }) });
 const dateOf = (data: ProgramData, taskId: string) => M.tasks(space(data).text).find(task => task.id === taskId)!.date;
 
 /** Two devices of one owner on one server (the real sync controller and the in-memory repository). */
@@ -49,17 +52,19 @@ function devices(data: ProgramData) {
 }
 type Device = ReturnType<typeof devices>['a'];
 const shown = (device: Device) => device.snapshot().envelope!.data;
-const check = (device: Device, taskId: string, today: string, expected: string | null, rebuild = true) => device.mutate('반복 회차 완료',
-  current => complete(current, taskId, today, expected), { history: true, awaitAutomaticRead: true, ...(rebuild ? { rebuildOnConflict: true } : {}) });
+/** A press as the screen makes it: the round and the log it showed, read before the save (and any read it waits on). */
+const check = (device: Device, taskId: string, today: string, expected: string | null, rebuild = true, seen = programRepeatSeen(space(shown(device)), taskId)) =>
+  device.mutate('반복 회차 완료', current => complete(current, taskId, today, expected, seen), { history: true, awaitAutomaticRead: true, ...(rebuild ? { rebuildOnConflict: true } : {}) });
 
 test('F1: a check that found its round already done changes nothing and may not undo the other tab\'s round', async () => {
   const { data, taskId } = fixture();
   const { a, b } = devices(data);
   await a.refresh(); await b.refresh();
   assert(readProgramRepeatCheck((await check(a, taskId, '2026-11-09', '2026-11-09') as { result: string }).result)!.applied);
-  // B reads the saved account (an automatic read) but its press still names the round its screen showed.
+  // B reads the saved account (an automatic read) but its press still names the round and the log its screen showed.
+  const seen = programRepeatSeen(space(shown(b)), taskId);
   await b.refresh();
-  const duplicate = await check(b, taskId, '2026-11-09', '2026-11-09');
+  const duplicate = await check(b, taskId, '2026-11-09', '2026-11-09', true, seen);
   assert(duplicate.ok && duplicate.changed === false);
   const token = readProgramRepeatCheck(duplicate.result)!;
   assert.equal(token.applied, false, 'no 되돌리기 for a request that changed nothing');
@@ -79,8 +84,8 @@ test('F1: a newer round checked on a day already kept still undoes, keeping that
   const undone = ok(undoProgramRepeat(early.data, { ...base(early.data), check: token }));
   assert.equal(dateOf(undone.data, taskId), '2026-11-12');
   assert.deepEqual(programRepeatDays(space(undone.data), taskId), ['2026-11-09'], 'the earlier check\'s day stays');
-  // Any change after the check (here one more kept day) refuses its 되돌리기.
-  const later = ok(complete(early.data, taskId, '2026-11-10', '2026-11-12'));
+  // Any change after the check (here the next round, finished a day later) refuses its 되돌리기.
+  const later = ok(complete(early.data, taskId, '2026-11-10', '2026-11-16'));
   const refused = undoProgramRepeat(later.data, { ...base(later.data), check: token });
   assert(!refused.ok && refused.reason === 'conflict');
   // A token that changed nothing is refused even when the line is exactly as it says.
@@ -158,9 +163,83 @@ test('F2: without the rebuild option a revision conflict stays a conflict (other
   // A day the stale tab could not have seen moved the date some other way: that is still refused, not merged.
   const moved = structuredClone(shown(a));
   space(moved).text = M.updateTask(space(moved).text, taskId, { date: '2026-11-19' });
-  const refused = complete(moved, taskId, '2026-11-10', '2026-11-09');
+  const refused = complete(moved, taskId, '2026-11-10', '2026-11-09', programRepeatSeen(space(data), taskId));
   assert(!refused.ok && refused.reason === 'conflict');
 });
+
+/** N1: the 운동 line with a day kept a week before (11/2) and its round on 11/9. */
+function withPastDay() {
+  const fixed = fixture(), data = structuredClone(fixed.data);
+  assert(addProgramRepeatDay(space(data), fixed.taskId, '2026-11-02').inserted);
+  return { ...fixed, data };
+}
+const moveByHand = (data: ProgramData, taskId: string, date: string) => {
+  const next = structuredClone(data); space(next).text = M.updateTask(space(next).text, taskId, { date });
+  return next;
+};
+
+test('N1: a date moved by hand is not a check made elsewhere; the stale press stays a conflict and writes nothing', async () => {
+  const { data, taskId } = withPastDay();
+  const { a, b } = devices(data);
+  await a.refresh(); await b.refresh();
+  // A moves the date to Thursday without finishing anything; B's screen still shows Monday's round and the old log.
+  assert((await a.mutate('날짜', current => ({ ok: true, data: moveByHand(current, taskId, '2026-11-12'), changed: true, result: taskId }))).ok);
+  let builds = 0;
+  const seen = programRepeatSeen(space(shown(b)), taskId);
+  const stale = await b.mutate('반복 회차 완료', current => { builds++; return complete(current, taskId, '2026-11-10', '2026-11-09', seen); },
+    { history: true, awaitAutomaticRead: true, rebuildOnConflict: true });
+  assert(!stale.ok && stale.reason === 'conflict', stale.ok ? 'the stale press was saved' : stale.reason);
+  assert.equal(builds, 2, 'built once more on the newer account, and refused there');
+  await a.refresh(); await b.refresh();
+  for (const device of [a, b]) {
+    assert.equal(device.snapshot().account!.revision, 1, 'only A\'s save');
+    assert.equal(dateOf(shown(device), taskId), '2026-11-12', 'A\'s date');
+    assert.deepEqual(programRepeatDays(space(shown(device)), taskId), ['2026-11-02'], 'only the day kept before');
+  }
+  // The real thing still joins: A finishes Monday's round early (on Sunday); B, stale, finishes it on Monday.
+  const pair = devices(data);
+  await pair.a.refresh(); await pair.b.refresh();
+  assert((await check(pair.a, taskId, '2026-11-08', '2026-11-09')).ok);
+  const joined = await check(pair.b, taskId, '2026-11-09', '2026-11-09');
+  assert(joined.ok && readProgramRepeatCheck(joined.result)!.applied, joined.ok ? 'not applied' : joined.reason);
+  assert.equal(dateOf(shown(pair.b), taskId), '2026-11-12');
+  assert.deepEqual(programRepeatDays(space(shown(pair.b)), taskId), ['2026-11-02', '2026-11-08', '2026-11-09']);
+});
+
+test('N1: only days added after the log the screen saw can say its round was finished elsewhere', () => {
+  const { data, taskId } = withPastDay(), seen = programRepeatSeen(space(data), taskId);
+  const refused = (result: ProgramTransition<string>, from: ProgramData, reason: string, why: string) => {
+    assert(!result.ok && result.reason === reason, `${why}: ${result.ok ? 'saved' : result.reason}`);
+    assert.deepEqual(result.data, from, `${why}: nothing written`);
+  };
+  // QA's case in the model: the old 11/2 gives Thursday as Monday's next round, but it was there before the screen.
+  const moved = moveByHand(data, taskId, '2026-11-12');
+  refused(complete(moved, taskId, '2026-11-10', '2026-11-09', seen), moved, 'conflict', 'moved by hand');
+  refused(complete(moved, taskId, '2026-11-10', '2026-11-09'), moved, 'conflict', 'a press that does not say what it saw');
+  // Checked elsewhere and then moved by hand: the new day leads to Thursday, not to where the date is now.
+  const done = ok(complete(data, taskId, '2026-11-10', '2026-11-09', seen)), movedAfter = moveByHand(done.data, taskId, '2026-11-16');
+  refused(complete(movedAfter, taskId, '2026-11-10', '2026-11-09', seen), movedAfter, 'conflict', 'checked, then moved by hand');
+  // A log that is not the seen one with days after it (a seen day taken out) proves nothing.
+  const rewritten = structuredClone(done.data);
+  assert(removeProgramRepeatDay(space(rewritten), taskId, '2026-11-02'));
+  refused(complete(rewritten, taskId, '2026-11-11', '2026-11-09', seen), rewritten, 'conflict', 'a seen day gone');
+  refused(complete(done.data, taskId, '2026-11-11', '2026-11-09', `9:${seen.split(':')[1]}`), done.data, 'conflict', 'more days than kept');
+  refused(complete(done.data, taskId, '2026-11-11', '2026-11-09', 'seen'), done.data, 'invalid', 'not a proof');
+  // Finished early elsewhere (Monday's round on Sunday): the same day changes nothing, the next day joins the log.
+  const early = ok(complete(data, taskId, '2026-11-08', '2026-11-09', seen));
+  const again = ok(complete(early.data, taskId, '2026-11-08', '2026-11-09', seen));
+  assert.equal(again.changed, false);
+  assert.equal(readProgramRepeatCheck(again.result)!.applied, false);
+  const monday = ok(complete(early.data, taskId, '2026-11-09', '2026-11-09', seen));
+  assert.equal(dateOf(monday.data, taskId), '2026-11-12');
+  assert.deepEqual(programRepeatDays(space(monday.data), taskId), ['2026-11-02', '2026-11-08', '2026-11-09']);
+  // Two stale presses one after another: every day after the seen log counts.
+  const third = ok(complete(done.data, taskId, '2026-11-11', '2026-11-09', seen));
+  assert.deepEqual(programRepeatDays(space(third.data), taskId), ['2026-11-02', '2026-11-10', '2026-11-11']);
+  const fourth = ok(complete(third.data, taskId, '2026-11-11', '2026-11-09', seen));
+  assert.equal(fourth.changed, false);
+});
+
 
 test('F4: a year of daily checks through the command, the account and the server; the result stays short', async () => {
   const { data, taskId } = fixture('- [ ] 영어 공부 @매일\n  - 날짜: 2026-01-01');
@@ -227,13 +306,18 @@ test('F3: settling takes only the lines a folder view shows; the editor settles 
   assert(editor.includes("root.addEventListener('focusout', left);"));
 });
 
-test('F5 and P3: the old repeat card waits out an automatic read; a slow check speaks only in its own view', () => {
+test('F5, P3 and N1: the old repeat card waits out an automatic read; a slow check speaks only in its own view and says what it saw', () => {
   const host = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   const convert = host.slice(host.indexOf('  async function convertLegacyRepeat() {'), host.indexOf('  const legacyRepeatContent ='));
   assert(convert.includes('expectedSpace: current.spaces[actorId], seriesId: legacyRepeat.id, today }), true, undefined, undefined, true);'));
   assert(convert.includes("if (!result.ok && !['missing', 'unresolved'].includes(result.reason)) return;"), 'a save that did not run keeps the card');
-  assert(host.includes('taskId, today, expected }), true, undefined, undefined, true, true);'), 'the check rebuilds on a conflict');
-  assert(host.includes('const view = presentation.current, check = await finishRepeatRound(taskId, expected);\n    if (!checkViewOwns(view)) return;'));
+  assert(host.includes('taskId, today, expected, seen }), true, undefined, undefined, true, true);'), 'the check rebuilds on a conflict');
+  assert(host.includes('const view = presentation.current, check = await finishRepeatRound(taskId, expected, programRepeatSeen(space, taskId));\n    if (!checkViewOwns(view)) return;'));
+  // N1: the editor also sends the log as it showed it at the press, before its own save lets a newer account in.
+  const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  const finish = editor.slice(editor.indexOf('  async function finishRepeatHere('), editor.indexOf('  async function undoRepeatHere('));
+  assert(finish.indexOf('const seen = programRepeatSeen(propsRef.current.repeatContext?.(), taskId);') < finish.indexOf('await saveNow()'));
+  assert(finish.includes('const check = await finish(taskId, expected, seen);'));
   assert(host.includes('const view = presentation.current, done = await undoRepeatRound(check);\n    if (!checkViewOwns(view)) return;'));
   assert(host.includes('check: check.applied ? check : null }'));
 });
