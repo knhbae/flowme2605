@@ -36,8 +36,8 @@ export function computeWriting(identity:WritingIdentity,payload:WritingPayload):
   value={ok:true,command,result,recoveryValue,recoveryRaw:encodeRecoveryStorage(recoveryValue),ackEligible};
  }else{
   const row=M.rowMeta(payload.workspace,identity.docId).find(r=>r.id===payload.lineId),target=row?.progressTargetId;
-  if(row?.kind==='subcheck')value={ok:true,panel:'subcheck'};
-  else if(row?.kind!=='task'||!target)value={ok:false,reason:'blocked'};
+  // N9: a subcheck's tap completes it as a task's does; its progress stays its own record.
+  if(row?.kind!=='task'&&row?.kind!=='subcheck'||!target)value={ok:false,reason:'blocked'};
   else {const percent=M.currentProgress(payload.workspace,target),latest=M.latestProgress(payload.workspace,target);
    if(percent===null)value={ok:false,reason:'blocked'};else if(percent>0&&percent<100)value={ok:true,panel:'partial'};else if((latest?.date??'')>payload.date)value={ok:true,panel:'future'};
    else {const workspace=M.recordProgress(payload.workspace,target,payload.date,percent===100?0:100);if(workspace===payload.workspace||!M.validate(workspace))value={ok:false,reason:'blocked'};else value={ok:true,workspace,rows:M.rowMeta(workspace,identity.docId),paint:textEditorRows(workspace,identity.docId)};}

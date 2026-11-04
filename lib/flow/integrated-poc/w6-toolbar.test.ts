@@ -50,7 +50,8 @@ test('↶ and ↷ say what they undo and redo', () => {
 });
 
 test('an empty document shows a two-line hint, and the writing example is in its ＋ menu', () => {
-  assert(editor.includes("const EMPTY_DOCUMENT_HINT = '여기에 적으세요.\\n할 일은 ☐ 단추나 - [ ] 로, 메뉴는 / 로 엽니다.';"));
+  // N9 (U52): the second line was shortened so it does not wrap one syllable onto a line of its own at 390px.
+  assert(editor.includes("const EMPTY_DOCUMENT_HINT = '여기에 적으세요.\\n할 일은 ☐ 또는 - [ ], 메뉴는 /';"));
   assert(editor.includes("textarea.placeholder = props.readOnly ? '' : props.directWriting ? '여기에 바로 적으세요' : EMPTY_DOCUMENT_HINT;"));
   // The textarea text is transparent over the mirror; its placeholder needs its own color.
   assert.match(css, /\.host :global\(\.tle-textarea::placeholder\)[^{]*\{[^}]*-webkit-text-fill-color: var\(--flowme-b-muted\);/);

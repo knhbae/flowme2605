@@ -77,7 +77,8 @@ test('the 복구함 lists and counts every stored entry even while the notice co
   assert.equal(evaluate<number>(declaration('storedTotal'), scope), 2);
   assert.equal(count({ parked: [], active: [typed], atRisk: false }), 0);
   assert(source.includes("<summary>복구함{storedTotal ? ` (${storedTotal})` : ''}</summary>"));
-  assert(source.includes('{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <p>보관한 입력이 없습니다.</p>}'));
+  // N9: an empty 복구함 also points to the archived documents (보관함), when there are any.
+  assert(source.includes('{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>보관한 입력이 없습니다.</p>'));
   assert(source.includes('open={!!storedTotal && (unavailable || external'));
   // The notice and the 더보기 badge name use their own label, so two different numbers never share "보관한 입력".
   assert(source.includes('<span>확인이 필요한 입력 {savedTotal}개</span>'));

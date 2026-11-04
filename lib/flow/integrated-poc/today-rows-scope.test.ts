@@ -38,7 +38,8 @@ test('"← 오늘" and the same tab return through the tab-change guard; the rem
   assert.match(attribute(nav[0], 'onClick'), /chooseMainTab\(key as ProgramMainTab\)/);
   const chooser = find((node): node is ts.FunctionDeclaration => ts.isFunctionDeclaration(node) && node.name?.text === 'chooseMainTab')[0].getText(tree);
   assert.match(chooser, /sourceOriginOpen && sourceOriginTab\(sourceOrigin!\) === key \? returnToSourceOrigin\(\)\.then\(\(\) => true\) : changePeriod\(key, true\)/);
-  assert.match(source, /props\.onRegisterMainTabs\?\.\(\{ choose: tab => chooseMainTabRef\.current\(tab\) \}\);/);
+  // N9: the same port also opens 쓰기's 보관함 for the 복구함's guide.
+  assert.match(source, /props\.onRegisterMainTabs\?\.\(\{ choose: tab => chooseMainTabRef\.current\(tab\), openArchive: \(\) => openArchiveRef\.current\(\) \}\);/);
   const back = buttons.filter(button => attribute(button, 'className') === '{styles.sourceReturn}');
   assert.equal(back.length, 1);
   assert.equal(attribute(back[0], 'onClick'), '{() => void returnToSourceOrigin()}');

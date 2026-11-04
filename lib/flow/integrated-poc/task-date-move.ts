@@ -113,6 +113,14 @@ export function programTaskDateChoices(today: string, picked: readonly (string |
     { key: 'none', label: '날짜 없음', date: null, detail: '' },
   ].map(choice => ({ ...choice, off: off(choice.date) }));
 }
+/** N9 line menu chips: the sheet's 오늘 and 내일, then 이번 주말, the coming Saturday (today on a Saturday or Sunday).
+ *  날짜 고르기 stays the row's own date form. */
+export function programLineDateChips(today: string): { key: string; label: string; date: string; detail: string }[] {
+  const [todayChoice, tomorrow] = programTaskDateChoices(today, []), weekday = new Date(`${today}T00:00:00Z`).getUTCDay();
+  const weekend = weekday === 0 || weekday === 6 ? today : programShiftDate(today, 6 - weekday);
+  return [todayChoice, tomorrow, { key: 'weekend', label: '이번 주말', date: weekend, detail: programCalendarDate(weekend, today) }]
+    .map(({ key, label, date, detail }) => ({ key, label, date: date!, detail }));
+}
 /** 로 or 으로 after a word, by its last Hangul syllable (ㄹ and no final take 로). */
 const ro = (word: string) => { const last = [...word].reverse().find(char => char >= '가' && char <= '힣'); const final = last ? (last.charCodeAt(0) - 0xac00) % 28 : 0; return final === 0 || final === 8 ? '로' : '으로'; };
 /** The notice after a move (2-6): "3개를 11월 2일 (월)로 옮겼습니다", or 날짜 없음으로. */

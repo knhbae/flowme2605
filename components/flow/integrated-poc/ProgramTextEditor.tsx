@@ -7,6 +7,7 @@ import { programEditorStatus, serverStatusWins } from '@/lib/flow/integrated-poc
 import { ProgramServerStatusContext } from './program-status-context';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
+import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
 import { readChildDrafts, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
 import { createWritingBarHold, folderBarLine, heldTargetVerdict, taskMarkerLock, toggleTaskLine, writingBarLine, writingBarTarget, type WritingBarAction, type WritingBarLine, type WritingBarTarget } from '@/lib/flow/integrated-poc/writing-bar';
 import { programFlowBelow, programKeyboardBarCramped, programKeyboardBarPlace, programKeyboardBarSettle, programKeyboardRoom, programVisibleBottom } from '@/lib/flow/integrated-poc/keyboard-bar-place';
@@ -189,7 +190,8 @@ export function trapProgramDialogTab(
 const FOLDER_STRUCTURE_LOCK = '분류 보기에서는 저장된 줄의 종류와 들여쓰기를 바꿀 수 없습니다. ‘전체 문서 보기’에서 바꿔 주세요.';
 const REGION_OUTSIDE = '이 자리는 지금 보는 분류 영역 밖이라 여기서 넣지 않았습니다. 원문은 그대로입니다. 전체 문서에서 추가해 주세요.';
 /** W6: an empty document's hint; the first character (a composing one too) takes it away. */
-const EMPTY_DOCUMENT_HINT = '여기에 적으세요.\n할 일은 ☐ 단추나 - [ ] 로, 메뉴는 / 로 엽니다.';
+// N9 (U52): short enough that its second line stays one line beside the ⋮ on a 390px phone.
+const EMPTY_DOCUMENT_HINT = '여기에 적으세요.\n할 일은 ☐ 또는 - [ ], 메뉴는 /';
 /** W6: bar icons drawn to read as what they do: indenting is not moving, and ↳ is not ↶. */
 function BarIcon({ name }: { name: WritingBarAction }) {
   const path = { task: 'M5 5h14v14H5z', outdent: 'M4 5v14M20 12H9m4-4-4 4 4 4', indent: 'M20 5v14M4 12h11m-4-4 4 4-4 4',
@@ -264,8 +266,8 @@ export function ProgramReferencePanel({ access, title, date, history, onOrigin, 
   </div>;
 }
 
-/** A default binary check records progress on the existing Item. Subchecks,
- * partial progress and future-record ambiguity retain the explicit detail UI. */
+/** A default binary check records progress on the existing Item, a subcheck's too (N9: one tap completes it, as a
+ * task's does). Partial progress and future-record ambiguity retain the explicit detail UI. */
 /** Presentation follows the real action; this never authorizes a mutation. */
 /** A checkbox line with no title yet. */
 const EMPTY_TITLE_TASK = /^\s*-\s+\[([ xX]|\d+(?:\.\d+)?%?)\]\s*$/;
@@ -273,16 +275,15 @@ const EMPTY_TITLE_TASK = /^\s*-\s+\[([ xX]|\d+(?:\.\d+)?%?)\]\s*$/;
 export function programCheckboxAction(meta: TextEditorRowMeta, access: ProgramReferenceAccess | undefined, date: string): 'toggle' | 'progress-open' | 'reference-open' {
   if (!meta.progressTargetId || !access || access.kind !== 'active' || access.reason
     || access.lineId !== meta.progressTargetId || !access.documentId) return 'reference-open';
-  if (meta.kind === 'subcheck' && !meta.isCanonical || (meta.progressDate ?? '') > date
+  if ((meta.progressDate ?? '') > date
     || (meta.progressPercent !== 0 && meta.progressPercent !== 100)) return 'progress-open';
-  return ['task', 'reference'].includes(meta.kind)||meta.kind==='subcheck'&&meta.isCanonical ? 'toggle' : 'progress-open';
+  return ['task', 'reference', 'subcheck'].includes(meta.kind) ? 'toggle' : 'progress-open';
 }
 
 export function programDirectCheckboxChange(workspace: TextWorkspaceState, docId: string, lineId: string, date: string) {
   const row = M.rowMeta(workspace, docId).find(entry => entry.id === lineId);
-  if (row?.kind === 'subcheck'&&!row.isCanonical) return { kind: 'panel', reason: 'subcheck' } as const;
   const target = row?.progressTargetId;
-  if (!row||row.kind!=='task'&&!(row.kind==='subcheck'&&row.isCanonical) || !target) return { kind: 'blocked' } as const;
+  if (!row||row.kind!=='task'&&row.kind!=='subcheck' || !target) return { kind: 'blocked' } as const;
   const value = M.currentProgress(workspace, target);
   if (value === null) return { kind: 'blocked' } as const;
   if (value > 0 && value < 100) return { kind: 'panel', reason: 'partial' } as const;
@@ -2427,6 +2428,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (next === currentState()) { closePanel(); return; }
     closePanel(); await apply(next, '항목 날짜·시간', { taskId: target, date: date || null, time });
   }
+  /** N9: a line menu date chip sets the date in one press, as 날짜·시간 적용 would, and keeps the time. */
+  async function applyDateChip(lineId: string | null, value: string) {
+    if (actionsDisabled() || composingRef.current || regionPendingRef.current) return;
+    if (accessFor(lineId)?.reason) { setPanel({ kind: 'reference', lineId }); return; }
+    const target = currentRow(lineId)?.progressTargetId, task = target ? M.tasks(currentState()).find(item => item.id === target) : undefined;
+    if (!target || !task) return;
+    if (task.date === value) { closePanel(); return; }
+    const time = task.time ?? '', next = M.updateTask(currentState(), target, { date: value, time });
+    if (next === currentState()) { closePanel(); return; }
+    closePanel(); await apply(next, '항목 날짜·시간', { taskId: target, date: value, time });
+  }
   function downloadDraft() {
     const blob = new Blob([captureDraftRaw()], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob), anchor = document.createElement('a');
@@ -2678,7 +2690,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {memoContext && <p className={styles.contextHint}>{memoContext.continuation}</p>}
         {row?.kind === 'subcheck' && row.isCanonical === true && !row.isReference && <small className={styles.registeredNotice}>이 하위 항목은 별도 할 일로 등록돼 있습니다. 들여쓰기를 바꿔도 등록과 진행 기록은 유지됩니다.</small>}
         {row?.progressTargetId && <section className={styles.menuSection} aria-label="선택 항목 진행·날짜"><h4>진행·날짜</h4>
-          {accessFor(panel.lineId)?.reason ? <button type="button" onClick={() => setPanel({ kind: 'reference', lineId: panel.lineId })}>기록·원래 항목 보기</button> : <><button type="button" onClick={() => openProgress(panel.lineId)}>진행 기록</button><button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜·시간</button></>}
+          {accessFor(panel.lineId)?.reason ? <button type="button" onClick={() => setPanel({ kind: 'reference', lineId: panel.lineId })}>기록·원래 항목 보기</button> : (chipTask => <>
+            {/* N9: the date in one press at the top of the menu; 날짜 고르기 is the date form, its time included. */}
+            {chipTask && <div className={styles.dateChips} role="group" aria-label="날짜 정하기">
+              {programLineDateChips(today()).map(chip => <button type="button" key={chip.key} aria-pressed={chipTask.date === chip.date} disabled={actionsDisabled()}
+                onClick={() => void applyDateChip(panel.lineId, chip.date)}>{chip.label}<small>{chip.detail}</small></button>)}
+              <button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜 고르기</button></div>}
+            <button type="button" onClick={() => openProgress(panel.lineId)}>진행 기록</button>
+            {!chipTask && <button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜·시간</button>}
+          </>)(M.tasks(currentState()).find(item => item.id === row.progressTargetId))}
         </section>}
         <section className={styles.menuSection} aria-label="이 위치에 추가">{row?.progressTargetId && <h4>추가</h4>}
         {placePreview.length>0&&<ol className={styles.insertPreview} aria-hidden="true">{placePreview.filter(line => !(line.kind === 'anchor' && line.text.trim() === '/')).map((line,index)=><li key={index} data-kind={line.kind} style={{paddingInlineStart:`${Math.min(line.depth,4)*14+8}px`}}>{line.text}</li>)}</ol>}

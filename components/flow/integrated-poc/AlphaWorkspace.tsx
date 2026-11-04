@@ -154,7 +154,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // Every open or close of the 더보기 menu or its 복구함 (see navigateFromMenu).
   const menuTurns = useRef(0);
   // R8b: the bottom tabs 쓰기·오늘·분류 drive the space through its main-tab port; 더보기 opens the menu.
-  const mainTabs = useRef<{ choose(tab: ProgramMainTab): Promise<boolean> } | null>(null);
+  const mainTabs = useRef<{ choose(tab: ProgramMainTab): Promise<boolean>; openArchive(): Promise<boolean> } | null>(null);
   const [mainTab, setMainTab] = useState<ProgramMainTab>('documents');
   const [savedNoticeClosedAt, setSavedNoticeClosedAt] = useState<number | null>(null);
   // The last mutation failed; captured input counts as saved input until one succeeds.
@@ -1359,11 +1359,22 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     menu.open = false;
     (document.querySelector<HTMLElement>('[data-main-tab="more"]') ?? menu.querySelector<HTMLElement>(':scope > summary'))?.focus({ preventScroll: true });
   }
+  /** N9: from an empty 복구함 to the archived documents people often look for there. The menu closes as a move does. */
+  async function openArchiveFromMenu() {
+    const turns = menuTurns.current;
+    if (destination.view !== 'space') await navigate({ view: 'space' });
+    if (!await mainTabs.current?.openArchive()) return;
+    const menu = managementMenu.current;
+    if (menu?.open && menuTurns.current === turns) menu.open = false;
+  }
   function openRecoveryBox() {
     if (managementMenu.current) managementMenu.current.open = true;
     if (recoveryBox.current) recoveryBox.current.open = true;
     requestAnimationFrame(() => recoveryBox.current?.querySelector<HTMLElement>(':scope > summary')?.focus());
   }
+  // N9: the documents the 쓰기 list's 보관함 shows (not in 휴지통, not a retained revision).
+  const archiveSpace = data?.spaces[session.userId], archivedCount = archiveSpace ? archiveSpace.archivedDocumentIds.filter(id => !archiveSpace.documentTrash?.[id]
+    && !Object.values(archiveSpace.retentionDocuments ?? {}).includes(id) && archiveSpace.text.documents.some(doc => doc.id === id)).length : 0;
   const usesNoteChrome = destination.view === 'space' && !unavailable;
   // R7: once the server names the contact address, every place that shows the development notice ends with 자세히,
   // and 더보기 › 계정 has 저장과 공개 안내. Without the address none of them shows.
@@ -1397,9 +1408,14 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         }}><summary>{announce ? <span role="alert">{inputRecoveryLabel}</span> : <span>{inputRecoveryLabel}</span>}</summary>
           <div className={styles.inputRecoveryBody}>{inputProtectionFor(announce)}</div>
         </details>;
+  const serverSlot = programServerStatus({ snapshot, storageError, external, participationRecovery: !!localParticipationRecovery });
+  // N9 (U46): a new account with no writing and no save yet has nothing 저장됨 could mean, so the line waits for the
+  // first document. A wait or a warning still shows.
+  const freshSpace = data?.spaces[session.userId], quietFresh = usesNoteChrome && serverSlot.level === 8 && snapshot?.account?.revision === 0
+    && !!freshSpace && !freshSpace.text.documents.length && !freshSpace.text.flows.length;
   // The status and its recovery box, and the notices that always show (today, 분류, no document).
   const serverStatusMain = <>
-        {!localParticipationRecovery && <p role={reviewOwnsAnnouncement ? undefined : 'status'} aria-live={reviewOwnsAnnouncement ? 'off' : 'polite'} data-save-state={snapshot?.status}>{pendingUnknown ? '저장 여부 확인 못 함' : pending ? '저장 중…' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
+        {!localParticipationRecovery && !quietFresh && <p role={reviewOwnsAnnouncement ? undefined : 'status'} aria-live={reviewOwnsAnnouncement ? 'off' : 'polite'} data-save-state={snapshot?.status}>{pendingUnknown ? '저장 여부 확인 못 함' : pending ? '저장 중…' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
         {inputRecoveryBox(true)}
       </>;
   const serverStatusExtras = <>
@@ -1413,7 +1429,6 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         {serverStatusMain}{serverStatusExtras}
         {!usesNoteChrome && serverUndo}
       </div>;
-  const serverSlot = programServerStatus({ snapshot, storageError, external, participationRecovery: !!localParticipationRecovery });
   // UX FC-DETAIL-HEAD 1 (R6): 둘러보기 draws its status row only for a warning or a wait (levels 1–5). Saved and
   // saving stay off, so the list does not jump; 되돌리기 is in 더보기 › 편집 on every screen.
   const browseStatusShown = serverSlot.level <= 5;
@@ -1466,7 +1481,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         <section className={styles.menuGroup} aria-label="자료"><h3>자료</h3>
           <details ref={recoveryBox} className={styles.recoveryBox} onToggle={() => { menuTurns.current++; }} open={!!storedTotal && (unavailable || external || snapshot?.status === 'conflict')}>
             <summary>복구함{storedTotal ? ` (${storedTotal})` : ''}</summary>
-            {storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <p>보관한 입력이 없습니다.</p>}
+            {storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>보관한 입력이 없습니다.</p>
+              {archivedCount > 0 && <button type="button" onClick={() => void openArchiveFromMenu()}>보관한 문서 {archivedCount}개 → 보관함에서 보기</button>}</>}
           </details>
           <div className={styles.managementActions}>
           <button type="button" disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} onClick={event => {

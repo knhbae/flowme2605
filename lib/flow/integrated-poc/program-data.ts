@@ -198,9 +198,20 @@ export function createProgramData(): ProgramData {
 export function createProgramEnvelope(data = createProgramData()): ProgramEnvelope {
   return { schema: PROGRAM_SCHEMA, revision: 0, data, undo: Object.fromEntries(data.actors.map(actor => [actor.id, []])) };
 }
+/** N10's repeat line days (N10 SPEC 7): a line ID and the days it was finished, ascending and once each, 10,000 days in
+ *  all. A key may name a line that is gone (a stopped repeat keeps its days). N9 only reads and keeps it, so a rollback
+ *  from N10 still opens the account; nothing in N9 writes it. */
+export const PROGRAM_REPEAT_LOG_DAYS = 10_000;
+export function isProgramRepeatLog(value: unknown): value is Record<string, string[]> {
+  if (!programRecord(value)) return false;
+  let days = 0;
+  return Object.entries(value).every(([lineId, dates]) => programIdentifier(lineId) && Array.isArray(dates)
+    && dates.every((date, index) => programDate(date) && (index === 0 || dates[index - 1] < date))
+    && (days += dates.length) <= PROGRAM_REPEAT_LOG_DAYS);
+}
 function privateSpace(value: unknown, data: ProgramData, actorId: string): value is ProgramPrivateSpace {
   const required = ['text', 'archivedDocumentIds', 'copies', 'savedBindings', 'draftRevisions', 'participationDrafts', 'publicationDrafts', 'publications', 'position', 'timelineOrders', 'legacySnapshot', 'legacyQuickItemLines', 'legacyTimelinePolicies'];
-  const extensions = ['personalAuthoring', 'retentionDocuments', 'creatorDraftImports', 'creatorWorkspace', 'catalogLibrary', 'proposalReviewDrafts', 'recurrenceExecution', 'recurrencePlans', 'executionTimelineOrders', 'documentTrash'];
+  const extensions = ['personalAuthoring', 'retentionDocuments', 'creatorDraftImports', 'creatorWorkspace', 'catalogLibrary', 'proposalReviewDrafts', 'recurrenceExecution', 'recurrencePlans', 'executionTimelineOrders', 'documentTrash', 'repeatLog'];
   if (!programRecord(value) || !required.every(key => own(value, key))
     || Object.keys(value).some(key => !required.includes(key) && !extensions.includes(key)) || !textWorkspaceModel.validate(value.text)) return false;
   const text = value.text, docs = [...text.documents, ...text.flows];
@@ -255,6 +266,7 @@ function privateSpace(value: unknown, data: ProgramData, actorId: string): value
   if (own(value, 'recurrencePlans') && (!validateProgramRecurrencePlans(value.recurrencePlans)
     || Object.values(value.recurrencePlans.owners).some(owner => owner.actorId !== actorId))) return false;
   if (own(value, 'executionTimelineOrders') && !isProgramExecutionTimelineOrders(value.executionTimelineOrders)) return false;
+  if (own(value, 'repeatLog') && !isProgramRepeatLog(value.repeatLog)) return false;
   if (own(value, 'proposalReviewDrafts') && (!programRecord(value.proposalReviewDrafts)
     || Object.entries(value.proposalReviewDrafts).some(([id, draft]) => !data.public.proposals.some(proposal => proposal.id === id)
       || !programShape(draft, ['note', 'expectedProposalToken']) || !programString(draft.note, 10000)

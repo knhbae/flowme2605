@@ -8,7 +8,9 @@ import { privateChanges, validateAlphaAccount } from './program-adapter';
 const fields: (keyof ProgramPrivateSpace)[] = ['personalAuthoring', 'text', 'archivedDocumentIds', 'documentTrash', 'copies', 'savedBindings', 'draftRevisions',
   'participationDrafts', 'publicationDrafts', 'publications', 'position', 'timelineOrders', 'executionTimelineOrders', 'legacySnapshot',
   'legacyQuickItemLines', 'legacyTimelinePolicies', 'retentionDocuments', 'creatorDraftImports', 'creatorWorkspace', 'proposalReviewDrafts',
-  'recurrenceExecution', 'recurrencePlans'];
+  'recurrenceExecution', 'recurrencePlans',
+  // N9: an N10 operation's inverse may carry repeatLog, so its ledger and backups stay valid after a rollback.
+  'repeatLog'];
 export function validateAlphaCommand(value: unknown): value is AlphaCommand {
   try {
     const command = detached(value);

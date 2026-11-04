@@ -49,6 +49,10 @@
 .menuGroup > summary { min-height: 48px; font-weight: 650; color: var(--flowme-b-primary); }
 .menuGroup > summary:focus-visible { outline: 2px solid var(--flowme-b-primary); outline-offset: 2px; border-radius: 4px; }
 .menuGroup > .choices { padding-bottom: 8px; }
+/* N9: 오늘 · 내일 · 이번 주말 · 날짜 고르기, two to a row on a phone. */
+.dateChips { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.choices .dateChips button { flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; }
+.choices .dateChips button[aria-pressed="true"] { border-color: var(--flowme-b-primary); color: var(--flowme-b-primary); font-weight: 650; }
 .quickProgress { display: flex; gap: 6px; flex-wrap: wrap; }
 .quickProgress button { flex: 1; }
 @media (max-width: 600px) {
