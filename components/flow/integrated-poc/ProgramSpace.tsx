@@ -1187,7 +1187,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const base = (_current: ProgramData) => ({ actorId, requestId: programId('request'), expectedSpace: detailExpected.current ?? formExpected.current ?? space });
   const run = async (label: string, build: (current: ProgramData) => ProgramTransition<string>, history = true,
     schedule?: { taskId: string; date: string | null; time?: string; onAcknowledged?: (workspace: TextWorkspaceState | null) => void }, ownsPresentation?: () => boolean,
-    awaitAutomaticRead = false) => {
+    awaitAutomaticRead = false, rebuildOnConflict = false) => {
     const noticeOwner = { ...executionDraftOwner.current }, noticeView = presentation.current;
     let committedSpace: typeof space | null = null;
     let beforeSchedule: typeof space | null = null;
@@ -1197,7 +1197,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const alphaSocial = target && task && schedule ? { type: 'private-task-schedule' as const, ...target,
       date: schedule.date, time: schedule.time ?? task.time ?? '' } : undefined;
     const result = await mutate(label, current => { const next = build(current); if (next.ok) { if (schedule) { beforeSchedule = current.spaces[actorId]; beforeScheduleData = current; committedScheduleData = next.data; } committedSpace = next.data.spaces[actorId]; } return next; },
-      { history, ...(alphaSocial ? { alphaSocial } : {}), ...(awaitAutomaticRead ? { awaitAutomaticRead } : {}) });
+      { history, ...(alphaSocial ? { alphaSocial } : {}), ...(awaitAutomaticRead ? { awaitAutomaticRead } : {}), ...(rebuildOnConflict ? { rebuildOnConflict } : {}) });
     // A read-only source return must not change a later dialog's message or baseline.
     if (ownsPresentation && !ownsPresentation()) return result;
     if (result.ok) {
@@ -1803,10 +1803,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   /** Re-review: the view a check was made in is still the one shown (person, period, date, folder, search); a later
    *  view keeps its own notices, so a slow save's answer never brings back the one the change of view cleared. */
   /** N10 (SPEC 2): finishing a repeat line's round, from 오늘 or from an open document: one command on the space as it
-   *  is now; the round the screen showed (`expected`) keeps a second tab from moving it twice. */
+   *  is now; the round the screen showed (`expected`) keeps a second tab from moving it twice. Another device's save
+   *  that got in first is read and the check built again on it (QA F2), so both days are kept and the date moves once. */
   async function finishRepeatRound(taskId: string, expected: string | null): Promise<ProgramRepeatCheck | 'refused' | null> {
     const result = await run('반복 회차 완료', current => completeProgramRepeat(current, { actorId, requestId: programId('repeat'), expectedSpace: current.spaces[actorId],
-      taskId, today, expected }), true, undefined, undefined, true);
+      taskId, today, expected }), true, undefined, undefined, true, true);
     return result.ok ? readProgramRepeatCheck(result.result) : result.reason === 'conflict' ? 'refused' : null;
   }
   /** SPEC 3: 되돌리기 takes the whole check back, only while the line is as it left it. */
@@ -1814,14 +1815,18 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const result = await run('반복 되돌리기', current => undoProgramRepeat(current, { actorId, requestId: programId('repeat-undo'), expectedSpace: current.spaces[actorId], check }));
     return result.ok;
   }
-  const repeatNextText = (title: string, check: ProgramRepeatCheck) => `${programRepeatTitle(title)} · 다음은 ${programCalendarDate(check.after, today)}`;
+  const repeatNextText = (title: string, check: ProgramRepeatCheck) => `${programRepeatTitle(title)} · ${check.applied ? '' : '다른 곳에서 이미 끝낸 회차입니다 · '}다음은 ${programCalendarDate(check.after, today)}`;
+  // QA P3: as with C2/C6, a slow save's answer speaks only in the view the tap was made in.
   async function finishRepeatFromList(taskId: string, title: string, expected: string | null) {
-    const check = await finishRepeatRound(taskId, expected);
-    setRepeatNotice(check && check !== 'refused' ? { actorId, text: repeatNextText(title, check), check }
+    const view = presentation.current, check = await finishRepeatRound(taskId, expected);
+    if (!checkViewOwns(view)) return;
+    // QA F1: a check that changed nothing here (the round was finished elsewhere first) offers no 되돌리기.
+    setRepeatNotice(check && check !== 'refused' ? { actorId, text: repeatNextText(title, check), check: check.applied ? check : null }
       : { actorId, text: check === 'refused' ? '다른 곳에서 이 반복을 먼저 바꿨습니다. 지금 날짜를 확인해 주세요' : '반복 회차를 저장하지 못했습니다', check: null, refused: true });
   }
   async function undoRepeatFromList(check: ProgramRepeatCheck) {
-    const done = await undoRepeatRound(check);
+    const view = presentation.current, done = await undoRepeatRound(check);
+    if (!checkViewOwns(view)) return;
     setRepeatNotice(done ? null : { actorId, text: PROGRAM_REPEAT_UNDO_REFUSED, check: null, refused: true });
   }
   const repeatNoticeContent = repeatNotice?.actorId === actorId && <div className={styles.orderNotice} data-repeat-notice>
@@ -1832,8 +1837,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const legacyRepeat = programLegacyRepeatSeries(space)[0];
   async function convertLegacyRepeat() {
     if (!legacyRepeat) return;
+    // QA F5: the press itself starts the host's automatic read (pointerdown after a quiet spell), so it waits that out
+    // like a check tap; refused as busy, it never reached the server. Only the command's own answer means it cannot be
+    // converted; a save that did not run keeps the card, and the host's message says why.
     const result = await run('예전 반복 바꾸기', current => convertProgramLegacyRepeat(current, { actorId, requestId: `legacy-repeat-${legacyRepeat.id}`,
-      expectedSpace: current.spaces[actorId], seriesId: legacyRepeat.id, today }));
+      expectedSpace: current.spaces[actorId], seriesId: legacyRepeat.id, today }), true, undefined, undefined, true);
+    if (!result.ok && !['missing', 'unresolved'].includes(result.reason)) return;
     setLegacyRepeatNotice(result.ok ? PROGRAM_LEGACY_REPEAT_DONE : PROGRAM_LEGACY_REPEAT_REFUSED);
     if (!result.ok) setLegacyRepeatLater(true);
   }

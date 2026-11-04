@@ -161,9 +161,24 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
       observe({ phase: 'prepared', generation: epoch, before: current.account, command, snapshot: snapshot() });
       const outcome = await operation;
       observe({ phase: 'settled', generation, before: current.account, command, snapshot: snapshot(), result: outcome });
+      // N10 (QA F2): a builder whose whole intent is re-read from the account (a repeat check) is built once more on
+      // the newer revision that refused it. Only this request's own rejected draft is let go, and the new command
+      // carries the new revision, so the server's compare-and-set still decides.
+      if (!outcome.ok && outcome.reason === 'conflict' && mutationOptions?.rebuildOnConflict && !current.retryableRejectedDraft
+        && epoch === generation && readClient().state?.draft?.requestId === command.requestId && !readClient().state?.pending
+        && await discardConflict() && epoch === generation)
+        return mutate(_label, build, { ...mutationOptions, rebuildOnConflict: false });
       return outcome;
     } catch { return rejected(failure ?? 'invalid'); }
   };
+  async function discardConflict() {
+    const current = readClient();
+    if (busy || !current.ownerId || !repository || !current.state?.draft || current.state.pending) return false;
+    const cleared = detached(current.state); cleared.draft = null;
+    try { if (!options.recovery.save(cleared)) return false; } catch { return false; }
+    client.bindSession(current.ownerId, repository); undo = null; redo = null; emit();
+    return settle('refresh');
+  }
   async function settle(kind: 'refresh' | 'refresh-if-changed' | 'resolve', retry = false) {
     if (busy) return false;
     const previous = readClient().state;
@@ -201,14 +216,7 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
     refresh: () => settle('refresh'), resolvePending: (retrySameRequest = false) => settle('resolve', retrySameRequest),
     /** The host's own periodic/return reads only; every other read stays a full refresh. */
     refreshIfChanged: () => settle('refresh-if-changed'),
-    async discardConflict() {
-      const current = readClient();
-      if (busy || !current.ownerId || !repository || !current.state?.draft || current.state.pending) return false;
-      const cleared = detached(current.state); cleared.draft = null;
-      try { if (!options.recovery.save(cleared)) return false; } catch { return false; }
-      client.bindSession(current.ownerId, repository); undo = null; redo = null; emit();
-      return settle('refresh');
-    },
+    discardConflict,
     async undo(): Promise<ProgramMutationResult> {
       const current = snapshot();
       if (!current.canUndo || !undo || !current.account) return rejected('undo-conflict');

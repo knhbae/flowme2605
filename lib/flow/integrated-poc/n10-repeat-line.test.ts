@@ -9,7 +9,7 @@ import { moveProgramTaskDates, programTaskRepeatMember } from './task-date-move'
 import { textEditorRows, textWorkspaceModel as M } from './text-workspace';
 import { programRepeatFirstDate, programRepeatNextDate, programRepeatTitle, readProgramRepeatMarker } from './repeat-line';
 import { completeProgramRepeat, convertProgramLegacyRepeat, programRepeatLine, readProgramRepeatCheck, settleProgramRepeatLines, undoProgramRepeat } from './repeat-commands';
-import { mergeProgramRepeatLogs, programRepeatDays } from './repeat-log';
+import { programRepeatDays } from './repeat-log';
 import { captureAlphaAccount, commandFromProgramTransition } from './alpha-persistence/program-adapter';
 import { isM3Command } from './alpha-sync/contract';
 
@@ -99,7 +99,7 @@ test('운동: a check keeps the box empty, moves the date, keeps the day; 되돌
   assert.deepEqual(space(done.data).text.progressRecords, [], 'C2 records are not written');
   assert.deepEqual(programRepeatDays(space(done.data), taskId), ['2026-11-09']);
   const check = readProgramRepeatCheck(done.result)!;
-  assert.deepEqual({ before: check.before, after: check.after, day: check.day, inserted: check.inserted }, { before: '2026-11-09', after: '2026-11-12', day: '2026-11-09', inserted: true });
+  assert.deepEqual({ before: check.before, after: check.after, day: check.day, inserted: check.inserted, applied: check.applied }, { before: '2026-11-09', after: '2026-11-12', day: '2026-11-09', inserted: true, applied: true });
   const undone = ok(undoProgramRepeat(done.data, { ...base(done.data), check }));
   assert.equal(rawOf(undone.data, docId), '- [ ] 운동 @매주 월 목\n  - 날짜: 2026-11-09');
   assert(!Object.hasOwn(space(undone.data), 'recurrenceExecution'), 'an account that never kept a day has no field again');
@@ -140,15 +140,16 @@ test('two tabs: the same round checked twice moves once and keeps one day; 되�
   assert.equal(b.changed, false);
   assert.equal(rawOf(b.data, docId), '- [ ] 운동 @매주 월 목\n  - 날짜: 2026-11-12');
   assert.deepEqual(programRepeatDays(space(b.data), taskId), ['2026-11-09']);
-  // A stale round with no day kept for today is a conflict, not a second move.
-  assert.equal(completeProgramRepeat(a.data, { ...base(a.data), taskId, today: '2026-11-10', expected: '2026-11-09' }).ok, false);
+  assert.equal(readProgramRepeatCheck(b.result)!.applied, false, 'QA F1: nothing of its own to take back');
+  // QA F2: the same stale round finished on another day keeps the one move and adds that day.
+  const c = ok(completeProgramRepeat(a.data, { ...base(a.data), taskId, today: '2026-11-10', expected: '2026-11-09' }));
+  assert.equal(rawOf(c.data, docId), '- [ ] 운동 @매주 월 목\n  - 날짜: 2026-11-12');
+  assert.deepEqual(programRepeatDays(space(c.data), taskId), ['2026-11-09', '2026-11-10']);
   // The line changed after the check (another tab moved its date): the first tab's 되돌리기 is refused.
   const check = readProgramRepeatCheck(a.result)!, moved = structuredClone(a.data);
   space(moved).text = M.updateTask(space(moved).text, taskId, { date: '2026-11-19' });
   const refused = undoProgramRepeat(moved, { ...base(moved), check });
   assert(!refused.ok && refused.reason === 'conflict');
-  assert.deepEqual(mergeProgramRepeatLogs({ a: ['2026-11-09'], b: ['2026-11-01'] }, { a: ['2026-11-11', '2026-11-09'], c: ['2026-11-02'] }),
-    { a: ['2026-11-09', '2026-11-11'], b: ['2026-11-01'], c: ['2026-11-02'] });
 });
 
 test('blocked and stopped lines: [x] stops the repeat, children refuse it; C6 lists move repeat lines one at a time', () => {

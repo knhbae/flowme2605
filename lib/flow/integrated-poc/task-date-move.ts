@@ -43,12 +43,12 @@ export function programTaskDateState(space: ProgramPrivateSpace, taskId: string)
     const lines = doc.lines.slice(at, row?.subtreeEndIndex ?? at + 1).map(line => line.text);
     const task = M.tasks(space.text).find(row => row.id === taskId), copy = copyOf(space, taskId);
     const itemId = copy && Object.keys(copy.itemLines).find(id => copy.itemLines[id] === taskId);
-    return hash(JSON.stringify({ lines, done: task?.done ?? null, progress: M.currentProgress(space.text, taskId), override: copy && itemId ? detached(copy.itemOverrides[itemId] ?? null) : null }));
+    return programStateHash(JSON.stringify({ lines, done: task?.done ?? null, progress: M.currentProgress(space.text, taskId), override: copy && itemId ? detached(copy.itemOverrides[itemId] ?? null) : null }));
   }
   return null;
 }
 /** cyrb53: a short, stable token (not a secret; it only tells a change). */
-function hash(text: string): string {
+export function programStateHash(text: string): string {
   let a = 0xdeadbeef, b = 0x41c6ce57;
   for (let i = 0; i < text.length; i++) { const c = text.charCodeAt(i); a = Math.imul(a ^ c, 2654435761); b = Math.imul(b ^ c, 1597334677); }
   a = Math.imul(a ^ (a >>> 16), 2246822507) ^ Math.imul(b ^ (b >>> 13), 3266489909);

@@ -337,6 +337,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // 날짜 고르기), or why a marker stays plain text. Each refusal is said once per line text.
   const [repeatNotice, setRepeatNotice] = useState<{ text: string; tone: ProgramNoticeTone; actions?: ProgramNoticeAction[] } | null>(null);
   const repeatToldRef = useRef(new Set<string>()), repeatBusyRef = useRef(false);
+  // QA F3: a settle held back by a save in flight (the caret left the line while it saved) runs once that save is
+  // acknowledged; a folder view's caret line comes from its region editor.
+  const settleWantedRef = useRef(false), regionLineRef = useRef<string | null>(null);
   // N10 (SPEC 5): the 이 줄 반복 form, for keyboards where "@" is hard to reach; it writes the same marker.
   type RepeatForm = { kind: 'daily' | 'weekdays-only' | 'weekend' | 'days-of-week' | 'days' | 'weeks' | 'month-day' | 'month-last' | 'yearly' | 'months';
     days: number[]; every: string; monthDay: string; month: string; day: string };
@@ -684,15 +687,24 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     return context && target && row?.kind !== 'subcheck' ? programRepeatLine({ ...context, text: currentState() }, target) : null;
   }
   /** N10 (SPEC 1, 첫 회차): repeat lines the caret has left (all of them on leaving the editor) get their first round's
-   *  "- 날짜:" once; a marker that may not repeat says why once. Never mid-composition, never over unsaved screen input. */
+   *  "- 날짜:" once; a marker that may not repeat says why once. Never mid-composition, never over unsaved screen input.
+   *  A folder view settles only the lines its editable regions show, once their input is accepted (QA F3). */
   function settleRepeatLines(all: boolean) {
-    const controller = draftRef.current, area = textArea(), context = propsRef.current.repeatContext?.();
-    if (!controller || !area || !context || composingRef.current || propsRef.current.readOnly || propsRef.current.folderId || repeatBusyRef.current) return;
-    const state = controller.getState();
-    if (state.invalid || state.saving || area.value !== state.raw || actionsDisabled()) return;
-    const lines = M.getDocument(state.working, propsRef.current.docId)?.lines ?? [], focused = area.ownerDocument.activeElement === area;
-    const caret = all || !focused ? null : lines[area.value.slice(0, area.selectionStart).split('\n').length - 1]?.id ?? null;
-    const result = settleProgramRepeatLines({ ...context, text: state.working }, propsRef.current.docId, today(), caret);
+    const controller = draftRef.current, context = propsRef.current.repeatContext?.(), folderId = propsRef.current.folderId;
+    if (!controller || !context || propsRef.current.readOnly) return;
+    const state = controller.getState(), area = folderId ? regionPortRef.current?.activeEditor?.(true)?.area ?? null : textArea();
+    // Input not yet in the draft (a composition, a region's pending text) or a save on its way: the caret may already
+    // have left, so the settle waits for that save's acknowledgement instead of being dropped (QA F3).
+    if (state.saving || composingRef.current || repeatBusyRef.current || regionPendingRef.current || !folderId && (!area || area.value !== state.raw)) {
+      settleWantedRef.current = true; return;
+    }
+    if (state.invalid || actionsDisabled()) return;
+    const lines = M.getDocument(state.working, propsRef.current.docId)?.lines ?? [], focused = !!area && area.ownerDocument.activeElement === area;
+    const caret = all || !focused ? null : folderId ? regionLineRef.current
+      : lines[area!.value.slice(0, area!.selectionStart).split('\n').length - 1]?.id ?? null;
+    const shown = folderId ? new Set(readProgramFolderRegions(state.working, propsRef.current.docId, folderId)?.regions
+      .filter(region => !region.readOnly).flatMap(region => region.lineIds) ?? []) : undefined;
+    const result = settleProgramRepeatLines({ ...context, text: state.working }, propsRef.current.docId, today(), caret, shown);
     const told = repeatToldRef.current, block = result.blocked.find(entry => !told.has(`${entry.taskId}:${entry.block}`));
     if (block) { told.add(`${block.taskId}:${block.block}`); setRepeatNotice({ tone: 'warn', text: PROGRAM_REPEAT_BLOCK_TEXT[block.block] }); }
     if (!result.settled.length) return;
@@ -714,9 +726,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (draftRef.current?.getState().dirty && !await saveNow()) return;
       const check = await finish(taskId, expected);
       if (check && check !== 'refused') {
-        lastRepeatCheck.current = check;
-        setRepeatNotice({ tone: 'choose', text: `${programRepeatTitle(title)} · 다음은 ${programCalendarDate(check.after, today())}`,
-          actions: [{ label: '되돌리기', run: () => void undoRepeatHere(check) }] });
+        // QA F1: a check that changed nothing here (finished elsewhere first) has nothing of its own to take back.
+        lastRepeatCheck.current = check.applied ? check : null;
+        setRepeatNotice({ tone: 'choose', text: `${programRepeatTitle(title)} · ${check.applied ? '' : '다른 곳에서 이미 끝낸 회차입니다 · '}다음은 ${programCalendarDate(check.after, today())}`,
+          actions: check.applied ? [{ label: '되돌리기', run: () => void undoRepeatHere(check) }] : [] });
       } else setRepeatNotice({ tone: 'warn', text: check === 'refused' ? '다른 곳에서 이 반복을 먼저 바꿨습니다. 지금 날짜를 확인해 주세요' : '반복 회차를 저장하지 못했습니다' });
     } finally { repeatBusyRef.current = false; }
   }
@@ -2138,6 +2151,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     return () => window.clearTimeout(timer);
   }, [folderNotice, noticeHeld, folderWaiting, freshHeld]);
   useEffect(() => { syncFreshNotice(); syncBarLine(); }, [folderNotice, draft.working, props.authoringMode, props.active, props.folderId]);
+  // QA F3: the settle a save held back, once that save is acknowledged (the caret line, if still there, waits on).
+  useEffect(() => { if (!draft.saving && settleWantedRef.current) { settleWantedRef.current = false; settleRepeatLines(false); } }, [draft.saving]);
+  // QA F3: leaving a folder view's regions settles their repeat lines, as the body's blur does; after the focus lands.
+  useEffect(() => {
+    const root = hostRef.current?.parentElement;
+    if (!root || !props.folderId) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const left = () => { clearTimeout(timer); timer = setTimeout(() => settleRepeatLines(false), 0); };
+    root.addEventListener('focusout', left);
+    return () => { clearTimeout(timer); root.removeEventListener('focusout', left); };
+  }, [props.folderId]);
   // C2: the check notice lasts 10s once it shows; held while pressed or focused there, or while it waits behind another.
   const checkWaiting = !!checkNotice && (!!moving || !!message && !panel || !!folderNotice && !checkBeforeFolder);
   const checkWaitedRef = useRef(false);
@@ -2790,7 +2814,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       workspace={currentState} onAccept={acceptRegion} onPersist={saveFullDraft} onDownload={downloadDraft}
       onContinueWholeDocument={continueWholeDocument} onInsertMenu={props.authoringMode ? () => { void openRegionInsertMenu(); } : undefined}
       afterActive={props.authoringMode ? writingBar : undefined}
-      onPosition={(start, end, lineId) => { regionPositionRef.current = { start, end }; propsRef.current.onPosition?.({ start, end, scrollTop: 0 }, lineId); syncBarLine(); }}
+      onPosition={(start, end, lineId) => { regionPositionRef.current = { start, end }; regionLineRef.current = lineId ?? null; propsRef.current.onPosition?.({ start, end, scrollTop: 0 }, lineId); syncBarLine(); settleRepeatLines(false); }}
       onRegister={port => { regionPortRef.current = port; }}
       onPending={(pending, composing) => { regionPendingRef.current = pending; composingRef.current = composing; setRegionPending(pending); propsRef.current.onDirtyChange?.(pending || !!draftRef.current?.getState().dirty); if (!composing) queueMicrotask(releaseHeldBar); }} />}
     {props.authoringMode && !folderView && writingBar}

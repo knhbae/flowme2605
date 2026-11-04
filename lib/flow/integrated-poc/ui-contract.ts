@@ -30,7 +30,10 @@ export type ProgramMutate = (
   build: (current: ProgramData) => ProgramTransition<string>,
   options?: { alphaWriting?:{documentId:string;expected:TextWorkspaceState;next:TextWorkspaceState;position?:ProgramWritingPosition;workingGeneration:number;canSubmit?:()=>boolean}; groupId?: string; history?: boolean; alphaCreator?: AlphaCreatorIntent | (() => AlphaCreatorIntent); alphaSocial?: AlphaSocialIntent | (() => AlphaSocialIntent); onPrivateMutation?: ProgramPrivateMutationObserver;
     /** The click fixed its whole intent up front, so it may wait out the host's automatic read instead of being refused as busy. */
-    awaitAutomaticRead?: boolean },
+    awaitAutomaticRead?: boolean;
+    /** The builder judges everything against the account it is given (a repeat check), so a revision conflict may
+     *  let go of this request's own rejected draft and build it once more on the newer account. */
+    rebuildOnConflict?: boolean },
 ) => Promise<ProgramMutationResult>;
 
 /** Only the host observing live controller state should show/clear this notice. */

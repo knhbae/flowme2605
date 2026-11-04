@@ -37,11 +37,6 @@ export function removeProgramRepeatDay(space: ProgramPrivateSpace, lineId: strin
   if (!next.lines && !Object.keys(next.entries).length) delete space.recurrenceExecution; else space.recurrenceExecution = next;
   return true;
 }
-/** Two saves of the same account (SPEC 7): each line's days are the union, in order; a line only one side has stays. */
-export function mergeProgramRepeatLogs(a: ProgramRepeatLog | undefined, b: ProgramRepeatLog | undefined): ProgramRepeatLog | undefined {
-  if (!a && !b) return undefined;
-  const merged: ProgramRepeatLog = {};
-  for (const lineId of new Set([...Object.keys(a ?? {}), ...Object.keys(b ?? {})]))
-    merged[lineId] = [...new Set([...(a?.[lineId] ?? []), ...(b?.[lineId] ?? [])])].sort();
-  return merged;
-}
+// Two saves of the same account (SPEC 7) are not merged by unioning their logs: a stale save would bring back a day
+// another device's 되돌리기 took out. A check refused for a newer revision is built again on the newer account
+// instead (completeProgramRepeat, rebuildOnConflict), so each day comes from one person's own press.
