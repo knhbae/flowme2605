@@ -18,6 +18,7 @@ N1에 들어간 것:
 - QA 3차와 실폰에서 찾은 결함 수정(fix2~fix3)
 - 메모 계정 잠김 막기(fix4), 마지막 줄 여백(fix5)
 
+- 11/5 01:49 N7 실제 5회차(READY10): a~d PASS, e Dry의 BACKUP_CAS 문장이 30초 제한 초과로 HOLD(잠금 약 49초 보유 후 롤백). A 미적용, 운영 잠금 0, 앱 N6 유지. Codex가 운영 무잠금 문장별 측정 후 READY11.
 - 11/4 22:46 N7 실제 4회차(READY9): a·b·c·d(verify-only) PASS, e Dry가 core-dry 120초 native 상한에 걸려 HOLD. A 미적용, 운영 잠금 0, 앱 N6 유지. 원인 분석·READY10은 Codex.
 ## 다음 묶음 N5 (11/2 15:50 갱신)
 
