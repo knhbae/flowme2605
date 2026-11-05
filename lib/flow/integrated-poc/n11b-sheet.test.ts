@@ -71,7 +71,8 @@ test('N11b: 날짜 미정, 지우기 and taking a finished task up again, in one
   const choices = new Map<string, ProgramCarryoverChoice>([[kind('세차 예약'), 'undated'], [kind('은행 서류'), 'delete'], [kind('운동 30분'), 'today']]);
   const counted = planProgramCarryover(space(data), '2026-11-05', undefined, choices);
   // 세차 6 copies, 영어 5, 운동 3 (taken up again: one line stays), 보고서 1 and 책 1 left-overs; 은행's 7 deleted.
-  assert.deepEqual({ moved: counted.moved, undated: counted.undated, dropped: counted.dropped, removed: counted.removed }, { moved: 3, undated: 1, dropped: 7, removed: 16 });
+  assert.deepEqual({ moved: counted.moved, undated: counted.undated, dropped: counted.dropped, droppedUnder: counted.droppedUnder, removed: counted.removed },
+    { moved: 3, undated: 1, dropped: 7, droppedUnder: 0, removed: 16 });
   const done = ok(apply(data, choices));
   assert.deepEqual(rows(done.data, 'today'), ['영어 단어 20개', '운동 30분', '치과 예약'].sort());
   assert.deepEqual(rows(done.data, 'undated'), ['세차 예약']);
@@ -90,9 +91,15 @@ test('N11b: deleting takes a memo with its line, but never a recorded copy; a fo
   const data = ok(recordProgramTaskProgress(start.data, { ...base(start.data), taskId: recordedId, date: '2026-11-03', percent: 20 })).data;
   const [item] = programCarryoverItems(space(data), '2026-11-05');
   const counted = planProgramCarryover(space(data), '2026-11-05', undefined, new Map([[item.kind, 'delete']]));
-  assert.deepEqual({ dropped: counted.dropped, blocked: counted.blocked }, { dropped: 2, blocked: { recorded: 1 } });
+  // One of the two lines deleted takes a memo along: the sheet says '메모 1개 함께 지움' before saving.
+  assert.deepEqual({ dropped: counted.dropped, droppedUnder: counted.droppedUnder, blocked: counted.blocked }, { dropped: 2, droppedUnder: 1, blocked: { recorded: 1 } });
   const done = ok(apply(data, new Map([[item.kind, 'delete']])));
   assert.equal(raw(done.data, start.docId), '[2026-11-03]\n- [ ] 영어', 'the memo went with its line; the recorded copy stays where it was');
+  // One 되돌리기 brings the line and its memo back, byte for byte.
+  const undone = ok(restoreProgramCarryover(done.data, { ...base(done.data), before: programCarryoverBefore(space(data)), after: programCarryoverProof(space(done.data)) }));
+  assert.equal(raw(undone.data, start.docId), raw(data, start.docId));
+  assert(raw(undone.data, start.docId).includes('- [ ] 영어\n  - 메모: 단어장 3쪽'));
+  assert.deepEqual(space(undone.data).text, space(data).text);
   // A plan that would delete the recorded copy is refused whole.
   const forged = carryProgramTasksToToday(data, { ...base(data), today: '2026-11-05', lines: [...counted.lines, { ...counted.lines[0], taskId: recordedId,
     state: planProgramCarryover(space(data), '2026-11-05').lines.find(line => line.taskId === recordedId)!.state }] });
@@ -102,7 +109,9 @@ test('N11b: deleting takes a memo with its line, but never a recorded copy; a fo
 test('N11b: the card opens the sheet; 이대로 정리 saves every choice at once; 오늘 rows say when their words are in two 분류', () => {
   const host = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   assert(host.includes('onClick={openCarrySheet}>하나씩 정리</button>'));
-  assert(host.includes('const plan = planProgramCarryover(space, today, undefined, new Map(carryItems.map(item => [item.kind, carryChoiceOf(item)])));'));
+  assert(host.includes('const carrySheetPlan = useMemo(() => carryItems && period === \'today\' ? planProgramCarryover(space, today, undefined,'));
+  assert(host.includes('const plan = carrySheetPlan;'));
+  assert(host.includes('{!!carrySheetPlan?.droppedUnder && <small className={styles.carryApplyNote}>메모 {carrySheetPlan.droppedUnder}개 함께 지움</small>}'));
   assert(host.includes("...(carryNotice.undatedView ? [{ label: '날짜 미정 보기', run: () => void changePeriod('undated') }] : [])"));
   assert(host.includes("`${carryPlaces.get(task.id)!.place || '분류 없음'} · 분류 ${carryPlaces.get(task.id)!.count}곳`"));
   assert(host.includes("const options: ProgramCarryoverChoice[] = item.finished ? ['delete', 'today'] : ['today', 'undated', 'delete'];")

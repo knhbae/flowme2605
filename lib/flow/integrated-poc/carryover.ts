@@ -33,6 +33,8 @@ export type ProgramCarryoverPlan = {
   /** What one press does: lines getting today's date, lines taken out, tasks found today, tasks finished since; and,
    *  from the sheet, lines sent to 날짜 미정 and lines deleted. */
   moved: number; removed: number; today: number; finished: number; undated: number; dropped: number;
+  /** Of the deleted lines, those with something under them (a memo, checks, other lines) that goes with them. */
+  droppedUnder: number;
   /** Repeat lines (they go on by their own check), lines left for another press (the limit), words in two 분류. */
   repeats: number; left: number; split: number;
   /** Copies that should go (every task, the limit aside) and, of those that stay, how many for each reason; and how
@@ -177,7 +179,7 @@ export function programCarryoverItems(space: ProgramPrivateSpace, today: string)
  *  where its line goes: today, 날짜 미정, or deleted (with all its copies). A task left out of it gets the card's. */
 export function planProgramCarryover(space: ProgramPrivateSpace, today: string, limit = PROGRAM_CARRYOVER_LIMIT,
   choices?: ReadonlyMap<string, ProgramCarryoverChoice>): ProgramCarryoverPlan {
-  const plan: ProgramCarryoverPlan = { lines: [], count: 0, kinds: 0, first: null, repeated: false, moved: 0, removed: 0, today: 0, finished: 0, undated: 0, dropped: 0,
+  const plan: ProgramCarryoverPlan = { lines: [], count: 0, kinds: 0, first: null, repeated: false, moved: 0, removed: 0, today: 0, finished: 0, undated: 0, dropped: 0, droppedUnder: 0,
     repeats: 0, left: 0, split: 0, copies: 0, blocked: {}, newDateLines: 0 };
   if (!programDate(today)) return plan;
   const rules = carryoverRules(space), { touchable, isRecorded, droppable, labelOf, underOf, takeBlock, states } = rules;
@@ -209,6 +211,7 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
       if (!steps.length) continue;
       if (cut || changed && changed + steps.length > limit) { cut = true; plan.left += group.length; continue; }
       changed += steps.length; plan.lines.push(...steps); plan.dropped += steps.length;
+      plan.droppedUnder += group.filter(task => steps.some(line => line.taskId === task.id) && underOf(task)).length;
       continue;
     }
     const dated: ProgramCarryoverAction = choice === 'undated' ? 'undated' : 'date';

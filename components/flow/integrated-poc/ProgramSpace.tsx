@@ -596,6 +596,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const carryPast = carryShown ? executionList.filter(item => item.kind === 'row' && item.group === 'past-incomplete') : [];
   const carryPlan = useMemo(() => carryShown && carryPast.length > 3 ? planProgramCarryover(space, today) : null, [carryShown, carryPast.length > 3, space, today]);
   const carryCard = !!carryPlan && carryPlan.count > 0;
+  // N11b: what the sheet's choices would do now (its save button says how many memos a deletion takes along).
+  const carrySheetPlan = useMemo(() => carryItems && period === 'today' ? planProgramCarryover(space, today, undefined,
+    new Map(carryItems.map(item => [item.kind, carryChoices.get(item.kind) ?? item.choice]))) : null, [carryItems, carryChoices, period, space, today]);
   // N11b: on 오늘, the same words in two 분류 or more (never merged) say so on each row: '업무 · 분류 2곳'.
   const carryPlaces = useMemo(() => period === 'today' ? programCarryoverPlaces(space, executionRows.flatMap(row => row.kind === 'text-task' ? [row.task] : []))
     : new Map<string, { place: string; count: number }>(), [period, space, executionRows]);
@@ -2087,8 +2090,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const carryCounts = (['today', 'undated', 'delete'] as const).map(choice => carryItems?.filter(item => carryChoiceOf(item) === choice).length ?? 0);
   /** [이대로 정리]: every choice in one save, as the card's press (all or none, one 되돌리기). */
   async function applyCarrySheet() {
-    if (!carryItems) return;
-    const plan = planProgramCarryover(space, today, undefined, new Map(carryItems.map(item => [item.kind, carryChoiceOf(item)])));
+    const plan = carrySheetPlan;
+    if (!carryItems || !plan) return;
     if (!plan.lines.length) { closeCarrySheet(); return; }
     const [moved, undated, deleted] = carryCounts;
     const text = `${['정리했습니다', moved ? `오늘 ${moved}가지` : '', undated ? `날짜 미정 ${undated}가지` : '', deleted ? `지움 ${deleted}가지` : ''].filter(Boolean).join(' · ')}.`;
@@ -2125,8 +2128,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {carrySection('오늘로 옮길 일', carryItems.filter(item => !item.finished))}
       {carrySection('이미 끝낸 일 · 남은 줄만 지웁니다', carryItems.filter(item => item.finished))}
       <button type="button" className={styles.carryApply} disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()} aria-busy={carryPending || undefined}
-        onClick={() => void applyCarrySheet()}>{carryPending ? '정리하는 중…' : `이대로 정리${[`오늘 ${carryCounts[0]}`, `날짜 미정 ${carryCounts[1]}`, `지우기 ${carryCounts[2]}`]
-          .filter((_, index) => carryCounts[index]).map(part => ` · ${part}`).join('')}`}</button>
+        onClick={() => void applyCarrySheet()}>{carryPending ? '정리하는 중…' : <>{`이대로 정리${[`오늘 ${carryCounts[0]}`, `날짜 미정 ${carryCounts[1]}`, `지우기 ${carryCounts[2]}`]
+          .filter((_, index) => carryCounts[index]).map(part => ` · ${part}`).join('')}`}
+          {/* A deletion the person chose takes what is under the line along (되돌리기 brings it back): said before saving. */}
+          {!!carrySheetPlan?.droppedUnder && <small className={styles.carryApplyNote}>메모 {carrySheetPlan.droppedUnder}개 함께 지움</small>}</>}</button>
     </>}
   </dialog>;
   const viewScope = programViewScope({ period, date, today, folderTitle: folderId ? folderOptions.find(item => item.id === folderId)?.title ?? '선택한 분류' : null, query });
