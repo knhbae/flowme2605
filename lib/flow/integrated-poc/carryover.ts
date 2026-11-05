@@ -39,7 +39,7 @@ const dateProperty = (row: TextRow) => row.kind === 'property' && /^ *-\s+날짜
  *  a copy, a Flow or repeat source, …), which would no longer hold without the line. `shape:*`: the line itself:
  *  under a task, a progress box, under a line of that kind, tasks or held lines under it, or lines under it (a memo,
  *  say) that the line which stays does not have. */
-export type ProgramCarryoverBlock = 'repeat' | 'locked' | 'progress' | 'bound' | `linked:${string}` | `shape:${string}`;
+export type ProgramCarryoverBlock = 'repeat' | 'locked' | 'progress-complete' | 'recorded' | 'recorded-finished' | 'bound' | `linked:${string}` | `shape:${string}`;
 const own = new Set(['text', 'timelineOrders', 'executionTimelineOrders', 'position']);
 type Shape = { block: ProgramCarryoverBlock } | { under: string };
 
@@ -65,7 +65,8 @@ function carryoverRules(space: ProgramPrivateSpace) {
   const touchBlock = (task: TextTask): ProgramCarryoverBlock | null => {
     if (repeat.has(task.id)) return 'repeat';
     if (task.done || !documents.has(task.docId) || space.documentTrash?.[task.docId] || space.archivedDocumentIds.includes(task.docId)) return 'locked';
-    if (recorded.has(task.id) || progress(task.id).current === 100) return 'progress';
+    // A line with a progress record may move (as C6 moves it) but never goes; one at 100% is finished in all but its box.
+    if (progress(task.id).current === 100) return 'progress-complete';
     if (bound.has(task.id)) return 'bound';
     const field = elsewhere(task.id);
     if (field) return `linked:${field}`;
@@ -109,11 +110,12 @@ function carryoverRules(space: ProgramPrivateSpace) {
   /** Why this copy stays when the lines that stay carry `kept` under them; null: it goes and nothing it says is lost. */
   const takeBlock = (task: TextTask, kept: ReadonlySet<string>): ProgramCarryoverBlock | null => {
     const block = untouchable(task); if (block) return block;
+    if (recorded.has(task.id)) return 'recorded';
     const shape = shapeOf(task); if ('block' in shape) return shape.block;
     return shape.under === '' || kept.has(shape.under) ? null : 'shape:different-under';
   };
-  const touchable = (task: TextTask) => untouchable(task) === null;
-  return { touchable, untouchable, kindOf, labelOf, underOf, takeBlock, repeat, states, rowsOf };
+  const touchable = (task: TextTask) => untouchable(task) === null, isRecorded = (task: TextTask) => recorded.has(task.id);
+  return { touchable, untouchable, isRecorded, kindOf, labelOf, underOf, takeBlock, repeat, states, rowsOf };
 }
 
 /** What one press of [오늘로 옮기기] would do now, from the space as the screen shows it. Oldest tasks first, at most
@@ -122,7 +124,7 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
   const plan: ProgramCarryoverPlan = { lines: [], count: 0, kinds: 0, first: null, repeated: false, moved: 0, removed: 0, today: 0, finished: 0, repeats: 0, left: 0, split: 0,
     copies: 0, blocked: {}, newDateLines: 0 };
   if (!programDate(today)) return plan;
-  const { touchable, kindOf, labelOf, underOf, takeBlock, repeat, states } = carryoverRules(space);
+  const { touchable, isRecorded, kindOf, labelOf, underOf, takeBlock, repeat, states } = carryoverRules(space);
   const past = programExecutionTasks(space, { period: 'today', date: today }).filter(task => task.date! < today && !task.done);
   const plain = past.filter(task => !repeat.has(task.id));
   plan.repeats = past.length - plain.length; plan.count = plain.length;
@@ -147,33 +149,36 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
     const same = near.filter(task => kindOf(task) === kind), latest = same.reduce((day, task) => task.date! > day ? task.date! : day, '');
     const finished = same.filter(task => task.date === latest).every(task => task.done);
     const written = same.filter(task => task.date === today && !task.done);
-    const lines = group.filter(touchable), steps: ProgramCarryoverLine[] = [];
+    // A copy with a progress record never goes. While the task goes on it stays as one of its lines (dated today),
+    // each of them; a task finished since leaves it where it is, a day's record of the past.
+    const recordedLines = group.filter(task => touchable(task) && isRecorded(task));
+    const lines = group.filter(task => touchable(task) && !(finished && isRecorded(task))), steps: ProgramCarryoverLine[] = [];
     const step = (task: TextTask, action: ProgramCarryoverAction) => { const state = states(task.id); if (state) steps.push({ taskId: task.id, state, action }); };
     // The lines that stay as they are: finished later, the finished ones; written again today, today's. Of the past
-    // copies, one stays (dated today) for each thing carried under them (a memo, say) that no line staying carries, so
-    // nothing written is lost; copies with nothing under them, or what a staying line has, go. With nothing carried,
-    // one plain copy stays. It is the copy in the document written in now (the newest copy's), the earliest there, so
-    // the first day stays too.
-    const keepers = finished ? same.filter(task => task.date === latest) : written;
-    const kept = new Set(keepers.flatMap(task => underOf(task) ?? [])), classes = new Map<string, TextTask[]>();
-    for (const task of lines) { const under = underOf(task); if (under !== null) classes.set(under, [...classes.get(under) ?? [], task]); }
+    // copies, the recorded ones stay, and one more (dated today) for each thing carried under them (a memo, say) that
+    // no line staying carries, so nothing written is lost; copies with nothing under them, or what a staying line has,
+    // go. With nothing carried and nothing recorded, one plain copy stays. It is the copy in the document written in now
+    // (the newest copy's), the earliest there, so the first day stays too.
+    const keepers = finished ? same.filter(task => task.date === latest) : written, pinned = finished ? [] : recordedLines;
+    const kept = new Set([...keepers, ...pinned].flatMap(task => underOf(task) ?? [])), classes = new Map<string, TextTask[]>();
+    for (const task of lines) { const under = underOf(task); if (under !== null && !pinned.includes(task)) classes.set(under, [...classes.get(under) ?? [], task]); }
     const pick = (pool: TextTask[]) => { const newest = [...pool].sort(newestFirst)[0];
       return pool.filter(task => task.docId === newest.docId).sort((a, b) => firstDay(a).localeCompare(firstDay(b)) || a.sourceIndex - b.sourceIndex)[0]; };
     const chosen: TextTask[] = [];
     for (const [under, pool] of [...classes.entries()].sort(([, a], [, b]) => newestFirst(a.sort(newestFirst)[0], b.sort(newestFirst)[0])))
       if (under && !kept.has(under)) { chosen.push(pick(pool)); kept.add(under); }
-    if (!keepers.length && !chosen.length && classes.get('')?.length) chosen.push(pick(classes.get('')!));
-    const staying = keepers.length + chosen.length > 0;
+    if (!keepers.length && !pinned.length && !chosen.length && classes.get('')?.length) chosen.push(pick(classes.get('')!));
+    const staying = keepers.length + pinned.length + chosen.length > 0;
     for (const task of lines) step(task, chosen.includes(task) || !staying || takeBlock(task, kept) !== null ? 'date' : 'remove');
     // A copy goes only beside a line that stays as it was seen (its token): today's line, the finished one.
     if (steps.some(line => line.action === 'remove')) for (const task of keepers) step(task, 'hold');
     // The copies that should go (all but the one that stays) and, of those that stay, why: counted for every task,
-    // also past the limit. A second line kept for another memo counts as a copy kept for that reason.
-    const spare = keepers.length ? null : chosen[0] ?? [...group].sort(newestFirst)[0];
+    // also past the limit. Another line kept for its record or for another memo counts as a copy kept for that reason.
+    const spare = keepers.length ? null : pinned[0] ?? chosen[0] ?? [...group].sort(newestFirst)[0];
     for (const task of group.filter(task => task !== spare)) {
       plan.copies++;
       if (steps.some(line => line.taskId === task.id && line.action === 'remove')) continue;
-      const block = takeBlock(task, new Set()) ?? 'shape:different-under';
+      const block = finished && recordedLines.includes(task) ? 'recorded-finished' : takeBlock(task, new Set()) ?? 'shape:different-under';
       plan.blocked[block] = (plan.blocked[block] ?? 0) + 1;
     }
     const size = steps.filter(line => line.action !== 'hold').length;
@@ -224,12 +229,12 @@ function dropEmptiedDays(before: TextWorkspaceState, text: TextWorkspaceState, d
 export function carryProgramTasksToToday(data: ProgramData, input: ProgramPrivateMutationBase & { today: string; lines: ProgramCarryoverLine[] }): ProgramTransition<string> {
   return transitionProgramPrivateSpace(data, input, 'private-task-carryover', { today: input.today, lines: input.lines }, space => {
     if (!programDate(input.today) || !validLines(input.lines)) return { result: '', reason: 'invalid' };
-    const start = { ...space }, { touchable, untouchable, kindOf, underOf, states } = carryoverRules(start), tasks = new Map(M.tasks(start.text).map(task => [task.id, task]));
+    const start = { ...space }, { touchable, untouchable, isRecorded, kindOf, underOf, states } = carryoverRules(start), tasks = new Map(M.tasks(start.text).map(task => [task.id, task]));
     if (input.lines.some(line => states(line.taskId) !== line.state)) return { result: '', reason: 'conflict' };
     // A copy goes only when nothing it says is lost: nothing under it, or just what a line of the same task that
     // stays (in this plan, as it was seen) has under it.
     const stay = input.lines.filter(line => line.action !== 'remove').flatMap(line => tasks.get(line.taskId) ?? []);
-    const goes = (task: TextTask) => untouchable(task) === null && underOf(task) !== null
+    const goes = (task: TextTask) => untouchable(task) === null && !isRecorded(task) && underOf(task) !== null
       && (underOf(task) === '' || stay.some(other => other !== task && kindOf(other) === kindOf(task) && underOf(other) === underOf(task)));
     for (const line of input.lines) {
       const task = tasks.get(line.taskId);
