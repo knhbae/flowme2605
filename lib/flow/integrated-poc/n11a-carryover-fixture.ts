@@ -15,6 +15,25 @@ function day(index: number): string[] {
       ...index === 7 && title === '빨래' ? ['    - 메모: 수건 따로'] : []];
   })]), ''];
 }
+/** N11a rev2: the shape the production census showed (counts only, 11/5): five documents, about sixty days, many
+ *  '- /' lines with a two-word name, tasks one level under them, '    - 이름: …' lines under some tasks that are copied
+ *  with them, a memo that changes on the way, progress recorded on some copies. Some '- /' lines are folders, the
+ *  two-word ones are still text (`held`: never made folders). 60 days, 9/6–11/4, twelve to a document. */
+export const CARRYOVER_PRODUCTION_DOCUMENTS: { title: string; raw: string; declare: number[]; hold: number[] }[] = Array.from({ length: 5 }, (_, doc) => {
+  const lines: string[] = [];
+  for (let offset = 0; offset < 12; offset++) {
+    const index = doc * 12 + offset, date = new Date(Date.UTC(2026, 8, 6 + index)).toISOString().slice(0, 10);
+    const mark = (at: number) => (index + at) % 6 === 0 ? 'x' : ' ';
+    lines.push(`[${date}]`);
+    if (index % 2) lines.push('- /운동', `  - [${mark(0)}] 스트레칭`, '    - 장소: 헬스장', `  - [${mark(1)}] 러닝`);
+    else lines.push('- /공부', `  - [${mark(0)}] 영어 단어`, `  - [${mark(1)}] 책 읽기`, `    - 메모: ${index < 40 ? '30쪽까지' : '50쪽까지'}`);
+    if (index % 2) lines.push('- /회사 일', `  - [${mark(2)}] 보고서`, `  - [${mark(3)}] 정리`);
+    else lines.push('- /집안 일', `  - [${mark(2)}] 빨래`, `  - [${mark(3)}] 정리`);
+    lines.push('');
+  }
+  const pick = (re: RegExp) => lines.flatMap((line, at) => re.test(line) ? [at] : []);
+  return { title: `기록 ${doc + 1}`, raw: lines.join('\n'), declare: pick(/^- \/\S+$/), hold: pick(/^- \/\S+ \S+$/) };
+});
 /** Three documents: 10/16–10/22, 10/23–10/29, 10/30–11/4 (twenty days). */
 export const CARRYOVER_DOCUMENTS: { title: string; raw: string }[] = [[0, 7], [7, 14], [14, 20]].map(([from, to], at) =>
   ({ title: ['10월 셋째 주', '10월 넷째 주', '11월 첫 주'][at], raw: Array.from({ length: to - from }, (_, offset) => day(from + offset)).flat().join('\n') }));

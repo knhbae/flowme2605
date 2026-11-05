@@ -14,7 +14,7 @@ import { programExecutionTasks } from './execution';
 import { programExecutionRowMeta } from './execution-presentation';
 import { programTaskDateState, programTaskDateStates, programTaskRepeatMember, programTaskRepeatMembers } from './task-date-move';
 import { programOpening, PROGRAM_OPENED_KEY } from './carryover-opening';
-import { CARRYOVER_DOCUMENTS } from './n11a-carryover-fixture';
+import { CARRYOVER_DOCUMENTS, CARRYOVER_PRODUCTION_DOCUMENTS } from './n11a-carryover-fixture';
 import { carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverProof, restoreProgramCarryover, type ProgramCarryoverPlan } from './carryover';
 
 // N11a 밀린 일 정리 (PROPOSAL 8, 완료 기준 1–3): one press moves the past unfinished tasks to today, one line per task.
@@ -131,18 +131,20 @@ test('N11a 3: lines with something under them, folder lines, repeat lines, progr
   assert(validateProgramData(data));
   const ids = lineIds(data), counted = planProgramCarryover(space(data), '2026-11-05');
   assert.equal(counted.repeats, 1, 'the repeat line goes on by its own check');
-  // Six tasks have a copy to go; five stay (a check, a memo, a time, a progress box under or in them; a recorded one).
-  assert.deepEqual({ copies: counted.copies, blocked: counted.blocked }, { copies: 6, blocked: { shape: 4, progress: 1 } });
+  // Six tasks have a copy to go; two stay (a progress box; a recorded line).
+  assert.deepEqual({ copies: counted.copies, blocked: counted.blocked }, { copies: 6, blocked: { 'shape:progress-box': 1, progress: 1 } });
   const done = ok(carry(data, '2026-11-05', counted));
   const after = new Set(lineIds(done.data));
   const lost = ids.filter(id => !after.has(id)).map(id => space(data).text.documents[0].lines.find(line => line.id === id)!.text);
-  // Only the plain copy of 스트레칭 under the second '- /운동' goes (rev1: a task right under a folder line may go); a
-  // plain copy is dated beside the one that cannot go, and a recorded line is not touched at all.
-  assert.deepEqual(lost, ['  - [ ] 스트레칭']);
+  // rev2: the copy with a check, a memo or a time under it is the one that stays, so its plain copies go; 스트레칭's
+  // copy under the second '- /운동' goes too (rev1). The lines under a kept task, the progress boxes and the recorded
+  // line stay.
+  assert.deepEqual(lost, ['- [ ] 세차 예약', '- [ ] 은행 서류', '- [ ] 치과 예약', '  - [ ] 스트레칭']);
   const result = raw(done.data, made.docId);
+  assert(result.includes('- [ ] 세차 예약\n  - 날짜: 2026-11-05\n  - [ ] 세제 사기\n') && result.includes('  - 메모: 통장 사본') && result.includes('  - 시간: 10:00'));
   assert.equal(result.split('\n').filter(line => line.startsWith('- /')).length, 2, 'folder lines as before, also the one left empty');
   assert(result.includes('- [ ] 영어 @매일\n'), 'the repeat line is untouched');
-  assert.equal(onToday(done.data, '2026-11-05').length, 10);
+  assert.equal(onToday(done.data, '2026-11-05').length, 7);
 });
 
 test('N11a rev1: an account shaped as the real one (every task under a folder line, twenty days, three documents)', () => {
@@ -163,21 +165,60 @@ test('N11a rev1: an account shaped as the real one (every task under a folder li
   assert.deepEqual({ tasks: M.tasks(space(data).text).length, folders: folders.reduce((sum, count) => sum + count, 0) }, { tasks: 106, folders: 53 });
   const counted = planProgramCarryover(space(data), '2026-11-05');
   assert.deepEqual({ count: counted.count, kinds: counted.kinds, moved: counted.moved, removed: counted.removed, finished: counted.finished, split: counted.split,
-    copies: counted.copies, blocked: counted.blocked }, { count: 84, kinds: 8, moved: 7, removed: 74, finished: 3, split: 1, copies: 79, blocked: { shape: 2, 'linked:legacyQuickItemLines': 3 } });
+    copies: counted.copies, blocked: counted.blocked }, { count: 84, kinds: 8, moved: 5, removed: 76, finished: 3, split: 1, copies: 79, blocked: { 'linked:legacyQuickItemLines': 3 } });
   const done = ok(carry(data, '2026-11-05', counted));
-  assert.equal(M.tasks(space(done.data).text).length, 32, '106 task lines become 32');
+  assert.equal(M.tasks(space(done.data).text).length, 30, '106 task lines become 30');
   assert.deepEqual(folderLines(done.data), folders, 'every folder line stays, also those left with nothing under them');
   const folder = (scopeId: string) => space(done.data).text.folders.find(item => item.id === scopeId)?.title;
   const rows = programExecutionTasks(space(done.data), { period: 'today', date: '2026-11-05' }).filter(task => !task.done)
     .map(task => `${task.date === '2026-11-05' ? '오늘' : '지난'}:${folder(task.scopeId)}:${task.title}:${task.groupDate}`).sort();
-  // One line per task in its 분류 (정리 apart in 집안일 and 공부; 집안일's was finished), the two that cannot go dated
-  // beside it, the three legacy-held lines left where they are.
-  assert.deepEqual(rows, ['오늘:공부:영어 단어:2026-10-30', '오늘:공부:정리:2026-10-31', '오늘:업무:보고서 쓰기:2026-10-20', '오늘:업무:보고서 쓰기:2026-11-01',
-    '오늘:운동:스트레칭:2026-10-30', '오늘:집안일:빨래:2026-10-23', '오늘:집안일:빨래:2026-10-30',
+  // One line per task in its 분류 (정리 apart in 집안일 and 공부; 집안일's was finished); the copy with a check or a
+  // memo under it is the one kept (rev2); the three legacy-held lines are left where they are.
+  assert.deepEqual(rows, ['오늘:공부:영어 단어:2026-10-30', '오늘:공부:정리:2026-10-31', '오늘:업무:보고서 쓰기:2026-10-20',
+    '오늘:운동:스트레칭:2026-10-30', '오늘:집안일:빨래:2026-10-23',
     '지난:공부:영어 단어:2026-10-18', '지난:공부:영어 단어:2026-10-19', '지난:공부:영어 단어:2026-10-22']);
   assert.deepEqual(legacy.map(task => lineIds(done.data).includes(task.id)), [true, true, true]);
   const undone = ok(restoreProgramCarryover(done.data, { ...base(done.data), before: programCarryoverBefore(space(data)), after: programCarryoverProof(space(done.data)) }));
   assert.deepEqual(docs.map(docId => raw(undone.data, docId)), originals, 'all three documents come back byte for byte');
+});
+
+test('N11a rev2: the production shape (5 documents, 60 days, "- /" lines still text, memo lines copied along, recorded copies)', () => {
+  let data = empty();
+  const docs: string[] = [];
+  for (const doc of CARRYOVER_PRODUCTION_DOCUMENTS) {
+    const made = write(data, doc.title, '');
+    const typed = M.editTextResult(space(made.data).text, made.docId, doc.raw, { folderText: true, folderDeclare: doc.declare, folderHold: doc.hold });
+    assert.equal(typed.reason, null, typed.folderProblem);
+    data = structuredClone(made.data); space(data).text = typed.state; docs.push(made.docId);
+  }
+  for (const task of M.tasks(space(data).text).filter(task => task.title === '러닝' && !task.done).filter((_, index) => index % 4 === 0))
+    data = ok(recordProgramTaskProgress(data, { ...base(data), taskId: task.id, date: task.date!, percent: 40 })).data;
+  assert(validateProgramData(data));
+  const lines = (value: ProgramData) => space(value).text.documents.flatMap(doc => doc.lines.map(line => line.text));
+  const originals = docs.map(docId => raw(data, docId)), carried = new Set(lines(data).filter(line => /^ {4}- (장소|메모):/.test(line)));
+  const shapeOf = (value: ProgramData) => ({ tasks: M.tasks(space(value).text).length, slash: lines(value).filter(line => line.startsWith('- /')).length,
+    folders: space(value).text.bindings.filter(binding => binding.kind === 'scope').length, dates: lines(value).filter(line => /^\s*- 날짜:/.test(line)).length,
+    past: programExecutionTasks(space(value), { period: 'today', date: '2026-11-05' }).filter(task => task.date! < '2026-11-05' && !task.done).length,
+    today: onToday(value, '2026-11-05').length });
+  assert.deepEqual(shapeOf(data), { tasks: 240, slash: 120, folders: 60, dates: 0, past: 200, today: 0 });
+  // Two presses (a hundred changed lines each at most).
+  const first = planProgramCarryover(space(data), '2026-11-05');
+  assert.deepEqual({ kinds: first.kinds, moved: first.moved, removed: first.removed, newDateLines: first.newDateLines, left: first.left, split: first.split, copies: first.copies, blocked: first.blocked },
+    { kinds: 8, moved: 3, removed: 92, newDateLines: 3, left: 100, split: 1, copies: 194, blocked: { 'shape:different-under': 1, progress: 5 } });
+  const once = ok(carry(data, '2026-11-05', first));
+  const twice = ok(carry(once.data, '2026-11-05')).data;
+  // 200 past lines become seven today (one per task and 분류, 책 읽기 twice for its two memos; 정리 apart under '- /회사
+  // 일' and '- /집안 일', both still text; 러닝 and 빨래 were finished last, so only their left-over copies went) and
+  // the five recorded copies; seven date lines; every '- /' line and folder stays.
+  assert.deepEqual(shapeOf(twice), { tasks: 52, slash: 120, folders: 60, dates: 7, past: 5, today: 7 });
+  const label = (task: { id: string; docId: string }) => { const doc = M.getDocument(space(twice).text, task.docId)!, rows = M.parseDocument(doc, space(twice).text).rows;
+    let row = rows.find(item => item.id === task.id); while (row?.parentLineId) { row = rows.find(item => item.id === row!.parentLineId); if (row?.text.startsWith('- /')) return row.text.slice(3); } return ''; };
+  assert.deepEqual(onToday(twice, '2026-11-05').map(task => `${label(task)}:${task.title}`).sort(),
+    ['공부:영어 단어', '공부:책 읽기', '공부:책 읽기', '운동:스트레칭', '집안 일:정리', '회사 일:보고서', '회사 일:정리'].sort());
+  assert.deepEqual(new Set(lines(twice).filter(line => /^ {4}- (장소|메모):/.test(line))), carried, 'every memo written is still there');
+  // 되돌리기 of the first press brings back all five documents byte for byte.
+  const undone = ok(restoreProgramCarryover(once.data, { ...base(once.data), before: programCarryoverBefore(space(data)), after: programCarryoverProof(space(once.data)) }));
+  assert.deepEqual(docs.map(docId => raw(undone.data, docId)), originals);
 });
 
 test('N11a: the same words in two 분류 stay apart; a day\'s hand order and the saved place forget only lines taken out', () => {
