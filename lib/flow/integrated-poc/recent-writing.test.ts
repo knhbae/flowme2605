@@ -8,8 +8,8 @@ import { programSame } from './controller';
 import { ALPHA_SCHEMA, type AlphaAccount } from './alpha-persistence/contract';
 import { materializeAccount } from './alpha-persistence/program-adapter';
 import { emptyAlphaReferences } from './alpha-social/projection';
-import { extendProgramRecent, extendProgramRecentRaw, moveProgramRecentOffset, programRecentFolds, programRecentHidden, programRecentHold, restrictProgramRecent,
-  weaveProgramRecent } from './recent-writing';
+import { extendProgramRecent, extendProgramRecentRaw, moveProgramRecentOffset, programRecentDone, programRecentFolds, programRecentHidden, programRecentHold,
+  restrictProgramRecent, weaveProgramRecent } from './recent-writing';
 
 // 11/5 쓰기 '최근만 쓰기' (W-a): the UX proposal's synthetic documents — every day two or three 분류 with tasks, what
 // was not done written again the next day, [미정] and tomorrow on top ('desc', the user's shape) or the old days first.
@@ -130,7 +130,9 @@ test('W-a: 200 lines or fewer, nothing old, or a recent part that would read dif
   // Long, but nothing older than the last 7 days.
   const notes = write([...Array.from({ length: 210 }, (_, index) => `메모 ${index}`), build(7, 'desc')].join('\n'));
   assert(M.getDocument(notes.text, notes.docId)!.lines.length > 300);
-  assert.equal(programRecentHold(notes.text, notes.docId, today), null);
+  assert.equal(programRecentHold(notes.text, notes.docId, today, { done: false }), null);
+  // (W-b still folds [미정]'s finished tasks there; nothing of the old days.)
+  assert.equal(programRecentHold(notes.text, notes.docId, today)!.lineIds.size, 0);
   // A code fence opened in an old day: what it holds counts as that day's, so it folds with it and the rest reads the same.
   const fenced = write(build(90, 'asc').replace('[2026-10-29]', '[2026-10-29]\n```').replace('[2026-10-31]', '[2026-10-31]\n```'));
   const held = programRecentHold(fenced.text, fenced.docId, today)!;
@@ -187,6 +189,58 @@ test('W-a: the 복구함 gets the whole raw of what was typed in view, and posit
     // A folded line is not in view: the start.
     assert.equal(moveProgramRecentOffset(to, from, whole.indexOf('[2026-10-29]')), 0);
   }
+});
+
+// W-b: [미정]'s finished tasks fold into '✓ 날짜 미정에서 끝낸 일 n개'; with nothing else there, [미정] folds whole.
+test('W-b: [미정]\'s finished tasks fold, the lines under them along; what is left reads and saves as before', () => {
+  const raw = build(90, 'desc').replace('  - [x] 수시 피드백', '  - [x] 수시 피드백\n    - 메모: 끝낸 일의 메모');
+  const { text, docId } = write(raw);
+  const hold = programRecentHold(text, docId, today)!, hidden = programRecentHidden(text, hold), restricted = restrictProgramRecent(text, docId, hidden);
+  const shown = rawOf(restricted, docId).split('\n');
+  assert.deepEqual(shown.slice(0, 5), ['[미정]', '- /회사 일', '  - [ ] 분기 계획', '- /집안 일', '  - [ ] 서랍 정리']);
+  assert(!shown.includes('    - 메모: 끝낸 일의 메모'));
+  assert.deepEqual(programRecentDone(text, docId, hidden), { count: 2, whole: false });
+  // The old days' line counts only the old days.
+  assert.deepEqual(programRecentFolds(text, docId, hidden).map(fold => [fold.through, fold.days]), [['2026-10-29', 83]]);
+  const back = extendProgramRecent(text, restricted, docId, hidden);
+  assert(back.ok && programSame(back.state, text));
+  // A task written under 회사 일 goes in after 분기 계획, the finished one (and its memo) where they were.
+  const typed = edit(restricted, docId, rawOf(restricted, docId).replace('  - [ ] 분기 계획', '  - [ ] 분기 계획\n  - [ ] 새 미정 할 일'));
+  const saved = extendProgramRecent(text, typed, docId, hidden);
+  assert(saved.ok);
+  assert.equal(rawOf(saved.state, docId), raw.replace('  - [ ] 분기 계획', '  - [ ] 분기 계획\n  - [ ] 새 미정 할 일'));
+  // Leaving them in view ([보기]) folds only the old days.
+  const shownDone = programRecentHold(text, docId, today, { done: false })!;
+  assert.equal(shownDone.done.size, 0);
+  assert(rawOf(restrictProgramRecent(text, docId, programRecentHidden(text, shownDone)), docId).includes('  - [x] 수시 피드백'));
+});
+
+test('W-b: [미정] with only finished tasks folds whole; something unfinished there brings it back, its finished ones still folded', () => {
+  const raw = build(90, 'desc').replace('  - [ ] 분기 계획', '  - [x] 분기 계획').replace('  - [ ] 서랍 정리', '  - [x] 서랍 정리');
+  const { text, docId } = write(raw);
+  const hold = programRecentHold(text, docId, today)!, hidden = programRecentHidden(text, hold);
+  assert.equal(hold.undated, true);
+  const shown = rawOf(restrictProgramRecent(text, docId, hidden), docId).split('\n');
+  assert.equal(shown[0], '[2026-11-06]');
+  assert.deepEqual(programRecentDone(text, docId, hidden), { count: 4, whole: true });
+  // Another device writes an unfinished task in [미정]: [미정] shows again, its finished tasks still folded.
+  const added = edit(text, docId, rawOf(text, docId).replace('- /회사 일\n  - [x] 수시 피드백', '- /회사 일\n  - [ ] 다른 기기에서 쓴 일\n  - [x] 수시 피드백'));
+  const again = rawOf(restrictProgramRecent(added, docId, programRecentHidden(added, hold)), docId).split('\n');
+  assert.deepEqual(again.slice(0, 4), ['[미정]', '- /회사 일', '  - [ ] 다른 기기에서 쓴 일', '- /집안 일']);
+  assert.deepEqual(programRecentDone(added, docId, programRecentHidden(added, hold)), { count: 4, whole: false });
+});
+
+test('W-b: one unchecked elsewhere comes back; one checked in this session stays in view; a memo added under a folded one folds with it', () => {
+  const { text, docId } = write(build(90, 'desc'));
+  const hold = programRecentHold(text, docId, today)!;
+  const unchecked = edit(text, docId, rawOf(text, docId).replace('  - [x] 수시 피드백', '  - [ ] 수시 피드백'));
+  assert(rawOf(restrictProgramRecent(unchecked, docId, programRecentHidden(unchecked, hold)), docId).includes('  - [ ] 수시 피드백'));
+  const checked = edit(text, docId, rawOf(text, docId).replace('  - [ ] 분기 계획', '  - [x] 분기 계획'), today);
+  assert(rawOf(restrictProgramRecent(checked, docId, programRecentHidden(checked, hold)), docId).includes('  - [x] 분기 계획'));
+  const memo = edit(text, docId, rawOf(text, docId).replace('  - [x] 요리 연습', '  - [x] 요리 연습\n    - 메모: 다른 기기에서 쓴 메모'));
+  const hidden = programRecentHidden(memo, hold), view = restrictProgramRecent(memo, docId, hidden);
+  assert(!rawOf(view, docId).includes('다른 기기에서 쓴 메모'));
+  assert(extendProgramRecent(memo, view, docId, hidden).ok);
 });
 
 test('W-a: weaving puts each hidden run before the next item still there, else at the end', () => {

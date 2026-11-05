@@ -497,3 +497,5 @@
 .recentFold p span { color: var(--flowme-b-text, inherit); font-weight: 600; }
 .recentFold small { font-size: 13px; }
 .recentFold button { flex: 0 0 auto; min-height: 44px; padding: 0 14px; border: 1px solid var(--flowme-b-line); border-radius: 10px; background: var(--flowme-b-surface); color: var(--flowme-b-primary); font-size: 14px; }
+.recentPair { padding: 6px; gap: 8px; }
+.recentPair button { flex: 1 1 0; min-width: 0; padding: 0 10px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

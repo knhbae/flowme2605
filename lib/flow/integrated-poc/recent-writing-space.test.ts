@@ -8,7 +8,7 @@ const space = readFileSync(new URL('../../../components/flow/integrated-poc/Prog
 const mount = space.slice(space.indexOf('{opened.filter(id => docs.some(doc => doc.id === id)).map(id => {'), space.indexOf('{selectedDoc && !selectedArchived && <ProgramRecurrence'));
 
 test('W-a: the editor gets the recent part, keyed by it, and its first position in the recent part\'s terms', () => {
-  assert(mount.includes("<TextEditor key={recent ? 'recent' : 'whole'}"));
+  assert(mount.includes("<TextEditor key={recent ? `recent:${recentDoneShown[id] ? 'done' : 'folded'}` : 'whole'}"));
   assert(mount.includes('workspace={recent ? recent.workspace : space.text}'));
   assert(mount.includes('initialPosition={recent && initial ? recentPosition(id, recent, initial, false) : initial}'));
   // No recent part: a folder or collection view, a document shown whole, or one that cannot be written.
@@ -37,11 +37,25 @@ test('W-a: a line opened from elsewhere (원문에서 보기, an import) that is
 test('W-a: the folded days\' line and the way back, as the proposal words them, remembered on the device', () => {
   assert(space.includes('<p><span>지난 기록 · {through ? `${recentDay(through)}까지 ` : \'\'}{sum(\'days\')}일</span><small>할 일 {sum(\'tasks\')}개 · 남은 일 {sum(\'open\')}개</small></p>'));
   assert(space.includes("'찾은 줄이 지난 기록에 있어 펼쳤습니다' : '지난 기록을 펼쳤습니다 · 길면 입력이 느려질 수 있습니다'"));
-  assert(space.includes('onClick={() => void showRecentWhole(id)}>펼치기</button>'));
-  assert(space.includes('onClick={() => void showRecentOnly(id)}>최근만 보기</button>'));
+  assert(space.includes('data-recent-action="past-show" onClick={() => void showRecentWhole(id)}>펼치기</button>'));
+  assert(space.includes('data-recent-action="past-fold" onClick={() => void showRecentOnly(id)}>최근만 보기</button>'));
   assert(space.includes('const recentWholeKey = `flow:alpha:writing-whole:v1:${actorId}`;'));
   // Either way, writing still being saved stops it.
   assert(space.includes("if (!found && !await settleRecent(id)) { setMessage('작성 중인 입력을 저장한 뒤 지난 기록을 펼쳐 주세요.'); return; }"));
+});
+
+test('W-b: [미정]\'s folded finished tasks have their line under the body, [보기] / [접기] remembered on the device', () => {
+  assert(space.includes("{view.done.whole ? `날짜 미정 · 끝낸 일 ${view.done.count}개` : `✓ 날짜 미정에서 끝낸 일 ${view.done.count}개`}"));
+  assert(space.includes('data-recent-action="done-show" onClick={() => void showRecentDone(id, true)}>보기</button>'));
+  assert(space.includes('data-recent-action="done-fold" onClick={() => void showRecentDone(id, false)}>접기</button>'));
+  // Both under the body: one line of two buttons, their full words as names.
+  assert(space.includes('if (atEnd && view?.done.count && view.folds.some(fold => fold.atEnd)) return recentPairLine(id, view);'));
+  assert(space.includes("aria-label={`${done} · 보기`} onClick={() => void showRecentDone(id, true)}>✓ 끝낸 일 {view.done.count}개 보기</button>"));
+  assert(space.includes("aria-label={`${past} · 펼치기`} onClick={() => void showRecentWhole(id)}>지난 기록 {sum('days')}일 펼치기</button>"));
+  assert(space.includes('const recentDoneKey = `flow:alpha:writing-done:v1:${actorId}`;'));
+  assert(space.includes('recentHolds.current[id] = programRecentHold(space.text, id, today, { done: !recentDoneShownRef.current[id] });'));
+  // Under the body with the old days' line, so the body keeps the lines its fold freed.
+  assert(space.includes('const done = atEnd ? recentDoneLine(id, view) : null, past = recentPastLine(id, view, atEnd);'));
 });
 
 test('W-a: each key re-renders the writing view, so its whole-document reads are kept while the text is the same', () => {

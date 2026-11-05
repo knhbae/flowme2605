@@ -11,8 +11,12 @@ import { programDate } from './program-data';
 export const PROGRAM_RECENT_WRITING = Object.freeze({ lines: 200, days: 7 });
 
 /** What one writing session folds: the lines folded when the document was opened, and the day before which a section
- *  is old. A section in view then is never folded later in the session (one dated back by hand stays in view). */
-export interface ProgramRecentHold { documentId: string; since: string; lineIds: ReadonlySet<string> }
+ *  is old. A section in view then is never folded later in the session (one dated back by hand stays in view).
+ *  W-b: the finished tasks of [미정] folded then (the lines under them fold along; one checked later stays in view, one
+ *  unchecked elsewhere comes back), and whether [미정] folded whole, holding nothing but folders, blank lines and
+ *  finished tasks (its date line and all, '날짜 미정 · 끝낸 일 n개'). */
+export interface ProgramRecentHold { documentId: string; since: string; lineIds: ReadonlySet<string>; done: ReadonlySet<string>; undated: boolean }
+export interface ProgramRecentDone { count: number; whole: boolean }
 export interface ProgramRecentFold { lineIds: string[]; through: string; days: number; tasks: number; open: number; atEnd: boolean }
 export type ProgramRecentExtend = { ok: true; state: TextWorkspaceState } | { ok: false; reason: 'document' | 'hidden-line' | 'invalid' | 'hidden-context' | 'visible-context' };
 
@@ -22,13 +26,30 @@ function oldSections(rows: readonly TextRow[], since: string) {
   const old = new Set(rows.filter(row => row.kind === 'date' && programDate(row.date) && row.date < since).map(row => row.id));
   return rows.filter(row => old.has(row.id) || !!row.dateLineId && old.has(row.dateLineId));
 }
+const undatedHeader = (row: TextRow) => row.kind === 'date' && row.text.trim() === '[미정]';
+/** W-b: each [미정] section's rows (its date line apart), and of them the finished tasks with nothing finished above. */
+function undatedSections(rows: readonly TextRow[]) {
+  const headers = new Set(rows.filter(undatedHeader).map(row => row.id));
+  return [...headers].map(id => {
+    const section = rows.filter(row => row.dateLineId === id && row.id !== id);
+    const finished = section.filter(row => row.kind === 'task' && row.isCanonical && row.done);
+    return { id, section, finished: finished.filter(row => !finished.some(above => above.index < row.index && row.index < above.subtreeEndIndex)) };
+  });
+}
+/** A [미정] section with nothing but folders (linked, or still a '- /이름' line), blank lines and finished tasks (and
+ *  what is under them). */
+const onlyFinished = (rows: readonly TextRow[], section: readonly TextRow[], finished: readonly TextRow[]) => finished.length > 0
+  && section.every(row => ['scope', 'blank'].includes(row.kind) || row.kind === 'note' && /^ *- \/\S/.test(row.text)
+    || finished.some(task => task.index <= row.index && row.index < task.subtreeEndIndex));
+
 /** What the writing view compares, row by row, between the whole document and its recent part. */
 const rowShape = (row: TextRow) => JSON.stringify([row.kind, row.depth, row.parentLineId, row.groupDate, row.date ?? null, row.dateLineId,
   row.title ?? null, row.done ?? null, row.isCanonical ?? null, row.isReference ?? null, row.scopeId ?? null, row.ancestorScopeIds ?? null,
   row.progressPercent ?? null, row.time ?? null, row.note ?? null, row.taskId ?? null]);
 
-/** The session's fold, or null: 200 lines or fewer, nothing old, or a recent part that would not read the same alone. */
-export function programRecentHold(state: TextWorkspaceState, documentId: string, today: string): ProgramRecentHold | null {
+/** The session's fold, or null: 200 lines or fewer, nothing to fold, or a recent part that would not read the same
+ *  alone. `done: false` leaves [미정]'s finished tasks in view (shown by [보기]). */
+export function programRecentHold(state: TextWorkspaceState, documentId: string, today: string, options: { done?: boolean } = {}): ProgramRecentHold | null {
   const doc = state.documents.find(entry => entry.id === documentId);
   if (!doc || doc.lines.length <= PROGRAM_RECENT_WRITING.lines || !programDate(today)) return null;
   const since = programShiftDate(today, 1 - PROGRAM_RECENT_WRITING.days), rows = rowsOf(state, documentId);
@@ -37,12 +58,14 @@ export function programRecentHold(state: TextWorkspaceState, documentId: string,
   const bySection = new Map<string, TextRow[]>();
   for (const row of oldSections(rows, since)) { const key = row.kind === 'date' ? row.id : row.dateLineId!; bySection.set(key, [...bySection.get(key) ?? [], row]); }
   const lineIds = new Set([...bySection.values()].filter(section => !section.some(row => referred.has(row.id))).flat().map(row => row.id));
-  if (!lineIds.size) return null;
-  const hold = { documentId, since, lineIds };
-  const restricted = restrictProgramRecent(state, documentId, lineIds);
+  const undated = options.done === false ? [] : undatedSections(rows).map(entry => ({ ...entry, finished: entry.finished.filter(row => !referred.has(row.id)) }));
+  const done = new Set(undated.flatMap(entry => entry.finished.map(row => row.id)));
+  if (!lineIds.size && !done.size) return null;
+  const hold: ProgramRecentHold = { documentId, since, lineIds, done, undated: undated.some(entry => onlyFinished(rows, entry.section, entry.finished)) };
+  const hidden = programRecentHidden(state, hold), restricted = restrictProgramRecent(state, documentId, hidden);
   if (!M.validate(restricted)) return null;
   const alone = new Map(rowsOf(restricted, documentId).map(row => [row.id, rowShape(row)]));
-  return rows.every(row => lineIds.has(row.id) || alone.get(row.id) === rowShape(row)) ? hold : null;
+  return rows.every(row => hidden.has(row.id) || alone.get(row.id) === rowShape(row)) ? hold : null;
 }
 
 /** The lines folded in `state` now: every line of a section whose date line was folded when the session began and is
@@ -53,9 +76,18 @@ export function programRecentHidden(state: TextWorkspaceState, hold: ProgramRece
   if (known) return known;
   let hidden = new Set<string>();
   if (M.getDocument(state, hold.documentId)) {
-    const rows = oldSections(rowsOf(state, hold.documentId), hold.since);
+    const all = rowsOf(state, hold.documentId), rows = oldSections(all, hold.since);
     const sections = new Set(rows.filter(row => row.kind === 'date' && hold.lineIds.has(row.id)).map(row => row.id));
     hidden = new Set(rows.filter(row => sections.has(row.kind === 'date' ? row.id : row.dateLineId!)).map(row => row.id));
+    // W-b: [미정]'s finished tasks folded at the start, still finished, with whatever is under them now; the whole
+    // section when it folded whole and still holds nothing else.
+    if (hold.done.size) for (const entry of undatedSections(all)) {
+      const folded = entry.finished.filter(row => hold.done.has(row.id));
+      if (hold.undated && folded.length === entry.finished.length && onlyFinished(all, entry.section, entry.finished)) {
+        hidden.add(entry.id); for (const row of entry.section) hidden.add(row.id); continue;
+      }
+      for (const task of folded) for (const row of all.slice(task.index, task.subtreeEndIndex)) hidden.add(row.id);
+    }
   }
   if (!hiddenKnown.has(state)) hiddenKnown.set(state, new WeakMap());
   hiddenKnown.get(state)!.set(hold, hidden);
@@ -143,9 +175,17 @@ export function moveProgramRecentOffset(from: readonly { id: string; text: strin
   return to.slice(0, target).reduce((sum, line) => sum + line.text.length + 1, 0) + Math.min(Math.max(0, offset - start), to[target].text.length);
 }
 
-/** The folded runs, for the '지난 기록' line: through which day, how many days, tasks and tasks still open. */
+/** W-b: how many finished tasks of [미정] are folded, and whether [미정] is folded whole. */
+export function programRecentDone(state: TextWorkspaceState, documentId: string, hidden: ReadonlySet<string>): ProgramRecentDone {
+  const sections = undatedSections(rowsOf(state, documentId));
+  return { count: sections.reduce((sum, entry) => sum + entry.finished.filter(row => hidden.has(row.id)).length, 0), whole: sections.some(entry => hidden.has(entry.id)) };
+}
+/** W-b: how many finished tasks [미정] has (for the line that folds them again). */
+export const programRecentDoneCount = (state: TextWorkspaceState, documentId: string) => undatedSections(rowsOf(state, documentId)).reduce((sum, entry) => sum + entry.finished.length, 0);
+
+/** The folded runs of old days, for the '지난 기록' line: through which day, how many days, tasks and tasks still open. */
 export function programRecentFolds(state: TextWorkspaceState, documentId: string, hidden: ReadonlySet<string>): ProgramRecentFold[] {
-  const rows = rowsOf(state, documentId), folds: ProgramRecentFold[] = [];
+  const rows = rowsOf(state, documentId), folds: ProgramRecentFold[] = [], undated = new Set(rows.filter(undatedHeader).map(row => row.id));
   let run: TextRow[] = [];
   const close = (atEnd: boolean) => {
     if (!run.length) return;
@@ -154,7 +194,7 @@ export function programRecentFolds(state: TextWorkspaceState, documentId: string
       tasks: tasks.length, open: tasks.filter(row => !row.done).length, atEnd });
     run = [];
   };
-  for (const row of rows) { if (hidden.has(row.id)) run.push(row); else close(false); }
+  for (const row of rows) { if (hidden.has(row.id) && !undated.has(row.id) && !undated.has(row.dateLineId ?? '')) run.push(row); else close(false); }
   close(true);
   return folds;
 }

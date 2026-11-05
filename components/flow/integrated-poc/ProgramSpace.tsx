@@ -43,8 +43,8 @@ import type { ProgramPmHostContext } from '@/lib/flow/integrated-poc/rea-pm/app-
 import { programTextProgressTransition } from '@/lib/flow/integrated-poc/program-text-progress-transition';
 import { programTextTransition } from '@/lib/flow/integrated-poc/program-text-transition';
 import { ProgramTextEditor, type ProgramSourceFocus, type ProgramTextCommitOptions, type ProgramTextPosition, type ProgramTextSaveStatus } from './ProgramTextEditor';
-import { extendProgramRecent, extendProgramRecentRaw, moveProgramRecentOffset, programRecentFolds, programRecentHidden, programRecentHold, restrictProgramRecent,
-  type ProgramRecentFold, type ProgramRecentHold } from '@/lib/flow/integrated-poc/recent-writing';
+import { extendProgramRecent, extendProgramRecentRaw, moveProgramRecentOffset, programRecentDone, programRecentDoneCount, programRecentFolds, programRecentHidden,
+  programRecentHold, restrictProgramRecent, PROGRAM_RECENT_WRITING, type ProgramRecentDone, type ProgramRecentFold, type ProgramRecentHold } from '@/lib/flow/integrated-poc/recent-writing';
 import { readProgramFolderRegions, programFolderAfterDocumentOpen } from '@/lib/flow/integrated-poc/folder-document-regions';
 import { ProgramRecurrence } from './ProgramRecurrence';
 import { ProgramRecurrencePlanRecovery } from './ProgramRecurrencePlanRecovery';
@@ -175,7 +175,7 @@ export type ProgramMainTab = 'documents' | 'today' | 'all';
 export const programMainTabOf = (period: ProgramPeriod): ProgramMainTab => period === 'documents' || period === 'all' ? period : 'today';
 type Detail = { kind: 'task'; id: string } | { kind: 'folder'; id: string } | { kind: 'connect'; docId: string; lineId: string | null; insertAfter: boolean } | null;
 /** 11/5 쓰기 '최근만 쓰기': what one document's editor gets in the recent view. */
-type ProgramRecentView = { hold: ProgramRecentHold; hidden: Set<string>; workspace: TextWorkspaceState; folds: ProgramRecentFold[] };
+type ProgramRecentView = { hold: ProgramRecentHold; hidden: Set<string>; workspace: TextWorkspaceState; folds: ProgramRecentFold[]; done: ProgramRecentDone };
 type LibraryWritingHandoff = { epoch: number; documentId: string; folderId: string; focusOwner: Element | null };
 /** The list view a row's title opened its source from, and where that row sat on screen. */
 type SourceOrigin = { actorId: string; documentId: string; taskId: string; top: number | null; scrollY: number;
@@ -600,9 +600,26 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const recentWholeRef = useRef(recentWhole); recentWholeRef.current = recentWhole;
   /** The document whose old days were opened to show a line found there ('찾은 줄이 지난 기록에 있어 펼쳤습니다'). */
   const [recentFound, setRecentFound] = useState<string | null>(null);
+  // W-b: the documents whose [미정] finished tasks are shown ([보기]) on this device, remembered as the whole ones are.
+  const recentDoneKey = `flow:alpha:writing-done:v1:${actorId}`;
+  const [recentDoneShown, setRecentDoneShown] = useState<Record<string, true>>(() => {
+    try { const read: unknown = JSON.parse(localStorage.getItem(recentDoneKey) ?? '{}'); return read && typeof read === 'object' && !Array.isArray(read) ? read as Record<string, true> : {}; }
+    catch { return {}; }
+  });
+  const recentDoneShownRef = useRef(recentDoneShown); recentDoneShownRef.current = recentDoneShown;
   function recentHoldOf(id: string): ProgramRecentHold | null {
-    if (!(id in recentHolds.current)) recentHolds.current[id] = programRecentHold(space.text, id, today);
+    if (!(id in recentHolds.current)) recentHolds.current[id] = programRecentHold(space.text, id, today, { done: !recentDoneShownRef.current[id] });
     return recentHolds.current[id];
+  }
+  /** W-b: how many finished tasks [미정] has, for '[접기]' once they are shown (kept while the text is the same). */
+  const recentDoneCounts = useRef(new WeakMap<TextWorkspaceState, Map<string, number>>());
+  function recentDoneCountOf(id: string) {
+    const known = recentDoneCounts.current.get(space.text)?.get(id);
+    if (known !== undefined) return known;
+    const doc = space.text.documents.find(entry => entry.id === id), count = doc && doc.lines.length > PROGRAM_RECENT_WRITING.lines ? programRecentDoneCount(space.text, id) : 0;
+    if (!recentDoneCounts.current.has(space.text)) recentDoneCounts.current.set(space.text, new Map());
+    recentDoneCounts.current.get(space.text)!.set(id, count);
+    return count;
   }
   /** The recent view handed to `id`'s editor, or null: the whole document (shown whole on this device, a folder or
    *  collection view, a document that cannot be written, or one with nothing to fold). */
@@ -613,7 +630,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const cached = recentCache.current[id];
     if (cached && cached.text === space.text && cached.hold === hold) return cached.view;
     const hidden = programRecentHidden(space.text, hold);
-    const view = { hold, hidden, workspace: restrictProgramRecent(space.text, id, hidden), folds: programRecentFolds(space.text, id, hidden) };
+    const view = { hold, hidden, workspace: restrictProgramRecent(space.text, id, hidden), folds: programRecentFolds(space.text, id, hidden), done: programRecentDone(space.text, id, hidden) };
     recentCache.current[id] = { text: space.text, hold, view };
     return view;
   }
@@ -657,6 +674,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     rememberRecentWhole({ ...recentWholeRef.current, [id]: true });
     setRecentFound(found ? id : null);
   }
+  /** W-b [보기] / [접기]: [미정]'s finished tasks shown where they are, or folded again (anew from the text as it is now). */
+  async function showRecentDone(id: string, show: boolean) {
+    if (!await settleRecent(id)) { setMessage('작성 중인 입력을 저장한 뒤 끝낸 일을 펼치거나 접어 주세요.'); return; }
+    delete recentHolds.current[id]; delete recentCache.current[id];
+    const next = { ...recentDoneShownRef.current }; if (show) next[id] = true; else delete next[id];
+    try { localStorage.setItem(recentDoneKey, JSON.stringify(next)); } catch { /* this visit only */ }
+    setRecentDoneShown(next);
+  }
   /** [최근만 보기]: the recent part again, folded anew from the text as it is now. */
   async function showRecentOnly(id: string) {
     if (!await settleRecent(id)) { setMessage('작성 중인 입력을 저장한 뒤 최근만 보기로 바꿔 주세요.'); return; }
@@ -681,20 +706,47 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     }));
   }, [selected, period, recentWhole]);
   const recentDay = (date: string) => `${Number(date.slice(5, 7))}월 ${Number(date.slice(8, 10))}일`;
-  /** The line above (`atEnd` false) or under the editor: the folded days there ('지난 기록 · …'), or, shown whole, the way back. */
+  /** The lines above (`atEnd` false) or under the editor: [미정]'s folded finished tasks (W-b) and the folded days there. */
   function recentLine(id: string, view: ProgramRecentView | null, atEnd: boolean) {
+    // [미정]'s line goes under the body with the old days' line, and both at once are one line of two buttons: each line
+    // took the body two lines, the very ones the folds had freed for today's first task (390 check).
+    if (atEnd && view?.done.count && view.folds.some(fold => fold.atEnd)) return recentPairLine(id, view);
+    const done = atEnd ? recentDoneLine(id, view) : null, past = recentPastLine(id, view, atEnd);
+    return done || past ? <>{done}{past}</> : null;
+  }
+  /** Both folds under the body: '✓ 끝낸 일 n개 보기' and '지난 기록 n일 펼치기', their full words as the buttons' names. */
+  function recentPairLine(id: string, view: ProgramRecentView) {
+    const folds = view.folds.filter(fold => fold.atEnd), through = folds.reduce((last, fold) => fold.through > last ? fold.through : last, '');
+    const sum = (key: 'days' | 'tasks' | 'open') => folds.reduce((total, fold) => total + fold[key], 0);
+    const done = view.done.whole ? `날짜 미정 · 끝낸 일 ${view.done.count}개` : `✓ 날짜 미정에서 끝낸 일 ${view.done.count}개`;
+    const past = `지난 기록 · ${through ? `${recentDay(through)}까지 ` : ''}${sum('days')}일 · 할 일 ${sum('tasks')}개 · 남은 일 ${sum('open')}개`;
+    return <div className={`${styles.recentFold} ${styles.recentPair}`} data-recent-done data-recent-fold="end">
+      <button type="button" data-recent-action="done-show" title={done} aria-label={`${done} · 보기`} onClick={() => void showRecentDone(id, true)}>✓ 끝낸 일 {view.done.count}개 보기</button>
+      <button type="button" data-recent-action="past-show" title={past} aria-label={`${past} · 펼치기`} onClick={() => void showRecentWhole(id)}>지난 기록 {sum('days')}일 펼치기</button></div>;
+  }
+  /** W-b: '✓ 날짜 미정에서 끝낸 일 n개 [보기]' ('날짜 미정 · 끝낸 일 n개' when [미정] folded whole), or [접기] once shown. */
+  function recentDoneLine(id: string, view: ProgramRecentView | null) {
+    if (view?.done.count) return <div className={styles.recentFold} data-recent-done>
+      <p><span>{view.done.whole ? `날짜 미정 · 끝낸 일 ${view.done.count}개` : `✓ 날짜 미정에서 끝낸 일 ${view.done.count}개`}</span></p>
+      <button type="button" data-recent-action="done-show" onClick={() => void showRecentDone(id, true)}>보기</button></div>;
+    const count = recentDoneShown[id] && !recentWhole[id] && !collectionMode && !folderId ? recentDoneCountOf(id) : 0;
+    return count ? <div className={styles.recentFold} data-recent-done="shown"><p><span>✓ 날짜 미정에서 끝낸 일 {count}개</span></p>
+      <button type="button" data-recent-action="done-fold" onClick={() => void showRecentDone(id, false)}>접기</button></div> : null;
+  }
+  /** The folded days there ('지난 기록 · …'), or, shown whole, the way back. */
+  function recentPastLine(id: string, view: ProgramRecentView | null, atEnd: boolean) {
     if (view) {
       const folds = view.folds.filter(fold => fold.atEnd === atEnd);
       if (!folds.length) return null;
       const through = folds.reduce((last, fold) => fold.through > last ? fold.through : last, ''), sum = (key: 'days' | 'tasks' | 'open') => folds.reduce((total, fold) => total + fold[key], 0);
       return <div className={styles.recentFold} data-recent-fold={atEnd ? 'end' : 'start'}>
         <p><span>지난 기록 · {through ? `${recentDay(through)}까지 ` : ''}{sum('days')}일</span><small>할 일 {sum('tasks')}개 · 남은 일 {sum('open')}개</small></p>
-        <button type="button" onClick={() => void showRecentWhole(id)}>펼치기</button></div>;
+        <button type="button" data-recent-action="past-show" onClick={() => void showRecentWhole(id)}>펼치기</button></div>;
     }
     if (atEnd || !recentWhole[id] || collectionMode || folderId || !recentHoldOf(id)) return null;
     return <div className={styles.recentFold} data-recent-whole>
       <p><span>{recentFound === id ? '찾은 줄이 지난 기록에 있어 펼쳤습니다' : '지난 기록을 펼쳤습니다 · 길면 입력이 느려질 수 있습니다'}</span></p>
-      <button type="button" onClick={() => void showRecentOnly(id)}>최근만 보기</button></div>;
+      <button type="button" data-recent-action="past-fold" onClick={() => void showRecentOnly(id)}>최근만 보기</button></div>;
   }
   const docs = [...space.text.documents, ...space.text.flows];
   const selectedDoc = docs.find(doc => doc.id === selected);
@@ -2508,7 +2560,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           : showsPersonalAuthoring(selectedDoc.id)&&<div ref={authoringBox}><ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openDocument(documentId,taskId);}}/></div>)}
         {opened.filter(id => docs.some(doc => doc.id === id)).map(id => { const recent = recentViewOf(id), recentTop = recentLine(id, recent, false);
           const initial = positions.current[id] ?? (space.position.documentId === id ? space.position : undefined);
-          return <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor key={recent ? 'recent' : 'whole'}
+          return <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor key={recent ? `recent:${recentDoneShown[id] ? 'done' : 'folded'}` : 'whole'}
           authoringMode={!!props.nativeAuthoringEnabled} onOpenPersonalAuthoring={() => requestPersonalAuthoring(id)} hostContext={props.pmTextHost}
           repeatLabel={props.hostMainTabs && props.nativeAuthoringEnabled && selected === id ? repeatLabel(id) : undefined}
           onRegisterInputCheckpoint={read => { inputCheckpointReaders.current[id] = read; }}

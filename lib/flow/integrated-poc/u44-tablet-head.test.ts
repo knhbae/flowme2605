@@ -35,7 +35,7 @@ test('U44: the title row and its notices are drawn in one place: their own row, 
     assert(notices.includes(piece), piece);
   // The editor is the same element either way: same key, same wrapper, no prop of its mount depends on the line.
   // (11/5 '최근만 쓰기': its key says only whether it shows the recent part.)
-  assert(space.includes("return <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor key={recent ? 'recent' : 'whole'}"));
+  assert(space.includes("return <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor key={recent ? `recent:${recentDoneShown[id] ? 'done' : 'folded'}` : 'whole'}"));
   assert(!/key=\{[^}]*headInToolbar/.test(space));
 });
 
