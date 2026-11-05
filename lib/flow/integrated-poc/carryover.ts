@@ -96,7 +96,10 @@ function carryoverRules(space: ProgramPrivateSpace) {
     if (shapes.has(task.id)) return shapes.get(task.id)!;
     const { list, at } = rowsOf(task.docId), index = at.get(task.id) ?? -1, row = list[index];
     const parent = row?.parentLineId ? list[at.get(row.parentLineId) ?? -1] : null;
-    const under = row ? list.slice(index + 1, row.subtreeEndIndex).filter(item => item.kind !== 'blank' && !dateProperty(item)) : [];
+    // Only the task's own 날짜 property is left out: a date under one of its checks or notes is part of what it says
+    // (QA F1: copies differing there were taken for one, and a date written was lost).
+    const under = row ? list.slice(index + 1, row.subtreeEndIndex).filter(item => item.kind !== 'blank'
+      && !(dateProperty(item) && item.depth === row.depth + 1 && item.parentLineId === row.id)) : [];
     const shape: Shape = !row ? { block: 'shape:missing' } : task.parentTaskId !== null ? { block: 'shape:under-task' }
       : task.inputPercent !== undefined ? { block: 'shape:progress-box' }
       : parent && !['scope', 'note', 'heading'].includes(parent.kind) ? { block: `shape:under-${parent.kind}` }
@@ -184,9 +187,17 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
     const size = steps.filter(line => line.action !== 'hold').length;
     if (!size) continue;
     if (cut || changed && changed + size > limit) { cut = true; plan.left += group.length; continue; }
-    changed += size; plan.lines.push(...steps);
-    const dated = steps.filter(line => line.action === 'date');
-    plan.moved += dated.length; plan.removed += steps.filter(line => line.action === 'remove').length;
+    // The first task alone may need more than one press may change (QA F2): the lines that stay go first, then the
+    // copies, up to the limit; the rest waits for the next press, where the line kept is today's and they go beside it.
+    let taken = steps;
+    if (size > limit) {
+      const changes = [...steps.filter(line => line.action === 'date'), ...steps.filter(line => line.action === 'remove')].slice(0, limit);
+      taken = [...changes, ...steps.filter(line => line.action === 'hold')];
+      plan.left += size - changes.length; cut = true;
+    }
+    changed += taken.length - taken.filter(line => line.action === 'hold').length; plan.lines.push(...taken);
+    const dated = taken.filter(line => line.action === 'date');
+    plan.moved += dated.length; plan.removed += taken.filter(line => line.action === 'remove').length;
     plan.newDateLines += dated.filter(line => !group.find(task => task.id === line.taskId)?.explicitDate).length;
     if (finished) plan.finished++; else if (written.length) plan.today++;
   }

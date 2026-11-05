@@ -335,3 +335,37 @@ test('N11a: the batch state tokens and repeat members are the one-by-one ones', 
     assert.equal(members.has(line.id), programTaskRepeatMember(space(data), line.id), line.text);
   }
 });
+
+// Independent QA (NO_GO, 11/5) F1: a date under a check or a note under the task was left out of the comparison like
+// the task's own date, so copies differing only there were taken for one and a date written was lost.
+test('N11a QA F1: dates under a check or a note are part of what a copy says; only the task\'s own date is not', () => {
+  for (const [label, child] of [['check', '  - [ ] 합성 점검'], ['note', '  - 합성 노트']] as const) {
+    const raw0 = ['[2026-11-01]', '- [ ] 합성 업무', child, '    - 날짜: 2026-12-01', '[2026-11-02]', '- [ ] 합성 업무', child, '    - 날짜: 2026-12-02'].join('\n');
+    const { data, docId } = write(empty(), '합성', raw0);
+    const counted = planProgramCarryover(space(data), '2026-11-05');
+    assert.equal(counted.removed, 0, `${label}: nothing goes`);
+    const after = raw(ok(carry(data, '2026-11-05', counted)).data, docId);
+    assert(after.includes('2026-12-01') && after.includes('2026-12-02'), `${label}: both dates written stay`);
+    assert.equal(after.split('\n').filter(line => line === '- [ ] 합성 업무').length, 2, label);
+  }
+  // Copies that differ only in their own date property still become one line.
+  const { data, docId } = write(empty(), '합성', ['[2026-11-01]', '- [ ] 합성 업무', '  - 날짜: 2026-11-03', '[2026-11-02]', '- [ ] 합성 업무'].join('\n'));
+  const counted = planProgramCarryover(space(data), '2026-11-05');
+  assert.deepEqual({ moved: counted.moved, removed: counted.removed }, { moved: 1, removed: 1 });
+  assert.equal(raw(ok(carry(data, '2026-11-05', counted)).data, docId).split('\n').filter(line => line === '- [ ] 합성 업무').length, 1);
+});
+
+// QA F2: the first task skipped the limit (101 or 400 lines in one save) and 401 copies were refused for good.
+test('N11a QA F2: a hundred changed lines at most per press, the first task too, split within it; 401 copies finish', () => {
+  for (const [copies, presses] of [[100, 1], [101, 2], [400, 4], [401, 5]] as const) {
+    let { data } = write(empty(), '많음', ['[2026-11-01]', ...Array.from({ length: copies }, () => '- [ ] 같은 일')].join('\n'));
+    let count = 0;
+    for (let plan = planProgramCarryover(space(data), '2026-11-05'); plan.lines.length; plan = planProgramCarryover(space(data), '2026-11-05')) {
+      assert(plan.lines.filter(line => line.action !== 'hold').length <= 100, `${copies}: press ${count + 1} changes at most 100`);
+      assert(++count <= presses, `${copies}: done in ${presses} presses`);
+      data = ok(carry(data, '2026-11-05', plan)).data;
+    }
+    assert.equal(count, presses, `${copies} copies`);
+    assert.deepEqual(M.tasks(space(data).text).map(task => [task.title, task.date]), [['같은 일', '2026-11-05']], `${copies}: one line, today`);
+  }
+});
