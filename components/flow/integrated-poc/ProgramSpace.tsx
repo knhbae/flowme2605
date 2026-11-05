@@ -743,9 +743,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         <p><span>지난 기록 · {through ? `${recentDay(through)}까지 ` : ''}{sum('days')}일</span><small>할 일 {sum('tasks')}개 · 남은 일 {sum('open')}개</small></p>
         <button type="button" data-recent-action="past-show" onClick={() => void showRecentWhole(id)}>펼치기</button></div>;
     }
-    if (atEnd || !recentWhole[id] || collectionMode || folderId || !recentHoldOf(id)) return null;
+    const hold = atEnd || !recentWhole[id] || collectionMode || folderId ? null : recentHoldOf(id);
+    if (!hold) return null;
     return <div className={styles.recentFold} data-recent-whole>
-      <p><span>{recentFound === id ? '찾은 줄이 지난 기록에 있어 펼쳤습니다' : '지난 기록을 펼쳤습니다 · 길면 입력이 느려질 수 있습니다'}</span></p>
+      <p><span>{recentFound === id ? '찾은 줄이 지난 기록에 있어 펼쳤습니다' : hold.lineIds.size ? '지난 기록을 펼쳤습니다 · 길면 입력이 느려질 수 있습니다' : '전체 문서를 보고 있습니다'}</span></p>
       <button type="button" data-recent-action="past-fold" onClick={() => void showRecentOnly(id)}>최근만 보기</button></div>;
   }
   const docs = [...space.text.documents, ...space.text.flows];
@@ -2159,6 +2160,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             if (!event.currentTarget.open && (!title || title.value === title.defaultValue)) formExpected.current = null;
           }}><summary aria-label="현재 글 작업"><span className={styles.documentToolsLabel}>글 작업</span><span className={styles.documentToolsMarker} aria-hidden="true"> …</span></summary><div className={styles.documentTools} onInputCapture={() => { formExpected.current ??= space; }}>
             <form onSubmit={async event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title') ?? ''); await run('문서 이름 변경', current => renameProgramDocument(current, { ...base(current), documentId: selectedDoc.id, title })); }}><label>문서 이름<input key={selectedDoc.id + selectedDoc.title} name="title" defaultValue={selectedDoc.title} required /></label><button>이름 변경</button></form>
+            {/* 총괄 조건 4: the whole document, as before, any time (remembered on this device; the recent part is the default). */}
+            {period === 'documents' && !collectionMode && !folderId && recentHoldOf(selectedDoc.id) && <button type="button" data-recent-action={recentWhole[selectedDoc.id] ? 'menu-recent' : 'menu-whole'}
+              disabled={preparingDocumentAction} onClick={() => { if (documentMenu.current) documentMenu.current.open = false;
+                void (recentWhole[selectedDoc.id] ? showRecentOnly(selectedDoc.id) : showRecentWhole(selectedDoc.id)); }}>{recentWhole[selectedDoc.id] ? '최근만 보기' : '전체 보기'}</button>}
             {!collectionMode && <label>보관 위치<select value={selectedDoc.folderId} onChange={event => { const value = event.target.value; void run('폴더 이동', current => setProgramDocumentFolder(current, { ...base(current), documentId: selectedDoc.id, folderId: value })); }}>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>}
             {props.capabilities?.publication !== false && props.onPublishDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onPublishDocument!, { modalReturnFocus: true })}>선택해서 공개</button>}
             {props.capabilities?.revisionHistory !== false && props.onRevisionHistory && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onRevisionHistory!)}>저장판본·복구</button>}

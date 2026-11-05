@@ -36,7 +36,7 @@ test('W-a: a line opened from elsewhere (원문에서 보기, an import) that is
 
 test('W-a: the folded days\' line and the way back, as the proposal words them, remembered on the device', () => {
   assert(space.includes('<p><span>지난 기록 · {through ? `${recentDay(through)}까지 ` : \'\'}{sum(\'days\')}일</span><small>할 일 {sum(\'tasks\')}개 · 남은 일 {sum(\'open\')}개</small></p>'));
-  assert(space.includes("'찾은 줄이 지난 기록에 있어 펼쳤습니다' : '지난 기록을 펼쳤습니다 · 길면 입력이 느려질 수 있습니다'"));
+  assert(space.includes("'찾은 줄이 지난 기록에 있어 펼쳤습니다' : hold.lineIds.size ? '지난 기록을 펼쳤습니다 · 길면 입력이 느려질 수 있습니다' : '전체 문서를 보고 있습니다'"));
   assert(space.includes('data-recent-action="past-show" onClick={() => void showRecentWhole(id)}>펼치기</button>'));
   assert(space.includes('data-recent-action="past-fold" onClick={() => void showRecentOnly(id)}>최근만 보기</button>'));
   assert(space.includes('const recentWholeKey = `flow:alpha:writing-whole:v1:${actorId}`;'));
@@ -56,6 +56,14 @@ test('W-b: [미정]\'s folded finished tasks have their line under the body, [�
   assert(space.includes('recentHolds.current[id] = programRecentHold(space.text, id, today, { done: !recentDoneShownRef.current[id] });'));
   // Under the body with the old days' line, so the body keeps the lines its fold freed.
   assert(space.includes('const done = atEnd ? recentDoneLine(id, view) : null, past = recentPastLine(id, view, atEnd);'));
+});
+
+test('총괄 조건 4: the document menu goes to the whole document any time and back, remembered on the device', () => {
+  assert(space.includes("data-recent-action={recentWhole[selectedDoc.id] ? 'menu-recent' : 'menu-whole'}"));
+  assert(space.includes("void (recentWhole[selectedDoc.id] ? showRecentOnly(selectedDoc.id) : showRecentWhole(selectedDoc.id)); }}>{recentWhole[selectedDoc.id] ? '최근만 보기' : '전체 보기'}</button>}"));
+  // Shown for a document the writing view folds (the whole one is the only view of a short one); the default is the recent part.
+  assert(space.includes("{period === 'documents' && !collectionMode && !folderId && recentHoldOf(selectedDoc.id) && <button"));
+  assert(space.includes('const [recentWhole, setRecentWhole] = useState<Record<string, true>>(() => {'));
 });
 
 test('W-a: each key re-renders the writing view, so its whole-document reads are kept while the text is the same', () => {
