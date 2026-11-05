@@ -42,7 +42,9 @@ import { documentHasPersonalAuthoring, documentRepeatSeries } from '@/lib/flow/i
 import type { ProgramPmHostContext } from '@/lib/flow/integrated-poc/rea-pm/app-host';
 import { programTextProgressTransition } from '@/lib/flow/integrated-poc/program-text-progress-transition';
 import { programTextTransition } from '@/lib/flow/integrated-poc/program-text-transition';
-import { ProgramTextEditor, type ProgramSourceFocus, type ProgramTextCommitOptions, type ProgramTextSaveStatus } from './ProgramTextEditor';
+import { ProgramTextEditor, type ProgramSourceFocus, type ProgramTextCommitOptions, type ProgramTextPosition, type ProgramTextSaveStatus } from './ProgramTextEditor';
+import { extendProgramRecent, extendProgramRecentRaw, moveProgramRecentOffset, programRecentFolds, programRecentHidden, programRecentHold, restrictProgramRecent,
+  type ProgramRecentFold, type ProgramRecentHold } from '@/lib/flow/integrated-poc/recent-writing';
 import { readProgramFolderRegions, programFolderAfterDocumentOpen } from '@/lib/flow/integrated-poc/folder-document-regions';
 import { ProgramRecurrence } from './ProgramRecurrence';
 import { ProgramRecurrencePlanRecovery } from './ProgramRecurrencePlanRecovery';
@@ -172,6 +174,8 @@ export type ProgramMainTab = 'documents' | 'today' | 'all';
 /** The main tab a period belongs to: week, month and date-less are under 오늘. */
 export const programMainTabOf = (period: ProgramPeriod): ProgramMainTab => period === 'documents' || period === 'all' ? period : 'today';
 type Detail = { kind: 'task'; id: string } | { kind: 'folder'; id: string } | { kind: 'connect'; docId: string; lineId: string | null; insertAfter: boolean } | null;
+/** 11/5 쓰기 '최근만 쓰기': what one document's editor gets in the recent view. */
+type ProgramRecentView = { hold: ProgramRecentHold; hidden: Set<string>; workspace: TextWorkspaceState; folds: ProgramRecentFold[] };
 type LibraryWritingHandoff = { epoch: number; documentId: string; folderId: string; focusOwner: Element | null };
 /** The list view a row's title opened its source from, and where that row sat on screen. */
 type SourceOrigin = { actorId: string; documentId: string; taskId: string; top: number | null; scrollY: number;
@@ -261,10 +265,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   const authoringSheet = useRef<HTMLDialogElement | null>(null);
   /** "반복 2" when the document has live repeats, else "반복". */
+  // Asked on every render of the writing view, a key typed among them (11/5 '최근만 쓰기' profile: a whole read of a
+  // long document each time), so kept while the text and the repeat plans are the same.
+  const repeatLabels = useRef(new WeakMap<TextWorkspaceState, Map<string, { owner: typeof space.personalAuthoring; label: string }>>());
   function repeatLabel(id: string) {
+    const known = repeatLabels.current.get(space.text)?.get(id);
+    if (known && known.owner === space.personalAuthoring) return known.label;
     const taskIds = M.rowMeta(space.text, id).flatMap(row => row.kind === 'task' ? [row.isReference ? row.taskId ?? '' : row.id] : []);
-    const count = documentRepeatSeries(space.personalAuthoring, id, taskIds).length;
-    return count ? `반복 ${count}` : '반복';
+    const count = documentRepeatSeries(space.personalAuthoring, id, taskIds).length, label = count ? `반복 ${count}` : '반복';
+    if (!repeatLabels.current.has(space.text)) repeatLabels.current.set(space.text, new Map());
+    repeatLabels.current.get(space.text)!.set(id, { owner: space.personalAuthoring, label });
+    return label;
   }
   useEffect(() => {
     if (!revealAuthoringBox.current) return; revealAuthoringBox.current = false;
@@ -576,6 +587,115 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // native drag before its data transfer has started.
   const nativeDrag = useRef<string | null>(null);
   const positions = useRef<Record<string, ProgramWritingPosition>>({}), dirty = useRef<Record<string, boolean>>({});
+  // 11/5 쓰기 '최근만 쓰기' (W-a): a long document is written in its recent part, its old date sections folded into one
+  // line (recent-writing.ts). Per writing session, the fold (recomputed when the person goes back to 최근만 보기); the
+  // documents shown whole on this device (remembered); the view handed to each editor, kept while the text is the same.
+  const recentHolds = useRef<Record<string, ProgramRecentHold | null>>({});
+  const recentCache = useRef<Record<string, { text: TextWorkspaceState; hold: ProgramRecentHold; view: ProgramRecentView }>>({});
+  const recentWholeKey = `flow:alpha:writing-whole:v1:${actorId}`;
+  const [recentWhole, setRecentWhole] = useState<Record<string, true>>(() => {
+    try { const read: unknown = JSON.parse(localStorage.getItem(recentWholeKey) ?? '{}'); return read && typeof read === 'object' && !Array.isArray(read) ? read as Record<string, true> : {}; }
+    catch { return {}; }
+  });
+  const recentWholeRef = useRef(recentWhole); recentWholeRef.current = recentWhole;
+  /** The document whose old days were opened to show a line found there ('찾은 줄이 지난 기록에 있어 펼쳤습니다'). */
+  const [recentFound, setRecentFound] = useState<string | null>(null);
+  function recentHoldOf(id: string): ProgramRecentHold | null {
+    if (!(id in recentHolds.current)) recentHolds.current[id] = programRecentHold(space.text, id, today);
+    return recentHolds.current[id];
+  }
+  /** The recent view handed to `id`'s editor, or null: the whole document (shown whole on this device, a folder or
+   *  collection view, a document that cannot be written, or one with nothing to fold). */
+  function recentViewOf(id: string): ProgramRecentView | null {
+    if (collectionMode || folderId || recentWhole[id] || !space.text.documents.some(doc => doc.id === id) || programDocumentContentLock(space, id) !== 'active') return null;
+    const hold = recentHoldOf(id);
+    if (!hold) return null;
+    const cached = recentCache.current[id];
+    if (cached && cached.text === space.text && cached.hold === hold) return cached.view;
+    const hidden = programRecentHidden(space.text, hold);
+    const view = { hold, hidden, workspace: restrictProgramRecent(space.text, id, hidden), folds: programRecentFolds(space.text, id, hidden) };
+    recentCache.current[id] = { text: space.text, hold, view };
+    return view;
+  }
+  const recentViewRef = useRef(recentViewOf); recentViewRef.current = recentViewOf;
+  /** The editor's state with the folded lines put back onto `base`; `check` proves the whole (a save), else a quick look.
+   *  The same state asked again (every row's reference check while the editor draws) gets the same object back. */
+  const recentWideKnown = useRef(new WeakMap<TextWorkspaceState, { base: TextWorkspaceState; hold: ProgramRecentHold; check: boolean; result: ReturnType<typeof extendProgramRecent> }>());
+  function recentWide(id: string, view: ProgramRecentView, next: TextWorkspaceState, check = true, base = space.text) {
+    const known = recentWideKnown.current.get(next);
+    if (known && known.base === base && known.hold === view.hold && (known.check || !check)) return known.result;
+    const result = extendProgramRecent(base, next, id, programRecentHidden(base, view.hold), check);
+    recentWideKnown.current.set(next, { base, hold: view.hold, check, result });
+    return result;
+  }
+  const recentNarrow = (id: string, view: ProgramRecentView, state: TextWorkspaceState) => restrictProgramRecent(state, id, programRecentHidden(state, view.hold));
+  /** The raw the document's editor shows: the recent part in the recent view. */
+  function shownDocument(id: string) {
+    const view = recentViewRef.current(id), whole = M.getDocument(dataRef.current.spaces[actorId]?.text ?? space.text, id);
+    return view ? M.getDocument(view.workspace, id) ?? whole : whole;
+  }
+  /** A caret between the recent part and the whole document, by its line. */
+  function recentPosition<T extends ProgramTextPosition>(id: string, view: ProgramRecentView, position: T, toWhole: boolean): T {
+    const recent = M.getDocument(view.workspace, id)?.lines ?? [], whole = M.getDocument(space.text, id)?.lines ?? [];
+    const [from, to] = toWhole ? [recent, whole] : [whole, recent];
+    // A scroll from the whole document means nothing in the recent part (it opens at its top, or at today: below).
+    return { ...position, start: moveProgramRecentOffset(from, to, position.start), end: moveProgramRecentOffset(from, to, position.end), ...(toWhole ? {} : { scrollTop: 0 }) };
+  }
+  async function settleRecent(id: string) {
+    if (saveStatusReaders.current[id]?.()?.composing || inputLockCount.current > 0) return false;
+    if (dirty.current[id] && !await saveRequests.current[id]?.()) return false;
+    return !dirty.current[id];
+  }
+  function rememberRecentWhole(next: Record<string, true>) {
+    try { localStorage.setItem(recentWholeKey, JSON.stringify(next)); } catch { /* this visit only */ }
+    setRecentWhole(next);
+  }
+  /** [펼치기]: the whole document in the editor, remembered on this device. A line opened from elsewhere (`found`)
+   *  opens it the same way, its writing already settled. */
+  async function showRecentWhole(id: string, found = false) {
+    if (!found && !await settleRecent(id)) { setMessage('작성 중인 입력을 저장한 뒤 지난 기록을 펼쳐 주세요.'); return; }
+    rememberRecentWhole({ ...recentWholeRef.current, [id]: true });
+    setRecentFound(found ? id : null);
+  }
+  /** [최근만 보기]: the recent part again, folded anew from the text as it is now. */
+  async function showRecentOnly(id: string) {
+    if (!await settleRecent(id)) { setMessage('작성 중인 입력을 저장한 뒤 최근만 보기로 바꿔 주세요.'); return; }
+    delete recentHolds.current[id]; delete recentCache.current[id];
+    const next = { ...recentWholeRef.current }; delete next[id];
+    rememberRecentWhole(next); setRecentFound(null);
+  }
+  // A document with its old days first opens at today's date line (PROPOSAL 4-2), once per session; one whose today is
+  // already in view (newest on top, or a caret put back there) is left as it is.
+  const recentShown = useRef(new Set<string>());
+  useEffect(() => {
+    const id = selected, view = id && period === 'documents' && !recentShown.current.has(id) ? recentViewRef.current(id) : null;
+    if (!view) return;
+    recentShown.current.add(id);
+    const index = M.getDocument(view.workspace, id)?.lines.findIndex(line => line.text.trim() === `[${today}]`) ?? -1;
+    if (index < 0) return;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const textarea = document.getElementById(`program-text-${encodeURIComponent(id)}`) as HTMLTextAreaElement | null;
+      const row = textarea?.closest('.tle-root')?.querySelectorAll<HTMLElement>('.tle-line')[index];
+      if (!textarea || !row || row.offsetTop >= textarea.scrollTop && row.offsetTop + row.offsetHeight <= textarea.scrollTop + textarea.clientHeight) return;
+      textarea.scrollTop = Math.max(0, row.offsetTop - 20);
+    }));
+  }, [selected, period, recentWhole]);
+  const recentDay = (date: string) => `${Number(date.slice(5, 7))}월 ${Number(date.slice(8, 10))}일`;
+  /** The line above (`atEnd` false) or under the editor: the folded days there ('지난 기록 · …'), or, shown whole, the way back. */
+  function recentLine(id: string, view: ProgramRecentView | null, atEnd: boolean) {
+    if (view) {
+      const folds = view.folds.filter(fold => fold.atEnd === atEnd);
+      if (!folds.length) return null;
+      const through = folds.reduce((last, fold) => fold.through > last ? fold.through : last, ''), sum = (key: 'days' | 'tasks' | 'open') => folds.reduce((total, fold) => total + fold[key], 0);
+      return <div className={styles.recentFold} data-recent-fold={atEnd ? 'end' : 'start'}>
+        <p><span>지난 기록 · {through ? `${recentDay(through)}까지 ` : ''}{sum('days')}일</span><small>할 일 {sum('tasks')}개 · 남은 일 {sum('open')}개</small></p>
+        <button type="button" onClick={() => void showRecentWhole(id)}>펼치기</button></div>;
+    }
+    if (atEnd || !recentWhole[id] || collectionMode || folderId || !recentHoldOf(id)) return null;
+    return <div className={styles.recentFold} data-recent-whole>
+      <p><span>{recentFound === id ? '찾은 줄이 지난 기록에 있어 펼쳤습니다' : '지난 기록을 펼쳤습니다 · 길면 입력이 느려질 수 있습니다'}</span></p>
+      <button type="button" onClick={() => void showRecentOnly(id)}>최근만 보기</button></div>;
+  }
   const docs = [...space.text.documents, ...space.text.flows];
   const selectedDoc = docs.find(doc => doc.id === selected);
   const retainedIds = new Set(Object.values(space.retentionDocuments ?? {}));
@@ -920,7 +1040,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         || sourceSession.current !== sourceEpoch || inputLockCount.current > 0 || Object.values(dirty.current).some(Boolean)
         || Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())) return;
       if (document.activeElement !== focusOwner && document.activeElement !== document.body) { importArrival.current = null; return; }
-      const doc = M.getDocument(dataRef.current.spaces[actorId].text, notice.documentId);
+      if (recentViewRef.current(notice.documentId)?.hidden.has(notice.lineId!)) { void showRecentWhole(notice.documentId, true); return; }
+      const doc = shownDocument(notice.documentId);
       const textarea = document.getElementById('program-text-' + encodeURIComponent(notice.documentId)) as HTMLTextAreaElement | null;
       const index = doc?.lines.findIndex(line => line.id === notice.lineId) ?? -1;
       if (!doc || index < 0 || !textarea || !root.current?.contains(textarea) || !textarea.getClientRects().length
@@ -1131,7 +1252,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         requestAnimationFrame(() => {
           for (const [id, position] of Object.entries(checkpoint.writing ?? {})) {
             const textarea = document.getElementById(`program-text-${encodeURIComponent(id)}`) as HTMLTextAreaElement | null;
-            if (textarea) { textarea.setSelectionRange(Math.min(position.start, textarea.value.length), Math.min(position.end, textarea.value.length)); textarea.scrollTop = position.scrollTop; }
+            const view = recentViewRef.current(id), shown = view ? recentPosition(id, view, position, false) : position;
+            if (textarea) { textarea.setSelectionRange(Math.min(shown.start, textarea.value.length), Math.min(shown.end, textarea.value.length)); textarea.scrollTop = position.scrollTop; }
           }
         });
       },
@@ -1173,14 +1295,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           space: { ...presentation.current }, scroll: window.scrollY, focus: editor.id,
           writing: { [documentId]: { start: editor.selectionStart, end: editor.selectionEnd, scrollTop: editor.scrollTop } },
         } };
-        return editor.value === raw && !programReviewOriginReason(dataRef.current, origin) ? origin : null;
+        return editor.value === (shownDocument(documentId) ? M.raw(shownDocument(documentId)!) : raw) && !programReviewOriginReason(dataRef.current, origin) ? origin : null;
       },
       restore: (origin, currentVisit, previousFocus) => new Promise(resolve => {
         const valid = () => currentVisit() && !programReviewOriginReason(dataRef.current, origin)
           && selectedRef.current === origin.documentId && !dirty.current[origin.documentId]
           && !Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())
           && origin.editor.isConnected && document.getElementById(origin.editor.id) === origin.editor
-          && !origin.editor.readOnly && origin.editor.value === origin.raw;
+          && !origin.editor.readOnly && origin.editor.value === (shownDocument(origin.documentId) ? M.raw(shownDocument(origin.documentId)!) : origin.raw);
         if (!valid()) { resolve(false); return; }
         const view = origin.checkpoint.space!;
         setPeriod(view.period as ProgramPeriod); setDate(view.date); setFolderId(view.folderId); setQuery(view.query);
@@ -1393,6 +1515,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (!ownsSource()) return false;
     navigating = true;
     setTaskNotice(null);
+    if (targetPosition && recentViewRef.current(id)?.hidden.has(taskId!)) await showRecentWhole(id, true);
     if (targetPosition) { positions.current[id] = targetPosition; setFolderId(''); }
     else setFolderId(programFolderAfterDocumentOpen(dataRef.current.spaces[actorId].text,
       selectedRef.current, id, presentation.current.folderId));
@@ -1417,7 +1540,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           || !programSame(positions.current[id], requested) || dataRef.current.activeActorId !== actorId
           || document.activeElement !== document.body && document.activeElement !== sourceFocusOwner
             && document.activeElement !== pendingSourceFocus.current.managedReturnFocus) { pendingSourceFocus.current = null; return; }
-        const doc = documentsRef.current.find(entry => entry.id === id);
+        const doc = shownDocument(id);
         const index = doc?.lines.findIndex(line => line.id === taskId) ?? -1;
         const textarea = document.getElementById(`program-text-${encodeURIComponent(id)}`) as HTMLTextAreaElement | null;
         // A cold editor mounts in a passive effect. Its readiness notification
@@ -2383,17 +2506,19 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{authoringSheet.current?.close();void openDocument(documentId,taskId);}}/>
           </dialog>
           : showsPersonalAuthoring(selectedDoc.id)&&<div ref={authoringBox}><ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openDocument(documentId,taskId);}}/></div>)}
-        {opened.filter(id => docs.some(doc => doc.id === id)).map(id => <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor
+        {opened.filter(id => docs.some(doc => doc.id === id)).map(id => { const recent = recentViewOf(id), recentTop = recentLine(id, recent, false);
+          const initial = positions.current[id] ?? (space.position.documentId === id ? space.position : undefined);
+          return <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor key={recent ? 'recent' : 'whole'}
           authoringMode={!!props.nativeAuthoringEnabled} onOpenPersonalAuthoring={() => requestPersonalAuthoring(id)} hostContext={props.pmTextHost}
           repeatLabel={props.hostMainTabs && props.nativeAuthoringEnabled && selected === id ? repeatLabel(id) : undefined}
           onRegisterInputCheckpoint={read => { inputCheckpointReaders.current[id] = read; }}
           onRegisterCaptureComplete={read => { captureReaders.current[id] = read; }}
           onRegisterExternalGuard={read => { externalReaders.current[id] = read; }}
-          docId={id} workspace={space.text} active={selected === id && period === 'documents'} initialPosition={positions.current[id] ?? (space.position.documentId === id ? space.position : undefined)}
+          docId={id} workspace={recent ? recent.workspace : space.text} active={selected === id && period === 'documents'} initialPosition={recent && initial ? recentPosition(id, recent, initial, false) : initial}
           noteStatus={selected === id ? props.noteStatus : undefined}
           noteActions={selected === id ? <>{props.noteHeader && !props.hostMainTabs && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}</> : undefined}
           headStart={headInToolbar && selected === id ? docTitle : undefined} headEnd={headInToolbar && selected === id ? docActions : undefined}
-          headBelow={headInToolbar && selected === id ? docNotices : undefined}
+          headBelow={headInToolbar && selected === id || recentTop ? <>{headInToolbar && selected === id ? docNotices : null}{recentTop}</> : undefined}
           onWritingExample={selected === id && writingExampleReady ? () => { void applyWritingExample(); } : undefined}
           folderId={collectionMode ? '' : folderId} directWriting={!!collectionMode} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
           onContinueWholeDocument={stage => {
@@ -2407,10 +2532,20 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             setFolderId(''); setMessage(''); return true;
           }}
           writingCompute={props.writingCompute} writingContext={props.writingContext}
-          onCommit={(next, label, options) => editorCommit(id, next, label, options)}
+          onCommit={(next, label, options) => {
+            if (!recent) return editorCommit(id, next, label, options);
+            // The folded days go back exactly as they were; a save that would change how they read is not made.
+            const whole = recentWide(id, recent, next), expected = options?.expectedWorkspace && recentWide(id, recent, options.expectedWorkspace, false);
+            if (!whole.ok || expected && !expected.ok) { setMessage('지난 기록과 이어지는 입력이라 최근만 보기에서 저장하지 않았습니다. 입력은 남아 있습니다. 지난 기록을 펼쳐 이어서 써 주세요.'); return Promise.resolve(false); }
+            const acknowledged = options?.onPrivateTaskScheduleAcknowledged;
+            return editorCommit(id, whole.state, label, options && { ...options, ...(expected?.ok ? { expectedWorkspace: expected.state } : {}),
+              ...(acknowledged ? { onPrivateTaskScheduleAcknowledged: (confirmation: Promise<TextWorkspaceState | null>) => acknowledged(confirmation.then(state => state && recentNarrow(id, recent, state))) } : {}) });
+          }}
           {...({
-            authorizeTaskSplit: (lineId: string, current: TextWorkspaceState) => {
-              const latest = dataRef.current, owner = latest.spaces[actorId];
+            authorizeTaskSplit: (lineId: string, shown: TextWorkspaceState) => {
+              const wide = recent ? recentWide(id, recent, shown, false) : { ok: true as const, state: shown };
+              if (!wide.ok) return false;
+              const current = wide.state, latest = dataRef.current, owner = latest.spaces[actorId];
               if (latest.activeActorId !== actorId || !owner) return false;
               const projected = { ...latest, spaces: { ...latest.spaces, [actorId]: { ...owner, text: current } } };
               if (!canClassifyProgramTask(projected, lineId)) return false;
@@ -2438,11 +2573,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               return true;
             },
           })}
-          folderCopyProblem={(state, docId, lineIds) => programFolderCopyAccessProblem({ ...space, text: state }, docId, lineIds)}
-          validateWorkspace={next => programPreservesLockedDocumentContent(space, next) && programPreservesSeriesMetadata(space, next) && programPreservesLegacyQualityHold(space, next) && programPreservesLegacyPlanExcluded(space, next)}
-          taskAccess={writingAccess}
+          folderCopyProblem={(state, docId, lineIds) => { const whole = recent ? recentWide(id, recent, state, false) : { ok: true as const, state };
+            return whole.ok ? programFolderCopyAccessProblem({ ...space, text: whole.state }, docId, lineIds) : '지난 기록과 이어지는 줄이라 여기서 확인하지 못했습니다. 지난 기록을 펼쳐 주세요.'; }}
+          validateWorkspace={next => { const whole = recent ? recentWide(id, recent, next, false) : { ok: true as const, state: next };
+            return whole.ok && programPreservesLockedDocumentContent(space, whole.state) && programPreservesSeriesMetadata(space, whole.state) && programPreservesLegacyQualityHold(space, whole.state) && programPreservesLegacyPlanExcluded(space, whole.state); }}
+          taskAccess={recent ? (taskId, current) => { const whole = current && recentWide(id, recent, current, false); return writingAccess(taskId, whole?.ok ? whole.state : undefined); } : writingAccess}
           onOpenTaskOrigin={(documentId, lineId) => { void openDocument(documentId, lineId); }}
-          onPosition={(position, lineId) => {
+          onPosition={(shownPosition, lineId) => {
+            // Kept (and saved) in the whole document's terms.
+            const view = recentViewRef.current(id), position = view ? recentPosition(id, view, shownPosition, true) : shownPosition;
             const sourceFocus = pendingSourceFocus.current;
             // Passive reports from the retained editor must not replace the
             // explicit target while this same source request still owns it.
@@ -2452,15 +2591,28 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onDirtyChange={value => { editorDirtyChanged(id, actorId, value); }} onInputFailureChange={failed => inputFailureChanged(id, failed)} onKeepRefusedInput={props.onKeepRefusedInput} repeatContext={() => dataRef.current.spaces[actorId] ?? space} onRepeatFinish={finishRepeatRound} onRepeatUndo={undoRepeatRound} onUndo={onUndo} onRedo={onRedo}
           onRegisterSave={(save, status) => { saveRequests.current[id] = save; saveStatusReaders.current[id] = status ?? null; }}
           onRegisterSourceFocus={focus => registerSourceFocus(id, focus)}
-          onRegisterDraft={read => { draftReaders.current[id] = read; }}
-          onRegisterStructuralDraft={read => { structuralDraftReaders.current[id] = read; }}
+          onRegisterDraft={read => { draftReaders.current[id] = read && (() => {
+            // The 복구함 keeps the whole document: the folded days around what was typed.
+            const raw = read(), view = recentViewRef.current(id), base = dataRef.current.spaces[actorId]?.text ?? space.text;
+            return view ? extendProgramRecentRaw(base, id, programRecentHidden(base, view.hold), raw) : raw;
+          }); }}
+          onRegisterStructuralDraft={read => { structuralDraftReaders.current[id] = read && (() => {
+            const draft = read(), view = recentViewRef.current(id);
+            if (!draft || !view) return draft;
+            const before = recentWide(id, view, draft.before, false), next = recentWide(id, view, draft.next, false);
+            return before.ok && next.ok ? { ...draft, before: before.state, next: next.state } : draft;
+          }); }}
           onRegisterChildDrafts={read => { childDraftReaders.current[id] = read; }}
-          onRegisterConfirmedSave={accept => { confirmedSaveReaders.current[id] = accept; }}
+          onRegisterConfirmedSave={accept => { confirmedSaveReaders.current[id] = accept && ((before, next, ack) => {
+            // Confirmed in the whole document's terms, judged in the editor's: its own save is the same recent part.
+            const view = recentViewRef.current(id);
+            return view ? accept(recentNarrow(id, view, before), recentNarrow(id, view, next)) : accept(before, next, ack);
+          }); }}
           onRegisterInputLock={lock => { inputLocks.current[id] = lock; lock?.(inputLockCount.current > 0); }}
           onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { if (collectionMode) { setMessage('기존 항목 분류는 모음이 아닙니다. 전체 문서에서 계속 작성합니다.'); return; } setFolderId(scopeId); setPeriod('all'); } else void openDocument(scopeId); }}
           onConnectFlow={(docId, lineId, insertAfter) => openDetail({ kind: 'connect', docId, lineId, insertAfter })}
           readOnly={programDocumentContentLock(space, id) !== 'active'} disabledReason={space.documentTrash?.[id] ? '휴지통의 문서입니다. 복원하면 삭제 전 상태로 돌아갑니다.' : retainedIds.has(id) ? '판본 복구 중 보관된 내용 · 읽기 전용' : '보관한 문서입니다. 보관에서 꺼내면 이어서 쓸 수 있습니다.'}
-        /></div>)}
+        />{recentLine(id, recent, true)}</div>; })}
         {selectedDoc && !selectedArchived && <ProgramRecurrence key={`${actorId}:${selectedDoc.id}`} data={data} mutate={mutate} today={today} period="documents" date={date} documentId={selectedDoc.id} onPlanApplied={focusAppliedPlan}
           presentation={recurrencePresentation.documents[selectedDoc.id] ?? { page: 0, includeHeld: false, includeExcluded: false }} onPresentationChange={value => setRecurrencePresentation(previous => ({ ...previous, documents: { ...previous.documents, [selectedDoc.id]: value } }))}
           onRegisterEditors={port => { recurrencePorts.current[selectedDoc.id] = port; }}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useRef,useState} from 'react';
+import React, {useMemo,useRef,useState} from 'react';
 import type {ProgramData,ProgramTransition} from '@/lib/flow/integrated-poc/contract';
 import {textWorkspaceModel as M} from '@/lib/flow/integrated-poc/text-workspace';
 import {previewPersonalRounds,documentRepeatSeries,describePersonalRepeatRule,type PersonalTaskDate,type PersonalRepeatRule,type PersonalFlowVersion,type PersonalSeriesOwner,type PersonalStandaloneExecution} from '@/lib/flow/integrated-poc/personal-authoring';
@@ -35,8 +35,12 @@ export function PersonalExecutionAnchorForm(props:{execution:PersonalStandaloneE
 
 export function ProgramPersonalAuthoring(props:{data:ProgramData;documentId:string;today:string;disabled:boolean;onOpenSource:(documentId:string,taskId:string)=>void;onCommand:(label:string,build:(data:ProgramData)=>ProgramTransition<string>,openResult?:boolean)=>Promise<boolean>}) {
  const space=props.data.spaces[props.data.activeActorId],owner=space.personalAuthoring,doc=M.getDocument(space.text,props.documentId)!;
- const tasks=M.tasks(space.text),documentTaskIds=M.rowMeta(space.text,doc.id).flatMap(row=>row.kind==='task'?[row.isReference?row.taskId??'':row.id]:[]),documentIds=new Set(documentTaskIds);
- const available=tasks.filter(t=>documentIds.has(t.id));
+ // Kept while the text is the same: this renders under the writing view, so each key typed re-rendered it, and the
+ // whole read of a long document each time was a third of a key's delay (11/5 '최근만 쓰기' profile).
+ const {tasks,documentTaskIds,available}=useMemo(()=>{
+  const all=M.tasks(space.text),taskIds=M.rowMeta(space.text,doc.id).flatMap(row=>row.kind==='task'?[row.isReference?row.taskId??'':row.id]:[]),ids=new Set(taskIds);
+  return {tasks:all,documentTaskIds:taskIds,available:all.filter(t=>ids.has(t.id))};
+ },[space.text,doc.id]);
  const savedRepeats=documentRepeatSeries(owner,doc.id,documentTaskIds);
  const [chosen,setChosen]=useState<string[]>([]),[title,setTitle]=useState(''),[newTitle,setNewTitle]=useState(''),[description,setDescription]=useState('');
  const [flowId,setFlowId]=useState(owner?.flows.find(f=>f.flowId===doc.id)?.flowId??owner?.flows[0]?.flowId??'');

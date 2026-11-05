@@ -25,7 +25,8 @@ test('U44: one line only on a landscape touch screen at least 1000px wide and at
 test('U44: the title row and its notices are drawn in one place: their own row, or the open editor\'s line', () => {
   assert(space.includes('{!headInToolbar && <><div className={styles.docHeading}>{docTitle}{docActions}</div>{docNotices}</>}'));
   assert(space.includes('headStart={headInToolbar && selected === id ? docTitle : undefined} headEnd={headInToolbar && selected === id ? docActions : undefined}'));
-  assert(space.includes('headBelow={headInToolbar && selected === id ? docNotices : undefined}'));
+  // 11/5 쓰기 '최근만 쓰기': the folded days' line (recentTop) joins them above the body, notices first.
+  assert(space.includes('headBelow={headInToolbar && selected === id || recentTop ? <>{headInToolbar && selected === id ? docNotices : null}{recentTop}</> : undefined}'));
   // The title keeps its button (the document sheet) and ⋯ its menu; the notices are the same ones, above the body.
   assert.match(space, /const docTitle = <>\{sourceOriginOpen && <button[^]*?ref=\{titleToggle\}[^]*?onPointerDown=\{findPointerDown\} onClick=\{openFindPanel\}>/);
   assert(space.includes('const docActions = <>{props.hostMainTabs ? selectedDocumentTools && <div className={styles.titleActions}>{selectedDocumentTools}</div>'));
@@ -33,7 +34,8 @@ test('U44: the title row and its notices are drawn in one place: their own row, 
   for (const piece of ['{props.noteHeader}', 'className={styles.importNotice}', 'data-writing-entry-notice', 'className={styles.copyHeader}', '<ProgramDocumentProvenance'])
     assert(notices.includes(piece), piece);
   // The editor is the same element either way: same key, same wrapper, no prop of its mount depends on the line.
-  assert(space.includes('.map(id => <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor'));
+  // (11/5 '최근만 쓰기': its key says only whether it shows the recent part.)
+  assert(space.includes("return <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor key={recent ? 'recent' : 'whole'}"));
   assert(!/key=\{[^}]*headInToolbar/.test(space));
 });
 

@@ -491,3 +491,9 @@
 /* S4 v19: the find notice takes no room; it floats over the head row, above the editor's toolbar, under dialogs. */
 .floatingNotice { position:relative; z-index:20; height:0; }
 .floatingNotice > .error { position:absolute; top:0; left:0; right:0; margin:0; box-shadow:0 4px 16px var(--flowme-b-shadow); }
+/* 11/5 쓰기 '최근만 쓰기': the folded old days, and the way back once they are open (one line, its button at the end). */
+.recentFold { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 8px 0; padding: 8px 12px; border: 1px solid var(--flowme-b-line); border-radius: 10px; background: var(--flowme-b-canvas); }
+.recentFold p { display: flex; flex-wrap: wrap; gap: 0 8px; min-width: 0; margin: 0; font-size: 14px; line-height: 20px; color: var(--flowme-b-muted); overflow-wrap: anywhere; }
+.recentFold p span { color: var(--flowme-b-text, inherit); font-weight: 600; }
+.recentFold small { font-size: 13px; }
+.recentFold button { flex: 0 0 auto; min-height: 44px; padding: 0 14px; border: 1px solid var(--flowme-b-line); border-radius: 10px; background: var(--flowme-b-surface); color: var(--flowme-b-primary); font-size: 14px; }

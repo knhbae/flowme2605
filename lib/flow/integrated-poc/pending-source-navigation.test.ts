@@ -228,6 +228,9 @@ function sourceFocusHarness(expressions: ReturnType<typeof sourceFocusExpression
     sourceNavigation, sourceFocusOwner, props: {}, setFolderId: () => {}, inputLockCount: { current: 0 }, writingBlocked: () => false,
     selectedRef: { current: documentId }, presentation: { current: { period: 'documents' } }, actorId: data.activeActorId,
     dataRef: { current: data }, documentsRef: { current: text.documents }, document: nativeDocument, M, programSame,
+    // 11/5 쓰기 '최근만 쓰기': this document is short, so its editor shows it whole.
+    recentViewRef: { current: () => null }, shownDocument: (id: string) => text.documents.find(entry => entry.id === id),
+    recentPosition: () => { throw Error('no recent view'); },
     root: { current: { contains: (value: unknown) => value === area } }, libraryDialog: { current: null },
     sourceFocusPorts: { current: { [documentId]: (target: { documentId: string; lineId: string; raw: string }) => {
       assert.deepEqual(target, { documentId, lineId: taskId, raw: M.raw(doc) });

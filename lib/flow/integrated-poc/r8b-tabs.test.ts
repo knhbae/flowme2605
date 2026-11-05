@@ -89,7 +89,8 @@ test('toolbar: ↶ ↷ and 반복 N; the Flow·반복 box is a sheet that stays 
   assert(space.includes('if (props.hostMainTabs) { const sheet = authoringSheet.current; if (sheet && !sheet.open) sheet.showModal(); return; }'));
   assert(space.includes('className={`${styles.findDialog} ${styles.authoringSheet}`} aria-labelledby="program-authoring-title"'));
   assert(space.includes("repeatLabel={props.hostMainTabs && props.nativeAuthoringEnabled && selected === id ? repeatLabel(id) : undefined}"));
-  const label = /function repeatLabel\(id: string\) \{[\s\S]*?return count \? `반복 \$\{count\}` : '반복';\n  \}/.test(space.replace(/\r\n/g, '\n'));
+  // (11/5 '최근만 쓰기': the label is kept while the text is the same; its words are as before.)
+  const label = /function repeatLabel\(id: string\) \{[\s\S]*?label = count \? `반복 \$\{count\}` : '반복';[\s\S]*?return label;\n  \}/.test(space.replace(/\r\n/g, '\n'));
   assert(label);
 });
 
