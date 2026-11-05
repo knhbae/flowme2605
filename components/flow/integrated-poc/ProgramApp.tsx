@@ -15,7 +15,9 @@ import { programErrorMessage, type ProgramDestination, type ProgramMutate, type 
 import { nextProgramMutationFeedback, programMutationFeedbackAfterNavigation, type ProgramMutationFeedback } from '@/lib/flow/integrated-poc/mutation-feedback';
 import type { PersonalWorkspacePocReadModel, PersonalWorkspacePocState } from '@/lib/flow/personal-workspace-poc-contract';
 import { ProgramSpace, useProgramMobileWritingChrome } from './ProgramSpace';
-import { ProgramDiscovery, createProgramDiscoveryNavigationState, captureProgramDiscoveryPresentation, restoreProgramDiscoveryPresentation, programDiscoveryHasUnstoredInput, type ProgramDiscoveryNavigationState, type ProgramImportOutcome } from './ProgramDiscovery';
+import { ProgramDiscovery, createProgramDiscoveryNavigationState, captureProgramDiscoveryPresentation, restoreProgramDiscoveryPresentation, programDiscoveryHasUnstoredInput, type ProgramDiscoveryNavigationState, type ProgramImportOutcome, type ProgramImportRepeatInput } from './ProgramDiscovery';
+import { programImportCancelNotice, programImportTargetNotice } from '@/lib/flow/integrated-poc/program-discovery-display';
+import { programImportRepeats } from '@/lib/flow/integrated-poc/public-repeat-import';
 import { ProgramCommunity } from './ProgramCommunity';
 import { emptyProgramCommunityPresentation, readProgramCommunityPresentation, type ProgramCommunityPresentation } from '@/lib/flow/integrated-poc/navigation';
 import { ProgramPublisher } from './ProgramPublisher';
@@ -562,14 +564,14 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
     try {
       const outcome = await cancelProgramImportLinks({ batch, read: () => current.current?.envelope.data ?? null, mutate, pending: pendingImportDocuments, isCurrent });
       if (isCurrent()) setImportUndo(previous => previous?.batch === batch ? { batch, done: outcome.remaining === 0,
-        text: outcome.reason === 'pending-input' ? '입력 중인 내용을 저장한 뒤 취소할 수 있습니다.'
-          : outcome.remaining ? (outcome.total - outcome.remaining) + '개를 뺐습니다. 남은 연결 ' + outcome.remaining + '개는 다시 취소할 수 있습니다.'
-            : '넣은 할 일을 뺐습니다. 사본 문서와 원래 할 일·진행 기록은 그대로 남아 있습니다.' } : previous);
+        text: programImportCancelNotice(outcome) } : previous);
     } finally { importUndoLock.current = false; setImportUndoBusy(false); }
   }
-  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>, targetDocumentId?: string): Promise<ProgramImportOutcome> {
+  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>, targetDocumentId?: string, repeat?: ProgramImportRepeatInput): Promise<ProgramImportOutcome> {
     const actorId = current.current?.envelope.data.activeActorId; if (!actorId) return { ok: false, reason: 'invalid' };
     const beforeData = current.current!.envelope.data, before = beforeData.spaces[actorId];
+    const importing = beforeData.public.versions.find(row => row.id === versionId);
+    const existingRepeats = importing ? programImportRepeats(before, importing, itemIds).filter(row => row.existing).length : 0;
     const copyDocumentId = before.copies.find(copy => copy.flowId === beforeData.public.versions.find(row => row.id === versionId)?.flowId)?.documentId;
     if (targetDocumentId && !programImportTargets(beforeData, actorId, copyDocumentId, pendingImportDocuments()).some(doc => doc.id === targetDocumentId && !doc.reason))
       return { ok: false, reason: 'unresolved' };
@@ -577,7 +579,7 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
     const result = await mutate('개인 Flow 가져오기', data => data.activeActorId !== actorId
       || targetDocumentId && !programImportTargets(data, actorId, copyDocumentId, pendingImportDocuments()).some(doc => doc.id === targetDocumentId && !doc.reason)
       ? programFailure(data, 'conflict') : importProgramPublicVersion(data, { actorId, requestId, expectedSpace: data.spaces[actorId], versionId, itemIds, anchor,
-      ...(targetDocumentId ? { targetDocumentId } : {}), ...(recurrenceStarts && Object.keys(recurrenceStarts).length ? { recurrenceStarts } : {}) }));
+      ...(targetDocumentId ? { targetDocumentId } : {}), ...(recurrenceStarts && Object.keys(recurrenceStarts).length ? { recurrenceStarts } : {}), ...(repeat?.repeatStarts ? { repeatStarts: repeat.repeatStarts } : {}), ...(repeat?.repeatMonths ? { repeatMonths: repeat.repeatMonths } : {}) }));
     if (result.ok) {
       if (result.presentationPending || current.current?.envelope.data.activeActorId !== actorId) return { ok: false, reason: 'presentation-pending' };
       const live = current.current.envelope.data, copy = live.spaces[actorId].copies.find(row => row.id === result.result);
@@ -585,8 +587,8 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
         navigate({ view: 'space', id: targetDocumentId ?? copy.documentId });
         if (targetDocumentId) {
           const batch = captureProgramImportLinks(actorId, copy.id, targetDocumentId, before, live.spaces[actorId]);
-          const count = batch.ordinary.length + batch.recurring.length;
-          setImportUndo({ batch, done: !count, text: count ? '문서 끝에 할 일 ' + count + '개를 넣었습니다.' : '이미 연결한 할 일입니다. 새로 넣은 것은 없습니다.' });
+          const count = batch.ordinary.length + batch.recurring.length, written = batch.repeat?.length ?? 0;
+          setImportUndo({ batch, done: !count && !written, text: programImportTargetNotice(count, written, existingRepeats) });
         }
       }
     }
@@ -653,7 +655,7 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
       <div hidden={destination.view !== 'space'}>{outputActorMismatch ? <section className={styles.legacyNotice} role="status" aria-label="출력 링크의 인물 확인">
         <p>이 링크를 만든 인물과 현재 선택한 인물이 다릅니다. 개인 내용은 열지 않았습니다. 같은 브라우저에서 원래 인물을 직접 선택해 주세요.</p>
         <button onClick={() => navigate({ view: 'space' })}>현재 내 공간으로</button>
-      </section> : <ProgramSpace key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} selectedDocumentId={destination.view === 'space' ? destination.id : undefined} outputReturn={outputReturn} onUndo={() => history('undo')} onRedo={() => history('redo')} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRevisionHistory={setRevisionDocument} onOpenCopySource={(flowId, id, focus) => openFlowsFromDocument(id, flowId, focus)} onBrowseFlows={(id, focus) => openFlowsFromDocument(id, undefined, focus)} importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } } : undefined} onOutputDocument={setOutputDocument} onRegisterEditors={registered => { editors.current = registered; }} onRegisterNavigation={registered => { spaceNavigation.current = registered; }} onStartReview={startReview} onRegisterReviewSpace={registered => { reviewSpace.current = registered; }} />}</div>
+      </section> : <ProgramSpace key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} selectedDocumentId={destination.view === 'space' ? destination.id : undefined} outputReturn={outputReturn} onUndo={() => history('undo')} onRedo={() => history('redo')} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRevisionHistory={setRevisionDocument} onOpenCopySource={(flowId, id, focus) => openFlowsFromDocument(id, flowId, focus)} onBrowseFlows={(id, focus) => openFlowsFromDocument(id, undefined, focus)} importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring, ...(importUndo.batch.repeat ?? [])][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } } : undefined} onOutputDocument={setOutputDocument} onRegisterEditors={registered => { editors.current = registered; }} onRegisterNavigation={registered => { spaceNavigation.current = registered; }} onStartReview={startReview} onRegisterReviewSpace={registered => { reviewSpace.current = registered; }} />}</div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined} selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} actorId={data.activeActorId} pendingDocumentIds={pendingImportDocuments} copySourceReturn={flowReturn?.kind === 'copy'} onReturnToSpace={flowReturn?.actorId === data.activeActorId ? returnFromFlows : undefined} onStartText={startText} onUseVersion={useVersion} navigationState={discoveryStates[data.activeActorId] ?? emptyDiscoveryState} onNavigationStateChange={state => changeDiscoveryPresentation(data.activeActorId, state)} onRegisterNavigation={registered => { discoveryNavigation.current = registered; }} /></div>}
       {seen.community && <div hidden={!['community', 'activity'].includes(destination.view)}><ProgramCommunity key={`${data.activeActorId}:${presentationEpoch}`} data={data} mutate={scopedMutate} navigate={navigate} today={today} view={communityView} selectedPostId={communitySelection} selectedReplyId={destination.view === 'community' ? destination.replyId : undefined} presentation={communityStates[data.activeActorId] ?? emptyProgramCommunityPresentation()} onPresentationChange={value => changeCommunityPresentation(data.activeActorId, value)} onRegisterEditors={registerCommunityEditors} reviewEntry={reviewEntry} captureReviewVisit={captureReviewVisit}
         onReviewPublished={(draftId, postId) => { const context = reviewContext.current; if (context?.draftId === draftId && context.origin.actorId === current.current?.envelope.data.activeActorId) { context.postId = postId; refreshReviewContext(value => value + 1); } }}

@@ -37,8 +37,9 @@ import { DEV_NOTICE_TEXT, DEV_NOTICE_VERSION, markDevNoticeSeen, readDevNoticeSe
 import { ProgramLegacyWorkspace } from './ProgramLegacyWorkspace';
 import { ProgramPrivateOutput } from './ProgramPrivateOutput';
 import { ProgramCreatorWorkspace } from './ProgramCreatorWorkspace';
-import { ProgramDiscovery, createProgramDiscoveryNavigationState, programDiscoveryHasUnstoredInput, type ProgramImportOutcome } from './ProgramDiscovery';
-import { programImportArrivalNotice } from '@/lib/flow/integrated-poc/program-discovery-display';
+import { ProgramDiscovery, createProgramDiscoveryNavigationState, programDiscoveryHasUnstoredInput, type ProgramImportOutcome, type ProgramImportRepeatInput } from './ProgramDiscovery';
+import { programImportArrivalNotice, programImportCancelNotice, programImportRepeatNotice, programImportTargetNotice } from '@/lib/flow/integrated-poc/program-discovery-display';
+import { programImportRepeats } from '@/lib/flow/integrated-poc/public-repeat-import';
 import { PROGRAM_BROWSE_VIEWS, programBrowseHistoryAllowed, programEmptyHistoryOrigin, programHistoryAfterChange, programHistoryAfterStep } from '@/lib/flow/integrated-poc/program-history-origin';
 import { ProgramCommunity, type ProgramCommunityDraftSaveRecovery } from './ProgramCommunity';
 import { ProgramPublisher } from './ProgramPublisher';
@@ -1110,20 +1111,21 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     try {
       const outcome = await cancelProgramImportLinks({ batch, read: () => currentData.current, mutate, pending: pendingImportDocuments, isCurrent });
       if (isCurrent()) setImportUndo(previous => previous?.batch === batch ? { batch, done: outcome.remaining === 0,
-        text: outcome.reason === 'pending-input' ? '입력 중인 내용을 저장한 뒤 취소할 수 있습니다.'
-          : outcome.remaining ? (outcome.total - outcome.remaining) + '개를 뺐습니다. 남은 연결 ' + outcome.remaining + '개는 다시 취소할 수 있습니다.'
-            : '넣은 할 일을 뺐습니다. 사본 문서와 원래 할 일·진행 기록은 그대로 남아 있습니다.' } : previous);
+        text: programImportCancelNotice(outcome) } : previous);
     } finally { if (epoch === sessionEpochRef.current) { importUndoLock.current = false; setImportUndoBusy(false); } }
   }
-  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>, targetDocumentId?: string): Promise<ProgramImportOutcome> {
+  async function useVersion(versionId: string, itemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>, targetDocumentId?: string, repeat?: ProgramImportRepeatInput): Promise<ProgramImportOutcome> {
     const owner = session.userId, epoch = sessionEpochRef.current, before = currentData.current?.spaces[owner];
+    // 공식 반복 Flow: the repeat items I already have a line for are not written; the notice says so.
+    const importing = currentData.current?.public.versions.find(row => row.id === versionId);
+    const existingRepeats = importing ? programImportRepeats(before, importing, itemIds).filter(row => row.existing).length : 0;
     if (!before || targetDocumentId && !programImportTargets(currentData.current!, owner, before.copies.find(copy => copy.flowId === currentData.current!.public.versions.find(row => row.id === versionId)?.flowId)?.documentId, pendingImportDocuments()).some(doc => doc.id === targetDocumentId && !doc.reason))
       return { ok: false, reason: 'unresolved' };
     const result = await mutate('개인 Flow 가져오기', fresh => epoch !== sessionEpochRef.current || owner !== currentOwnerRef.current
       || targetDocumentId && !programImportTargets(fresh, owner, before.copies.find(copy => copy.flowId === fresh.public.versions.find(row => row.id === versionId)?.flowId)?.documentId, pendingImportDocuments()).some(doc => doc.id === targetDocumentId && !doc.reason)
       ? programFailure(fresh, 'conflict') : importProgramPublicVersion(fresh, { actorId: owner,
-      requestId: programId('request'), expectedSpace: fresh.spaces[session.userId], versionId, itemIds, anchor, ...(targetDocumentId ? { targetDocumentId } : {}), ...(recurrenceStarts ? { recurrenceStarts } : {}) }),
-    { alphaSocial: { type: 'copy-import', versionId, itemIds, anchor, ...(targetDocumentId ? { targetDocumentId } : {}), ...(recurrenceStarts ? { recurrenceStarts } : {}) } });
+      requestId: programId('request'), expectedSpace: fresh.spaces[session.userId], versionId, itemIds, anchor, ...(targetDocumentId ? { targetDocumentId } : {}), ...(recurrenceStarts ? { recurrenceStarts } : {}), ...(repeat?.repeatStarts ? { repeatStarts: repeat.repeatStarts } : {}), ...(repeat?.repeatMonths ? { repeatMonths: repeat.repeatMonths } : {}) }),
+    { alphaSocial: { type: 'copy-import', versionId, itemIds, anchor, ...(targetDocumentId ? { targetDocumentId } : {}), ...(recurrenceStarts ? { recurrenceStarts } : {}), ...(repeat?.repeatStarts ? { repeatStarts: repeat.repeatStarts } : {}), ...(repeat?.repeatMonths ? { repeatMonths: repeat.repeatMonths } : {}) } });
     if (!result.ok) return { ok: false, reason: result.reason };
     if (result.presentationPending || epoch !== sessionEpochRef.current || owner !== currentOwnerRef.current) return { ok: false, reason: 'presentation-pending' };
     const confirmed = controller.current?.snapshot();
@@ -1142,10 +1144,13 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           return { ok: true };
         }
         const batch = captureProgramImportLinks(owner, copy.id, targetDocumentId, before, live!.spaces[owner]);
-        const count = batch.ordinary.length + batch.recurring.length;
-        setImportUndo({ batch, done: !count, text: count ? '문서 끝에 할 일 ' + count + '개를 넣었습니다.' : '이미 연결한 할 일입니다. 새로 넣은 것은 없습니다.' });
-      } else if (version && arrived.view === 'space' && arrived.id === copy.documentId)
-        setMessage(programImportArrivalNotice(version.title, !!live?.spaces[session.userId]?.personalAuthoring));
+        const count = batch.ordinary.length + batch.recurring.length, written = batch.repeat?.length ?? 0;
+        setImportUndo({ batch, done: !count && !written, text: programImportTargetNotice(count, written, existingRepeats) });
+      } else if (version && arrived.view === 'space' && arrived.id === copy.documentId) {
+        // A new document: its repeat lines go with the document itself (휴지통 or 되돌리기, as the notice says).
+        const written = captureProgramImportLinks(owner, copy.id, copy.documentId, before, live!.spaces[owner]).repeat?.length ?? 0;
+        setMessage(programImportArrivalNotice(version.title, !!live?.spaces[session.userId]?.personalAuthoring, programImportRepeatNotice(written, existingRepeats)));
+      }
     }
     return { ok: true };
   }
@@ -1542,7 +1547,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         selectedDocumentId={destination.view === 'space' ? destination.id : undefined} onUndo={() => history('undo')} onRedo={() => history('redo')}
         onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} onInputFailureChange={setEditorInputFailed} onKeepRefusedInput={keepRefusedInput}
         onOpenCopySource={(flowId, id, focus) => { void openFlowsFromDocument(id, flowId, focus); }} onBrowseFlows={(id, focus, writing) => { void openFlowsFromDocument(id, undefined, focus, writing); }}
-        importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } } : undefined}
+        importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring, ...(importUndo.batch.repeat ?? [])][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } } : undefined}
         onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></ProgramServerStatusContext.Provider></div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} storageScope="account"
         selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined}

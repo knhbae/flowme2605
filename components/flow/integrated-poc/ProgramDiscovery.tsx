@@ -17,6 +17,9 @@ import { createTransientOutputDraft, previewTransientOutput, confirmTransientOut
 import { ProgramShareLink } from './ProgramShareLink';
 import { ProgramImportDocumentPicker } from './ProgramSpace';
 import { programImportTargets } from '@/lib/flow/integrated-poc/program-import-links';
+import { programImportFirstDate, programImportItemView, programImportRepeatChoice, programImportRepeatRule, programImportRepeats, programImportSentence } from '@/lib/flow/integrated-poc/public-repeat-import';
+import { programRepeatFixed } from '@/lib/flow/integrated-poc/repeat-line';
+import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
 import styles from './ProgramDiscovery.module.css';
 
 export type ProgramDiscoveryDraftState = {
@@ -49,7 +52,7 @@ export type ProgramDiscoveryProps = {
   storageScope?: 'local' | 'account';
   selectedVersionId?: string; selectedItemId?: string; selectedOutputReturn?: string;
   /** FC2: the host imports, opens the copy document and reports the reason of a failure (D1). */
-  onUseVersion: (versionId: string, selectedItemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>, targetDocumentId?: string) => Promise<ProgramImportOutcome>;
+  onUseVersion: (versionId: string, selectedItemIds: string[], anchor: string | null, recurrenceStarts?: Record<string, string>, targetDocumentId?: string, repeat?: ProgramImportRepeatInput) => Promise<ProgramImportOutcome>;
   actorId?: string;
   pendingDocumentIds?: () => string[];
   onReturnToSpace?: () => void;
@@ -61,6 +64,8 @@ export type ProgramDiscoveryProps = {
   onRegisterNavigation?: (navigation: ProgramDiscoveryNavigation | null) => void;
 };
 export type ProgramImportOutcome = { ok: true } | { ok: false; reason: string };
+/** 공식 반복 Flow: the repeat lines' first dates and the months typed, as the sheet sends them. */
+export type ProgramImportRepeatInput = { repeatStarts?: Record<string, string>; repeatMonths?: Record<string, number> };
 export type ProgramOutputPort = { copyText: (text: string) => Promise<void>; download: (file: { filename: string; mime: string; payload: string }) => Promise<void> };
 export async function transferProgramOutput(output: ProgramOutput, mode: 'copy' | 'download', port: ProgramOutputPort): Promise<
   { ok: true; bytes: number; count: number; undatedCount: number; action: 'copied' | 'download-requested' } | { ok: false; reason: string }
@@ -152,6 +157,8 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   const [targetDocumentId, setTargetDocumentId] = useState<string>();
   const [pickingDocument, setPickingDocument] = useState(false);
   const [importFailure, setImportFailure] = useState<{ text: string; continueCopy: boolean } | null>(null);
+  // 공식 반복 Flow: what is typed in the sheet's repeat rows (first dates, months), per sheet opened.
+  const [repeatTyped, setRepeatTyped] = useState<{ starts: Record<string, string>; months: Record<string, string> }>({ starts: {}, months: {} });
   // Per-version view toggles; they are presentation only and never stored.
   const [summaryOpen, setSummaryOpen] = useState<string | null>(null);
   const [choosingVersion, setChoosingVersion] = useState<string | null>(null);
@@ -265,6 +272,11 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   const sourceOnHold = !!flow && isPublicCatalogFlowOnHold(flow.id);
   const canUseVersion = version && outputOptions && !flow?.archived && !sourceOnHold && useItemIds.length > 0
     ? programImportCheckPasses(useItemIds, itemIds => makeProgramOutput(version, { ...outputOptions, selectedItemIds: itemIds, recurrenceWindow: undefined, format: 'txt' }, new Date())) : false;
+  // 공식 반복 Flow: the selected repeat items go in as repeat lines of mine (an existing copy's later import has none:
+  // it carries its copy items only). Nothing to put in when every selected item is one I already repeat.
+  const sheetRepeats = version && !(importDestination === 'existing' && storedCopy) ? programImportRepeats(privateSpace, version, useItemIds) : [];
+  const repeatChoice = programImportRepeatChoice(sheetRepeats, repeatTyped, today);
+  const nothingToImport = sheetRepeats.length > 0 && sheetRepeats.length === useItemIds.length && sheetRepeats.every(repeat => repeat.existing);
   const knownSources = flows.flatMap(row => {
     const current = data.public.versions.find(candidate => candidate.id === row.currentVersionId);
     return current?.source.url ? [{ url: current.source.url, version: current }] : [];
@@ -293,12 +305,12 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     if (!result.ok) { setFailed(true); setMessage(errorText(result.reason)); return; }
     update({ transient: result.draft, transientSource: { text: state.pastedText, title: state.pastedTitle, url: state.url } }); setFailed(false); setMessage('');
   };
-  const openSheet = (existing = false) => { if (pendingRef.current) return; setImportDestination(existing ? 'existing' : 'new'); setTargetDocumentId(undefined); setImportFailure(null); setSheetOpen(true); if (!sheet.current?.open) sheet.current?.showModal(); if (existing) setPickingDocument(true); };
+  const openSheet = (existing = false) => { if (pendingRef.current) return; setRepeatTyped({ starts: {}, months: {} }); setImportDestination(existing ? 'existing' : 'new'); setTargetDocumentId(undefined); setImportFailure(null); setSheetOpen(true); if (!sheet.current?.open) sheet.current?.showModal(); if (existing) setPickingDocument(true); };
   const closeSheet = () => { if (pendingRef.current) return; setSheetOpen(false); sheet.current?.close(); };
   // FC2: one import per press. The host saves, opens the copy document and says so there; a failure keeps the
   // sheet, the anchor and the selection, and names its reason (D1).
   const runImport = async () => {
-    if (pendingRef.current || !version || !detail || !canUseVersion) return;
+    if (pendingRef.current || !version || !detail || !canUseVersion || !repeatChoice || nothingToImport) return;
     pendingRef.current = true; setPending(true); setImportFailure(null);
     const target = importDestination === 'existing' ? targetDocumentId : undefined;
     const importingVersion = target && storedCopy ? storedCopy.baseVersionId : version.id;
@@ -309,7 +321,8 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
         || !programImportTargets(data, actorId, storedCopy?.documentId, pendingDocumentIds()).some(doc => doc.id === target && !doc.reason))) {
         setImportFailure({ text: '고른 문서에 저장 안 한 입력이 있거나 지금 넣을 수 없습니다. 저장하거나 취소한 뒤 다시 골라 주세요.', continueCopy: false }); return;
       }
-      const outcome = await onUseVersion(importingVersion, importingItems, anchor, target && storedCopy ? undefined : Object.keys(recurrenceStarts).length ? recurrenceStarts : undefined, target);
+      const outcome = await onUseVersion(importingVersion, importingItems, anchor, target && storedCopy ? undefined : Object.keys(recurrenceStarts).length ? recurrenceStarts : undefined, target,
+        Object.keys(repeatChoice).length ? repeatChoice : undefined);
       if (outcome.ok) { setSheetOpen(false); sheet.current?.close(); }
       else setImportFailure(programImportFailure(outcome.reason, { onHold: sourceOnHold,
         copyConflict: !!storedCopy && (storedCopy.baseVersionId !== importingVersion || storedCopy.anchor !== anchor) }));
@@ -385,8 +398,9 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
           <ol ref={taskList} className={styles.taskRows}>{version.items.map((item, index) => {
             const classifiedSource = item.sourceUrl ? classifyProgramUrl(item.sourceUrl, []) : null;
             const sourceUrl = classifiedSource && classifiedSource.kind !== 'invalid' ? item.sourceUrl!.trim() : null;
-            const dateLabel = programItemDateLabel(item, detail.anchor || null);
-            const row = <><span className={styles.taskNumber}>{index + 1}</span><span className={styles.taskTitle} data-task-clip={item.id}>{item.title}</span><span className={styles.taskDate} data-task-clip={item.id}>{dateLabel}</span></>;
+            const repeatView = programImportItemView(item), title = repeatView?.title ?? item.title;
+            const dateLabel = repeatView?.label ?? programItemDateLabel(item, detail.anchor || null);
+            const row = <><span className={styles.taskNumber}>{index + 1}</span><span className={styles.taskTitle} data-task-clip={item.id}>{title}</span><span className={styles.taskDate} data-task-clip={item.id}>{dateLabel}</span></>;
             // UX 2절 8: ▸ on the row opens the method, criteria and item source; the row itself stays one 44px line,
             // so a long title or date is cut there and read in full under ▸.
             const detailsKey = `${version.id}:${item.id}`, detailsId = `${uid}-item-${index}`, open = openItems.includes(detailsKey);
@@ -394,9 +408,9 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
             const hasMethod = !!(item.description || item.completionCriteria || item.subchecks.length > 0 || sourceUrl), hasDetails = cut || hasMethod;
             return <li key={item.id} id={`program-public-item-${encodeURIComponent(version.id)}-${encodeURIComponent(item.id)}`} tabIndex={-1} aria-current={selectedItemId === item.id ? 'location' : undefined}>
               <div className={styles.taskLine}>{choosing ? <label className={styles.taskRow}><input type="checkbox" disabled={pending} checked={detail.selectedItemIds.includes(item.id)} onChange={event => patchDetail({ selectedItemIds: event.target.checked ? [...detail.selectedItemIds, item.id] : detail.selectedItemIds.filter(id => id !== item.id) })} />{row}</label> : <div className={styles.taskRow}>{row}</div>}
-                {hasDetails && <button type="button" className={styles.taskToggle} aria-expanded={open} aria-controls={detailsId} aria-label={`${item.title} ${hasMethod ? '방법과 완료 기준' : '전체 제목과 날짜'} ${open ? '접기' : '펼치기'}`}
+                {hasDetails && <button type="button" className={styles.taskToggle} aria-expanded={open} aria-controls={detailsId} aria-label={`${title} ${hasMethod ? '방법과 완료 기준' : '전체 제목과 날짜'} ${open ? '접기' : '펼치기'}`}
                   onClick={() => setOpenItems(prior => open ? prior.filter(key => key !== detailsKey) : [...prior, detailsKey])}>{open ? '▾' : '▸'}</button>}</div>
-              {hasDetails && open && <div id={detailsId} className={styles.itemDetails}>{cut && <p className={styles.taskFull}><strong>{item.title}</strong><br />{dateLabel}</p>}{item.description &&<p className={styles.pre}>{item.description}</p>}{sourceUrl && <p><a href={sourceUrl} target="_blank" rel="noreferrer noopener" aria-label={`${item.title} 원문 열기`}>항목 원문 열기 ↗</a></p>}{item.completionCriteria && <p><strong>완료 기준</strong><br />{item.completionCriteria}</p>}{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</div>}</li>;
+              {hasDetails && open && <div id={detailsId} className={styles.itemDetails}>{cut && <p className={styles.taskFull}><strong>{title}</strong><br />{dateLabel}</p>}{item.description &&<p className={styles.pre}>{item.description}</p>}{sourceUrl && <p><a href={sourceUrl} target="_blank" rel="noreferrer noopener" aria-label={`${item.title} 원문 열기`}>항목 원문 열기 ↗</a></p>}{item.completionCriteria && <p><strong>완료 기준</strong><br />{item.completionCriteria}</p>}{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</div>}</li>;
           })}</ol>
           {chooseButton(`${styles.chooseButton} ${styles.phoneOnly}`)}
           <div className={styles.phoneOnly}>{extras}</div>
@@ -433,12 +447,28 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
             <label className={styles.destinationChoice}><input type="radio" name={`${uid}-destination`} checked={importDestination === 'existing'} disabled={!!privateSpace?.documentTrash?.[storedCopy?.documentId ?? '']} onChange={() => { setImportDestination('existing'); setPickingDocument(true); }} /><span><strong>기존 문서 끝에 넣기</strong><small>고른 문서 끝에 할 일을 연결합니다.</small></span></label></fieldset>
           {importDestination === 'existing' && <div className={styles.targetPreview}>
             <button type="button" disabled={pending} onClick={() => setPickingDocument(true)}>{targetDocumentId ? (programImportTargets(data, actorId, storedCopy?.documentId, []).find(doc => doc.id === targetDocumentId)?.title ?? '문서') + ' · 바꾸기' : '넣을 문서 고르기'}</button>
-            <p>{storedCopy ? '이미 가져온 사본의 할 일을 연결합니다. 새 사본은 만들지 않습니다.' : '넣은 할 일은 미분류의 사본 문서와 연결됩니다. 어느 쪽에서 체크해도 같이 바뀝니다.'}</p>
+            <p>{storedCopy ? '이미 가져온 사본의 할 일을 연결합니다. 새 사본은 만들지 않습니다.' : '넣은 할 일은 미분류의 사본 문서와 연결됩니다. 어느 쪽에서 체크해도 같이 바뀝니다.'}{sheetRepeats.some(repeat => !repeat.existing) ? ' 반복 할 일은 연결 없이 내 줄로 들어갑니다.' : ''}</p>
             {storedCopy && privateSpace.archivedDocumentIds.includes(storedCopy.documentId) && <p>보관한 사본 문서는 다시 꺼내집니다.</p>}
-            {targetDocumentId && <><p>고른 문서 끝에 할 일 {storedCopy ? storedCopy.includedItemIds.length : useItemIds.length}개가 들어갑니다.</p><ul>{(storedCopy ? data.public.versions.find(row => row.id === storedCopy.baseVersionId)?.items.filter(row => storedCopy.includedItemIds.includes(row.id)) ?? [] : version.items.filter(item => useItemIds.includes(item.id))).slice(0, 3).map(item => <li key={item.id}>{item.schedule.kind === 'recurring' ? '반복 참조: ' : ''}{item.title}</li>)}</ul>{(storedCopy ? storedCopy.includedItemIds.length : useItemIds.length) > 3 && <p>… {(storedCopy ? storedCopy.includedItemIds.length : useItemIds.length) - 3}개 더</p>}</>}
+            {targetDocumentId && <><p>고른 문서 끝에 할 일 {storedCopy ? storedCopy.includedItemIds.length : useItemIds.length - sheetRepeats.filter(repeat => repeat.existing).length}개가 들어갑니다.</p><ul>{(storedCopy ? data.public.versions.find(row => row.id === storedCopy.baseVersionId)?.items.filter(row => storedCopy.includedItemIds.includes(row.id)) ?? [] : version.items.filter(item => useItemIds.includes(item.id) && !sheetRepeats.some(repeat => repeat.itemId === item.id && repeat.existing))).slice(0, 3).map(item => <li key={item.id}>{item.schedule.kind === 'recurring' ? '반복 참조: ' : programImportItemView(item) ? '↻ ' : ''}{programImportItemView(item)?.title ?? item.title}</li>)}</ul>{(storedCopy ? storedCopy.includedItemIds.length : useItemIds.length - sheetRepeats.filter(repeat => repeat.existing).length) > 3 && <p>… {(storedCopy ? storedCopy.includedItemIds.length : useItemIds.length - sheetRepeats.filter(repeat => repeat.existing).length) - 3}개 더</p>}</>}
           </div>}
+          {sheetRepeats.length > 0 && <section className={styles.repeatChoices} aria-labelledby={`${uid}-repeats`}><h3 id={`${uid}-repeats`}>반복 할 일 · 내 반복 줄로 들어갑니다</h3>
+            {sheetRepeats.every(repeat => repeat.existing) && <p className={styles.repeatNone}>넣을 반복 할 일이 없습니다</p>}
+            <ul>{sheetRepeats.map(repeat => {
+              const typed = repeat.pick ? (repeatTyped.months[repeat.itemId] ?? '').trim() : '', months = /^\d{1,2}$/.test(typed) ? Number(typed) : null;
+              const rule = programImportRepeatRule(repeat, months), first = rule ? programImportFirstDate(rule, today) : null, item = version.items.find(row => row.id === repeat.itemId);
+              const setTyped = (key: 'starts' | 'months', value: string) => { setRepeatTyped(prior => ({ ...prior, [key]: { ...prior[key], [repeat.itemId]: value } })); setImportFailure(null); };
+              return <li key={repeat.itemId} data-existing={repeat.existing ? 'true' : undefined}>
+                <p className={styles.repeatTitle}>↻ {repeat.title}{repeat.marker && !repeat.existing ? ` ${repeat.marker}` : ''}</p>
+                {repeat.existing ? <small>{repeat.existing.same ? `이미 있음 (‘${repeat.existing.documentTitle}’ 문서) · 넣지 않음` : `이미 있음 · 내 줄은 ${repeat.existing.marker} · 넣지 않음`}</small> : <>
+                  {repeat.pick && <><label className={styles.repeatMonths}><input inputMode="numeric" pattern="[0-9]*" maxLength={2} autoComplete="off" value={repeatTyped.months[repeat.itemId] ?? ''} disabled={pending} aria-label={`${repeat.title} 반복 개월 수`} aria-invalid={!!typed && !rule} onChange={event => setTyped('months', event.target.value)} /><span>개월마다</span></label>
+                    <small>{[item ? programImportSentence(item.description) : '', '비우면 반복 없이 할 일로 들어갑니다.'].filter(Boolean).join(' ')}</small>
+                    {typed && !rule && <small className={styles.repeatProblem} role="alert">1~24 사이 숫자를 넣어 주세요.</small>}</>}
+                  {rule && first && (programRepeatFixed(rule) ? <small>{programDateLabel(first, today)}부터</small>
+                    : <label className={styles.repeatStart}><span>첫 날짜</span><input type="date" disabled={pending} value={repeatTyped.starts[repeat.itemId] ?? ''} onChange={event => setTyped('starts', event.target.value)} /><small>비우면 {programCalendarDate(first, today, false)}</small></label>)}</>}
+              </li>;
+            })}</ul></section>}
           {privateSpace?.documentTrash?.[storedCopy?.documentId ?? ''] && <p>사본 문서가 휴지통에 있습니다. 복원한 뒤 넣을 수 있습니다.</p>}
-          <button type="button" className={styles.primary} data-testid="program-import-run" disabled={pending || !canUseVersion || importDestination === 'existing' && !targetDocumentId} onClick={() => void runImport()}>{pending ? '가져오는 중…' : importDestination === 'existing' ? '고른 문서에 넣기' : '새 문서로 가져오기'}</button>
+          <button type="button" className={styles.primary} data-testid="program-import-run" disabled={pending || !canUseVersion || !repeatChoice || nothingToImport || importDestination === 'existing' && !targetDocumentId} onClick={() => void runImport()}>{pending ? '가져오는 중…' : importDestination === 'existing' ? '고른 문서에 넣기' : '새 문서로 가져오기'}</button>
           {importFailure && <div className={styles.error} role="alert"><p>{importFailure.text}</p>{importFailure.continueCopy && (existingCopy ?? storedCopy) && <button type="button" onClick={() => { closeSheet(); navigate({ view: 'space', id: (existingCopy ?? storedCopy)!.documentId }); }}>내 문서에서 이어보기</button>}</div>}
         </div>}
       </dialog>

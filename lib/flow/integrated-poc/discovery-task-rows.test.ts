@@ -23,8 +23,10 @@ test('a task row stays one 44px line: title and date are cut, never wrapped', ()
   assert(css.includes('.taskTitle,.taskDate{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.taskDate{max-width:12em}'));
   assert(css.includes('.taskToggle{flex:0 0 44px;width:44px;min-height:44px!important;'));
   // Cut rows are measured and get ▸, which opens the full title and date first.
-  assert.match(tsx, /data-task-clip=\{item\.id\}>\{item\.title\}<\/span><span className=\{styles\.taskDate\} data-task-clip=\{item\.id\}>\{dateLabel\}/);
+  // 공식 반복 Flow: a repeat item's row reads its words without the marker (`title`) and its chip as the date.
+  assert.match(tsx, /data-task-clip=\{item\.id\}>\{title\}<\/span><span className=\{styles\.taskDate\} data-task-clip=\{item\.id\}>\{dateLabel\}/);
+  assert.match(tsx, /title = repeatView\?\.title \?\? item\.title;/);
   assert.match(tsx, /element\.scrollWidth > element\.clientWidth \+ 1/);
   assert.match(tsx, /hasDetails = cut \|\| hasMethod;/);
-  assert.match(tsx, /\{cut && <p className=\{styles\.taskFull\}><strong>\{item\.title\}<\/strong><br \/>\{dateLabel\}<\/p>\}/);
+  assert.match(tsx, /\{cut && <p className=\{styles\.taskFull\}><strong>\{title\}<\/strong><br \/>\{dateLabel\}<\/p>\}/);
 });

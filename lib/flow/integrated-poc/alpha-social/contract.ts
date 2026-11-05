@@ -36,7 +36,7 @@ export type AlphaSocialIntent =
  | { type:'publication-private-resolve'; draft:ProgramPublicationDraft; expected:ProgramPublicationDraft|null; choice:'mine'|'stored' }
  | { type:'publication-source'; draft:ProgramPublicationDraft; expected:ProgramPublicationDraft|null; itemId:string; fields:ProgramPublicationSourceField[] }
  | { type:'publication-archive'; documentId:string; flowId:string; expectedVersionId:string }
- | { type:'copy-import'; versionId:string; itemIds:string[]; anchor:string|null; targetDocumentId?:string; recurrenceStarts?:Record<string,string|null> }
+ | { type:'copy-import'; versionId:string; itemIds:string[]; anchor:string|null; targetDocumentId?:string; recurrenceStarts?:Record<string,string|null>; repeatStarts?:Record<string,string>; repeatMonths?:Record<string,number> }
  | { type:'copy-anchor'; copyId:string; anchor:string|null }
  | { type:'private-task-schedule'; copyId:string; itemId:string; taskId:string; date:string|null; time:string }
  | { type:'private-task-dates'; moves:AlphaTaskDateMove[] }
@@ -92,7 +92,10 @@ export function isAlphaSocialIntent(v:unknown):v is AlphaSocialIntent {
    case 'publication-private-resolve':return shape(['draft','expected','choice'])&&publication(v.draft)&&(v.expected===null||publication(v.expected))&&['mine','stored'].includes(v.choice as string);
    case 'publication-source':return shape(['draft','expected','itemId','fields'])&&publication(v.draft)&&(v.expected===null||publication(v.expected))&&named('itemId')&&Array.isArray(v.fields)&&v.fields.length>0&&new Set(v.fields).size===v.fields.length&&v.fields.every(f=>(PROGRAM_PUBLICATION_SOURCE_FIELDS as readonly unknown[]).includes(f));
    case 'publication-archive':return shape(['documentId','flowId','expectedVersionId'])&&named('documentId','flowId','expectedVersionId');
-   case 'copy-import':return shape(['versionId','itemIds','anchor'],['targetDocumentId','recurrenceStarts'])&&named('versionId')&&ids(v.itemIds)&&date(v.anchor)&&(v.targetDocumentId===undefined||named('targetDocumentId'))&&(v.recurrenceStarts===undefined||programRecord(v.recurrenceStarts)&&Object.entries(v.recurrenceStarts).every(([k,x])=>programIdentifier(k)&&date(x)));
+   case 'copy-import':return shape(['versionId','itemIds','anchor'],['targetDocumentId','recurrenceStarts','repeatStarts','repeatMonths'])&&named('versionId')&&ids(v.itemIds)&&date(v.anchor)&&(v.targetDocumentId===undefined||named('targetDocumentId'))&&(v.recurrenceStarts===undefined||programRecord(v.recurrenceStarts)&&Object.entries(v.recurrenceStarts).every(([k,x])=>programIdentifier(k)&&date(x)))
+    // 공식 반복 Flow: the repeat lines' first dates and the months chosen (1-24), by item.
+    &&(v.repeatStarts===undefined||programRecord(v.repeatStarts)&&Object.entries(v.repeatStarts).every(([k,x])=>programIdentifier(k)&&typeof x==='string'&&date(x)))
+    &&(v.repeatMonths===undefined||programRecord(v.repeatMonths)&&Object.entries(v.repeatMonths).every(([k,x])=>programIdentifier(k)&&Number.isInteger(x)&&(x as number)>=1&&(x as number)<=24));
    case 'copy-anchor':return shape(['copyId','anchor'])&&named('copyId')&&date(v.anchor);
    case 'private-task-dates':return shape(['moves'])&&isAlphaTaskDateMoves(v.moves);
    case 'private-task-schedule':return shape(['copyId','itemId','taskId','date','time'])&&named('copyId','itemId','taskId')&&date(v.date)&&typeof v.time==='string'&&(v.time===''||/^([01]\d|2[0-3]):[0-5]\d$/.test(v.time));

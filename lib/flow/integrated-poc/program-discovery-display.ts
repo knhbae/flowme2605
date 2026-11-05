@@ -124,8 +124,26 @@ export function programObjectParticle(word: string): string {
   return code >= 0 && code <= 11171 ? code % 28 ? '을' : '를' : '을(를)';
 }
 /** The arrival notice on the copy document; an account whose server undo is held gets the trash route instead. */
-export function programImportArrivalNotice(title: string, undoHeld: boolean): string {
-  return `‘${title}’${programObjectParticle(title)} 가져왔습니다. 날짜가 있는 할 일은 오늘에도 보입니다. ${undoHeld
+export function programImportArrivalNotice(title: string, undoHeld: boolean, repeats = ''): string {
+  return `‘${title}’${programObjectParticle(title)} 가져왔습니다.${repeats ? ` ${repeats}` : ''} 날짜가 있는 할 일은 오늘에도 보입니다. ${undoHeld
     ? '필요 없으면 문서를 휴지통으로 옮길 수 있습니다. 다시 쓰려면 휴지통에서 복원합니다.'
     : '필요 없으면 더보기 › 되돌리기로 취소할 수 있습니다.'}`;
+}
+/** 공식 반복 Flow: '반복 2개를 넣었습니다. 이미 있던 반복 1개는 넣지 않았습니다.' ('' with neither). */
+export function programImportRepeatNotice(written: number, existing: number): string {
+  return [written ? `반복 ${written}개를 넣었습니다.` : '', existing ? `이미 있던 반복 ${existing}개는 넣지 않았습니다.` : ''].filter(Boolean).join(' ');
+}
+/** The notice on a document an import went into the end of: links made, repeat lines written, ones I already had. */
+export function programImportTargetNotice(linked: number, written: number, existing: number): string {
+  const parts = [linked ? `할 일 ${linked}개` : '', written ? `반복 ${written}개` : ''].filter(Boolean);
+  const skipped = existing ? `이미 있던 반복 ${existing}개는 넣지 않았습니다.` : '';
+  return parts.length ? `문서 끝에 ${parts.join('와 ')}를 넣었습니다.${skipped ? ` ${skipped}` : ''}` : `${skipped || '이미 연결한 할 일입니다.'} 새로 넣은 것은 없습니다.`;
+}
+/** After 이번 가져오기 취소: repeat lines checked or changed since stay, and are said apart. */
+export function programImportCancelNotice(outcome: { total: number; remaining: number; kept?: number; reason?: string }): string {
+  const kept = outcome.kept ?? 0, removed = outcome.total - outcome.remaining - kept, keptText = kept ? `체크하거나 고친 반복 ${kept}개는 남겼습니다.` : '';
+  if (outcome.reason === 'pending-input') return '입력 중인 내용을 저장한 뒤 취소할 수 있습니다.';
+  if (outcome.remaining) return `${removed}개를 뺐습니다. 남은 연결 ${outcome.remaining}개는 다시 취소할 수 있습니다.${keptText ? ` ${keptText}` : ''}`;
+  if (!removed && kept) return `${keptText} 뺀 것은 없습니다.`;
+  return `넣은 할 일을 뺐습니다.${keptText ? ` ${keptText}` : ''} 사본 문서와 원래 할 일·진행 기록은 그대로 남아 있습니다.`;
 }

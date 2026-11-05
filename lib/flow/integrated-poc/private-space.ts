@@ -13,6 +13,7 @@ import { programRecurringScheduleLabel, programRecurringScheduleStart } from './
 import { programPublicCopyItemStart } from './public-copy-recurrence';
 import { programOrdinaryScheduleLabel } from './public-ordinary-time';
 import { isPublicCatalogFlowOnHold } from '../public-source-review-policy';
+import { PROGRAM_IMPORT_REPEAT_LINE, programImportMonths, programImportRepeatLines, programImportRepeatOf, programImportRepeatRule, programImportRepeats, type ProgramImportRepeat } from './public-repeat-import';
 
 /** Compare the selected actor's entire private baseline before any mutation. */
 export type ProgramPrivateMutationBase = { actorId: string; requestId: string; expectedSpace: ProgramPrivateSpace };
@@ -342,10 +343,14 @@ export type ImportProgramPublicVersionInput = ProgramPrivateMutationBase & {
   versionId: string; itemIds: string[]; anchor: string | null; targetDocumentId?: string;
   /** Only explicitly chosen starts for public start-undated series. */
   recurrenceStarts?: Record<string, string | null>;
+  /** 공식 반복 Flow: each repeat line's first date (the screen works it out from its today, or takes the one chosen),
+   *  and the months chosen for an `@?개월마다` item (left out: it goes in as a plain task, 날짜 미정). */
+  repeatStarts?: Record<string, string>; repeatMonths?: Record<string, number>;
 };
 export function importProgramPublicVersion(data: ProgramData, input: ImportProgramPublicVersionInput): ProgramTransition<string> {
   return mutate(data, input, 'private-public-import', { versionId: input.versionId, itemIds: input.itemIds, anchor: input.anchor, targetDocumentId: input.targetDocumentId ?? null,
-    ...(input.recurrenceStarts !== undefined ? { recurrenceStarts: input.recurrenceStarts } : {}) }, space => {
+    ...(input.recurrenceStarts !== undefined ? { recurrenceStarts: input.recurrenceStarts } : {}),
+    ...(input.repeatStarts !== undefined ? { repeatStarts: input.repeatStarts } : {}), ...(input.repeatMonths !== undefined ? { repeatMonths: input.repeatMonths } : {}) }, space => {
     const version = data.public.versions.find(version => version.id === input.versionId);
     if (!version || !data.public.flows.some(flow => flow.id === version.flowId && !flow.archived)) return { result: '', reason: 'missing' };
     if (!Array.isArray(input.itemIds) || !input.itemIds.length || new Set(input.itemIds).size !== input.itemIds.length
@@ -354,6 +359,14 @@ export function importProgramPublicVersion(data: ProgramData, input: ImportProgr
     if (selected.some(item => !supportedItem(item))) return { result: '', reason: 'unresolved' };
     if (input.recurrenceStarts !== undefined && (!programRecord(input.recurrenceStarts) || Object.entries(input.recurrenceStarts).some(([itemId, start]) =>
       !selected.some(item => item.id === itemId && item.schedule.kind === 'recurring' && item.schedule.start.kind === 'undated') || start !== null && !programDate(start)))) return { result: '', reason: 'invalid' };
+    // 공식 반복 Flow: repeat items become lines of mine (not copy items); one I already repeat is not written again.
+    const repeats = programImportRepeats(space, version, input.itemIds), writing = repeats.filter(repeat => !repeat.existing);
+    const months = input.repeatMonths ?? {}, starts = input.repeatStarts ?? {};
+    const ruleOf = (repeat: ProgramImportRepeat) => programImportRepeatRule(repeat, months[repeat.itemId]);
+    if (!programRecord(months) || !programRecord(starts)
+      || Object.entries(months).some(([itemId, value]) => !writing.some(repeat => repeat.itemId === itemId && repeat.pick) || !programImportMonths(value))
+      || Object.entries(starts).some(([itemId, value]) => !writing.some(repeat => repeat.itemId === itemId && ruleOf(repeat)) || !programDate(value))
+      || writing.some(repeat => ruleOf(repeat) && !Object.hasOwn(starts, repeat.itemId))) return { result: '', reason: 'invalid' };
     let copy = space.copies.find(copy => copy.flowId === version.flowId);
     if (copy && (copy.baseVersionId !== version.id || copy.anchor !== input.anchor)) return { result: copy.id, reason: 'conflict' };
     if (!copy) {
@@ -373,6 +386,7 @@ export function importProgramPublicVersion(data: ProgramData, input: ImportProgr
     }
     space.archivedDocumentIds = space.archivedDocumentIds.filter(id => id !== copy!.documentId);
     for (const item of selected) {
+      if (repeats.some(repeat => repeat.itemId === item.id)) continue;
       if (!copy.itemLines[item.id] && !appendSourceItem(space, copy, item)) return { result: copy.id, reason: 'limit' };
       if (Object.hasOwn(input.recurrenceStarts ?? {}, item.id)) {
         const start = input.recurrenceStarts![item.id];
@@ -387,6 +401,7 @@ export function importProgramPublicVersion(data: ProgramData, input: ImportProgr
       if (input.targetDocumentId === copy.documentId || !M.getDocument(space.text, input.targetDocumentId)) return { result: copy.id, reason: 'missing' };
       if (programDocumentContentLock(space, input.targetDocumentId) !== 'active') return { result: copy.id, reason: 'unresolved' };
       for (const item of selected) {
+        if (repeats.some(repeat => repeat.itemId === item.id)) continue;
         if (item.schedule.kind === 'recurring') {
           if (!appendProgramCopySeriesReference(space, copy, item.id, input.targetDocumentId)) return { result: copy.id, reason: 'unresolved' };
           continue;
@@ -397,6 +412,19 @@ export function importProgramPublicVersion(data: ProgramData, input: ImportProgr
         if (next === space.text) return { result: copy.id, reason: 'unresolved' };
         space.text = next;
       }
+    }
+    // The repeat lines go at the end of the chosen document, or of the new copy document; each must read as a task.
+    if (writing.length) {
+      const doc = M.getDocument(space.text, input.targetDocumentId ?? copy.documentId);
+      if (!doc) return { result: copy.id, reason: 'missing' };
+      const written = writing.map(repeat => {
+        const item = selected.find(row => row.id === repeat.itemId)!, lineId = programId(PROGRAM_IMPORT_REPEAT_LINE), rule = ruleOf(repeat);
+        return { lineId, lines: programImportRepeatLines(item, repeat, version.title, lineId, repeat.pick ? months[repeat.itemId] ?? null : null, rule ? starts[repeat.itemId] : null) };
+      });
+      doc.lines.push(...written.flatMap(row => row.lines));
+      registerItems(space.text, doc, space.text.flows.some(flow => flow.id === doc.id) ? doc.id : doc.folderId);
+      const tasks = M.tasks(space.text);
+      if (!M.validate(space.text) || written.some(row => !tasks.some(task => task.id === row.lineId))) return { result: copy.id, reason: 'unresolved' };
     }
     return { result: copy.id };
   });
@@ -648,7 +676,10 @@ export function compareProgramCopyVersion(data: ProgramData, input: { actorId: s
   if (!space) return programFailure(data, 'forbidden');
   const copy = space.copies.find(copy => copy.id === input.copyId), target = data.public.versions.find(version => version.id === input.versionId);
   if (!copy || !target || copy.flowId !== target.flowId) return programFailure(data, 'missing');
-  const itemIds = [...new Set([...Object.keys(copy.itemLines), ...target.items.map(item => item.id)])];
+  // 공식 반복 Flow: a repeat item went in as a line of mine, never a copy item; it is not offered as one to add.
+  const base = data.public.versions.find(version => version.id === copy.baseVersionId);
+  const repeatLine = (itemId: string) => !copy.itemLines[itemId] && [target, base].some(version => { const item = version?.items.find(row => row.id === itemId); return !!item && !!programImportRepeatOf(item); });
+  const itemIds = [...new Set([...Object.keys(copy.itemLines), ...target.items.map(item => item.id)])].filter(itemId => !repeatLine(itemId));
   const items: ProgramCopyItemComparison[] = itemIds.map(itemId => {
     const incoming = target.items.find(item => item.id === itemId);
     const original = data.public.versions.find(version => version.id === copy.baseVersionId)?.items.find(item => item.id === itemId);

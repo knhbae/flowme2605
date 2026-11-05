@@ -87,3 +87,19 @@
 .targetPreview { padding:12px; border:1px solid var(--border,#d9dde3); border-radius:8px; font-size:13px; line-height:1.6; }
 .targetPreview p { margin:8px 0; }
 .targetPreview ul { margin:8px 0; padding-left:20px; }
+/* 공식 반복 Flow: the sheet's repeat rows (PROPOSAL 3-2). */
+.repeatChoices { display:grid; gap:8px; padding:12px; border:1px solid #d6e0dc; border-radius:12px; }
+.repeatChoices h3 { margin:0; font-size:14px; line-height:1.5; color:#23473f; }
+.repeatChoices ul { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+.repeatChoices li { display:grid; gap:4px; padding-top:10px; border-top:1px solid #e3eae6; }
+.repeatChoices li:first-child { padding-top:0; border-top:0; }
+.repeatChoices li[data-existing] { color:#6b7a75; }
+.repeatChoices small { font-size:13px; line-height:20px; color:#5b6b66; }
+.repeatChoices .repeatTitle { margin:0; font-size:15px; font-weight:600; overflow-wrap:anywhere; }
+.repeatChoices li[data-existing] .repeatTitle { font-weight:400; }
+.repeatNone { margin:0; font-size:13px; color:#5b6b66; }
+.repeatMonths, .repeatStart { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:14px; }
+.repeatMonths input { width:64px !important; text-align:center; }
+.repeatStart input { width:auto !important; flex:1 1 160px; max-width:200px; }
+.repeatStart small { flex-basis:100%; }
+.repeatChoices .repeatProblem { color:#8f302c; }
