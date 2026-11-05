@@ -39,7 +39,7 @@ test('W-a: the folded days\' line and the way back, as the proposal words them, 
   assert(space.includes('<p><span>지난 기록 · {through ? `${recentDay(through)}까지 ` : \'\'}{sum(\'days\')}일</span><small>할 일 {sum(\'tasks\')}개 · 남은 일 {sum(\'open\')}개</small></p>'));
   assert(space.includes("'찾은 줄이 지난 기록에 있어 펼쳤습니다' : hold.lineIds.size ? '지난 기록을 펼쳤습니다 · 길면 입력이 느려질 수 있습니다' : '전체 문서를 보고 있습니다'"));
   assert(space.includes('data-recent-action="past-show" onMouseDown={holdRecentFocus} onClick={() => void showRecentWhole(id)}>펼치기</button>'));
-  assert(space.includes('data-recent-action="past-fold" onClick={() => void showRecentOnly(id)}>최근만 보기</button>'));
+  assert(space.includes('data-recent-action="past-fold" onMouseDown={holdRecentFocus} onClick={() => void showRecentOnly(id)}>최근만 보기</button>'));
   assert(space.includes('const recentWholeKey = `flow:alpha:writing-whole:v1:${actorId}`;'));
   // Input saved first where it can be; QA Q1: input that cannot be (the folded days' order refused it) does not stop it.
   assert(space.includes('if (!found && !await settleRecent(id) && !keepRecentInput(id)) return;'));
@@ -52,6 +52,26 @@ test('QA Q1 (390): a press on [펼치기] keeps the editor focused, so the butto
   const show = space.slice(space.indexOf('  async function showRecentWhole('), space.indexOf('  /** QA Q1 (390)'));
   assert(show.indexOf('if (!found) await releaseRecentEditor(id);') < show.indexOf('await settleRecent(id)'));
   assert(space.includes('(document.activeElement as HTMLElement).blur();'));
+});
+
+test('p3: every fold-line button ([보기], [접기], [최근만 보기] too) keeps the editor focused while pressed; each action lets go of it first', () => {
+  for (const action of ['past-show', 'past-fold', 'done-show', 'done-fold'])
+    for (const button of space.split(`data-recent-action="${action}"`).slice(1)) assert(button.slice(0, button.indexOf('onClick')).includes('onMouseDown={holdRecentFocus}'), action);
+  // Those six; the document menu's button is reached by opening the menu first (the editor already let go).
+  assert.equal(space.split('onMouseDown={holdRecentFocus}').length - 1, 6);
+  for (const name of ['showRecentDone(id: string, show: boolean)', 'showRecentOnly(id: string)']) {
+    const at = space.indexOf(`  async function ${name} {`), body = space.slice(at, space.indexOf('await settleRecent(id)', at));
+    assert(at > 0 && body.includes('await releaseRecentEditor(id);'), name);
+  }
+});
+
+test('p3: the fold keeps in view the lines the whole document\'s repeat settle would give a first round now', () => {
+  const hold = space.slice(space.indexOf('  function recentHoldOf(id: string)'), space.indexOf('  /** W-b: how many finished tasks [미정] has'));
+  assert(hold.includes('const keep = long ? new Set(settleProgramRepeatLines(space, id, today, null).settled.map(entry => entry.taskId)) : undefined;'));
+  assert(hold.includes('long = !!doc && doc.lines.length > PROGRAM_RECENT_WRITING.lines'));
+  // The editor's settle is the same function, on the lines it has.
+  const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
+  assert(editor.includes('const result = settleProgramRepeatLines({ ...context, text: state.working }, propsRef.current.docId, today(), caret, shown);'));
 });
 
 test('QA Q1: [펼치기] after a refused save puts the input in the 복구함 whole, then opens the whole document; not kept, nothing changes', () => {
@@ -81,14 +101,14 @@ test('QA Q2: a document opened at today scrolls the surface the editor shows (it
 
 test('W-b: [미정]\'s folded finished tasks have their line under the body, [보기] / [접기] remembered on the device', () => {
   assert(space.includes("{view.done.whole ? `날짜 미정 · 끝낸 일 ${view.done.count}개` : `✓ 날짜 미정에서 끝낸 일 ${view.done.count}개`}"));
-  assert(space.includes('data-recent-action="done-show" onClick={() => void showRecentDone(id, true)}>보기</button>'));
-  assert(space.includes('data-recent-action="done-fold" onClick={() => void showRecentDone(id, false)}>접기</button>'));
+  assert(space.includes('data-recent-action="done-show" onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>보기</button>'));
+  assert(space.includes('data-recent-action="done-fold" onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, false)}>접기</button>'));
   // Both under the body: one line of two buttons, their full words as names.
   assert(space.includes('if (atEnd && view?.done.count && view.folds.some(fold => fold.atEnd)) return recentPairLine(id, view);'));
-  assert(space.includes("aria-label={`${done} · 보기`} onClick={() => void showRecentDone(id, true)}>✓ 끝낸 일 {view.done.count}개 보기</button>"));
+  assert(space.includes("aria-label={`${done} · 보기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>✓ 끝낸 일 {view.done.count}개 보기</button>"));
   assert(space.includes("aria-label={`${past} · 펼치기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentWhole(id)}>지난 기록 {sum('days')}일 펼치기</button>"));
   assert(space.includes('const recentDoneKey = `flow:alpha:writing-done:v1:${actorId}`;'));
-  assert(space.includes('recentHolds.current[id] = programRecentHold(space.text, id, today, { done: !recentDoneShownRef.current[id] });'));
+  assert(space.includes('return recentHolds.current[id] = programRecentHold(space.text, id, today, { done: !recentDoneShownRef.current[id], keep });'));
   // Under the body with the old days' line, so the body keeps the lines its fold freed.
   assert(space.includes('const done = atEnd ? recentDoneLine(id, view) : null, past = recentPastLine(id, view, atEnd);'));
 });

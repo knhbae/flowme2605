@@ -24,7 +24,7 @@ import { programCalendarDate, programDaysBetween } from '@/lib/flow/integrated-p
 import { carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverItems, programCarryoverPlaces, programCarryoverProof, restoreProgramCarryover,
   PROGRAM_CARRYOVER_LIMIT, type ProgramCarryoverBefore, type ProgramCarryoverChoice, type ProgramCarryoverItem, type ProgramCarryoverPlan } from '@/lib/flow/integrated-poc/carryover';
 import { programOpening } from '@/lib/flow/integrated-poc/carryover-opening';
-import { completeProgramRepeat, convertProgramLegacyRepeat, programLegacyRepeatSeries, programRepeatLine, programRepeatSeen, readProgramRepeatCheck, undoProgramRepeat,
+import { completeProgramRepeat, convertProgramLegacyRepeat, programLegacyRepeatSeries, programRepeatLine, programRepeatSeen, readProgramRepeatCheck, settleProgramRepeatLines, undoProgramRepeat,
   PROGRAM_LEGACY_REPEAT_CARD, PROGRAM_LEGACY_REPEAT_DONE, PROGRAM_LEGACY_REPEAT_REFUSED, PROGRAM_REPEAT_UNDO_REFUSED, type ProgramRepeatCheck } from '@/lib/flow/integrated-poc/repeat-commands';
 import { programRepeatTitle } from '@/lib/flow/integrated-poc/repeat-line';
 import { programViewScope } from '@/lib/flow/integrated-poc/view-scope';
@@ -608,8 +608,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   });
   const recentDoneShownRef = useRef(recentDoneShown); recentDoneShownRef.current = recentDoneShown;
   function recentHoldOf(id: string): ProgramRecentHold | null {
-    if (!(id in recentHolds.current)) recentHolds.current[id] = programRecentHold(space.text, id, today, { done: !recentDoneShownRef.current[id] });
-    return recentHolds.current[id];
+    if (id in recentHolds.current) return recentHolds.current[id];
+    // A repeat line still to get its first round keeps its old day in view: the editor writes that round on the lines
+    // it has, there as in the whole document (the same "- 날짜:" in the same place), and folded lines are never written.
+    const doc = space.text.documents.find(entry => entry.id === id), long = !!doc && doc.lines.length > PROGRAM_RECENT_WRITING.lines;
+    const keep = long ? new Set(settleProgramRepeatLines(space, id, today, null).settled.map(entry => entry.taskId)) : undefined;
+    return recentHolds.current[id] = programRecentHold(space.text, id, today, { done: !recentDoneShownRef.current[id], keep });
   }
   /** W-b: how many finished tasks [미정] has, for '[접기]' once they are shown (kept while the text is the same). */
   const recentDoneCounts = useRef(new WeakMap<TextWorkspaceState, Map<string, number>>());
@@ -677,7 +681,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   /** QA Q1 (390): pressing [펼치기] while typing took the editor's focus, its toolbar grew a line (the refused save's
    *  status) and the button moved from under the finger, so the click was lost. The press keeps the focus; the action
-   *  lets go of the editor itself, as the press did (a composition ends), before it settles the input. */
+   *  lets go of the editor itself, as the press did (a composition ends), before it settles the input. The fold lines'
+   *  other buttons ([보기], [접기], [최근만 보기]) move the same way and are pressed the same way. */
   const holdRecentFocus = (event: React.MouseEvent) => event.preventDefault();
   async function releaseRecentEditor(id: string) {
     const area = document.getElementById(`program-text-${encodeURIComponent(id)}`);
@@ -700,6 +705,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   /** W-b [보기] / [접기]: [미정]'s finished tasks shown where they are, or folded again (anew from the text as it is now). */
   async function showRecentDone(id: string, show: boolean) {
+    await releaseRecentEditor(id);
     if (!await settleRecent(id)) { setMessage('작성 중인 입력을 저장한 뒤 끝낸 일을 펼치거나 접어 주세요.'); return; }
     delete recentHolds.current[id]; delete recentCache.current[id];
     const next = { ...recentDoneShownRef.current }; if (show) next[id] = true; else delete next[id];
@@ -708,6 +714,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   /** [최근만 보기]: the recent part again, folded anew from the text as it is now. */
   async function showRecentOnly(id: string) {
+    await releaseRecentEditor(id);
     if (!await settleRecent(id)) { setMessage('작성 중인 입력을 저장한 뒤 최근만 보기로 바꿔 주세요.'); return; }
     delete recentHolds.current[id]; delete recentCache.current[id];
     const next = { ...recentWholeRef.current }; delete next[id];
@@ -755,17 +762,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const done = view.done.whole ? `날짜 미정 · 끝낸 일 ${view.done.count}개` : `✓ 날짜 미정에서 끝낸 일 ${view.done.count}개`;
     const past = `지난 기록 · ${through ? `${recentDay(through)}까지 ` : ''}${sum('days')}일 · 할 일 ${sum('tasks')}개 · 남은 일 ${sum('open')}개`;
     return <div className={`${styles.recentFold} ${styles.recentPair}`} data-recent-done data-recent-fold="end">
-      <button type="button" data-recent-action="done-show" title={done} aria-label={`${done} · 보기`} onClick={() => void showRecentDone(id, true)}>✓ 끝낸 일 {view.done.count}개 보기</button>
+      <button type="button" data-recent-action="done-show" title={done} aria-label={`${done} · 보기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>✓ 끝낸 일 {view.done.count}개 보기</button>
       <button type="button" data-recent-action="past-show" title={past} aria-label={`${past} · 펼치기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentWhole(id)}>지난 기록 {sum('days')}일 펼치기</button></div>;
   }
   /** W-b: '✓ 날짜 미정에서 끝낸 일 n개 [보기]' ('날짜 미정 · 끝낸 일 n개' when [미정] folded whole), or [접기] once shown. */
   function recentDoneLine(id: string, view: ProgramRecentView | null) {
     if (view?.done.count) return <div className={styles.recentFold} data-recent-done>
       <p><span>{view.done.whole ? `날짜 미정 · 끝낸 일 ${view.done.count}개` : `✓ 날짜 미정에서 끝낸 일 ${view.done.count}개`}</span></p>
-      <button type="button" data-recent-action="done-show" onClick={() => void showRecentDone(id, true)}>보기</button></div>;
+      <button type="button" data-recent-action="done-show" onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>보기</button></div>;
     const count = recentDoneShown[id] && !recentWhole[id] && !collectionMode && !folderId ? recentDoneCountOf(id) : 0;
     return count ? <div className={styles.recentFold} data-recent-done="shown"><p><span>✓ 날짜 미정에서 끝낸 일 {count}개</span></p>
-      <button type="button" data-recent-action="done-fold" onClick={() => void showRecentDone(id, false)}>접기</button></div> : null;
+      <button type="button" data-recent-action="done-fold" onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, false)}>접기</button></div> : null;
   }
   /** The folded days there ('지난 기록 · …'), or, shown whole, the way back. */
   function recentPastLine(id: string, view: ProgramRecentView | null, atEnd: boolean) {
@@ -781,7 +788,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (!hold) return null;
     return <div className={styles.recentFold} data-recent-whole>
       <p><span>{recentFound === id ? '찾은 줄이 지난 기록에 있어 펼쳤습니다' : hold.lineIds.size ? '지난 기록을 펼쳤습니다 · 길면 입력이 느려질 수 있습니다' : '전체 문서를 보고 있습니다'}</span></p>
-      <button type="button" data-recent-action="past-fold" onClick={() => void showRecentOnly(id)}>최근만 보기</button></div>;
+      <button type="button" data-recent-action="past-fold" onMouseDown={holdRecentFocus} onClick={() => void showRecentOnly(id)}>최근만 보기</button></div>;
   }
   const docs = [...space.text.documents, ...space.text.flows];
   const selectedDoc = docs.find(doc => doc.id === selected);

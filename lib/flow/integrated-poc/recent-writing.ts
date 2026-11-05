@@ -6,8 +6,9 @@ import { programDate } from './program-data';
  *  document without its old date sections (dated before the last 7 days), and a save puts them back exactly where they
  *  were, byte for byte with their own IDs, folder links, scopes and progress records. Nothing is saved for the fold: the
  *  text, other devices, the 오늘 and 분류 tabs and the rollback build read the whole document as before.
- *  A section another line refers to (a reference's task) stays in view, and a document whose recent part would read
- *  differently alone (a code fence left open, say) is not folded. */
+ *  A section another line refers to (a reference's task) stays in view, and so does one holding a line the host keeps
+ *  (a repeat line still to get its first round, which the editor writes only on lines it has); a document whose recent
+ *  part would read differently alone (a code fence left open, say) is not folded. */
 export const PROGRAM_RECENT_WRITING = Object.freeze({ lines: 200, days: 7 });
 
 /** What one writing session folds: the lines folded when the document was opened, and the day before which a section
@@ -48,17 +49,19 @@ const rowShape = (row: TextRow) => JSON.stringify([row.kind, row.depth, row.pare
   row.progressPercent ?? null, row.time ?? null, row.note ?? null, row.taskId ?? null]);
 
 /** The session's fold, or null: 200 lines or fewer, nothing to fold, or a recent part that would not read the same
- *  alone. `done: false` leaves [미정]'s finished tasks in view (shown by [보기]). */
-export function programRecentHold(state: TextWorkspaceState, documentId: string, today: string, options: { done?: boolean } = {}): ProgramRecentHold | null {
+ *  alone. `done: false` leaves [미정]'s finished tasks in view (shown by [보기]); `keep`: lines to leave in view, with
+ *  their old day or the finished task above them. */
+export function programRecentHold(state: TextWorkspaceState, documentId: string, today: string, options: { done?: boolean; keep?: ReadonlySet<string> } = {}): ProgramRecentHold | null {
   const doc = state.documents.find(entry => entry.id === documentId);
   if (!doc || doc.lines.length <= PROGRAM_RECENT_WRITING.lines || !programDate(today)) return null;
   const since = programShiftDate(today, 1 - PROGRAM_RECENT_WRITING.days), rows = rowsOf(state, documentId);
   // A section with a line another line refers to stays in view: its task must be there for the reference.
-  const referred = new Set(state.bindings.flatMap(binding => binding.kind === 'task' ? [binding.taskId] : []));
+  const referred = new Set(state.bindings.flatMap(binding => binding.kind === 'task' ? [binding.taskId] : [])), keep = options.keep ?? new Set<string>();
   const bySection = new Map<string, TextRow[]>();
   for (const row of oldSections(rows, since)) { const key = row.kind === 'date' ? row.id : row.dateLineId!; bySection.set(key, [...bySection.get(key) ?? [], row]); }
-  const lineIds = new Set([...bySection.values()].filter(section => !section.some(row => referred.has(row.id))).flat().map(row => row.id));
-  const undated = options.done === false ? [] : undatedSections(rows).map(entry => ({ ...entry, finished: entry.finished.filter(row => !referred.has(row.id)) }));
+  const lineIds = new Set([...bySection.values()].filter(section => !section.some(row => referred.has(row.id) || keep.has(row.id))).flat().map(row => row.id));
+  const undated = options.done === false ? [] : undatedSections(rows).map(entry => ({ ...entry,
+    finished: entry.finished.filter(row => !referred.has(row.id) && !rows.slice(row.index, row.subtreeEndIndex).some(line => keep.has(line.id))) }));
   const done = new Set(undated.flatMap(entry => entry.finished.map(row => row.id)));
   if (!lineIds.size && !done.size) return null;
   const hold: ProgramRecentHold = { documentId, since, lineIds, done, undated: undated.some(entry => onlyFinished(rows, entry.section, entry.finished)) };
