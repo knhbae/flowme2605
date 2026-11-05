@@ -147,7 +147,7 @@ export type ProgramSpaceProps = {
   /** Some document editor holds input it refused or failed to save. */
   onInputFailureChange?: (failed: boolean) => void;
   /** N7: input an editor refused and put back, for the tab's 복구함. */
-  onKeepRefusedInput?: (draft: { title: string; raw: string }) => boolean;
+  onKeepRefusedInput?: (draft: { title: string; raw: string; documentId?: string }) => boolean;
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
   /** R8b: the host draws the main tabs (쓰기·오늘·분류) and chooses one through this port. The space's own
    *  period state stays here; this is not onRegisterNavigation, so source opens keep their focus path. */
@@ -670,9 +670,33 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   /** [펼치기]: the whole document in the editor, remembered on this device. A line opened from elsewhere (`found`)
    *  opens it the same way, its writing already settled. */
   async function showRecentWhole(id: string, found = false) {
-    if (!found && !await settleRecent(id)) { setMessage('작성 중인 입력을 저장한 뒤 지난 기록을 펼쳐 주세요.'); return; }
+    if (!found) await releaseRecentEditor(id);
+    if (!found && !await settleRecent(id) && !keepRecentInput(id)) return;
     rememberRecentWhole({ ...recentWholeRef.current, [id]: true });
     setRecentFound(found ? id : null);
+  }
+  /** QA Q1 (390): pressing [펼치기] while typing took the editor's focus, its toolbar grew a line (the refused save's
+   *  status) and the button moved from under the finger, so the click was lost. The press keeps the focus; the action
+   *  lets go of the editor itself, as the press did (a composition ends), before it settles the input. */
+  const holdRecentFocus = (event: React.MouseEvent) => event.preventDefault();
+  async function releaseRecentEditor(id: string) {
+    const area = document.getElementById(`program-text-${encodeURIComponent(id)}`);
+    if (!area || !area.contains(document.activeElement) && document.activeElement !== area) return;
+    (document.activeElement as HTMLElement).blur();
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  }
+  /** QA Q1: [펼치기] does not wait on a save. Input the recent part could not save (refused, as the folded days' order,
+   *  or failed) goes to the 복구함 whole, as the 복구함 always keeps it (the folded days put back by the same function),
+   *  and the whole document opens from the saved text. Not kept (storage), it stays as typed and nothing changes;
+   *  input still being composed waits. */
+  function keepRecentInput(id: string) {
+    if (saveStatusReaders.current[id]?.()?.composing || inputLockCount.current > 0) { setMessage('입력을 마친 뒤 지난 기록을 펼쳐 주세요.'); return false; }
+    const raw = draftReaders.current[id]?.(), title = documentsRef.current.find(doc => doc.id === id)?.title ?? '작성 중 문서';
+    if (typeof raw !== 'string' || !props.onKeepRefusedInput?.({ documentId: id, title, raw })) { setMessage('입력을 복구함에 넣지 못해 펼치지 않았습니다. 입력은 그대로 있습니다.'); return false; }
+    // The recent part's editor goes with its input, now in the 복구함; the whole one starts clean.
+    editorDirtyChanged(id, actorId, false);
+    setMessage('입력은 복구함에 있습니다.');
+    return true;
   }
   /** W-b [보기] / [접기]: [미정]'s finished tasks shown where they are, or folded again (anew from the text as it is now). */
   async function showRecentDone(id: string, show: boolean) {
@@ -698,12 +722,22 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     recentShown.current.add(id);
     const index = M.getDocument(view.workspace, id)?.lines.findIndex(line => line.text.trim() === `[${today}]`) ?? -1;
     if (index < 0) return;
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      const textarea = document.getElementById(`program-text-${encodeURIComponent(id)}`) as HTMLTextAreaElement | null;
-      const row = textarea?.closest('.tle-root')?.querySelectorAll<HTMLElement>('.tle-line')[index];
-      if (!textarea || !row || row.offsetTop >= textarea.scrollTop && row.offsetTop + row.offsetHeight <= textarea.scrollTop + textarea.clientHeight) return;
-      textarea.scrollTop = Math.max(0, row.offsetTop - 20);
-    }));
+    // QA Q2: not being typed in, the editor shows its text on its reading viewport (the vendor's scroll surface), the
+    // textarea only while typed in: today goes in view on the surface shown (and on the textarea, which a switch to
+    // typing carries over). Tried again while the editor is not laid out yet.
+    let tries = 0;
+    const reveal = () => {
+      const textarea = document.getElementById(`program-text-${encodeURIComponent(id)}`) as HTMLTextAreaElement | null, root = textarea?.closest<HTMLElement>('.tle-root');
+      const row = root?.querySelectorAll<HTMLElement>('.tle-line')[index];
+      if (!textarea || !root || !row || !row.offsetHeight) { if (++tries < 60) requestAnimationFrame(reveal); return; }
+      const viewport = root.querySelector<HTMLElement>('.tle-viewport');
+      const surface = viewport && (root.classList.contains('tle-reading-view') || root.classList.contains('tle-folded-view')) ? viewport : textarea;
+      if (row.offsetTop >= surface.scrollTop && row.offsetTop + row.offsetHeight <= surface.scrollTop + surface.clientHeight) return;
+      const top = Math.max(0, row.offsetTop - 20);
+      textarea.scrollTop = top;
+      if (surface !== textarea) surface.scrollTop = top;
+    };
+    requestAnimationFrame(() => requestAnimationFrame(reveal));
   }, [selected, period, recentWhole]);
   const recentDay = (date: string) => `${Number(date.slice(5, 7))}월 ${Number(date.slice(8, 10))}일`;
   /** The lines above (`atEnd` false) or under the editor: [미정]'s folded finished tasks (W-b) and the folded days there. */
@@ -722,7 +756,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const past = `지난 기록 · ${through ? `${recentDay(through)}까지 ` : ''}${sum('days')}일 · 할 일 ${sum('tasks')}개 · 남은 일 ${sum('open')}개`;
     return <div className={`${styles.recentFold} ${styles.recentPair}`} data-recent-done data-recent-fold="end">
       <button type="button" data-recent-action="done-show" title={done} aria-label={`${done} · 보기`} onClick={() => void showRecentDone(id, true)}>✓ 끝낸 일 {view.done.count}개 보기</button>
-      <button type="button" data-recent-action="past-show" title={past} aria-label={`${past} · 펼치기`} onClick={() => void showRecentWhole(id)}>지난 기록 {sum('days')}일 펼치기</button></div>;
+      <button type="button" data-recent-action="past-show" title={past} aria-label={`${past} · 펼치기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentWhole(id)}>지난 기록 {sum('days')}일 펼치기</button></div>;
   }
   /** W-b: '✓ 날짜 미정에서 끝낸 일 n개 [보기]' ('날짜 미정 · 끝낸 일 n개' when [미정] folded whole), or [접기] once shown. */
   function recentDoneLine(id: string, view: ProgramRecentView | null) {
@@ -741,7 +775,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       const through = folds.reduce((last, fold) => fold.through > last ? fold.through : last, ''), sum = (key: 'days' | 'tasks' | 'open') => folds.reduce((total, fold) => total + fold[key], 0);
       return <div className={styles.recentFold} data-recent-fold={atEnd ? 'end' : 'start'}>
         <p><span>지난 기록 · {through ? `${recentDay(through)}까지 ` : ''}{sum('days')}일</span><small>할 일 {sum('tasks')}개 · 남은 일 {sum('open')}개</small></p>
-        <button type="button" data-recent-action="past-show" onClick={() => void showRecentWhole(id)}>펼치기</button></div>;
+        <button type="button" data-recent-action="past-show" onMouseDown={holdRecentFocus} onClick={() => void showRecentWhole(id)}>펼치기</button></div>;
     }
     const hold = atEnd || !recentWhole[id] || collectionMode || folderId ? null : recentHoldOf(id);
     if (!hold) return null;
