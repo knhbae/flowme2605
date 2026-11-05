@@ -33,6 +33,9 @@ export type ProgramCarryoverPlan = {
   /** What one press does: lines getting today's date, lines taken out, tasks found today, tasks finished since; and,
    *  from the sheet, lines sent to 날짜 미정 and lines deleted. */
   moved: number; removed: number; today: number; finished: number; undated: number; dropped: number;
+  /** 11/5 phone P3: how many tasks one press brings to today (a line dated today, or one found there), in 가지 as the
+   *  card and the sheet count: a task keeping two lines (a different memo under each) is one, not two. */
+  toToday: number;
   /** Of the deleted lines, those with something under them (a memo, checks, other lines) that goes with them. */
   droppedUnder: { memo: number; check: number; other: number };
   /** Repeat lines (they go on by their own check), lines left for another press (the limit), words in two 분류. */
@@ -191,7 +194,7 @@ export function programCarryoverItems(space: ProgramPrivateSpace, today: string)
  *  where its line goes: today, 날짜 미정, or deleted (with all its copies). A task left out of it gets the card's. */
 export function planProgramCarryover(space: ProgramPrivateSpace, today: string, limit = PROGRAM_CARRYOVER_LIMIT,
   choices?: ReadonlyMap<string, ProgramCarryoverChoice>): ProgramCarryoverPlan {
-  const plan: ProgramCarryoverPlan = { lines: [], count: 0, kinds: 0, first: null, repeated: false, moved: 0, removed: 0, today: 0, finished: 0, undated: 0, dropped: 0, droppedUnder: { memo: 0, check: 0, other: 0 },
+  const plan: ProgramCarryoverPlan = { lines: [], count: 0, kinds: 0, first: null, repeated: false, moved: 0, removed: 0, today: 0, finished: 0, undated: 0, dropped: 0, toToday: 0, droppedUnder: { memo: 0, check: 0, other: 0 },
     repeats: 0, left: 0, split: 0, copies: 0, blocked: {}, newDateLines: 0 };
   if (!programDate(today)) return plan;
   const rules = carryoverRules(space), { touchable, isRecorded, droppable, labelOf, underOf, takenAlong, takeBlock, states } = rules;
@@ -284,6 +287,7 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
     plan.removed += taken.filter(line => line.action === 'remove').length;
     plan.newDateLines += moving.filter(line => !group.find(task => task.id === line.taskId)?.explicitDate).length;
     if (finished) plan.finished++; else if (written.length) plan.today++;
+    if (taken.some(line => line.action === 'date') || !finished && written.length) plan.toToday++;
   }
   return plan;
 }

@@ -41,6 +41,16 @@ export interface ProgramTextDraftState {
   problemLine?: number;
   /** One line about a finished folder line: moved to a folder, its folder renamed, or the move put back. */
   folderNotice?: string;
+  /** The refused input is only a check mark still being typed: held unsaved and shown as editing, not as a refusal. */
+  typingMark?: boolean;
+}
+
+/** 11/5 phone P2: one line, and only it, became a check mark not closed yet (`- [`, `- [ `, `- [5`). Deleting a task back
+ *  to `- ` or typing one passes through it, and the model refuses it until the mark closes or goes. */
+function markBeingTyped(accepted: string, raw: string) {
+  const was = accepted.split('\n'), now = raw.split('\n');
+  const changed = now.filter((line, index) => line !== was[index]);
+  return was.length === now.length && changed.length === 1 && /^ *-\s+\[[^\]]*$/.test(changed[0]);
 }
 
 /** Serializes draft commits while preserving newer typing and rejected raw input. */
@@ -295,6 +305,7 @@ export function createProgramTextDraft(
       const folderError = edit.folderProblem ? FOLDER_PROBLEM_TEXT[edit.folderProblem] ?? '폴더 이름과 연결 정보를 확인해 주세요. 입력은 남아 있습니다.' : '';
       const protectedChange = !admitted && !validateWorkspace(next);
       let invalid = protectedChange || M.raw(M.getDocument(next, docId)) !== acceptedRaw;
+      const typingMark = invalid && !protectedChange && !folderError && edit.reason === 'invalid-format' && markBeingTyped(M.raw(M.getDocument(state.working, docId)), raw);
       let working=next;
       if(!invalid&&documentInput){
         const owned=proof?documentInput.accept(proof,before):documentInput.install(next);
@@ -306,8 +317,9 @@ export function createProgramTextDraft(
         progressConflict: !protectedChange && invalid && edit.reason === 'progress-check-conflict' ? edit.progressConflict : undefined,
         problemLine: !protectedChange && invalid ? edit.folderLine : undefined,
         folderNotice: !invalid && edit.folderMoved ? edit.folderMoved.renamed ? `폴더 이름을 ‘${edit.folderMoved.title}’로 바꿨습니다` : `‘${edit.folderMoved.title}’ 폴더로 옮겼습니다` : undefined,
+        typingMark: typingMark || undefined,
         error: protectedChange ? '보관·휴지통·복구 문서나 반복 규칙·보류 항목의 원문 표시는 여기서 바꿀 수 없습니다. 해당 줄을 원래대로 되돌리면 일반 할 일과 메모를 계속 편집할 수 있습니다. 입력은 보관 중입니다.'
-          : !invalid ? '' : folderError || (edit.reason === 'identity-ambiguous'
+          : !invalid || typingMark ? '' : folderError || (edit.reason === 'identity-ambiguous'
             ? '여러 줄의 변경을 기존 항목과 연결하지 못해 반영하지 않았습니다. 제목 수정과 줄 이동은 나누고, 여러 제목은 한 줄씩 수정해 저장해 주세요. 입력은 그대로 남아 있습니다.'
             : edit.reason === 'invalid-format'
               ? '날짜·진행률·들여쓰기 형식을 확인해 주세요. 입력은 그대로 남아 있습니다.'

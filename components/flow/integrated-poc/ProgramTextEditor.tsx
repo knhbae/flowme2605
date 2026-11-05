@@ -1362,8 +1362,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     }
     return focused;
   };
-  // A local refusal never reaches the server, so the host learns of it only here.
-  const inputFailed = draft.invalid || !!draft.error;
+  // A local refusal never reaches the server, so the host learns of it only here. A check mark still being typed is
+  // held (unsaved, 편집 중) but is not one: deleting a task line or typing one passes through `- [`.
+  const inputFailed = draft.invalid && !draft.typingMark || !!draft.error;
   useEffect(() => { propsRef.current.onInputFailureChange?.(inputFailed); }, [inputFailed]);
   useEffect(() => () => propsRef.current.onInputFailureChange?.(false), []);
   useEffect(() => {

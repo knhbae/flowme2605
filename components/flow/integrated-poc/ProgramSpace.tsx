@@ -2037,7 +2037,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       }, { history: true, awaitAutomaticRead: true });
       if (result.ok) {
         setTaskNotice(null); setOrderNotice(null); setDatesNotice(null);
-        const kinds = plan.moved + plan.today;
+        const kinds = plan.toToday;
         const text = sheet ? [sheet.text, plan.left ? `남은 ${plan.left}줄은 한 번 더 정리하면 됩니다.` : ''].filter(Boolean).join(' ')
           : [kinds ? `${kinds}가지를 오늘로 옮겼습니다.` : '', plan.removed ? kinds ? `겹친 줄과 끝낸 일의 남은 줄 ${plan.removed}개는 지웠습니다.` : `끝낸 일의 남은 줄 ${plan.removed}개를 지웠습니다.` : '',
             plan.left ? `남은 ${plan.left}줄은 한 번 더 누르면 정리됩니다.` : ''].filter(Boolean).join(' ');
@@ -2074,7 +2074,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     {carryPlan.first && <p className={styles.carryMeta}>{programCalendarDate(carryPlan.first, today, false)}부터{carryPlan.repeated ? ' · 같은 일이 여러 날에 있음' : ''}</p>}
     <div className={styles.carryActions}>
       {carryPlan.lines.length > 0 && <button type="button" className={styles.carryMove} disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}
-        aria-busy={carryPending || undefined} onClick={() => void carryToToday(carryPlan)}>{carryPending ? '옮기는 중…' : `오늘로 옮기기 · ${carryPlan.moved}`}</button>}
+        aria-busy={carryPending || undefined} onClick={() => void carryToToday(carryPlan)}>{carryPending ? '옮기는 중…' : `오늘로 옮기기 · ${carryPlan.toToday}`}</button>}
       <button type="button" className={styles.carryOne} aria-haspopup="dialog" disabled={carryPending} onClick={() => openCarrySheet()}>하나씩 정리</button>
     </div>
     {carryWriting && <small className={styles.carryNote} role="status">쓰기를 마치면 정리할 수 있습니다</small>}
@@ -2091,6 +2091,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       actions: carryNotice.before && !carryPending ? [{ label: '되돌리기', run: () => void undoCarry(carryNotice) },
         ...(carryNotice.undatedView ? [{ label: '날짜 미정 보기', run: () => void changePeriod('undated') }] : [])] : [] }} onClose={() => setCarryNotice(null)} />
   </div>;
+  // 11/5 phone P3: the notices under the list hold one place at the bottom (sticky), and the old-repeat card covered them
+  // and the list there; it waits while one shows (they close by themselves) and comes back after.
+  const bottomNoticeShown = !!(!sheetOpen && (orderNoticeContent || checkNoticeContent || repeatNoticeContent) || datesNoticeContent || carryNoticeContent || selecting && selectNotice);
   /** N11b [하나씩 정리]: the card's tasks one by one (PROPOSAL 4-3), each with the card's choice to start from. */
   function openCarrySheet(keep?: ReadonlyMap<string, ProgramCarryoverChoice>, from?: ProgramPrivateSpace | null) {
     const shown = from ?? dataRef.current.spaces[actorId] ?? space, items = programCarryoverItems(shown, today);
@@ -2564,7 +2567,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {selecting && selectNotice && <div className={styles.orderNotice}><ProgramNoticeRow notice={{ tone: 'info', text: selectNotice }} onClose={() => setSelectNotice(null)} /></div>}
         {/* I7: under the list, held at the bottom of the screen (above the bottom tabs on a phone) while it scrolls. */}
         {!detail && !sheetOpen && orderNoticeContent}
-        {!detail && !sheetOpen && checkNoticeContent}{!detail && !sheetOpen && repeatNoticeContent}{!detail && legacyRepeatContent}
+        {!detail && !sheetOpen && checkNoticeContent}{!detail && !sheetOpen && repeatNoticeContent}{!detail && !bottomNoticeShown && legacyRepeatContent}
         {!detail && datesNoticeContent}{!detail && carryNoticeContent}
       </div>
     </div>
