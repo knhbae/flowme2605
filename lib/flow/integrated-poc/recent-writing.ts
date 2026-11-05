@@ -1,4 +1,4 @@
-import { textWorkspaceModel as M, type TextRow, type TextWorkspaceState } from './text-workspace';
+import { textWorkspaceModel as M, type TextLine, type TextRow, type TextWorkspaceState } from './text-workspace';
 import { programShiftDate } from './execution';
 import { programDate } from './program-data';
 
@@ -18,7 +18,7 @@ export const PROGRAM_RECENT_WRITING = Object.freeze({ lines: 200, days: 7 });
 export interface ProgramRecentHold { documentId: string; since: string; lineIds: ReadonlySet<string>; done: ReadonlySet<string>; undated: boolean }
 export interface ProgramRecentDone { count: number; whole: boolean }
 export interface ProgramRecentFold { lineIds: string[]; through: string; days: number; tasks: number; open: number; atEnd: boolean }
-export type ProgramRecentExtend = { ok: true; state: TextWorkspaceState } | { ok: false; reason: 'document' | 'hidden-line' | 'invalid' | 'hidden-context' | 'visible-context' };
+export type ProgramRecentExtend = { ok: true; state: TextWorkspaceState } | { ok: false; reason: 'document' | 'hidden-line' | 'hidden-order' | 'invalid' | 'hidden-context' | 'visible-context' };
 
 const rowsOf = (state: TextWorkspaceState, documentId: string) => M.rowMeta(state, documentId);
 /** The date rows of old sections and the rows under them. */
@@ -120,9 +120,13 @@ export function weaveProgramRecent<T>(full: readonly T[], restricted: readonly T
   return [...restricted.flatMap(item => [...before.get(key(item)) ?? [], item]), ...waiting];
 }
 
+/** The folded lines' order: their IDs as the document has them. */
+const hiddenOrder = (lines: readonly TextLine[], hidden: ReadonlySet<string>) => lines.filter(line => hidden.has(line.id)).map(line => line.id).join('\n');
 /** The whole workspace a save of the writing view's `next` makes: `base`'s hidden lines (and what belongs to them) put
- *  back. `check` proves it: the whole model accepts it, the hidden lines read exactly as in `base`, and the lines in view
- *  read exactly as the editor had them. Without `check` (a quick look at each key) only the lines go back. */
+ *  back. `check` proves it: the hidden lines keep their order (writing-view review F1: each run goes back before the line
+ *  that followed it, so days in view swapped would swap the folded days between them), the whole model accepts it, the
+ *  hidden lines read exactly as in `base`, and the lines in view read exactly as the editor had them. Without `check` (a
+ *  quick look at each key) only the lines go back. */
 export function extendProgramRecent(base: TextWorkspaceState, next: TextWorkspaceState, documentId: string, hidden: ReadonlySet<string>,
   check = true): ProgramRecentExtend {
   if (!hidden.size) return { ok: true, state: next };
@@ -135,6 +139,7 @@ export function extendProgramRecent(base: TextWorkspaceState, next: TextWorkspac
     taskScopes: { ...next.taskScopes, ...pick(base.taskScopes, hidden) }, itemScopes: { ...next.itemScopes, ...pick(base.itemScopes, hidden) },
     progressRecords: weaveProgramRecent(base.progressRecords, next.progressRecords, record => hidden.has(record.taskId), record => `${record.taskId}\u0000${record.date}`) };
   if (!check) return { ok: true, state };
+  if (hiddenOrder(lines, hidden) !== hiddenOrder(baseDoc.lines, hidden)) return { ok: false, reason: 'hidden-order' };
   if (!M.validate(state)) return { ok: false, reason: 'invalid' };
   const whole = new Map(rowsOf(state, documentId).map(row => [row.id, rowShape(row)]));
   if (rowsOf(base, documentId).some(row => hidden.has(row.id) && whole.get(row.id) !== rowShape(row))) return { ok: false, reason: 'hidden-context' };
@@ -142,28 +147,50 @@ export function extendProgramRecent(base: TextWorkspaceState, next: TextWorkspac
   return { ok: true, state };
 }
 
-/** The whole raw for a raw typed in the recent view (what the 복구함 keeps): each folded run right before the line that
- *  followed it, found by its text after the run put back last, else at the end. Unchanged, it is the whole document. */
+/** The whole raw for a raw typed in the recent view (what the 복구함 keeps), made as a save makes it (writing-view review
+ *  F2: not by finding lines by their text): the model reads what was typed into lines with their IDs, and the folded
+ *  lines go back by ID, in their order. Unchanged, it is the whole document. Typed input the model cannot read yet (a
+ *  refused edit), or one whose folded lines could not keep their order, is kept by the lines it still shares with the
+ *  recent part: each folded run after the line that came before it (else before the one that came after), never out of
+ *  order. Nothing typed and nothing folded is left out. */
 export function extendProgramRecentRaw(base: TextWorkspaceState, documentId: string, hidden: ReadonlySet<string>, raw: string): string {
   const doc = M.getDocument(base, documentId);
   if (!doc || !hidden.size) return raw;
-  if (raw === doc.lines.filter(line => !hidden.has(line.id)).map(line => line.text).join('\n')) return M.raw(doc);
-  const runs: { lines: string[]; next: string | null }[] = [];
-  for (const [index, line] of doc.lines.entries()) {
-    if (!hidden.has(line.id)) continue;
-    if (index && hidden.has(doc.lines[index - 1].id)) runs.at(-1)!.lines.push(line.text);
-    else runs.push({ lines: [line.text], next: null });
-    const after = doc.lines[index + 1];
-    if (after && !hidden.has(after.id)) runs.at(-1)!.next = after.text;
+  const restricted = restrictProgramRecent(base, documentId, hidden), shown = M.getDocument(restricted, documentId)!;
+  if (raw === M.raw(shown)) return M.raw(doc);
+  const typed = M.editTextResult(restricted, documentId, raw);
+  if (!typed.reason && M.raw(M.getDocument(typed.state, documentId)) === raw) {
+    const put = extendProgramRecent(base, typed.state, documentId, hidden, false), lines = put.ok ? M.getDocument(put.state, documentId)!.lines : null;
+    if (lines && hiddenOrder(lines, hidden) === hiddenOrder(doc.lines, hidden)) return lines.map(line => line.text).join('\n');
   }
-  const typed = raw.split('\n'), out: string[] = [], last: string[] = [];
-  let cursor = 0;
-  for (const run of runs) {
-    const at = run.next === null ? -1 : typed.indexOf(run.next, cursor);
-    if (at < 0) { last.push(...run.lines); continue; }
-    out.push(...typed.slice(cursor, at), ...run.lines); cursor = at;
+  return alignedRaw(doc.lines, shown.lines, raw.split('\n'), hidden);
+}
+/** The folded runs put into typed lines by the recent part's lines they still match (a longest common subsequence of
+ *  identical lines): each after the typed place of the line before it, else before that of the line after it, else
+ *  where the run before it went; never before the run before it. */
+function alignedRaw(whole: readonly TextLine[], shown: readonly TextLine[], typed: readonly string[], hidden: ReadonlySet<string>): string {
+  const n = shown.length, m = typed.length, table = Array.from({ length: n + 1 }, () => new Uint32Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--)
+    table[i][j] = shown[i].text === typed[j] ? table[i + 1][j + 1] + 1 : Math.max(table[i + 1][j], table[i][j + 1]);
+  const at = new Map<string, number>();
+  for (let i = 0, j = 0; i < n && j < m;) {
+    if (shown[i].text === typed[j] && table[i][j] === table[i + 1][j + 1] + 1) { at.set(shown[i].id, j); i++; j++; }
+    else if (table[i + 1][j] >= table[i][j + 1]) i++; else j++;
   }
-  return [...out, ...typed.slice(cursor), ...last].join('\n');
+  const insert = new Map<number, string[]>();
+  let floor = 0;
+  for (let index = 0; index < whole.length;) {
+    if (!hidden.has(whole[index].id)) { index++; continue; }
+    const start = index;
+    while (index < whole.length && hidden.has(whole[index].id)) index++;
+    const before = whole.slice(0, start).reverse().find(line => !hidden.has(line.id)), after = whole.slice(index).find(line => !hidden.has(line.id));
+    const place = before && at.has(before.id) ? at.get(before.id)! + 1 : after && at.has(after.id) ? at.get(after.id)! : !before ? 0 : !after ? m : floor;
+    floor = Math.max(floor, place);
+    insert.set(floor, [...insert.get(floor) ?? [], ...whole.slice(start, index).map(line => line.text)]);
+  }
+  const out: string[] = [];
+  for (let j = 0; j <= m; j++) { out.push(...insert.get(j) ?? []); if (j < m) out.push(typed[j]); }
+  return out.join('\n');
 }
 
 /** An offset in one raw moved to the same line (and column) in another, by line ID; 0 when that line is not there. */

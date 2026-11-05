@@ -8,7 +8,7 @@ import { programShiftDate } from './execution';
 import { ALPHA_SCHEMA, type AlphaAccount } from './alpha-persistence/contract';
 import { materializeAccount } from './alpha-persistence/program-adapter';
 import { emptyAlphaReferences } from './alpha-social/projection';
-import { extendProgramRecent, programRecentHidden, programRecentHold, restrictProgramRecent } from './recent-writing';
+import { extendProgramRecent, extendProgramRecentRaw, programRecentHidden, programRecentHold, restrictProgramRecent } from './recent-writing';
 
 // 11/5 총괄 조건 1 (쓰기 '최근만 쓰기'): the put-back is a pure function, checked as a property. Random long documents
 // (days old and recent, [미정], tomorrow, folders, tasks done and not, memos; newest on top or old days first) get random
@@ -16,7 +16,9 @@ import { extendProgramRecent, programRecentHidden, programRecentHold, restrictPr
 // made as the editor makes them (the full text model on the recent part). After each:
 // - put back, every folded line is there with its ID and bytes, in its order, and the whole raw is exactly the same
 //   edit made on the whole raw; the model accepts the whole;
-// - refused, the reason is one of the checks', and the saved whole is as it was (nothing partly saved).
+// - refused, the reason is one of the checks', and the saved whole is as it was (nothing partly saved);
+// - either way the 복구함's raw keeps every typed line and every folded line in order, and is the saved raw itself when
+//   the save went through (writing-view review F1/F2: two days in view swapped, a date line retyped).
 const owner = '99999999-9999-4999-8999-999999999999', today = '2026-11-05';
 let request = 0;
 const ok = <T,>(result: ProgramTransition<T>) => { assert(result.ok, result.ok ? '' : result.reason); return result; };
@@ -51,9 +53,15 @@ function write(raw: string) {
   return { text: made.data.spaces[owner].text, docId: made.result };
 }
 
-type Edit = { kind: 'type' | 'delete' | 'indent' | 'check' | 'date' | 'enter'; at: string; insert?: string[] };
-/** The edit applied to lines (by the ID of the line it is made at): the same function for the recent part and the whole. */
+type Edit = { kind: 'type' | 'delete' | 'indent' | 'check' | 'date' | 'enter' | 'swap'; at: string; insert?: string[] };
+/** The edit applied to lines (by the ID of the line it is made at): the same function for the recent part and the whole.
+ *  'swap' trades the date section starting at `at` with the one right after it (in the lines given). */
 function apply(lines: readonly TextLine[], edit: Edit): string[] {
+  if (edit.kind === 'swap') {
+    const start = lines.findIndex(line => line.id === edit.at), heads = lines.flatMap((line, index) => index > start && /^\[/.test(line.text) ? [index] : []);
+    const middle = heads[0] ?? lines.length, end = heads[1] ?? lines.length, texts = lines.map(line => line.text);
+    return [...texts.slice(0, start), ...texts.slice(middle, end), ...texts.slice(start, middle), ...texts.slice(end)];
+  }
   const texts: string[] = [];
   for (const line of lines) {
     if (line.id !== edit.at) { texts.push(line.text); continue; }
@@ -65,7 +73,12 @@ function apply(lines: readonly TextLine[], edit: Edit): string[] {
 }
 function choose(next: () => number, shown: readonly TextLine[], hidden: ReadonlySet<string>, whole: readonly TextLine[]): Edit | null {
   const pick = <T,>(items: readonly T[]) => items.length ? items[Math.floor(next() * items.length)] : null;
-  const kinds = ['type', 'delete', 'indent', 'check', 'date', 'enter'] as const, kind = kinds[Math.floor(next() * kinds.length)];
+  const kinds = ['type', 'delete', 'indent', 'check', 'date', 'enter', 'swap'] as const, kind = kinds[Math.floor(next() * kinds.length)];
+  if (kind === 'swap') {
+    // Two date sections in view, one right after the other (in view): folded days may lie between them in the whole.
+    const heads = shown.flatMap((line, index) => /^\[/.test(line.text) ? [index] : []), first = heads.length > 1 ? heads[Math.floor(next() * (heads.length - 1))] : -1;
+    return first < 0 ? null : { kind, at: shown[first].id };
+  }
   const plain = shown.filter(line => line.text.trim() && !/^\[/.test(line.text)), tasks = shown.filter(line => /^ *- \[ \] /.test(line.text));
   if (kind === 'type') { const line = pick(plain); return line && { kind, at: line.id }; }
   if (kind === 'delete') { const line = pick(shown); return line && { kind, at: line.id }; }
@@ -79,7 +92,7 @@ function choose(next: () => number, shown: readonly TextLine[], hidden: Readonly
 }
 
 test('W-a property: random documents and random edits in the recent part put the folded lines back exactly', () => {
-  const tally = { cases: 0, edits: 0, saved: 0, refused: 0, modelRefused: 0, normalized: 0 };
+  const tally = { cases: 0, edits: 0, saved: 0, refused: 0, modelRefused: 0, normalized: 0, swaps: 0, orderRefused: 0 };
   for (let seed = 1; seed <= 40; seed++) {
     const next = random(seed * 7919), { raw } = document(next), made = write(raw), docId = made.docId;
     let whole = made.text;
@@ -91,15 +104,23 @@ test('W-a property: random documents and random edits in the recent part put the
       const shown = M.getDocument(restricted, docId)!.lines, all = M.getDocument(whole, docId)!.lines;
       const edit = choose(next, shown, hidden, all);
       if (!edit) continue;
-      tally.edits++;
-      const typed = apply(shown, edit).join('\n'), result = M.editTextResult(restricted, docId, typed, { progressDate: today });
+      tally.edits++; if (edit.kind === 'swap') tally.swaps++;
+      const typed = apply(shown, edit).join('\n'), context = `seed ${seed} step ${step} ${edit.kind}`;
+      // The 복구함's raw, saved or not: every typed line and every folded line, the folded ones in their order.
+      const kept = extendProgramRecentRaw(whole, docId, hidden, typed).split('\n'), folded = all.filter(line => hidden.has(line.id)).map(line => line.text);
+      assert.equal(kept.length, typed.split('\n').length + folded.length, `${context}: 복구함 raw size`);
+      let cursor = 0;
+      for (const line of folded) { const found = kept.indexOf(line, cursor); assert(found >= cursor, `${context}: folded line out of order in the 복구함 raw`); cursor = found + 1; }
+      const result = M.editTextResult(restricted, docId, typed, { progressDate: today });
       if (result.reason) { tally.modelRefused++; continue; }
-      const put = extendProgramRecent(whole, result.state, docId, hidden), context = `seed ${seed} step ${step} ${edit.kind}`;
+      const put = extendProgramRecent(whole, result.state, docId, hidden);
       if (!put.ok) {
         // Refused: one of the checks' reasons, and nothing of it is saved (the whole stays the one it was).
-        assert(['invalid', 'hidden-context', 'visible-context', 'hidden-line'].includes(put.reason), `${context}: ${put.reason}`);
-        tally.refused++; continue;
+        assert(['invalid', 'hidden-context', 'visible-context', 'hidden-line', 'hidden-order'].includes(put.reason), `${context}: ${put.reason}`);
+        tally.refused++; if (put.reason === 'hidden-order') tally.orderRefused++; continue;
       }
+      // Saved: the 복구함 had exactly the raw the save puts back (one function), when the model kept the text as typed.
+      if (M.raw(M.getDocument(result.state, docId)) === typed) assert.equal(kept.join('\n'), M.raw(M.getDocument(put.state, docId)), `${context}: 복구함 raw`);
       tally.saved++;
       const after = M.getDocument(put.state, docId)!.lines, byId = new Map(after.map((line, index) => [line.id, { line, index }]));
       // Every folded line: same ID, same bytes, same order.
@@ -112,12 +133,13 @@ test('W-a property: random documents and random edits in the recent part put the
       }
       assert(M.validate(put.state), context);
       // The whole raw is the same edit made on the whole raw (when the model kept the part's text as typed).
-      if (M.raw(M.getDocument(result.state, docId)) === typed) assert.equal(M.raw(M.getDocument(put.state, docId)), apply(all, edit).join('\n'), context);
+      if (edit.kind === 'swap') { /* the whole's own sections differ: order and bytes are what count */ }
+      else if (M.raw(M.getDocument(result.state, docId)) === typed) assert.equal(M.raw(M.getDocument(put.state, docId)), apply(all, edit).join('\n'), context);
       else tally.normalized++;
       whole = put.state;
     }
   }
-  assert(tally.cases >= 30 && tally.saved >= 120, JSON.stringify(tally));
+  assert(tally.cases >= 30 && tally.saved >= 120 && tally.swaps >= 20 && tally.orderRefused >= 1, JSON.stringify(tally));
   console.log(JSON.stringify(tally));
 });
 
