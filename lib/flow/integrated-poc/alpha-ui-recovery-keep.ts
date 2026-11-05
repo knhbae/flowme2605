@@ -27,6 +27,7 @@ export interface AlphaUiRecoveryKeep {
   readonly key: string;
   /** Append an immutable generation. No deletion, overwrite, expiry or truncation occurs here. */
   put(drafts: readonly AlphaUiDraft[], left?: boolean, proof?: AlphaUiRecoveryKeepProof): boolean;
+  /** take confirms receiver coverage, leaving every source key intact, including v3. */
   left(saved: (draft: AlphaUiDraft) => boolean): AlphaUiRecoveryHandoff;
   /** Own compaction also runs under the account lock and rechecks both stores. */
   clean(session: AlphaUiRecoveryPort): Promise<boolean>;
@@ -76,9 +77,9 @@ function legacy(value: unknown, ownerId: string, version: number): value is Lega
   } catch { return false; }
 }
 
-/** Sync publication never removes keys. Every removal, including own compaction, requires the same exclusive account
- * lock. This keeps a receiver's durable witnesses present from its locked reread through foreign removal. A rejected
- * or unavailable lock retains duplicates. Age makes a page eligible to import; it never authorizes losing unique RAW. */
+/** Sync publication never removes keys. Foreign keys remain read-only even under the account lock: handoff must not
+ * rely on another client's Storage view having caught up. Only own-prefix compaction may remove, under the exclusive
+ * account lock after both stores are checked. Age makes a page eligible to import, never eligible to lose unique RAW. */
 export function createAlphaUiRecoveryKeep(storage: AlphaUiRecoveryKeepStorage | undefined, ownerId: string, pageId: string,
   now: () => number = Date.now): AlphaUiRecoveryKeep | null {
   if (!storage || !programIdentifier(ownerId) || !programIdentifier(pageId)) return null;
@@ -150,8 +151,8 @@ export function createAlphaUiRecoveryKeep(storage: AlphaUiRecoveryKeepStorage | 
     } catch { return false; }
   }
   function remove(row: Row) {
-    // Only immutable v3 rows participate. Callers hold the exclusive account lock.
-    if (row.version !== 3 || storage!.getItem(row.key) !== row.raw) return false;
+    // Callers hold the account lock. The prefix guard also forbids future callers from removing foreign v3 rows.
+    if (row.version !== 3 || !row.key.startsWith(ownPrefix) || storage!.getItem(row.key) !== row.raw) return false;
     storage!.removeItem(row.key);
     return storage!.getItem(row.key) === null;
   }
@@ -192,11 +193,10 @@ export function createAlphaUiRecoveryKeep(storage: AlphaUiRecoveryKeepStorage | 
             if (stored === null) return false;
             const all = rows(), own = new Set(effective(mine(all)).map(identity)), inSession = new Set(stored.map(identity));
             let complete = true;
-            // Eligibility, source union, own session and own durable coverage are all decided inside the lock.
+            // Confirm the copy inside the lock, but leave every foreign source untouched. A later lock holder may
+            // still see an earlier Storage view, so mutual take must never depend on foreign removal propagation.
             for (const group of groups(all).filter(group => group.list.some(row => selected.has(row.key)))) {
-              if (group.newest.version !== 3) continue;
-              if (!group.drafts.every(draft => saved(draft) || own.has(identity(draft)) && inSession.has(identity(draft)))) { complete = false; continue; }
-              for (const row of group.list) if (!remove(row)) complete = false;
+              if (!group.drafts.every(draft => saved(draft) || own.has(identity(draft)) && inSession.has(identity(draft)))) complete = false;
             }
             return complete;
           });

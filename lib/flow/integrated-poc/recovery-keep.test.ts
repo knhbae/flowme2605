@@ -48,6 +48,38 @@ class Storage {
     this.removed.push(key); this.values.delete(key);
   }
 }
+/** Independent cached views share physical backing. Cross-client storage events are deliberately delayed until
+ * synchronize() is called; a lock orders callbacks but does not synchronize the views for this regression. */
+class DelayedViews {
+  backing = new Map<string, string>();
+  stores: { values: Map<string, string>; actor: string }[] = [];
+  changes: { actor: string; page: string; op: 'set' | 'remove' }[] = [];
+  writes = 0;
+  constructor(readonly locks: Locks) {}
+  view(actor: string) {
+    const values = new Map(this.backing), cluster = this;
+    this.stores.push({ actor, values });
+    return {
+      get length() { return values.size; },
+      key: (index: number) => [...values.keys()][index] ?? null,
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem(key: string, value: string) {
+        const page = JSON.parse(value).pageId as string;
+        cluster.backing.set(key, value); values.set(key, value); cluster.writes++;
+        cluster.changes.push({ actor, page, op: 'set' });
+      },
+      removeItem(key: string) {
+        assert.equal(cluster.locks.active, 1);
+        const page = JSON.parse(values.get(key) ?? cluster.backing.get(key)!).pageId as string;
+        cluster.backing.delete(key); values.delete(key);
+        cluster.changes.push({ actor, page, op: 'remove' });
+      },
+    };
+  }
+  synchronize() {
+    for (const store of this.stores) { store.values.clear(); for (const entry of this.backing) store.values.set(...entry); }
+  }
+}
 async function withLocks(work: (locks: Locks) => unknown | Promise<unknown>, enabled = true) {
   const previous = Object.getOwnPropertyDescriptor(globalThis, 'navigator'), locks = new Locks();
   Object.defineProperty(globalThis, 'navigator', { configurable: true, value: enabled ? { locks } : {} });
@@ -201,6 +233,37 @@ test('mutual take: same-RAW saves within 60s cannot delete both durable current 
   });
 });
 
+test('serialized take with delayed cross-client Storage views leaves physical RAW and every foreign key intact', async () => {
+  await withLocks(async locks => {
+    const cluster = new DelayedViews(locks), same = draft('지연 전파된 상호 보관 원문\n한글😀');
+    function tab(page: string) {
+      const port = createAlphaUiRecovery(new Storage(), { ownerId: OWNER, slotId: page });
+      const keep = createAlphaUiRecoveryKeep(cluster.view(page), OWNER, page, () => TIME)!;
+      const ui = keepAlphaUiRecovery(port, keep, () => TIME);
+      assert(ui.read().ok); return { port, keep, ui };
+    }
+    const a = tab('page-a'), b = tab('page-b');
+    assert(a.ui.save([same]).ok); a.ui.leave(); assert(b.ui.save([same]).ok); b.ui.leave(); await locks.tail;
+    cluster.synchronize();
+    assert.equal(cluster.backing.size, 2, 'successful own compaction retains each newest readback generation');
+    const original = new Map(cluster.backing), foundA = a.keep.left(() => false), foundB = b.keep.left(() => false);
+    assert.deepEqual(foundA.drafts, [same]); assert.deepEqual(foundB.drafts, [same]);
+    const writes = cluster.writes;
+    assert(a.ui.save([same]).ok); assert(b.ui.save([same]).ok);
+    assert.equal(cluster.writes, writes, 'preserve the original same-RAW/60s skip crossing');
+    assert.deepEqual(await Promise.all([foundA.take(a.port), foundB.take(b.port)]), [true, true]);
+    await locks.tail;
+    // Neither client's mutations/events have propagated to the other view during those serialized take calls.
+    assert.equal(cluster.changes.filter(change => change.actor !== change.page).length, 0);
+    for (const [key, raw] of original) assert.equal(cluster.backing.get(key), raw);
+    const physical = [...cluster.backing.values()].filter(value => JSON.parse(value).drafts.some((item: AlphaUiDraft) => item.raw === same.raw)).length;
+    assert(physical >= 1);
+    const fresh = createAlphaUiRecoveryKeep(cluster.view('fresh-page'), OWNER, 'fresh-page', () => TIME + 1)!;
+    assert.deepEqual(fresh.left(() => false).drafts, [same]);
+    cluster.synchronize();
+  });
+});
+
 test('take waits for the account lock and rechecks eligibility and receiver proof after acquisition', async () => {
   await withLocks(async locks => {
     const shared = new Storage(locks), a = client(shared, 'page-a'), b = client(shared, 'page-b');
@@ -288,7 +351,7 @@ test('failed shared readback never reuses a possibly published generation key', 
   });
 });
 
-test('superseded active versions do not reappear after foreign take removes the source proof rows', async () => {
+test('superseded active versions do not reappear after foreign take confirms while retaining the source proof rows', async () => {
   await withLocks(async locks => {
     const shared = new Storage(locks), a = client(shared, 'page-a'), b = client(shared, 'page-b');
     const parked = draft('별도로 보관한 원문'), latest = draft('인계할 최신 원문');
@@ -298,9 +361,29 @@ test('superseded active versions do not reappear after foreign take removes the 
     assert.deepEqual(found.drafts, [parked, latest]);
     assert(b.ui.save(found.drafts).ok);
     assert.equal(await found.take(b.port), true);
-    assert(!shared.values.has(a.keep.key));
+    assert(shared.values.has(a.keep.key));
     b.ui.leave(); await locks.tail;
     assert.deepEqual(next(shared), [parked, latest]);
+  });
+});
+
+test('own compaction waits for successful session and newest shared readback; failed shared save retains predecessors', async () => {
+  await withLocks(async locks => {
+    const shared = new Storage(locks), a = client(shared, 'page-a');
+    assert(a.ui.save([draft('자기 이전 사본')]).ok); await locks.tail;
+    const predecessor = a.keep.key, original = shared.values.get(predecessor), removed = shared.removed.length;
+    shared.failWrite = () => true;
+    assert(a.ui.save([draft('자기 최신 입력')]).ok, 'session save can succeed while shared save fails');
+    assert.equal(await a.keep.clean(a.port), false);
+    assert.equal(shared.values.get(predecessor), original); assert.equal(shared.removed.length, removed);
+    shared.failWrite = () => false;
+    assert(a.ui.save([draft('자기 최신 입력')]).ok); assert.equal(await a.keep.clean(a.port), true);
+    assert(!shared.values.has(predecessor)); assert(shared.values.has(a.keep.key));
+    const latest = shared.values.get(a.keep.key), beforeFailure = shared.removed.length;
+    a.session.failWrite = () => true;
+    assert.equal(a.ui.save([draft('session 실패 입력')]).ok, false);
+    assert.equal(await a.keep.clean(a.port), false);
+    assert.equal(shared.values.get(a.keep.key), latest); assert.equal(shared.removed.length, beforeFailure);
   });
 });
 
