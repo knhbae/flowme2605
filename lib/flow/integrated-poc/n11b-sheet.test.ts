@@ -130,3 +130,14 @@ test('N11b: each sheet task names its 분류: a folder, or a "- /" line still te
   assert.deepEqual(items.map(item => `${item.place}:${item.title}`).sort(),
     ['공부:영어 단어', '공부:책 읽기', '운동:러닝', '운동:스트레칭', '집안 일:빨래', '집안 일:정리', '회사 일:보고서', '회사 일:정리'].sort());
 });
+
+test('N11b + N11a QA F2: deleting a task of 150 copies takes a hundred in one save, the other fifty in the next', () => {
+  let { data } = write(['[2026-11-01]', ...Array.from({ length: 150 }, () => '- [ ] 같은 일')].join('\n'));
+  const [item] = programCarryoverItems(space(data), '2026-11-05'), choices = new Map([[item.kind, 'delete' as const]]);
+  const first = planProgramCarryover(space(data), '2026-11-05', undefined, choices);
+  assert.deepEqual({ dropped: first.dropped, left: first.left, lines: first.lines.length }, { dropped: 100, left: 50, lines: 100 });
+  data = ok(apply(data, choices)).data;
+  const second = planProgramCarryover(space(data), '2026-11-05', undefined, choices);
+  assert.deepEqual({ dropped: second.dropped, left: second.left }, { dropped: 50, left: 0 });
+  assert.equal(M.tasks(space(ok(apply(data, choices)).data).text).length, 0);
+});
