@@ -1,8 +1,8 @@
 import { programFailure, type ProgramData, type ProgramPrivateSpace, type ProgramTransition } from './contract';
 import { patchProgramTask, transitionProgramPrivateSpace } from './private-space';
 import { programSeriesMetadata } from './recurrence-target';
-import { textWorkspaceModel as M } from './text-workspace';
-import { programShiftDate } from './execution';
+import { textWorkspaceModel as M, type TextRow, type TextTask } from './text-workspace';
+import { programShiftDate, programTaskProgress } from './execution';
 import { programCalendarDate } from './date-label';
 import { ALPHA_TASK_DATE_MOVE_LIMIT, isAlphaTaskDateMoves, type AlphaTaskDateMove } from './alpha-social/contract';
 import { resolveAlphaPrivateTaskSchedule } from './alpha-social/private-task-schedule';
@@ -46,6 +46,35 @@ export function programTaskDateState(space: ProgramPrivateSpace, taskId: string)
     return programStateHash(JSON.stringify({ lines, done: task?.done ?? null, progress: M.currentProgress(space.text, taskId), override: copy && itemId ? detached(copy.itemOverrides[itemId] ?? null) : null }));
   }
   return null;
+}
+/** programTaskDateState for many tasks of one space (N11a): the same tokens, with each document parsed once and the
+ *  tasks and their progress read once (one by one, a hundred lines took seconds). */
+export function programTaskDateStates(space: ProgramPrivateSpace): (taskId: string) => string | null {
+  const docs = [...space.text.documents, ...space.text.flows], rows = new Map<string, TextRow[]>();
+  let tasks: Map<string, TextTask> | null = null, progress: ReturnType<typeof programTaskProgress> | null = null;
+  return taskId => {
+    for (const doc of docs) {
+      const at = doc.lines.findIndex(line => line.id === taskId);
+      if (at < 0) continue;
+      if (!rows.has(doc.id)) rows.set(doc.id, M.parseDocument(doc, space.text).rows);
+      const row = rows.get(doc.id)![at], lines = doc.lines.slice(at, row?.subtreeEndIndex ?? at + 1).map(line => line.text);
+      tasks ??= new Map(M.tasks(space.text).map(task => [task.id, task])); progress ??= programTaskProgress(space.text);
+      const task = tasks.get(taskId), copy = copyOf(space, taskId), itemId = copy && Object.keys(copy.itemLines).find(id => copy.itemLines[id] === taskId);
+      return programStateHash(JSON.stringify({ lines, done: task?.done ?? null, progress: progress(taskId).current, override: copy && itemId ? detached(copy.itemOverrides[itemId] ?? null) : null }));
+    }
+    return null;
+  };
+}
+/** programTaskRepeatMember for every task at once (N11a): the IDs a repeat owns. */
+export function programTaskRepeatMembers(space: ProgramPrivateSpace): Set<string> {
+  const ids = new Set<string>(programSeriesMetadata(space).map(row => row.lineId));
+  for (const series of space.personalAuthoring?.series ?? []) {
+    if (!series.stopped && series.source.kind === 'task') ids.add(series.source.taskId);
+    for (const round of series.rounds) for (const id of Object.values(round.taskIds)) ids.add(id);
+  }
+  for (const copy of space.copies) for (const itemId of copy.recurrence?.itemIds ?? []) if (copy.itemLines[itemId]) ids.add(copy.itemLines[itemId]);
+  for (const task of M.tasks(space.text)) if (!task.done && readProgramRepeatMarker(task.title)) ids.add(task.id);
+  return ids;
 }
 /** cyrb53: a short, stable token (not a secret; it only tells a change). */
 export function programStateHash(text: string): string {

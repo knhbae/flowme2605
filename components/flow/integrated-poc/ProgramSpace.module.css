@@ -411,6 +411,14 @@
 .space .orderNotice { position: sticky; bottom: 8px; z-index: 2; margin: 12px 0 0; }
 @media (max-width: 700px) { .space .orderNotice { bottom: calc(84px + env(safe-area-inset-bottom)); } }
 .space .dayAdd { flex: 0 0 auto; min-width: 44px; padding: 0; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 20px; line-height: 1; }
+/* N11a: the 밀린 일 card over 오늘's list (PROPOSAL 4-1): an orange edge, one main button, the folded rows under it. */
+.space .carryCard { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin: 12px 0 4px; padding: 12px 12px 6px 14px; border: 1px solid var(--flowme-b-line); border-left: 4px solid #d08a1a; border-radius: 10px; background: var(--flowme-b-surface); }
+.space .carryTitle { margin: 0; font-size: 15px; line-height: 22px; font-weight: 700; color: #7a4f08; }
+.space .carryMeta { margin: 0; font-size: 13px; line-height: 20px; color: var(--flowme-b-muted); }
+.space .carryMove { min-height: 44px; margin-top: 4px; padding: 0 16px; border: 0; border-radius: 10px; background: var(--flowme-b-primary); color: #ffffff; font-size: 15px; font-weight: 700; }
+.space .carryMove:disabled { opacity: 0.45; }
+.space .carryNote { font-size: 12px; line-height: 18px; color: var(--flowme-b-muted); }
+.space .carryFold { min-height: 44px; padding: 0 2px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 13px; }
 .space .emptyDays > button { min-height: 44px; padding: 8px 4px; border: 0; background: transparent; color: var(--flowme-b-muted); font-size: 13px; }
 .space .groupAdd > form { display: flex; align-items: center; gap: 6px; padding: 6px 4px; border-bottom: 1px solid var(--flowme-b-line); }
 .space .groupAdd input[name="title"] { flex: 1 1 auto; min-width: 0; }

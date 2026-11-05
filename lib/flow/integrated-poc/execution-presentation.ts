@@ -2,7 +2,7 @@ import { programDate } from './program-data';
 import { programDateRange, programLocalDate, programShiftDate, type ProgramPeriod } from './execution';
 import type { ProgramOrderedExecutionRow } from './recurrence-order';
 import { textWorkspaceModel as M, type TextTask, type TextWorkspaceState } from './text-workspace';
-import { programCalendarDate, programDateLabel, programOverdueLabel } from './date-label';
+import { programCalendarDate, programDateLabel, programDaysBetween, programOverdueLabel } from './date-label';
 
 export type ProgramExecutionDayGroup = 'on-date' | 'past-incomplete';
 export type ProgramExecutionListItem =
@@ -71,16 +71,19 @@ export function programExecutionDay(rows: readonly ProgramOrderedExecutionRow[],
   ...own.map(entry => ({ kind: 'row' as const, entry, group: null, dated: true }))];
 }
 
-/** One row's date words: "20일 지남" stays apart so it can carry the warning colour. */
+/** One row's date words: "20일 지남" stays apart so it can carry the warning colour. `since`: the day a line moved on
+ *  by its date property was first written (its date section); from a week on it says how long ago (N11a, "7일째"). */
 export function programExecutionRowMeta(input: { date: string | null; done: boolean; progress: { date: string; percent: number } | null;
-  today: string; dated: boolean }): { late: string | null; parts: string[] } {
+  today: string; dated: boolean; since?: string | null }): { late: string | null; parts: string[] } {
   const { date, today } = input;
   const late = !input.dated && !input.done ? programOverdueLabel(date, today) : null;
   const dateText = input.dated ? null : late ? programCalendarDate(date!, today, false) : programDateLabel(date, today);
   const progress = input.progress && programDate(input.progress.date) && !(input.dated && input.progress.date === date)
     ? `${input.progress.percent}% 기록` : null;
-  if (progress && input.progress!.date === date) return { late, parts: [progress, dateText ?? programDateLabel(date, today, false)] };
-  return { late, parts: [...(dateText ? [dateText] : []), ...(progress ? [`${progress} · ${programDateLabel(input.progress!.date, today, false)}`] : [])] };
+  const days = !late && !input.done && input.since && programDate(input.since) && programDate(date) && input.since < date! && programDate(today) ? programDaysBetween(input.since, today) : 0;
+  const since = days >= 7 ? [`${days}일째`] : [];
+  if (progress && input.progress!.date === date) return { late, parts: [progress, dateText ?? programDateLabel(date, today, false), ...since] };
+  return { late, parts: [...(dateText ? [dateText] : []), ...(progress ? [`${progress} · ${programDateLabel(input.progress!.date, today, false)}`] : []), ...since] };
 }
 
 export type ProgramTaskDatePresentation = {

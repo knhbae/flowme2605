@@ -21,6 +21,9 @@ import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocia
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
 import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
+import { carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverProof, restoreProgramCarryover, PROGRAM_CARRYOVER_LIMIT,
+  type ProgramCarryoverBefore, type ProgramCarryoverPlan } from '@/lib/flow/integrated-poc/carryover';
+import { programOpening } from '@/lib/flow/integrated-poc/carryover-opening';
 import { completeProgramRepeat, convertProgramLegacyRepeat, programLegacyRepeatSeries, programRepeatLine, programRepeatSeen, readProgramRepeatCheck, undoProgramRepeat,
   PROGRAM_LEGACY_REPEAT_CARD, PROGRAM_LEGACY_REPEAT_DONE, PROGRAM_LEGACY_REPEAT_REFUSED, PROGRAM_REPEAT_UNDO_REFUSED, type ProgramRepeatCheck } from '@/lib/flow/integrated-poc/repeat-commands';
 import { programRepeatTitle } from '@/lib/flow/integrated-poc/repeat-line';
@@ -177,6 +180,7 @@ type SourceOrigin = { actorId: string; documentId: string; taskId: string; top: 
   /** C5: opened from the calendar, with the day open in its sheet or panel. */
   view: { period: ProgramPeriod; date: string; folderId: string; query: string; monthView?: 'grid'; dayOpen?: boolean } };
 const MONTH_VIEW_KEY = 'flow:poc:personal-workspace:v1:month-view';
+const CARRY_OPEN_KEY = 'flow:alpha:carryover-open:v1';
 const periods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['week', '주간'], ['month', '월간'], ['all', '분류'], ['undated', '날짜 미정']];
 const mainPeriods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['all', '분류']];
 export const PROGRAM_EMPTY_EXAMPLE = '이번 주 준비\n- [ ] 확인할 일\n  - [ ] 먼저 확인할 내용\n자유롭게 적는 메모';
@@ -226,7 +230,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const selectingNow = useRef(false), [savesPending, setSavesPending] = useState(0);
   const countedMutate: ProgramMutate = async (label, build, options) => { setSavesPending(count => count + 1); try { return await props.mutate(label, build, options); } finally { setSavesPending(count => count - 1); } };
   const mutate: ProgramMutate = (label, build, options) => selectingNow.current ? Promise.resolve({ ok: false, reason: 'busy' })
-    : countedMutate(label, build, options).then(result => { if (result.ok && result.changed !== false) setDatesNotice(null); return result; });
+    : countedMutate(label, build, options).then(result => { if (result.ok && result.changed !== false) setDatesNotice(null); return result; })
+      // N11a: another save ends the 밀린 일 notice too (its 되돌리기 would be refused by then anyway).
+      .then(result => { if (result.ok && result.changed !== false) setCarryNotice(null); return result; });
   const countedHistory = async (run: () => Promise<void>) => { setSavesPending(count => count + 1); try { await run(); } finally { setSavesPending(count => count - 1); } };
   const onUndo = () => selectingNow.current ? Promise.resolve() : countedHistory(props.onUndo), onRedo = () => selectingNow.current ? Promise.resolve() : countedHistory(props.onRedo);
   const writingAccess=useMemo(()=>createProgramReferenceExecutionAccess(space,actorId),[space,actorId]);
@@ -241,7 +247,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const scheduleAcknowledgment = useRef<{ actorId: string; before: ProgramPrivateSpace; after: ProgramPrivateSpace;
     beforeData: ProgramData; afterData: ProgramData; detail: boolean;
     accept?: (workspace: TextWorkspaceState | null) => void; timeout?: ReturnType<typeof setTimeout> } | null>(null);
-  const [period, setPeriod] = useState<ProgramPeriod>('documents');
+  // N11a 결정 2: opened again three days or more since this device last did, the first screen is 오늘.
+  const [opening] = useState(() => { let storage: Storage | null = null; try { storage = window.localStorage; } catch { /* no storage */ } return programOpening(storage, today); });
+  const [period, setPeriod] = useState<ProgramPeriod>(() => opening.first ? 'today' : 'documents');
   // Writing tools are workspace-wide. The Flow·repeat box shows where the document already has
   // personal authoring, or after the ＋ menu asks for it; that ask is screen-only, never stored.
   const [authoringRequests, setAuthoringRequests] = useState<string[]>([]);
@@ -305,6 +313,21 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const timer = setTimeout(() => setDatesNotice(current => current === datesNotice ? null : current), Math.max(0, ends - Date.now()));
     return () => clearTimeout(timer);
   }, [datesNotice, datesNoticeHeld]);
+  // N11a 밀린 일: the card over 지난 미완료 (folded unless this device opened it), its one save, and the notice holding
+  // what 되돌리기 puts back (until another save or a change of view).
+  type CarryNotice = { actorId: string; text: string; before: ProgramCarryoverBefore | null; after: string; refused?: boolean; undone?: boolean; shownAt: number };
+  const [carryNotice, setCarryNotice] = useState<CarryNotice | null>(null), [carryNoticeHeld, setCarryNoticeHeld] = useState(false);
+  const carryBusy = useRef(false), [carryPending, setCarryPending] = useState(false);
+  const [carryOpen, setCarryOpenState] = useState(false);
+  useEffect(() => { try { if (localStorage.getItem(CARRY_OPEN_KEY) === 'open') setCarryOpenState(true); } catch { /* folded, then */ } }, []);
+  const setCarryOpen = (open: boolean) => { setCarryOpenState(open); try { localStorage.setItem(CARRY_OPEN_KEY, open ? 'open' : 'folded'); } catch { /* kept for this visit */ } };
+  useEffect(() => {
+    if (!carryNotice) return;
+    const ends = programNoticeEndsAt({ tone: carryNotice.refused ? 'warn' : carryNotice.before ? 'choose' : 'info', shownAt: carryNotice.shownAt, leftBlockAt: null, held: carryNoticeHeld });
+    if (ends === null) return;
+    const timer = setTimeout(() => setCarryNotice(current => current === carryNotice ? null : current), Math.max(0, ends - Date.now()));
+    return () => clearTimeout(timer);
+  }, [carryNotice, carryNoticeHeld]);
   // C2: a check tap still completes at once; its notice offers 되돌리기 and 진행률로 (then the percent chips) for that
   // task, by ID. 10s, held while pressed or focused. [직접] opens the detail with its 진행 기록 open.
   type CheckNotice = ProgramCheckNotice & { actorId: string };
@@ -332,9 +355,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // A check notice button pressed while Korean is being composed on the page (the ＋ line, say) runs once that
   // composition has ended, as the editor's notice buttons do (W15): the composed text stays whole.
   const pageComposing = useRef(false), heldCheckStep = useRef<(() => void) | null>(null);
+  // N11a: [오늘로 옮기기] is off while Korean is being composed anywhere on the page.
+  const [composingShown, setComposingShown] = useState(false);
   useEffect(() => {
-    const start = () => { pageComposing.current = true; };
-    const end = () => { pageComposing.current = false; const held = heldCheckStep.current; heldCheckStep.current = null; if (held) setTimeout(held, 0); };
+    const start = () => { pageComposing.current = true; setComposingShown(true); };
+    const end = () => { pageComposing.current = false; setComposingShown(false); const held = heldCheckStep.current; heldCheckStep.current = null; if (held) setTimeout(held, 0); };
     document.addEventListener('compositionstart', start, true); document.addEventListener('compositionend', end, true);
     return () => { document.removeEventListener('compositionstart', start, true); document.removeEventListener('compositionend', end, true); };
   }, []);
@@ -563,6 +588,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const manualOrderDays = useMemo(() => period === 'documents' ? new Map<string, { hidden: number }>() : programManualOrderDays(data, executionQuery, executionRows),
     [data, period, date, today, folderId, query, includeHeldOccurrences, includeExcludedOccurrences, occurrencePage, executionRows]);
   const executionList = programExecutionList(executionRows, period, date, today, emptyDaysOpen, manualOrderDays);
+  // N11a: 오늘 with more than three past unfinished rows folds them under the 밀린 일 card; 고르기 shows them all.
+  const carryShown = period === 'today' && date === today && !selecting;
+  const carryPast = carryShown ? executionList.filter(item => item.kind === 'row' && item.group === 'past-incomplete') : [];
+  const carryPlan = useMemo(() => carryShown && carryPast.length > 3 ? planProgramCarryover(space, today) : null, [carryShown, carryPast.length > 3, space, today]);
+  const carryCard = !!carryPlan && carryPlan.count > 0;
+  const listItems = carryCard && !carryOpen ? executionList.filter(item => !(item.kind === 'heading' && item.key === 'heading:past') && !(item.kind === 'row' && item.group === 'past-incomplete')) : executionList;
   const monthGrid = period === 'month' && monthView === 'grid';
   const wideMonth = monthWidth >= 840;
   // C6a: 고르기 ends with any view change (탭·기간·날짜·분류·검색) and with Esc; the picks are not kept. A view change
@@ -570,6 +601,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   useEffect(() => { stopSelecting(false); }, [actorId, period, date, folderId, query]);
   // C6b: the move's notice goes with a view change (and with another save, in the gate above).
   useEffect(() => { setDatesNotice(null); }, [actorId, period, date, folderId, query]);
+  useEffect(() => { setCarryNotice(null); }, [actorId, period, date, folderId, query]);
   useEffect(() => { setCheckNotice(null); }, [actorId, period, date, folderId, query]);
   useEffect(() => {
     if (!selecting) return;
@@ -1975,6 +2007,63 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       onClick={startSelecting}>{compactNoteToday ? '여러 개 고르기' : monthGrid ? '목록에서 고르기' : '고르기'}</button>}
     {period !== 'documents' && !selecting && selectBlocked && <small className={styles.selectBlocked}>{selectBlocked}</small>}
   </div>;
+  /** N11a [오늘로 옮기기]: the card's plan in one save, all or none (it waits out an automatic read). A line changed since
+   *  the card showed it moves nothing. What 되돌리기 puts back is taken inside the save, from the very space it changed. */
+  async function carryToToday(plan: ProgramCarryoverPlan) {
+    if (!plan.lines.length || carryBusy.current || pageComposing.current) return;
+    const requestId = programId('carryover');
+    let before: ProgramCarryoverBefore | null = null, after = '';
+    carryBusy.current = true; setCarryPending(true); setCarryNotice(null);
+    try {
+      const result = await countedMutate('밀린 일 오늘로', current => {
+        const next = carryProgramTasksToToday(current, { actorId, requestId, expectedSpace: current.spaces[actorId], today, lines: plan.lines });
+        if (next.ok) { before = programCarryoverBefore(current.spaces[actorId]); after = programCarryoverProof(next.data.spaces[actorId]); }
+        return next;
+      }, { history: true, awaitAutomaticRead: true });
+      if (result.ok) {
+        setTaskNotice(null); setOrderNotice(null); setDatesNotice(null);
+        const kinds = plan.moved + plan.today;
+        const text = [kinds ? `${kinds}가지를 오늘로 옮겼습니다.` : '', plan.removed ? kinds ? `겹친 줄과 끝낸 일의 남은 줄 ${plan.removed}개는 지웠습니다.` : `끝낸 일의 남은 줄 ${plan.removed}개를 지웠습니다.` : '',
+          plan.left ? `남은 ${plan.left}줄은 한 번 더 누르면 정리됩니다.` : ''].filter(Boolean).join(' ');
+        setCarryNotice({ actorId, text, before, after, shownAt: Date.now() });
+      } else if (result.reason === 'conflict') setCarryNotice({ actorId, text: '그사이 바뀐 할 일이 있어 정리하지 않았습니다. 다시 확인해 주세요.', before: null, after: '', refused: true, shownAt: Date.now() });
+      else if (result.reason !== 'busy') setMessage(programErrorMessage(result.reason));
+    } finally { carryBusy.current = false; setCarryPending(false); }
+  }
+  /** 되돌리기: the writing exactly as before the save, while nothing has changed it since. */
+  async function undoCarry(notice: CarryNotice) {
+    if (!notice.before || carryBusy.current) return;
+    const before = notice.before, requestId = programId('carryover-undo');
+    carryBusy.current = true; setCarryPending(true);
+    try {
+      const result = await countedMutate('밀린 일 되돌리기', current => restoreProgramCarryover(current, { actorId, requestId, expectedSpace: current.spaces[actorId], before, after: notice.after }),
+        { history: true, awaitAutomaticRead: true });
+      if (result.ok) setCarryNotice({ ...notice, text: '정리 전으로 되돌렸습니다', before: null, undone: true, shownAt: Date.now() });
+      else if (result.reason === 'conflict') setCarryNotice({ ...notice, text: '그 뒤 바뀐 할 일이 있어 되돌리지 않았습니다', before: null, refused: true, shownAt: Date.now() });
+      else if (result.reason !== 'busy') setMessage(programErrorMessage(result.reason));
+    } finally { carryBusy.current = false; setCarryPending(false); }
+  }
+  const carryWriting = composingShown || Object.values(dirty.current).some(Boolean);
+  const carryRepeats = (carryPlan?.repeats ?? 0) + carryPast.filter(item => item.kind === 'row' && item.entry.kind === 'occurrence').length;
+  const carryCardContent = carryCard && carryPlan && <section className={styles.carryCard} aria-label="밀린 일" data-carryover>
+    <p className={styles.carryTitle}>{opening.since ? `${programCalendarDate(opening.since, today, false)} 이후 처음 열었습니다 · 밀린 일 ${carryPlan.kinds}가지`
+      : `밀린 일 ${carryPlan.kinds}가지 · ${carryPlan.count}줄`}</p>
+    {carryPlan.first && <p className={styles.carryMeta}>{programCalendarDate(carryPlan.first, today, false)}부터{carryPlan.repeated ? ' · 같은 일이 여러 날에 있음' : ''}</p>}
+    {carryPlan.lines.length > 0 && <button type="button" className={styles.carryMove} disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}
+      aria-busy={carryPending || undefined} onClick={() => void carryToToday(carryPlan)}>{carryPending ? '옮기는 중…' : `오늘로 옮기기 · ${carryPlan.moved}`}</button>}
+    {carryWriting && <small className={styles.carryNote} role="status">쓰기를 마치면 정리할 수 있습니다</small>}
+    {carryPlan.finished > 0 && <small className={styles.carryNote}>끝낸 일의 남은 줄 {carryPlan.finished}가지는 지웁니다</small>}
+    {carryRepeats > 0 && <small className={styles.carryNote}>반복 {carryRepeats}개는 체크하면 다음 회차로 넘어갑니다</small>}
+    {carryPlan.split > 0 && <small className={styles.carryNote}>분류가 다른 같은 글 {carryPlan.split}가지는 합치지 않고 따로 옮깁니다</small>}
+    {carryPlan.left > 0 && <small className={styles.carryNote}>한 번에 {PROGRAM_CARRYOVER_LIMIT}줄까지 정리합니다 · 남은 {carryPlan.left}줄은 한 번 더 누르면 정리됩니다</small>}
+    <button type="button" className={styles.carryFold} aria-expanded={carryOpen} onClick={() => setCarryOpen(!carryOpen)}>{carryOpen ? '접기' : `펼쳐 보기 · ${carryPast.length}줄`}</button>
+  </section>;
+  const releaseCarryNotice = () => { if (!carryNoticeHeld) return; setCarryNoticeHeld(false); setCarryNotice(current => current && { ...current, shownAt: Date.now() }); };
+  const carryNoticeContent = carryNotice?.actorId === actorId && <div className={styles.orderNotice} data-carry-notice onPointerDown={() => setCarryNoticeHeld(true)}
+    onPointerUp={releaseCarryNotice} onPointerLeave={releaseCarryNotice} onFocus={() => setCarryNoticeHeld(true)} onBlur={releaseCarryNotice}>
+    <ProgramNoticeRow notice={{ tone: carryNotice.refused ? 'warn' : carryNotice.before ? 'choose' : 'info', text: carryNotice.text,
+      actions: carryNotice.before && !carryPending ? [{ label: '되돌리기', run: () => void undoCarry(carryNotice) }] : [] }} onClose={() => setCarryNotice(null)} />
+  </div>;
   const viewScope = programViewScope({ period, date, today, folderTitle: folderId ? folderOptions.find(item => item.id === folderId)?.title ?? '선택한 분류' : null, query });
   async function clearScope(kind: 'period' | 'folder' | 'query') {
     if (kind === 'period') return changePeriod('today');
@@ -2041,7 +2130,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           const task = entry.task;
           const origin = readProgramTaskOrigin(data, task);
           const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
-          const meta = programExecutionRowMeta({ date: task.date, done: value === 100, progress: progress?.date ? { date: progress.date, percent: progress.percent } : null, today, dated: item.dated });
+          const meta = programExecutionRowMeta({ date: task.date, done: value === 100, progress: progress?.date ? { date: progress.date, percent: progress.percent } : null, today, dated: item.dated,
+            since: task.explicitDate ? task.groupDate : null });
           return <li key={entry.key} className={styles.task} data-task-id={task.id} data-done={value === 100 || undefined} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
@@ -2359,6 +2449,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                 {choice('none')}</>; })()}
             <button type="button" className={styles.datesClose} onClick={closeDatesSheet}>닫기</button>
           </dialog></div>}
+        {/* N11a: the 밀린 일 card, over 오늘's list (never with the calendar). */}
+        {!monthGrid && carryCardContent}
         {monthGrid ? <div className={styles.monthLayout} data-wide={wideMonth || undefined}>
           <ProgramMonthGrid rows={executionRows} date={date} today={today} titles={monthWidth >= 761} onPick={pickMonthDay} />
           {/* The chosen day: a sheet on a narrow screen (its row notices inside while open), a panel beside the grid
@@ -2376,12 +2468,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               if (daySheetLook && event.target === event.currentTarget && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) closeDaySheet(); }}>
             {dayShown && <>{dayGroup(dayShown, daySheetLook ? closeDaySheet : undefined)}{sheetOpen && !detail && taskNoticeContent}{sheetOpen && !detail && orderNoticeContent}{sheetOpen && !detail && checkNoticeContent}</>}
           </dialog>
-        </div> : <ul className={styles.tasks} onKeyDown={selecting ? moveSelectFocus : undefined}>{executionList.map(renderListItem)}</ul>}
+        </div> : <ul className={styles.tasks} onKeyDown={selecting ? moveSelectFocus : undefined}>{listItems.map(renderListItem)}</ul>}
         {selecting && selectNotice && <div className={styles.orderNotice}><ProgramNoticeRow notice={{ tone: 'info', text: selectNotice }} onClose={() => setSelectNotice(null)} /></div>}
         {/* I7: under the list, held at the bottom of the screen (above the bottom tabs on a phone) while it scrolls. */}
         {!detail && !sheetOpen && orderNoticeContent}
         {!detail && !sheetOpen && checkNoticeContent}{!detail && !sheetOpen && repeatNoticeContent}{!detail && legacyRepeatContent}
-        {!detail && datesNoticeContent}
+        {!detail && datesNoticeContent}{!detail && carryNoticeContent}
       </div>
     </div>
     <dialog ref={dialog} className={styles.dialog} data-task-detail={detail?.kind === 'task' ? true : undefined} aria-labelledby="program-detail-title" onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2 id="program-detail-title">{detail?.kind === 'task' ? detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 정리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>
