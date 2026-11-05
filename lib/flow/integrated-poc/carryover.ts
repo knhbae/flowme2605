@@ -26,16 +26,23 @@ export type ProgramCarryoverPlan = {
   moved: number; removed: number; today: number; finished: number;
   /** Repeat lines (they go on by their own check), lines left for another press (the limit), words in two 분류. */
   repeats: number; left: number; split: number;
+  /** Copies that should go (every task, the limit aside) and, of those that stay, how many for each reason. */
+  copies: number; blocked: Partial<Record<ProgramCarryoverBlock, number>>;
 };
 
 const words = (task: TextTask) => task.title.trim().replace(/\s+/g, ' ');
 const kindOf = (task: TextTask) => `${task.scopeId}\n${words(task)}`;
 const firstDay = (task: TextTask) => task.groupDate ?? task.date ?? '';
 
-/** Which lines of the space may be touched, and which of those may be taken out. */
+/** Why a line stays (null: it may be taken out). `linked:<field>`: its ID is in that field of the space (a legacy map,
+ *  a copy, a Flow or repeat source, …), which would no longer hold without the line. */
+export type ProgramCarryoverBlock = 'repeat' | 'locked' | 'progress' | 'bound' | 'shape' | `linked:${string}`;
+const own = new Set(['text', 'timelineOrders', 'executionTimelineOrders', 'position']);
+
+/** Which lines of the space may be touched, and which of those may be taken out, with the reason when not. */
 function carryoverRules(space: ProgramPrivateSpace) {
   // A line ID anywhere outside the writing itself (Flow sources, copies, repeat logs, legacy maps, …) keeps that line.
-  const elsewhere = JSON.stringify({ ...space, text: null, timelineOrders: null, executionTimelineOrders: null, position: null });
+  const outside = Object.entries(space).filter(([key]) => !own.has(key)).map(([key, value]) => [key, JSON.stringify(value) ?? ''] as const);
   const documents = new Set(space.text.documents.map(doc => doc.id)), rows = new Map<string, TextRow[]>();
   const rowsOf = (docId: string) => {
     if (!rows.has(docId)) { const doc = M.getDocument(space.text, docId); rows.set(docId, doc ? M.parseDocument(doc, space.text).rows : []); }
@@ -45,27 +52,43 @@ function carryoverRules(space: ProgramPrivateSpace) {
   const repeat = programTaskRepeatMembers(space), progress = programTaskProgress(space.text), states = programTaskDateStates(space);
   const recorded = new Set(space.text.progressRecords.map(record => record.taskId));
   const bound = new Set(space.text.bindings.flatMap(binding => binding.kind === 'task' ? [binding.lineId, binding.taskId] : [binding.lineId]));
-  // The reference check (locked documents, legacy holds and exclusions, Flow sources) comes last: it is the dear one.
-  const touchable = (task: TextTask) => !task.done && documents.has(task.docId) && !space.documentTrash?.[task.docId]
-    && !space.archivedDocumentIds.includes(task.docId) && !repeat.has(task.id) && !recorded.has(task.id) && !bound.has(task.id)
-    && progress(task.id).current !== 100 && !elsewhere.includes(task.id) && programReferenceExecutionAccess(space, task.id).kind === 'active';
-  // Taken out only as a line alone, right under its day (not under a folder line): no child task, check, memo, time or
-  // progress box; its own 날짜 property may go with it (removeTask takes those, and leaves blank lines where they are).
-  const removable = (task: TextTask) => {
-    if (!touchable(task) || task.parentTaskId !== null || task.subchecks.length || task.note || task.time !== null || task.inputPercent !== undefined) return false;
-    const list = rowsOf(task.docId), at = list.findIndex(row => row.id === task.id);
-    return at >= 0 && list[at].depth === 0 && !list[at].ancestorScopeId && list.slice(at + 1, list[at].subtreeEndIndex)
-      .every(row => row.kind === 'blank' || row.kind === 'property' && /^ *-\s+날짜:/.test(row.text));
+  const touches = new Map<string, ProgramCarryoverBlock | null>(), blocks = new Map<string, ProgramCarryoverBlock | null>();
+  const untouchable = (task: TextTask): ProgramCarryoverBlock | null => {
+    if (!touches.has(task.id)) touches.set(task.id, touchBlock(task));
+    return touches.get(task.id)!;
   };
-  return { touchable, removable, repeat, states };
+  // The reference check (locked documents, legacy holds and exclusions, Flow sources) comes last: it is the dear one.
+  const touchBlock = (task: TextTask): ProgramCarryoverBlock | null => {
+    if (repeat.has(task.id)) return 'repeat';
+    if (task.done || !documents.has(task.docId) || space.documentTrash?.[task.docId] || space.archivedDocumentIds.includes(task.docId)) return 'locked';
+    if (recorded.has(task.id) || progress(task.id).current === 100) return 'progress';
+    if (bound.has(task.id)) return 'bound';
+    const field = outside.find(([, json]) => json.includes(task.id))?.[0];
+    if (field) return `linked:${field}`;
+    return programReferenceExecutionAccess(space, task.id).kind === 'active' ? null : 'locked';
+  };
+  // Taken out only as a line alone, right under its day or right under a folder line (`[날짜]` → `- /분류` → `  - [ ] 할
+  // 일`; the folder line itself always stays, even with nothing left under it): no child task, check, memo, time or
+  // progress box; its own 날짜 property may go with it (removeTask takes those, and leaves blank lines where they are).
+  const unremovable = (task: TextTask): ProgramCarryoverBlock | null => {
+    if (!blocks.has(task.id)) blocks.set(task.id, untouchable(task) ?? (() => {
+      if (task.parentTaskId !== null || task.subchecks.length || task.note || task.time !== null || task.inputPercent !== undefined) return 'shape';
+      const list = rowsOf(task.docId), at = list.findIndex(row => row.id === task.id);
+      return at >= 0 && (list[at].depth === 0 || list[at].parentKind === 'scope') && list.slice(at + 1, list[at].subtreeEndIndex)
+        .every(row => row.kind === 'blank' || row.kind === 'property' && /^ *-\s+날짜:/.test(row.text)) ? null : 'shape';
+    })());
+    return blocks.get(task.id)!;
+  };
+  const touchable = (task: TextTask) => untouchable(task) === null, removable = (task: TextTask) => unremovable(task) === null;
+  return { touchable, removable, unremovable, repeat, states };
 }
 
 /** What one press of [오늘로 옮기기] would do now, from the space as the screen shows it. Oldest tasks first, at most
  *  `limit` lines changed; a task's copies always go together. */
 export function planProgramCarryover(space: ProgramPrivateSpace, today: string, limit = PROGRAM_CARRYOVER_LIMIT): ProgramCarryoverPlan {
-  const plan: ProgramCarryoverPlan = { lines: [], count: 0, kinds: 0, first: null, repeated: false, moved: 0, removed: 0, today: 0, finished: 0, repeats: 0, left: 0, split: 0 };
+  const plan: ProgramCarryoverPlan = { lines: [], count: 0, kinds: 0, first: null, repeated: false, moved: 0, removed: 0, today: 0, finished: 0, repeats: 0, left: 0, split: 0, copies: 0, blocked: {} };
   if (!programDate(today)) return plan;
-  const { touchable, removable, repeat, states } = carryoverRules(space);
+  const { touchable, removable, unremovable, repeat, states } = carryoverRules(space);
   const past = programExecutionTasks(space, { period: 'today', date: today }).filter(task => task.date! < today && !task.done);
   const plain = past.filter(task => !repeat.has(task.id));
   plan.repeats = past.length - plain.length; plan.count = plain.length;
@@ -102,6 +125,15 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
         || (order.get(b.docId) ?? 0) - (order.get(a.docId) ?? 0))[0];
       const keep = newest && merge.filter(task => task.docId === newest.docId).sort((a, b) => firstDay(a).localeCompare(firstDay(b)) || a.sourceIndex - b.sourceIndex)[0];
       for (const task of lines) step(task, task === keep || !merge.includes(task) ? 'date' : 'remove');
+    }
+    // The copies that should go (all but the one that stays, or all when finished or written today) and, of those that
+    // cannot, why: counted for every task, also past the limit.
+    const stays = finished || written.length ? null : steps.find(line => line.action === 'date' && merge.some(task => task.id === line.taskId))?.taskId
+      ?? [...group].sort((a, b) => b.date!.localeCompare(a.date!))[0].id;
+    for (const task of group.filter(task => task.id !== stays)) {
+      plan.copies++;
+      const block = steps.some(line => line.taskId === task.id && line.action === 'remove') ? null : unremovable(task);
+      if (block) plan.blocked[block] = (plan.blocked[block] ?? 0) + 1;
     }
     const size = steps.filter(line => line.action !== 'hold').length;
     if (!size) continue;
