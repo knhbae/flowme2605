@@ -114,6 +114,31 @@ test('차 관리: the months chosen for 엔진오일 and a first date for 정기
   assert(!missing.ok && missing.reason === 'invalid');
 });
 
+test('QA F1: the same words are found whatever the spaces and case (PROPOSAL 5-5); other words are not', () => {
+  const exercise = (data: ProgramData) => programImportRepeats(space(data), data.public.versions.find(row => row.id === 'exercise-v1')!);
+  const mine = (raw: string) => { const data = catalog(); return ok(createProgramDocument(data, { ...base(data), title: '내 운동', raw })); };
+  for (const [raw, marker, same] of [['- [ ] 근력운동하기 @매주 화', '@매주 화', false], ['- [ ] 근력   운동  하기 @매주 월 목', '@매주 월 목', true],
+    ['- [ ] 근력 운동하기 @매주 월 목', '@매주 월 목', true], ['- [ ] 빠르게 걷기 30분 @매주 월 화 수 목 금', '@매주 월 화 수 목 금', true]] as const) {
+    const made = mine(raw), found = exercise(made.data).filter(row => row.existing);
+    assert.deepEqual(found.map(row => row.existing), [{ documentTitle: '내 운동', marker, same }], raw);
+    // Put in, the line I had stays the only one with those words.
+    const done = ok(importProgramPublicVersion(made.data, { ...base(made.data), ...sheet(made.data, 'exercise-v1'), targetDocumentId: made.result }));
+    const tasks = M.tasks(space(done.data).text).filter(task => task.docId === made.result).map(task => task.title);
+    assert.equal(tasks.length, 2, raw);
+    assert(tasks.includes(raw.slice(6)), raw);
+  }
+  // Case: Latin words in another case are the same words.
+  const data = catalog();
+  data.public.versions.find(row => row.id === 'english-v1')!.items[0].title = 'Anki 단어 복습 @매일';
+  const anki = ok(createProgramDocument(data, { ...base(data), title: '영어', raw: '- [ ] ANKI단어  복습 @매주 월' }));
+  assert.deepEqual(programImportRepeats(space(anki.data), anki.data.public.versions.find(row => row.id === 'english-v1')!).map(row => row.existing?.marker ?? null), ['@매주 월', null]);
+  // Negative: other words, a finished line, or a line that is not a repeat line are not mine to keep.
+  for (const raw of ['- [ ] 근력 운동 하기 두 번 @매주 화', '- [x] 근력 운동 하기 @매주 화', '- [ ] 근력 운동 하기', '- [ ] 근력 운동 @매주 화']) {
+    const made = mine(raw);
+    assert.deepEqual(exercise(made.data).map(row => row.existing), [null, null], raw);
+  }
+});
+
 test('a repeat line of mine with the same words is not written again (its rule aside); 되돌리기 takes back exactly what was written', () => {
   let data = catalog();
   const mine = ok(createProgramDocument(data, { ...base(data), title: '내 운동', raw: '- [ ] 근력 운동 하기 @매주 화\n  - 날짜: 2026-11-10\n- [ ] 장보기' }));

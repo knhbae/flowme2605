@@ -27,7 +27,8 @@ export function programImportRepeatOf(item: ProgramPublicItem): Omit<ProgramImpo
   return marker ? { title: programRepeatTitle(item.title).trim(), marker: marker.text, rule: marker.rule, pick: false } : null;
 }
 
-const words = (title: string) => title.trim().replace(/\s+/g, ' ').toLocaleLowerCase('ko-KR');
+/** PROPOSAL 5-5: the same words whatever the spaces and case ('근력운동하기' is '근력 운동 하기'). */
+const words = (title: string) => title.replace(/\s+/g, '').toLocaleLowerCase('ko-KR');
 /** The version's repeat items (those listed in `itemIds`, when given), each with a repeat line of mine it would repeat:
  *  one in any document or copy document, not finished, not trashed or archived, not a copy's own item. */
 export function programImportRepeats(space: ProgramPrivateSpace | undefined, version: ProgramPublicVersion, itemIds?: readonly string[]): ProgramImportRepeat[] {
