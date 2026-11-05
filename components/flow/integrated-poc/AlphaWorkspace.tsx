@@ -17,6 +17,7 @@ import { isSyntheticAlphaWorkspaceInput, type SyntheticAlphaWorkspaceRuntime } f
 import { newProgramReviewDraft, programReviewOriginReason, type ProgramReviewEntry, type ProgramReviewOrigin, type ProgramReviewSpacePort } from '@/lib/flow/integrated-poc/review-return';
 import { createAlphaTabRecovery } from '@/lib/flow/integrated-poc/alpha-sync/recovery';
 import { createAlphaUiRecovery, type AlphaUiDraft, type AlphaUiRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-ui-recovery';
+import { createAlphaUiRecoveryKeep, keepAlphaUiRecovery, type AlphaUiRecoveryKeep } from '@/lib/flow/integrated-poc/alpha-ui-recovery-keep';
 import { createAlphaStructuralRecovery, resolveAlphaStructuralRecovery, type AlphaStructuralEditorPort, type AlphaStructuralRecoveryEntry, type AlphaStructuralRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
 import { type ProgramData, type ProgramParticipationDraft, type ProgramPublicationDraft, programId } from '@/lib/flow/integrated-poc/contract';
 import type { ProgramProposalReviewDraft } from '@/lib/flow/integrated-poc/review-drafts';
@@ -79,12 +80,9 @@ const labels: Record<AlphaSyncSnapshot['status'], string> = {
   'session-expired': '로그인이 만료되었습니다', 'checking-result': '저장 여부 확인 못 함', 'recovery-required': '저장 상태를 확인해 주세요',
 };
 function mergeRecoveryDrafts(parked: readonly AlphaUiDraft[], active: readonly AlphaUiDraft[]): AlphaUiDraft[] {
-  const seen = new Set<string>();
-  return [...parked, ...active].filter(draft => {
-    const identity = JSON.stringify([draft.documentId ?? null, draft.title, draft.raw]);
-    if (seen.has(identity)) return false;
-    seen.add(identity); return true;
-  }).map(draft => ({ ...draft }));
+  const all = [...parked, ...active], identity = (draft: AlphaUiDraft) => JSON.stringify([draft.documentId ?? null, draft.title, draft.raw]);
+  const last = new Map(all.map((draft, index) => [identity(draft), index]));
+  return all.filter((draft, index) => last.get(identity(draft)) === index).map(draft => ({ ...draft }));
 }
 
 /** Receipt proof belongs to confirmedAlphaPrivateTextSave. This only limits its
@@ -199,6 +197,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     return () => { const cleanup = openLatestLock.current; openLatestLock.current = null; cleanup?.(); };
   }, [presentation, sessionEpoch]);
   const controller = useRef<Controller | null>(null), uiRecovery = useRef<UiRecovery | null>(null);
+  const uiKeep = useRef<{ port: ReturnType<typeof keepAlphaUiRecovery>; keep: AlphaUiRecoveryKeep } | null>(null), keepTaken = useRef(false);
   const writingCompute = useRef<WritingCompute|null>(null);
   const automaticRead = useRef<{ store: Controller; ownerId: string; epoch: object; promise: Promise<boolean>; eligible: boolean } | null>(null);
   const editors = useRef<(ProgramEditorFlush & AlphaStructuralEditorPort) | null>(null), legacyEditors = useRef<ProgramEditorFlush | null>(null);
@@ -481,7 +480,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       // sessionStorage is isolated even when a browser duplicates a tab's slot ID.
       const recovery = createAlphaTabRecovery(tabStorage, slot,compute);
       const ui = createAlphaUiRecovery(tabStorage, { ownerId: session.userId, slotId: slot });
-      uiRecovery.current = ui;
+      let keepStorage: Storage | undefined;
+      try { keepStorage = syntheticRuntime?.documentStorage ?? localStorage; } catch { /* Session recovery remains available. */ }
+      const keep = createAlphaUiRecoveryKeep(keepStorage, session.userId, crypto.randomUUID());
+      const kept = keep ? keepAlphaUiRecovery(ui, keep) : null;
+      uiRecovery.current = kept ?? ui; uiKeep.current = keep && kept ? { port: kept, keep } : null; keepTaken.current = false;
       const structural = createAlphaStructuralRecovery(tabStorage, { ownerId: session.userId, slotId: slot });
       structuralRecovery.current = structural; activeStructural.current = [];
       const structuralLoaded = structural.read();
@@ -496,13 +499,13 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       if (creatorLoaded.ok) { parkedCreator.current = creatorLoaded.value?.entries ?? []; setCreatorRecoveries(creatorLoaded.value); }
       else setStorageError(true);
       parkedDrafts.current = []; activeDrafts.current = [];
-      const loaded = ui.read();
+      const loaded = (kept ?? ui).read();
       if (loaded.ok) { parkedDrafts.current = (loaded.value?.drafts ?? []).map(draft => ({ ...draft })); setRecoveries(loaded.value); }
       else setStorageError(true);
       const store = createAlphaSyncController({ recovery, onChange: present,writingCompute:compute });
       controller.current = store;
     } catch { setStorageError(true); }
-    return () => { captureInput(); disposed.current = true; preservationRef.current = false; preservationOpener.current = null; preservationReturn.current = null; controller.current?.dispose(); controller.current = null;writingCompute.current?.dispose();writingCompute.current=null; };
+    return () => { captureInput(); uiKeep.current?.port.leave(); disposed.current = true; preservationRef.current = false; preservationOpener.current = null; preservationReturn.current = null; controller.current?.dispose(); controller.current = null;writingCompute.current?.dispose();writingCompute.current=null; };
   }, [session.userId]);
   useEffect(() => {
     const store = controller.current; if (!store) return;
@@ -649,13 +652,17 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       if (hasInput() || controller.current?.snapshot().pending) { event.preventDefault(); event.returnValue = ''; }
     };
     const visibility = () => { captureInput(); if (document.visibilityState === 'visible') reads.returned(); else refresh(); };
+    const pageHide = () => { captureInput(); uiKeep.current?.port.leave(); };
+    const pageShow = (event: PageTransitionEvent) => { if (event.persisted) uiKeep.current?.port.back(); };
     const input = { capture: true, passive: true };
     window.addEventListener('focus', reads.returned); window.addEventListener('online', refresh);
     document.addEventListener('visibilitychange', visibility); window.addEventListener('beforeunload', beforeUnload);
+    window.addEventListener('pagehide', pageHide); window.addEventListener('pageshow', pageShow);
     for (const type of AUTOMATIC_READ_INPUT_EVENTS) window.addEventListener(type, reads.input, input);
     const timer = window.setInterval(reads.interval, POLL_MS);
     return () => { clearInterval(timer); window.removeEventListener('focus', reads.returned); window.removeEventListener('online', refresh);
       document.removeEventListener('visibilitychange', visibility); window.removeEventListener('beforeunload', beforeUnload);
+      window.removeEventListener('pagehide', pageHide); window.removeEventListener('pageshow', pageShow);
       for (const type of AUTOMATIC_READ_INPUT_EVENTS) window.removeEventListener(type, reads.input, input); };
   }, []);
   const performMutation: ProgramMutate = async (label, build, options) => {
@@ -1001,6 +1008,23 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       setDestination({ view: 'space', id: result.result }); setMessage('보관한 문서·폴더와 행을 복구했습니다.');
     }
   }
+  useEffect(() => {
+    const kept = uiKeep.current, ui = uiRecovery.current;
+    const text = data?.activeActorId === session.userId ? data.spaces[session.userId]?.text : undefined;
+    if (!kept || !ui || !text || keepTaken.current) return;
+    keepTaken.current = true;
+    const found = kept.keep.left(draft => !!draft.documentId && !!M.getDocument(text, draft.documentId)
+      && M.raw(M.getDocument(text, draft.documentId)) === draft.raw);
+    if (found.drafts.length) {
+      const parked = mergeRecoveryDrafts(found.drafts, parkedDrafts.current);
+      const saved = ui.save(mergeRecoveryDrafts(parked, activeDrafts.current));
+      if (!saved.ok) { keepTaken.current = false; setStorageError(true); return; }
+      parkedDrafts.current = parked; setRecoveries(saved.value);
+    }
+    // take rereads this session and the durable receiver inside the account lock.
+    // Missing locks or failed shared storage retain the source for the next page.
+    void found.take(ui);
+  }, [data, session.userId]);
   function clearStructuralDrafts() {
     if (structuralRecovery.current?.clear().ok) { parkedStructural.current = []; activeStructural.current = []; setStructuralRecoveries(null); }
     else setStorageError(true);
