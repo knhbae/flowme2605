@@ -140,7 +140,7 @@ export function programTaskDateUndo(before: ProgramPrivateSpace, after: ProgramP
 }
 
 /** The date sheet's choices (2-4), each with its real date from today: 오늘, 내일, 다음 주 월요일 (weeks start on
- *  Monday), then 날짜 고르기… and 날짜 없음 in the sheet itself. A choice every picked task already has is off. */
+ *  Monday), then 날짜 고르기… and 날짜 미정 in the sheet itself. A choice every picked task already has is off. */
 export function programTaskDateChoices(today: string, picked: readonly (string | null)[]): { key: string; label: string; date: string | null; detail: string; off: boolean }[] {
   const weekday = new Date(`${today}T00:00:00Z`).getUTCDay() || 7, monday = programShiftDate(today, 8 - weekday);
   const off = (date: string | null) => picked.length > 0 && picked.every(value => value === date);
@@ -148,7 +148,7 @@ export function programTaskDateChoices(today: string, picked: readonly (string |
     { key: 'today', label: '오늘', date: today, detail: programCalendarDate(today, today) },
     { key: 'tomorrow', label: '내일', date: programShiftDate(today, 1), detail: programCalendarDate(programShiftDate(today, 1), today) },
     { key: 'monday', label: '다음 주 월요일', date: monday, detail: programCalendarDate(monday, today, false) },
-    { key: 'none', label: '날짜 없음', date: null, detail: '' },
+    { key: 'none', label: '날짜 미정', date: null, detail: '' },
   ].map(choice => ({ ...choice, off: off(choice.date) }));
 }
 /** N9 line menu chips: the sheet's 오늘 and 내일, then 이번 주말, the coming Saturday (today on a Saturday or Sunday).
@@ -161,8 +161,8 @@ export function programLineDateChips(today: string): { key: string; label: strin
 }
 /** 로 or 으로 after a word, by its last Hangul syllable (ㄹ and no final take 로). */
 const ro = (word: string) => { const last = [...word].reverse().find(char => char >= '가' && char <= '힣'); const final = last ? (last.charCodeAt(0) - 0xac00) % 28 : 0; return final === 0 || final === 8 ? '로' : '으로'; };
-/** The notice after a move (2-6): "3개를 11월 2일 (월)로 옮겼습니다", or 날짜 없음으로. */
+/** The notice after a move (2-6): "3개를 11월 2일 (월)로 옮겼습니다", or 날짜 미정으로 (N11b: as the 날짜 미정 view is named). */
 export function programTaskDatesMovedText(count: number, date: string | null, today: string): string {
-  const name = date ? programCalendarDate(date, today) : '날짜 없음';
+  const name = date ? programCalendarDate(date, today) : '날짜 미정';
   return `${count}개를 ${name}${ro(name)} 옮겼습니다`;
 }

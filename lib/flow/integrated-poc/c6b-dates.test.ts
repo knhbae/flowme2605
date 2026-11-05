@@ -175,7 +175,7 @@ test('the sheet\'s choices carry their real dates from today; one every picked t
   const choices = programTaskDateChoices('2026-10-29', ['2026-10-29', '2026-10-29']);
   assert.deepEqual(choices.map(choice => [choice.key, choice.label, choice.date, choice.detail, choice.off]), [
     ['today', '오늘', '2026-10-29', '10월 29일 (목)', true], ['tomorrow', '내일', '2026-10-30', '10월 30일 (금)', false],
-    ['monday', '다음 주 월요일', '2026-11-02', '11월 2일', false], ['none', '날짜 없음', null, '', false]]);
+    ['monday', '다음 주 월요일', '2026-11-02', '11월 2일', false], ['none', '날짜 미정', null, '', false]]);
   // Monday's next Monday is a week on; Sunday's is the day after.
   assert.equal(programTaskDateChoices('2026-11-02', [])[2].date, '2026-11-09');
   assert.equal(programTaskDateChoices('2026-11-01', [])[2].date, '2026-11-02');
@@ -183,5 +183,5 @@ test('the sheet\'s choices carry their real dates from today; one every picked t
   assert.equal(programTaskDatesMovedText(3, '2026-11-02', '2026-10-29'), '3개를 11월 2일 (월)로 옮겼습니다');
   assert.equal(programTaskDatesMovedText(2, '2026-10-29', '2026-10-29'), '2개를 10월 29일 (목)으로 옮겼습니다');
   assert.equal(programTaskDatesMovedText(1, '2026-10-30', '2026-10-29'), '1개를 10월 30일 (금)으로 옮겼습니다');
-  assert.equal(programTaskDatesMovedText(4, null, '2026-10-29'), '4개를 날짜 없음으로 옮겼습니다');
+  assert.equal(programTaskDatesMovedText(4, null, '2026-10-29'), '4개를 날짜 미정으로 옮겼습니다');
 });

@@ -419,6 +419,28 @@
 .space .carryMove:disabled { opacity: 0.45; }
 .space .carryNote { font-size: 12px; line-height: 18px; color: var(--flowme-b-muted); }
 .space .carryFold { min-height: 44px; padding: 0 2px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 13px; }
+/* N11b: [하나씩 정리] beside the main button, and its sheet (PROPOSAL 4-3): a W5 sheet on a phone, a panel on a PC. */
+.space .carryActions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 4px; }
+.space .carryActions .carryMove { margin-top: 0; }
+.space .carryOne { min-height: 44px; padding: 0 14px; border: 1px solid var(--flowme-b-line); border-radius: 10px; background: var(--flowme-b-surface); color: var(--flowme-b-primary); font-size: 15px; }
+.carrySheet { padding-bottom: 0; }
+.carrySheetHead { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.carrySheetHead h2 { margin: 0; font-size: 18px; line-height: 26px; }
+.carrySheetHead button { min-height: 44px; padding: 0 12px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 15px; }
+.carrySheet .carryMeta { margin: 0 0 4px; font-size: 13px; line-height: 20px; color: var(--flowme-b-muted); }
+.carrySection h3 { margin: 16px 0 4px; padding-bottom: 4px; border-bottom: 1px solid var(--flowme-b-line); font-size: 14px; line-height: 20px; color: var(--flowme-b-muted); }
+.carrySection ul { margin: 0; padding: 0; list-style: none; }
+.carryItem { padding: 8px 0; border-bottom: 1px solid var(--flowme-b-line); }
+.carryItem > p { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 8px; margin: 0 0 6px; font-size: 15px; line-height: 22px; }
+.carryItem > p small { font-size: 12px; line-height: 18px; color: var(--flowme-b-muted); }
+.carryChoices { display: flex; gap: 6px; }
+.carryChoices button { flex: 1 1 0; min-height: 44px; padding: 0 6px; border: 1px solid var(--flowme-b-line); border-radius: 22px; background: #ffffff; color: var(--flowme-b-ink); font-size: 14px; }
+.carryChoices button[aria-checked="true"] { border-color: var(--flowme-b-primary); background: var(--flowme-b-selected); color: var(--flowme-b-primary-strong); font-weight: 700; }
+.carryBundle > p { margin: 10px 0 0; font-size: 15px; line-height: 22px; font-weight: 700; }
+.carryBundle > ul { padding-left: 12px; }
+.carrySheet .carryApply { position: sticky; bottom: 0; width: 100%; min-height: 52px; margin: 16px 0 0; border: 0; border-radius: 12px; background: var(--flowme-b-primary); color: #ffffff; font-size: 16px; font-weight: 700; box-shadow: 0 -8px 12px #ffffff; }
+.carrySheet .carryApply:disabled { opacity: 0.45; }
+@media (max-width: 700px) { .carrySheet .carryApply { margin-bottom: calc(12px + env(safe-area-inset-bottom)); } }
 .space .emptyDays > button { min-height: 44px; padding: 8px 4px; border: 0; background: transparent; color: var(--flowme-b-muted); font-size: 13px; }
 .space .groupAdd > form { display: flex; align-items: center; gap: 6px; padding: 6px 4px; border-bottom: 1px solid var(--flowme-b-line); }
 .space .groupAdd input[name="title"] { flex: 1 1 auto; min-width: 0; }

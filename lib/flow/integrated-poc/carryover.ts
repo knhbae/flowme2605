@@ -15,15 +15,24 @@ import { programPreservesLegacyPlanExcluded } from './program-legacy-plan-target
  *  copies left over from a task finished later are taken out. Lines anything else points at (progress records,
  *  references, Flow or repeat sources, public copies) are never touched. */
 export const PROGRAM_CARRYOVER_LIMIT = 100;
-export type ProgramCarryoverAction = 'date' | 'remove' | 'hold';
-/** One line of the plan with its state as the screen saw it (C6b's token): `hold` lines only have to stay so. */
+/** `date`: today's date; `undated`: 날짜 미정 (N11b); `remove`: a copy that says nothing a staying line does not;
+ *  `drop`: a line the person chose to delete in 하나씩 정리, with what is under it (N11b); `hold`: only has to stay so. */
+export type ProgramCarryoverAction = 'date' | 'undated' | 'remove' | 'drop' | 'hold';
+/** One line of the plan with its state as the screen saw it (C6b's token). */
 export type ProgramCarryoverLine = { taskId: string; state: string; action: ProgramCarryoverAction };
+/** N11b 하나씩 정리: what the person chose for one task (all its copies) in the sheet. */
+export type ProgramCarryoverChoice = 'today' | 'undated' | 'delete';
+/** One task of the sheet: its words, its 분류 (a folder, or a '- /' line still text), how many past copies, since
+ *  when, the day it was finished if it was since (its copies are then left-overs), whether it is written today too,
+ *  and the choice the card's one press makes for it. */
+export type ProgramCarryoverItem = { kind: string; title: string; place: string; lines: number; since: string; finished: string | null; today: boolean; choice: ProgramCarryoverChoice };
 export type ProgramCarryoverPlan = {
   lines: ProgramCarryoverLine[];
   /** The card: past unfinished tasks (repeat lines apart), how many different ones, the earliest day, any twice. */
   count: number; kinds: number; first: string | null; repeated: boolean;
-  /** What one press does: lines getting today's date, lines taken out, tasks found today, tasks finished since. */
-  moved: number; removed: number; today: number; finished: number;
+  /** What one press does: lines getting today's date, lines taken out, tasks found today, tasks finished since; and,
+   *  from the sheet, lines sent to 날짜 미정 and lines deleted. */
+  moved: number; removed: number; today: number; finished: number; undated: number; dropped: number;
   /** Repeat lines (they go on by their own check), lines left for another press (the limit), words in two 분류. */
   repeats: number; left: number; split: number;
   /** Copies that should go (every task, the limit aside) and, of those that stay, how many for each reason; and how
@@ -43,12 +52,9 @@ export type ProgramCarryoverBlock = 'repeat' | 'locked' | 'progress-complete' | 
 const own = new Set(['text', 'timelineOrders', 'executionTimelineOrders', 'position']);
 type Shape = { block: ProgramCarryoverBlock } | { under: string };
 
-/** Which lines of the space may be touched, what each carries under it, and which of those may be taken out. */
-function carryoverRules(space: ProgramPrivateSpace) {
-  // A line ID anywhere outside the writing itself (Flow sources, copies, repeat logs, legacy maps, …) keeps that line.
-  const outside = Object.entries(space).filter(([key]) => !own.has(key)).map(([key, value]) => [key, JSON.stringify(value) ?? ''] as const);
-  const elsewhere = (id: string) => outside.find(([, json]) => json.includes(id))?.[0] ?? null;
-  const documents = new Set(space.text.documents.map(doc => doc.id)), rows = new Map<string, { list: TextRow[]; at: Map<string, number> }>();
+/** Where tasks are written: their documents' rows (each parsed once), and each task's 분류 by name. */
+function carryoverPlaces(space: ProgramPrivateSpace) {
+  const rows = new Map<string, { list: TextRow[]; at: Map<string, number> }>(), labels = new Map<string, string>();
   const rowsOf = (docId: string) => {
     if (!rows.has(docId)) {
       const doc = M.getDocument(space.text, docId), list = doc ? M.parseDocument(doc, space.text).rows : [];
@@ -56,23 +62,6 @@ function carryoverRules(space: ProgramPrivateSpace) {
     }
     return rows.get(docId)!;
   };
-  // Read once for the whole space: one by one, these checks took seconds on a few hundred lines.
-  const repeat = programTaskRepeatMembers(space), progress = programTaskProgress(space.text), states = programTaskDateStates(space);
-  const recorded = new Set(space.text.progressRecords.map(record => record.taskId));
-  const bound = new Set(space.text.bindings.flatMap(binding => binding.kind === 'task' ? [binding.lineId, binding.taskId] : [binding.lineId]));
-  const touches = new Map<string, ProgramCarryoverBlock | null>(), shapes = new Map<string, Shape>(), labels = new Map<string, string>();
-  // The reference check (locked documents, legacy holds and exclusions, Flow sources) comes last: it is the dear one.
-  const touchBlock = (task: TextTask): ProgramCarryoverBlock | null => {
-    if (repeat.has(task.id)) return 'repeat';
-    if (task.done || !documents.has(task.docId) || space.documentTrash?.[task.docId] || space.archivedDocumentIds.includes(task.docId)) return 'locked';
-    // A line with a progress record may move (as C6 moves it) but never goes; one at 100% is finished in all but its box.
-    if (progress(task.id).current === 100) return 'progress-complete';
-    if (bound.has(task.id)) return 'bound';
-    const field = elsewhere(task.id);
-    if (field) return `linked:${field}`;
-    return programReferenceExecutionAccess(space, task.id).kind === 'active' ? null : 'locked';
-  };
-  const untouchable = (task: TextTask) => { if (!touches.has(task.id)) touches.set(task.id, touchBlock(task)); return touches.get(task.id)!; };
   // A `- /이름` line never made a folder (still text) names a 분류 for the user all the same: tasks under two such
   // lines of different names are not one task.
   const labelOf = (task: TextTask) => {
@@ -89,6 +78,34 @@ function carryoverRules(space: ProgramPrivateSpace) {
     }
     return labels.get(task.id)!;
   };
+  const scopes = new Map(M.scopes(space.text).map(scope => [scope.id, scope.title]));
+  const placeOf = (task: TextTask) => labelOf(task) || scopes.get(task.scopeId) || '';
+  return { rowsOf, labelOf, placeOf };
+}
+
+/** Which lines of the space may be touched, what each carries under it, and which of those may be taken out. */
+function carryoverRules(space: ProgramPrivateSpace) {
+  // A line ID anywhere outside the writing itself (Flow sources, copies, repeat logs, legacy maps, …) keeps that line.
+  const outside = Object.entries(space).filter(([key]) => !own.has(key)).map(([key, value]) => [key, JSON.stringify(value) ?? ''] as const);
+  const elsewhere = (id: string) => outside.find(([, json]) => json.includes(id))?.[0] ?? null;
+  const documents = new Set(space.text.documents.map(doc => doc.id)), { rowsOf, labelOf, placeOf } = carryoverPlaces(space);
+  // Read once for the whole space: one by one, these checks took seconds on a few hundred lines.
+  const repeat = programTaskRepeatMembers(space), progress = programTaskProgress(space.text), states = programTaskDateStates(space);
+  const recorded = new Set(space.text.progressRecords.map(record => record.taskId));
+  const bound = new Set(space.text.bindings.flatMap(binding => binding.kind === 'task' ? [binding.lineId, binding.taskId] : [binding.lineId]));
+  const touches = new Map<string, ProgramCarryoverBlock | null>(), shapes = new Map<string, Shape>();
+  // The reference check (locked documents, legacy holds and exclusions, Flow sources) comes last: it is the dear one.
+  const touchBlock = (task: TextTask): ProgramCarryoverBlock | null => {
+    if (repeat.has(task.id)) return 'repeat';
+    if (task.done || !documents.has(task.docId) || space.documentTrash?.[task.docId] || space.archivedDocumentIds.includes(task.docId)) return 'locked';
+    // A line with a progress record may move (as C6 moves it) but never goes; one at 100% is finished in all but its box.
+    if (progress(task.id).current === 100) return 'progress-complete';
+    if (bound.has(task.id)) return 'bound';
+    const field = elsewhere(task.id);
+    if (field) return `linked:${field}`;
+    return programReferenceExecutionAccess(space, task.id).kind === 'active' ? null : 'locked';
+  };
+  const untouchable = (task: TextTask) => { if (!touches.has(task.id)) touches.set(task.id, touchBlock(task)); return touches.get(task.id)!; };
   const kindOf = (task: TextTask) => `${task.scopeId}\n${labelOf(task)}\n${words(task)}`;
   // What a line carries under it, as words with their indents below it (its own 날짜 property and blank lines aside),
   // or why it can never go: under a task, a progress box, under a line of another kind, a task or a held line under it.
@@ -115,45 +132,90 @@ function carryoverRules(space: ProgramPrivateSpace) {
     return shape.under === '' || kept.has(shape.under) ? null : 'shape:different-under';
   };
   const touchable = (task: TextTask) => untouchable(task) === null, isRecorded = (task: TextTask) => recorded.has(task.id);
-  return { touchable, untouchable, isRecorded, kindOf, labelOf, underOf, takeBlock, repeat, states, rowsOf };
+  // N11b: deleted on the person's word, a line goes with what is under it (a memo, say), never a recorded or held one.
+  const droppable = (task: TextTask) => touchable(task) && !isRecorded(task) && 'under' in shapeOf(task);
+  return { touchable, untouchable, isRecorded, droppable, kindOf, labelOf, placeOf, underOf, takeBlock, repeat, states, rowsOf };
+}
+
+/** The past unfinished tasks of 오늘 (repeat lines apart), by task (words and 분류), oldest first, and for each the
+ *  lines of it up to today in any document: the newest says whether it was finished since; today's, written again. */
+function pastKinds(space: ProgramPrivateSpace, today: string, rules: ReturnType<typeof carryoverRules>) {
+  const { kindOf, repeat } = rules;
+  const past = programExecutionTasks(space, { period: 'today', date: today }).filter(task => task.date! < today && !task.done);
+  const plain = past.filter(task => !repeat.has(task.id)), kinds = new Map<string, TextTask[]>();
+  for (const task of plain) kinds.set(kindOf(task), [...kinds.get(kindOf(task)) ?? [], task]);
+  const archived = new Set(space.archivedDocumentIds);
+  const near = M.tasks(space.text, { to: today }).filter(task => !archived.has(task.docId) && !space.documentTrash?.[task.docId] && !repeat.has(task.id));
+  const earliest = (group: TextTask[]) => group.reduce((day, task) => task.date! < day ? task.date! : day, '9999');
+  const groups = [...kinds.entries()].sort(([a, left], [b, right]) => earliest(left).localeCompare(earliest(right)) || a.localeCompare(b)).map(([kind, group]) => {
+    const same = near.filter(task => kindOf(task) === kind), latest = same.reduce((day, task) => task.date! > day ? task.date! : day, '');
+    return { kind, group, same, latest, finished: same.filter(task => task.date === latest).every(task => task.done), written: same.filter(task => task.date === today && !task.done) };
+  });
+  return { past, plain, groups };
+}
+
+/** N11b: of these tasks, those whose words are written in two 분류 or more (never merged), with their own 분류's
+ *  name and how many 분류 have them: 오늘 shows them as one bundle ('분류 2곳'). */
+export function programCarryoverPlaces(space: ProgramPrivateSpace, tasks: readonly TextTask[]): Map<string, { place: string; count: number }> {
+  const rules = carryoverPlaces(space), places = new Map<string, Set<string>>(), found = new Map<string, { place: string; count: number }>();
+  for (const task of tasks) places.set(words(task), new Set([...places.get(words(task)) ?? [], `${task.scopeId}\n${rules.labelOf(task)}`]));
+  for (const task of tasks) { const count = places.get(words(task))!.size; if (count > 1) found.set(task.id, { place: rules.placeOf(task), count }); }
+  return found;
+}
+
+/** N11b 하나씩 정리: the tasks of the sheet, oldest first, each with the choice the card's one press makes. */
+export function programCarryoverItems(space: ProgramPrivateSpace, today: string): ProgramCarryoverItem[] {
+  if (!programDate(today)) return [];
+  const rules = carryoverRules(space);
+  return pastKinds(space, today, rules).groups.map(({ kind, group, latest, finished, written }) => ({ kind, title: words(group[0]), place: rules.placeOf(group[0]),
+    lines: group.length, since: group.reduce((day, task) => firstDay(task) < day ? firstDay(task) : day, '9999'), finished: finished ? latest : null,
+    today: written.length > 0, choice: finished ? 'delete' : 'today' }));
 }
 
 /** What one press of [오늘로 옮기기] would do now, from the space as the screen shows it. Oldest tasks first, at most
- *  `limit` lines changed; a task's copies always go together. */
-export function planProgramCarryover(space: ProgramPrivateSpace, today: string, limit = PROGRAM_CARRYOVER_LIMIT): ProgramCarryoverPlan {
-  const plan: ProgramCarryoverPlan = { lines: [], count: 0, kinds: 0, first: null, repeated: false, moved: 0, removed: 0, today: 0, finished: 0, repeats: 0, left: 0, split: 0,
-    copies: 0, blocked: {}, newDateLines: 0 };
+ *  `limit` lines changed; a task's copies always go together. N11b: `choices` (from 하나씩 정리) says, task by task,
+ *  where its line goes: today, 날짜 미정, or deleted (with all its copies). A task left out of it gets the card's. */
+export function planProgramCarryover(space: ProgramPrivateSpace, today: string, limit = PROGRAM_CARRYOVER_LIMIT,
+  choices?: ReadonlyMap<string, ProgramCarryoverChoice>): ProgramCarryoverPlan {
+  const plan: ProgramCarryoverPlan = { lines: [], count: 0, kinds: 0, first: null, repeated: false, moved: 0, removed: 0, today: 0, finished: 0, undated: 0, dropped: 0,
+    repeats: 0, left: 0, split: 0, copies: 0, blocked: {}, newDateLines: 0 };
   if (!programDate(today)) return plan;
-  const { touchable, isRecorded, kindOf, labelOf, underOf, takeBlock, repeat, states } = carryoverRules(space);
-  const past = programExecutionTasks(space, { period: 'today', date: today }).filter(task => task.date! < today && !task.done);
-  const plain = past.filter(task => !repeat.has(task.id));
+  const rules = carryoverRules(space), { touchable, isRecorded, droppable, labelOf, underOf, takeBlock, states } = rules;
+  const { past, plain, groups } = pastKinds(space, today, rules);
   plan.repeats = past.length - plain.length; plan.count = plain.length;
-  const kinds = new Map<string, TextTask[]>();
-  for (const task of plain) kinds.set(kindOf(task), [...kinds.get(kindOf(task)) ?? [], task]);
-  plan.kinds = kinds.size; plan.repeated = [...kinds.values()].some(group => group.length > 1);
+  plan.kinds = groups.length; plan.repeated = groups.some(({ group }) => group.length > 1);
   // Since the day the oldest of them was first written (its date section), as '7일째' counts.
   plan.first = plain.reduce<string | null>((first, task) => !first || firstDay(task) < first ? firstDay(task) : first, null);
   const places = new Map<string, Set<string>>();
   for (const task of plain) places.set(words(task), new Set([...places.get(words(task)) ?? [], `${task.scopeId}\n${labelOf(task)}`]));
   plan.split = [...places.values()].filter(set => set.size > 1).length;
-  // Every line up to today of the same task, finished or not, in any document: the newest says whether it was done.
-  const archived = new Set(space.archivedDocumentIds);
-  const near = M.tasks(space.text, { to: today }).filter(task => !archived.has(task.docId) && !space.documentTrash?.[task.docId] && !repeat.has(task.id));
   const order = new Map(space.text.documents.map((doc, index) => [doc.id, index]));
   const newestFirst = (a: TextTask, b: TextTask) => b.date!.localeCompare(a.date!) || Number(b.docId === space.position.documentId) - Number(a.docId === space.position.documentId)
     || (order.get(b.docId) ?? 0) - (order.get(a.docId) ?? 0);
-  const groups = [...kinds.entries()].sort(([a, left], [b, right]) => left.reduce((day, task) => task.date! < day ? task.date! : day, '9999')
-    .localeCompare(right.reduce((day, task) => task.date! < day ? task.date! : day, '9999')) || a.localeCompare(b));
   let changed = 0, cut = false;
-  for (const [kind, group] of groups) {
-    const same = near.filter(task => kindOf(task) === kind), latest = same.reduce((day, task) => task.date! > day ? task.date! : day, '');
-    const finished = same.filter(task => task.date === latest).every(task => task.done);
-    const written = same.filter(task => task.date === today && !task.done);
+  for (const { kind, group, same, latest, finished: done, written } of groups) {
+    const choice = choices?.get(kind), steps: ProgramCarryoverLine[] = [];
+    const step = (task: TextTask, action: ProgramCarryoverAction) => { const state = states(task.id); if (state) steps.push({ taskId: task.id, state, action }); };
+    // Chosen to go somewhere (today or 날짜 미정), a task finished since is taken up again as one going on.
+    const finished = done && !choice;
+    if (choice === 'delete') {
+      // Deleted: every copy that may go goes with what is under it; a recorded or held one stays where it is.
+      for (const task of group) if (droppable(task)) step(task, 'drop');
+      for (const task of group) {
+        plan.copies++;
+        const block = steps.some(line => line.taskId === task.id) ? null : takeBlock(task, new Set()) ?? 'shape:kept';
+        if (block) plan.blocked[block] = (plan.blocked[block] ?? 0) + 1;
+      }
+      if (!steps.length) continue;
+      if (cut || changed && changed + steps.length > limit) { cut = true; plan.left += group.length; continue; }
+      changed += steps.length; plan.lines.push(...steps); plan.dropped += steps.length;
+      continue;
+    }
+    const dated: ProgramCarryoverAction = choice === 'undated' ? 'undated' : 'date';
     // A copy with a progress record never goes. While the task goes on it stays as one of its lines (dated today),
     // each of them; a task finished since leaves it where it is, a day's record of the past.
     const recordedLines = group.filter(task => touchable(task) && isRecorded(task));
-    const lines = group.filter(task => touchable(task) && !(finished && isRecorded(task))), steps: ProgramCarryoverLine[] = [];
-    const step = (task: TextTask, action: ProgramCarryoverAction) => { const state = states(task.id); if (state) steps.push({ taskId: task.id, state, action }); };
+    const lines = group.filter(task => touchable(task) && !(finished && isRecorded(task)));
     // The lines that stay as they are: finished later, the finished ones; written again today, today's. Of the past
     // copies, the recorded ones stay, and one more (dated today) for each thing carried under them (a memo, say) that
     // no line staying carries, so nothing written is lost; copies with nothing under them, or what a staying line has,
@@ -169,7 +231,7 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
       if (under && !kept.has(under)) { chosen.push(pick(pool)); kept.add(under); }
     if (!keepers.length && !pinned.length && !chosen.length && classes.get('')?.length) chosen.push(pick(classes.get('')!));
     const staying = keepers.length + pinned.length + chosen.length > 0;
-    for (const task of lines) step(task, chosen.includes(task) || !staying || takeBlock(task, kept) !== null ? 'date' : 'remove');
+    for (const task of lines) step(task, chosen.includes(task) || !staying || takeBlock(task, kept) !== null ? dated : 'remove');
     // A copy goes only beside a line that stays as it was seen (its token): today's line, the finished one.
     if (steps.some(line => line.action === 'remove')) for (const task of keepers) step(task, 'hold');
     // The copies that should go (all but the one that stays) and, of those that stay, why: counted for every task,
@@ -185,9 +247,10 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
     if (!size) continue;
     if (cut || changed && changed + size > limit) { cut = true; plan.left += group.length; continue; }
     changed += size; plan.lines.push(...steps);
-    const dated = steps.filter(line => line.action === 'date');
-    plan.moved += dated.length; plan.removed += steps.filter(line => line.action === 'remove').length;
-    plan.newDateLines += dated.filter(line => !group.find(task => task.id === line.taskId)?.explicitDate).length;
+    const moving = steps.filter(line => line.action === 'date' || line.action === 'undated');
+    plan.moved += steps.filter(line => line.action === 'date').length; plan.undated += steps.filter(line => line.action === 'undated').length;
+    plan.removed += steps.filter(line => line.action === 'remove').length;
+    plan.newDateLines += moving.filter(line => !group.find(task => task.id === line.taskId)?.explicitDate).length;
     if (finished) plan.finished++; else if (written.length) plan.today++;
   }
   return plan;
@@ -196,7 +259,7 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
 const validLines = (lines: unknown): lines is ProgramCarryoverLine[] => Array.isArray(lines) && lines.length > 0 && lines.length <= PROGRAM_CARRYOVER_LIMIT * 4
   && new Set(lines.map(line => line?.taskId)).size === lines.length
   && lines.every(line => line && typeof line.taskId === 'string' && typeof line.state === 'string' && /^[0-9a-z]{1,64}$/.test(line.state)
-    && ['date', 'remove', 'hold'].includes(line.action) && Object.keys(line).length === 3);
+    && ['date', 'undated', 'remove', 'drop', 'hold'].includes(line.action) && Object.keys(line).length === 3);
 
 /** Date rows of a document whose day has something written under it. */
 function filledDays(text: TextWorkspaceState, docId: string): Set<string> {
@@ -229,25 +292,25 @@ function dropEmptiedDays(before: TextWorkspaceState, text: TextWorkspaceState, d
 export function carryProgramTasksToToday(data: ProgramData, input: ProgramPrivateMutationBase & { today: string; lines: ProgramCarryoverLine[] }): ProgramTransition<string> {
   return transitionProgramPrivateSpace(data, input, 'private-task-carryover', { today: input.today, lines: input.lines }, space => {
     if (!programDate(input.today) || !validLines(input.lines)) return { result: '', reason: 'invalid' };
-    const start = { ...space }, { touchable, untouchable, isRecorded, kindOf, underOf, states } = carryoverRules(start), tasks = new Map(M.tasks(start.text).map(task => [task.id, task]));
+    const start = { ...space }, { touchable, untouchable, isRecorded, droppable, kindOf, underOf, states } = carryoverRules(start), tasks = new Map(M.tasks(start.text).map(task => [task.id, task]));
     if (input.lines.some(line => states(line.taskId) !== line.state)) return { result: '', reason: 'conflict' };
     // A copy goes only when nothing it says is lost: nothing under it, or just what a line of the same task that
-    // stays (in this plan, as it was seen) has under it.
-    const stay = input.lines.filter(line => line.action !== 'remove').flatMap(line => tasks.get(line.taskId) ?? []);
+    // stays (in this plan, as it was seen) has under it. A line deleted on the person's word (drop) goes with it all.
+    const stay = input.lines.filter(line => line.action !== 'remove' && line.action !== 'drop').flatMap(line => tasks.get(line.taskId) ?? []);
     const goes = (task: TextTask) => untouchable(task) === null && !isRecorded(task) && underOf(task) !== null
       && (underOf(task) === '' || stay.some(other => other !== task && kindOf(other) === kindOf(task) && underOf(other) === underOf(task)));
     for (const line of input.lines) {
       const task = tasks.get(line.taskId);
-      const fits = !!task && (line.action === 'hold' || (line.action === 'remove' ? goes(task)
+      const fits = !!task && (line.action === 'hold' || (line.action === 'remove' ? goes(task) : line.action === 'drop' ? droppable(task)
         : touchable(task) && task.date !== null && task.date < input.today));
       if (!fits) return { result: line.taskId, reason: 'conflict' };
     }
-    for (const line of input.lines.filter(line => line.action === 'date')) {
-      const patched = patchProgramTask(space, line.taskId, { date: input.today });
+    for (const line of input.lines.filter(line => line.action === 'date' || line.action === 'undated')) {
+      const patched = patchProgramTask(space, line.taskId, { date: line.action === 'date' ? input.today : null });
       if (patched.reason) return patched;
     }
     const dated = space.text, emptied = new Set<string>();
-    for (const line of input.lines.filter(line => line.action === 'remove')) {
+    for (const line of input.lines.filter(line => line.action === 'remove' || line.action === 'drop')) {
       const next = M.removeTask(space.text, line.taskId);
       if (next === space.text) return { result: line.taskId, reason: 'unresolved' };
       space.text = next; emptied.add(tasks.get(line.taskId)!.docId);
@@ -259,8 +322,8 @@ export function carryProgramTasksToToday(data: ProgramData, input: ProgramPrivat
     const ids = new Set([...space.text.documents, ...space.text.flows].flatMap(doc => doc.lines.map(line => line.id)));
     space.timelineOrders = Object.fromEntries(Object.entries(space.timelineOrders).map(([day, order]) => [day, order.filter(id => ids.has(id))]));
     if (space.position.lineId && !ids.has(space.position.lineId)) space.position = { documentId: space.position.documentId, lineId: null, start: 0, end: 0, scrollTop: 0 };
-    const counts = input.lines.reduce((sum, line) => ({ ...sum, [line.action]: sum[line.action] + 1 }), { date: 0, remove: 0, hold: 0 });
-    return { result: `${counts.date}:${counts.remove}` };
+    const counts = input.lines.reduce((sum, line) => ({ ...sum, [line.action]: sum[line.action] + 1 }), { date: 0, undated: 0, remove: 0, drop: 0, hold: 0 });
+    return { result: `${counts.date}:${counts.remove}:${counts.undated}:${counts.drop}` };
   });
 }
 

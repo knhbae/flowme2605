@@ -20,9 +20,9 @@ import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } fr
 import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
 import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
-import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
-import { carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverProof, restoreProgramCarryover, PROGRAM_CARRYOVER_LIMIT,
-  type ProgramCarryoverBefore, type ProgramCarryoverPlan } from '@/lib/flow/integrated-poc/carryover';
+import { programCalendarDate, programDaysBetween } from '@/lib/flow/integrated-poc/date-label';
+import { carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverItems, programCarryoverPlaces, programCarryoverProof, restoreProgramCarryover,
+  PROGRAM_CARRYOVER_LIMIT, type ProgramCarryoverBefore, type ProgramCarryoverChoice, type ProgramCarryoverItem, type ProgramCarryoverPlan } from '@/lib/flow/integrated-poc/carryover';
 import { programOpening } from '@/lib/flow/integrated-poc/carryover-opening';
 import { completeProgramRepeat, convertProgramLegacyRepeat, programLegacyRepeatSeries, programRepeatLine, programRepeatSeen, readProgramRepeatCheck, undoProgramRepeat,
   PROGRAM_LEGACY_REPEAT_CARD, PROGRAM_LEGACY_REPEAT_DONE, PROGRAM_LEGACY_REPEAT_REFUSED, PROGRAM_REPEAT_UNDO_REFUSED, type ProgramRepeatCheck } from '@/lib/flow/integrated-poc/repeat-commands';
@@ -315,7 +315,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }, [datesNotice, datesNoticeHeld]);
   // N11a 밀린 일: the card over 지난 미완료 (folded unless this device opened it), its one save, and the notice holding
   // what 되돌리기 puts back (until another save or a change of view).
-  type CarryNotice = { actorId: string; text: string; before: ProgramCarryoverBefore | null; after: string; refused?: boolean; undone?: boolean; shownAt: number };
+  type CarryNotice = { actorId: string; text: string; before: ProgramCarryoverBefore | null; after: string; refused?: boolean; undone?: boolean; undatedView?: boolean; shownAt: number };
+  // N11b 하나씩 정리: the card's sheet, the tasks it lists and what is chosen for each (nothing saved until 이대로 정리).
+  const carrySheet = useRef<HTMLDialogElement>(null);
+  const [carryItems, setCarryItems] = useState<ProgramCarryoverItem[] | null>(null), [carryChoices, setCarryChoices] = useState<ReadonlyMap<string, ProgramCarryoverChoice>>(new Map());
   const [carryNotice, setCarryNotice] = useState<CarryNotice | null>(null), [carryNoticeHeld, setCarryNoticeHeld] = useState(false);
   const carryBusy = useRef(false), [carryPending, setCarryPending] = useState(false);
   const [carryOpen, setCarryOpenState] = useState(false);
@@ -593,6 +596,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const carryPast = carryShown ? executionList.filter(item => item.kind === 'row' && item.group === 'past-incomplete') : [];
   const carryPlan = useMemo(() => carryShown && carryPast.length > 3 ? planProgramCarryover(space, today) : null, [carryShown, carryPast.length > 3, space, today]);
   const carryCard = !!carryPlan && carryPlan.count > 0;
+  // N11b: on 오늘, the same words in two 분류 or more (never merged) say so on each row: '업무 · 분류 2곳'.
+  const carryPlaces = useMemo(() => period === 'today' ? programCarryoverPlaces(space, executionRows.flatMap(row => row.kind === 'text-task' ? [row.task] : []))
+    : new Map<string, { place: string; count: number }>(), [period, space, executionRows]);
   const listItems = carryCard && !carryOpen ? executionList.filter(item => !(item.kind === 'heading' && item.key === 'heading:past') && !(item.kind === 'row' && item.group === 'past-incomplete')) : executionList;
   const monthGrid = period === 'month' && monthView === 'grid';
   const wideMonth = monthWidth >= 840;
@@ -2009,7 +2015,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   </div>;
   /** N11a [오늘로 옮기기]: the card's plan in one save, all or none (it waits out an automatic read). A line changed since
    *  the card showed it moves nothing. What 되돌리기 puts back is taken inside the save, from the very space it changed. */
-  async function carryToToday(plan: ProgramCarryoverPlan) {
+  async function carryToToday(plan: ProgramCarryoverPlan, sheet?: { text: string; undated: boolean }) {
     if (!plan.lines.length || carryBusy.current || pageComposing.current) return;
     const requestId = programId('carryover');
     let before: ProgramCarryoverBefore | null = null, after = '';
@@ -2023,9 +2029,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (result.ok) {
         setTaskNotice(null); setOrderNotice(null); setDatesNotice(null);
         const kinds = plan.moved + plan.today;
-        const text = [kinds ? `${kinds}가지를 오늘로 옮겼습니다.` : '', plan.removed ? kinds ? `겹친 줄과 끝낸 일의 남은 줄 ${plan.removed}개는 지웠습니다.` : `끝낸 일의 남은 줄 ${plan.removed}개를 지웠습니다.` : '',
-          plan.left ? `남은 ${plan.left}줄은 한 번 더 누르면 정리됩니다.` : ''].filter(Boolean).join(' ');
-        setCarryNotice({ actorId, text, before, after, shownAt: Date.now() });
+        const text = sheet ? [sheet.text, plan.left ? `남은 ${plan.left}줄은 한 번 더 정리하면 됩니다.` : ''].filter(Boolean).join(' ')
+          : [kinds ? `${kinds}가지를 오늘로 옮겼습니다.` : '', plan.removed ? kinds ? `겹친 줄과 끝낸 일의 남은 줄 ${plan.removed}개는 지웠습니다.` : `끝낸 일의 남은 줄 ${plan.removed}개를 지웠습니다.` : '',
+            plan.left ? `남은 ${plan.left}줄은 한 번 더 누르면 정리됩니다.` : ''].filter(Boolean).join(' ');
+        if (sheet) carrySheet.current?.close();
+        setCarryNotice({ actorId, text, before, after, ...(sheet?.undated ? { undatedView: true } : {}), shownAt: Date.now() });
       } else if (result.reason === 'conflict') setCarryNotice({ actorId, text: '그사이 바뀐 할 일이 있어 정리하지 않았습니다. 다시 확인해 주세요.', before: null, after: '', refused: true, shownAt: Date.now() });
       else if (result.reason !== 'busy') setMessage(programErrorMessage(result.reason));
     } finally { carryBusy.current = false; setCarryPending(false); }
@@ -2049,8 +2057,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     <p className={styles.carryTitle}>{opening.since ? `${programCalendarDate(opening.since, today, false)} 이후 처음 열었습니다 · 밀린 일 ${carryPlan.kinds}가지`
       : `밀린 일 ${carryPlan.kinds}가지 · ${carryPlan.count}줄`}</p>
     {carryPlan.first && <p className={styles.carryMeta}>{programCalendarDate(carryPlan.first, today, false)}부터{carryPlan.repeated ? ' · 같은 일이 여러 날에 있음' : ''}</p>}
-    {carryPlan.lines.length > 0 && <button type="button" className={styles.carryMove} disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}
-      aria-busy={carryPending || undefined} onClick={() => void carryToToday(carryPlan)}>{carryPending ? '옮기는 중…' : `오늘로 옮기기 · ${carryPlan.moved}`}</button>}
+    <div className={styles.carryActions}>
+      {carryPlan.lines.length > 0 && <button type="button" className={styles.carryMove} disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}
+        aria-busy={carryPending || undefined} onClick={() => void carryToToday(carryPlan)}>{carryPending ? '옮기는 중…' : `오늘로 옮기기 · ${carryPlan.moved}`}</button>}
+      <button type="button" className={styles.carryOne} aria-haspopup="dialog" disabled={carryPending} onClick={openCarrySheet}>하나씩 정리</button>
+    </div>
     {carryWriting && <small className={styles.carryNote} role="status">쓰기를 마치면 정리할 수 있습니다</small>}
     {carryPlan.finished > 0 && <small className={styles.carryNote}>끝낸 일의 남은 줄 {carryPlan.finished}가지는 지웁니다</small>}
     {carryRepeats > 0 && <small className={styles.carryNote}>반복 {carryRepeats}개는 체크하면 다음 회차로 넘어갑니다</small>}
@@ -2062,8 +2073,62 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const carryNoticeContent = carryNotice?.actorId === actorId && <div className={styles.orderNotice} data-carry-notice onPointerDown={() => setCarryNoticeHeld(true)}
     onPointerUp={releaseCarryNotice} onPointerLeave={releaseCarryNotice} onFocus={() => setCarryNoticeHeld(true)} onBlur={releaseCarryNotice}>
     <ProgramNoticeRow notice={{ tone: carryNotice.refused ? 'warn' : carryNotice.before ? 'choose' : 'info', text: carryNotice.text,
-      actions: carryNotice.before && !carryPending ? [{ label: '되돌리기', run: () => void undoCarry(carryNotice) }] : [] }} onClose={() => setCarryNotice(null)} />
+      actions: carryNotice.before && !carryPending ? [{ label: '되돌리기', run: () => void undoCarry(carryNotice) },
+        ...(carryNotice.undatedView ? [{ label: '날짜 미정 보기', run: () => void changePeriod('undated') }] : [])] : [] }} onClose={() => setCarryNotice(null)} />
   </div>;
+  /** N11b [하나씩 정리]: the card's tasks one by one (PROPOSAL 4-3), each with the card's choice to start from. */
+  function openCarrySheet() {
+    const items = programCarryoverItems(space, today);
+    setCarryItems(items); setCarryChoices(new Map(items.map(item => [item.kind, item.choice])));
+    carrySheet.current?.showModal();
+  }
+  const closeCarrySheet = () => carrySheet.current?.close();
+  const carryChoiceOf = (item: ProgramCarryoverItem) => carryChoices.get(item.kind) ?? item.choice;
+  const carryCounts = (['today', 'undated', 'delete'] as const).map(choice => carryItems?.filter(item => carryChoiceOf(item) === choice).length ?? 0);
+  /** [이대로 정리]: every choice in one save, as the card's press (all or none, one 되돌리기). */
+  async function applyCarrySheet() {
+    if (!carryItems) return;
+    const plan = planProgramCarryover(space, today, undefined, new Map(carryItems.map(item => [item.kind, carryChoiceOf(item)])));
+    if (!plan.lines.length) { closeCarrySheet(); return; }
+    const [moved, undated, deleted] = carryCounts;
+    const text = `${['정리했습니다', moved ? `오늘 ${moved}가지` : '', undated ? `날짜 미정 ${undated}가지` : '', deleted ? `지움 ${deleted}가지` : ''].filter(Boolean).join(' · ')}.`;
+    await carryToToday(plan, { text, undated: undated > 0 });
+  }
+  const carryChoiceLabel: Record<ProgramCarryoverChoice, string> = { today: '오늘', undated: '날짜 미정', delete: '지우기' };
+  const carryItemRow = (item: ProgramCarryoverItem, named: boolean) => {
+    const choice = carryChoiceOf(item), options: ProgramCarryoverChoice[] = item.finished ? ['delete', 'today'] : ['today', 'undated', 'delete'];
+    const meta = item.finished ? `${programCalendarDate(item.finished, today, false)} 끝냄 · 남은 줄 ${item.lines}`
+      : [`${Math.max(1, programDaysBetween(item.since, today))}일째`, item.lines > 1 ? `${item.lines}번 다시 씀` : '', item.today ? '오늘에도 있음' : ''].filter(Boolean).join(' · ');
+    return <li key={item.kind} className={styles.carryItem} data-carry-item>
+      <p><span>{named ? item.place || '분류 없음' : item.title}</span><small>{meta}</small></p>
+      <div className={styles.carryChoices} role="radiogroup" aria-label={`${item.title}${named ? ` · ${item.place}` : ''} 정리`}>
+        {options.map(option => <button key={option} type="button" role="radio" aria-checked={choice === option}
+          onClick={() => setCarryChoices(current => new Map(current).set(item.kind, option))}>{carryChoiceLabel[option]}</button>)}
+      </div>
+    </li>;
+  };
+  // The same words in two 분류 or more are one bundle ('세차 예약 · 분류 2곳'), a choice for each 분류.
+  const carrySection = (title: string, items: ProgramCarryoverItem[]) => {
+    if (!items.length) return null;
+    const bundles = new Map<string, ProgramCarryoverItem[]>();
+    for (const item of items) bundles.set(item.title, [...bundles.get(item.title) ?? [], item]);
+    return <section className={styles.carrySection} aria-label={title}><h3>{title} · {items.length}</h3><ul>
+      {[...bundles.values()].map(bundle => bundle.length > 1 ? <li key={`bundle:${bundle[0].title}`} className={styles.carryBundle}>
+        <p>{bundle[0].title} · 분류 {bundle.length}곳</p><ul>{bundle.map(item => carryItemRow(item, true))}</ul></li> : carryItemRow(bundle[0], false))}
+    </ul></section>;
+  };
+  const carrySheetContent = period === 'today' && <dialog ref={carrySheet} className={`${styles.findDialog} ${styles.carrySheet}`} aria-labelledby="program-carry-title"
+    onCancel={event => { event.preventDefault(); closeCarrySheet(); }}>
+    <div className={styles.carrySheetHead}><h2 id="program-carry-title">밀린 일 정리</h2><button type="button" onClick={closeCarrySheet}>닫기</button></div>
+    {carryItems && carryItems.length > 0 && <>
+      <p className={styles.carryMeta}>{programCalendarDate(carryItems.reduce((day, item) => item.since < day ? item.since : day, carryItems[0].since), today, false)}부터 {carryItems.length}가지 · {carryItems.reduce((sum, item) => sum + item.lines, 0)}줄</p>
+      {carrySection('오늘로 옮길 일', carryItems.filter(item => !item.finished))}
+      {carrySection('이미 끝낸 일 · 남은 줄만 지웁니다', carryItems.filter(item => item.finished))}
+      <button type="button" className={styles.carryApply} disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()} aria-busy={carryPending || undefined}
+        onClick={() => void applyCarrySheet()}>{carryPending ? '정리하는 중…' : `이대로 정리${[`오늘 ${carryCounts[0]}`, `날짜 미정 ${carryCounts[1]}`, `지우기 ${carryCounts[2]}`]
+          .filter((_, index) => carryCounts[index]).map(part => ` · ${part}`).join('')}`}</button>
+    </>}
+  </dialog>;
   const viewScope = programViewScope({ period, date, today, folderTitle: folderId ? folderOptions.find(item => item.id === folderId)?.title ?? '선택한 분류' : null, query });
   async function clearScope(kind: 'period' | 'folder' | 'query') {
     if (kind === 'period') return changePeriod('today');
@@ -2171,7 +2236,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               <small>{sourceWaitingTask === task.id ? <span className={styles.rowBusy}>원문 여는 중…</span> : <>
                 {completingTaskIds.has(task.id) && <><span className={styles.rowBusy}>{value === 100 ? '다시 열기 대기 중' : '완료 대기 중'}</span> · </>}
                 {meta.late && <><em className={styles.rowLate}>{meta.late}</em> · </>}
-                {[...meta.parts, ...(task.time ? [task.time] : [])].map((part, index) => <React.Fragment key={index}>{part} · </React.Fragment>)}
+                {[...meta.parts, ...(task.time ? [task.time] : []), ...(carryPlaces.has(task.id) ? [`${carryPlaces.get(task.id)!.place || '분류 없음'} · 분류 ${carryPlaces.get(task.id)!.count}곳`] : [])]
+                  .map((part, index) => <React.Fragment key={index}>{part} · </React.Fragment>)}
                 <span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}<span className={styles.taskFolder}>{taskFolderPath(task)} / </span>{task.docTitle} →</span>
               </>}</small></button>
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
@@ -2450,7 +2516,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <button type="button" className={styles.datesClose} onClick={closeDatesSheet}>닫기</button>
           </dialog></div>}
         {/* N11a: the 밀린 일 card, over 오늘's list (never with the calendar). */}
-        {!monthGrid && carryCardContent}
+        {!monthGrid && carryCardContent}{carrySheetContent}
         {monthGrid ? <div className={styles.monthLayout} data-wide={wideMonth || undefined}>
           <ProgramMonthGrid rows={executionRows} date={date} today={today} titles={monthWidth >= 761} onPick={pickMonthDay} />
           {/* The chosen day: a sheet on a narrow screen (its row notices inside while open), a panel beside the grid
