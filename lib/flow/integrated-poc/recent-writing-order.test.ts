@@ -58,6 +58,8 @@ test('review F2: a date line in view retyped — the 복구함 gets exactly the 
   assert.deepEqual(order(put.state, docId, hidden), order(text, docId, hidden));
   const saved = M.raw(M.getDocument(put.state, docId)), kept = extendProgramRecentRaw(text, docId, hidden, typed);
   assert.equal(sha(kept), sha(saved));
+  // From the editor's own state (what the writing view passes), the same raw: the save's function and input.
+  assert.equal(sha(extendProgramRecentRaw(text, docId, hidden, typed, edited.state)), sha(saved));
   assert(kept.indexOf('[2026-10-01]') < kept.indexOf('[2026-11-06]') && kept.indexOf('[2026-11-06]') < kept.indexOf('[2026-10-02]'));
 });
 

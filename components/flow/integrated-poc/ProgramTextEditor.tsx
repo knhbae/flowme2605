@@ -135,7 +135,8 @@ export interface ProgramTextEditorProps {
   onRegisterSave?: (save: (() => Promise<boolean>) | null, status?: (() => ProgramTextSaveStatus) | null) => void;
   onRegisterSourceFocus?: (focus: ProgramSourceFocus | null) => void;
   onRegisterInputLock?: (lock: ((locked: boolean) => void) | null) => void;
-  onRegisterDraft?: (read: (() => string) | null) => void;
+  /** `working`: the state the raw was accepted into (lines with their IDs), the one a save sends. */
+  onRegisterDraft?: (read: (() => string) | null, working?: (() => TextWorkspaceState | null) | null) => void;
   onRegisterStructuralDraft?: (read: (() => AlphaStructuralDraft | null) | null) => void;
   /** Unconfirmed memo/child-task panel text, for the tab's input recovery only. */
   onRegisterChildDrafts?: (read: (() => ProgramChildDraft[]) | null) => void;
@@ -1370,7 +1371,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   useEffect(() => {
     propsRef.current.onRegisterSave?.(saveNow, () => ({ composing: composingRef.current, saving: !!checkPendingRef.current || !!draftRef.current?.getState().saving, failed: !!draftRef.current?.getState().error }));
     propsRef.current.onRegisterSourceFocus?.(focusSourceRow);
-    propsRef.current.onRegisterDraft?.(captureDraftRaw);
+    propsRef.current.onRegisterDraft?.(captureDraftRaw, () => draftRef.current?.getState().working ?? null);
     propsRef.current.onRegisterStructuralDraft?.(captureStructuralDraft);
     propsRef.current.onRegisterChildDrafts?.(captureChildDrafts);
     propsRef.current.onRegisterCaptureComplete?.(()=>!currentChild());

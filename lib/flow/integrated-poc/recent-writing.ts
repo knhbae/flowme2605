@@ -153,17 +153,23 @@ export function extendProgramRecent(base: TextWorkspaceState, next: TextWorkspac
  *  refused edit), or one whose folded lines could not keep their order, is kept by the lines it still shares with the
  *  recent part: each folded run after the line that came before it (else before the one that came after), never out of
  *  order. Nothing typed and nothing folded is left out. */
-export function extendProgramRecentRaw(base: TextWorkspaceState, documentId: string, hidden: ReadonlySet<string>, raw: string): string {
+export function extendProgramRecentRaw(base: TextWorkspaceState, documentId: string, hidden: ReadonlySet<string>, raw: string,
+  working?: TextWorkspaceState): string {
   const doc = M.getDocument(base, documentId);
   if (!doc || !hidden.size) return raw;
-  const restricted = restrictProgramRecent(base, documentId, hidden), shown = M.getDocument(restricted, documentId)!;
-  if (raw === M.raw(shown)) return M.raw(doc);
-  const typed = M.editTextResult(restricted, documentId, raw);
-  if (!typed.reason && M.raw(M.getDocument(typed.state, documentId)) === raw) {
-    const put = extendProgramRecent(base, typed.state, documentId, hidden, false), lines = put.ok ? M.getDocument(put.state, documentId)!.lines : null;
-    if (lines && hiddenOrder(lines, hidden) === hiddenOrder(doc.lines, hidden)) return lines.map(line => line.text).join('\n');
+  const shown = doc.lines.filter(line => !hidden.has(line.id));
+  if (raw === shown.map(line => line.text).join('\n')) return M.raw(doc);
+  const putBack = (state: TextWorkspaceState) => {
+    const put = extendProgramRecent(base, state, documentId, hidden, false), lines = put.ok ? M.getDocument(put.state, documentId)!.lines : null;
+    return lines && hiddenOrder(lines, hidden) === hiddenOrder(doc.lines, hidden) ? lines.map(line => line.text).join('\n') : null;
+  };
+  // The editor's own state for this raw (each key: no model run here), else the model's reading of it.
+  if (working && M.raw(M.getDocument(working, documentId)) === raw) { const whole = putBack(working); if (whole !== null) return whole; }
+  else {
+    const typed = M.editTextResult(restrictProgramRecent(base, documentId, hidden), documentId, raw);
+    if (!typed.reason && M.raw(M.getDocument(typed.state, documentId)) === raw) { const whole = putBack(typed.state); if (whole !== null) return whole; }
   }
-  return alignedRaw(doc.lines, shown.lines, raw.split('\n'), hidden);
+  return alignedRaw(doc.lines, shown, raw.split('\n'), hidden);
 }
 /** The folded runs put into typed lines by the recent part's lines they still match (a longest common subsequence of
  *  identical lines): each after the typed place of the line before it, else before that of the line after it, else

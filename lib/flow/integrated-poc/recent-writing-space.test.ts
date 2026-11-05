@@ -22,7 +22,8 @@ test('W-a: a save, its checks and its confirmation go through the whole document
   assert(mount.includes('return whole.ok && programPreservesLockedDocumentContent(space, whole.state) && programPreservesSeriesMetadata(space, whole.state)'));
   assert(mount.includes('return view ? accept(recentNarrow(id, view, before), recentNarrow(id, view, next)) : accept(before, next, ack);'));
   // The 복구함 keeps the whole document, and a structural capture is whole too.
-  assert(mount.includes('return view ? extendProgramRecentRaw(base, id, programRecentHidden(base, view.hold), raw) : raw;'));
+  // (Review F2: made as a save makes it, from the editor's own state.)
+  assert(mount.includes('return view ? extendProgramRecentRaw(base, id, programRecentHidden(base, view.hold), raw, working?.() ?? undefined) : raw;'));
   assert(mount.includes('return before.ok && next.ok ? { ...draft, before: before.state, next: next.state } : draft;'));
   // Positions are kept (and saved) in the whole document's terms.
   assert(mount.includes('const view = recentViewRef.current(id), position = view ? recentPosition(id, view, shownPosition, true) : shownPosition;'));

@@ -2648,10 +2648,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onDirtyChange={value => { editorDirtyChanged(id, actorId, value); }} onInputFailureChange={failed => inputFailureChanged(id, failed)} onKeepRefusedInput={props.onKeepRefusedInput} repeatContext={() => dataRef.current.spaces[actorId] ?? space} onRepeatFinish={finishRepeatRound} onRepeatUndo={undoRepeatRound} onUndo={onUndo} onRedo={onRedo}
           onRegisterSave={(save, status) => { saveRequests.current[id] = save; saveStatusReaders.current[id] = status ?? null; }}
           onRegisterSourceFocus={focus => registerSourceFocus(id, focus)}
-          onRegisterDraft={read => { draftReaders.current[id] = read && (() => {
-            // The 복구함 keeps the whole document: the folded days around what was typed.
+          onRegisterDraft={(read, working) => { draftReaders.current[id] = read && (() => {
+            // The 복구함 keeps the whole document, made as a save makes it: from the editor's own state (lines with IDs).
             const raw = read(), view = recentViewRef.current(id), base = dataRef.current.spaces[actorId]?.text ?? space.text;
-            return view ? extendProgramRecentRaw(base, id, programRecentHidden(base, view.hold), raw) : raw;
+            return view ? extendProgramRecentRaw(base, id, programRecentHidden(base, view.hold), raw, working?.() ?? undefined) : raw;
           }); }}
           onRegisterStructuralDraft={read => { structuralDraftReaders.current[id] = read && (() => {
             const draft = read(), view = recentViewRef.current(id);
