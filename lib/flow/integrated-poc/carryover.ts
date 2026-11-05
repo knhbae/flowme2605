@@ -34,7 +34,7 @@ export type ProgramCarryoverPlan = {
    *  from the sheet, lines sent to 날짜 미정 and lines deleted. */
   moved: number; removed: number; today: number; finished: number; undated: number; dropped: number;
   /** Of the deleted lines, those with something under them (a memo, checks, other lines) that goes with them. */
-  droppedUnder: number;
+  droppedUnder: { memo: number; check: number; other: number };
   /** Repeat lines (they go on by their own check), lines left for another press (the limit), words in two 분류. */
   repeats: number; left: number; split: number;
   /** Copies that should go (every task, the limit aside) and, of those that stay, how many for each reason; and how
@@ -52,7 +52,7 @@ const dateProperty = (row: TextRow) => row.kind === 'property' && /^ *-\s+날짜
  *  say) that the line which stays does not have. */
 export type ProgramCarryoverBlock = 'repeat' | 'locked' | 'progress-complete' | 'recorded' | 'recorded-finished' | 'bound' | `linked:${string}` | `shape:${string}`;
 const own = new Set(['text', 'timelineOrders', 'executionTimelineOrders', 'position']);
-type Shape = { block: ProgramCarryoverBlock } | { under: string };
+type Shape = { block: ProgramCarryoverBlock } | { under: string; rows: TextRow[] };
 
 /** Where tasks are written: their documents' rows (each parsed once), and each task's 분류 by name. */
 function carryoverPlaces(space: ProgramPrivateSpace) {
@@ -124,11 +124,18 @@ function carryoverRules(space: ProgramPrivateSpace) {
       : parent && !['scope', 'note', 'heading'].includes(parent.kind) ? { block: `shape:under-${parent.kind}` }
       : under.some(item => !['property', 'note', 'subcheck'].includes(item.kind)) ? { block: 'shape:tasks-under' }
       : under.some(item => recorded.has(item.id) || bound.has(item.id) || elsewhere(item.id)) ? { block: 'shape:held-under' }
-      : { under: under.map(item => `${'  '.repeat(Math.max(0, item.depth - row.depth - 1))}${item.text.trimStart()}`).join('\n') };
+      : { under: under.map(item => `${'  '.repeat(Math.max(0, item.depth - row.depth - 1))}${item.text.trimStart()}`).join('\n'), rows: under };
     shapes.set(task.id, shape);
     return shape;
   };
   const underOf = (task: TextTask) => { const shape = shapeOf(task); return 'under' in shape ? shape.under : null; };
+  /** N11b QA F3: the lines under a task that go with it, by kind: memo lines (a 메모 property or a plain line), checks,
+   *  and any other (a time, a date under a check, …). Its own 날짜 property is not counted. */
+  const takenAlong = (task: TextTask) => {
+    const shape = shapeOf(task), rows = 'rows' in shape ? shape.rows : [];
+    const memo = rows.filter(row => row.kind === 'note' || row.kind === 'property' && /^ *-\s+메모:/.test(row.text)).length, check = rows.filter(row => row.kind === 'subcheck').length;
+    return { memo, check, other: rows.length - memo - check };
+  };
   /** Why this copy stays when the lines that stay carry `kept` under them; null: it goes and nothing it says is lost. */
   const takeBlock = (task: TextTask, kept: ReadonlySet<string>): ProgramCarryoverBlock | null => {
     const block = untouchable(task); if (block) return block;
@@ -139,7 +146,7 @@ function carryoverRules(space: ProgramPrivateSpace) {
   const touchable = (task: TextTask) => untouchable(task) === null, isRecorded = (task: TextTask) => recorded.has(task.id);
   // N11b: deleted on the person's word, a line goes with what is under it (a memo, say), never a recorded or held one.
   const droppable = (task: TextTask) => touchable(task) && !isRecorded(task) && 'under' in shapeOf(task);
-  return { touchable, untouchable, isRecorded, droppable, kindOf, labelOf, placeOf, underOf, takeBlock, repeat, states, rowsOf };
+  return { touchable, untouchable, isRecorded, droppable, kindOf, labelOf, placeOf, underOf, takenAlong, takeBlock, repeat, states, rowsOf };
 }
 
 /** The past unfinished tasks of 오늘 (repeat lines apart), by task (words and 분류), oldest first, and for each the
@@ -151,10 +158,12 @@ function pastKinds(space: ProgramPrivateSpace, today: string, rules: ReturnType<
   for (const task of plain) kinds.set(kindOf(task), [...kinds.get(kindOf(task)) ?? [], task]);
   const archived = new Set(space.archivedDocumentIds);
   const near = M.tasks(space.text, { to: today }).filter(task => !archived.has(task.docId) && !space.documentTrash?.[task.docId] && !repeat.has(task.id));
+  const undated = M.tasks(space.text, { undatedOnly: true }).filter(task => !task.done && !archived.has(task.docId) && !space.documentTrash?.[task.docId] && !repeat.has(task.id));
   const earliest = (group: TextTask[]) => group.reduce((day, task) => task.date! < day ? task.date! : day, '9999');
   const groups = [...kinds.entries()].sort(([a, left], [b, right]) => earliest(left).localeCompare(earliest(right)) || a.localeCompare(b)).map(([kind, group]) => {
     const same = near.filter(task => kindOf(task) === kind), latest = same.reduce((day, task) => task.date! > day ? task.date! : day, '');
-    return { kind, group, same, latest, finished: same.filter(task => task.date === latest).every(task => task.done), written: same.filter(task => task.date === today && !task.done) };
+    return { kind, group, same, latest, finished: same.filter(task => task.date === latest).every(task => task.done), written: same.filter(task => task.date === today && !task.done),
+      parked: undated.filter(task => kindOf(task) === kind) };
   });
   return { past, plain, groups };
 }
@@ -182,10 +191,10 @@ export function programCarryoverItems(space: ProgramPrivateSpace, today: string)
  *  where its line goes: today, 날짜 미정, or deleted (with all its copies). A task left out of it gets the card's. */
 export function planProgramCarryover(space: ProgramPrivateSpace, today: string, limit = PROGRAM_CARRYOVER_LIMIT,
   choices?: ReadonlyMap<string, ProgramCarryoverChoice>): ProgramCarryoverPlan {
-  const plan: ProgramCarryoverPlan = { lines: [], count: 0, kinds: 0, first: null, repeated: false, moved: 0, removed: 0, today: 0, finished: 0, undated: 0, dropped: 0, droppedUnder: 0,
+  const plan: ProgramCarryoverPlan = { lines: [], count: 0, kinds: 0, first: null, repeated: false, moved: 0, removed: 0, today: 0, finished: 0, undated: 0, dropped: 0, droppedUnder: { memo: 0, check: 0, other: 0 },
     repeats: 0, left: 0, split: 0, copies: 0, blocked: {}, newDateLines: 0 };
   if (!programDate(today)) return plan;
-  const rules = carryoverRules(space), { touchable, isRecorded, droppable, labelOf, underOf, takeBlock, states } = rules;
+  const rules = carryoverRules(space), { touchable, isRecorded, droppable, labelOf, underOf, takenAlong, takeBlock, states } = rules;
   const { past, plain, groups } = pastKinds(space, today, rules);
   plan.repeats = past.length - plain.length; plan.count = plain.length;
   plan.kinds = groups.length; plan.repeated = groups.some(({ group }) => group.length > 1);
@@ -198,7 +207,9 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
   const newestFirst = (a: TextTask, b: TextTask) => b.date!.localeCompare(a.date!) || Number(b.docId === space.position.documentId) - Number(a.docId === space.position.documentId)
     || (order.get(b.docId) ?? 0) - (order.get(a.docId) ?? 0);
   let changed = 0, cut = false;
-  for (const { kind, group, same, latest, finished: done, written } of groups) {
+  for (const { kind, group, same, latest, finished: done, written, parked } of groups) {
+    // From the sheet (QA F1): only the tasks it listed, each as chosen; one it never showed is left as it is.
+    if (choices && !choices.has(kind)) continue;
     const choice = choices?.get(kind), steps: ProgramCarryoverLine[] = [];
     const step = (task: TextTask, action: ProgramCarryoverAction) => { const state = states(task.id); if (state) steps.push({ taskId: task.id, state, action }); };
     // Chosen to go somewhere (today or 날짜 미정), a task finished since is taken up again as one going on.
@@ -217,7 +228,10 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
       const taken = steps.slice(0, limit);
       if (steps.length > limit) { plan.left += steps.length - limit; cut = true; }
       changed += taken.length; plan.lines.push(...taken); plan.dropped += taken.length;
-      plan.droppedUnder += group.filter(task => taken.some(line => line.taskId === task.id) && underOf(task)).length;
+      for (const task of group.filter(task => taken.some(line => line.taskId === task.id))) {
+        const along = takenAlong(task);
+        plan.droppedUnder = { memo: plan.droppedUnder.memo + along.memo, check: plan.droppedUnder.check + along.check, other: plan.droppedUnder.other + along.other };
+      }
       continue;
     }
     const dated: ProgramCarryoverAction = choice === 'undated' ? 'undated' : 'date';
@@ -230,7 +244,8 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
     // no line staying carries, so nothing written is lost; copies with nothing under them, or what a staying line has,
     // go. With nothing carried and nothing recorded, one plain copy stays. It is the copy in the document written in now
     // (the newest copy's), the earliest there, so the first day stays too.
-    const keepers = finished ? same.filter(task => task.date === latest) : written, pinned = finished ? [] : recordedLines;
+    // Sent to 날짜 미정 again (QA F2): the line an earlier save left there is the one, as today's line is for today.
+    const keepers = finished ? same.filter(task => task.date === latest) : choice === 'undated' && parked.length ? parked : written, pinned = finished ? [] : recordedLines;
     const kept = new Set([...keepers, ...pinned].flatMap(task => underOf(task) ?? [])), classes = new Map<string, TextTask[]>();
     for (const task of lines) { const under = underOf(task); if (under !== null && !pinned.includes(task)) classes.set(under, [...classes.get(under) ?? [], task]); }
     const pick = (pool: TextTask[]) => { const newest = [...pool].sort(newestFirst)[0];
@@ -274,6 +289,7 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
 }
 
 const validLines = (lines: unknown): lines is ProgramCarryoverLine[] => Array.isArray(lines) && lines.length > 0 && lines.length <= PROGRAM_CARRYOVER_LIMIT * 4
+  && lines.filter(line => line?.action !== 'hold').length <= PROGRAM_CARRYOVER_LIMIT
   && new Set(lines.map(line => line?.taskId)).size === lines.length
   && lines.every(line => line && typeof line.taskId === 'string' && typeof line.state === 'string' && /^[0-9a-z]{1,64}$/.test(line.state)
     && ['date', 'undated', 'remove', 'drop', 'hold'].includes(line.action) && Object.keys(line).length === 3);

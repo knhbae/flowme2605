@@ -320,7 +320,7 @@ test('N11a: the card folds only 오늘\'s past rows, is off while Korean is comp
   assert(host.includes('const start = () => { pageComposing.current = true; setComposingShown(true); };'));
   assert(host.includes('const carryWriting = composingShown || Object.values(dirty.current).some(Boolean);'));
   assert(host.includes('disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}'));
-  assert(host.includes("if (!plan.lines.length || carryBusy.current || pageComposing.current) return;"));
+  assert(host.includes("if (!plan.lines.length || carryBusy.current || pageComposing.current) return null;"));
   assert(host.includes('since: task.explicitDate ? task.groupDate : null });'));
 });
 
