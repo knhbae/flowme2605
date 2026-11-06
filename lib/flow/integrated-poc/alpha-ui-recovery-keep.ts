@@ -23,6 +23,8 @@ export type AlphaUiRecoveryKeepRecord = {
 export type AlphaUiRecoveryKeepStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem' | 'key' | 'length'>;
 export type AlphaUiRecoveryKeepProof = { session: AlphaUiRecoveryPort; released?: readonly AlphaUiDraft[] };
 export type AlphaUiRecoveryHandoff = { drafts: AlphaUiDraft[]; take(session: AlphaUiRecoveryPort): Promise<boolean> };
+/** P3c logout: this account's input kept on this device outside the tab, and the rows that hold it. */
+export type AlphaUiRecoveryDevice = { drafts: AlphaUiDraft[]; rows: { key: string; raw: string }[] };
 export interface AlphaUiRecoveryKeep {
   readonly key: string;
   /** Append an immutable generation. No deletion, overwrite, expiry or truncation occurs here. */
@@ -31,6 +33,13 @@ export interface AlphaUiRecoveryKeep {
   left(saved: (draft: AlphaUiDraft) => boolean): AlphaUiRecoveryHandoff;
   /** Own compaction also runs under the account lock and rechecks both stores. */
   clean(session: AlphaUiRecoveryPort): Promise<boolean>;
+  /** P3c logout: this page's rows and the rows of pages that left or went quiet (the ones a later page takes), with
+   * their drafts. A live page's rows belong to another open tab and are not listed. */
+  device(): AlphaUiRecoveryDevice;
+  /** P3c '지우고 로그아웃', the person's own choice: in the account lock, removes this page's rows and the listed rows
+   * that are still as listed, and this keep writes nothing after. A live page's rows, rows that came or changed after
+   * the listing and unreadable rows stay. Without the lock nothing is removed. True when none of those is left. */
+  erase(listed: AlphaUiRecoveryDevice['rows']): Promise<boolean>;
 }
 
 export function alphaUiRecoveryLockName(ownerId: string): string {
@@ -86,7 +95,7 @@ export function createAlphaUiRecoveryKeep(storage: AlphaUiRecoveryKeepStorage | 
   try { void storage.length; } catch { return null; }
   const instance = (globalThis.crypto?.randomUUID?.() ?? `${now().toString(36)}-${Math.random().toString(36).slice(2)}`).replace(/[^0-9a-z-]/gi, '');
   const ownPrefix = generationKey(ownerId, pageId, instance, 0).slice(0, -1);
-  let seq = 0, current: string | null = null;
+  let seq = 0, current: string | null = null, closed = false;
   type Row = { key: string; raw: string; value: AlphaUiRecoveryKeepRecord | LegacyRecord; version: number };
   function rows(): Row[] {
     const keys: string[] = [];
@@ -160,6 +169,7 @@ export function createAlphaUiRecoveryKeep(storage: AlphaUiRecoveryKeepStorage | 
     get key() { return current ?? generationKey(ownerId, pageId, instance, seq + 1); },
     put(drafts, left = false, proof) {
       try {
+        if (closed) return false;
         canonicalJson(drafts);
         if (proof?.released) canonicalJson(proof.released);
         if (!validDrafts(drafts)) return false;
@@ -223,6 +233,32 @@ export function createAlphaUiRecoveryKeep(storage: AlphaUiRecoveryKeepStorage | 
         return complete;
       });
     },
+    device() {
+      try {
+        const all = rows(), own = mine(all), gone = groups(all);
+        return { drafts: mergeAlphaUiRecoveryDrafts([], [...effective(own), ...gone.flatMap(group => group.drafts)]),
+          rows: [...own, ...gone.flatMap(group => group.list)].map(({ key, raw }) => ({ key, raw })) };
+      } catch { return { drafts: [], rows: [] }; }
+    },
+    erase(listed) {
+      // The one removal of another page's rows outside compaction: the person chose to erase what they were shown.
+      // The lock orders it with every other page's put, compaction and take; it rereads before removing.
+      return locked(() => {
+        closed = true;
+        const shown = new Map(listed.map(row => [row.key, row.raw]));
+        let complete = true;
+        for (const row of rows()) {
+          const own = row.version === 3 && row.key.startsWith(ownPrefix), was = shown.get(row.key);
+          if (!own && was === undefined) continue;
+          if (!own && was !== row.raw) { complete = false; continue; }
+          if (storage!.getItem(row.key) !== row.raw) { complete = false; continue; }
+          storage!.removeItem(row.key);
+          if (storage!.getItem(row.key) !== null) complete = false;
+        }
+        for (const [key, raw] of shown) if (storage!.getItem(key) === raw) complete = false;
+        return complete;
+      });
+    },
   };
 }
 
@@ -235,7 +271,7 @@ export function mergeAlphaUiRecoveryDrafts(parked: readonly AlphaUiDraft[], acti
 /** Session save stays synchronous and authoritative for its existing fallback. Shared failures are retried on the
  * next save; take() independently proves shared coverage, so session-only success never deletes a source. */
 export function keepAlphaUiRecovery(port: AlphaUiRecoveryPort, keep: AlphaUiRecoveryKeep, now: () => number = Date.now):
-  AlphaUiRecoveryPort & { leave(): void; back(): void } {
+  AlphaUiRecoveryPort & { leave(): void; back(): void; erase(listed: AlphaUiRecoveryDevice['rows']): Promise<boolean> } {
   let last: AlphaUiDraft[] = [], wrote = -Infinity;
   function write(drafts: AlphaUiDraft[], left = false, released?: readonly AlphaUiDraft[]) {
     const ok = keep.put(drafts, left, { session: port, released });
@@ -261,5 +297,11 @@ export function keepAlphaUiRecovery(port: AlphaUiRecoveryPort, keep: AlphaUiReco
     },
     leave() { write(last, true); },
     back() { write(last, false); },
+    /** P3c '지우고 로그아웃': the rows outside the tab first (in the lock), then this tab's copy, with no new row. */
+    async erase(listed) {
+      if (!await keep.erase(listed)) return false;
+      last = [];
+      return port.clear().ok;
+    },
   };
 }

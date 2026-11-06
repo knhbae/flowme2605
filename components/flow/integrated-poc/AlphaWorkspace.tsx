@@ -47,7 +47,7 @@ import { ProgramCommunity, type ProgramCommunityDraftSaveRecovery } from './Prog
 import { ProgramPublisher } from './ProgramPublisher';
 import { ProgramCopyInspector } from './ProgramCopyInspector';
 import { emptyProgramCommunityPresentation, parseProgramLocation, programLocation } from '@/lib/flow/integrated-poc/navigation';
-import { createAlphaSocialRecovery, type AlphaSocialRecoveryRecord, type AlphaSocialRecoveryEntry } from '@/lib/flow/integrated-poc/alpha-social-recovery';
+import { alphaSocialSettledEntry, createAlphaSocialRecovery, type AlphaSocialRecoveryRecord, type AlphaSocialRecoveryEntry } from '@/lib/flow/integrated-poc/alpha-social-recovery';
 import { type AlphaSocialIntent, isAlphaSocialIntent } from '@/lib/flow/integrated-poc/alpha-social/contract';
 import { executeAlphaSocialIntent } from '@/lib/flow/integrated-poc/alpha-social/dispatch';
 import { createAlphaCommunityMediaPort } from '@/lib/flow/integrated-poc/alpha-social/media-client';
@@ -165,6 +165,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const modalRef = useRef(false); modalRef.current = !!publisher || !!inspector;
   const inspectorDialog = useRef<HTMLDialogElement | null>(null);
   const socialRecovery = useRef<ReturnType<typeof createAlphaSocialRecovery> | null>(null), parkedSocial = useRef<AlphaSocialRecoveryEntry[]>([]), activeSocial = useRef<AlphaSocialRecoveryEntry[]>([]);
+  // P3c (11/6): drafts a confirmed publish or post took (alphaSocialSettledEntry); their copies are not kept again.
+  const settledSocial = useRef(new Set<string>());
+  const erasing = useRef(false), [leaveBusy, setLeaveBusy] = useState(false), [leaveFailed, setLeaveFailed] = useState(false);
+  const leaveKeep = useRef<HTMLButtonElement | null>(null);
+  const socialSettled = (entry: AlphaSocialRecoveryEntry) => { try { return settledSocial.current.has(canonicalJson(entry)); } catch { return false; } };
   const publisherEditors = useRef<ProgramEditorFlush | null>(null), communityEditors = useRef<ProgramEditorFlush | null>(null), inspectorEditors = useRef<ProgramEditorFlush | null>(null);
   const mediaPort = useMemo(() => createAlphaCommunityMediaPort({ accessToken: () => session.accessToken, fetch: request }), [session.userId, session.accessToken, request]);
   const [output, setOutput] = useState<string | null>(null), [message, setMessage] = useState('');
@@ -297,9 +302,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     return ready;
   }
   function captureInput() {
+    // P3c: once '지우고 로그아웃' starts, nothing is kept again (and nothing else runs) until it is done or refused.
+    if (erasing.current) return false;
     const structuralSaved = captureStructuralInput();
     if (!captureCreator()) return false;
-    const social = [publisherEditors.current, communityEditors.current, inspectorEditors.current].flatMap(port => port?.captureSocialDrafts?.() ?? []);
+    const social = [publisherEditors.current, communityEditors.current, inspectorEditors.current].flatMap(port => port?.captureSocialDrafts?.() ?? [])
+      .filter(entry => !socialSettled(entry));
     activeSocial.current = social;
     if (social.length && socialRecovery.current) {
       const entries = [...parkedSocial.current, ...social].filter((entry, index, list) => list.findIndex(other => canonicalJson(other) === canonicalJson(entry)) === index);
@@ -506,7 +514,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       const creatorPort = createAlphaCreatorRecovery(tabStorage, session.userId, slot);
       creatorRecovery.current = creatorPort; activeCreator.current = null;
       const socialPort = createAlphaSocialRecovery(tabStorage, session.userId, slot); socialRecovery.current = socialPort;
-      const socialLoaded = socialPort.read(); activeSocial.current = [];
+      const socialLoaded = socialPort.read(); activeSocial.current = []; settledSocial.current = new Set();
       if (socialLoaded.ok) { parkedSocial.current = socialLoaded.value?.entries ?? []; setSocialRecoveries(socialLoaded.value); } else setStorageError(true);
       const creatorLoaded = creatorPort.read();
       if (creatorLoaded.ok) { parkedCreator.current = creatorLoaded.value?.entries ?? []; setCreatorRecoveries(creatorLoaded.value); }
@@ -518,7 +526,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       const store = createAlphaSyncController({ recovery, onChange: present,writingCompute:compute });
       controller.current = store;
     } catch { setStorageError(true); }
-    return () => { captureInput(); uiKeep.current?.port.leave(); disposed.current = true; preservationRef.current = false; preservationOpener.current = null; preservationReturn.current = null; controller.current?.dispose(); controller.current = null;writingCompute.current?.dispose();writingCompute.current=null; };
+    return () => { captureInput(); if (!erasing.current) uiKeep.current?.port.leave(); disposed.current = true; preservationRef.current = false; preservationOpener.current = null; preservationReturn.current = null; controller.current?.dispose(); controller.current = null;writingCompute.current?.dispose();writingCompute.current=null; };
   }, [session.userId]);
   useEffect(() => {
     const store = controller.current; if (!store) return;
@@ -665,7 +673,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       if (hasInput() || controller.current?.snapshot().pending) { event.preventDefault(); event.returnValue = ''; }
     };
     const visibility = () => { captureInput(); if (document.visibilityState === 'visible') reads.returned(); else refresh(); };
-    const pageHide = () => { captureInput(); uiKeep.current?.port.leave(); };
+    const pageHide = () => { captureInput(); if (!erasing.current) uiKeep.current?.port.leave(); };
     const pageShow = (event: PageTransitionEvent) => { if (event.persisted) uiKeep.current?.port.back(); };
     const input = { capture: true, passive: true };
     window.addEventListener('focus', reads.returned); window.addEventListener('online', refresh);
@@ -761,7 +769,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           if (cleared?.ok) { parkedDrafts.current = []; activeDrafts.current = []; setRecoveries(null); }
         }
         const socialSaved = socialRecovery.current?.read();
-        if (socialSaved?.ok && socialSaved.value && confirmed && socialSaved.value.entries.every(entry => {
+        // P3c (11/6): a confirmed publish or post settles the copy kept of exactly the draft it took; the rest stays.
+        const settled = !outcome.presentationPending && confirmed ? alphaSocialSettledEntry(intent, confirmed.space) : null;
+        if (settled) settledSocial.current.add(settled);
+        const unsettled = socialSaved?.ok && socialSaved.value ? socialSaved.value.entries.filter(entry => !socialSettled(entry)) : [];
+        if (socialSaved?.ok && socialSaved.value && confirmed && unsettled.every(entry => {
           const value = entry.value as ProgramPublicationDraft & ProgramParticipationDraft & { proposalId: string; draft: ProgramProposalReviewDraft };
           const stored = entry.kind === 'publication' ? confirmed.space.publicationDrafts.find(row => row.id === value.id)
             : entry.kind === 'participation' ? confirmed.space.participationDrafts.find(row => row.id === value.id)
@@ -769,6 +781,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           return stored && canonicalJson(stored) === canonicalJson(entry.kind === 'review' ? value.draft : value);
         })) {
           if (socialRecovery.current?.clear(socialSaved.value).ok) { parkedSocial.current = []; activeSocial.current = []; setSocialRecoveries(null); }
+        } else if (socialSaved?.ok && socialSaved.value && unsettled.length < socialSaved.value.entries.length) {
+          const kept = socialRecovery.current?.save(unsettled);
+          if (kept?.ok) {
+            parkedSocial.current = parkedSocial.current.filter(entry => !socialSettled(entry));
+            activeSocial.current = activeSocial.current.filter(entry => !socialSettled(entry)); setSocialRecoveries(kept.value);
+          }
         }
       }
       return outcome;
@@ -976,6 +994,40 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     } finally { reviewBusy.current = false; }
   }
   async function signOut() { clearReviewContext(); await onSignOut(); }
+  /** P3c (11/6): this account's 복구함 input left on this device at logout: this tab's four kinds and the copies kept
+   * outside the tab (this page's and those of tabs that left), each counted once; with the outside rows behind it. */
+  function deviceInput() {
+    const outside = uiKeep.current?.keep.device() ?? { drafts: [], rows: [] };
+    const ui = uiRecovery.current?.read(), structural = structuralRecovery.current?.read();
+    const creator = creatorRecovery.current?.read(), social = socialRecovery.current?.read();
+    const count = mergeRecoveryDrafts(outside.drafts, ui?.ok ? ui.value?.drafts ?? [] : []).length
+      + (structural?.ok ? structural.value?.entries.length ?? 0 : 0) + (creator?.ok ? creator.value?.entries.length ?? 0 : 0)
+      + (social?.ok ? social.value?.entries.length ?? 0 : 0);
+    return { count, rows: outside.rows };
+  }
+  /** P3c '지우고 로그아웃': the copies outside the tab go first, in the account lock (another account's and another open
+   * tab's stay), then this tab's four. Nothing is kept again from the start; when a part is refused, the person stays
+   * signed in, is told so, and the tab keeps input again. */
+  async function eraseAndSignOut() {
+    if (leaveBusy || erasing.current || disposed.current || controller.current?.snapshot().pending) return;
+    const listed = deviceInput().rows;
+    erasing.current = true; setLeaveBusy(true); setLeaveFailed(false);
+    let erased = false;
+    try {
+      const kept = uiKeep.current;
+      erased = (kept ? await kept.port.erase(listed) : uiRecovery.current?.clear().ok ?? true)
+        && (structuralRecovery.current?.clear().ok ?? true) && (creatorRecovery.current?.clear().ok ?? true)
+        && (socialRecovery.current?.clear().ok ?? true);
+    } catch { erased = false; }
+    if (disposed.current) return;
+    if (!erased) { erasing.current = false; setLeaveBusy(false); setLeaveFailed(true); captureInput(); return; }
+    parkedDrafts.current = []; activeDrafts.current = []; parkedStructural.current = []; activeStructural.current = [];
+    parkedCreator.current = []; activeCreator.current = null; parkedSocial.current = []; activeSocial.current = [];
+    setRecoveries(null); setStructuralRecoveries(null); setCreatorRecoveries(null); setSocialRecoveries(null);
+    await signOut();
+    if (!disposed.current) { erasing.current = false; setLeaveBusy(false); }
+  }
+  useEffect(() => { if (leave) leaveKeep.current?.focus({ preventScroll: false }); }, [leave]);
   async function history(kind: 'undo' | 'redo') {
     if (selectingRefuses()) return;
     if(currentData.current?.spaces[session.userId]?.personalAuthoring){setMessage('개인 Flow 판본·실행 기록을 보존하기 위해 전체 변경 되돌리기는 보류합니다. 본문 입력 취소는 편집기에서 사용할 수 있습니다.');return;}
@@ -1584,7 +1636,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         </section>
         <section className={styles.menuGroup} aria-label="계정"><h3>계정</h3>
           <div className={styles.account}><p>{email}</p></div>
-          <div className={styles.managementActions}><button type="button" onClick={() => { captureInput(); if (hasInput() || pending) setLeave(true); else void signOut(); }}>로그아웃 · 계정 바꾸기</button>
+          <div className={styles.managementActions}><button type="button" disabled={leaveBusy} onClick={() => { captureInput(); if (hasInput() || pending || deviceInput().count) { setLeaveFailed(false); setLeave(true); } else void signOut(); }}>로그아웃 · 계정 바꾸기</button>
             {privacyAddress && <button type="button" onClick={() => setPrivacyOpen(true)}>저장과 공개 안내</button>}</div>
         </section>
         <section className={styles.menuGroup} aria-label="문제 해결"><h3>문제 해결</h3>
@@ -1606,8 +1658,17 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         ownMutation.current++; try { await controller.current?.refresh(); if (!replaceEditors()) setMessage(keptEditorsNotice('서버 자료는 반영했습니다.')); } finally { ownMutation.current--; }
       }} />}
     {destination.view !== 'space' && inputProtectionFor(true)}
-    {leave && <section className={styles.problem} aria-label="로그아웃 전 입력 확인"><p>저장하지 않은 입력을 이 탭에 보관한 뒤 로그아웃할 수 있습니다. 같은 계정으로 돌아와 복구하세요.</p>
-      <button type="button" onClick={() => { if (captureInput() && canReleaseInput()) void signOut(); }}>입력 보관 후 로그아웃</button><button type="button" onClick={() => setLeave(false)}>계속 작성</button></section>}
+    {leave && (() => {
+      // P3c (11/6): what stays on this device is said with its count; 남기고 comes first and takes the focus.
+      const left = leaveBusy ? null : deviceInput(), count = left?.count ?? 0;
+      return <section className={styles.problem} aria-label="로그아웃 전 입력 확인" data-logout-left={count}>
+        <p>{count ? `저장 안 된 입력 ${count}개가 이 기기의 복구함에 남아 있습니다. 남기면 같은 계정으로 다시 로그인할 때 복구함에서 찾을 수 있습니다. 지우면 되돌릴 수 없고, 서버에 저장한 자료는 그대로입니다.`
+          : leaveBusy ? '이 기기의 보관본을 지우는 중입니다.' : '저장하지 않은 입력을 이 탭에 보관한 뒤 로그아웃할 수 있습니다. 같은 계정으로 돌아와 복구하세요.'}</p>
+        {leaveFailed && <p role="alert">이 기기의 보관본을 다 지우지 못했습니다. 남은 것은 다음 로그인 때 복구함에 보입니다. 다시 지우거나 남기고 로그아웃할 수 있습니다.</p>}
+        <button type="button" ref={leaveKeep} disabled={leaveBusy} onClick={() => { if (captureInput() && canReleaseInput()) void signOut(); }}>{count ? '남기고 로그아웃' : '입력 보관 후 로그아웃'}</button>
+        {count > 0 && !pending && <button type="button" disabled={leaveBusy} onClick={() => void eraseAndSignOut()}>지우고 로그아웃</button>}
+        <button type="button" disabled={leaveBusy} onClick={() => setLeave(false)}>계속 작성</button></section>;
+    })()}
     {privacyOpen && privacyAddress && <AlphaPrivacyNotice contact={privacyAddress} onClose={() => setPrivacyOpen(false)} returnFocus={() => document.querySelector<HTMLElement>('[data-main-tab="more"]')} />}
     {destination.view !== 'space' && message && !participationMessage && <p className={styles.message} role="status">{message}</p>}
     {unavailable ? <section className={styles.empty}><p>{snapshot?.status === 'session-expired' ? '계정을 다시 확인한 뒤 개인공간을 열 수 있습니다.' : '서버에서 개인공간을 확인하고 있습니다.'}</p></section> : <>

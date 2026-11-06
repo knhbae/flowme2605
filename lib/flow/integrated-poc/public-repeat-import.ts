@@ -52,6 +52,24 @@ export function programImportRepeats(space: ProgramPrivateSpace | undefined, ver
   });
 }
 
+/** P3c (11/6): taking a Flow again as '새 문서' once I have its copy goes into that copy and changes nothing when every
+ *  item is already there and every repeat item is already a line of mine (as importProgramPublicVersion does it: same
+ *  version and 기준일, the copy document not archived or trashed, each one-time item linked and included, no start
+ *  date to set). Then there is nothing to take; a copy of another version or 기준일 still says so on pressing. */
+export function programImportAddsNothing(space: ProgramPrivateSpace | undefined, version: ProgramPublicVersion, itemIds: readonly string[],
+  anchor: string | null, recurrenceStarts: Readonly<Record<string, string | null>> = {}): boolean {
+  const copy = space?.copies.find(row => row.flowId === version.flowId);
+  if (!space || !copy || !itemIds.length || copy.baseVersionId !== version.id || copy.anchor !== anchor
+    || space.archivedDocumentIds.includes(copy.documentId) || space.documentTrash?.[copy.documentId]) return false;
+  const repeats = programImportRepeats(space, version, itemIds);
+  return itemIds.every(id => {
+    const repeat = repeats.find(row => row.itemId === id);
+    if (repeat) return !!repeat.existing;
+    return !!copy.itemLines[id] && copy.includedItemIds.includes(id) && copy.itemOverrides[id]?.included !== false
+      && (!Object.hasOwn(recurrenceStarts, id) || Object.hasOwn(copy.recurrence?.starts ?? {}, id) && copy.recurrence?.starts?.[id] === recurrenceStarts[id]);
+  });
+}
+
 /** The rule a line gets: as published, or `@{n}개월마다` for the months chosen; null with no months chosen. */
 export function programImportRepeatRule(repeat: Pick<ProgramImportRepeat, 'rule' | 'pick'>, months?: number | null): ProgramRepeatRule | null {
   return repeat.pick ? programImportMonths(months) ? parseProgramRepeatWords(`${months}개월마다`) : null : repeat.rule;

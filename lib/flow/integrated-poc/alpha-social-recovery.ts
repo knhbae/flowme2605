@@ -1,4 +1,6 @@
 import type { ProgramStorage } from './program-store';
+import type { ProgramPrivateSpace } from './contract';
+import type { AlphaSocialIntent } from './alpha-social/contract';
 import { programIdentifier, programShape } from './program-data';
 import { canonicalJson, detached, parseAlphaJson } from './alpha-persistence/json';
 
@@ -12,6 +14,20 @@ export function validateAlphaSocialRecovery(value: unknown, ownerId: string, slo
       && Array.isArray(value.entries) && value.entries.length > 0 && value.entries.length <= 30
       && value.entries.every(entry => programShape(entry, ['kind', 'value']) && ['publication', 'participation', 'review'].includes(entry.kind as string));
   } catch { return false; }
+}
+/** P3c (11/6): the entry a confirmed publish or post settles. Before the request the tab keeps the draft as typed;
+ *  once the server took it, it is public and its private draft is gone, so that copy is no input to check (it was
+ *  the '확인이 필요한 입력 1개' after every publish). Only that exact draft: input changed after it, another draft, or
+ *  a draft the server still has (not taken) is not settled. Null for any other request. */
+export function alphaSocialSettledEntry(intent: AlphaSocialIntent | undefined, space: ProgramPrivateSpace | undefined): string | null {
+  try {
+    if (!space || !intent) return null;
+    if (intent.type === 'publication-submit' && !space.publicationDrafts.some(row => row.id === intent.draft.id))
+      return canonicalJson({ kind: 'publication', value: intent.draft });
+    if (intent.type === 'participation-submit' && !space.participationDrafts.some(row => row.id === intent.draft.id))
+      return canonicalJson({ kind: 'participation', value: intent.draft });
+  } catch { /* Not a JSON draft: nothing is settled. */ }
+  return null;
 }
 /** Full draft input, never a private text document or automatic public replay. */
 export function createAlphaSocialRecovery(storage: ProgramStorage, ownerId: string, slotId: string) {

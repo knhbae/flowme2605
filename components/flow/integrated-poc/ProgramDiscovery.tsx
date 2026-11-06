@@ -17,7 +17,7 @@ import { createTransientOutputDraft, previewTransientOutput, confirmTransientOut
 import { ProgramShareLink } from './ProgramShareLink';
 import { ProgramImportDocumentPicker } from './ProgramSpace';
 import { programImportTargets } from '@/lib/flow/integrated-poc/program-import-links';
-import { programImportFirstDate, programImportItemView, programImportRepeatChoice, programImportRepeatOf, programImportRepeatRule, programImportRepeats, programImportSentence } from '@/lib/flow/integrated-poc/public-repeat-import';
+import { programImportAddsNothing, programImportFirstDate, programImportItemView, programImportRepeatChoice, programImportRepeatOf, programImportRepeatRule, programImportRepeats, programImportSentence } from '@/lib/flow/integrated-poc/public-repeat-import';
 import { programRepeatFixed } from '@/lib/flow/integrated-poc/repeat-line';
 import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
 import { programFlowProgress, programFlowProgressText } from '@/lib/flow/integrated-poc/flow-loop';
@@ -286,6 +286,12 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   const nothingForTarget = importDestination === 'existing' && !!targetDocumentId && !targetItems.length;
   const nothingReason = `넣을 할 일이 없습니다.${(storedCopy ? storedVersion?.items ?? [] : version?.items.filter(item => useItemIds.includes(item.id)) ?? []).some(item => programImportRepeatOf(item))
     ? ' 반복 할 일은 처음 가져올 때 내 반복 줄로 들어가 있습니다.' : ''}`;
+  // P3c (11/6): '새 문서' once I have the copy goes into that copy. With every item already there (a mixed Flow's
+  // one-time items in the copy, its repeat items lines of mine) the button stays off and one line says why.
+  const nothingForNew = importDestination === 'new' && !!version && !nothingToImport
+    && programImportAddsNothing(privateSpace, version, useItemIds, detail?.anchor || null, recurrenceStarts);
+  const copyTitle = storedCopy && [...privateSpace.text.documents, ...privateSpace.text.flows].find(doc => doc.id === storedCopy.documentId)?.title;
+  const nothingNewReason = `넣을 할 일이 없습니다. 할 일은 이미 ‘${copyTitle || version?.title}’ 문서에 있${sheetRepeats.length ? '고, 반복 할 일은 내 반복 줄에 있' : ''}습니다.`;
   const knownSources = flows.flatMap(row => {
     const current = data.public.versions.find(candidate => candidate.id === row.currentVersionId);
     return current?.source.url ? [{ url: current.source.url, version: current }] : [];
@@ -320,6 +326,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   // sheet, the anchor and the selection, and names its reason (D1).
   const runImport = async () => {
     if (pendingRef.current || !version || !detail || !canUseVersion || !repeatChoice || nothingToImport || nothingForTarget) return;
+    if (nothingForNew) return;
     pendingRef.current = true; setPending(true); setImportFailure(null);
     const target = importDestination === 'existing' ? targetDocumentId : undefined;
     const importingVersion = target && storedCopy ? storedCopy.baseVersionId : version.id;
@@ -481,7 +488,8 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
               </li>;
             })}</ul></section>}
           {privateSpace?.documentTrash?.[storedCopy?.documentId ?? ''] && <p>사본 문서가 휴지통에 있습니다. 복원한 뒤 넣을 수 있습니다.</p>}
-          <button type="button" className={styles.primary} data-testid="program-import-run" disabled={pending || !canUseVersion || !repeatChoice || nothingToImport || nothingForTarget || importDestination === 'existing' && !targetDocumentId} onClick={() => void runImport()}>{pending ? '가져오는 중…' : importDestination === 'existing' ? '고른 문서에 넣기' : '새 문서로 가져오기'}</button>
+          {nothingForNew && <p className={styles.repeatNone} data-import-nothing>{nothingNewReason}</p>}
+          <button type="button" className={styles.primary} data-testid="program-import-run" disabled={pending || !canUseVersion || !repeatChoice || nothingToImport || nothingForTarget || nothingForNew || importDestination === 'existing' && !targetDocumentId} onClick={() => void runImport()}>{pending ? '가져오는 중…' : importDestination === 'existing' ? '고른 문서에 넣기' : '새 문서로 가져오기'}</button>
           {importFailure && <div className={styles.error} role="alert"><p>{importFailure.text}</p>{importFailure.continueCopy && (existingCopy ?? storedCopy) && <button type="button" onClick={() => { closeSheet(); navigate({ view: 'space', id: (existingCopy ?? storedCopy)!.documentId }); }}>내 문서에서 이어보기</button>}</div>}
         </div>}
       </dialog>
