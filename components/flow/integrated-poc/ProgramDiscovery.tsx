@@ -400,12 +400,11 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
         <header className={styles.detailHeader}><p className={styles.eyebrow}>{[flow.category, ...flow.situations].join(' · ')}</p>
           <h1 ref={heading} tabIndex={-1}>{version.title}</h1>
           <div className={styles.summaryBox}><p ref={summaryRef} id={`${uid}-summary`} className={`${styles.pre} ${styles.summaryText} ${summaryOpen === version.id ? '' : styles.summaryClamp}${longSummary ? '' : ` ${styles.summaryPlain}`}`}>{version.summary}</p>
-            {longSummary && <button type="button" className={`${styles.linkButton} ${styles.pcOnly}`} aria-expanded={summaryOpen === version.id} aria-controls={`${uid}-summary`} onClick={toggleSummary}>{summaryOpen === version.id ? '접기' : '더 보기'}</button>}
+            {(summaryClipped || summaryOpen === version.id) && <button type="button" className={`${styles.linkButton} ${styles.pcOnly}`} aria-expanded={summaryOpen === version.id} aria-controls={`${uid}-summary`} onClick={toggleSummary}>{summaryOpen === version.id ? '접기' : '더 보기'}</button>}
             {(summaryClipped || summaryOpen === version.id) && <button type="button" className={`${styles.linkButton} ${styles.summaryMore} ${styles.phoneOnly}`} data-open={summaryOpen === version.id ? 'true' : undefined} aria-expanded={summaryOpen === version.id} aria-controls={`${uid}-summary`} onClick={toggleSummary}>{summaryOpen === version.id ? '접기' : '더 보기'}</button>}</div>
         </header>
         <section className={styles.sourceBlock} aria-label="출처와 판본">
           <p className={styles.sourceLine}>{kindLabel && <>{kindLabel} · </>}{programSourceLine(version.source)}{version.source.url && <> · <a href={version.source.url} target="_blank" rel="noreferrer noopener">원문 열기 ↗</a></>}</p>
-          {version.source.checkedAt && <p className={styles.muted}>출처 확인 기록: {version.source.checkedAt} · 지금 원문을 다시 확인한 결과는 아닙니다.</p>}
           {sourceMeta?.sourceNeedsReview && <p className={styles.notice}>이 자료는 출처 재검토가 필요합니다. 현재 조건을 원문에서 확인해 주세요.</p>}
           <div className={styles.pcOnly}>{extras}</div>
           {existingCopy && copyVersion && existingCopy.baseVersionId !== version.id && <p className={styles.versionLine}>내 사본은 판본 {copyVersion.number}입니다. 원본에 판본 {version.number}이 있습니다. <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>변경 확인</button></p>}

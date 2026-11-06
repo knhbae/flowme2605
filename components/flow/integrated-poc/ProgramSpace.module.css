@@ -281,6 +281,8 @@
 /* Today reuses the existing quick form and guarded finder, without extra rows. */
 .space[data-note-layout="true"] .notePeriodTitle { grid-column: 1 / -1; grid-row: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; margin-top: 12px; }
 .space[data-note-layout="true"] .notePeriodTitle h1 { flex: 1; min-width: 0; margin: 0; }
+/* UX C3 (11/6): on a 390 phone "오늘 · 11월 9일 (월)" broke onto two lines beside [할 일 추가] and …; 20px keeps it on one. */
+@media (max-width: 700px) { .space[data-note-layout="true"] .notePeriodTitle h1 { font-size: 20px; line-height: 28px; } }
 .space[data-note-layout="true"] .notePeriodActions { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; }
 .space[data-note-layout="true"] .notePeriodActions > button { min-height: 48px; padding: 8px; border-color: transparent; background: var(--flowme-b-canvas); color: var(--flowme-b-primary); font-size: 14px; white-space: nowrap; }
 .space[data-note-layout="true"] .notePeriodTools { position: relative; }

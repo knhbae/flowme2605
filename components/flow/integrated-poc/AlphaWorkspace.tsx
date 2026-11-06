@@ -176,10 +176,15 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const [flowReturn, setFlowReturn] = useState<{ actorId: string; documentId?: string; kind: 'copy' | 'browse'; returnFocus?: HTMLElement; writing?: ProgramWritingReturn } | null>(null);
   const [importUndo, setImportUndo] = useState<{ batch: ProgramImportLinks; text: string; done?: boolean } | null>(null);
   const [importUndoBusy, setImportUndoBusy] = useState(false), importUndoLock = useRef(false);
+  // UX B1 (11/6): a new document's arrival notice stays on that document only, with [되돌리기] while the import is
+  // still the last server change (`revision`); null when this account's undo is held (the notice says the trash way).
+  const [importArrival, setImportArrival] = useState<{ actorId: string; documentId: string; text: string; revision: number | null } | null>(null);
+  const [importArrivalBusy, setImportArrivalBusy] = useState(false);
   useEffect(() => {
     setImportUndo(previous => previous && (previous.batch.actorId !== session.userId || destination.view !== 'space' || destination.id !== previous.batch.documentId) ? null : previous);
+    setImportArrival(previous => previous && (previous.actorId !== session.userId || destination.view !== 'space' || destination.id !== previous.documentId) ? null : previous);
   }, [destination, session.userId]);
-  useEffect(() => { setFlowReturn(null); setImportUndo(null); importUndoLock.current = false; setImportUndoBusy(false); }, [sessionEpoch]);
+  useEffect(() => { setFlowReturn(null); setImportUndo(null); setImportArrival(null); importUndoLock.current = false; setImportUndoBusy(false); }, [sessionEpoch]);
   // 실행 고리 1안: the save of mine that finishes someone's Flow asks once whether to leave ‘해 봤어요’. Nothing records
   // the answer; a Flow asked about in this tab is not asked again, and leaving the space lets the question go.
   // QA F1: one question at a time; others wait their turn, and only one put on screen counts as asked.
@@ -1249,6 +1254,16 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       else intent?.stop();
     });
   }
+  /** UX B1: the arrival notice's 되돌리기 is 더보기 › 되돌리기 (the same server undo), offered while the import is the
+   *  last server change. Once it is taken back the notice goes. */
+  async function undoImportArrival() {
+    const arrival = importArrival;
+    if (!arrival || importArrivalBusy || controller.current?.snapshot().account?.revision !== arrival.revision) return;
+    setImportArrivalBusy(true);
+    try { await history('undo'); }
+    finally { if (!disposed.current) setImportArrivalBusy(false); }
+    if (!disposed.current && controller.current?.snapshot().account?.revision !== arrival.revision) setImportArrival(previous => previous === arrival ? null : previous);
+  }
   async function cancelImportLinks() {
     if (!importUndo || importUndoLock.current) return;
     const batch = importUndo.batch, epoch = sessionEpochRef.current;
@@ -1296,7 +1311,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       } else if (version && arrived.view === 'space' && arrived.id === copy.documentId) {
         // A new document: its repeat lines go with the document itself (휴지통 or 되돌리기, as the notice says).
         const written = captureProgramImportLinks(owner, copy.id, copy.documentId, before, live!.spaces[owner]).repeat?.length ?? 0;
-        setMessage(programImportArrivalNotice(version.title, !!live?.spaces[session.userId]?.personalAuthoring, programImportRepeatNotice(written, existingRepeats)));
+        const undoHeld = !!live?.spaces[session.userId]?.personalAuthoring;
+        setImportArrival({ actorId: owner, documentId: copy.documentId, text: programImportArrivalNotice(version.title, undoHeld, programImportRepeatNotice(written, existingRepeats)),
+          revision: undoHeld ? null : confirmed?.account?.revision ?? null });
       }
     }
     return { ok: true };
@@ -1534,7 +1551,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const privacyMore = privacyAddress && <> <button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></>;
   // Once acknowledged, keep an element: ProgramSpace reads a truthy noteHeader as the note layout.
   const publicNotice = devNoticeSeen ? <span hidden data-dev-notice="acknowledged" /> : <div className={styles.devNotice}>
-    <details className={styles.notice} aria-label="개발계 안내"><summary>공개한 내용은 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 넣지 마세요.</summary>
+    <details className={styles.notice} aria-label="저장과 공개 안내"><summary>공개한 Flow와 글만 다른 사용자에게 보입니다.</summary>
       <p>{DEV_NOTICE_TEXT}{privacyMore}</p></details>
     <button type="button" onClick={() => { if (markDevNoticeSeen(devNoticeStorage(), session.userId)) setDevNoticeSeen(true); }}>확인</button></div>;
   const savedNotice = savedNoticeShown && <p className={styles.savedNotice} role="status"><span>확인이 필요한 입력 {savedTotal}개</span>
@@ -1584,6 +1601,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // UX FC-DETAIL-HEAD 1 (R6): 둘러보기 draws its status row only for a warning or a wait (levels 1–5). Saved and
   // saving stay off, so the list does not jump; 되돌리기 is in 더보기 › 편집 on every screen.
   const browseStatusShown = serverSlot.level <= 5;
+  // UX B7 (11/6): 내 활동 starts with its title too: its status row also warns only (되돌리기 stays in 더보기 › 편집).
+  const quietStatus = browse || destination.view === 'activity';
+  const activityTabs = <nav className={styles.tabs} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={openCreatorEntry}>Flow 만들기</button></nav>;
   const serverStatusView: ProgramServerStatusView | null = usesNoteChrome ? {
     ...serverSlot,
     recovery: destination.view === 'space' && needsInputProtection ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,
@@ -1602,13 +1622,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M5 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg><span>더보기</span>
           {savedTotal > 0 && <span className={styles.navBadge} aria-hidden="true">{savedTotal}</span>}</button>
       </nav>}
-      <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1>
-      <details className={styles.development}><summary>{syntheticRuntime ? '합성 검증' : '개발계'}</summary><p>{DEV_NOTICE_TEXT}{privacyMore}</p></details></header>
+      <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1></header>
     {browse && <nav className={styles.browseNavigation} aria-label="둘러보기 종류"><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({view:'community'})}>경험·질문·지식</button><button aria-current={['discover','flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({view:'discover'})}>Flow 찾기</button></nav>}
     <div className={styles.workPane} data-testid="alpha-work-pane">
     {!usesNoteChrome && (browse && savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice)}
     <section className={styles.sync} aria-label="서버 저장 상태">
-      {!usesNoteChrome && (!browse || browseStatusShown) && serverStatus}
+      {!usesNoteChrome && (!quietStatus || browseStatusShown) && serverStatus}
       <details ref={managementMenu} className={styles.management} aria-label="계정 및 자료 관리" onToggle={() => { menuTurns.current++; }} onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
@@ -1642,7 +1661,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           const opener = event.currentTarget;
           preservationOpener.current = opener; preservationReturn.current = null;
           void (async () => { const openingController = controller.current; if (!captureInput()) return; for (const port of allEditors()) if (port && !await port.flushAll()) return; if (disposed.current || controller.current !== openingController || currentOwnerRef.current !== session.userId) return; preservationRef.current = true; setPreservation(true); })();
-        }}>백업 · 복원 · 가져오기</button></div>
+        }}>백업 · 복원 · 가져오기</button>
+          {/* UX B1 (11/6): the sign-in screen no longer links the old local PoC; its way stays here, after signing in. */}
+          <a className={styles.menuLink} href="/my?personalWorkspacePoc=v1">이 기기에만 저장한 예전 자료</a></div>
         </section>
         <section className={styles.menuGroup} aria-label="계정"><h3>계정</h3>
           <div className={styles.account}><p>{email}</p></div>
@@ -1651,14 +1672,14 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         </section>
         <section className={styles.menuGroup} aria-label="문제 해결"><h3>문제 해결</h3>
           <div className={styles.managementActions}><button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button></div>
-          {snapshot?.account && <small className={styles.account}>서버 기록 번호 {snapshot.account.revision}</small>}
+          {snapshot?.account && <details className={styles.menuNote}><summary>기록 정보</summary><small className={styles.account}>서버 기록 번호 {snapshot.account.revision}</small></details>}
         </section>
         {!unavailable && data && destination.view === 'space' && <section className={styles.menuGroup} aria-label="실험"><h3>실험</h3>
           <div className={styles.managementActions}><button type="button" aria-pressed={collectionsMode} disabled={collectionsSwitching || collectionsSaving || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError}
             onClick={() => void switchCollectionsMode()}>{collectionsMode ? '기존 폴더로 보기' : '문서·모음 시험'}</button></div>
         </section>}
-        <section className={styles.menuGroup} aria-label="개발계 안내"><h3>개발계 안내</h3>
-          <details className={styles.menuNote}><summary>개발계 안내</summary><p>{DEV_NOTICE_TEXT}{privacyMore}</p></details>
+        <section className={styles.menuGroup} aria-label="저장과 공개 안내"><h3>저장과 공개 안내</h3>
+          <p className={styles.menuNoteText}>{DEV_NOTICE_TEXT}{privacyMore}</p>
         </section>
         </div></details>
     </section>
@@ -1682,7 +1703,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     {privacyOpen && privacyAddress && <AlphaPrivacyNotice contact={privacyAddress} onClose={() => setPrivacyOpen(false)} returnFocus={() => document.querySelector<HTMLElement>('[data-main-tab="more"]')} />}
     {destination.view !== 'space' && message && !participationMessage && <p className={styles.message} role="status">{message}</p>}
     {unavailable ? <section className={styles.empty}><p>{snapshot?.status === 'session-expired' ? '계정을 다시 확인한 뒤 개인공간을 열 수 있습니다.' : '서버에서 개인공간을 확인하고 있습니다.'}</p></section> : <>
-      {['activity', 'creator'].includes(destination.view) && <nav className={styles.tabs} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={openCreatorEntry}>Flow 만들기</button></nav>}
+      {destination.view === 'creator' && activityTabs}
       <div hidden={destination.view !== 'space'}>
         {collectionsMode && <p className={styles.notice}>모음 연결은 이 브라우저에만 저장됩니다. 문서·할 일은 기존 서버에 저장되며, 기존 폴더는 바뀌지 않습니다.</p>}
         {collectionsMessage && <p className={styles.message} role="status">{collectionsMessage}</p>}
@@ -1703,7 +1724,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         selectedDocumentId={destination.view === 'space' ? destination.id : undefined} onUndo={() => history('undo')} onRedo={() => history('redo')}
         onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} onInputFailureChange={setEditorInputFailed} onKeepRefusedInput={keepRefusedInput}
         onOpenCopySource={(flowId, id, focus) => { void openFlowsFromDocument(id, flowId, focus); }} onBrowseFlows={(id, focus, writing) => { void openFlowsFromDocument(id, undefined, focus, writing); }}
-        importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring, ...(importUndo.batch.repeat ?? [])][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } } : undefined}
+        importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring, ...(importUndo.batch.repeat ?? [])][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } }
+          : importArrival ? { actorId: importArrival.actorId, documentId: importArrival.documentId, text: importArrival.text, busy: importArrivalBusy, actionLabel: '되돌리기', busyLabel: '되돌리는 중…',
+            onCancel: importArrival.revision !== null && snapshot?.account?.revision === importArrival.revision && !!snapshot?.canUndo && !external ? () => { void undoImportArrival(); } : undefined } : undefined}
         onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></ProgramServerStatusContext.Provider>
         {/* Over the top of the space, apart from the check notices and the tabs below; pressing it leaves the caret where it is. */}
         {tried?.epoch === sessionEpoch && tried.queue.shown && <div key={tried.queue.shown.flowId} className={styles.triedPrompt} role="status" data-tried-prompt={tried.queue.shown.flowId}>
@@ -1717,7 +1740,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       {seen.community && <div hidden={!['community', 'activity'].includes(destination.view)}><ProgramCommunity key={`community:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()}
         view={communityView} selectedPostId={communitySelection} selectedReplyId={destination.view === 'community' ? destination.replyId : undefined} presentation={communityState} onPresentationChange={setCommunityState}
         storageScope="account" mediaPort={mediaPort} draftSaveRecovery={localParticipationRecovery}
-        reviewEntry={reviewEntry} captureReviewVisit={captureReviewVisit}
+        reviewEntry={reviewEntry} captureReviewVisit={captureReviewVisit} activityTabs={activityTabs}
         onRegisterReviewResult={receive => { reviewResultReceiver.current = receive; }}
         reviewAnnouncement={{
           captureState: () => {

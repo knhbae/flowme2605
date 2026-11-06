@@ -138,7 +138,8 @@ export type ProgramSpaceProps = {
   onInspectCopy?: (copyId: string) => void;
   onOpenCopySource?: (flowId: string, documentId: string, returnFocus?: HTMLElement) => void;
   onBrowseFlows?: (documentId?: string, returnFocus?: HTMLElement, writing?: ProgramWritingReturn) => void;
-  importNotice?: { actorId: string; documentId: string; lineId?: string; text: string; busy: boolean; onCancel?: () => void };
+  /** UX B1 (11/6): a new document's arrival notice uses the same slot with its own button (되돌리기). */
+  importNotice?: { actorId: string; documentId: string; lineId?: string; text: string; busy: boolean; onCancel?: () => void; actionLabel?: string; busyLabel?: string };
   onRevisionHistory?: (documentId: string) => void;
   onOutputDocument?: (documentId: string) => void;
   onStartReview?: (documentId: string) => Promise<void>;
@@ -2444,6 +2445,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             onOpenSource={(id, line) => openOccurrenceSource(id, line, entry.key)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={onUndo} onRedo={onRedo} /></li>;
           const task = entry.task;
           const origin = readProgramTaskOrigin(data, task);
+          // UX C5 (11/6): the row is read as it shows: a repeat line by its title and chip, 직접 작성 not said (as on screen).
+          const repeatRow = programRepeatLine(space, task.id), repeatShown = repeatRow && (!repeatRow.block || repeatRow.block === 'done') ? repeatRow : null;
           const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
           const meta = programExecutionRowMeta({ date: task.date, done: value === 100, progress: progress?.date ? { date: progress.date, percent: progress.percent } : null, today, dated: item.dated,
             since: task.explicitDate ? task.groupDate : null });
@@ -2480,8 +2483,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               }
             }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
               {completingTaskIds.has(task.id) ? '…' : value > 0 && value < 100 ? `${value}%` : ''}</span></button>
-            <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} aria-busy={sourceWaitingTask === task.id || undefined} onClick={event => moving ? void moveBefore(moving, entry.key) : openFromList(task, event.currentTarget)}>{(line => line && (!line.block || line.block === 'done') ? <span className={styles.taskTitleText}>{programRepeatTitle(task.title)}<span className={styles.repeatChip}>{line.block ? '반복 멈춤' : `↻ ${line.marker.label}`}</span></span>
-              : <span className={styles.taskTitleText}>{task.title}</span>)(programRepeatLine(space, task.id))}
+            <button className={styles.taskTitle} aria-label={`${repeatShown ? `${programRepeatTitle(task.title)} · ${repeatShown.block ? '반복 멈춤' : `반복 ${repeatShown.marker.label}`}` : task.title}${origin.label !== '직접 작성' ? ` · ${origin.label}` : ''} · ${task.docTitle} 원문 열기`} aria-busy={sourceWaitingTask === task.id || undefined} onClick={event => moving ? void moveBefore(moving, entry.key) : openFromList(task, event.currentTarget)}>{(line => line ? <span className={styles.taskTitleText}>{programRepeatTitle(task.title)}<span className={styles.repeatChip}>{line.block ? '반복 멈춤' : `↻ ${line.marker.label}`}</span></span>
+              : <span className={styles.taskTitleText}>{task.title}</span>)(repeatShown)}
               {/* R4's waits, now visible on the row. The title's aria-busy and the host notice still do the announcing. */}
               <small>{sourceWaitingTask === task.id ? <span className={styles.rowBusy}>원문 여는 중…</span> : <>
                 {completingTaskIds.has(task.id) && <><span className={styles.rowBusy}>{value === 100 ? '다시 열기 대기 중' : '완료 대기 중'}</span> · </>}
@@ -2509,7 +2512,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       : (!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</>;
   const docNotices = <>
     {props.noteHeader}
-    {props.importNotice?.actorId === actorId && props.importNotice.documentId === selected && <div className={styles.importNotice}><span role="status">{props.importNotice.text}</span>{props.importNotice.onCancel && <button type="button" disabled={props.importNotice.busy} onClick={props.importNotice.onCancel}>{props.importNotice.busy ? '연결을 빼는 중…' : '이번 가져오기 취소'}</button>}</div>}
+    {props.importNotice?.actorId === actorId && props.importNotice.documentId === selected && <div className={styles.importNotice}><span role="status">{props.importNotice.text}</span>{props.importNotice.onCancel && <button type="button" disabled={props.importNotice.busy} onClick={props.importNotice.onCancel}>{props.importNotice.busy ? props.importNotice.busyLabel ?? '연결을 빼는 중…' : props.importNotice.actionLabel ?? '이번 가져오기 취소'}</button>}</div>}
     <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice data-quiet={props.noteNoticeShown ? 'true' : undefined}>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
     {!selectedDoc && props.noteStatus}
     {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>

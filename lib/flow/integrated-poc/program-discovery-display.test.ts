@@ -80,7 +80,8 @@ test('failure reasons map to their D1 texts only when the screen shows the cause
   assert.match(programImportFailure('unresolved', { copyConflict: false, onHold: true }).text, /^출처를 다시 확인하는 중이라/);
   assert.equal(programImportFailure('unresolved', { copyConflict: false, onHold: false }).text, PROGRAM_IMPORT_GENERIC_FAILURE);
   for (const reason of ['missing', 'invalid', 'unavailable', 'session-expired']) assert.equal(programImportFailure(reason, { copyConflict: false, onHold: false }).text, PROGRAM_IMPORT_GENERIC_FAILURE);
-  assert.match(programImportArrivalNotice('이사 준비', false), /^‘이사 준비’를 가져왔습니다\. 날짜가 있는 할 일은 오늘에도 보입니다\. .*되돌리기/);
+  // UX B1 (11/6): the notice's own [되돌리기] button takes it back; the text no longer sends the person to 더보기.
+  assert.equal(programImportArrivalNotice('이사 준비', false), '‘이사 준비’를 가져왔습니다. 날짜가 있는 할 일은 오늘에도 보입니다.');
   assert.match(programImportArrivalNotice('이사 준비', true), /휴지통으로 옮길 수 있습니다/);
   assert.deepEqual(['짐 싸기', '연말정산', '시험 2주', 'Plan A', '이사 준비 '].map(programObjectParticle), ['를', '을', '를', '을(를)', '를']);
 });

@@ -12,8 +12,8 @@ test('Alpha paths and their assets stay open', () => {
     assert.equal(alphaRouteDecision(path), 'allow', path);
 });
 
-test('the old local PoC screen stays reachable from the sign-in link, but nothing under it', () => {
-  // The sign-in screen links to /my?personalWorkspacePoc=v1; the query is not part of the pathname.
+test('the old local PoC screen stays reachable from its link, but nothing under it', () => {
+  // 더보기 › 자료 links to /my?personalWorkspacePoc=v1 (UX B1; the sign-in screen did); the query is not part of the pathname.
   assert.equal(alphaRouteDecision('/my'), 'allow');
   for (const path of ['/my/', '/my/x', '/MY', '/my.json', '/myflows'])
     assert.equal(alphaRouteDecision(path), 'block', path);

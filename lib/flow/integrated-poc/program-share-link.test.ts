@@ -108,7 +108,7 @@ test('three places, the same button: Flow detail ⋯, the publish panel, 내 활
   const panel = publisher.slice(publisher.indexOf('if (published) return <dialog'), publisher.indexOf('return <dialog ref={dialog} className={styles.dialog} aria-labelledby="program-publisher-title"'));
   assert(panel.indexOf('<ProgramShareLink') < panel.indexOf('공개한 Flow 보기') && panel.indexOf('공개한 Flow 보기') < panel.indexOf('>닫기<'));
   // The honest line, the unverified block, the 3-second result and the hand-copy fallback.
-  for (const text of ['Alpha에 로그인한 사람만 열 수 있습니다.', '미확인 콘텐츠는 링크를 만들지 않습니다.', '링크를 복사했습니다', '길게 눌러 복사해 주세요']) assert(button.includes(text), text);
+  for (const text of ['FlowMe에 로그인한 사람만 열 수 있습니다.', '미확인 콘텐츠는 링크를 만들지 않습니다.', '링크를 복사했습니다', '길게 눌러 복사해 주세요']) assert(button.includes(text), text);
   assert.match(button, /window\.setTimeout\(\(\) => setResult\(null\), 3000\)/);
 });
 

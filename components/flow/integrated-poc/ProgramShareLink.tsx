@@ -38,7 +38,7 @@ export function ProgramShareLink({ flowId, versionId, unverified = false }: { fl
   };
   return <div className={styles.share} data-share-link>
     <button type="button" disabled={busy || unverified} onClick={() => void run()}>링크 복사</button>
-    <p className={styles.hint}>{unverified ? '미확인 콘텐츠는 링크를 만들지 않습니다.' : 'Alpha에 로그인한 사람만 열 수 있습니다.'}</p>
+    <p className={styles.hint}>{unverified ? '미확인 콘텐츠는 링크를 만들지 않습니다.' : 'FlowMe에 로그인한 사람만 열 수 있습니다.'}</p>
     {(state?.outcome === 'copied' || state?.outcome === 'shared') && <p className={styles.done} role="status">{state.outcome === 'copied' ? '링크를 복사했습니다' : '링크를 공유했습니다'}</p>}
     {state?.outcome === 'fallback' && <div className={styles.fallback} role="status"><input readOnly aria-label="공유할 링크" value={state.url} onFocus={event => event.currentTarget.select()} />
       <p>길게 눌러 복사해 주세요</p></div>}

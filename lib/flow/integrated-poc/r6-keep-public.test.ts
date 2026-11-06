@@ -86,6 +86,6 @@ test('R6: only well-formed aliases the public rows name are added; a missing own
 test('R6 wording: the notice, the publisher and the post preview say public things stay when the account goes', () => {
   assert.equal(PRIVACY_NOTICE_DELETION[1], '계정을 지워도 공개한 글과 Flow는 남습니다. 내리려면 먼저 공개를 철회하세요.');
   const read = (path: string) => readFileSync(join(process.cwd(), path), 'utf8');
-  assert(read('components/flow/integrated-poc/ProgramPublisher.tsx').includes("'개발계의 다른 사용자에게 선택한 내용을 공개합니다. 계정을 지워도 공개한 Flow는 남습니다.'"));
-  assert(read('components/flow/integrated-poc/ProgramCommunity.tsx').includes("'확인한 내용만 개발계의 다른 사용자에게 공개합니다. 작성 중인 다른 초안은 공개하지 않습니다. 계정을 지워도 공개한 글은 남습니다.'"));
+  assert(read('components/flow/integrated-poc/ProgramPublisher.tsx').includes("'로그인한 다른 사용자에게 선택한 내용을 공개합니다. 계정을 지워도 공개한 Flow는 남습니다.'"));
+  assert(read('components/flow/integrated-poc/ProgramCommunity.tsx').includes("'확인한 내용만 로그인한 다른 사용자에게 공개합니다. 작성 중인 다른 초안은 공개하지 않습니다. 계정을 지워도 공개한 글은 남습니다.'"));
 });

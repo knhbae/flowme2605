@@ -318,6 +318,13 @@
 .recoveryBox > summary, .menuNote > summary { min-height: 48px; align-content: center; cursor: pointer; }
 .recoveryBox > .recovery { margin: 8px 0; }
 .menuNote p { margin: 4px 0 0; line-height: 1.6; color: var(--flowme-text-secondary); }
+/* UX B1 (11/6): 저장과 공개 안내 is one line; the old local data link sits with the 자료 buttons and looks like them. */
+.menuNoteText { margin: 0; line-height: 1.6; color: var(--flowme-text-secondary); }
+.managementActions .menuLink { flex: 1 1 200px; display: inline-flex; align-items: center; justify-content: center; min-height: 48px; box-sizing: border-box; padding: 8px 14px; border: 1px solid var(--flowme-control-border); border-radius: 8px; background: var(--flowme-surface); color: var(--flowme-text); font-size: 14px; text-decoration: none; }
+/* UX C6: 복구함 opens like the buttons around it (no ▸ marker), the box stays a details. */
+.recoveryBox > summary { list-style: none; display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 8px 14px; border: 1px solid var(--flowme-control-border); border-radius: 8px; background: var(--flowme-surface); color: var(--flowme-text); }
+.recoveryBox > summary::-webkit-details-marker { display: none; }
+.recoveryBox[open] > summary { margin-bottom: 8px; }
 .savedNotice { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0; padding: 4px 12px; border-left: 3px solid var(--flowme-action, #3548ce); background: var(--flowme-surface); font-size: 14px; }
 .savedNotice > span { flex: 1 1 auto; min-width: 0; }
 .savedNotice > button { min-height: 44px; }
@@ -378,4 +385,5 @@
 .triedPrompt > div { display: flex; gap: 4px; margin-left: auto; }
 .triedPrompt button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--flowme-b-primary-strong); font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer; }
 .triedPrompt button:first-child { background: var(--flowme-b-primary); color: #fff; }
-@media (max-width: 700px) { .triedPrompt { top: 72px; left: 16px; right: 16px; width: auto; transform: none; } }
+/* UX B3 (11/6): on phones the question sits above the bottom tabs, not over the 오늘 title and [할 일 추가]. */
+@media (max-width: 700px) { .triedPrompt { top: auto; bottom: calc(76px + env(safe-area-inset-bottom) + 12px); left: 16px; right: 16px; width: auto; transform: none; } }

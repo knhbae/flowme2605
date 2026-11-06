@@ -34,8 +34,11 @@
 .cardMeta,.cardSource{font-size:12px;line-height:18px;color:#5b6b66;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .detailBar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
 .detailLayout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:32px;align-items:start}.detailMain{min-width:0}
-.summaryClamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+/* UX C1 (11/6): the cut has no ellipsis (a sentence ending in "." read "...."); 더 보기 shows only when it is cut. */
+.summaryClamp{overflow:hidden;max-height:3lh}
 .sourceBlock{margin:12px 0;display:grid;gap:4px}.sourceLine{margin:0;font-size:14px;line-height:22px;color:#3d524d}
+/* UX C2 (11/6): 원문 열기 is a 44px target without making the line taller. */
+.sourceLine a{display:inline-block;padding:11px 0;margin:-11px 0}
 .versionLine{margin:8px 0;font-size:14px;line-height:22px}
 .anchorRow{margin:12px 0;display:grid!important;grid-template-columns:auto minmax(0,200px);align-items:center;gap:4px 12px}.anchorRow small{grid-column:1/-1}
 .taskRows{list-style:none;margin:8px 0 16px;padding:0}.taskRows>li{border-bottom:1px solid #e1e9e4;padding:8px 0}
@@ -46,6 +49,8 @@
 .importSheet{width:min(560px,calc(100% - 32px));max-height:calc(100dvh - 48px);padding:0;border:0;border-radius:16px;box-shadow:0 12px 40px rgba(16,40,34,.24);color:#20342f}
 .importSheet::backdrop{background:var(--flowme-b-scrim)}.sheetBody{display:grid;gap:12px;padding:20px}.sheetBody h2{margin:0;font-size:20px}.sheetSummary{margin:0;color:#3d524d}
 .destinationChoices{border:0;margin:0;padding:0;display:grid;gap:8px}.destinationChoice{display:flex;gap:12px;align-items:flex-start;padding:12px;border:2px solid #176d59;border-radius:12px}.destinationChoice span{display:grid}.destinationChoice small{color:#5b6b66}
+/* UX B2 (11/6): .page input{width:100%} made the radio take half the card; it keeps its own size. */
+.page .destinationChoice input{flex:none;width:20px;height:20px;min-height:0;margin:3px 0 0}
 .sheetBody>.primary{width:100%}
 @media(max-width:900px){.detailLayout{grid-template-columns:minmax(0,1fr) 260px;gap:20px}}
 @media(max-width:700px){.flowCards{grid-template-columns:minmax(0,1fr)}
@@ -72,8 +77,8 @@
 .detailBar{min-height:56px;margin:0 0 8px}
 .flowDetail .detailHeader{margin:0}.flowDetail .detailHeader .eyebrow{margin:0;font-size:13px;line-height:20px}
 .flowDetail .detailHeader h1{font-size:22px;line-height:30px;margin:4px 0}
-.summaryText{margin:0;font-size:16px;line-height:25px}.summaryText.summaryClamp{-webkit-line-clamp:2}
-.summaryMore{position:absolute;right:0;bottom:-10px;min-height:44px!important;padding:0 0 0 32px!important;border:0!important;background:linear-gradient(90deg,rgba(250,250,247,0),#fafaf7 28px)!important}
+.summaryText{margin:0;font-size:16px;line-height:25px}.summaryText.summaryClamp{max-height:2lh}
+.summaryMore{display:block;margin-left:auto;min-height:44px!important;padding:0!important;border:0!important;background:none!important}
 .summaryMore[data-open]{position:static;padding:0!important;background:none!important}
 .flowDetail .sourceBlock{margin:4px 0}
 .flowDetail .anchorRow{min-height:48px;margin:4px 0 8px}.anchorRow>span{font-weight:600}

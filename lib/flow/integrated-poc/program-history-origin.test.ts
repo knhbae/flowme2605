@@ -55,7 +55,7 @@ test('the Flow detail head rules apply to phones only; PC keeps its detail (revi
   const css = read('ProgramDiscovery.module.css');
   const phone = css.slice(css.indexOf('@media(max-width:700px){\n.pcOnly{display:none!important}'));
   const before = css.slice(0, css.indexOf('@media(max-width:700px){\n.pcOnly{display:none!important}'));
-  for (const rule of ['.flowDetail .detailHeader h1{font-size:22px;line-height:30px;margin:4px 0}', '.summaryText.summaryClamp{-webkit-line-clamp:2}', '.detailBar{min-height:56px;margin:0 0 8px}',
+  for (const rule of ['.flowDetail .detailHeader h1{font-size:22px;line-height:30px;margin:4px 0}', '.summaryText.summaryClamp{max-height:2lh}', '.detailBar{min-height:56px;margin:0 0 8px}',
     '.anchorGeneralHint{position:absolute;', '.flowDetail .itemsLabel{margin:0;padding:4px 0;font-size:13px;']) {
     assert(phone.includes(rule), rule);
     assert(!before.includes(rule), `not outside the phone block: ${rule}`);
@@ -91,11 +91,12 @@ test('re-review P2: on PC the summary keeps the header closing-line look it had 
   assert(!css.slice(0, css.indexOf('@media(max-width:700px){\n.pcOnly{display:none!important}')).includes('.summaryText{margin:0}'));
 });
 
-test('re-review 2 P2: PC shows 더 보기 by the earlier rule; only phones go by the measured cut', () => {
+// UX C1 (11/6) changed this: PC also goes by the measured cut (1280 showed 더 보기 with nothing hidden).
+test('re-review 2 P2, then UX C1: 더 보기 shows only when the summary is cut, on phones and PC', () => {
   const tsx = read('ProgramDiscovery.tsx');
   // The rule before the head change (eb6f38fc), and the plain look exactly when it has no button.
   assert(tsx.includes("const longSummary = version.summary.length > 90 || version.summary.includes('\\n');"));
   assert(tsx.includes("${longSummary ? '' : ` ${styles.summaryPlain}`}"));
-  assert(tsx.includes('{longSummary && <button type="button" className={`${styles.linkButton} ${styles.pcOnly}`}'));
+  assert(tsx.includes('{(summaryClipped || summaryOpen === version.id) && <button type="button" className={`${styles.linkButton} ${styles.pcOnly}`}'));
   assert(tsx.includes('{(summaryClipped || summaryOpen === version.id) && <button type="button" className={`${styles.linkButton} ${styles.summaryMore} ${styles.phoneOnly}`}'));
 });

@@ -22,7 +22,7 @@ function evaluate<T>(expression: string, scope: Record<string, unknown>): T {
 
 test('every function of the old "…" menu has a place in the new groups, in the designed order', () => {
   const menu = element('aria-label="계정 및 자료 관리"');
-  const groups = ['편집', '내 활동', '자료', '계정', '문제 해결', '실험', '개발계 안내'].map(title => menu.indexOf(`aria-label="${title}"><h3>${title}</h3>`));
+  const groups = ['편집', '내 활동', '자료', '계정', '문제 해결', '실험', '저장과 공개 안내'].map(title => menu.indexOf(`aria-label="${title}"><h3>${title}</h3>`));
   assert(groups.every(at => at > 0), String(groups));
   assert.deepEqual([...groups].sort((a, b) => a - b), groups);
   const between = (from: string, to?: string) => menu.slice(menu.indexOf(`aria-label="${from}"`), to ? menu.indexOf(`aria-label="${to}"`) : undefined);
@@ -30,11 +30,12 @@ test('every function of the old "…" menu has a place in the new groups, in the
     // UX FC-DETAIL-HEAD 1: 되돌리기 is in 편집 on every screen (둘러보기 no longer has a status row with it).
     ['편집', ['{serverUndo}', '다시 실행']],
     ['내 활동', ['>내 활동</button>', '개인 Flow 상세']],
-    ['자료', ['복구함', '백업 · 복원 · 가져오기']],
+    // UX B1 (11/6): the old local PoC data, no longer linked from the sign-in screen, is reached from here.
+    ['자료', ['복구함', '백업 · 복원 · 가져오기', 'href="/my?personalWorkspacePoc=v1">이 기기에만 저장한 예전 자료</a>']],
     ['계정', ['{email}', '로그아웃 · 계정 바꾸기']],
     ['문제 해결', ['서버에서 다시 확인', '서버 기록 번호 {snapshot.account.revision}']],
     ['실험', ["'기존 폴더로 보기' : '문서·모음 시험'"]],
-    ['개발계 안내', ['{DEV_NOTICE_TEXT}']],
+    ['저장과 공개 안내', ['{DEV_NOTICE_TEXT}']],
   ];
   const order = expect.map(([title]) => title);
   expect.forEach(([title, items], index) => { const part = between(title, order[index + 1]); for (const item of items) assert(part.includes(item), `${title}: ${item}`); });

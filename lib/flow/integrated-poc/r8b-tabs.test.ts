@@ -154,7 +154,9 @@ test('둘러보기 on phones takes the R8b title rows; its status row warns only
   assert(css.indexOf('@media (max-width: 700px) {\n  .page[data-alpha-frame="b"][data-browse-layout] { padding-top: 8px; }') > 0);
   // R6: levels 1–5 only on 둘러보기; the space and other screens keep their rows.
   assert.match(alpha, /const browseStatusShown = serverSlot\.level <= 5;/);
-  assert.match(alpha, /\{!usesNoteChrome && \(!browse \|\| browseStatusShown\) && serverStatus\}/);
+  // UX B7 (11/6): 내 활동 too.
+  assert.match(alpha, /const quietStatus = browse \|\| destination\.view === 'activity';/);
+  assert.match(alpha, /\{!usesNoteChrome && \(!quietStatus \|\| browseStatusShown\) && serverStatus\}/);
   // 되돌리기 next to 다시 실행 on every screen, so hiding the row loses no undo path.
   assert.match(alpha, /<div className=\{styles\.managementActions\}>\{serverUndo\}<button type="button" onClick=\{\(\) => void history\('redo'\)\}/);
 });

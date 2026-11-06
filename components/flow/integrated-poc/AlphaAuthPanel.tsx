@@ -35,7 +35,7 @@ const statuses: Partial<Record<AlphaSessionView['status'], string>> = {
 function authError(code?: string) {
   if (code === 'over_email_send_rate_limit' || code === 'over_request_rate_limit') return '요청이 많습니다. 잠시 후 다시 시도해 주세요.';
   if (code === 'email_not_confirmed') return '이메일의 확인 링크를 먼저 열어 주세요.';
-  if (code === 'email_address_not_authorized') return '개발계 이메일 발송 설정이 필요합니다. 관리자에게 알려 주세요.';
+  if (code === 'email_address_not_authorized') return '지금 이메일을 보낼 수 없습니다. 잠시 뒤 다시 시도해 주세요.';
   if (code === 'invalid_credentials') return '이메일과 비밀번호를 확인해 주세요.';
   return '요청을 완료하지 못했습니다. 연결 상태를 확인하고 다시 시도해 주세요.';
 }
@@ -154,7 +154,7 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
         .then(async response => response.ok ? response.json() : null).then(settings => { if (!disposed) setGoogle(settings?.external?.google === true); }).catch(() => {});
     } catch {
       if (callback) { callbackGate.current = 'failed'; setCallbackPhase('failed'); }
-      setMessage('개발 설정 또는 브라우저 저장소를 확인해 주세요. 서버 연결을 시작하지 않았습니다.');
+      setMessage('로그인을 시작하지 못했습니다. 브라우저 저장소를 허용했는지 확인한 뒤 다시 시도해 주세요.');
     }
     const onStorage = (event: StorageEvent) => {
       if (event.key === logoutKey && event.newValue === '1') {
@@ -270,9 +270,9 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
         :<p role="alert">기존 작성 연결을 확인하지 못했습니다. 입력을 다른 계정에 옮기지 않았습니다.</p>
       :<AlphaWorkspace key={workspaceSession.userId} config={config} session={workspaceSession} email={accountEmail} onSignOut={signOut} pmWriting={appWriting?'v11-pm/1':undefined} nativeAuthoringEnabled={nativeAuthoringEnabled} readProbe={readProbe} privacyContact={privacyContact} />;
   } else legacy = <main className={styles.page}>
-    <header className={styles.header}><a href="/alpha" className={styles.brand}>FlowMe</a><span>개발계 · 로그인 검증</span></header>
+    <header className={styles.header}><a href="/alpha" className={styles.brand}>FlowMe</a></header>
     <section className={styles.panel} aria-labelledby="alpha-heading">
-      {!config ? <><h1 id="alpha-heading">개발계 연결이 꺼져 있습니다</h1><p>설정된 개발 환경에서만 로그인할 수 있습니다. 기존 개인공간에는 영향을 주지 않습니다.</p></>
+      {!config ? <><h1 id="alpha-heading">지금은 로그인할 수 없습니다</h1><p>잠시 뒤 다시 시도해 주세요.</p></>
         : logoutPending ? <><h1 id="alpha-heading">로그아웃 확인이 필요합니다</h1><button disabled={busy} onClick={() => void signOut()}>로그아웃 다시 시도</button></>
         : recoveryBlocked ? <>
           <h1 id="alpha-heading">로그인 상태가 바뀌었습니다</h1>
@@ -286,13 +286,13 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
         </>
         : signedIn && mode !== 'new-password' ? <>
           <h1 id="alpha-heading">내 계정</h1><p className={styles.identity}>{accountEmail}</p>
-          {view.status === 'new-account' && <><h2>아직 개인공간이 없습니다</h2><p>이 계정의 빈 개인공간을 만듭니다. 이 브라우저의 기존 PoC 자료는 가져오지 않습니다.</p><button onClick={() => void boundary.current?.load(true)}>빈 개인공간 만들기</button></>}
+          {view.status === 'new-account' && <><h2>처음 오셨네요</h2><p>빈 공간을 만들고 시작합니다.</p><button onClick={() => void boundary.current?.load(true)}>빈 개인공간 만들기</button></>}
           {view.status === 'ready' && <><h2>개인공간 연결을 확인했습니다</h2><button className={styles.secondary} onClick={() => void boundary.current?.load()}>개인공간 열기</button></>}
           {['unavailable', 'invalid', 'session-expired'].includes(view.status) && <button onClick={() => void boundary.current?.load()}>계정 다시 확인</button>}
           <button className={styles.secondary} disabled={busy} onClick={() => void signOut()}>로그아웃 · 계정 바꾸기</button>
         </> : <>
           <h1 id="alpha-heading">{headings[mode]}</h1>
-          <p>계정과 서버 접근을 확인하는 개발 화면입니다. 실제 개인 자료는 아직 넣지 마세요.</p>
+          <p>할 일과 메모를 한곳에 쓰고, 다른 사람의 Flow를 내 계획으로 가져옵니다.</p>
           {google && mode === 'login' && <button className={styles.secondary} disabled={!ready || busy} onClick={() => void signInGoogle()}>Google로 계속</button>}
           <form onSubmit={event => void submit(event)}>
             {mode !== 'new-password' && <label>이메일<input name="email" type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} disabled={busy || !hydrated} /></label>}
@@ -309,7 +309,6 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
       {(!recoveryBlocked && callbackPhase === 'ready' || logoutPending || !config) && <div className={styles.status} role="status" aria-live="polite">{message || statuses[view.status] || ''}</div>}
       {/* R7: what is stored and who sees it, under the sign-in, once the server names the contact address. */}
       {privacyAddress && <p className={styles.privacy}><span>저장과 공개 안내</span><button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></p>}
-      <a className={styles.back} href="/my?personalWorkspacePoc=v1">기존 로컬 PoC 열기 <span>로그인 계정과 별도 저장</span></a>
     </section>
     {privacyOpen && privacyAddress && <AlphaPrivacyNotice contact={privacyAddress} onClose={() => setPrivacyOpen(false)} />}
   </main>;

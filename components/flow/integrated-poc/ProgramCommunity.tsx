@@ -30,6 +30,8 @@ export type ProgramCommunityProps = {
   draftSaveRecovery?: ProgramCommunityDraftSaveRecovery & { draftId: string };
   reviewEntry?: ProgramReviewEntry | null;
   captureReviewVisit?: () => () => boolean;
+  /** UX B7 (11/6): the host's 내 활동 kinds (활동·공개 관리 · Flow 만들기), drawn under the title so the title comes first. */
+  activityTabs?: React.ReactNode;
   reviewAnnouncement?: {
     captureState: () => () => boolean;
     onChange: (isCurrent: () => boolean) => void;
@@ -63,7 +65,7 @@ function postTitle(data: ProgramData, id: string) { return data.public.posts.fin
 export function ProgramCommunity(props: ProgramCommunityProps) {
   return <CommunityBody key={props.data.activeActorId} {...props} />;
 }
-function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedReplyId, onRegisterEditors, presentation, onPresentationChange, storageScope = 'local', mediaPort, resolveDraftSaveError, resolveDraftSaveRecovery, draftSaveRecovery, reviewEntry, captureReviewVisit, reviewAnnouncement, onReviewPublished, onRegisterReviewResult, reviewReturnPostId, onReturnReview }: ProgramCommunityProps) {
+function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedReplyId, onRegisterEditors, presentation, onPresentationChange, storageScope = 'local', mediaPort, resolveDraftSaveError, resolveDraftSaveRecovery, draftSaveRecovery, reviewEntry, captureReviewVisit, activityTabs, reviewAnnouncement, onReviewPublished, onRegisterReviewResult, reviewReturnPostId, onReturnReview }: ProgramCommunityProps) {
   const actorId = data.activeActorId;
   const [localPresentation, setLocalPresentation] = useState(emptyProgramCommunityPresentation);
   const currentPresentation = presentation ?? localPresentation, { query, kind } = currentPresentation;
@@ -426,6 +428,7 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
 
   return <section className={styles.community} aria-label={view === 'activity' ? '내 활동' : '이야기'}>
     <header className={styles.header}><h1>{view === 'activity' ? '내 활동' : '이야기'}</h1><button className={styles.primary} type="button" disabled={draftEntryDisabled} onClick={() => void openDraft(newProgramParticipationDraft())}>글 쓰기</button></header>
+    {view === 'activity' && activityTabs}
     {reviewPending?.isCurrent() && <p key={`review-pending:${reviewPending.attempt}`} role="status" aria-live="polite" aria-atomic="true" className={styles.notice} data-review-submit-state="pending">후기 게시 결과를 확인하고 있습니다. 확인이 끝날 때까지 다시 제출할 수 없습니다.</p>}
     {confirmedReview?.isCurrent() && selectedPostId !== confirmedReview.postId && <div key={`review-confirmed:${confirmedReview.attempt}`} role={confirmedReview.canAnnounce() ? 'status' : undefined} aria-live={confirmedReview.canAnnounce() ? 'polite' : 'off'} aria-atomic="true" className={styles.notice}>
       <p>{data.public.posts.some(post => post.id === confirmedReview.postId && post.authorId === actorId)
@@ -491,7 +494,7 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
         {draft.kind !== 'reply' && <><p className={styles.meta}>주제: {draft.topic || '없음'}</p>
           <p className={styles.meta}>공개 항목: {draft.flowId ? draft.itemId ? data.public.versions.find(version => version.id === draft.versionId)?.items.find(item => item.id === draft.itemId)?.title ?? '항목 확인 필요' : 'Flow 전체' : '연결하지 않음'}</p></>}
         {draft.evidencePostIds.length > 0 && <ul>{draft.evidencePostIds.map(id => <li key={id}>{postTitle(data, id)}</li>)}</ul>}
-        <p className={styles.notice}>{isReviewDraft && reviewEntry?.tried ? "'해 봤어요' 후기도 공개한 글입니다. " : ''}{storageScope === 'account' ? '확인한 내용만 개발계의 다른 사용자에게 공개합니다. 작성 중인 다른 초안은 공개하지 않습니다. 계정을 지워도 공개한 글은 남습니다.' : '이 내용만 이 기기의 공개 목록에 반영됩니다. 실제 서비스에는 게시되지 않습니다.'}</p>
+        <p className={styles.notice}>{isReviewDraft && reviewEntry?.tried ? "'해 봤어요' 후기도 공개한 글입니다. " : ''}{storageScope === 'account' ? '확인한 내용만 로그인한 다른 사용자에게 공개합니다. 작성 중인 다른 초안은 공개하지 않습니다. 계정을 지워도 공개한 글은 남습니다.' : '이 내용만 이 기기의 공개 목록에 반영됩니다. 실제 서비스에는 게시되지 않습니다.'}</p>
         <div className={styles.actions}><button type="button" disabled={busy} onClick={() => setPreview(false)}>다시 수정</button><button className={styles.primary} type="button" disabled={busy} onClick={() => void submit()}>{busy ? '저장 중…' : draft.editTargetId ? '수정 내용 반영' : '공개하기'}</button></div>
       </div>}
       {conflict && (!errorNotice.isCurrent || errorNotice.isCurrent()) && <div className={styles.notice}><h3>최신 내용과 비교</h3>
@@ -529,7 +532,7 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
         <section><h2>내 공개 Flow</h2>{publishingActivity.flows.length ? <ul className={styles.list}>{publishingActivity.flows.map(flow => <li key={flow.id}>
           <button className={styles.rowLink} type="button" onClick={() => void go({ view: 'flow', id: flow.id, versionId: flow.versionId })}><strong>{flow.title}</strong><span>{flow.number}판 · {flow.archived ? '공개 철회됨' : '공개 중'}{flowReviews.byFlow[flow.id] ? ` · 후기 ${flowReviews.byFlow[flow.id]}` : ''}</span></button>
           {!flow.archived && <ProgramShareLink flowId={flow.id} versionId={flow.versionId} />}
-          {flow.documents.length ? flow.documents.map(doc => <div className={styles.actions} key={doc.id}><button type="button" onClick={() => void go({ view: 'space', id: doc.id })}>{doc.archived ? '보관한 원문 열기 · 복원 후 이어 쓰기' : `개인 원문 · ${doc.title}`}</button>{!doc.archived && (flow.archived && hasActivePublication(doc.id) ? <small>이 문서는 새 링크로 공개 중입니다</small> : doc.canEditPublication ? <button type="button" disabled={draftEntryDisabled} onClick={() => flow.archived ? void startRepublish(doc.id, flow.id) : void go({ view: 'space', id: doc.id, action: 'publish' })}>{flow.archived ? '새 링크로 다시 공개…' : '공개 내용 편집'}</button> : <small>이 문서의 공개 편집은 다른 초안에 연결되어 있습니다.</small>)}</div>) : <p className={styles.meta}>연결된 개인 문서가 없습니다. 공개 판본은 읽을 수 있습니다.</p>}
+          {flow.documents.length ? flow.documents.map(doc => <div className={styles.actions} key={doc.id}><button type="button" onClick={() => void go({ view: 'space', id: doc.id })}>{doc.archived ? '보관한 원문 열기 · 복원 후 이어 쓰기' : `개인 원문 · ${doc.title}`}</button>{!doc.archived && (flow.archived && hasActivePublication(doc.id) ? <small>이 문서는 새 링크로 공개 중입니다</small> : doc.canEditPublication ? <button type="button" disabled={draftEntryDisabled} onClick={() => flow.archived ? void startRepublish(doc.id, flow.id) : void go({ view: 'space', id: doc.id, action: 'publish' })}>{flow.archived ? '새 링크로 다시 공개…' : '공개 내용 편집'}</button> : <small>이 문서의 공개 편집은 다른 초안에 연결되어 있습니다.</small>)}</div>) : <p className={styles.meta}>이 Flow와 연결된 내 문서가 없습니다.</p>}
         </li>)}</ul> : <p className={styles.empty}>공개한 Flow가 없어요.</p>}</section>
         <section><h2>작성 중인 공개 초안</h2>{publishingActivity.drafts.length ? <ul className={styles.list}>{publishingActivity.drafts.map(entry => <li key={entry.id}><strong>{entry.title || entry.document?.title || '제목 없는 공개 초안'}</strong><p className={styles.meta}>{stamp(entry.updatedAt)}{entry.flowArchived ? ' · 다시 공개 준비 중' : ''}</p>
           {entry.document ? <button type="button" onClick={() => void go({ view: 'space', id: entry.document!.id, ...(!entry.document!.archived ? { action: 'publish' as const } : {}) })}>{entry.document.archived ? '보관한 원문 열기 · 복원 후 이어 쓰기' : '공개 초안 이어 쓰기'}</button> : <p>원래 문서를 찾을 수 없어 편집을 열 수 없습니다.</p>}

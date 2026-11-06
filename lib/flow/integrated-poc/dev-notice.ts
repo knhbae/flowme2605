@@ -2,10 +2,12 @@
  * The development-environment publication notice is acknowledged once per device and account (W11, decision 2
  * option C). It lives in device storage, so a new tab does not show it again; raising DEV_NOTICE_VERSION with new
  * wording shows it once more. Any storage failure counts as "not acknowledged" and the notice keeps showing.
- * 더보기 › 개발계 안내 shows the text at any time.
+ * 더보기 › 저장과 공개 안내 shows the text at any time.
+ * UX B1 (11/6): the wording says what is public, not that this is a development build; the version stays, so a
+ * person who already confirmed the notice does not see it again.
  */
-export const DEV_NOTICE_TEXT = '개발용 통합 검증판 · 공개한 내용은 개발계의 다른 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 아직 넣지 마세요.';
-/** Raise when DEV_NOTICE_TEXT changes, so every device and account sees the new wording once. */
+export const DEV_NOTICE_TEXT = '공개한 Flow와 글은 로그인한 다른 사용자도 봅니다. 내 문서와 할 일은 나만 봅니다.';
+/** Raise when DEV_NOTICE_TEXT changes, so every device and account sees the new wording once (not raised for B1). */
 export const DEV_NOTICE_VERSION = '2026-10-31';
 
 const KEY_PREFIX = 'flow:poc:personal-workspace:v1:alpha-m3:dev-notice:';

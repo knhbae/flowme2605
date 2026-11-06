@@ -129,11 +129,11 @@ export function programObjectParticle(word: string): string {
   const last = word.trim().slice(-1), code = last.charCodeAt(0) - 0xAC00;
   return code >= 0 && code <= 11171 ? code % 28 ? '을' : '를' : '을(를)';
 }
-/** The arrival notice on the copy document; an account whose server undo is held gets the trash route instead. */
+/** The arrival notice on the copy document. UX B1 (11/6): its [되돌리기] button stands for the undo (the notice no longer
+ *  sends the person to 더보기); an account whose server undo is held gets the trash route instead. */
 export function programImportArrivalNotice(title: string, undoHeld: boolean, repeats = ''): string {
-  return `‘${title}’${programObjectParticle(title)} 가져왔습니다.${repeats ? ` ${repeats}` : ''} 날짜가 있는 할 일은 오늘에도 보입니다. ${undoHeld
-    ? '필요 없으면 문서를 휴지통으로 옮길 수 있습니다. 다시 쓰려면 휴지통에서 복원합니다.'
-    : '필요 없으면 더보기 › 되돌리기로 취소할 수 있습니다.'}`;
+  return `‘${title}’${programObjectParticle(title)} 가져왔습니다.${repeats ? ` ${repeats}` : ''} 날짜가 있는 할 일은 오늘에도 보입니다.${undoHeld
+    ? ' 필요 없으면 문서를 휴지통으로 옮길 수 있습니다. 다시 쓰려면 휴지통에서 복원합니다.' : ''}`;
 }
 /** 공식 반복 Flow: '반복 2개를 넣었습니다. 이미 있던 반복 1개는 넣지 않았습니다.' ('' with neither). */
 export function programImportRepeatNotice(written: number, existing: number): string {
