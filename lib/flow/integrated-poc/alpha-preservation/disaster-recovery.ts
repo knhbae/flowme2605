@@ -1,7 +1,7 @@
 import type { AlphaAccount } from '../alpha-persistence/contract';
 import { canonicalJson, detached, hashJson, parseAlphaJson, sha256 } from '../alpha-persistence/json';
 import { validateAlphaAccount } from '../alpha-persistence/program-adapter';
-import { alphaSocialReferences, emptyAlphaReferences, isAlphaSocialContext, type AlphaSocialContext } from '../alpha-social/projection';
+import { alphaSocialReferences, emptyAlphaReferences, isAlphaSocialContext, withDepartedAlphaActors, type AlphaSocialContext } from '../alpha-social/projection';
 import { programShape } from '../program-data';
 
 /** Administrator-only rehearsal package. Never accepted by account restore APIs. */
@@ -88,8 +88,11 @@ async function validateRows(input: ServiceDrInput, schema: ServiceDrBackup['sche
     const identity = identities.find(entry => entry.owner_id === row.owner_id), account = row.account as AlphaAccount;
     let refs = emptyAlphaReferences(row.owner_id as string);
     if (identity) {
-      const context = { schema: 'flowme-alpha-social-context/1', revision: state.revision, ownActorId: identity.public_actor_id,
-        actors: identities.map(entry => ({ id: entry.public_actor_id, name: entry.display_name })), public: state.repository };
+      // R6 '남김': a deleted author's public rows outlive the identity row. Checked as every read checks them
+      // (readAlphaSocialResponse): each well-formed alias only those author slots name counts as an actor for this check.
+      // The package is kept exactly as given; no actor or identity row is added to it.
+      const context = withDepartedAlphaActors({ schema: 'flowme-alpha-social-context/1', revision: state.revision, ownActorId: identity.public_actor_id,
+        actors: identities.map(entry => ({ id: entry.public_actor_id, name: entry.display_name })), public: state.repository });
       need(isAlphaSocialContext(context, { server: true }), 'public-graph'); refs = alphaSocialReferences(context as AlphaSocialContext, row.owner_id as string);
     }
     need(account?.source.actorId === row.owner_id && validateAlphaAccount(account, refs, row.owner_id as string), 'account-graph');
