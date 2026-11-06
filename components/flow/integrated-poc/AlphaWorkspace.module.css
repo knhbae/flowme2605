@@ -409,3 +409,11 @@
 @media (max-width: 700px) {
   .recoverySheet { width: 100%; max-width: none; margin: auto 0 0; border-radius: 16px 16px 0 0; padding-bottom: env(safe-area-inset-bottom); }
 }
+/* Save wait (11/7): a move waiting on its save, where 해 봤어요 sits (top on wider screens, above the bottom tabs on phones), over it. */
+.moveNotice { position: fixed; z-index: 46; top: 12px; left: calc(92px + (100% - 92px) / 2); transform: translateX(-50%); width: min(560px, calc(100vw - 124px)); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 6px 6px 6px 14px; border: 1px solid var(--flowme-b-line); border-left: 3px solid var(--flowme-b-primary); border-radius: 10px; background: #fff; color: var(--flowme-b-ink); box-shadow: 0 8px 24px var(--flowme-b-shadow); font-size: 14px; line-height: 20px; }
+.moveNotice:not([data-move-wait="saving"]) { border-left-color: #986209; }
+.moveNotice > p { flex: 1 1 240px; margin: 0; overflow-wrap: anywhere; }
+.moveNotice > div { display: flex; gap: 4px; margin-left: auto; }
+.moveNotice button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--flowme-b-primary-strong); font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.moveNotice button:first-child { background: var(--flowme-b-primary); color: #fff; }
+@media (max-width: 700px) { .moveNotice { top: auto; bottom: calc(76px + env(safe-area-inset-bottom) + 12px); left: 16px; right: 16px; width: auto; transform: none; } }

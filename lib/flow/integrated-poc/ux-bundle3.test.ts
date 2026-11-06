@@ -16,8 +16,11 @@ test('Flow and 나 call navigate() and nothing of what it does (input, locks, sa
     assert(code.includes('await navigate({ view:'), name);
     for (const step of ['captureInput', 'lockInput', 'flushAll', 'mutate(', 'focus(']) assert(!code.includes(step), `${name}: ${step}`);
   }
-  // navigate() itself is as it was: keep input, lock every editor, save them all, check, move.
-  assert(workspace.includes('if (!captureInput()) return;\n    const releases = allEditors().map(port => port?.lockInput());\n    try { for (const port of allEditors()) if (port && !await port.flushAll()) return; }'));
+  // navigate() keeps input, locks every editor, saves them all, checks, then moves (since save wait 11/7 the save is
+  // waited on with a notice and a limit; move-save-wait.test.ts).
+  const move = body('navigate');
+  for (const step of ['if (!captureInput()) return;', 'allEditors().map(port => port?.lockInput())', 'if (port && !await port.flushAll()) return false;', "if (outcome !== 'saved')"])
+    assert(move.includes(step), step);
   const tabs = workspace.slice(workspace.indexOf('data-main-tab="flow"'), workspace.indexOf('</nav>}', workspace.indexOf('data-main-tab="flow"')));
   assert(!tabs.includes('onPointerDown'));
   assert(workspace.indexOf('data-main-tab={tab}') < workspace.indexOf('data-main-tab="flow"') && workspace.indexOf('data-main-tab="flow"') < workspace.indexOf('data-main-tab="me"'), 'Tab order 쓰기·오늘·분류 → Flow → 나');

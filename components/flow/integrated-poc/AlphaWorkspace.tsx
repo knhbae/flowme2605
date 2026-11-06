@@ -22,6 +22,7 @@ import { createAlphaStructuralRecovery, resolveAlphaStructuralRecovery, type Alp
 import { type ProgramData, type ProgramParticipationDraft, type ProgramPublicationDraft, programId } from '@/lib/flow/integrated-poc/contract';
 import type { ProgramProposalReviewDraft } from '@/lib/flow/integrated-poc/review-drafts';
 import { programInputBoundaryCurrent, readProgramInputBoundary, programInputCanRelease, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
+import { waitProgramMoveFlush, type ProgramMoveWaitOutcome } from '@/lib/flow/integrated-poc/move-save-wait';
 import { type ProgramDestination, type ProgramMutate, programErrorMessage, PROGRAM_BUSY_NOTICE, PROGRAM_QUEUED_NOTICE, PROGRAM_SOURCE_QUEUED_NOTICE } from '@/lib/flow/integrated-poc/ui-contract';
 import { automaticReadToAwait, queueTap, sourceReturnWait, unqueueTap, type QueuedTaps } from '@/lib/flow/integrated-poc/automatic-read-wait';
 import { AUTOMATIC_READ_INPUT_EVENTS, automaticReadSchedule } from '@/lib/flow/integrated-poc/automatic-read-idle';
@@ -175,6 +176,15 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const publisherEditors = useRef<ProgramEditorFlush | null>(null), communityEditors = useRef<ProgramEditorFlush | null>(null), inspectorEditors = useRef<ProgramEditorFlush | null>(null);
   const mediaPort = useMemo(() => createAlphaCommunityMediaPort({ accessToken: () => session.accessToken, fetch: request }), [session.userId, session.accessToken, request]);
   const [output, setOutput] = useState<string | null>(null), [message, setMessage] = useState('');
+  // Save wait (11/7): what a move waiting on its save shows (navigate()). moveSeq marks the latest move; moveStay ends its wait.
+  const [moveWait, setMoveWait] = useState<{ seq: number; phase: 'saving' | 'late' | 'late-saved' | 'not-saved' } | null>(null);
+  const moveSeq = useRef(0), moveStay = useRef<(() => void) | null>(null), moveOpener = useRef<HTMLElement | null>(null);
+  /** 머무르기 or 닫기: the notice goes and focus goes back to what started the move (a tab, usually). */
+  function closeMoveNotice(stay: boolean) {
+    if (stay) moveStay.current?.(); else setMoveWait(null);
+    const opener = moveOpener.current;
+    if (opener?.isConnected) opener.focus({ preventScroll: true });
+  }
   const [flowReturn, setFlowReturn] = useState<{ actorId: string; documentId?: string; kind: 'copy' | 'browse'; returnFocus?: HTMLElement; writing?: ProgramWritingReturn } | null>(null);
   const [importUndo, setImportUndo] = useState<{ batch: ProgramImportLinks; text: string; done?: boolean } | null>(null);
   const [importUndoBusy, setImportUndoBusy] = useState(false), importUndoLock = useRef(false);
@@ -1183,9 +1193,31 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (externalRef.current || controller.current?.snapshot().pending) { setMessage('먼저 저장 결과와 보관 입력을 확인해 주세요.'); return; }
     const visit = destinationRef.current, epoch = sessionEpochRef.current, store = controller.current;
     if (!captureInput()) return;
+    // Save wait (11/7): the move still saves every editor first and never skips it. Past 0.8 s it says so and offers 머무르기;
+    // past 10 s, or when the save cannot finish, it does not move and says the input is on this device (복구함). A wait
+    // that ends without moving lets the save go on. A newer move takes over: the older one stops waiting and does not move.
+    moveStay.current?.();
+    const seq = ++moveSeq.current;
+    let stay = () => {};
+    const stayed = new Promise<void>(resolve => { stay = resolve; });
+    moveStay.current = stay;
+    moveOpener.current = document.activeElement instanceof HTMLElement && document.activeElement !== document.body ? document.activeElement : null;
     const releases = allEditors().map(port => port?.lockInput());
-    try { for (const port of allEditors()) if (port && !await port.flushAll()) return; }
-    finally { releases.forEach(release => release?.()); }
+    let outcome: ProgramMoveWaitOutcome;
+    try {
+      outcome = await waitProgramMoveFlush({
+        flush: async () => { for (const port of allEditors()) if (port && !await port.flushAll()) return false; return true; },
+        onWaiting: () => { if (moveSeq.current === seq) setMoveWait({ seq, phase: 'saving' }); },
+        stayed,
+        onLateSettled: saved => setMoveWait(shown => shown?.seq === seq && shown.phase === 'late' ? { seq, phase: saved ? 'late-saved' : 'not-saved' } : shown),
+      });
+    } finally {
+      releases.forEach(release => release?.());
+      if (moveStay.current === stay) moveStay.current = null;
+    }
+    if (moveSeq.current !== seq) return;
+    if (outcome !== 'saved') { setMoveWait(outcome === 'stayed' ? null : { seq, phase: outcome }); return; }
+    setMoveWait(null);
     if (disposed.current || visit !== destinationRef.current || epoch !== sessionEpochRef.current || store !== controller.current
       || currentOwnerRef.current !== session.userId) return;
     if (chooseCreatorEntry) { creatorEntryReturn.current = visit; setCatalogDetailOpen(false); }
@@ -1736,6 +1768,15 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       <div className={styles.recoverySheetBody}>{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>보관한 입력이 없습니다.</p>
         {archivedCount > 0 && <button type="button" onClick={() => void openArchiveFromMenu()}>보관한 문서 {archivedCount}개 → 보관함에서 보기</button>}</>}</div>
     </dialog>
+    {moveWait && <section className={styles.moveNotice} aria-label="이동 전 저장" data-move-wait={moveWait.phase}>
+      <p role="status">{moveWait.phase === 'saving' ? '저장 중… 저장을 마치면 이동합니다.'
+        : moveWait.phase === 'late' ? '저장이 늦어지고 있어요. 이동하지 않았습니다. 내용은 이 기기에 남아 있고, 저장은 계속합니다.'
+        : moveWait.phase === 'late-saved' ? '늦어지던 저장을 마쳤습니다. 이제 이동할 수 있습니다.'
+        : '저장하지 못한 입력이 있어 이동하지 않았습니다. 내용은 이 기기에 남아 있습니다. 편집기의 안내를 확인해 주세요.'}</p>
+      <div>{moveWait.phase === 'saving' ? <button type="button" onClick={() => closeMoveNotice(true)}>머무르기</button> : <>
+        <button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>복구함 열기</button>
+        <button type="button" onClick={() => closeMoveNotice(false)}>닫기</button></>}</div>
+    </section>}
     {destination.view !== 'space' && message && !participationMessage && <p className={styles.message} role="status">{message}</p>}
     {unavailable ? <section className={styles.empty}><p>{snapshot?.status === 'session-expired' ? '계정을 다시 확인한 뒤 개인공간을 열 수 있습니다.' : '서버에서 개인공간을 확인하고 있습니다.'}</p></section> : <>
       {destination.view === 'creator' && activityTabs}
