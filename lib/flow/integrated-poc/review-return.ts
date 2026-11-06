@@ -19,6 +19,8 @@ export type ProgramReviewEntry = {
   draft: ProgramParticipationDraft;
   isCurrent: () => boolean;
   onOpened: (opened: boolean) => void;
+  /** 실행 고리 1안: opened by ‘해 봤어요’ [남기기], its Flow and version already chosen (flow-loop.ts). */
+  tried?: true;
 };
 
 export function newProgramReviewDraft(): ProgramParticipationDraft {

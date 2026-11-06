@@ -20,6 +20,7 @@ import { programImportTargets } from '@/lib/flow/integrated-poc/program-import-l
 import { programImportFirstDate, programImportItemView, programImportRepeatChoice, programImportRepeatRule, programImportRepeats, programImportSentence } from '@/lib/flow/integrated-poc/public-repeat-import';
 import { programRepeatFixed } from '@/lib/flow/integrated-poc/repeat-line';
 import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
+import { programFlowProgress, programFlowProgressText } from '@/lib/flow/integrated-poc/flow-loop';
 import styles from './ProgramDiscovery.module.css';
 
 export type ProgramDiscoveryDraftState = {
@@ -359,8 +360,11 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
       : flow.archived ? null
         : storedCopy ? <button type="button" className={styles.primary} disabled={pending} onClick={() => navigate({ view: 'space' })}>내 공간에서 확인</button>
           : <button type="button" className={styles.primary} data-testid="program-import-open" disabled={pending || !canUseVersion} onClick={() => openSheet()}>{importLabel}</button>;
+    // 실행 고리 1안: a copy I can open says how far I got, read from my own space (no request).
+    const progress = existingCopy && !flow.archived && !privateSpace.archivedDocumentIds.includes(existingCopy.documentId) ? programFlowProgress(data, actorId, flow.id, today) : null;
+    const progressText = progress && programFlowProgressText(progress);
     const stateNote = flow.archived ? '공개가 철회된 Flow입니다. 가져간 사본은 그대로입니다.'
-      : existingCopy ? privateSpace.archivedDocumentIds.includes(existingCopy.documentId) ? '보관한 내 문서를 읽기 전용으로 엽니다.' : '이미 가져온 내 문서를 엽니다. 날짜·진행 기록은 그대로입니다.'
+      : existingCopy ? privateSpace.archivedDocumentIds.includes(existingCopy.documentId) ? '보관한 내 문서를 읽기 전용으로 엽니다.' : progressText || '이미 가져온 내 문서를 엽니다. 날짜·진행 기록은 그대로입니다.'
         : storedCopy ? '이 Flow의 개인 사본이 있지만 지금 바로 열 수 없습니다. 내 공간에서 휴지통과 보관 상태를 확인해 주세요. 새 사본은 만들지 않습니다.'
           : sourceOnHold ? '출처를 다시 확인하는 중이라 지금은 새로 가져올 수 없습니다.' : null;
     return <section className={`${styles.page} ${styles.flowDetail}`} data-testid="program-flow-detail" data-has-action={action ? 'true' : undefined}>
@@ -388,7 +392,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
           <div className={styles.pcOnly}>{extras}</div>
           {existingCopy && copyVersion && existingCopy.baseVersionId !== version.id && <p className={styles.versionLine}>내 사본은 판본 {copyVersion.number}입니다. 원본에 판본 {version.number}이 있습니다. <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>변경 확인</button></p>}
         </section>
-        {stateNote && <p className={flow.archived || existingCopy ? styles.muted : styles.notice}>{stateNote}</p>}
+        {stateNote && <p className={flow.archived || existingCopy ? styles.muted : styles.notice} data-flow-progress={progressText ? '' : undefined}>{stateNote}</p>}
         {anchorUsed && !flow.archived && <><label className={`${styles.field} ${styles.anchorRow}`}><span>{sourceMeta?.anchorLabel ?? '기준일'}</span><input type="date" value={detail.anchor} disabled={pending} aria-describedby={`${uid}-anchor-hint`} onChange={event => patchDetail({ anchor: event.target.value })} /></label>
           {/* Phones: the rows already read "기준일 30일 전" and change at once, so only a version's own hint is shown. */}
           <p id={`${uid}-anchor-hint`} className={sourceMeta?.anchorHint ? styles.anchorHint : `${styles.anchorHint} ${styles.anchorGeneralHint}`}>{sourceMeta?.anchorHint || '넣으면 아래 날짜가 바로 바뀝니다. 고정 날짜는 그대로입니다.'}</p></>}
