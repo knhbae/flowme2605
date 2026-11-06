@@ -2,6 +2,7 @@ import {personalAuthoringCapability} from '../personal-authoring-boundary';
 import { PROGRAM_SCHEMA, type ProgramEnvelope, type ProgramPrivateSpace, type ProgramTransition } from '../contract';
 import { createProgramPrivateSpace, programIdentifier, programShape, validateProgramEnvelope,inspectStoredProgramEnvelope } from '../program-data';
 import {freezeStored,type DeepReadonly,type ReaStoredSpace,type StoredTextRead} from '../rea-stored-text';
+import { rememberAlphaPublicActorProjection } from '../alpha-official-actors';
 import { ALPHA_SCHEMA, ALPHA_COMMAND_SCHEMA, type AlphaAccount, type AlphaReferenceContext, type AlphaPrivateCommand as AlphaCommand, type AlphaChange, type AlphaSpace } from './contract';
 import { canonicalJson, detached } from './json';
 import {inspectOrderedStoredProgramEnvelope} from '../program-data';
@@ -10,9 +11,9 @@ import {type ReaOrderedStoredSpace,type OrderedTextRead} from '../rea-stored-tex
 export function materializeAccount(account: AlphaAccount, references: AlphaReferenceContext): ProgramEnvelope {
   const actorId = account.source.actorId;
   return { schema: PROGRAM_SCHEMA, revision: account.source.revision,
-    data: { ...(references.social ? { projection: 'alpha-social-v1' as const } : {}), actors: references.actorIds.map(id => ({ id, name: references.social?.actorNames[id] ?? 'M1 reference', simulated: true })), activeActorId: actorId,
+    data: rememberAlphaPublicActorProjection({ ...(references.social ? { projection: 'alpha-social-v1' as const } : {}), actors: references.actorIds.map(id => ({ id, name: references.social?.actorNames[id] ?? 'M1 reference', simulated: true })), activeActorId: actorId,
       spaces: Object.fromEntries(references.actorIds.map(id => [id, id === actorId ? account.space : createProgramPrivateSpace()])),
-      public: references.public, receipts: account.legacyReceipts },
+      public: references.public, receipts: account.legacyReceipts }, account.ownerId, references.social?.ownActorId),
     undo: Object.fromEntries(references.actorIds.map(id => [id, id === actorId ? account.legacyUndo : []])) };
 }
 type AlphaStoredFrame=Omit<AlphaAccount,'space'|'legacyUndo'>&{space:unknown;legacyUndo:unknown};

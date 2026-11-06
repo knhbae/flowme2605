@@ -1,10 +1,22 @@
 import { isAlphaAuthConfig, type AlphaAuthConfig } from './alpha-auth/config';
 import type { VerifiedAlphaSession } from './alpha-auth/account-access';
 import { programIdentifier, programShape } from './program-data';
+import type { ProgramData } from './contract';
 
 export const ALPHA_OFFICIAL_ACTORS_RPC = 'flowme_alpha_official_actors_v1';
 const noOfficialActors: readonly string[] = Object.freeze([]);
 const publicAlias = /^member-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+const projections = new WeakMap<ProgramData, Readonly<{ ownerId: string; publicActorId: string }>>();
+
+/** The account presentation already maps the viewer's public alias to its
+ * private owner ID. Keep that verified correspondence beside the exact view,
+ * never in JSON, an account, public repository or browser storage. */
+export function rememberAlphaPublicActorProjection(data: ProgramData, ownerId: string, publicActorId: unknown) {
+  projections.delete(data);
+  if (data.activeActorId === ownerId && typeof publicActorId === 'string' && publicAlias.test(publicActorId))
+    projections.set(data, Object.freeze({ ownerId, publicActorId }));
+  return data;
+}
 
 /** Separate optional metadata: never add keys to a social/account response. */
 export function readAlphaOfficialActors(value: unknown): readonly string[] | null {
@@ -37,8 +49,10 @@ export function createAlphaOfficialActorsReader(inputConfig: AlphaAuthConfig, in
 
 /** Text, source attribution, display names and derivedFrom never grant a mark. */
 export function programFlowAttributionLabel(flow: { id: string; ownerId: string },
-  version: { flowId: string; createdBy: string; source: { kind: string } }, officialActors: readonly string[] = []) {
-  if (version.flowId === flow.id && officialActors.includes(flow.ownerId) && officialActors.includes(version.createdBy))
+  version: { flowId: string; createdBy: string; source: { kind: string } }, officialActors: readonly string[] = [], view?: ProgramData) {
+  const projection = view && projections.get(view);
+  const aliasOf = (id: string) => projection && projection.ownerId === view?.activeActorId && id === projection.ownerId ? projection.publicActorId : id;
+  if (version.flowId === flow.id && officialActors.includes(aliasOf(flow.ownerId)) && officialActors.includes(aliasOf(version.createdBy)))
     return 'FlowMe가 정리한 자료';
   return version.source.kind === 'repository-source' ? '기존 출처 자료'
     : version.source.kind === 'user-text' ? '사용자가 정리한 자료' : null;

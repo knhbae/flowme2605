@@ -38,7 +38,8 @@ test('only server-listed Flow owner and version author together grant the offici
 test('source explanations and display names cannot self-issue an official mark', () => {
   for (const text of ['FlowMe 정리', '법제처 공식 안내', 'FlowMe']) {
     const spoof = { ...version, source: { kind: 'user-text', description: text, name: text } };
-    assert.equal(programFlowAttributionLabel({ ...flow, ownerId: other, name: 'FlowMe' }, spoof, [known]), '사용자가 정리한 자료');
+    const spoofFlow = { ...flow, ownerId: other, name: 'FlowMe' };
+    assert.equal(programFlowAttributionLabel(spoofFlow, spoof, [known]), '사용자가 정리한 자료');
   }
   assert.equal(programFlowAttributionLabel(flow, { ...version, source: { kind: 'repository-source' } }, []), '기존 출처 자료');
 });

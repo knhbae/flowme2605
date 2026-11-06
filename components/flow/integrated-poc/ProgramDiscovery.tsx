@@ -361,7 +361,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     const anchorNeeded = programVersionUsesAnchor(version, useItemIds);
     const undatedStarts = selectedSeries.filter(item => item.schedule.kind === 'recurring' && item.schedule.start.kind === 'undated');
     const outputOpen = outputVersion === version.id || !!selectedOutputReturn;
-    const kindLabel = programFlowAttributionLabel(flow, version, officialActors);
+    const kindLabel = programFlowAttributionLabel(flow, version, officialActors, data);
     const importLabel = choosing ? `할 일 ${useItemIds.length}개 가져오기` : '내 계획으로 가져오기';
     // Head re-review 2 P2: PC keeps its earlier '더 보기' rule (over 90 characters or a line break) and, without it,
     // the plain closing-line look; phones show it only when the two lines really cut text.
