@@ -1032,7 +1032,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   }
   useEffect(() => {
     const resume = (event: Event) => { if (event.isTrusted && erasedOut.current) { erasedOut.current = false; erasing.current = false; } };
-    const types = ['pointerdown', 'keydown', 'input', 'paste', 'drop', 'compositionstart'];
+    // A key alone is not acting here (F5·Ctrl+R reloads with it): typing is an input, a key on a button is its click.
+    const types = ['pointerdown', 'click', 'input', 'paste', 'drop', 'compositionstart'];
     for (const type of types) document.addEventListener(type, resume, true);
     return () => { for (const type of types) document.removeEventListener(type, resume, true); };
   }, []);

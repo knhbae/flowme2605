@@ -215,7 +215,9 @@ test('P3 지우고: nothing is kept again until the logout takes the workspace d
   assert(erase.includes('if (!disposed.current) { erasedOut.current = true; setLeaveBusy(false); }'), 'erasing stays on after signOut returns');
   assert(!erase.slice(erase.indexOf('await signOut();'), erase.indexOf('const resume')).includes('erasing.current = false'), 'signOut returning does not let capture run again');
   assert(erase.includes("if (event.isTrusted && erasedOut.current) { erasedOut.current = false; erasing.current = false; }"), 'the person acting here again lets it run');
-  for (const type of ['pointerdown', 'keydown', 'input', 'paste', 'drop', 'compositionstart']) assert(erase.includes(`'${type}'`), type);
+  for (const type of ['pointerdown', 'click', 'input', 'paste', 'drop', 'compositionstart']) assert(erase.includes(`'${type}'`), type);
+  // P3 (QA r6-dr-p3 2228): a key alone (F5·Ctrl+R) does not let it run; typing (input) and a key on a button (click) do.
+  assert(!erase.includes("'keydown'"), 'a key alone is not acting here');
 });
 
 test('P3 지우고: input another open tab took from a tab that left is counted and said, and that tab keeps it', async () => {
