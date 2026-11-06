@@ -23,8 +23,10 @@ export type AlphaUiRecoveryKeepRecord = {
 export type AlphaUiRecoveryKeepStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem' | 'key' | 'length'>;
 export type AlphaUiRecoveryKeepProof = { session: AlphaUiRecoveryPort; released?: readonly AlphaUiDraft[] };
 export type AlphaUiRecoveryHandoff = { drafts: AlphaUiDraft[]; take(session: AlphaUiRecoveryPort): Promise<boolean> };
-/** P3c logout: this account's input kept on this device outside the tab, and the rows that hold it. */
-export type AlphaUiRecoveryDevice = { drafts: AlphaUiDraft[]; rows: { key: string; raw: string }[] };
+/** P3c logout: this account's input kept on this device outside the tab, and the rows that hold it. `elsewhere`: how
+ * many of those drafts a page that may still be open holds too (it took them from a tab that left, or has them itself);
+ * '지우고' leaves that page's copy, and the next sign-in may take it back once that page leaves or goes quiet. */
+export type AlphaUiRecoveryDevice = { drafts: AlphaUiDraft[]; rows: { key: string; raw: string }[]; elsewhere: number };
 export interface AlphaUiRecoveryKeep {
   readonly key: string;
   /** Append an immutable generation. No deletion, overwrite, expiry or truncation occurs here. */
@@ -142,7 +144,7 @@ export function createAlphaUiRecoveryKeep(storage: AlphaUiRecoveryKeepStorage | 
       || (modern(row).seq > (draft.documentId ? superseded.get(draft.documentId) ?? -1 : -1)
         && modern(row).seq > (released.get(identity(draft)) ?? -1))));
   }
-  function groups(all: Row[]) {
+  function groups(all: Row[], every = false) {
     const result = new Map<string, Row[]>();
     for (const row of all) {
       if (row.key.startsWith(ownPrefix)) continue;
@@ -152,7 +154,7 @@ export function createAlphaUiRecoveryKeep(storage: AlphaUiRecoveryKeepStorage | 
     return [...result.values()].map(list => {
       list.sort((a, b) => a.version === 1 ? a.value.at - b.value.at : (a.value.seq ?? 0) - (b.value.seq ?? 0));
       return { list, newest: list.at(-1)!, drafts: effective(list) };
-    }).filter(group => group.newest.value.left || group.newest.value.at < now() - ALPHA_UI_RECOVERY_KEEP_LIMITS.quietMinutes * 60_000);
+    }).filter(group => every || group.newest.value.left || group.newest.value.at < now() - ALPHA_UI_RECOVERY_KEEP_LIMITS.quietMinutes * 60_000);
   }
   async function locked(work: () => boolean): Promise<boolean> {
     try {
@@ -237,10 +239,13 @@ export function createAlphaUiRecoveryKeep(storage: AlphaUiRecoveryKeepStorage | 
     },
     device() {
       try {
-        const all = rows(), own = mine(all), gone = groups(all).filter(group => group.newest.value.left);
-        return { drafts: mergeAlphaUiRecoveryDrafts([], [...effective(own), ...gone.flatMap(group => group.drafts)]),
-          rows: [...own, ...gone.flatMap(group => group.list)].map(({ key, raw }) => ({ key, raw })) };
-      } catch { return { drafts: [], rows: [] }; }
+        const all = rows(), own = mine(all), every = groups(all, true), gone = every.filter(group => group.newest.value.left);
+        const drafts = mergeAlphaUiRecoveryDrafts([], [...effective(own), ...gone.flatMap(group => group.drafts)]);
+        // A page that may be open (quiet or not) keeps what it took or holds; the same input there is counted, not listed.
+        const open = new Set(every.filter(group => !group.newest.value.left).flatMap(group => group.drafts.map(identity)));
+        return { drafts, rows: [...own, ...gone.flatMap(group => group.list)].map(({ key, raw }) => ({ key, raw })),
+          elsewhere: drafts.filter(draft => open.has(identity(draft))).length };
+      } catch { return { drafts: [], rows: [], elsewhere: 0 }; }
     },
     erase(listed) {
       // The one removal of another page's rows outside compaction: the person chose to erase what they were shown.

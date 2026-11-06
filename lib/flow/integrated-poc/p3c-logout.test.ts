@@ -205,3 +205,49 @@ test('B the logout button warns only with input on this device; 남기고 comes 
   assert(shell.includes('if (erasing.current) return false;'), 'nothing is kept again once erasing starts');
   assert(shell.includes('captureInput(); if (!erasing.current) uiKeep.current?.port.leave();'));
 });
+
+// P3 (11/6, QA p3c-logout 1936): ① after '지우고' the unmount of the workspace kept the editors' input again when signOut
+// returned before the logout took the workspace down; ② a copy another open tab took from a tab that left stays there.
+test('P3 지우고: nothing is kept again until the logout takes the workspace down or the person acts here again', () => {
+  const shell = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/AlphaWorkspace.tsx'), 'utf8');
+  const erase = shell.slice(shell.indexOf('async function eraseAndSignOut()'), shell.indexOf('useEffect(() => { if (leave) leaveKeep.current?.focus('));
+  assert(erase.includes('await signOut();'));
+  assert(erase.includes('if (!disposed.current) { erasedOut.current = true; setLeaveBusy(false); }'), 'erasing stays on after signOut returns');
+  assert(!erase.slice(erase.indexOf('await signOut();'), erase.indexOf('const resume')).includes('erasing.current = false'), 'signOut returning does not let capture run again');
+  assert(erase.includes("if (event.isTrusted && erasedOut.current) { erasedOut.current = false; erasing.current = false; }"), 'the person acting here again lets it run');
+  for (const type of ['pointerdown', 'keydown', 'input', 'paste', 'drop', 'compositionstart']) assert(erase.includes(`'${type}'`), type);
+});
+
+test('P3 지우고: input another open tab took from a tab that left is counted and said, and that tab keeps it', async () => {
+  await withLocks(async locks => {
+    const shared = new Storage(locks);
+    const closed = page(shared, 'page-closed', OWNER, () => TIME - 31 * 60_000);
+    assert(closed.ui.save([draft('닫은 탭의 원문', 'document-c')]).ok); closed.ui.leave(); await locks.tail;
+    // Another tab opens and takes it (it stays open, quiet or not); then this tab signs out.
+    const taker = page(shared, 'page-taker', OWNER, () => TIME);
+    const found = taker.keep.left(() => false);
+    assert.deepEqual(found.drafts.map(row => row.raw), ['닫은 탭의 원문']);
+    assert(taker.ui.save(found.drafts).ok); assert(await found.take(taker.port)); await locks.tail;
+    const me = page(shared, 'page-me', OWNER, () => TIME);
+    assert(me.ui.save([draft('내 탭 원문')]).ok); await locks.tail;
+    const device = me.keep.device();
+    assert.deepEqual(device.drafts.map(row => row.raw).sort(), ['내 탭 원문', '닫은 탭의 원문'].sort());
+    assert.equal(device.elsewhere, 1, 'the closed tab\'s input is in the open tab too');
+    const takerBytes = canonicalJson(keysOf(shared, OWNER).filter(key => key.includes('page-taker')).map(key => [key, shared.values.get(key)]));
+    assert(await me.ui.erase(device.rows));
+    assert.equal(canonicalJson(keysOf(shared, OWNER).filter(key => key.includes('page-taker')).map(key => [key, shared.values.get(key)])), takerBytes, 'its rows: bytes as they were');
+    assert(keysOf(shared, OWNER).every(key => key.includes('page-taker')), 'the closed tab\'s and this tab\'s rows are gone');
+    assert.deepEqual(taker.session.values.size, 1, 'its own tab copy stays');
+    assert(nextPage(shared, TIME + ALPHA_UI_RECOVERY_KEEP_LIMITS.quietMinutes * 60_000 + 1).some(row => row.raw === '닫은 탭의 원문'),
+      'once that tab goes quiet the next sign-in takes it back (what the warning says)');
+  });
+  await withLocks(async locks => {
+    const shared = new Storage(locks), me = page(shared, 'page-me');
+    const live = page(shared, 'page-live');
+    assert(live.ui.save([draft('열린 다른 탭의 원문', 'document-l')]).ok);
+    assert(me.ui.save([draft('내 탭 원문')]).ok); await locks.tail;
+    assert.equal(me.keep.device().elsewhere, 0, 'another tab\'s own different input is not counted');
+  });
+  const shell = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/AlphaWorkspace.tsx'), 'utf8');
+  assert(shell.includes('이 가운데 ${elsewhere}개는 다른 탭에도 있어서 지워도 그 탭에는 남고, 다음 로그인 때 복구함에 다시 보일 수 있습니다.'));
+});

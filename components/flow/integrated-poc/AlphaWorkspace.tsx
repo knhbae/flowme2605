@@ -167,7 +167,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const socialRecovery = useRef<ReturnType<typeof createAlphaSocialRecovery> | null>(null), parkedSocial = useRef<AlphaSocialRecoveryEntry[]>([]), activeSocial = useRef<AlphaSocialRecoveryEntry[]>([]);
   // P3c (11/6): drafts a confirmed publish or post took (alphaSocialSettledEntry); their copies are not kept again.
   const settledSocial = useRef(new Set<string>());
-  const erasing = useRef(false), [leaveBusy, setLeaveBusy] = useState(false), [leaveFailed, setLeaveFailed] = useState(false);
+  const erasing = useRef(false), erasedOut = useRef(false), [leaveBusy, setLeaveBusy] = useState(false), [leaveFailed, setLeaveFailed] = useState(false);
   const leaveKeep = useRef<HTMLButtonElement | null>(null);
   const socialSettled = (entry: AlphaSocialRecoveryEntry) => { try { return settledSocial.current.has(canonicalJson(entry)); } catch { return false; } };
   const publisherEditors = useRef<ProgramEditorFlush | null>(null), communityEditors = useRef<ProgramEditorFlush | null>(null), inspectorEditors = useRef<ProgramEditorFlush | null>(null);
@@ -997,13 +997,13 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   /** P3c (11/6): this account's 복구함 input left on this device at logout: this tab's four kinds and the copies kept
    * outside the tab (this page's and those of tabs that left), each counted once; with the outside rows behind it. */
   function deviceInput() {
-    const outside = uiKeep.current?.keep.device() ?? { drafts: [], rows: [] };
+    const outside = uiKeep.current?.keep.device() ?? { drafts: [], rows: [], elsewhere: 0 };
     const ui = uiRecovery.current?.read(), structural = structuralRecovery.current?.read();
     const creator = creatorRecovery.current?.read(), social = socialRecovery.current?.read();
     const count = mergeRecoveryDrafts(outside.drafts, ui?.ok ? ui.value?.drafts ?? [] : []).length
       + (structural?.ok ? structural.value?.entries.length ?? 0 : 0) + (creator?.ok ? creator.value?.entries.length ?? 0 : 0)
       + (social?.ok ? social.value?.entries.length ?? 0 : 0);
-    return { count, rows: outside.rows };
+    return { count, rows: outside.rows, elsewhere: outside.elsewhere };
   }
   /** P3c '지우고 로그아웃': the copies outside the tab go first, in the account lock (another account's and another open
    * tab's stay), then this tab's four. Nothing is kept again from the start; when a part is refused, the person stays
@@ -1025,8 +1025,17 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     parkedCreator.current = []; activeCreator.current = null; parkedSocial.current = []; activeSocial.current = [];
     setRecoveries(null); setStructuralRecoveries(null); setCreatorRecoveries(null); setSocialRecoveries(null);
     await signOut();
-    if (!disposed.current) { erasing.current = false; setLeaveBusy(false); }
+    // P3 (11/6): the logout takes this workspace down before or after signOut returns, and its unmount would keep the
+    // editors' input (just erased) again. So nothing is kept until then, or until the person acts here again (a logout
+    // that did not start leaves them here, with the input still in the editors).
+    if (!disposed.current) { erasedOut.current = true; setLeaveBusy(false); }
   }
+  useEffect(() => {
+    const resume = (event: Event) => { if (event.isTrusted && erasedOut.current) { erasedOut.current = false; erasing.current = false; } };
+    const types = ['pointerdown', 'keydown', 'input', 'paste', 'drop', 'compositionstart'];
+    for (const type of types) document.addEventListener(type, resume, true);
+    return () => { for (const type of types) document.removeEventListener(type, resume, true); };
+  }, []);
   useEffect(() => { if (leave) leaveKeep.current?.focus({ preventScroll: false }); }, [leave]);
   async function history(kind: 'undo' | 'redo') {
     if (selectingRefuses()) return;
@@ -1660,9 +1669,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     {destination.view !== 'space' && inputProtectionFor(true)}
     {leave && (() => {
       // P3c (11/6): what stays on this device is said with its count; 남기고 comes first and takes the focus.
-      const left = leaveBusy ? null : deviceInput(), count = left?.count ?? 0;
-      return <section className={styles.problem} aria-label="로그아웃 전 입력 확인" data-logout-left={count}>
-        <p>{count ? `저장 안 된 입력 ${count}개가 이 기기의 복구함에 남아 있습니다. 남기면 같은 계정으로 다시 로그인할 때 복구함에서 찾을 수 있습니다. 지우면 되돌릴 수 없고, 서버에 저장한 자료는 그대로입니다.`
+      const left = leaveBusy ? null : deviceInput(), count = left?.count ?? 0, elsewhere = Math.min(left?.elsewhere ?? 0, count);
+      return <section className={styles.problem} aria-label="로그아웃 전 입력 확인" data-logout-left={count} data-logout-elsewhere={elsewhere}>
+        <p>{count ? `저장 안 된 입력 ${count}개가 이 기기의 복구함에 남아 있습니다. 남기면 같은 계정으로 다시 로그인할 때 복구함에서 찾을 수 있습니다. 지우면 되돌릴 수 없고, 서버에 저장한 자료는 그대로입니다.${elsewhere ? ` 이 가운데 ${elsewhere}개는 다른 탭에도 있어서 지워도 그 탭에는 남고, 다음 로그인 때 복구함에 다시 보일 수 있습니다.` : ''}`
           : leaveBusy ? '이 기기의 보관본을 지우는 중입니다.' : '저장하지 않은 입력을 이 탭에 보관한 뒤 로그아웃할 수 있습니다. 같은 계정으로 돌아와 복구하세요.'}</p>
         {leaveFailed && <p role="alert">이 기기의 보관본을 다 지우지 못했습니다. 남은 것은 다음 로그인 때 복구함에 보입니다. 다시 지우거나 남기고 로그아웃할 수 있습니다.</p>}
         <button type="button" ref={leaveKeep} disabled={leaveBusy} onClick={() => { if (captureInput() && canReleaseInput()) void signOut(); }}>{count ? '남기고 로그아웃' : '입력 보관 후 로그아웃'}</button>
