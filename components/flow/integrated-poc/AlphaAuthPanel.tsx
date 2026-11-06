@@ -9,6 +9,7 @@ import { updateAlphaRecoveryPassword } from '@/lib/flow/integrated-poc/alpha-aut
 import { createAlphaAccountAccess, createAlphaSessionBoundary, type AlphaSessionView, type VerifiedAlphaSession } from '@/lib/flow/integrated-poc/alpha-auth/account-access';
 import styles from './AlphaAuthPanel.module.css';
 import { AlphaWorkspace,AlphaWorkspaceLegacyWriting } from './AlphaWorkspace';
+import { AlphaOfficialActorsProvider } from './AlphaOfficialActors';
 import {createAlphaLegacyWritingTransport} from '@/lib/flow/integrated-poc/alpha-sync/legacy-writing-transport';
 import { AlphaAuthenticatedWritingWorkspace } from './AlphaAuthenticatedWritingWorkspace';
 import type { AlphaAuthenticatedWritingPorts } from '@/lib/flow/integrated-poc/alpha-sync/authenticated-writing-shell';
@@ -316,5 +317,6 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
   // the existing legacy or explicitly injected writing branch.
   // The opt-in child remains mounted across Auth events so a dirty owner can
   // refuse retirement; it re-verifies the supplied session through the reader.
-  return config&&appWriting&&!writing?<AlphaAppWritingWorkspace config={config} session={writingSession} email={accountEmail} onSignOut={signOut} legacy={legacy}/>:config && writing ? <AlphaAuthenticatedWritingWorkspace config={config} session={writingSession} ports={writing} email={accountEmail} onSignOut={signOut} legacy={legacy}/> : legacy;
+  const workspace = config&&appWriting&&!writing?<AlphaAppWritingWorkspace config={config} session={writingSession} email={accountEmail} onSignOut={signOut} legacy={legacy}/>:config && writing ? <AlphaAuthenticatedWritingWorkspace config={config} session={writingSession} ports={writing} email={accountEmail} onSignOut={signOut} legacy={legacy}/> : legacy;
+  return <AlphaOfficialActorsProvider config={config} session={writingSession} request={writing?.request}>{workspace}</AlphaOfficialActorsProvider>;
 }

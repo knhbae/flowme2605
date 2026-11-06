@@ -21,6 +21,8 @@ import { programImportAddsNothing, programImportFirstDate, programImportItemView
 import { programRepeatFixed } from '@/lib/flow/integrated-poc/repeat-line';
 import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
 import { programFlowProgress, programFlowProgressText } from '@/lib/flow/integrated-poc/flow-loop';
+import { programFlowAttributionLabel } from '@/lib/flow/integrated-poc/alpha-official-actors';
+import { useAlphaOfficialActors } from './AlphaOfficialActors';
 import styles from './ProgramDiscovery.module.css';
 
 export type ProgramDiscoveryDraftState = {
@@ -147,6 +149,7 @@ export function TransientOutputEditor({ draft, stale, onChange, onDiscard }: { d
 }
 
 export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersionId, selectedItemId, selectedOutputReturn, today, onUseVersion, onStartText, onCreateFlow, navigationState, onNavigationStateChange, onRegisterNavigation, storageScope = 'local', actorId = data.activeActorId, pendingDocumentIds = () => [], onReturnToSpace, copySourceReturn = false }: ProgramDiscoveryProps) {
+  const officialActors = useAlphaOfficialActors();
   const [local, setLocal] = useState(createProgramDiscoveryNavigationState);
   const state = navigationState ?? local; const stateRef = useRef(state); stateRef.current = state;
   const [message, setMessage] = useState(''); const [failed, setFailed] = useState(false); const [pending, setPending] = useState(false);
@@ -358,7 +361,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     const anchorNeeded = programVersionUsesAnchor(version, useItemIds);
     const undatedStarts = selectedSeries.filter(item => item.schedule.kind === 'recurring' && item.schedule.start.kind === 'undated');
     const outputOpen = outputVersion === version.id || !!selectedOutputReturn;
-    const kindLabel = version.source.kind === 'repository-source' ? '기존 출처 자료' : version.source.kind === 'user-text' ? '사용자가 정리한 자료' : null;
+    const kindLabel = programFlowAttributionLabel(flow, version, officialActors);
     const importLabel = choosing ? `할 일 ${useItemIds.length}개 가져오기` : '내 계획으로 가져오기';
     // Head re-review 2 P2: PC keeps its earlier '더 보기' rule (over 90 characters or a line break) and, without it,
     // the plain closing-line look; phones show it only when the two lines really cut text.
