@@ -2,6 +2,7 @@ import type { ProgramCopy, ProgramPrivateSpace, ProgramPublicFlow, ProgramPublic
 import { resolveProgramItemDate } from './private-space';
 import { programRecurringScheduleLabel } from './public-recurrence-contract';
 import { programOrdinaryTimingLabel } from './public-ordinary-time';
+import { programImportItemView } from './public-repeat-import';
 
 // Flow 찾기 FC1·FC2 (planning/flow-content-20261030/FC-SPEC.md). Pure display values shared by the card, the
 // detail and the import sheet; nothing here is stored and no version or flow field is added.
@@ -61,7 +62,8 @@ export function programFlowCardLines(flow: ProgramPublicFlow, version: ProgramPu
     title: version.title,
     badge: programFlowBadge({ flowId: flow.id, ...context }),
     summary: version.summary.replace(/\s+/g, ' ').trim(),
-    firstItem: version.items[0] ? `첫 할 일 ${version.items[0].title}` : null,
+    // P3 (11/6): a repeat item reads as on the detail, its words and then its chip, never the `@…` marker.
+    firstItem: version.items[0] ? `첫 할 일 ${(view => view ? `${view.title} · ${view.label}` : version.items[0].title)(programImportItemView(version.items[0]))}` : null,
     meta: [`할 일 ${version.items.length}개`, programVersionScheduleShape(version), flow.category, ...flow.situations.slice(0, 2)].filter(Boolean).join(' · '),
     source: programSourceLine(version.source),
   };

@@ -84,13 +84,19 @@ export const programImportSentence = (text: string) => {
   const line = text.replace(/\s+/g, ' ').trim(), match = /^(.+?[.!?])(?:\s|$)/.exec(line);
   return (match ? match[1] : line).slice(0, 200);
 };
+/** P3 (11/6): a description's caution lines (`주의(FlowMe 안내): …`, `주의: …`), each whole on one line. */
+export const programImportCautions = (text: string) => text.split('\n').map(line => line.replace(/\s+/g, ' ').trim())
+  .filter(line => /^주의\s*[(:：]/.test(line)).map(line => line.slice(0, 300));
 /** The lines one repeat item becomes: the task with its marker (`@{n}개월마다` for the months chosen, none when none
- *  were: then a plain task in 날짜 미정), its first date, and a memo naming the Flow with the description's first
- *  sentence (the rest stays in the copy's source view). */
+ *  were: then a plain task in 날짜 미정), its first date, a memo naming the Flow with the description's first
+ *  sentence, and a memo for each caution line, so its safety words come along (the rest stays in the copy's source
+ *  view). */
 export function programImportRepeatLines(item: ProgramPublicItem, repeat: ProgramImportRepeat, flowTitle: string, lineId: string, months: number | null, start: string | null): TextLine[] {
   const title = repeat.pick ? months ? `${repeat.title} @${months}개월마다` : repeat.title : item.title.trim(), sentence = programImportSentence(item.description);
+  const cautions = programImportCautions(item.description).filter(line => line !== sentence);
   return [{ id: lineId, text: `- [ ] ${title}` }, { id: `${lineId}:date`, text: `  - 날짜: ${start ?? '미정'}` },
-    { id: `${lineId}:memo`, text: `  - 메모: ‘${flowTitle.trim()}’에서${sentence ? ` · ${sentence}` : ''}` }];
+    { id: `${lineId}:memo`, text: `  - 메모: ‘${flowTitle.trim()}’에서${sentence ? ` · ${sentence}` : ''}` },
+    ...cautions.map((line, index) => ({ id: `${lineId}:caution${index ? `-${index}` : ''}`, text: `  - 메모: ${line}` }))];
 }
 /** Lines an import wrote are named so: its 되돌리기 finds them again (and what was written under them). */
 export const PROGRAM_IMPORT_REPEAT_LINE = 'repeat-line';

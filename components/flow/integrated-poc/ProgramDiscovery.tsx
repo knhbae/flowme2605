@@ -17,7 +17,7 @@ import { createTransientOutputDraft, previewTransientOutput, confirmTransientOut
 import { ProgramShareLink } from './ProgramShareLink';
 import { ProgramImportDocumentPicker } from './ProgramSpace';
 import { programImportTargets } from '@/lib/flow/integrated-poc/program-import-links';
-import { programImportFirstDate, programImportItemView, programImportRepeatChoice, programImportRepeatRule, programImportRepeats, programImportSentence } from '@/lib/flow/integrated-poc/public-repeat-import';
+import { programImportFirstDate, programImportItemView, programImportRepeatChoice, programImportRepeatOf, programImportRepeatRule, programImportRepeats, programImportSentence } from '@/lib/flow/integrated-poc/public-repeat-import';
 import { programRepeatFixed } from '@/lib/flow/integrated-poc/repeat-line';
 import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
 import { programFlowProgress, programFlowProgressText } from '@/lib/flow/integrated-poc/flow-loop';
@@ -278,6 +278,14 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   const sheetRepeats = version && !(importDestination === 'existing' && storedCopy) ? programImportRepeats(privateSpace, version, useItemIds) : [];
   const repeatChoice = programImportRepeatChoice(sheetRepeats, repeatTyped, today);
   const nothingToImport = sheetRepeats.length > 0 && sheetRepeats.length === useItemIds.length && sheetRepeats.every(repeat => repeat.existing);
+  // P3 (11/6): what goes into the chosen document. An existing copy brings its own items only, so a Flow of repeat
+  // items alone brings none there: the button stays off and one line says why.
+  const storedVersion = storedCopy ? data.public.versions.find(row => row.id === storedCopy.baseVersionId) : undefined;
+  const targetItems = !version ? [] : storedCopy ? storedVersion?.items.filter(row => storedCopy.includedItemIds.includes(row.id)) ?? []
+    : version.items.filter(item => useItemIds.includes(item.id) && !sheetRepeats.some(repeat => repeat.itemId === item.id && repeat.existing));
+  const nothingForTarget = importDestination === 'existing' && !!targetDocumentId && !targetItems.length;
+  const nothingReason = `넣을 할 일이 없습니다.${(storedCopy ? storedVersion?.items ?? [] : version?.items.filter(item => useItemIds.includes(item.id)) ?? []).some(item => programImportRepeatOf(item))
+    ? ' 반복 할 일은 처음 가져올 때 내 반복 줄로 들어가 있습니다.' : ''}`;
   const knownSources = flows.flatMap(row => {
     const current = data.public.versions.find(candidate => candidate.id === row.currentVersionId);
     return current?.source.url ? [{ url: current.source.url, version: current }] : [];
@@ -311,7 +319,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   // FC2: one import per press. The host saves, opens the copy document and says so there; a failure keeps the
   // sheet, the anchor and the selection, and names its reason (D1).
   const runImport = async () => {
-    if (pendingRef.current || !version || !detail || !canUseVersion || !repeatChoice || nothingToImport) return;
+    if (pendingRef.current || !version || !detail || !canUseVersion || !repeatChoice || nothingToImport || nothingForTarget) return;
     pendingRef.current = true; setPending(true); setImportFailure(null);
     const target = importDestination === 'existing' ? targetDocumentId : undefined;
     const importingVersion = target && storedCopy ? storedCopy.baseVersionId : version.id;
@@ -453,7 +461,8 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
             <button type="button" disabled={pending} onClick={() => setPickingDocument(true)}>{targetDocumentId ? (programImportTargets(data, actorId, storedCopy?.documentId, []).find(doc => doc.id === targetDocumentId)?.title ?? '문서') + ' · 바꾸기' : '넣을 문서 고르기'}</button>
             <p>{storedCopy ? '이미 가져온 사본의 할 일을 연결합니다. 새 사본은 만들지 않습니다.' : '넣은 할 일은 미분류의 사본 문서와 연결됩니다. 어느 쪽에서 체크해도 같이 바뀝니다.'}{sheetRepeats.some(repeat => !repeat.existing) ? ' 반복 할 일은 연결 없이 내 줄로 들어갑니다.' : ''}</p>
             {storedCopy && privateSpace.archivedDocumentIds.includes(storedCopy.documentId) && <p>보관한 사본 문서는 다시 꺼내집니다.</p>}
-            {targetDocumentId && <><p>고른 문서 끝에 할 일 {storedCopy ? storedCopy.includedItemIds.length : useItemIds.length - sheetRepeats.filter(repeat => repeat.existing).length}개가 들어갑니다.</p><ul>{(storedCopy ? data.public.versions.find(row => row.id === storedCopy.baseVersionId)?.items.filter(row => storedCopy.includedItemIds.includes(row.id)) ?? [] : version.items.filter(item => useItemIds.includes(item.id) && !sheetRepeats.some(repeat => repeat.itemId === item.id && repeat.existing))).slice(0, 3).map(item => <li key={item.id}>{item.schedule.kind === 'recurring' ? '반복 참조: ' : programImportItemView(item) ? '↻ ' : ''}{programImportItemView(item)?.title ?? item.title}</li>)}</ul>{(storedCopy ? storedCopy.includedItemIds.length : useItemIds.length - sheetRepeats.filter(repeat => repeat.existing).length) > 3 && <p>… {(storedCopy ? storedCopy.includedItemIds.length : useItemIds.length - sheetRepeats.filter(repeat => repeat.existing).length) - 3}개 더</p>}</>}
+            {targetDocumentId && (targetItems.length ? <><p>고른 문서 끝에 할 일 {targetItems.length}개가 들어갑니다.</p><ul>{targetItems.slice(0, 3).map(item => <li key={item.id}>{item.schedule.kind === 'recurring' ? '반복 참조: ' : programImportItemView(item) ? '↻ ' : ''}{programImportItemView(item)?.title ?? item.title}</li>)}</ul>{targetItems.length > 3 && <p>… {targetItems.length - 3}개 더</p>}</>
+              : <p className={styles.repeatNone} data-import-nothing>{nothingReason}</p>)}
           </div>}
           {sheetRepeats.length > 0 && <section className={styles.repeatChoices} aria-labelledby={`${uid}-repeats`}><h3 id={`${uid}-repeats`}>반복 할 일 · 내 반복 줄로 들어갑니다</h3>
             {sheetRepeats.every(repeat => repeat.existing) && <p className={styles.repeatNone}>넣을 반복 할 일이 없습니다</p>}
@@ -472,7 +481,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
               </li>;
             })}</ul></section>}
           {privateSpace?.documentTrash?.[storedCopy?.documentId ?? ''] && <p>사본 문서가 휴지통에 있습니다. 복원한 뒤 넣을 수 있습니다.</p>}
-          <button type="button" className={styles.primary} data-testid="program-import-run" disabled={pending || !canUseVersion || !repeatChoice || nothingToImport || importDestination === 'existing' && !targetDocumentId} onClick={() => void runImport()}>{pending ? '가져오는 중…' : importDestination === 'existing' ? '고른 문서에 넣기' : '새 문서로 가져오기'}</button>
+          <button type="button" className={styles.primary} data-testid="program-import-run" disabled={pending || !canUseVersion || !repeatChoice || nothingToImport || nothingForTarget || importDestination === 'existing' && !targetDocumentId} onClick={() => void runImport()}>{pending ? '가져오는 중…' : importDestination === 'existing' ? '고른 문서에 넣기' : '새 문서로 가져오기'}</button>
           {importFailure && <div className={styles.error} role="alert"><p>{importFailure.text}</p>{importFailure.continueCopy && (existingCopy ?? storedCopy) && <button type="button" onClick={() => { closeSheet(); navigate({ view: 'space', id: (existingCopy ?? storedCopy)!.documentId }); }}>내 문서에서 이어보기</button>}</div>}
         </div>}
       </dialog>
