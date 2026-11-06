@@ -16,6 +16,10 @@ export function programVersionScheduleShape(version: Pick<ProgramPublicVersion, 
     const frequencies = new Set(recurring);
     return frequencies.size === 1 ? `${FREQUENCY[recurring[0]]} 반복 포함` : '반복 포함';
   }
+  // 2차 리허설 (11/6): items that go in as repeat lines (공식 반복 Flow) read as repeating, not '날짜 미정': one is its
+  // chip, more are '반복 할 일', and among one-time items '반복 포함'.
+  const repeats = version.items.flatMap(item => { const view = programImportItemView(item); return view ? [view.label] : []; });
+  if (repeats.length) return repeats.length < version.items.length ? '반복 포함' : repeats.length === 1 && repeats[0].startsWith('↻') ? repeats[0] : '반복 할 일';
   if (version.items.some(item => item.schedule.kind === 'relative')) return '기준일부터';
   if (version.items.some(item => item.schedule.kind === 'fixed')) return '날짜 지정';
   return '날짜 미정';

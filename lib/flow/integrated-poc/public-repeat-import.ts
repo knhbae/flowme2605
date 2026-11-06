@@ -30,18 +30,25 @@ export function programImportRepeatOf(item: ProgramPublicItem): Omit<ProgramImpo
 /** PROPOSAL 5-5: the same words whatever the spaces and case ('근력운동하기' is '근력 운동 하기'). */
 const words = (title: string) => title.replace(/\s+/g, '').toLocaleLowerCase('ko-KR');
 /** The version's repeat items (those listed in `itemIds`, when given), each with a repeat line of mine it would repeat:
- *  one in any document or copy document, not finished, not trashed or archived, not a copy's own item. */
+ *  one in any document or copy document, not finished, not trashed or archived, not a copy's own item. A line of the
+ *  same words without a marker counts too when an import wrote it or it carries this Flow's memo (2차 리허설 11/6: an
+ *  `@?개월마다` item taken with its months left empty is such a line, and taking the Flow again wrote it twice). */
 export function programImportRepeats(space: ProgramPrivateSpace | undefined, version: ProgramPublicVersion, itemIds?: readonly string[]): ProgramImportRepeat[] {
   const copied = new Set(space?.copies.flatMap(copy => Object.values(copy.itemLines)) ?? []);
-  const mine = space ? M.tasks(space.text).filter(task => !task.done && !copied.has(task.id) && !space.documentTrash?.[task.docId]
-    && !space.archivedDocumentIds.includes(task.docId) && readProgramRepeatMarker(task.title)) : [];
+  const open = space ? M.tasks(space.text).filter(task => !task.done && !copied.has(task.id) && !space.documentTrash?.[task.docId]
+    && !space.archivedDocumentIds.includes(task.docId)) : [];
+  const mine = open.filter(task => readProgramRepeatMarker(task.title)), memo = `‘${version.title.trim()}’에서`;
+  const bare = open.filter(task => !readProgramRepeatMarker(task.title)
+    && (task.id.startsWith(`${PROGRAM_IMPORT_REPEAT_LINE}-`) || task.note.split('\n').some(line => line.startsWith(memo))));
   const titleOf = (docId: string) => space ? [...space.text.documents, ...space.text.flows].find(doc => doc.id === docId)?.title ?? '' : '';
   return version.items.filter(item => !itemIds || itemIds.includes(item.id)).flatMap(item => {
     const repeat = programImportRepeatOf(item);
     if (!repeat) return [];
     const found = mine.find(task => words(programRepeatTitle(task.title)) === words(repeat.title)), theirs = found && readProgramRepeatMarker(found.title);
+    const plain = !theirs ? bare.find(task => words(task.title) === words(repeat.title)) : undefined;
     return [{ itemId: item.id, ...repeat, existing: found && theirs
-      ? { documentTitle: titleOf(found.docId), marker: theirs.text, same: !!repeat.rule && programRepeatLabel(theirs.rule) === programRepeatLabel(repeat.rule) } : null }];
+      ? { documentTitle: titleOf(found.docId), marker: theirs.text, same: !!repeat.rule && programRepeatLabel(theirs.rule) === programRepeatLabel(repeat.rule) }
+      : plain ? { documentTitle: titleOf(plain.docId), marker: '반복 없음', same: false } : null }];
   });
 }
 
