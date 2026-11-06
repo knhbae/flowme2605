@@ -83,8 +83,8 @@ test('every Alpha dialog backdrop is the one scrim, still defined where ::backdr
   const rules = modules.flatMap(name => [...read(name).matchAll(/([.\w:-]+)::backdrop\s*\{([^}]*)\}/g)].map(match => ({ name, selector: match[1], body: match[2].trim() })));
   // ProgramApp is the /my PoC; its backdrop is already navy and outside Alpha.
   const alpha = rules.filter(rule => rule.name !== 'ProgramApp.module.css');
-  // FC2 added the Flow 찾기 import sheet; R7 the 저장과 공개 안내 sheet.
-  assert.equal(alpha.length, 11);
+  // FC2 added the Flow 찾기 import sheet; R7 the 저장과 공개 안내 sheet; UX B3 the 복구함 sheet.
+  assert.equal(alpha.length, 12);
   for (const rule of alpha) assert.match(rule.body, /^background:\s?var\(--flowme-b-scrim\);?$/, `${rule.name} ${rule.selector}`);
   // Every Alpha <dialog> module has one of those rules.
   for (const name of ['ProgramTextEditor', 'ProgramSpace', 'AlphaWorkspace', 'AlphaPreservationPanel', 'ProgramCreatorStructureForm', 'ProgramPrivateOutput', 'ProgramPublisher', 'ProgramDiscovery', 'AlphaPrivacyNotice']) {

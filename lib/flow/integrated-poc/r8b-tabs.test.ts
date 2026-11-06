@@ -37,7 +37,7 @@ test('the space chooses a main tab the R7 way: the tab a source came from return
   assert(!alpha.includes('onRegisterNavigation='));
 });
 
-test('the host tabs go to the space first when needed, then ask the port; 더보기 toggles the menu', async () => {
+test('the host tabs go to the space first when needed, then ask the port; Flow and 나 move by navigate() alone (UX B3)', async () => {
   const calls: string[] = [];
   const port = { choose: async (tab: string) => { calls.push(`choose ${tab}`); return true; } };
   const make = (view: string) => evaluate<(tab: string) => Promise<void>>(fn(alpha, 'chooseMainTab'), {
@@ -46,10 +46,24 @@ test('the host tabs go to the space first when needed, then ask the port; 더보
   await make('community')('today');
   await make('space')('all');
   assert.deepEqual(calls, ['navigate space', 'choose today', 'choose all']);
-  const focus: string[] = [], menu = { open: false, querySelector: () => ({ focus: () => focus.push('first item') }) };
-  const toggle = evaluate<() => void>(fn(alpha, 'toggleMoreMenu'), { managementMenu: { current: menu }, requestAnimationFrame: (callback: () => void) => { callback(); return 1; } });
-  toggle(); assert.deepEqual([menu.open, focus], [true, ['first item']]);
-  toggle(); assert.equal(menu.open, false);
+  // Flow: the branch last seen, or back to the 찾기 list (and the top) when already there.
+  const moves: string[] = [];
+  const flow = (view: string, last: string) => evaluate<() => Promise<void>>(fn(alpha, 'chooseFlowTab'), {
+    destinationRef: { current: { view } }, lastBrowse: { current: last }, navigate: async (next: { view: string }) => { moves.push(`navigate ${next.view}`); },
+    window: { scrollTo: () => moves.push('top') } });
+  await flow('space', 'community')(); await flow('today', 'discover')(); await flow('flow', 'community')();
+  assert.deepEqual(moves, ['navigate community', 'navigate discover', 'navigate discover', 'top']);
+  // 나: a refused move (a save or held input) also opens the 복구함 sheet; again on 나, the top.
+  const me = (refused: boolean, view: string) => { const log: string[] = []; return { log, run: evaluate<(opener: unknown) => Promise<void>>(fn(alpha, 'chooseMeTab'), {
+    externalRef: { current: refused }, controller: { current: { snapshot: () => ({ pending: null }) } }, destinationRef: { current: { view } },
+    navigate: async (next: { view: string }) => { log.push(`navigate ${next.view}`); }, openRecoveryBox: (opener: unknown) => log.push(`sheet ${opener}`),
+    window: { scrollTo: () => log.push('top') } }) }; };
+  const refused = me(true, 'space'); await refused.run('나'); assert.deepEqual(refused.log, ['navigate activity', 'sheet 나']);
+  const again = me(false, 'activity'); await again.run('나'); assert.deepEqual(again.log, ['navigate activity', 'top']);
+  // The new tabs hold no pointerdown (they move, as 쓰기·오늘·분류 do); the "…" tab and its toggle are gone.
+  assert(!alpha.includes('toggleMoreMenu') && !alpha.includes('data-main-tab="more"'));
+  const tabs = alpha.slice(alpha.indexOf('data-main-tab="flow"'), alpha.indexOf('</nav>}', alpha.indexOf('data-main-tab="flow"')));
+  assert(!tabs.includes('onPointerDown'));
 });
 
 test('tab marks: the space reports its main tab (week, month, date-less under 오늘); the host marks the matching tab', () => {
@@ -57,9 +71,9 @@ test('tab marks: the space reports its main tab (week, month, date-less under �
   assert.deepEqual(['documents', 'today', 'week', 'month', 'undated', 'all'].map(mainTabOf), ['documents', 'today', 'today', 'today', 'today', 'all']);
   assert(space.includes('useEffect(() => { props.onMainTabChange?.(programMainTabOf(period)); }, [period]);'));
   assert(alpha.includes("data-main-tab={tab} aria-current={destination.view === 'space' && mainTab === tab ? 'page' : undefined}"));
-  assert(alpha.includes("data-main-tab=\"more\" aria-current={['discover', 'flow', 'community', 'activity', 'legacy', 'creator'].includes(destination.view) ? 'page' : undefined}"));
-  // 둘러보기 and 내 활동 now live in the 더보기 menu; the space's own tab row is hidden under the host tabs.
-  assert(alpha.includes('aria-label="둘러보기"><h3>둘러보기</h3>') && alpha.includes('aria-label="내 활동"><h3>내 활동</h3>'));
+  // UX B3: Flow marks the 둘러보기 screens, 나 the 내 활동 ones (개인 Flow 상세 and 제작 공간 too).
+  assert(alpha.includes("data-main-tab=\"flow\" aria-current={browse ? 'page' : undefined}"));
+  assert(alpha.includes("data-main-tab=\"me\" aria-current={['activity', 'legacy', 'creator'].includes(destination.view) ? 'page' : undefined}"));
   assert(space.includes('aria-label="기본 이동" hidden={!!props.hostMainTabs}'));
   assert(!alpha.includes('<span>내 공간</span>') && !alpha.includes('<span>둘러보기</span>'));
 });
@@ -158,5 +172,7 @@ test('둘러보기 on phones takes the R8b title rows; its status row warns only
   assert.match(alpha, /const quietStatus = browse \|\| destination\.view === 'activity';/);
   assert.match(alpha, /\{!usesNoteChrome && \(!quietStatus \|\| browseStatusShown\) && serverStatus\}/);
   // 되돌리기 next to 다시 실행 on every screen, so hiding the row loses no undo path.
-  assert.match(alpha, /<div className=\{styles\.managementActions\}>\{serverUndo\}<button type="button" onClick=\{\(\) => void history\('redo'\)\}/);
+  // UX B3: on 나 › 문제 해결 (and in the menu left for an account that cannot open).
+  assert(alpha.includes('마지막 변경 되돌리기</button>{redoButton}</div>') && alpha.includes('<div className={styles.managementActions}>{serverUndo}{redoButton}</div>'));
+  assert(alpha.includes("const redoButton = <button type=\"button\" onClick={() => void history('redo')}"));
 });

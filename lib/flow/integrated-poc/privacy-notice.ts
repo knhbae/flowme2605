@@ -1,6 +1,6 @@
 /**
  * R7 저장과 공개 안내: the planning session's settled wording (third edition, 11/3), shown as one sheet from
- * 더보기 › 계정, the development notice and the sign-in screen. It reads nothing from the server and stores nothing.
+ * 나 › 계정 (UX B3), the development notice and the sign-in screen. It reads nothing from the server and stores nothing.
  * The contact address is not in the repository: the server passes FLOWME_ALPHA_PRIVACY_CONTACT. Without it the sheet
  * and its entry points do not show: the sheet promises deletion within a day, which holds only once the deletion
  * procedure has been practiced (R6), and the operator sets the address then.

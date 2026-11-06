@@ -49,7 +49,9 @@ test('entry points: 더보기 › 계정, the development notice in its three pl
   assert(account.includes('{privacyAddress && <button type="button" onClick={() => setPrivacyOpen(true)}>저장과 공개 안내</button>}'), '더보기 › 계정');
   // UX B1 (11/6): the header's 개발계 label is gone; the first-run line and 더보기 › 저장과 공개 안내 show the notice.
   assert.equal(workspace.split('{DEV_NOTICE_TEXT}{privacyMore}').length - 1, 2, 'every place that shows the development notice ends with 자세히');
-  assert.equal(workspace.split('{DEV_NOTICE_TEXT}').length - 1, 2);
+  // UX B3 (11/7): 나 › 계정 shows the notice folded when there is no address (no 자세히 then).
+  assert.equal(workspace.split('{DEV_NOTICE_TEXT}').length - 1, 3);
+  assert(workspace.includes('{!privacyAddress && <details className={styles.menuNote}><summary>저장과 공개 안내</summary><p>{DEV_NOTICE_TEXT}</p></details>}'));
   assert(workspace.includes('const privacyMore = privacyAddress && <> <button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></>;'));
   assert(workspace.includes('{privacyOpen && privacyAddress && <AlphaPrivacyNotice contact={privacyAddress}'));
   assert(signIn.includes('privacyAddress = readPrivacyContact(privacyContact);'));

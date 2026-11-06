@@ -2,7 +2,7 @@
  * The development-environment publication notice is acknowledged once per device and account (W11, decision 2
  * option C). It lives in device storage, so a new tab does not show it again; raising DEV_NOTICE_VERSION with new
  * wording shows it once more. Any storage failure counts as "not acknowledged" and the notice keeps showing.
- * 더보기 › 저장과 공개 안내 shows the text at any time.
+ * 나 › 계정 › 저장과 공개 안내 shows the text at any time (UX B3).
  * UX B1 (11/6): the wording says what is public, not that this is a development build; the version stays, so a
  * person who already confirmed the notice does not see it again.
  */

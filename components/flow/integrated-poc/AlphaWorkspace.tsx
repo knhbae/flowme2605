@@ -149,11 +149,13 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const preservationRef = useRef(false);
   const preservationOpener = useRef<HTMLElement | null>(null);
-  // R8a: the "…" menu and its 복구함, and the total the user last closed the saved-input notice at.
-  const managementMenu = useRef<HTMLDetailsElement | null>(null), recoveryBox = useRef<HTMLDetailsElement | null>(null);
-  // Every open or close of the 더보기 menu or its 복구함 (see navigateFromMenu).
-  const menuTurns = useRef(0);
-  // R8b: the bottom tabs 쓰기·오늘·분류 drive the space through its main-tab port; 더보기 opens the menu.
+  // UX B3 (11/7): the "…" menu is left only for an account that cannot open (no tabs then); 복구함 is a sheet that
+  // opens anywhere (recoveryDialog), and focus goes back to what opened it.
+  const managementMenu = useRef<HTMLDetailsElement | null>(null), recoveryDialog = useRef<HTMLDialogElement | null>(null);
+  const recoveryOpener = useRef<HTMLElement | null>(null), [recoveryOpen, setRecoveryOpen] = useState(false);
+  // The Flow tab opens the branch last seen (이야기 or 찾기).
+  const lastBrowse = useRef<'discover' | 'community'>('discover');
+  // R8b: the bottom tabs 쓰기·오늘·분류 drive the space through its main-tab port; Flow and 나 move by navigate().
   const mainTabs = useRef<{ choose(tab: ProgramMainTab): Promise<boolean>; openArchive(): Promise<boolean> } | null>(null);
   const [mainTab, setMainTab] = useState<ProgramMainTab>('documents');
   const [savedNoticeClosedAt, setSavedNoticeClosedAt] = useState<number | null>(null);
@@ -1254,7 +1256,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       else intent?.stop();
     });
   }
-  /** UX B1: the arrival notice's 되돌리기 is 더보기 › 되돌리기 (the same server undo), offered while the import is the
+  /** UX B1: the arrival notice's 되돌리기 is 나 › 문제 해결's 되돌리기 (the same server undo), offered while the import is the
    *  last server change. Once it is taken back the notice goes. */
   async function undoImportArrival() {
     const arrival = importArrival;
@@ -1511,42 +1513,50 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (destination.view !== 'space') await navigate({ view: 'space' });
     await mainTabs.current?.choose(tab);
   }
-  function toggleMoreMenu() {
-    const menu = managementMenu.current;
-    if (!menu) return;
-    menu.open = !menu.open;
-    if (menu.open) requestAnimationFrame(() => menu.querySelector<HTMLElement>(':scope > div :is(button, summary)')?.focus());
+  // UX B3 (11/7): the Flow and 나 tabs move by navigate() alone, which keeps input, locks the editors, saves them all and
+  // checks the session before it moves (nothing of that is done again here). Pressed again on its own screen, Flow goes
+  // to the 찾기 list and 나 to the top. A refused move (a save or held input pending) changes no tab; 나 then opens the
+  // 복구함 sheet too, where the held input is.
+  async function chooseFlowTab() {
+    if (['discover', 'flow', 'community'].includes(destinationRef.current.view)) { await navigate({ view: 'discover' }); window.scrollTo({ top: 0 }); return; }
+    await navigate({ view: lastBrowse.current });
   }
-  // A move to another screen from 더보기 closes the menu, which otherwise stayed open over the new screen and took its
-  // presses. Focus goes to the 더보기 tab, as Escape leaves it. A move that is refused (saving, held input) keeps it, and
-  // so does one whose wait (the save before it) saw the menu or its 복구함 opened or closed: that is the person's menu now.
-  async function navigateFromMenu(next: ProgramDestination) {
-    const turns = menuTurns.current;
-    await navigate(next);
-    const menu = managementMenu.current;
-    if (!menu?.open || destinationRef.current !== next || menuTurns.current !== turns) return;
-    menu.open = false;
-    (document.querySelector<HTMLElement>('[data-main-tab="more"]') ?? menu.querySelector<HTMLElement>(':scope > summary'))?.focus({ preventScroll: true });
+  async function chooseMeTab(opener: HTMLElement) {
+    const refused = !!externalRef.current || !!controller.current?.snapshot().pending, here = destinationRef.current.view === 'activity';
+    await navigate({ view: 'activity' });
+    if (refused) openRecoveryBox(opener); else if (here) window.scrollTo({ top: 0 });
   }
-  /** N9: from an empty 복구함 to the archived documents people often look for there. The menu closes as a move does. */
+  /** N9: from an empty 복구함 to the archived documents people often look for there. The sheet closes first. */
   async function openArchiveFromMenu() {
-    const turns = menuTurns.current;
+    setRecoveryOpen(false);
     if (destination.view !== 'space') await navigate({ view: 'space' });
-    if (!await mainTabs.current?.openArchive()) return;
-    const menu = managementMenu.current;
-    if (menu?.open && menuTurns.current === turns) menu.open = false;
+    await mainTabs.current?.openArchive();
   }
-  function openRecoveryBox() {
-    if (managementMenu.current) managementMenu.current.open = true;
-    if (recoveryBox.current) recoveryBox.current.open = true;
-    requestAnimationFrame(() => recoveryBox.current?.querySelector<HTMLElement>(':scope > summary')?.focus());
+  /** UX B3: 복구함 opens over any screen, while saving or in a conflict too. It is not a move: input is kept
+   *  (captureInput), nothing is locked or saved, and closing it returns focus to what opened it. */
+  function openRecoveryBox(opener?: HTMLElement | null) {
+    captureInput();
+    recoveryOpener.current = opener ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
+    setRecoveryOpen(true);
   }
+  useEffect(() => {
+    const sheet = recoveryDialog.current;
+    if (!sheet) return;
+    if (recoveryOpen && !sheet.open) sheet.showModal();
+    else if (!recoveryOpen && sheet.open) {
+      sheet.close();
+      const opener = recoveryOpener.current;
+      recoveryOpener.current = null;
+      if (opener?.isConnected) opener.focus({ preventScroll: true });
+    }
+  }, [recoveryOpen]);
+  useEffect(() => { if (destination.view === 'community') lastBrowse.current = 'community'; else if (['discover', 'flow'].includes(destination.view)) lastBrowse.current = 'discover'; }, [destination]);
   // N9: the documents the 쓰기 list's 보관함 shows (not in 휴지통, not a retained revision).
   const archiveSpace = data?.spaces[session.userId], archivedCount = archiveSpace ? archiveSpace.archivedDocumentIds.filter(id => !archiveSpace.documentTrash?.[id]
     && !Object.values(archiveSpace.retentionDocuments ?? {}).includes(id) && archiveSpace.text.documents.some(doc => doc.id === id)).length : 0;
   const usesNoteChrome = destination.view === 'space' && !unavailable;
   // R7: once the server names the contact address, every place that shows the development notice ends with 자세히,
-  // and 더보기 › 계정 has 저장과 공개 안내. Without the address none of them shows.
+  // and 나 › 계정 has 저장과 공개 안내. Without the address none of them shows.
   const privacyAddress = readPrivacyContact(privacyContact);
   const privacyMore = privacyAddress && <> <button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></>;
   // Once acknowledged, keep an element: ProgramSpace reads a truthy noteHeader as the note layout.
@@ -1555,7 +1565,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       <p>{DEV_NOTICE_TEXT}{privacyMore}</p></details>
     <button type="button" onClick={() => { if (markDevNoticeSeen(devNoticeStorage(), session.userId)) setDevNoticeSeen(true); }}>확인</button></div>;
   const savedNotice = savedNoticeShown && <p className={styles.savedNotice} role="status"><span>확인이 필요한 입력 {savedTotal}개</span>
-    <button type="button" onClick={openRecoveryBox}>복구함 열기</button>
+    <button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>복구함 열기</button>
     <button type="button" aria-label="확인이 필요한 입력 안내 닫기" onClick={() => setSavedNoticeClosedAt(savedTotal)}>닫기</button></p>;
   // W11: on the 쓰기 tab the notices around the title share one line, by priority: saved input, then the
   // development notice, then the new-document notice (ProgramSpace keeps that one for screen readers only).
@@ -1599,11 +1609,51 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         {!usesNoteChrome && serverUndo}
       </div>;
   // UX FC-DETAIL-HEAD 1 (R6): 둘러보기 draws its status row only for a warning or a wait (levels 1–5). Saved and
-  // saving stay off, so the list does not jump; 되돌리기 is in 더보기 › 편집 on every screen.
+  // saving stay off, so the list does not jump; 되돌리기 is on 나 › 문제 해결 (UX B3).
   const browseStatusShown = serverSlot.level <= 5;
-  // UX B7 (11/6): 내 활동 starts with its title too: its status row also warns only (되돌리기 stays in 더보기 › 편집).
+  // UX B7 (11/6): 내 활동 starts with its title too: its status row also warns only (되돌리기 is on 나 › 문제 해결).
   const quietStatus = browse || destination.view === 'activity';
   const activityTabs = <nav className={styles.tabs} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={openCreatorEntry}>Flow 만들기</button></nav>;
+  // UX B3 (11/7): the 더보기 items, each drawn in one place at a time: on 나 when the account opens, in the menu when
+  // it cannot (unavailable). Their actions are the ones the menu had, unchanged.
+  const redoButton = <button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external} aria-disabled={browseHistory('redo') ? undefined : true}>다시 실행</button>;
+  const recoveryButton = <button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>복구함{storedTotal ? ` (${storedTotal})` : ''}</button>;
+  const backupButton = <button type="button" disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} onClick={event => {
+    if (disposed.current || currentOwnerRef.current !== session.userId) return;
+    const opener = event.currentTarget;
+    preservationOpener.current = opener; preservationReturn.current = null;
+    void (async () => { const openingController = controller.current; if (!captureInput()) return; for (const port of allEditors()) if (port && !await port.flushAll()) return; if (disposed.current || controller.current !== openingController || currentOwnerRef.current !== session.userId) return; preservationRef.current = true; setPreservation(true); })();
+  }}>백업 · 복원 · 가져오기</button>;
+  // UX B1 (11/6): the sign-in screen no longer links the old local PoC; its way stays here, after signing in.
+  const oldLocalLink = <a className={styles.menuLink} href="/my?personalWorkspacePoc=v1">이 기기에만 저장한 예전 자료</a>;
+  const signOutButton = <button type="button" disabled={leaveBusy} onClick={() => { captureInput(); if (hasInput() || pending || deviceInput().count) { setLeaveFailed(false); setLeave(true); } else void signOut(); }}>로그아웃 · 계정 바꾸기</button>;
+  const refreshButton = <button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button>;
+  const recordNumber = snapshot?.account && <details className={styles.menuNote}><summary>기록 정보</summary><small className={styles.account}>서버 기록 번호 {snapshot.account.revision}</small></details>;
+  // 나's head (on top of 내 활동): the account, 개인 Flow 상세 when there is one, then 활동·공개 관리 / Flow 만들기.
+  const meHead = <div className={styles.meHead}><p className={styles.meEmail}>{email}</p>
+    {data && data.spaces[session.userId].savedBindings.length > 0 && <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'legacy' ? 'page' : undefined} onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세 ›</button></div>}
+    {activityTabs}</div>;
+  // 나 under 내 활동: 자료, 계정, then 문제 해결 and 실험 folded.
+  const meSections = <div className={styles.meSections}>
+    <section className={styles.menuGroup} aria-label="자료"><h3>자료</h3>
+      <div className={styles.managementActions}>{recoveryButton}{backupButton}{oldLocalLink}</div>
+    </section>
+    <section className={styles.menuGroup} aria-label="계정"><h3>계정</h3>
+      <div className={styles.managementActions}>{privacyAddress && <button type="button" onClick={() => setPrivacyOpen(true)}>저장과 공개 안내</button>}{signOutButton}</div>
+      {!privacyAddress && <details className={styles.menuNote}><summary>저장과 공개 안내</summary><p>{DEV_NOTICE_TEXT}</p></details>}
+    </section>
+    <details className={`${styles.menuGroup} ${styles.meFold}`} aria-label="문제 해결"><summary>문제 해결</summary>
+      <div className={styles.managementActions}>{refreshButton}<button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external} aria-disabled={browseHistory('undo') ? undefined : true}>마지막 변경 되돌리기</button>{redoButton}</div>
+      {historyHint && <p className={styles.menuHint} role="status">{historyHint === 'undo' ? '쓰기 화면에서 되돌릴 수 있어요.' : '쓰기 화면에서 다시 실행할 수 있어요.'}</p>}
+      {recordNumber}
+    </details>
+    {/* 문서·모음 시험 re-keys the 쓰기 space and says what it did there (its notice, a refusal), so it opens on 쓰기. */}
+    {data && <details className={`${styles.menuGroup} ${styles.meFold}`} aria-label="실험"><summary>실험</summary>
+      <div className={styles.managementActions}><button type="button" aria-pressed={collectionsMode} disabled={collectionsSwitching || collectionsSaving || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError}
+        onClick={() => void (async () => { if (destinationRef.current.view !== 'space') await navigate({ view: 'space' }); if (destinationRef.current.view === 'space') await switchCollectionsMode(); })()}>{collectionsMode ? '기존 폴더로 보기' : '문서·모음 시험'}</button></div>
+      <p className={styles.menuHint}>쓰기 화면에서 열립니다.</p>
+    </details>}
+  </div>;
   const serverStatusView: ProgramServerStatusView | null = usesNoteChrome ? {
     ...serverSlot,
     recovery: destination.view === 'space' && needsInputProtection ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,
@@ -1617,71 +1667,49 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         {([['documents', '쓰기', 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4'], ['today', '오늘', 'M4 4h16v16H4zm4 8 3 3 5-6'], ['all', '분류', 'M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z']] as const).map(([tab, label, path]) =>
           <button type="button" key={tab} data-main-tab={tab} aria-current={destination.view === 'space' && mainTab === tab ? 'page' : undefined} onClick={() => void chooseMainTab(tab)}>
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" d={path}/></svg><span>{label}</span></button>)}
-        <button type="button" data-main-tab="more" aria-current={['discover', 'flow', 'community', 'activity', 'legacy', 'creator'].includes(destination.view) ? 'page' : undefined}
-          aria-label={`더보기${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`} onPointerDown={event => { event.preventDefault(); }} onClick={toggleMoreMenu}>
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M5 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg><span>더보기</span>
+        {/* UX B3 (11/7): Flow and 나 are screens like the three before them (no pointerdown hold): a press moves by
+            navigate(), which ends a composition through blur and keeps its result as 쓰기 → 오늘 does. */}
+        <button type="button" data-main-tab="flow" aria-current={browse ? 'page' : undefined} onClick={() => void chooseFlowTab()}>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm3.5 5.5-2 5-5 2 2-5z"/></svg><span>Flow</span></button>
+        <button type="button" data-main-tab="me" aria-current={['activity', 'legacy', 'creator'].includes(destination.view) ? 'page' : undefined}
+          aria-label={`나${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`} onClick={event => void chooseMeTab(event.currentTarget)}>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7 8a7 7 0 0 1 14 0"/></svg><span>나</span>
           {savedTotal > 0 && <span className={styles.navBadge} aria-hidden="true">{savedTotal}</span>}</button>
       </nav>}
-      <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1></header>
+      <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '나' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1></header>
     {browse && <nav className={styles.browseNavigation} aria-label="둘러보기 종류"><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({view:'community'})}>이야기</button><button aria-current={['discover','flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({view:'discover'})}>Flow 찾기</button></nav>}
     <div className={styles.workPane} data-testid="alpha-work-pane">
     {!usesNoteChrome && (browse && savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice)}
     <section className={styles.sync} aria-label="서버 저장 상태">
       {!usesNoteChrome && (!quietStatus || browseStatusShown) && serverStatus}
-      <details ref={managementMenu} className={styles.management} aria-label="계정 및 자료 관리" onToggle={() => { menuTurns.current++; }} onKeyDown={event => {
+      {/* UX B3 (11/7): with the tabs (an account that opens) its items live on 나 and in the 복구함 sheet. Without them
+          (unavailable: the account cannot open) this menu stays, as it was, for 복구함, 로그아웃 and 서버에서 다시 확인. */}
+      {unavailable && <details ref={managementMenu} className={styles.management} aria-label="계정 및 자료 관리" onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
-        // The 더보기 tab opened it; its own summary is hidden under the tabs.
-        (document.querySelector<HTMLElement>('[data-main-tab="more"]') ?? event.currentTarget.querySelector('summary'))?.focus({ preventScroll: true });
+        event.currentTarget.querySelector<HTMLElement>('summary')?.focus({ preventScroll: true });
       }} onBlur={event => {
         if (!preservationRef.current && event.relatedTarget && !event.currentTarget.contains(event.relatedTarget as Node)) event.currentTarget.open = false;
-      }}><summary aria-current={['activity', 'legacy'].includes(destination.view) ? 'page' : undefined} aria-label={`${destination.view === 'activity' ? '보조 메뉴 · 현재 위치: 내 활동' : destination.view === 'legacy' ? '보조 메뉴 · 현재 위치: 개인 Flow 상세' : '보조 메뉴 · 내 활동, 계정·자료 관리'}${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`}><span className={styles.auxiliaryLabel}>{destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : '더보기'}</span>{savedTotal > 0 && <span className={styles.menuBadge} aria-hidden="true">{savedTotal}</span>}</summary><div className={styles.managementBody}>
+      }}><summary aria-label={`보조 메뉴 · 계정·자료 관리${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`}><span className={styles.auxiliaryLabel}>더보기</span>{savedTotal > 0 && <span className={styles.menuBadge} aria-hidden="true">{savedTotal}</span>}</summary><div className={styles.managementBody}>
         <h2>더보기</h2>
-        {!unavailable && <section className={styles.menuGroup} aria-label="둘러보기"><h3>둘러보기</h3>
-          <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigateFromMenu({ view: 'community' })}>이야기</button>
-            <button type="button" aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigateFromMenu({ view: 'discover' })}>Flow 찾기</button></div>
-        </section>}
         <section className={styles.menuGroup} aria-label="편집"><h3>편집</h3>
-          <div className={styles.managementActions}>{serverUndo}<button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external} aria-disabled={browseHistory('redo') ? undefined : true}>다시 실행</button></div>
-          {browse && historyHint && <p className={styles.menuHint} role="status">{historyHint === 'undo' ? '쓰기 화면에서 되돌릴 수 있어요.' : '쓰기 화면에서 다시 실행할 수 있어요.'}</p>}
+          <div className={styles.managementActions}>{serverUndo}{redoButton}</div>
         </section>
-        {!unavailable && data && <section className={styles.menuGroup} aria-label="내 활동"><h3>내 활동</h3>
-          <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigateFromMenu({ view: 'activity' })}>내 활동</button>
-            {data.spaces[session.userId].savedBindings.length > 0 && <button type="button" aria-current={destination.view === 'legacy' ? 'page' : undefined} onClick={() => void navigateFromMenu({ view: 'legacy' })}>개인 Flow 상세</button>}</div>
-        </section>}
         <section className={styles.menuGroup} aria-label="자료"><h3>자료</h3>
-          <details ref={recoveryBox} className={styles.recoveryBox} onToggle={() => { menuTurns.current++; }} open={!!storedTotal && (unavailable || external || snapshot?.status === 'conflict')}>
-            <summary>복구함{storedTotal ? ` (${storedTotal})` : ''}</summary>
-            {storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>보관한 입력이 없습니다.</p>
-              {archivedCount > 0 && <button type="button" onClick={() => void openArchiveFromMenu()}>보관한 문서 {archivedCount}개 → 보관함에서 보기</button>}</>}
-          </details>
-          <div className={styles.managementActions}>
-          <button type="button" disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} onClick={event => {
-          if (disposed.current || currentOwnerRef.current !== session.userId) return;
-          const opener = event.currentTarget;
-          preservationOpener.current = opener; preservationReturn.current = null;
-          void (async () => { const openingController = controller.current; if (!captureInput()) return; for (const port of allEditors()) if (port && !await port.flushAll()) return; if (disposed.current || controller.current !== openingController || currentOwnerRef.current !== session.userId) return; preservationRef.current = true; setPreservation(true); })();
-        }}>백업 · 복원 · 가져오기</button>
-          {/* UX B1 (11/6): the sign-in screen no longer links the old local PoC; its way stays here, after signing in. */}
-          <a className={styles.menuLink} href="/my?personalWorkspacePoc=v1">이 기기에만 저장한 예전 자료</a></div>
+          <div className={styles.managementActions}>{recoveryButton}{backupButton}{oldLocalLink}</div>
         </section>
         <section className={styles.menuGroup} aria-label="계정"><h3>계정</h3>
           <div className={styles.account}><p>{email}</p></div>
-          <div className={styles.managementActions}><button type="button" disabled={leaveBusy} onClick={() => { captureInput(); if (hasInput() || pending || deviceInput().count) { setLeaveFailed(false); setLeave(true); } else void signOut(); }}>로그아웃 · 계정 바꾸기</button>
-            {privacyAddress && <button type="button" onClick={() => setPrivacyOpen(true)}>저장과 공개 안내</button>}</div>
+          <div className={styles.managementActions}>{signOutButton}{privacyAddress && <button type="button" onClick={() => setPrivacyOpen(true)}>저장과 공개 안내</button>}</div>
         </section>
         <section className={styles.menuGroup} aria-label="문제 해결"><h3>문제 해결</h3>
-          <div className={styles.managementActions}><button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button></div>
-          {snapshot?.account && <details className={styles.menuNote}><summary>기록 정보</summary><small className={styles.account}>서버 기록 번호 {snapshot.account.revision}</small></details>}
+          <div className={styles.managementActions}>{refreshButton}</div>
+          {recordNumber}
         </section>
-        {!unavailable && data && destination.view === 'space' && <section className={styles.menuGroup} aria-label="실험"><h3>실험</h3>
-          <div className={styles.managementActions}><button type="button" aria-pressed={collectionsMode} disabled={collectionsSwitching || collectionsSaving || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError}
-            onClick={() => void switchCollectionsMode()}>{collectionsMode ? '기존 폴더로 보기' : '문서·모음 시험'}</button></div>
-        </section>}
         <section className={styles.menuGroup} aria-label="저장과 공개 안내"><h3>저장과 공개 안내</h3>
           <p className={styles.menuNoteText}>{DEV_NOTICE_TEXT}{privacyMore}</p>
         </section>
-        </div></details>
+        </div></details>}
     </section>
     {!writingTab && savedNotice}
     {preservation && snapshot?.account && snapshot.references && <AlphaPreservationPanel key={session.userId} account={snapshot.account} references={snapshot.references}
@@ -1700,7 +1728,14 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         {count > 0 && !pending && <button type="button" disabled={leaveBusy} onClick={() => void eraseAndSignOut()}>지우고 로그아웃</button>}
         <button type="button" disabled={leaveBusy} onClick={() => setLeave(false)}>계속 작성</button></section>;
     })()}
-    {privacyOpen && privacyAddress && <AlphaPrivacyNotice contact={privacyAddress} onClose={() => setPrivacyOpen(false)} returnFocus={() => document.querySelector<HTMLElement>('[data-main-tab="more"]')} />}
+    {privacyOpen && privacyAddress && <AlphaPrivacyNotice contact={privacyAddress} onClose={() => setPrivacyOpen(false)} returnFocus={() => document.querySelector<HTMLElement>('[data-main-tab="me"]')} />}
+    {/* UX B3 (11/7): 복구함 as a sheet over any screen (a modal dialog: Escape closes it, focus goes back to its opener).
+        Its content is the 복구함's as it was, drawn here only. */}
+    <dialog ref={recoveryDialog} className={styles.recoverySheet} aria-labelledby="alpha-recovery-heading" onCancel={event => { event.preventDefault(); setRecoveryOpen(false); }}>
+      <div className={styles.recoverySheetHead}><h2 id="alpha-recovery-heading">복구함{storedTotal ? ` (${storedTotal})` : ''}</h2><button type="button" onClick={() => setRecoveryOpen(false)}>닫기</button></div>
+      <div className={styles.recoverySheetBody}>{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>보관한 입력이 없습니다.</p>
+        {archivedCount > 0 && <button type="button" onClick={() => void openArchiveFromMenu()}>보관한 문서 {archivedCount}개 → 보관함에서 보기</button>}</>}</div>
+    </dialog>
     {destination.view !== 'space' && message && !participationMessage && <p className={styles.message} role="status">{message}</p>}
     {unavailable ? <section className={styles.empty}><p>{snapshot?.status === 'session-expired' ? '계정을 다시 확인한 뒤 개인공간을 열 수 있습니다.' : '서버에서 개인공간을 확인하고 있습니다.'}</p></section> : <>
       {destination.view === 'creator' && activityTabs}
@@ -1740,7 +1775,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       {seen.community && <div hidden={!['community', 'activity'].includes(destination.view)}><ProgramCommunity key={`community:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()}
         view={communityView} selectedPostId={communitySelection} selectedReplyId={destination.view === 'community' ? destination.replyId : undefined} presentation={communityState} onPresentationChange={setCommunityState}
         storageScope="account" mediaPort={mediaPort} draftSaveRecovery={localParticipationRecovery}
-        reviewEntry={reviewEntry} captureReviewVisit={captureReviewVisit} activityTabs={activityTabs}
+        reviewEntry={reviewEntry} captureReviewVisit={captureReviewVisit} activityTabs={meHead}
         onRegisterReviewResult={receive => { reviewResultReceiver.current = receive; }}
         reviewAnnouncement={{
           captureState: () => {
@@ -1772,6 +1807,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           return '초안을 저장하지 못했습니다. 입력은 남아 있습니다.';
         }}
         onRegisterEditors={port => { communityEditors.current = port; }} /></div>}
+      {destination.view === 'activity' && meSections}
       {destination.view === 'legacy' && <ProgramLegacyWorkspace key={`legacy:${session.userId}:${presentation}`} data={data} today={programLocalDate()} mutate={mutate}
         navigate={next => { void navigate(next); }} capabilities={{ sourceReview: false }}
         selectedFlowId={destination.id} onUndo={() => history('undo')} onRegisterEditors={port => { legacyEditors.current = port; }} />}

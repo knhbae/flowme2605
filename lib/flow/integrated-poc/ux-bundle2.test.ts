@@ -37,7 +37,8 @@ test('B6: the screens say 버전 for a public Flow, 저장본 for a saved docume
   assert(!history.includes('버전'), 'a saved document is never called 버전');
   assert(read(C + 'ProgramSpace.tsx').includes('>저장본·복구</button>'));
   assert(read(C + 'ProgramCommunity.tsx').includes('>버전 {version.number} · {stamp(version.createdAt)}</option>'));
-  assert.equal(read(C + 'AlphaWorkspace.tsx').split('>이야기</button>').length - 1, 2);
+  // UX B3 (11/7): the 더보기 menu's 둘러보기 group is gone; the Flow tab's branch row keeps the one 이야기.
+  assert.equal(read(C + 'AlphaWorkspace.tsx').split('>이야기</button>').length - 1, 1);
 });
 
 const repository = { flows: [{ id: 'flow-a', ownerId: 'member-x', currentVersionId: 'flow-a-v2', category: '', situations: [], derivedFrom: null, archived: false }],

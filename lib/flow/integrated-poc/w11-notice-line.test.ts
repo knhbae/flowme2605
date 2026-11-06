@@ -26,7 +26,7 @@ test('one slot under the title on 쓰기: saved input first, then the developmen
   assert(host.includes('{!usesNoteChrome && (browse && savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice)}'));
   assert.equal(host.match(/className=\{styles\.savedNotice\}/g)?.length, 1);
   // The saved-input notice itself is unchanged: count, 복구함 열기, 닫기.
-  assert.match(host, /const savedNotice = savedNoticeShown && <p className=\{styles\.savedNotice\} role="status"><span>확인이 필요한 입력 \{savedTotal\}개<\/span>\s*<button type="button" onClick=\{openRecoveryBox\}>복구함 열기<\/button>/);
+  assert.match(host, /const savedNotice = savedNoticeShown && <p className=\{styles\.savedNotice\} role="status"><span>확인이 필요한 입력 \{savedTotal\}개<\/span>\s*<button type="button" onClick=\{event => openRecoveryBox\(event\.currentTarget\)\}>복구함 열기<\/button>/);
   assert.match(space, /data-writing-entry-notice data-quiet=\{props\.noteNoticeShown \? 'true' : undefined\}/);
   const quiet = spaceCss.slice(spaceCss.indexOf('.writingEntryNotice[data-quiet="true"] {'));
   for (const kept of ['position: absolute;', 'width: 1px;', 'height: 1px;', 'overflow: hidden;', 'clip-path: inset(50%);']) assert(quiet.slice(0, quiet.indexOf('}')).includes(kept), kept);

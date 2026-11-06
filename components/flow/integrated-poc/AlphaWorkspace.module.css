@@ -331,12 +331,12 @@
 /* Match the closed publication notice's space when kept input takes its place. */
 .page[data-note-layout="true"] .savedNotice { padding-block: 8px; }
 
-/* R8b: four bottom tabs (쓰기·오늘·분류·더보기); 더보기 opens the menu, so its own "…" button steps aside. */
+/* R8b: bottom tabs. UX B3 (11/7): five (쓰기·오늘·분류·Flow·나); the "…" menu is left only when the account cannot open,
+   and there are no tabs then, so its own button shows. */
 .page[data-alpha-frame="b"] .globalNavigation button { position: relative; }
-.page[data-alpha-frame="b"] .management > summary { display: none; }
-.navBadge { position: absolute; top: 6px; right: calc(50% - 22px); display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #f4c7a3; color: #4a1f05; font-size: 12px; font-weight: 800; line-height: 1; }
+.navBadge { position: absolute; top: 6px; right: calc(50% - 22px); display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--flowme-b-warning-bg); color: var(--flowme-b-warning-ink); box-shadow: 0 0 0 1px var(--flowme-b-warning-border); font-size: 12px; font-weight: 800; line-height: 1; }
 @media (max-width: 700px) {
-  .page[data-alpha-frame="b"] .globalNavigation { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding-inline: 8px; }
+  .page[data-alpha-frame="b"] .globalNavigation { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; padding-inline: 8px; }
 }
 
 /* R8b: in the space the screen title rows replace the fixed header bar on phones (the tabs stay at the bottom). */
@@ -387,3 +387,25 @@
 .triedPrompt button:first-child { background: var(--flowme-b-primary); color: #fff; }
 /* UX B3 (11/6): on phones the question sits above the bottom tabs, not over the 오늘 title and [할 일 추가]. */
 @media (max-width: 700px) { .triedPrompt { top: auto; bottom: calc(76px + env(safe-area-inset-bottom) + 12px); left: 16px; right: 16px; width: auto; transform: none; } }
+
+/* UX B3 (11/7): 나 — the account under its title, then 자료 and 계정, then 문제 해결 and 실험 folded (44px summaries). */
+.meHead { display: grid; gap: 8px; margin: -4px 0 12px; }
+.meEmail { margin: 0; color: var(--flowme-b-muted); font-size: 14px; overflow-wrap: anywhere; }
+.meSections { display: grid; gap: 12px; margin-top: 24px; }
+/* The menu's buttons took their look from the status row they sat in; on 나 they keep it. */
+:is(.meSections, .meHead) .managementActions button { min-height: 48px; padding: 8px 14px; border: 1px solid var(--flowme-control-border); border-radius: 8px; background: var(--flowme-surface); color: var(--flowme-text); font-size: 14px; }
+:is(.meSections, .meHead) .managementActions button:disabled { opacity: .55; }
+.meFold > summary { display: flex; align-items: center; min-height: 48px; font-size: 13px; line-height: 20px; font-weight: 650; color: var(--flowme-text-secondary); cursor: pointer; }
+.meFold[open] > summary { margin-bottom: 4px; }
+/* 복구함 sheet: from the bottom on phones, centred on wider screens; its content scrolls inside. */
+.recoverySheet { width: min(560px, calc(100vw - 32px)); max-height: min(80dvh, 720px); padding: 0; border: 1px solid var(--flowme-b-line); border-radius: 12px; background: var(--flowme-b-surface); color: var(--flowme-b-ink); box-shadow: 0 12px 40px var(--flowme-b-shadow); }
+.recoverySheet[open] { display: flex; flex-direction: column; }
+.recoverySheet::backdrop { background: var(--flowme-b-scrim); }
+.recoverySheetHead { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 8px 8px 20px; border-bottom: 1px solid var(--flowme-b-line); }
+.recoverySheetHead h2 { margin: 0; font-size: 18px; line-height: 28px; }
+.recoverySheetHead button { min-width: 48px; min-height: 48px; padding: 8px 14px; border: 1px solid var(--flowme-b-line); border-radius: 8px; background: var(--flowme-b-surface); color: var(--flowme-b-ink); }
+.recoverySheetBody { display: grid; gap: 12px; padding: 16px 20px 20px; overflow: auto; }
+.recoverySheetBody button { min-height: 48px; }
+@media (max-width: 700px) {
+  .recoverySheet { width: 100%; max-width: none; margin: auto 0 0; border-radius: 16px 16px 0 0; padding-bottom: env(safe-area-inset-bottom); }
+}

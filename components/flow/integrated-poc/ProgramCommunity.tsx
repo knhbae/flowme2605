@@ -30,7 +30,8 @@ export type ProgramCommunityProps = {
   draftSaveRecovery?: ProgramCommunityDraftSaveRecovery & { draftId: string };
   reviewEntry?: ProgramReviewEntry | null;
   captureReviewVisit?: () => () => boolean;
-  /** UX B7 (11/6): the host's 내 활동 kinds (활동·공개 관리 · Flow 만들기), drawn under the title so the title comes first. */
+  /** UX B7 (11/6): the host's 내 활동 kinds (활동·공개 관리 · Flow 만들기), drawn under the title so the title comes first.
+   *  UX B3 (11/7): on 나 the host puts the account and 개인 Flow 상세 there too. */
   activityTabs?: React.ReactNode;
   reviewAnnouncement?: {
     captureState: () => () => boolean;
@@ -427,7 +428,7 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
   </li>)}</ul> : <p className={styles.empty}>아직 답글이 없어요.</p>; }
 
   return <section className={styles.community} aria-label={view === 'activity' ? '내 활동' : '이야기'}>
-    <header className={styles.header}><h1>{view === 'activity' ? '내 활동' : '이야기'}</h1><button className={styles.primary} type="button" disabled={draftEntryDisabled} onClick={() => void openDraft(newProgramParticipationDraft())}>글 쓰기</button></header>
+    <header className={styles.header}><h1>{view === 'activity' ? '나' : '이야기'}</h1><button className={styles.primary} type="button" disabled={draftEntryDisabled} onClick={() => void openDraft(newProgramParticipationDraft())}>글 쓰기</button></header>
     {view === 'activity' && activityTabs}
     {reviewPending?.isCurrent() && <p key={`review-pending:${reviewPending.attempt}`} role="status" aria-live="polite" aria-atomic="true" className={styles.notice} data-review-submit-state="pending">후기 게시 결과를 확인하고 있습니다. 확인이 끝날 때까지 다시 제출할 수 없습니다.</p>}
     {confirmedReview?.isCurrent() && selectedPostId !== confirmedReview.postId && <div key={`review-confirmed:${confirmedReview.attempt}`} role={confirmedReview.canAnnounce() ? 'status' : undefined} aria-live={confirmedReview.canAnnounce() ? 'polite' : 'off'} aria-atomic="true" className={styles.notice}>

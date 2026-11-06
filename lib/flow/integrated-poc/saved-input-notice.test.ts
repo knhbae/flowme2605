@@ -76,10 +76,13 @@ test('the 복구함 lists and counts every stored entry even while the notice co
   const scope = { recoveries: { drafts: [typed] }, structuralRecoveries: null, creatorRecoveries: { entries: [{ id: 'c' }] }, socialRecoveries: null };
   assert.equal(evaluate<number>(declaration('storedTotal'), scope), 2);
   assert.equal(count({ parked: [], active: [typed], atRisk: false }), 0);
-  assert(source.includes("<summary>복구함{storedTotal ? ` (${storedTotal})` : ''}</summary>"));
+  // UX B3 (11/7): 복구함 is a sheet; its title and every button that opens it carry the same count.
+  assert(source.includes('<h2 id="alpha-recovery-heading">복구함{storedTotal ? ` (${storedTotal})` : \'\'}</h2>'));
+  assert(source.includes("onClick={event => openRecoveryBox(event.currentTarget)}>복구함{storedTotal ? ` (${storedTotal})` : ''}</button>"));
   // N9: an empty 복구함 also points to the archived documents (보관함), when there are any.
   assert(source.includes('{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>보관한 입력이 없습니다.</p>'));
-  assert(source.includes('open={!!storedTotal && (unavailable || external'));
+  // It never opens by itself (a conflict while typing must not take the focus); the notice, the menu and 나 open it.
+  assert(!source.includes('open={!!storedTotal'));
   // The notice and the 더보기 badge name use their own label, so two different numbers never share "보관한 입력".
   assert(source.includes('<span>확인이 필요한 입력 {savedTotal}개</span>'));
   assert(!/보관한 입력 \$?\{savedTotal\}/.test(source));
