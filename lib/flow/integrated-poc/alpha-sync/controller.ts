@@ -17,6 +17,8 @@ import { isAlphaCreatorIntent } from '../alpha-creator/contract';
 export type AlphaSyncSnapshot = { ownerId: string | null; account: AlphaAccount | null; envelope: ProgramEnvelope | null;
   status: AlphaClientStatus; busy: boolean; draft: AlphaCommand | null; pending: AlphaCommand | null; canUndo: boolean; canRedo: boolean; retryableRejectedDraft?: boolean; retryableNativeHandoff?: boolean; retryableRejectedSocialDraft?: boolean; ownWritingAck?:OwnedWritingAck|null; lastReceipt?: AlphaReceipt | null; publicRevision?: number; references?: AlphaReferenceContext };
 type Success = { command: AlphaCommand; before: AlphaAccount; after: AlphaAccount };
+/** Waits before each quiet lookup of a social write whose answer was lost (see lostSocialAnswer). */
+export const ALPHA_LOST_ANSWER_CHECKS_MS: readonly number[] = Object.freeze([1500, 3000]);
 export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort; onChange?: (snapshot: AlphaSyncSnapshot) => void; requestId?: () => string;writingCompute?:WritingCompute }) {
   const client = createAlphaClient(isAccountForOwner, options.recovery,options.writingCompute);
   let generation = 0, busy = false, repository: AlphaRepository | null = null, undo: Success | null = null;
@@ -44,7 +46,7 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
       noteWritingPhase('ack-materialize',started);
     }
     return { ownerId: current.ownerId, account: options.writingCompute?account:structuredClone(account), envelope, ownWritingAck:client.ownWritingAck(),
-      status: current.status, busy, draft: state?.draft ?? null, pending: state?.pending ?? null,
+      status: quietCheck && busy ? 'saving' : current.status, busy, draft: state?.draft ?? null, pending: state?.pending ?? null,
       retryableRejectedDraft: !busy && current.retryableRejectedDraft,
       retryableNativeHandoff: !busy && current.retryableNativeHandoff,
       retryableRejectedSocialDraft: !busy && current.retryableRejectedSocialDraft,
@@ -55,14 +57,34 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
   }
   const emit = () => { try { options.onChange?.(snapshot()); } catch { /* Presentation cannot undo a server commit. */ } };
   const rejected = (reason: string): ProgramMutationResult => ({ ok: false, reason });
+  // 11/7: a social write whose answer was lost on the way back (a tunnel's 502 page reads as 'unavailable', an unreadable
+  // answer as 'checking-result') was often saved. Before it is called unknown it is looked up by its request id, as a
+  // reload does: a lookup only, never sent again. While that runs the write still shows as saving.
+  let quietCheck = false;
+  const lostSocialAnswer = (command: AlphaCommand, next: ReturnType<typeof readClient>) =>
+    (command.kind === 'social' || command.kind === 'undo-social') && next.state?.pending?.requestId === command.requestId
+    && (next.lastError === 'unavailable' || next.status === 'checking-result');
   async function execute(command: AlphaCommand, result: string, before: AlphaAccount, mode: 'edit' | 'undo' | 'redo', recordHistory = true, retryRejectedDraft = false, retryNativeHandoff = false, retryRejectedSocialDraft = false,writingIdentity?:WritingIdentity,preparedReply?:WritingReply,writeCheckpoint?:()=>boolean,writingAckInput?:WritingAckInput): Promise<ProgramMutationResult> {
     if (!isAlphaWireCommand(command)) return rejected('forbidden');
     const epoch = generation; busy = true;
     try {
       const operation = client.execute(command, { retryRejectedDraft, retryNativeHandoff, retryRejectedSocialDraft,writingIdentity,preparedReply,writeCheckpoint,writingAckInput }); emit();
-      const ok = await operation;
+      let ok = await operation;
       if (epoch !== generation) return rejected('session-expired');
-      const next = readClient(), account = next.state?.confirmed;
+      let next = readClient();
+      if (!ok && lostSocialAnswer(command, next)) {
+        quietCheck = true; emit();
+        for (const wait of ALPHA_LOST_ANSWER_CHECKS_MS) {
+          await new Promise(done => setTimeout(done, wait));
+          if (epoch !== generation) return rejected('session-expired');
+          ok = await client.resolvePending(false);
+          if (epoch !== generation) return rejected('session-expired');
+          next = readClient();
+          if (ok || !lostSocialAnswer(command, next)) break;
+        }
+        quietCheck = false;
+      }
+      const account = next.state?.confirmed;
       if (!ok) return next.status === 'same-location' ? { ok: true, result, changed: false }
         : rejected(next.lastError === 'limit' ? next.state?.pending ? 'checking-result' : 'limit' : next.status);
       if (next.status === 'saved' && account?.revision === before.revision + 1) {
@@ -73,7 +95,7 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
       const resultId = next.lastReceipt?.requestId === command.requestId ? next.lastReceipt.resultId ?? result : result;
       const flowId = next.state?.references?.public.versions.find(version => version.id === resultId)?.flowId;
       return { ok: true, result: resultId, ...(flowId ? { flowId } : {}), changed: next.status === 'saved' };
-    } finally { if (epoch === generation) { busy = false; emit(); } }
+    } finally { quietCheck = false; if (epoch === generation) { busy = false; emit(); } }
   }
   const mutate: ProgramMutate = async (_label, build, mutationOptions) => {
     const started=performance.now();
