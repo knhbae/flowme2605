@@ -15,7 +15,7 @@ const signIn = read('components/flow/integrated-poc/AlphaAuthPanel.tsx');
 test('the settled wording, in its three parts and closing line', () => {
   assert.equal(PRIVACY_NOTICE_TITLE, '저장과 공개 안내');
   assert.match(PRIVACY_NOTICE_INTRO, /^FlowMe는 개발 중인 시험판입니다\./);
-  assert.deepEqual([PRIVACY_NOTICE_STORED.length, PRIVACY_NOTICE_READERS.length, PRIVACY_NOTICE_DELETION.length], [5, 6, 4]);
+  assert.deepEqual([PRIVACY_NOTICE_STORED.length, PRIVACY_NOTICE_READERS.length, PRIVACY_NOTICE_DELETION.length], [5, 6, 5]);
   assert(PRIVACY_NOTICE_READERS.some(line => line.includes("'FlowMe 참여자'")));
   // P3c (11/6): a review left with '해 봤어요' is said to be public, in the words the review composer uses.
   assert.equal(PRIVACY_NOTICE_READERS[2], "'해 봤어요'로 남긴 후기도 공개한 글이라 로그인한 다른 사용자가 봅니다.");

@@ -42,10 +42,31 @@ export function alphaSocialReferences(context: AlphaSocialContext, ownerId: stri
     social: { schema: 'flowme-alpha-social-projection/1', revision: context.revision, ownActorId: context.ownActorId,
       actorNames: Object.fromEntries(context.actors.map(row => [mappedId(row.id), row.name])) } };
 }
+/** R6 (11/6, '남김'): a public Flow, version, post, reply, reaction or proposal outlives its author's account. Once that
+ *  author's public identity is gone the rows still name the alias, and the graph check (every author in `actors`)
+ *  refused the whole read, for everyone. Each such well-formed alias is read as one more actor, shown as every author
+ *  is ('FlowMe 참여자'). Nothing else changes: the viewer's own alias must still be there, and a malformed id still
+ *  fails. Read only; the server writes the public rows, never these actors. */
+export const ALPHA_DEPARTED_ACTOR_NAME = 'FlowMe 참여자';
+export function withDepartedAlphaActors(value: unknown): unknown {
+  try {
+    if (!programShape(value, ['schema', 'revision', 'ownActorId', 'actors', 'public']) || !Array.isArray(value.actors)
+      || !programShape(value.public, ['flows', 'versions', 'posts', 'replies', 'reactions', 'proposals'])) return value;
+    const known = new Set(value.actors.map(row => (row as { id?: unknown } | null)?.id)), departed = new Set<string>();
+    const named = (rows: unknown, keys: string[]) => { if (Array.isArray(rows)) for (const row of rows) for (const key of keys) {
+      const id = (row as Record<string, unknown> | null)?.[key];
+      if (alias(id) && !known.has(id) && id !== value.ownActorId) departed.add(id);
+    } };
+    const { flows, versions, posts, replies, reactions, proposals } = value.public;
+    named(flows, ['ownerId']); named(versions, ['createdBy']); named(posts, ['authorId']); named(replies, ['authorId']);
+    named(reactions, ['actorId']); named(proposals, ['authorId', 'reviewedBy']);
+    return departed.size ? { ...value, actors: [...value.actors, ...[...departed].sort().map(id => ({ id, name: ALPHA_DEPARTED_ACTOR_NAME }))] } : value;
+  } catch { return value; }
+}
 export function readAlphaSocialResponse(value: unknown, ownerId: string, options: { server?: boolean } = {}): AlphaSocialRead | null {
-  if (!programShape(value, ['ok', 'value']) || value.ok !== true || !programShape(value.value, ['account', 'context'])
-    || !isAlphaSocialContext(value.value.context, options)) return null;
-  const context = value.value.context;
+  if (!programShape(value, ['ok', 'value']) || value.ok !== true || !programShape(value.value, ['account', 'context'])) return null;
+  const context = withDepartedAlphaActors(value.value.context);
+  if (!isAlphaSocialContext(context, options)) return null;
   return validateAlphaAccount(value.value.account, alphaSocialReferences(context, ownerId), ownerId)
     ? detached({ account: value.value.account, context }) : null;
 }

@@ -25,6 +25,8 @@ export const PRIVACY_NOTICE_READERS = [
 /** The first line of 지워 달라고 할 때 goes before these; see privacyRequestLine. */
 export const PRIVACY_NOTICE_DELETION = [
   '요청을 받은 때부터 하루 안에 문서, 할 일, 진행률 기록, 가져온 사본, 고친 기록, 로그인 계정을 지우고 끝났다고 알려 드립니다.',
+  // R6 (11/6 decision): public Flows and posts stay when the account goes.
+  '계정을 지워도 공개한 글과 Flow는 남습니다. 내리려면 먼저 공개를 철회하세요.',
   '백업 파일에는 글 사본이 최대 4주 동안 남았다가 지워집니다.',
   '접속 기록 원문은 7일 안에 지웁니다. 서비스 제공자(Cloudflare, Supabase)의 기록은 그 회사의 보존 기간을 따릅니다.',
   "공개한 Flow 하나만 내리려면 직접 할 수 있습니다: 문서의 '선택해서 공개' › '공개 상태 관리' › '공개 목록에서 내리기'.",
