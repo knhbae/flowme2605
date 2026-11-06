@@ -42,6 +42,7 @@ N1에 들어간 것:
 - 11/7 00:0x 가벼운 절차 12회차 DEPLOYED: dcc6f895 / u_x1wWPFy1yK3YtD3dswa(공식 표시 A안 화면: Flow 작성자·판본 작성자가 모두 공식일 때만 상세 머리 FlowMe가 정리한 자료). 기타 독립 QA_GO(390·1280 16/16, 판독 호환 22/22, 관련 238/238). 운영 서버가 before .next에 아이콘 route-cache 2개를 써서 그 두 파일만 허용한 release-before-cache 판으로 Inspect→Deploy, 10경로 기대값, DB 변경 0, 복귀 N6r. 실계정 화면 표시는 미확인.
 - 11/6 23:58 UX 1차 9335b84c / ggbSppUb89xI-2wUyB4mm(dcc6f895 위, busy P3 포함, 1184/0/2). B9는 메모 줄 흐린 색, C5는 읽기 이름만으로 대체. 기타 QA 맡김, 개발은 2차 시작. 사고: 개발이 임시 worktree를 --force로 지우다 junction을 따라 운영 의존성 폴더의 .bin·lock·@alloc 삭제 → 같은 lock 설치본에서 복사 복구(대조 같음, 운영 영향 0). 규칙: worktree 지울 때 junction 먼저 cmd /c rd.
 - 11/7 새벽 R6: Codex READY_FOR_PG_CHECK(SQL19 FREEZE 9e5baf75, 공식 표·공개 사진 0 가드, 카드 v3). PG 검증 파일은 운영 DB의 Supabase 기본 event trigger 6개에 막히는 설계라 실행 안 함 → Codex에 로컬 PG17 임시 클러스터 실행 + 6개 허용 목록 v4 맡김. 보안 점검(advisors): RLS 정책 0 표들(의도), 공식 RPC security definer(의도), 유출 비밀번호 보호 꺼짐(선반 그대로).
+- 11/7 00:22 UX 2차 29318cac / Ezc_UcDVTEXygSi6d9jxt(Flow 두 CSS 색 170곳→기존 토큰, 판본→버전/저장본 등 92곳, 충돌 화면 JSON 대신 제목·내용·[내 내용 복사], 1189/0/2). 1차 QA 뒤 QA. 개발은 3차(아래 탭) 시작.
 - 11/6 23:00 사용자 "진행판 보고 자율적으로 권고대로, 용량 정리도 정기적으로". 용량: 끝난 worktree·QA 폴더 .next 74개 삭제(운영·되돌림·진행 중·2시간 안 폴더 제외), D 7.3→67GB 여유, 운영 그대로. 다음: Codex에 R6 SQL 갱신(공식 표·사진 처리)·흔적 없는 PG 검증 스크립트, 개발에 7d(예전 할 일 현재값을 글 표기로)·busy 새로고침 P3.
 - 11/6 22:44 Codex 공식 표시 통합 dcc6f895 / u_x1wWPFy1yK3YtD3dswa(7f214a04 위, 겹침 0, 1,179 PASS). 기타 독립 QA 맡김.
 - 11/6 23:10 사용자 "디자인·UX 개선할 부분도 보고 개선해줘" → UX 세션에 Flow 여정 점검(390·1280, P1~P3 표). 쓰기 편집기는 결함만. 구현은 점검 뒤 S 크기 P1·P2 묶음으로.
