@@ -20,6 +20,7 @@ import { programImportTargets } from '@/lib/flow/integrated-poc/program-import-l
 import { programImportAddsNothing, programImportFirstDate, programImportItemView, programImportRepeatChoice, programImportRepeatOf, programImportRepeatRule, programImportRepeats, programImportSentence } from '@/lib/flow/integrated-poc/public-repeat-import';
 import { programRepeatFixed } from '@/lib/flow/integrated-poc/repeat-line';
 import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
+import { numberEul, numberIga } from '@/lib/flow/integrated-poc/number-particle';
 import { programFlowProgress, programFlowProgressText } from '@/lib/flow/integrated-poc/flow-loop';
 import { programFlowAttributionLabel } from '@/lib/flow/integrated-poc/alpha-official-actors';
 import { useAlphaOfficialActors } from './AlphaOfficialActors';
@@ -395,7 +396,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
           {!flow.archived && <ProgramShareLink flowId={flow.id} versionId={version.id} unverified={flow.id.startsWith('catalog-')} />}
         </div></details></div>
       {flow.archived && <p className={styles.notice} role="status">공개 목록에서 내려 보관된 Flow입니다. 연결된 버전은 읽을 수 있지만 새로 가져오거나 출력할 수 없습니다. 기존 개인 사본과 기록은 그대로 남아 있습니다.</p>}
-      {version.id !== flow.currentVersionId && current && !flow.archived && <p className={styles.versionLine}>버전 {version.number}을 보고 있습니다 · <button type="button" className={styles.linkButton} disabled={pending} onClick={() => { update({ versionByFlow: { ...state.versionByFlow, [flow.id]: current.id } }); navigate({ view: 'flow', id: flow.id, versionId: current.id }); }}>최신 버전으로</button></p>}
+      {version.id !== flow.currentVersionId && current && !flow.archived && <p className={styles.versionLine}>버전 {version.number}{numberEul(version.number)} 보고 있습니다 · <button type="button" className={styles.linkButton} disabled={pending} onClick={() => { update({ versionByFlow: { ...state.versionByFlow, [flow.id]: current.id } }); navigate({ view: 'flow', id: flow.id, versionId: current.id }); }}>최신 버전으로</button></p>}
       <div className={styles.detailLayout}><div className={styles.detailMain}>
         <header className={styles.detailHeader}><p className={styles.eyebrow}>{[flow.category, ...flow.situations].join(' · ')}</p>
           <h1 ref={heading} tabIndex={-1}>{version.title}</h1>
@@ -407,7 +408,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
           <p className={styles.sourceLine}>{kindLabel && <>{kindLabel} · </>}{programSourceLine(version.source)}{version.source.url && <> · <a href={version.source.url} target="_blank" rel="noreferrer noopener">원문 열기 ↗</a></>}</p>
           {sourceMeta?.sourceNeedsReview && <p className={styles.notice}>이 자료는 출처 재검토가 필요합니다. 현재 조건을 원문에서 확인해 주세요.</p>}
           <div className={styles.pcOnly}>{extras}</div>
-          {existingCopy && copyVersion && existingCopy.baseVersionId !== version.id && <p className={styles.versionLine}>내 사본은 버전 {copyVersion.number}입니다. 원본에 버전 {version.number}이 있습니다. <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>변경 확인</button></p>}
+          {existingCopy && copyVersion && existingCopy.baseVersionId !== version.id && <p className={styles.versionLine}>내 사본은 버전 {copyVersion.number}입니다. 원본에 버전 {version.number}{numberIga(version.number)} 있습니다. <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>변경 확인</button></p>}
         </section>
         {stateNote && <p className={flow.archived || existingCopy ? styles.muted : styles.notice} data-flow-progress={progressText ? '' : undefined}>{stateNote}</p>}
         {anchorUsed && !flow.archived && <><label className={`${styles.field} ${styles.anchorRow}`}><span>{sourceMeta?.anchorLabel ?? '기준일'}</span><input type="date" value={detail.anchor} disabled={pending} aria-describedby={`${uid}-anchor-hint`} onChange={event => patchDetail({ anchor: event.target.value })} /></label>

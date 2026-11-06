@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { restoreProgramDialogFocus } from '@/lib/flow/integrated-poc/dialog-return-focus';
 import { programClone, programFailure, programResult, type ProgramData, type ProgramPublicationDraft, type ProgramPublicationDraftRow } from '@/lib/flow/integrated-poc/contract';
+import { numberGwa } from '@/lib/flow/integrated-poc/number-particle';
 import { canPublishProgramSchedule } from '@/lib/flow/integrated-poc/program-data';
 import { programSame } from '@/lib/flow/integrated-poc/controller';
 import type { ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
@@ -26,7 +27,7 @@ const same = programSame;
 
 export function PublicationConflictReview({ comparison, choices, disabled, onChoice, onApply, onCancel }: { comparison: PublicationComparison; choices: PublicationConflictChoices; disabled: boolean; onChoice: (key: string, choice: 'draft' | 'latest') => void; onApply: () => void; onCancel: () => void }) {
   const remaining = comparison.fields.filter(field => !choices[field.key]).length;
-  return <section className={styles.comparison} aria-label="최신 공개 버전과 초안 비교"><h3>버전 {comparison.latestNumber}과 비교</h3><p>다른 필드마다 유지할 내용을 골라 주세요. 선택은 공개하지 않고 초안에만 반영합니다.</p>
+  return <section className={styles.comparison} aria-label="최신 공개 버전과 초안 비교"><h3>버전 {comparison.latestNumber}{numberGwa(comparison.latestNumber)} 비교</h3><p>다른 필드마다 유지할 내용을 골라 주세요. 선택은 공개하지 않고 초안에만 반영합니다.</p>
     {comparison.fields.map(field => <fieldset key={field.key} disabled={disabled}><legend>{field.label}</legend><div className={styles.compareValues}>
       <label><strong>내 공개 초안</strong><pre>{field.draftText}</pre><span><input type="radio" name={`resolve-${field.key}`} checked={choices[field.key] === 'draft'} onChange={() => onChoice(field.key, 'draft')} />초안 유지</span></label>
       <label><strong>최신 공개 버전</strong><pre>{field.latestText}</pre><span><input type="radio" name={`resolve-${field.key}`} checked={choices[field.key] === 'latest'} onChange={() => onChoice(field.key, 'latest')} />최신 내용 선택</span></label>

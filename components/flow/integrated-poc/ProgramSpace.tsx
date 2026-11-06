@@ -21,6 +21,7 @@ import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocia
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
 import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate, programDaysBetween } from '@/lib/flow/integrated-poc/date-label';
+import { timeRo } from '@/lib/flow/integrated-poc/number-particle';
 import { carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverItems, programCarryoverPlaces, programCarryoverProof, restoreProgramCarryover,
   PROGRAM_CARRYOVER_LIMIT, type ProgramCarryoverBefore, type ProgramCarryoverChoice, type ProgramCarryoverItem, type ProgramCarryoverPlan } from '@/lib/flow/integrated-poc/carryover';
 import { programOpening } from '@/lib/flow/integrated-poc/carryover-opening';
@@ -1490,7 +1491,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         const changed = M.tasks((committedSpace as ProgramPrivateSpace).text).find(task => task.id === changedId);
         if (changed) {
           setTaskNotice({ taskId: changed.id, title: changed.title,
-            text: schedule ? (changed.date ? `날짜를 ${programCalendarDate(changed.date, today, false)}${changed.time ? ` ${changed.time}` : ''}로 저장했습니다.` : '날짜 없음으로 저장했습니다.')
+            text: schedule ? (changed.date ? `날짜를 ${programCalendarDate(changed.date, today, false)}${changed.time ? ` ${changed.time}${timeRo(changed.time)}` : '로'} 저장했습니다.` : '날짜 없음으로 저장했습니다.')
               : label === '완료' ? '완료로 저장했습니다.' : label === '다시 열기' ? '미완료로 다시 열었습니다.' : '진행 기록을 저장했습니다.' });
         }
       }
