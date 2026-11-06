@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { PRIVACY_NOTICE_CLOSING, PRIVACY_NOTICE_DELETION, PRIVACY_NOTICE_INTRO, PRIVACY_NOTICE_READERS, PRIVACY_NOTICE_REQUEST, PRIVACY_NOTICE_STORED, PRIVACY_NOTICE_TITLE, readPrivacyContact } from './privacy-notice';
+import { PROGRAM_TRIED_NOTE } from './flow-loop';
 
 // R7 저장과 공개 안내 (N8): one sheet from 더보기 › 계정, the development notice and the sign-in screen, shown only
 // once the server names the contact address.
@@ -14,8 +15,11 @@ const signIn = read('components/flow/integrated-poc/AlphaAuthPanel.tsx');
 test('the settled wording, in its three parts and closing line', () => {
   assert.equal(PRIVACY_NOTICE_TITLE, '저장과 공개 안내');
   assert.match(PRIVACY_NOTICE_INTRO, /^FlowMe는 개발 중인 시험판입니다\./);
-  assert.deepEqual([PRIVACY_NOTICE_STORED.length, PRIVACY_NOTICE_READERS.length, PRIVACY_NOTICE_DELETION.length], [5, 5, 4]);
+  assert.deepEqual([PRIVACY_NOTICE_STORED.length, PRIVACY_NOTICE_READERS.length, PRIVACY_NOTICE_DELETION.length], [5, 6, 4]);
   assert(PRIVACY_NOTICE_READERS.some(line => line.includes("'FlowMe 참여자'")));
+  // P3c (11/6): a review left with '해 봤어요' is said to be public, in the words the review composer uses.
+  assert.equal(PRIVACY_NOTICE_READERS[2], "'해 봤어요'로 남긴 후기도 공개한 글이라 로그인한 다른 사용자가 봅니다.");
+  assert(PRIVACY_NOTICE_READERS[1].includes('로그인한 다른 사용자가 봅니다') && PROGRAM_TRIED_NOTE.startsWith('로그인한 다른 사용자에게 공개되는 글입니다.'));
   assert(PRIVACY_NOTICE_DELETION.some(line => line.includes("'선택해서 공개' › '공개 상태 관리' › '공개 목록에서 내리기'")));
   assert.equal(`someone@example.com${PRIVACY_NOTICE_REQUEST}`, 'someone@example.com 으로 "계정 자료를 지워 주세요"라고 보내 주세요. 로그인한 메일 주소를 함께 적어 주세요.');
   assert.equal(PRIVACY_NOTICE_CLOSING, '중요한 자료의 유일본은 넣지 마세요. 시험판이라 오류가 날 수 있습니다.');

@@ -113,7 +113,9 @@ export function programPendingFinish(requestId: string, live: { pending: { reque
 }
 
 export const PROGRAM_TRIED_ASK = '이 Flow를 다 했어요. 작성자에게 ‘해 봤어요’를 남길까요?';
-export const PROGRAM_TRIED_NOTE = '이름과 함께 공개되는 글입니다. 한 줄만 써도 됩니다.';
+// R7 (11/6): the same words as 저장과 공개 안내 ('로그인한 다른 사용자가 봅니다'); it said '이름과 함께', but every
+// author shows as 'FlowMe 참여자' there.
+export const PROGRAM_TRIED_NOTE = '로그인한 다른 사용자에게 공개되는 글입니다. 한 줄만 써도 됩니다.';
 /** [남기기]: the review draft, its Flow and my copy's version chosen, titled; the body is left to write. */
 export function programTriedDraft(finish: ProgramFlowFinish): ProgramParticipationDraft {
   return { ...newProgramReviewDraft(), flowId: finish.flowId, versionId: finish.versionId, title: `해 봤어요 · ${finish.title.trim()}`.slice(0, 240) };

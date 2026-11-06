@@ -491,7 +491,7 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
         {draft.kind !== 'reply' && <><p className={styles.meta}>주제: {draft.topic || '없음'}</p>
           <p className={styles.meta}>공개 항목: {draft.flowId ? draft.itemId ? data.public.versions.find(version => version.id === draft.versionId)?.items.find(item => item.id === draft.itemId)?.title ?? '항목 확인 필요' : 'Flow 전체' : '연결하지 않음'}</p></>}
         {draft.evidencePostIds.length > 0 && <ul>{draft.evidencePostIds.map(id => <li key={id}>{postTitle(data, id)}</li>)}</ul>}
-        <p className={styles.notice}>{isReviewDraft && reviewEntry?.tried ? '이름과 함께 공개되는 글입니다. ' : ''}{storageScope === 'account' ? '확인한 내용만 개발계의 다른 사용자에게 공개합니다. 작성 중인 다른 초안은 공개하지 않습니다.' : '이 내용만 이 기기의 공개 목록에 반영됩니다. 실제 서비스에는 게시되지 않습니다.'}</p>
+        <p className={styles.notice}>{isReviewDraft && reviewEntry?.tried ? "'해 봤어요' 후기도 공개한 글입니다. " : ''}{storageScope === 'account' ? '확인한 내용만 개발계의 다른 사용자에게 공개합니다. 작성 중인 다른 초안은 공개하지 않습니다.' : '이 내용만 이 기기의 공개 목록에 반영됩니다. 실제 서비스에는 게시되지 않습니다.'}</p>
         <div className={styles.actions}><button type="button" disabled={busy} onClick={() => setPreview(false)}>다시 수정</button><button className={styles.primary} type="button" disabled={busy} onClick={() => void submit()}>{busy ? '저장 중…' : draft.editTargetId ? '수정 내용 반영' : '공개하기'}</button></div>
       </div>}
       {conflict && (!errorNotice.isCurrent || errorNotice.isCurrent()) && <div className={styles.notice}><h3>최신 내용과 비교</h3>

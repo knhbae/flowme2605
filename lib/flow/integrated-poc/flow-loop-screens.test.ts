@@ -53,7 +53,7 @@ test('QA F2: a lost reply\'s own request, once confirmed, is compared from what 
 test('the composer names the public post for ‘해 봤어요’, and the author sees 내 Flow에 남은 후기 and 후기 n', () => {
   const community = source('ProgramCommunity.tsx');
   assert(community.includes("{reviewEntry?.tried ? PROGRAM_TRIED_NOTE : '공개할 연결을 직접 선택해 주세요.'} 개인 원문·메모·진행 기록은 포함하지 않습니다."));
-  assert(community.includes("{isReviewDraft && reviewEntry?.tried ? '이름과 함께 공개되는 글입니다. ' : ''}"));
+  assert(community.includes(`{isReviewDraft && reviewEntry?.tried ? "'해 봤어요' 후기도 공개한 글입니다. " : ''}`));
   assert(community.includes('<h2>내 Flow에 남은 후기 · 해 봤어요 {flowReviews.posts.length}</h2>'));
   assert(community.includes("<p className={styles.empty}>아직 남은 후기가 없어요.</p>"));
   assert(community.includes("{flowReviews.byFlow[flow.id] ? ` · 후기 ${flowReviews.byFlow[flow.id]}` : ''}"));

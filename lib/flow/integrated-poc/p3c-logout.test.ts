@@ -128,6 +128,9 @@ test('B 지우고: in the lock, this page\'s rows and the listed rows of tabs th
     assert(closed.ui.save([draft('닫은 탭의 원문', 'document-c')]).ok); closed.ui.leave();
     const live = page(shared, 'page-live', OWNER, () => time);
     assert(live.ui.save([draft('열린 다른 탭의 원문', 'document-l')]).ok);
+    // Quiet for more than 30 minutes but never left (a background tab): it may be open, so it is not erased.
+    const quiet = page(shared, 'page-quiet', OWNER, () => time - 31 * 60_000);
+    assert(quiet.ui.save([draft('조용한 탭의 원문', 'document-q')]).ok);
     const other = page(shared, 'page-other', OTHER);
     assert(other.ui.save([draft('다른 계정 원문')]).ok); other.ui.leave();
     const me = page(shared, 'page-me', OWNER, () => time);
@@ -135,22 +138,23 @@ test('B 지우고: in the lock, this page\'s rows and the listed rows of tabs th
     await locks.tail;
     const otherBytes = canonicalJson(Object.fromEntries(keysOf(shared, OTHER).map(key => [key, shared.values.get(key)])));
     const device = me.keep.device();
-    assert.deepEqual(device.drafts.map(row => row.raw).sort(), ['내 탭 원문', '닫은 탭의 원문'].sort(), 'a live tab\'s input is not listed');
+    assert.deepEqual(device.drafts.map(row => row.raw).sort(), ['내 탭 원문', '닫은 탭의 원문'].sort(), 'a live or quiet tab\'s input is not listed');
     assert(await me.ui.erase(device.rows));
     const left = keysOf(shared, OWNER);
-    assert(left.length > 0 && left.every(key => key.includes('page-live')), 'only the live tab\'s rows stay (read only)');
+    assert(left.some(key => key.includes('page-live')) && left.some(key => key.includes('page-quiet')), 'the open and the quiet tab keep their rows');
+    assert(left.every(key => key.includes('page-live') || key.includes('page-quiet')), 'only those stay (read only)');
     assert.equal(canonicalJson(Object.fromEntries(keysOf(shared, OTHER).map(key => [key, shared.values.get(key)]))), otherBytes, 'another account: bytes as they were');
     assert.equal(me.session.values.size, 0, 'this tab\'s copy is gone too');
     // Nothing is written after: a save, a leave or a return writes no row of this page.
     assert(me.ui.save([draft('지운 뒤 입력')]).ok); me.ui.leave(); me.ui.back(); await locks.tail;
-    assert(keysOf(shared, OWNER).every(key => key.includes('page-live')));
+    assert(keysOf(shared, OWNER).every(key => key.includes('page-live') || key.includes('page-quiet')));
     assert(!nextPage(shared).some(row => ['내 탭 원문', '닫은 탭의 원문'].includes(row.raw)), 'nothing erased comes back');
-    assert.deepEqual(nextPage(shared, time + ALPHA_UI_RECOVERY_KEEP_LIMITS.quietMinutes * 60_000 + 1).map(row => row.raw), ['열린 다른 탭의 원문'],
-      'the live tab\'s input is still its own, taken once that tab goes quiet');
+    assert.deepEqual(nextPage(shared, time + ALPHA_UI_RECOVERY_KEEP_LIMITS.quietMinutes * 60_000 + 1).map(row => row.raw).sort(), ['열린 다른 탭의 원문', '조용한 탭의 원문'].sort(),
+      'their input is still their own, taken as before once they go quiet');
   });
 });
 
-test('B 지우고 removes nothing without the lock, and leaves a row that came after the listing', async () => {
+test('B 지우고 removes nothing without the lock, and leaves a row that came after the listing or a tab that came back', async () => {
   await withLocks(async () => {
     const shared = new Storage(), me = page(shared, 'page-me');
     assert(me.ui.save([draft('내 탭 원문')]).ok);
@@ -167,6 +171,27 @@ test('B 지우고 removes nothing without the lock, and leaves a row that came a
     assert(late.ui.save([draft('목록 뒤에 생긴 원문', 'document-z')]).ok); late.ui.leave(); await locks.tail;
     assert(await me.ui.erase(listed));
     assert.deepEqual(nextPage(shared).map(row => row.raw), ['목록 뒤에 생긴 원문'], 'not shown, not erased');
+  });
+  await withLocks(async locks => {
+    // A tab listed as left that comes back (page restored from the back/forward cache) before the erase may be open.
+    const shared = new Storage(locks), back = page(shared, 'page-back'), me = page(shared, 'page-me');
+    assert(back.ui.save([draft('돌아온 탭의 원문', 'document-b')]).ok); back.ui.leave(); await locks.tail;
+    const listed = me.keep.device().rows;
+    assert(listed.some(row => row.key.includes('page-back')));
+    // Its new row (not left) before its compaction ran: the listed rows of a page that may be open are kept, and said.
+    assert(back.keep.put([draft('돌아온 탭의 원문', 'document-b')], false));
+    const before = keysOf(shared, OWNER).filter(key => key.includes('page-back'));
+    assert.equal(await me.ui.erase(listed), false, 'said: not everything was erased');
+    assert.deepEqual(keysOf(shared, OWNER).filter(key => key.includes('page-back')), before, 'its rows stay');
+  });
+  await withLocks(async locks => {
+    // The same with its compaction done first (back() writes and compacts): its newest row is not listed and stays.
+    const shared = new Storage(locks), back = page(shared, 'page-back'), me = page(shared, 'page-me');
+    assert(back.ui.save([draft('돌아온 탭의 원문', 'document-b')]).ok); back.ui.leave(); await locks.tail;
+    const listed = me.keep.device().rows;
+    back.ui.back(); await locks.tail;
+    await me.ui.erase(listed);
+    assert.deepEqual(nextPage(shared, TIME + ALPHA_UI_RECOVERY_KEEP_LIMITS.quietMinutes * 60_000 + 1).map(row => row.raw), ['돌아온 탭의 원문'], 'its input is still its own');
   });
 });
 

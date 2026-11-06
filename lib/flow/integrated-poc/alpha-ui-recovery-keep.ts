@@ -33,12 +33,14 @@ export interface AlphaUiRecoveryKeep {
   left(saved: (draft: AlphaUiDraft) => boolean): AlphaUiRecoveryHandoff;
   /** Own compaction also runs under the account lock and rechecks both stores. */
   clean(session: AlphaUiRecoveryPort): Promise<boolean>;
-  /** P3c logout: this page's rows and the rows of pages that left or went quiet (the ones a later page takes), with
-   * their drafts. A live page's rows belong to another open tab and are not listed. */
+  /** P3c logout: this page's rows and the rows of pages that have left (their newest row says so), with their drafts.
+   * Any other page may still be open, a quiet or background one too (the take after 30 quiet minutes is unchanged):
+   * its rows are another tab's and are not listed. */
   device(): AlphaUiRecoveryDevice;
-  /** P3c '지우고 로그아웃', the person's own choice: in the account lock, removes this page's rows and the listed rows
-   * that are still as listed, and this keep writes nothing after. A live page's rows, rows that came or changed after
-   * the listing and unreadable rows stay. Without the lock nothing is removed. True when none of those is left. */
+  /** P3c '지우고 로그아웃', the person's own choice: in the account lock, removes this page's rows and the rows of a page
+   * that still has left with every row as listed, and this keep writes nothing after. A page that may be open, one
+   * that came back or wrote after the listing, and unreadable rows stay. Without the lock nothing is removed. True
+   * when no listed row is left. */
   erase(listed: AlphaUiRecoveryDevice['rows']): Promise<boolean>;
 }
 
@@ -235,22 +237,25 @@ export function createAlphaUiRecoveryKeep(storage: AlphaUiRecoveryKeepStorage | 
     },
     device() {
       try {
-        const all = rows(), own = mine(all), gone = groups(all);
+        const all = rows(), own = mine(all), gone = groups(all).filter(group => group.newest.value.left);
         return { drafts: mergeAlphaUiRecoveryDrafts([], [...effective(own), ...gone.flatMap(group => group.drafts)]),
           rows: [...own, ...gone.flatMap(group => group.list)].map(({ key, raw }) => ({ key, raw })) };
       } catch { return { drafts: [], rows: [] }; }
     },
     erase(listed) {
       // The one removal of another page's rows outside compaction: the person chose to erase what they were shown.
-      // The lock orders it with every other page's put, compaction and take; it rereads before removing.
+      // The lock orders it with every other page's put, compaction and take; it rereads before removing, and a page
+      // goes only while it has left and has written nothing since (one that came back may be open: it stays).
       return locked(() => {
         closed = true;
-        const shown = new Map(listed.map(row => [row.key, row.raw]));
+        const all = rows(), shown = new Map(listed.map(row => [row.key, row.raw]));
+        const gone = new Set(groups(all).filter(group => group.newest.value.left && group.list.every(row => shown.get(row.key) === row.raw))
+          .flatMap(group => group.list.map(row => row.key)));
         let complete = true;
-        for (const row of rows()) {
-          const own = row.version === 3 && row.key.startsWith(ownPrefix), was = shown.get(row.key);
-          if (!own && was === undefined) continue;
-          if (!own && was !== row.raw) { complete = false; continue; }
+        for (const row of all) {
+          const own = row.version === 3 && row.key.startsWith(ownPrefix);
+          if (!own && !shown.has(row.key)) continue;
+          if (!own && !gone.has(row.key)) { complete = false; continue; }
           if (storage!.getItem(row.key) !== row.raw) { complete = false; continue; }
           storage!.removeItem(row.key);
           if (storage!.getItem(row.key) !== null) complete = false;
