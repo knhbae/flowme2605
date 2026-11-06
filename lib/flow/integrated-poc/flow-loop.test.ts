@@ -7,8 +7,14 @@ import { completeProgramRepeat } from './repeat-commands';
 import { programImportRepeatChoice, programImportRepeats } from './public-repeat-import';
 import { saveProgramParticipationDraft, submitProgramParticipation } from './participation-editor';
 import { programReviewPublicRelationValid } from './review-return';
-import { programFlowProgress, programFlowProgressText, programFlowReviews, programFlowsJustFinished, programTriedDraft, programWeekStart } from './flow-loop';
+import { PROGRAM_TRIED_EMPTY, programFlowProgress, programFlowProgressText, programFlowReviews, programFlowsJustFinished, programPendingFinish, programTriedAdd, programTriedDone,
+  programTriedDraft, programTriedShow, programWeekStart } from './flow-loop';
 import { textWorkspaceModel as M } from './text-workspace';
+import { createProgramEnvelope } from './program-data';
+import { captureAlphaAccount } from './alpha-persistence/program-adapter';
+import { createAlphaFakeServer } from './alpha-persistence/fake-server';
+import { createAlphaSyncController } from './alpha-sync/controller';
+import type { AlphaRepository } from './alpha-persistence/contract';
 
 // 실행 고리 1안 (B-EXECUTION-LOOP.md, 11/6): B takes A's Flow, checks its tasks, and on the last check may leave
 // ‘해 봤어요’ through the existing review path; A sees it under 내 Flow에 남은 후기.
@@ -109,4 +115,72 @@ test('남기기 → 공개: one experience post on the Flow, the author\'s 내 F
   assert.deepEqual(programFlowReviews(posted.data, B).posts, [], 'not the reviewer\'s');
   const own = posted.data.public.posts.map(post => ({ ...post, authorId: A })), gone = posted.data.public.posts.map(post => ({ ...post, deleted: true }));
   for (const posts of [own, gone]) assert.deepEqual(programFlowReviews({ ...posted.data, public: { ...posted.data.public, posts } }, A).posts, [], 'my own or a deleted one is not listed');
+});
+// QA NO_GO 11/6 F1: two Flows finished by one save were both marked asked and only the first shown; a Flow finished
+// while a question was up replaced it unanswered.
+const ONE = { title: '아침 루틴', items: [item('stretch', '스트레칭 하기')] }, TWO = { title: '저녁 루틴', items: [item('diary', '일기 쓰기')] };
+function pair(): ProgramData {
+  const data = catalog();
+  for (const [id, flow] of Object.entries({ morning: ONE, evening: TWO })) {
+    data.public.flows.push({ id, ownerId: A, currentVersionId: `${id}-v1`, category: '생활', situations: [], derivedFrom: null, archived: false });
+    data.public.versions.push({ id: `${id}-v1`, flowId: id, number: 1, parentVersionId: null, title: flow.title, summary: '합성', items: flow.items,
+      source: { kind: 'user-text', label: '합성', url: null, checkedAt: null }, createdBy: A, createdAt: NOW });
+  }
+  return take(take(data, 'morning'), 'evening');
+}
+
+test('QA F1: two Flows finished by one save are asked one after the other; only the one shown counts as asked', () => {
+  const before = pair(), text = M.updateTask(M.updateTask(before.spaces[B].text, task(before, '스트레칭 하기').id, { done: true }), task(before, '일기 쓰기').id, { done: true });
+  const after = { ...before, spaces: { ...before.spaces, [B]: { ...before.spaces[B], text } } };
+  const finished = programFlowsJustFinished(before, after, B, TODAY);
+  assert.deepEqual(finished.map(row => row.flowId), ['morning', 'evening'], 'one save, two Flows');
+  let queue = programTriedAdd(PROGRAM_TRIED_EMPTY, finished, true);
+  assert.deepEqual([queue.shown?.flowId, queue.waiting.map(row => row.flowId), queue.asked], ['morning', ['evening'], ['morning']]);
+  queue = programTriedDone(queue, true);
+  assert.deepEqual([queue.shown?.flowId, queue.waiting, queue.asked], ['evening', [], ['morning', 'evening']], 'answered: the next comes up');
+  queue = programTriedAdd(programTriedDone(queue, true), finished, true);
+  assert.deepEqual([queue.shown, queue.waiting], [null, []], 'both asked: never again in this tab');
+});
+
+test('QA F1: a Flow finished while a question is up waits; nothing is asked off screen', () => {
+  const data = pair(), morning = check(data, '스트레칭 하기'), evening = check(morning, '일기 쓰기');
+  let queue = programTriedAdd(PROGRAM_TRIED_EMPTY, programFlowsJustFinished(data, morning, B, TODAY), true);
+  queue = programTriedAdd(queue, programFlowsJustFinished(morning, evening, B, TODAY), true);
+  assert.deepEqual([queue.shown?.flowId, queue.waiting.map(row => row.flowId), queue.asked], ['morning', ['evening'], ['morning']], 'the unanswered one stays');
+  queue = programTriedAdd(queue, programFlowsJustFinished(morning, evening, B, TODAY), true);
+  assert.equal(queue.waiting.length, 1, 'waiting once');
+  const away = programTriedDone(queue, false);
+  assert.deepEqual([away.shown, away.waiting.map(row => row.flowId), away.asked], [null, ['evening'], ['morning']], 'the space left: the next is not put up unseen');
+  assert.equal(programTriedShow(away).shown?.flowId, 'evening', 'back in the space');
+  const hidden = programTriedAdd(PROGRAM_TRIED_EMPTY, programFlowsJustFinished(data, morning, B, TODAY), false);
+  assert.deepEqual([hidden.shown, hidden.asked], [null, []]);
+});
+
+// QA F2: the last check's reply was lost; 다시 확인 confirmed the same request, but nothing asked.
+test('QA F2: a last check whose reply was lost is asked about when that same request is confirmed, not before', async () => {
+  let data = take(catalog(), 'mixed');
+  data = check(data, '기록 공책 고르기');
+  const seed = captureAlphaAccount(createProgramEnvelope(data), B, B), server = createAlphaFakeServer([seed]), port = server.connect(server.issueSession(B));
+  let saved: unknown = null, wire = 0, lose = false;
+  // The public Flows come with the account, as the social read gives them; the reply of the next save is lost.
+  const lossy: AlphaRepository = { ...port, references: () => seed.references,
+    execute: async command => { const result = await port.execute(command); if (lose) { lose = false; throw Error('reply lost'); } return result; } };
+  const controller = createAlphaSyncController({ recovery: { load: () => ({ ok: true, value: saved }), save: (value: unknown) => { saved = structuredClone(value); return true; } } as never,
+    requestId: () => `loop-wire-${++wire}` });
+  controller.bindSession(B, lossy);
+  await controller.refresh();
+  const shown = controller.snapshot().envelope!.data;
+  lose = true;
+  const last = await controller.mutate('완료', current => completeProgramTask(current, { ...base(current), taskId: task(current, '첫 주 돌아보기').id, date: TODAY, done: true }));
+  assert(!last.ok, 'the reply was lost');
+  const pending = controller.snapshot().pending;
+  assert(pending, 'unresolved');
+  assert.equal(programPendingFinish(pending.requestId, controller.snapshot()), 'wait');
+  assert(await controller.resolvePending(true), '다시 확인');
+  const live = controller.snapshot();
+  assert.equal(programPendingFinish(pending.requestId, live), 'ask');
+  assert.deepEqual(programFlowsJustFinished(shown, live.envelope!.data, B, TODAY).map(row => row.flowId), ['mixed']);
+  assert.equal(programPendingFinish('loop-wire-other', live), 'drop', 'another request is not this one');
+  assert.equal(programPendingFinish(pending.requestId, { pending: null, lastReceipt: null }), 'drop', 'no receipt: not asked');
+  assert.equal(programPendingFinish(pending.requestId, { pending: { requestId: 'loop-wire-other' }, lastReceipt: null }), 'drop');
 });

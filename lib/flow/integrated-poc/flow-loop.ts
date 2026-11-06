@@ -84,6 +84,34 @@ export function programFlowsJustFinished(before: ProgramData, after: ProgramData
   });
 }
 
+/** QA F1: a tab's questions, one at a time. Flows finished while one is up (or together) wait in the order they
+ *  finished; only a Flow put on screen counts as asked, and the one up stays until it is answered or let go. */
+export type ProgramTriedQueue = { shown: ProgramFlowFinish | null; waiting: ProgramFlowFinish[]; asked: string[] };
+export const PROGRAM_TRIED_EMPTY: ProgramTriedQueue = { shown: null, waiting: [], asked: [] };
+/** `visible`: the space is on screen, so the next waiting question may be put up now. */
+export function programTriedAdd(queue: ProgramTriedQueue, finished: readonly ProgramFlowFinish[], visible: boolean): ProgramTriedQueue {
+  const known = new Set([...queue.asked, ...queue.waiting.map(row => row.flowId)]), waiting = [...queue.waiting];
+  for (const row of finished) if (!known.has(row.flowId)) { known.add(row.flowId); waiting.push(row); }
+  const next = { ...queue, waiting };
+  return visible ? programTriedShow(next) : next;
+}
+export function programTriedShow(queue: ProgramTriedQueue): ProgramTriedQueue {
+  if (queue.shown || !queue.waiting.length) return queue;
+  const [shown, ...waiting] = queue.waiting;
+  return { shown, waiting, asked: [...queue.asked, shown.flowId] };
+}
+/** The question up is answered (or let go with the space); the next one comes up when the space is on screen. */
+export function programTriedDone(queue: ProgramTriedQueue, visible: boolean): ProgramTriedQueue {
+  const next = { ...queue, shown: null };
+  return visible ? programTriedShow(next) : next;
+}
+/** QA F2: a save of mine whose reply was lost is asked about only when that same request is confirmed (다시 확인, or
+ *  the check a read starts with); while it is unresolved it waits, and another request or no receipt lets it go. */
+export function programPendingFinish(requestId: string, live: { pending: { requestId: string } | null; lastReceipt?: { requestId: string; changed: boolean } | null }): 'wait' | 'ask' | 'drop' {
+  if (live.pending) return live.pending.requestId === requestId ? 'wait' : 'drop';
+  return live.lastReceipt?.requestId === requestId && live.lastReceipt.changed ? 'ask' : 'drop';
+}
+
 export const PROGRAM_TRIED_ASK = '이 Flow를 다 했어요. 작성자에게 ‘해 봤어요’를 남길까요?';
 export const PROGRAM_TRIED_NOTE = '이름과 함께 공개되는 글입니다. 한 줄만 써도 됩니다.';
 /** [남기기]: the review draft, its Flow and my copy's version chosen, titled; the body is left to write. */

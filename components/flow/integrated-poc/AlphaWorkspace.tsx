@@ -31,7 +31,7 @@ import { ProgramServerStatusContext, type ProgramServerStatusView } from './prog
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
 import { captureProgramImportLinks, cancelProgramImportLinks, programImportTargets, programImportReceiptOwnsLinks, type ProgramImportLinks } from '@/lib/flow/integrated-poc/program-import-links';
 import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
-import { PROGRAM_TRIED_ASK, programFlowsJustFinished, programTriedDraft, type ProgramFlowFinish } from '@/lib/flow/integrated-poc/flow-loop';
+import { PROGRAM_TRIED_ASK, PROGRAM_TRIED_EMPTY, programFlowsJustFinished, programPendingFinish, programTriedAdd, programTriedDone, programTriedDraft, programTriedShow, type ProgramTriedQueue } from '@/lib/flow/integrated-poc/flow-loop';
 import { textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { ProgramSpace, useProgramMobileWritingChrome, type ProgramMainTab } from './ProgramSpace';
 import { programSourceNavigationReady } from '@/lib/flow/integrated-poc/pending-source-navigation';
@@ -177,10 +177,16 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   useEffect(() => { setFlowReturn(null); setImportUndo(null); importUndoLock.current = false; setImportUndoBusy(false); }, [sessionEpoch]);
   // 실행 고리 1안: the save of mine that finishes someone's Flow asks once whether to leave ‘해 봤어요’. Nothing records
   // the answer; a Flow asked about in this tab is not asked again, and leaving the space lets the question go.
-  const [tried, setTried] = useState<{ epoch: object; finish: ProgramFlowFinish } | null>(null);
-  const triedAsked = useRef(new Set<string>()), finishWatch = useRef<ProgramData | null>(null);
-  useEffect(() => { setTried(null); finishWatch.current = null; }, [sessionEpoch]);
-  useEffect(() => { if (destination.view !== 'space') setTried(null); }, [destination]);
+  // QA F1: one question at a time; others wait their turn, and only one put on screen counts as asked.
+  const [tried, setTried] = useState<{ epoch: object; queue: ProgramTriedQueue } | null>(null);
+  const finishWatch = useRef<ProgramData | null>(null);
+  // QA F2: a save whose reply was lost, with what was shown when it started, until that request is confirmed.
+  const pendingFinish = useRef<{ epoch: object; requestId: string; before: ProgramData } | null>(null);
+  useEffect(() => { setTried(null); finishWatch.current = null; pendingFinish.current = null; }, [sessionEpoch]);
+  useEffect(() => {
+    const visible = destination.view === 'space';
+    setTried(current => current && { ...current, queue: visible ? programTriedShow(current.queue) : programTriedDone(current.queue, false) });
+  }, [destination]);
   const [reviewAnnouncement, setReviewAnnouncement] = useState<{ isCurrent: () => boolean } | null>(null);
   const reviewAnnouncementGeneration = useRef(0);
   const [recoveries, setRecoveries] = useState<AlphaUiRecoveryRecord | null>(null), [storageError, setStorageError] = useState(false);
@@ -709,7 +715,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     // The matching composer owns this attempt's message; account recovery controls remain here.
     const reviewOwnsMessage = intent?.type === 'participation-submit' && intent.draft.id === reviewContext.current?.draftId;
     if (reviewOwnsMessage && captureReviewVisit()()) setMessage('');
-    const shownBefore = currentData.current;
+    const shownBefore = currentData.current, pendingBefore = store.snapshot().pending?.requestId;
     ownMutation.current++;
     try {
       const guardedOptions=options?.alphaWriting?{...options,alphaWriting:{...options.alphaWriting,canSubmit:()=>
@@ -721,6 +727,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         || sessionEpochRef.current !== epoch) return outcome;
       if (!outcome.ok) {
         if (outcome.reason !== 'busy') setSaveFailed(true);
+        // QA F2: this request's reply was lost; its confirmation later may still be the last check.
+        const unresolved = store.snapshot().pending;
+        if (unresolved && unresolved.requestId !== pendingBefore && shownBefore?.spaces[owner]?.copies.length) pendingFinish.current = { epoch, requestId: unresolved.requestId, before: shownBefore };
         // A blocked click may resume after the original request settles.
         // Do not reintroduce its temporary wait notice after the final snapshot.
         if (outcome.reason !== 'busy' && !reviewOwnsMessage) {
@@ -904,16 +913,27 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const before = finishWatch.current, after = currentData.current;
     if (!before || !after || after === before) return;
     finishWatch.current = null;
-    const finished = programFlowsJustFinished(before, after, session.userId, programLocalDate()).filter(row => !triedAsked.current.has(row.flowId));
-    finished.forEach(row => triedAsked.current.add(row.flowId));
-    if (finished.length) setTried({ epoch: sessionEpochRef.current, finish: finished[0] });
+    const finished = programFlowsJustFinished(before, after, session.userId, programLocalDate());
+    if (!finished.length) return;
+    const epoch = sessionEpochRef.current, visible = destinationRef.current.view === 'space';
+    setTried(current => ({ epoch, queue: programTriedAdd(current?.epoch === epoch ? current.queue : PROGRAM_TRIED_EMPTY, finished, visible) }));
   }
-  useEffect(() => { askIfFlowFinished(); }, [data]);
+  useEffect(() => {
+    const waiting = pendingFinish.current, live = controller.current?.snapshot();
+    if (waiting && (waiting.epoch !== sessionEpochRef.current || !live)) pendingFinish.current = null;
+    else if (waiting && live) {
+      const state = programPendingFinish(waiting.requestId, live);
+      if (state !== 'wait') pendingFinish.current = null;
+      if (state === 'ask') finishWatch.current = waiting.before;
+    }
+    askIfFlowFinished();
+  }, [data, snapshot]);
   /** [남기기]: the review composer, its Flow and my copy's version chosen and the title written (programTriedDraft);
    *  saving the input first, as 후기 쓰기 does. Nothing is public until its preview's 공개하기. */
   async function startTriedReview() {
-    const asked = tried, epoch = sessionEpochRef.current, visit = destinationRef.current, editor = editors.current;
-    if (!asked || asked.epoch !== epoch || reviewBusy.current) return;
+    const epoch = sessionEpochRef.current, visit = destinationRef.current, editor = editors.current;
+    const asked = tried?.epoch === epoch ? tried.queue.shown : null;
+    if (!asked || reviewBusy.current) return;
     if (!reviewReady(epoch)) { setMessage('저장이 끝난 뒤 다시 눌러 주세요. 입력은 그대로 있습니다.'); return; }
     reviewBusy.current = true;
     try {
@@ -924,9 +944,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       const communitySaved = !community || await community.flushAll();
       if (!reviewReady(epoch) || community !== communityEditors.current) return;
       if (!communitySaved) { setMessage('작성 중인 글을 저장한 뒤 후기를 열어 주세요. 입력은 그대로 남아 있습니다.'); return; }
-      setTried(null);
+      setTried(current => current && { ...current, queue: programTriedDone(current.queue, false) });
       const next: ProgramDestination = { view: 'community' };
-      setReviewEntry({ draft: programTriedDraft(asked.finish), tried: true, isCurrent: () => reviewReady(epoch) && destinationRef.current === next,
+      setReviewEntry({ draft: programTriedDraft(asked), tried: true, isCurrent: () => reviewReady(epoch) && destinationRef.current === next,
         onOpened: opened => { if (!opened && epoch === sessionEpochRef.current) setMessage('후기를 열지 못했습니다. 입력과 저장 결과를 확인해 주세요.'); } });
       await navigate(next);
     } finally { reviewBusy.current = false; }
@@ -1615,10 +1635,10 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring, ...(importUndo.batch.repeat ?? [])][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } } : undefined}
         onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></ProgramServerStatusContext.Provider>
         {/* Over the top of the space, apart from the check notices and the tabs below; pressing it leaves the caret where it is. */}
-        {tried?.epoch === sessionEpoch && <div className={styles.triedPrompt} role="status" data-tried-prompt>
+        {tried?.epoch === sessionEpoch && tried.queue.shown && <div key={tried.queue.shown.flowId} className={styles.triedPrompt} role="status" data-tried-prompt={tried.queue.shown.flowId}>
           <p>{PROGRAM_TRIED_ASK}</p>
           <div><button type="button" onPointerDown={event => event.preventDefault()} onClick={() => void startTriedReview()}>남기기</button>
-            <button type="button" onPointerDown={event => event.preventDefault()} onClick={() => setTried(null)}>괜찮아요</button></div>
+            <button type="button" onPointerDown={event => event.preventDefault()} onClick={() => setTried(current => current && { ...current, queue: programTriedDone(current.queue, true) })}>괜찮아요</button></div>
         </div>}</div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} storageScope="account"
         selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined}
