@@ -77,7 +77,7 @@ test('at the limit the move is dropped; the save goes on and its result is told 
 test('navigate() waits through it and moves only when saved; the notice offers 머무르기, then 복구함 열기', () => {
   const workspace = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/AlphaWorkspace.tsx'), 'utf8').replace(/\r\n/g, '\n');
   const at = workspace.indexOf('async function navigate('), move = workspace.slice(at, workspace.indexOf('\n  }\n', at));
-  const order = ['if (!captureInput()) return;', 'lockInput()', 'await waitProgramMoveFlush({', 'releases.forEach(release => release?.())',
+  const order = ["if (!captureInput()) return 'refused';", 'lockInput()', 'await waitProgramMoveFlush({', 'releases.forEach(release => release?.())',
     "if (outcome !== 'saved') {", 'setDestination(next)'];
   order.reduce((from, step) => { const found = move.indexOf(step, from); assert(found > from, step); return found; }, -1);
   assert(!/flushAll\(\)\)\s*return;/.test(move), 'a failed save no longer returns silently');

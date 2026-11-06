@@ -53,13 +53,16 @@ test('the host tabs go to the space first when needed, then ask the port; Flow a
     window: { scrollTo: () => moves.push('top') } });
   await flow('space', 'community')(); await flow('today', 'discover')(); await flow('flow', 'community')();
   assert.deepEqual(moves, ['navigate community', 'navigate discover', 'navigate discover', 'top']);
-  // 나: a refused move (a save or held input) also opens the 복구함 sheet; again on 나, the top.
-  const me = (refused: boolean, view: string) => { const log: string[] = []; return { log, run: evaluate<(opener: unknown) => Promise<void>>(fn(alpha, 'chooseMeTab'), {
-    externalRef: { current: refused }, controller: { current: { snapshot: () => ({ pending: null }) } }, destinationRef: { current: { view } },
-    navigate: async (next: { view: string }) => { log.push(`navigate ${next.view}`); }, openRecoveryBox: (opener: unknown) => log.push(`sheet ${opener}`),
+  // 나: a refused move (a save or held input, before or inside navigate()) also opens the 복구함 sheet; again on 나, the top.
+  const me = (outcome: string, view: string) => { const log: string[] = []; return { log, run: evaluate<(opener: unknown) => Promise<void>>(fn(alpha, 'chooseMeTab'), {
+    destinationRef: { current: { view } },
+    navigate: async (next: { view: string }) => { log.push(`navigate ${next.view}`); return outcome; }, openRecoveryBox: (opener: unknown) => log.push(`sheet ${opener}`),
     window: { scrollTo: () => log.push('top') } }) }; };
-  const refused = me(true, 'space'); await refused.run('나'); assert.deepEqual(refused.log, ['navigate activity', 'sheet 나']);
-  const again = me(false, 'activity'); await again.run('나'); assert.deepEqual(again.log, ['navigate activity', 'top']);
+  // QA P2 (11/7): a late tab's conflict is refused inside navigate() (its save cannot finish): the sheet opens too.
+  for (const outcome of ['refused', 'not-saved', 'late']) { const refused = me(outcome, 'space'); await refused.run('나'); assert.deepEqual(refused.log, ['navigate activity', 'sheet 나'], outcome); }
+  for (const outcome of ['stayed', 'superseded', 'dropped']) { const kept = me(outcome, 'space'); await kept.run('나'); assert.deepEqual(kept.log, ['navigate activity'], outcome); }
+  const again = me('moved', 'activity'); await again.run('나'); assert.deepEqual(again.log, ['navigate activity', 'top']);
+  const there = me('moved', 'space'); await there.run('나'); assert.deepEqual(there.log, ['navigate activity']);
   // The new tabs hold no pointerdown (they move, as 쓰기·오늘·분류 do); the "…" tab and its toggle are gone.
   assert(!alpha.includes('toggleMoreMenu') && !alpha.includes('data-main-tab="more"'));
   const tabs = alpha.slice(alpha.indexOf('data-main-tab="flow"'), alpha.indexOf('</nav>}', alpha.indexOf('data-main-tab="flow"')));

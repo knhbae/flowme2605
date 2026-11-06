@@ -101,5 +101,5 @@ test('복구함 opens as a sheet from anywhere: it keeps input and moves nothing
   // Every way in passes its button: the notice, 나 › 자료 (and the menu's), and the 나 tab when a move is refused.
   assert(source.includes('<button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>복구함 열기</button>'));
   assert(source.includes('const recoveryButton = <button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>'));
-  assert(source.includes('if (refused) openRecoveryBox(opener);'));
+  assert(source.includes("if (moved === 'refused' || moved === 'not-saved' || moved === 'late') openRecoveryBox(opener);"));
 });

@@ -30,6 +30,7 @@ import { pendingResultUnknown } from '@/lib/flow/integrated-poc/save-status';
 import { programServerStatus } from '@/lib/flow/integrated-poc/program-status';
 import { ProgramServerStatusContext, type ProgramServerStatusView } from './program-status-context';
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
+import { programFencedRecoveryRaw } from '@/lib/flow/integrated-poc/recovery-restore';
 import { captureProgramImportLinks, cancelProgramImportLinks, programImportTargets, programImportReceiptOwnsLinks, type ProgramImportLinks } from '@/lib/flow/integrated-poc/program-import-links';
 import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
 import { PROGRAM_TRIED_ASK, PROGRAM_TRIED_EMPTY, programFlowsJustFinished, programPendingFinish, programTriedAdd, programTriedDone, programTriedDraft, programTriedShow, type ProgramTriedQueue } from '@/lib/flow/integrated-poc/flow-loop';
@@ -1108,11 +1109,21 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   }
   async function restoreDraft(index: number) {
     const draft = recoveries?.drafts[index]; if (!draft) return;
-    const result = await mutate('보관 원문 복구', current => createProgramDocument(current, {
+    const restore = (current: ProgramData, raw: string) => createProgramDocument(current, {
       actorId: session.userId, requestId: programId('recover'), expectedSpace: current.spaces[session.userId],
-      title: `${draft.title || '보관 원문'} 복구`.slice(0, 240), raw: draft.raw,
-    }));
-    if (result.ok) { setDestination({ view: 'space', id: result.result }); setMessage('보관 원문을 새 문서로 저장했습니다. 확인 후 보관본을 정리할 수 있습니다.'); }
+      title: `${draft.title || '보관 원문'} 복구`.slice(0, 240), raw,
+    });
+    // P3 (11/7): input the grammar cannot store as it is (an unfinished '- [') goes in whole between fence lines,
+    // every character as it was; nothing is fixed.
+    let fenced = false;
+    const result = await mutate('보관 원문 복구', current => {
+      const plain = restore(current, draft.raw);
+      fenced = !plain.ok && plain.reason === 'unresolved';
+      return fenced ? restore(current, programFencedRecoveryRaw(draft.raw)) : plain;
+    });
+    if (result.ok) { setDestination({ view: 'space', id: result.result }); setMessage(fenced
+      ? '보관 원문을 새 문서로 저장했습니다. 그대로 저장할 수 없는 줄(덜 쓴 체크 칸 등)이 있어 원문 전체를 ``` 줄 사이에 글자 그대로 넣었습니다. 확인 후 보관본을 정리할 수 있습니다.'
+      : '보관 원문을 새 문서로 저장했습니다. 확인 후 보관본을 정리할 수 있습니다.'); }
   }
   async function restoreStructuralDraft(index: number) {
     const entry = structuralRecoveries?.entries[index], record = structuralRecoveries;
@@ -1189,10 +1200,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (creatorEntryChoices) return;
     void navigate({ view: 'creator', id: creatorSelection }, true);
   }
-  async function navigate(next: ProgramDestination, chooseCreatorEntry = false) {
-    if (externalRef.current || controller.current?.snapshot().pending) { setMessage('먼저 저장 결과와 보관 입력을 확인해 주세요.'); return; }
+  /** What became of a move: 'moved'; not moved because a save or held input refused it ('refused' before saving,
+   *  'not-saved', 'late'); or because the person stayed, a newer move took over, or the session changed meanwhile. */
+  async function navigate(next: ProgramDestination, chooseCreatorEntry = false): Promise<'moved' | 'refused' | 'not-saved' | 'late' | 'stayed' | 'superseded' | 'dropped'> {
+    if (externalRef.current || controller.current?.snapshot().pending) { setMessage('먼저 저장 결과와 보관 입력을 확인해 주세요.'); return 'refused'; }
     const visit = destinationRef.current, epoch = sessionEpochRef.current, store = controller.current;
-    if (!captureInput()) return;
+    if (!captureInput()) return 'refused';
     // Save wait (11/7): the move still saves every editor first and never skips it. Past 0.8 s it says so and offers 머무르기;
     // past 10 s, or when the save cannot finish, it does not move and says the input is on this device (복구함). A wait
     // that ends without moving lets the save go on. A newer move takes over: the older one stops waiting and does not move.
@@ -1215,11 +1228,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       releases.forEach(release => release?.());
       if (moveStay.current === stay) moveStay.current = null;
     }
-    if (moveSeq.current !== seq) return;
-    if (outcome !== 'saved') { setMoveWait(outcome === 'stayed' ? null : { seq, phase: outcome }); return; }
+    if (moveSeq.current !== seq) return 'superseded';
+    if (outcome !== 'saved') { setMoveWait(outcome === 'stayed' ? null : { seq, phase: outcome }); return outcome; }
     setMoveWait(null);
     if (disposed.current || visit !== destinationRef.current || epoch !== sessionEpochRef.current || store !== controller.current
-      || currentOwnerRef.current !== session.userId) return;
+      || currentOwnerRef.current !== session.userId) return 'dropped';
     if (chooseCreatorEntry) { creatorEntryReturn.current = visit; setCatalogDetailOpen(false); }
     setCreatorEntryChoices(next.view === 'creator' && chooseCreatorEntry);
     if (next.view === 'creator') { setCreatorSeen(true); setCreatorSelection(next.id); }
@@ -1230,6 +1243,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (window.location.hash !== programLocation(next)) window.history.pushState(null, '', programLocation(next));
     destinationRef.current = next; setDestination(next); setOutput(null);
     if (!['flow', 'discover'].includes(next.view)) setFlowReturn(null);
+    return 'moved';
   }
   useEffect(() => {
     const initial = parseProgramLocation(window.location.hash);
@@ -1554,9 +1568,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     await navigate({ view: lastBrowse.current });
   }
   async function chooseMeTab(opener: HTMLElement) {
-    const refused = !!externalRef.current || !!controller.current?.snapshot().pending, here = destinationRef.current.view === 'activity';
-    await navigate({ view: 'activity' });
-    if (refused) openRecoveryBox(opener); else if (here) window.scrollTo({ top: 0 });
+    const here = destinationRef.current.view === 'activity';
+    // QA P2 (11/7): refused inside navigate() too (a save it could not finish, as in a late tab's conflict, or one past
+    // its limit), 나 opens the 복구함. Not when the person stayed or another move took over.
+    const moved = await navigate({ view: 'activity' });
+    if (moved === 'refused' || moved === 'not-saved' || moved === 'late') openRecoveryBox(opener); else if (moved === 'moved' && here) window.scrollTo({ top: 0 });
   }
   /** N9: from an empty 복구함 to the archived documents people often look for there. The sheet closes first. */
   async function openArchiveFromMenu() {
