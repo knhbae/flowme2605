@@ -473,6 +473,17 @@
 .space .sheetNewWriting { width: 100%; min-height: 48px; margin: 0 0 12px; border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); color: #fff; font-weight: 700; }
 /* N1 fix 3: the empty first screen's own start, styled like the sheet's ＋ 새 글. */
 .space .emptyNewWriting { min-height: 48px; padding-inline: 20px; border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); color: #fff; font-weight: 700; }
+/* 첫인상 (11/7): an empty account's Flows from FlowMe, under its two buttons. Cards are whole buttons (title, two
+   summary lines, counts); one column on phones, up to three across on wider screens. */
+.space .firstFlows { margin-top: 28px; color: var(--flowme-b-ink); }
+.space .firstFlows > h2 { font-weight: 700; line-height: 26px; }
+.space .firstFlows > p { margin: 4px 0 12px; color: var(--flowme-b-muted); font-size: 14px; }
+.space .firstFlows > ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.space .firstFlows button { box-sizing: border-box; display: grid; gap: 6px; align-content: start; width: 100%; height: 100%; min-height: 44px; margin: 0; padding: 14px 16px; border: 1px solid var(--flowme-b-line); border-radius: 12px; background: var(--flowme-b-surface); color: var(--flowme-b-ink); text-align: start; font: inherit; cursor: pointer; }
+.space .firstFlowTitle { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font-size: 16px; font-weight: 700; line-height: 24px; overflow-wrap: anywhere; }
+.space .firstFlowBadge { padding: 0 8px; border-radius: 999px; background: var(--flowme-b-selected); color: var(--flowme-b-muted); font-size: 12px; font-weight: 600; line-height: 20px; }
+.space .firstFlowSummary { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: var(--flowme-b-ink); font-size: 14px; line-height: 21px; }
+.space .firstFlowMeta { color: var(--flowme-b-muted); font-size: 13px; line-height: 20px; }
 @media (max-width: 760px) { .space .findDialog { max-height: 85dvh; } }
 
 /* R8b: the Flow·반복 box opens as a sheet from the toolbar's 반복 button. */

@@ -22,6 +22,8 @@ import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSel
 import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate, programDaysBetween } from '@/lib/flow/integrated-poc/date-label';
 import { timeRo } from '@/lib/flow/integrated-poc/number-particle';
+import { programFirstOfficialFlows } from '@/lib/flow/integrated-poc/first-flows';
+import { useAlphaOfficialActors } from './AlphaOfficialActors';
 import { carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverItems, programCarryoverPlaces, programCarryoverProof, restoreProgramCarryover,
   PROGRAM_CARRYOVER_LIMIT, type ProgramCarryoverBefore, type ProgramCarryoverChoice, type ProgramCarryoverItem, type ProgramCarryoverPlan } from '@/lib/flow/integrated-poc/carryover';
 import { programOpening } from '@/lib/flow/integrated-poc/carryover-opening';
@@ -231,6 +233,8 @@ function sameScheduleWorkspace(before: TextWorkspaceState, expected: TextWorkspa
 
 export function ProgramSpace(props: ProgramSpaceProps) {
   const { data, today } = props, actorId = data.activeActorId, space = data.spaces[actorId];
+  // 첫인상 (11/7): read here, not inside a branch; empty unless the official list was read (Alpha only).
+  const officialActors = useAlphaOfficialActors();
   // C6a review: every save of the space goes through here. Each is counted while it waits (고르기 does not start during
   // one), and while picking it is refused, with undo/redo: 고르기 changes nothing. A document's own commit is counted only.
   const selectingNow = useRef(false), [savesPending, setSavesPending] = useState(0);
@@ -794,6 +798,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   const docs = [...space.text.documents, ...space.text.flows];
   const selectedDoc = docs.find(doc => doc.id === selected);
+  const firstFlows = !selected && props.capabilities?.discovery !== false ? programFirstOfficialFlows(data, actorId, officialActors) : [];
   const retainedIds = new Set(Object.values(space.retentionDocuments ?? {}));
   const retentionSource = Object.entries(space.retentionDocuments ?? {}).find(([, id]) => id === selected)?.[0];
   const selectedArchived = !!selectedDoc && space.archivedDocumentIds.includes(selectedDoc.id);
@@ -2519,7 +2524,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>
       {/* A new account starts here with no document; the title row keeps only a document's tools, so the
           first screen needs its own way to start writing. */}
-      <button type="button" className={styles.emptyNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글 쓰기</button>{props.capabilities?.discovery !== false && <button onClick={() => props.navigate({ view: 'discover' })}>Flow 찾기</button>}</div> : <>
+      <button type="button" className={styles.emptyNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글 쓰기</button>{props.capabilities?.discovery !== false && <button onClick={() => props.navigate({ view: 'discover' })}>Flow 찾기</button>}
+      {/* 첫인상 (11/7): an empty account also sees a few Flows FlowMe put together; a card opens its detail. */}
+      {firstFlows.length > 0 && <section className={styles.firstFlows} aria-labelledby="program-first-flows"><h2 id="program-first-flows">FlowMe가 정리한 Flow</h2>
+        <p>살펴보고 마음에 들면 내 계획으로 가져올 수 있습니다.</p>
+        <ul>{firstFlows.map(({ flowId, lines }) => <li key={flowId}><button type="button" data-first-flow={flowId} onClick={() => props.navigate({ view: 'flow', id: flowId })}>
+          <span className={styles.firstFlowTitle}>{lines.title}{lines.badge && <span className={styles.firstFlowBadge}>{lines.badge}</span>}</span>
+          <span className={styles.firstFlowSummary}>{lines.summary}</span>
+          <span className={styles.firstFlowMeta}>{lines.meta}</span>
+        </button></li>)}</ul></section>}</div> : <>
       {selectedTrashed && <ProgramDocumentTrashAction key={selectedDoc.id} space={space} documentId={selectedDoc.id} disabled={preparingDocumentAction} onChange={changeDocumentTrash} />}
       <ProgramDocumentProvenance data={data} documentId={selectedDoc.id} disabled={preparingDocumentAction || selectedTrashed} onOpenRevisions={props.capabilities?.revisionHistory !== false && props.onRevisionHistory ? () => void openDocumentAction(props.onRevisionHistory!) : undefined} onOpenCreatorDraft={props.capabilities?.creatorNavigation !== false ? draftId => void openDocumentAction(() => props.navigate({ view: 'creator', id: draftId })) : undefined} />
       {copyHeader && <div className={styles.copyHeader} data-state={copyHeader.kind}><span>{copyHeader.text}</span>
