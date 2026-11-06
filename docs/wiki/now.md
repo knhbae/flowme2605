@@ -40,6 +40,7 @@ N1에 들어간 것:
 - 11/6 22:27 사용자 "너가 해줘" → 공식 계정 한 줄 켬(공개 Flow 10개 가진 작성자 1명, 확인: 공식 행 1·공식 Flow 10). 되돌리기: delete from flowme_private.alpha_official_identities_v1. 화면 표시는 클라이언트 반영 뒤부터.
 - 11/6 22:45 가벼운 절차 11회차 DEPLOYED: 7f214a04 / VsCEna0da2tjK0Fv9Ka6K(DR 검사 보정, 로그아웃 '지우고' 뒤 다시 담김 막기, 다른 탭 사본 경고 문장). 기타 독립 QA_GO(DR 합성 15/15, 390·1280 18/18), 10경로 기대값, DB 변경 0, 복귀 N6r. 남은 P3: busy에서 지운 직후 키 새로고침이면 다시 담김(손실 0).
 - 11/7 00:0x 가벼운 절차 12회차 DEPLOYED: dcc6f895 / u_x1wWPFy1yK3YtD3dswa(공식 표시 A안 화면: Flow 작성자·판본 작성자가 모두 공식일 때만 상세 머리 FlowMe가 정리한 자료). 기타 독립 QA_GO(390·1280 16/16, 판독 호환 22/22, 관련 238/238). 운영 서버가 before .next에 아이콘 route-cache 2개를 써서 그 두 파일만 허용한 release-before-cache 판으로 Inspect→Deploy, 10경로 기대값, DB 변경 0, 복귀 N6r. 실계정 화면 표시는 미확인.
+- 11/6 23:58 UX 1차 9335b84c / ggbSppUb89xI-2wUyB4mm(dcc6f895 위, busy P3 포함, 1184/0/2). B9는 메모 줄 흐린 색, C5는 읽기 이름만으로 대체. 기타 QA 맡김, 개발은 2차 시작. 사고: 개발이 임시 worktree를 --force로 지우다 junction을 따라 운영 의존성 폴더의 .bin·lock·@alloc 삭제 → 같은 lock 설치본에서 복사 복구(대조 같음, 운영 영향 0). 규칙: worktree 지울 때 junction 먼저 cmd /c rd.
 - 11/6 23:00 사용자 "진행판 보고 자율적으로 권고대로, 용량 정리도 정기적으로". 용량: 끝난 worktree·QA 폴더 .next 74개 삭제(운영·되돌림·진행 중·2시간 안 폴더 제외), D 7.3→67GB 여유, 운영 그대로. 다음: Codex에 R6 SQL 갱신(공식 표·사진 처리)·흔적 없는 PG 검증 스크립트, 개발에 7d(예전 할 일 현재값을 글 표기로)·busy 새로고침 P3.
 - 11/6 22:44 Codex 공식 표시 통합 dcc6f895 / u_x1wWPFy1yK3YtD3dswa(7f214a04 위, 겹침 0, 1,179 PASS). 기타 독립 QA 맡김.
 - 11/6 23:10 사용자 "디자인·UX 개선할 부분도 보고 개선해줘" → UX 세션에 Flow 여정 점검(390·1280, P1~P3 표). 쓰기 편집기는 결함만. 구현은 점검 뒤 S 크기 P1·P2 묶음으로.
