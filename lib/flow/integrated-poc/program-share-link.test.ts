@@ -121,7 +121,7 @@ test('C9 × FC5: a republish shows C9 panel with the new Flow link; other accoun
   assert(done.indexOf('setRepublished(') < done.indexOf('setPublished('), 'republish first');
   // C9's panel: its words, then the link for the new Flow's first version, then 새 공개 Flow 열기.
   const panel = publisher.slice(publisher.indexOf('{republished ? <section'), publisher.indexOf('새 공개 Flow 열기</button></section>'));
-  assert(panel.includes('새 링크의 1판을 공개했습니다. 예전 Flow는 철회된 그대로입니다.'));
+  assert(panel.includes('새 링크로 버전 1을 공개했습니다. 예전 Flow는 철회된 그대로입니다.'));
   assert(panel.includes('<ProgramShareLink flowId={republished.flowId} versionId={republished.versionId} />'));
   // 내 공개 Flow: C9's row (철회됨, 새 링크로 다시 공개…) with FC5's link only while the Flow is live.
   const row = community.slice(community.indexOf('<section><h2>내 공개 Flow</h2>'), community.indexOf('<section><h2>작성 중인 공개 초안</h2>'));

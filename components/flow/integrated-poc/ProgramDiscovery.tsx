@@ -100,12 +100,12 @@ const failureText: Record<string, string> = {
   'missing-anchor': '기준일을 넣으면 상대 일정의 날짜를 확인할 수 있습니다.', 'invalid-date': '실제 달력에 있는 날짜를 넣어 주세요.',
   'copy-failed': '복사하지 못했습니다. 아래 결과를 직접 선택해 복사하거나 파일로 받아 주세요.',
   'download-failed': '파일 받기를 시작하지 못했습니다. 다시 시도하거나 결과를 복사해 주세요.',
-  'invalid-version': '이 판본을 안전하게 출력할 수 없습니다. 원문과 항목을 다시 확인해 주세요.',
+  'invalid-version': '이 버전은 내보낼 수 없습니다. 원문과 항목을 다시 확인해 주세요.',
   'empty-source': '파일로 옮길 원문을 먼저 붙여넣어 주세요.', 'source-limit': '원문은 3만 자·1,200줄 안에서 나누어 넣어 주세요.',
   'invalid-source-url': '출처 주소에서 로그인 정보·비밀 값·로컬 주소를 제거해 주세요.',
   'confirmation-required': '수정한 결과를 확인한 뒤 출력 내용을 확정해 주세요.',
 };
-const errorText = (reason: string) => failureText[reason] ?? '내용이 달라졌습니다. 현재 판본과 선택 항목을 다시 확인해 주세요.';
+const errorText = (reason: string) => failureText[reason] ?? '내용이 달라졌습니다. 지금 버전과 고른 항목을 다시 확인해 주세요.';
 
 export function TransientOutputEditor({ draft, stale, onChange, onDiscard }: { draft: TransientOutputDraft; stale: boolean; onChange: (draft: TransientOutputDraft) => void; onDiscard: () => void }) {
   const [message, setMessage] = useState(''), [busy, setBusy] = useState(false), [discarding, setDiscarding] = useState(false);
@@ -349,8 +349,8 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     finally { pendingRef.current = false; setPending(false); }
   };
 
-  if (selectedOutputReturn && (!outputBase || !returnedDetail)) return <section className={styles.page}><h1>출력한 공개 항목을 확인할 수 없습니다</h1><p>이 기기의 같은 주소와 저장된 판본에서만 열 수 있습니다. 다른 항목을 선택하거나 저장하지 않았습니다.</p><button onClick={() => navigate({view:'discover'})}>Flow 목록으로 돌아가기</button></section>;
-  if (selectedFlowId && (!flow || !version || !detail)) return <section className={styles.page}><h1>이 Flow를 찾을 수 없습니다</h1><p>{flow?.archived && !selectedVersionId ? '보관된 Flow는 판본이 지정된 기존 링크에서 읽을 수 있습니다.' : '연결한 Flow 또는 판본이 없습니다. 다른 판본으로 바꾸지 않았습니다.'}</p>{existingCopy && <button type="button" className={styles.primary} disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>내 문서에서 이어보기</button>}<button type="button" onClick={() => navigate({ view: 'discover' })}>Flow 목록으로 돌아가기</button></section>;
+  if (selectedOutputReturn && (!outputBase || !returnedDetail)) return <section className={styles.page}><h1>출력한 공개 항목을 확인할 수 없습니다</h1><p>이 기기의 같은 주소와 저장된 버전에서만 열 수 있습니다. 다른 항목을 선택하거나 저장하지 않았습니다.</p><button onClick={() => navigate({view:'discover'})}>Flow 목록으로 돌아가기</button></section>;
+  if (selectedFlowId && (!flow || !version || !detail)) return <section className={styles.page}><h1>이 Flow를 찾을 수 없습니다</h1><p>{flow?.archived && !selectedVersionId ? '보관된 Flow는 버전이 지정된 기존 링크에서 읽을 수 있습니다.' : '연결한 Flow 또는 버전이 없습니다. 다른 버전으로 바꾸지 않았습니다.'}</p>{existingCopy && <button type="button" className={styles.primary} disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>내 문서에서 이어보기</button>}<button type="button" onClick={() => navigate({ view: 'discover' })}>Flow 목록으로 돌아가기</button></section>;
   if (flow && version && detail) {
     const related = data.public.posts.filter(post => !post.deleted && post.flowId === flow.id);
     const derived = flow.derivedFrom ? data.public.versions.find(row => row.id === flow.derivedFrom?.versionId) : undefined;
@@ -371,7 +371,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     const chooseButton = (place: string) => !flow.archived && !existingCopy && !storedCopy && version.items.length > 1 && <button type="button" className={`${styles.linkButton} ${place}`} disabled={pending} aria-pressed={choosing}
       onClick={() => { if (choosing) { setChoosingVersion(null); patchDetail({ selectedItemIds: version.items.map(item => item.id) }); } else setChoosingVersion(version.id); }}>{choosing ? '모두 가져오기' : '할 일 고르기'}</button>;
     const extras = <>{sourceMeta && <details><summary>저장소에 보관된 원문</summary><pre className={styles.raw}>{sourceMeta.originalRawText}</pre></details>}
-      {derived && <button type="button" className={styles.linkButton} onClick={() => navigate({ view: 'flow', id: derived.flowId, versionId: derived.id })}>원본: {derived.title} · 판본 {derived.number}</button>}
+      {derived && <button type="button" className={styles.linkButton} onClick={() => navigate({ view: 'flow', id: derived.flowId, versionId: derived.id })}>원본: {derived.title} · 버전 {derived.number}</button>}
       {children.length > 0 && <details><summary>이 Flow에서 파생된 자료 {children.length}개</summary>{children.map(child => <button type="button" className={styles.linkButton} key={child.id} onClick={() => navigate({ view: 'flow', id: child.id })}>{data.public.versions.find(row => row.id === child.currentVersionId)?.title ?? child.id}</button>)}</details>}</>;
     // UX 2절 큰 단추: one action per state. An archived or held Flow never starts a new copy.
     const action = existingCopy ? <button type="button" className={styles.primary} data-testid="program-existing-copy-return" disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>내 문서에서 이어보기</button>
@@ -386,16 +386,16 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
         : storedCopy ? '이 Flow의 개인 사본이 있지만 지금 바로 열 수 없습니다. 내 공간에서 휴지통과 보관 상태를 확인해 주세요. 새 사본은 만들지 않습니다.'
           : sourceOnHold ? '출처를 다시 확인하는 중이라 지금은 새로 가져올 수 없습니다.' : null;
     return <section className={`${styles.page} ${styles.flowDetail}`} data-testid="program-flow-detail" data-has-action={action ? 'true' : undefined}>
-      {selectedOutputReturn && returnedDetail && <p role="status">출력한 공개 판본의 같은 항목으로 돌아왔습니다. 출력 선택·기준일·반복 범위를 복원했으며 원래 일정과 개인 기록은 변경하지 않았습니다.</p>}
+      {selectedOutputReturn && returnedDetail && <p role="status">내보낸 버전의 같은 항목으로 돌아왔습니다. 출력 선택·기준일·반복 범위를 복원했으며 원래 일정과 개인 기록은 변경하지 않았습니다.</p>}
       <div className={styles.detailBar}><button className={styles.back} type="button" disabled={pending} onClick={() => copySourceReturn && onReturnToSpace ? onReturnToSpace() : navigate({ view: 'discover' })}>{copySourceReturn && onReturnToSpace ? '← 내 문서' : '← Flow 찾기'}</button>
         <details className={styles.moreMenu}><summary aria-label="Flow 더보기 메뉴">⋯</summary><div>
-          {versions.length > 1 && <label className={styles.field}>이전 판본 보기<select value={version.id} disabled={pending} onChange={event => { update({ versionByFlow: { ...state.versionByFlow, [flow.id]: event.target.value } }); navigate({ view: 'flow', id: flow.id, versionId: event.target.value }); }}>{versions.map(row => <option key={row.id} value={row.id}>판본 {row.number}{row.id === flow.currentVersionId ? ' · 최신' : ''}</option>)}</select></label>}
+          {versions.length > 1 && <label className={styles.field}>이전 버전 보기<select value={version.id} disabled={pending} onChange={event => { update({ versionByFlow: { ...state.versionByFlow, [flow.id]: event.target.value } }); navigate({ view: 'flow', id: flow.id, versionId: event.target.value }); }}>{versions.map(row => <option key={row.id} value={row.id}>버전 {row.number}{row.id === flow.currentVersionId ? ' · 최신' : ''}</option>)}</select></label>}
           {!flow.archived && <button type="button" disabled={pending} onClick={() => setOutputVersion(outputOpen ? null : version.id)}>{outputOpen ? '내 도구로 받기 닫기' : '내 도구로 받기'}</button>}
           {/* FC5: a link to this version; an archived Flow's link stays closed (UX 13, C9). */}
           {!flow.archived && <ProgramShareLink flowId={flow.id} versionId={version.id} unverified={flow.id.startsWith('catalog-')} />}
         </div></details></div>
-      {flow.archived && <p className={styles.notice} role="status">공개 목록에서 내려 보관된 Flow입니다. 연결된 판본은 읽을 수 있지만 새로 가져오거나 출력할 수 없습니다. 기존 개인 사본과 기록은 그대로 남아 있습니다.</p>}
-      {version.id !== flow.currentVersionId && current && !flow.archived && <p className={styles.versionLine}>판본 {version.number}을 보고 있습니다 · <button type="button" className={styles.linkButton} disabled={pending} onClick={() => { update({ versionByFlow: { ...state.versionByFlow, [flow.id]: current.id } }); navigate({ view: 'flow', id: flow.id, versionId: current.id }); }}>최신 판본으로</button></p>}
+      {flow.archived && <p className={styles.notice} role="status">공개 목록에서 내려 보관된 Flow입니다. 연결된 버전은 읽을 수 있지만 새로 가져오거나 출력할 수 없습니다. 기존 개인 사본과 기록은 그대로 남아 있습니다.</p>}
+      {version.id !== flow.currentVersionId && current && !flow.archived && <p className={styles.versionLine}>버전 {version.number}을 보고 있습니다 · <button type="button" className={styles.linkButton} disabled={pending} onClick={() => { update({ versionByFlow: { ...state.versionByFlow, [flow.id]: current.id } }); navigate({ view: 'flow', id: flow.id, versionId: current.id }); }}>최신 버전으로</button></p>}
       <div className={styles.detailLayout}><div className={styles.detailMain}>
         <header className={styles.detailHeader}><p className={styles.eyebrow}>{[flow.category, ...flow.situations].join(' · ')}</p>
           <h1 ref={heading} tabIndex={-1}>{version.title}</h1>
@@ -403,11 +403,11 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
             {(summaryClipped || summaryOpen === version.id) && <button type="button" className={`${styles.linkButton} ${styles.pcOnly}`} aria-expanded={summaryOpen === version.id} aria-controls={`${uid}-summary`} onClick={toggleSummary}>{summaryOpen === version.id ? '접기' : '더 보기'}</button>}
             {(summaryClipped || summaryOpen === version.id) && <button type="button" className={`${styles.linkButton} ${styles.summaryMore} ${styles.phoneOnly}`} data-open={summaryOpen === version.id ? 'true' : undefined} aria-expanded={summaryOpen === version.id} aria-controls={`${uid}-summary`} onClick={toggleSummary}>{summaryOpen === version.id ? '접기' : '더 보기'}</button>}</div>
         </header>
-        <section className={styles.sourceBlock} aria-label="출처와 판본">
+        <section className={styles.sourceBlock} aria-label="출처와 버전">
           <p className={styles.sourceLine}>{kindLabel && <>{kindLabel} · </>}{programSourceLine(version.source)}{version.source.url && <> · <a href={version.source.url} target="_blank" rel="noreferrer noopener">원문 열기 ↗</a></>}</p>
           {sourceMeta?.sourceNeedsReview && <p className={styles.notice}>이 자료는 출처 재검토가 필요합니다. 현재 조건을 원문에서 확인해 주세요.</p>}
           <div className={styles.pcOnly}>{extras}</div>
-          {existingCopy && copyVersion && existingCopy.baseVersionId !== version.id && <p className={styles.versionLine}>내 사본은 판본 {copyVersion.number}입니다. 원본에 판본 {version.number}이 있습니다. <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>변경 확인</button></p>}
+          {existingCopy && copyVersion && existingCopy.baseVersionId !== version.id && <p className={styles.versionLine}>내 사본은 버전 {copyVersion.number}입니다. 원본에 버전 {version.number}이 있습니다. <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>변경 확인</button></p>}
         </section>
         {stateNote && <p className={flow.archived || existingCopy ? styles.muted : styles.notice} data-flow-progress={progressText ? '' : undefined}>{stateNote}</p>}
         {anchorUsed && !flow.archived && <><label className={`${styles.field} ${styles.anchorRow}`}><span>{sourceMeta?.anchorLabel ?? '기준일'}</span><input type="date" value={detail.anchor} disabled={pending} aria-describedby={`${uid}-anchor-hint`} onChange={event => patchDetail({ anchor: event.target.value })} /></label>
@@ -415,7 +415,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
           <p id={`${uid}-anchor-hint`} className={sourceMeta?.anchorHint ? styles.anchorHint : `${styles.anchorHint} ${styles.anchorGeneralHint}`}>{sourceMeta?.anchorHint || '넣으면 아래 날짜가 바로 바뀝니다. 고정 날짜는 그대로입니다.'}</p></>}
         <section aria-labelledby={`${uid}-items`}><div className={`${styles.row} ${styles.itemsHead}`}><h2 id={`${uid}-items`} className={styles.itemsLabel}>할 일 <span>{choosing ? `${useItemIds.length}/${version.items.length}` : version.items.length}</span><span className={styles.phoneOnly}>개</span></h2>
           {chooseButton(styles.pcOnly)}</div>
-          {selectedItemId && !version.items.some(item => item.id === selectedItemId) && <p className={styles.notice} role="status">이 판본에서 연결된 항목을 찾을 수 없습니다. 다른 항목으로 바꾸지 않고 지정된 판본을 표시합니다.</p>}
+          {selectedItemId && !version.items.some(item => item.id === selectedItemId) && <p className={styles.notice} role="status">이 버전에는 연결된 항목이 없습니다. 다른 항목으로 바꾸지 않고 지정된 버전을 표시합니다.</p>}
           <ol ref={taskList} className={styles.taskRows}>{version.items.map((item, index) => {
             const classifiedSource = item.sourceUrl ? classifyProgramUrl(item.sourceUrl, []) : null;
             const sourceUrl = classifiedSource && classifiedSource.kind !== 'invalid' ? item.sourceUrl!.trim() : null;
@@ -491,7 +491,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
             })}</ul></section>}
           {privateSpace?.documentTrash?.[storedCopy?.documentId ?? ''] && <p>사본 문서가 휴지통에 있습니다. 복원한 뒤 넣을 수 있습니다.</p>}
           {nothingForNew && <p className={styles.repeatNone} data-import-nothing>{nothingNewReason}</p>}
-          <button type="button" className={styles.primary} data-testid="program-import-run" disabled={pending || !canUseVersion || !repeatChoice || nothingToImport || nothingForTarget || nothingForNew || importDestination === 'existing' && !targetDocumentId} onClick={() => void runImport()}>{pending ? '가져오는 중…' : importDestination === 'existing' ? '고른 문서에 넣기' : '새 문서로 가져오기'}</button>
+          <button type="button" className={styles.primary} data-testid="program-import-run" disabled={pending || !canUseVersion || !repeatChoice || nothingToImport || nothingForTarget || nothingForNew || importDestination === 'existing' && !targetDocumentId} onClick={() => void runImport()}>{pending ? '가져오는 중…' : importDestination === 'existing' ? '고른 문서에 넣기' : '가져오기'}</button>
           {importFailure && <div className={styles.error} role="alert"><p>{importFailure.text}</p>{importFailure.continueCopy && (existingCopy ?? storedCopy) && <button type="button" onClick={() => { closeSheet(); navigate({ view: 'space', id: (existingCopy ?? storedCopy)!.documentId }); }}>내 문서에서 이어보기</button>}</div>}
         </div>}
       </dialog>

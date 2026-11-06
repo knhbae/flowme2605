@@ -77,7 +77,7 @@ function reviewAnnouncementState(snapshot: AlphaSyncSnapshot | null | undefined)
 }
 const labels: Record<AlphaSyncSnapshot['status'], string> = {
   'signed-out': '로그인이 필요합니다', ready: '저장됨', saving: '저장 중…', saved: '저장됨',
-  'same-location': '변경 없음', cancelled: '취소했습니다', conflict: '다른 변경이 먼저 저장되었습니다',
+  'same-location': '변경 없음', cancelled: '취소했습니다', conflict: '다른 곳에서 먼저 저장했습니다',
   'session-expired': '로그인이 만료되었습니다', 'checking-result': '저장 여부 확인 못 함', 'recovery-required': '저장 상태를 확인해 주세요',
 };
 function mergeRecoveryDrafts(parked: readonly AlphaUiDraft[], active: readonly AlphaUiDraft[]): AlphaUiDraft[] {
@@ -1045,7 +1045,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   useEffect(() => { if (leave) leaveKeep.current?.focus({ preventScroll: false }); }, [leave]);
   async function history(kind: 'undo' | 'redo') {
     if (selectingRefuses()) return;
-    if(currentData.current?.spaces[session.userId]?.personalAuthoring){setMessage('개인 Flow 판본·실행 기록을 보존하기 위해 전체 변경 되돌리기는 보류합니다. 본문 입력 취소는 편집기에서 사용할 수 있습니다.');return;}
+    if(currentData.current?.spaces[session.userId]?.personalAuthoring){setMessage('내 Flow의 버전·실행 기록을 지키려고 전체 변경 되돌리기는 보류합니다. 본문 입력 취소는 편집기에서 사용할 수 있습니다.');return;}
     if (storageError) { setMessage('입력 보관 상태를 확인하기 전에는 변경할 수 없습니다.'); return; }
     if (hasInput()) { setMessage('작성 중인 내용을 먼저 저장하거나 보관해 주세요.'); return; }
     // 둘러보기 takes back only a change made there; anything else is the writing screens' to undo.
@@ -1170,7 +1170,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     }, now), { history: false, alphaCreator: { type: 'working', now, working } });
     if (result.ok && !replaceEditors()) setMessage(keptEditorsNotice('제작 작업본은 서버에 복구했습니다.'));
     else if (result.ok) { setCreatorSeen(true); setCreatorSelection(working.draftId); setDestination({ view: 'creator', id: working.draftId });
-      setMessage(entry.auxiliaries.length ? '제작 작업본을 복구했습니다. 별도로 보관한 비교·구조 입력은 아래 원문을 확인해 다시 적용해 주세요.' : '제작 작업본을 복구했습니다. 저장 판본과 개인 실행은 그대로입니다.'); }
+      setMessage(entry.auxiliaries.length ? '제작 작업본을 복구했습니다. 별도로 보관한 비교·구조 입력은 아래 원문을 확인해 다시 적용해 주세요.' : '제작 작업본을 복구했습니다. 저장한 버전과 개인 실행은 그대로입니다.'); }
     else setMessage('현재 제작 구조와 안전하게 합칠 수 없습니다. 보관 원문과 구조 자료는 유지했습니다. 현재 저장본을 확인해 주세요.');
   }
   function openCreatorEntry() {
@@ -1420,7 +1420,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const browse = ['discover', 'flow', 'community'].includes(destination.view);
   const modalRecovery = pendingUnknown
     ? <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 입력은 유지하고 같은 요청으로 확인합니다.</p><button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>{snapshot?.busy ? '확인 중…' : '다시 확인'}</button></section>
-    : external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft ? <section className={styles.problem} aria-label="편집 중 변경 확인"><p>다른 변경이 먼저 저장되었습니다. 입력을 보관한 뒤 최신 내용을 확인해 주세요.</p><button disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button></section> : null;
+    : external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft ? <section className={styles.problem} aria-label="편집 중 변경 확인"><p>다른 곳에서 먼저 저장했습니다. 지금 쓴 내용은 이 기기에 남겨 두었습니다. 최신 내용을 확인해 주세요.</p><button disabled={snapshot?.busy} onClick={() => void openLatest()}>최신 내용 열기</button></section> : null;
   // Presentation only: storage, pending authority and recovery actions stay
   // unchanged. In personal space their disclosure does not resize the document.
   const needsInputProtection = storageError || !localParticipationRecovery && (pendingUnknown
@@ -1452,11 +1452,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       : snapshot?.retryableRejectedSocialDraft ? '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'
       : '저장되지 않았습니다. 입력은 남아 있습니다. 문서에서 내용을 수정한 뒤 ‘다시 저장’을 눌러 주세요.'}</p></section>}
     {(external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft) && !localParticipationRecovery && <section className={styles.problem} aria-label="다른 기기 변경과 입력 보호">
-      <h2>내 입력과 서버의 변경을 확인해 주세요</h2><p>내 입력은 이 탭에 보관합니다. 최신 내용을 연 뒤 필요한 원문을 복구할 수 있습니다.</p>
+      <h2>다른 곳에서 먼저 바뀐 내용이 있습니다</h2><p>지금 쓴 내용은 이 기기에 남겨 두었습니다. 최신 내용을 연 뒤 필요하면 다시 붙여 넣으세요.</p>
       {snapshot?.busy && <p role={announce ? 'status' : undefined}>서버 확인 중… 입력은 그대로 보관합니다.</p>}
-      <button type="button" disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button>
-      {snapshot?.draft && <AlphaConflictReview draft={snapshot.draft} account={snapshot.account}
-        onCopy={raw => navigator.clipboard.writeText(raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))} />}
+      <button type="button" disabled={snapshot?.busy} onClick={() => void openLatest()}>최신 내용 열기</button>
+      {snapshot?.draft && <AlphaConflictReview draft={snapshot.draft} account={snapshot.account} publicRepository={snapshot.references?.public ?? data?.public}
+        onCopy={raw => navigator.clipboard.writeText(raw).then(() => setMessage('내용을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 내용을 직접 선택해 주세요.'))} />}
     </section>}
   </>;
   const structuralRecoveryPanel = structuralRecoveries && <details className={styles.recovery}>
@@ -1623,7 +1623,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           {savedTotal > 0 && <span className={styles.navBadge} aria-hidden="true">{savedTotal}</span>}</button>
       </nav>}
       <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1></header>
-    {browse && <nav className={styles.browseNavigation} aria-label="둘러보기 종류"><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({view:'community'})}>경험·질문·지식</button><button aria-current={['discover','flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({view:'discover'})}>Flow 찾기</button></nav>}
+    {browse && <nav className={styles.browseNavigation} aria-label="둘러보기 종류"><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({view:'community'})}>이야기</button><button aria-current={['discover','flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({view:'discover'})}>Flow 찾기</button></nav>}
     <div className={styles.workPane} data-testid="alpha-work-pane">
     {!usesNoteChrome && (browse && savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice)}
     <section className={styles.sync} aria-label="서버 저장 상태">
@@ -1638,7 +1638,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       }}><summary aria-current={['activity', 'legacy'].includes(destination.view) ? 'page' : undefined} aria-label={`${destination.view === 'activity' ? '보조 메뉴 · 현재 위치: 내 활동' : destination.view === 'legacy' ? '보조 메뉴 · 현재 위치: 개인 Flow 상세' : '보조 메뉴 · 내 활동, 계정·자료 관리'}${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`}><span className={styles.auxiliaryLabel}>{destination.view === 'activity' ? '내 활동' : destination.view === 'legacy' ? '개인 Flow 상세' : '더보기'}</span>{savedTotal > 0 && <span className={styles.menuBadge} aria-hidden="true">{savedTotal}</span>}</summary><div className={styles.managementBody}>
         <h2>더보기</h2>
         {!unavailable && <section className={styles.menuGroup} aria-label="둘러보기"><h3>둘러보기</h3>
-          <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigateFromMenu({ view: 'community' })}>경험·질문·지식</button>
+          <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigateFromMenu({ view: 'community' })}>이야기</button>
             <button type="button" aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigateFromMenu({ view: 'discover' })}>Flow 찾기</button></div>
         </section>}
         <section className={styles.menuGroup} aria-label="편집"><h3>편집</h3>

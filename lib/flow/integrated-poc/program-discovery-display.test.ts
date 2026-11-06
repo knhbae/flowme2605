@@ -74,7 +74,7 @@ test('detail dates follow the anchor; without one a relative row reads before/af
 
 test('failure reasons map to their D1 texts only when the screen shows the cause', () => {
   assert.match(programImportFailure('limit', { copyConflict: false, onHold: false }).text, /^Flow 문서가 100개라/);
-  assert.deepEqual(programImportFailure('conflict', { copyConflict: true, onHold: false }), { text: '이미 다른 판본(또는 기준일)으로 가져온 사본이 있습니다.', continueCopy: true });
+  assert.deepEqual(programImportFailure('conflict', { copyConflict: true, onHold: false }), { text: '이미 다른 버전(또는 기준일)으로 가져온 사본이 있습니다.', continueCopy: true });
   // An external change also arrives as 'conflict'; without a differing copy it is the ordinary retry text.
   assert.deepEqual(programImportFailure('conflict', { copyConflict: false, onHold: false }), { text: PROGRAM_IMPORT_GENERIC_FAILURE, continueCopy: false });
   assert.match(programImportFailure('unresolved', { copyConflict: false, onHold: true }).text, /^출처를 다시 확인하는 중이라/);

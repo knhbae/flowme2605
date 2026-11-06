@@ -11,7 +11,7 @@ import { programErrorMessage, type ProgramMutate, type ProgramNavigate } from '.
 import styles from './ProgramCommunity.module.css';
 
 export type ProgramProposalReviewProps = { proposal: ProgramProposal; data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate; onRegisterEditors?: (port: ProgramEditorFlush | null) => void };
-const statuses = { submitted: '검토 대기', held: '보류', rejected: '반영하지 않음', accepted: '새 판본에 반영됨' };
+const statuses = { submitted: '검토 대기', held: '보류', rejected: '반영하지 않음', accepted: '새 버전에 반영됨' };
 const fieldLabels = { title: '항목 이름', description: '설명', completionCriteria: '완료 기준', schedule: '일정', subchecks: '하위 체크' };
 const comparisonLabels = { unavailable: '연결 확인 필요', conflict: '최신 값이 바뀜 · 채택 충돌', unchanged: '최신 값과 같음', proposed: '기준 값 유지 중 · 변경 제안', 'keep-latest': '제안 없음 · 최신 값 유지' };
 export function ProgramProposalReview(props: ProgramProposalReviewProps) {
@@ -124,26 +124,26 @@ function ReviewBody(props: ProgramProposalReviewProps) {
   const comparisonRow = (row: ProgramProposalComparisonRow) => <div key={row.field} className={styles.proposalCompareField}>
     <dt>{fieldLabels[row.field]} <span className={row.state === 'conflict' && proposal.status !== 'accepted' ? styles.proposalCompareConflict : styles.meta}>{proposal.status === 'accepted' && row.proposed ? '채택한 변경' : comparisonLabels[row.state]}</span></dt>
     <dd className={styles.proposalCompareValues}>
-      <div><span className={styles.meta}>기준 · {base ? `${base.number}판` : '연결 확인 필요'}</span><p>{programProposalComparisonValue(row.base)}</p></div>
-      <div><span className={styles.meta}>최신 · {latest ? `${latest.number}판` : '연결 확인 필요'}</span><p>{programProposalComparisonValue(row.latest)}</p></div>
+      <div><span className={styles.meta}>기준 · {base ? `버전 ${base.number}` : '연결 확인 필요'}</span><p>{programProposalComparisonValue(row.base)}</p></div>
+      <div><span className={styles.meta}>최신 · {latest ? `버전 ${latest.number}` : '연결 확인 필요'}</span><p>{programProposalComparisonValue(row.latest)}</p></div>
       <div><span className={styles.meta}>제안</span><p>{row.proposed ? programProposalComparisonValue(row.proposal) : '변경하지 않음'}</p></div>
     </dd>
   </div>;
   return <details className={styles.proposal}>
     <summary>{original?.title ?? '연결된 항목'} <span>{statuses[proposal.status]}</span></summary>
-    <p className={styles.meta}>{data.actors.find(actor => actor.id === proposal.authorId)?.name} · {base ? `${base.number}판에 대한 제안` : '기준 판본 연결 확인 필요'}</p>
+    <p className={styles.meta}>{data.actors.find(actor => actor.id === proposal.authorId)?.name} · {base ? `버전 ${base.number}에 대한 제안` : '기준 버전 연결 확인 필요'}</p>
     <p className={styles.body}>{proposal.reason}</p>
     {comparison.issue && <p id={acceptanceReasonId} className={styles.error} role="alert">{comparison.issue === 'latest-item-removed'
-      ? proposal.status === 'accepted' ? '최신 판본에는 이 항목이 없습니다. 제안이 반영된 판본과 당시 항목은 아래에서 열 수 있습니다.'
-        : '최신 판본에는 이 항목이 없습니다. 기준 판본과 제안은 보존되어 있지만 이 제안을 그대로 채택할 수 없습니다.'
-      : 'Flow·판본·항목 연결을 확인할 수 없습니다. 다른 항목을 대신 연결하거나 비교하지 않았습니다.'}</p>}
+      ? proposal.status === 'accepted' ? '최신 버전에는 이 항목이 없습니다. 제안이 반영된 버전과 당시 항목은 아래에서 열 수 있습니다.'
+        : '최신 버전에는 이 항목이 없습니다. 기준 버전과 제안은 보존되어 있지만 이 제안을 그대로 채택할 수 없습니다.'
+      : 'Flow·버전·항목 연결을 확인할 수 없습니다. 다른 항목을 대신 연결하거나 비교하지 않았습니다.'}</p>}
     <dl className={styles.proposalComparison}>{comparison.rows.filter(row => row.proposed).map(comparisonRow)}</dl>
     {comparison.rows.some(row => !row.proposed) && <details className={styles.proposalUnchanged}><summary>제안하지 않은 항목 내용 확인</summary>
       <dl className={styles.proposalComparison}>{comparison.rows.filter(row => !row.proposed).map(comparisonRow)}</dl></details>}
     {proposal.reviewNote && <p>작성자 의견: {proposal.reviewNote}</p>}
-    <div className={styles.actions}><button type="button" disabled={!base || !original} onClick={() => navigate({ view: 'flow', id: proposal.flowId, versionId: proposal.baseVersionId, itemId: proposal.itemId })}>제안한 판본·항목 열기</button>
-      {latest && <button type="button" onClick={() => navigate({ view: 'flow', id: proposal.flowId, versionId: latest.id, ...(comparison.current ? { itemId: proposal.itemId } : {}) })}>최신 {latest.number}판 열기</button>}</div>
-    {proposal.resultVersionId && <button type="button" onClick={() => navigate({ view: 'flow', id: proposal.flowId, versionId: proposal.resultVersionId!, itemId: proposal.itemId })}>반영된 판본 열기</button>}
+    <div className={styles.actions}><button type="button" disabled={!base || !original} onClick={() => navigate({ view: 'flow', id: proposal.flowId, versionId: proposal.baseVersionId, itemId: proposal.itemId })}>제안한 버전·항목 열기</button>
+      {latest && <button type="button" onClick={() => navigate({ view: 'flow', id: proposal.flowId, versionId: latest.id, ...(comparison.current ? { itemId: proposal.itemId } : {}) })}>최신 버전 {latest.number} 열기</button>}</div>
+    {proposal.resultVersionId && <button type="button" onClick={() => navigate({ view: 'flow', id: proposal.flowId, versionId: proposal.resultVersionId!, itemId: proposal.itemId })}>반영된 버전 열기</button>}
     {owner && <div className={styles.review}>
       <label>검토 의견 (선택)<textarea ref={input} maxLength={10000} value={note} readOnly={(busy || locked) && !composing.current}
         onCompositionStart={() => { composing.current = true; }} onCompositionEnd={event => { composing.current = false; draft.current = { ...draft.current, note: event.currentTarget.value }; touched.current = true; setNote(event.currentTarget.value); readonly(); }}
@@ -155,13 +155,13 @@ function ReviewBody(props: ProgramProposalReviewProps) {
       <div className={styles.actions}><button type="button" disabled={busy || locked} onClick={() => void flush()}>의견 초안 저장</button>
         <button type="button" onClick={keepRaw}>입력한 의견 TXT 보관</button><button type="button" disabled={busy || locked || privateConflict} onClick={() => void discard()}>의견 초안 지우기</button></div>
       {canReview && <>{!comparison.issue && <p id={acceptanceBlocked ? acceptanceReasonId : undefined} className={styles.meta}>{acceptanceBlock === 'recurrence-rollout'
-        ? '이 판본에 반복 일정이 있습니다. 반복 공개 연결을 마치기 전에는 새 판본을 만들 수 없습니다. 보류하거나 반영하지 않을 수 있습니다.'
+        ? '이 버전에 반복 일정이 있습니다. 반복 공개 연결을 마치기 전에는 새 버전을 만들 수 없습니다. 보류하거나 반영하지 않을 수 있습니다.'
         : acceptanceBlocked ? '최신 내용과 충돌해 그대로 채택할 수 없습니다. 보류하거나 반영하지 않을 수 있습니다.'
-        : '채택하면 변경을 반영한 새 판본이 이 기기의 공개 목록에 생깁니다.'}</p>}
+        : '채택하면 변경을 반영한 새 버전이 이 기기의 공개 목록에 생깁니다.'}</p>}
         <div className={styles.actions}>{(['hold', 'reject', 'accept'] as const).map(decision => <button key={decision} type="button"
           disabled={busy || locked || sourceConflict || privateConflict || (decision === 'accept' && acceptanceBlocked)}
           aria-describedby={decision === 'accept' && acceptanceBlocked ? acceptanceReasonId : undefined}
-          onClick={() => void review(decision)}>{({ hold: '보류', reject: '반영하지 않기', accept: '채택하고 새 판본 공개' })[decision]}</button>)}</div></>}
+          onClick={() => void review(decision)}>{({ hold: '보류', reject: '반영하지 않기', accept: '채택하고 새 버전 공개' })[decision]}</button>)}</div></>}
     </div>}
     {error && <p role="alert" className={styles.error}>{error}</p>}
   </details>;

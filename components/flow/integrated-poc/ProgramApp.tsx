@@ -644,7 +644,7 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
       <button onClick={() => void retryPresentation()}>저장된 화면 다시 확인</button>
       <button onClick={downloadPendingInput}>작성 중 입력 파일로 보관</button>
     </section>}
-    {browse && <nav className={styles.browseNav} aria-label="둘러보기 종류"><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => navigate({ view: 'community' })}>경험·질문·지식</button><button aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => navigate({ view: 'discover' })}>Flow 찾기</button></nav>}
+    {browse && <nav className={styles.browseNav} aria-label="둘러보기 종류"><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => navigate({ view: 'community' })}>이야기</button><button aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => navigate({ view: 'discover' })}>Flow 찾기</button></nav>}
     {['activity', 'creator'].includes(destination.view) && <nav className={styles.browseNav} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={() => navigate({ view: 'creator' })}>제작 초안</button></nav>}
     <main id="program-main" ref={main} tabIndex={-1} className={styles.main}>
       {!outputActorMismatch && destination.view === 'space' && data.activeActorId === 'local-user' && (legacyIssue || (savedCount > 0 && !data.spaces['local-user'].legacySnapshot)) && <aside className={styles.legacyNotice}>

@@ -26,12 +26,12 @@ const same = programSame;
 
 export function PublicationConflictReview({ comparison, choices, disabled, onChoice, onApply, onCancel }: { comparison: PublicationComparison; choices: PublicationConflictChoices; disabled: boolean; onChoice: (key: string, choice: 'draft' | 'latest') => void; onApply: () => void; onCancel: () => void }) {
   const remaining = comparison.fields.filter(field => !choices[field.key]).length;
-  return <section className={styles.comparison} aria-label="최신 공개 판본과 초안 비교"><h3>판본 {comparison.latestNumber}과 비교</h3><p>다른 필드마다 유지할 내용을 골라 주세요. 선택은 공개하지 않고 초안에만 반영합니다.</p>
+  return <section className={styles.comparison} aria-label="최신 공개 버전과 초안 비교"><h3>버전 {comparison.latestNumber}과 비교</h3><p>다른 필드마다 유지할 내용을 골라 주세요. 선택은 공개하지 않고 초안에만 반영합니다.</p>
     {comparison.fields.map(field => <fieldset key={field.key} disabled={disabled}><legend>{field.label}</legend><div className={styles.compareValues}>
       <label><strong>내 공개 초안</strong><pre>{field.draftText}</pre><span><input type="radio" name={`resolve-${field.key}`} checked={choices[field.key] === 'draft'} onChange={() => onChoice(field.key, 'draft')} />초안 유지</span></label>
-      <label><strong>최신 공개 판본</strong><pre>{field.latestText}</pre><span><input type="radio" name={`resolve-${field.key}`} checked={choices[field.key] === 'latest'} onChange={() => onChoice(field.key, 'latest')} />최신 내용 선택</span></label>
+      <label><strong>최신 공개 버전</strong><pre>{field.latestText}</pre><span><input type="radio" name={`resolve-${field.key}`} checked={choices[field.key] === 'latest'} onChange={() => onChoice(field.key, 'latest')} />최신 내용 선택</span></label>
     </div></fieldset>)}
-    {!comparison.fields.length && <p>공개할 필드의 차이는 없습니다. 확인한 최신 판본만 초안의 기준으로 연결합니다.</p>}<p role="status">{remaining ? `${remaining}개 차이를 더 선택해 주세요.` : '모든 차이를 선택했습니다. 공개 전 미리보기에서 다시 확인할 수 있습니다.'}</p>
+    {!comparison.fields.length && <p>공개할 필드의 차이는 없습니다. 확인한 최신 버전만 초안의 기준으로 연결합니다.</p>}<p role="status">{remaining ? `${remaining}개 차이를 더 선택해 주세요.` : '모든 차이를 선택했습니다. 공개 전 미리보기에서 다시 확인할 수 있습니다.'}</p>
     <button type="button" disabled={disabled || remaining > 0} onClick={onApply}>선택한 내용으로 초안 갱신</button><button type="button" disabled={disabled} onClick={onCancel}>비교 취소 · 초안 유지</button>
   </section>;
 }
@@ -176,7 +176,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       if (!await save()) return;
       const submitted = programClone(draftRef.current);
       let publishedFlowId: string | undefined;
-      const result = await mutate(republishing ? '새 링크로 공개' : storageScope === 'account' ? submitted.flowId ? '새 판본 공개' : '선택 내용 공개' : submitted.flowId ? 'PoC 새 판본 공개' : 'PoC에 선택 내용 공개', current => {
+      const result = await mutate(republishing ? '새 링크로 공개' : storageScope === 'account' ? submitted.flowId ? '새 버전 공개' : '선택 내용 공개' : submitted.flowId ? '새 버전 공개' : '선택 내용 공개', current => {
         const transition = publishProgramDocument(current, actorId, submitted, new Date().toISOString());
         if (transition.ok) publishedFlowId = transition.data.public.versions.find(row => row.id === transition.result)?.flowId;
         return transition;
@@ -237,7 +237,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
         if (value !== undefined) element.value = value;
       }
       setCurrent(next); setPrivateComparison(null); setComparison(null); setChoices({}); setPreview(false);
-      setMessage(choice === 'mine' ? '내 입력으로 비공개 초안을 저장했습니다. 공개 판본은 바꾸지 않았습니다.' : '확인한 저장 초안을 열었습니다. 공개 판본은 바꾸지 않았습니다.');
+      setMessage(choice === 'mine' ? '내 입력으로 비공개 초안을 저장했습니다. 공개 버전은 바꾸지 않았습니다.' : '확인한 저장 초안을 열었습니다. 공개 버전은 바꾸지 않았습니다.');
     } catch { setMessage('비교 선택을 저장하지 못했습니다. 내 입력과 비교 내용을 유지했습니다.'); }
     finally { endAction(); }
   };
@@ -246,7 +246,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     const fingerprint = documentFingerprint(data, actorId, documentId); if (fingerprint === null) return;
     if (fingerprint !== documentFingerprint(dataRef.current, actorId, documentId)) { setMessage(programErrorMessage('conflict')); return; }
     edit({ sourceDocumentFingerprint: fingerprint });
-    setMessage('개인 문서 변경을 확인했습니다. 공개 초안과 공개 판본 기준은 그대로 유지했습니다.');
+    setMessage('개인 문서 변경을 확인했습니다. 공개 초안과 공개 버전 기준은 그대로 유지했습니다.');
   };
   const startComparison = () => {
     if (!draftRef.current || unavailable()) return;
@@ -260,7 +260,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     try {
       if (!await save()) return;
       const submitted = programClone(draftRef.current); let updated: ProgramPublicationDraft | undefined;
-      const result = await mutate('공개 판본 비교를 초안에 반영', current => {
+      const result = await mutate('공개 버전 비교를 초안에 반영', current => {
         const transition = resolveProgramPublicationComparison(current, actorId, submitted, comparison, choices, new Date().toISOString());
         if (transition.ok) updated = transition.data.spaces[actorId].publicationDrafts.find(row => row.id === submitted.id);
         return transition;
@@ -279,7 +279,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       if (!await save()) return;
       const result = await mutate('공개 목록에서 내리기', current => archiveProgramPublication(current, actorId, documentId, archiveTarget.flowId, archiveTarget.versionId), { history: false, alphaSocial: { type: 'publication-archive', documentId, flowId: archiveTarget.flowId, expectedVersionId: archiveTarget.versionId } });
       if (!result.ok) { setMessage(programErrorMessage(result.reason)); return; }
-      setArchiveTarget(null); setComparison(null); setPreview(false); setMessage('공개 목록에서 내렸습니다. 기존 판본·개인 사본·작성 중인 초안은 그대로 보관했습니다.');
+      setArchiveTarget(null); setComparison(null); setPreview(false); setMessage('공개 목록에서 내렸습니다. 기존 버전·개인 사본·작성 중인 초안은 그대로 보관했습니다.');
     } catch { setMessage('공개 철회 결과를 확인하지 못했습니다. 초안은 유지했습니다. 현재 상태를 확인한 뒤 다시 시도해 주세요.'); }
     finally { endAction(); }
   };
@@ -350,22 +350,22 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     onCompositionStartCapture={event => { composing.current.add(event.target); }}
     onCompositionEndCapture={event => { composing.current.delete(event.target); const next = read(); if (next) setCurrent({ ...next, updatedAt: new Date().toISOString() }); syncReadonly(); void save(); }}>
     {externalRecovery}
-    <header className={styles.header}><div><p>선택한 내용만 공유</p><h2 id="program-publisher-title">{republishing ? '새 링크로 다시 공개' : currentFlow?.archived ? '공개 철회·보관 상태' : draft?.flowId ? '새 판본 공개' : '공개할 내용 고르기'}</h2></div><button type="button" disabled={blocked} onClick={() => void close()}>닫기 · 초안 보관</button></header>
-    {republished ? <section className={styles.preview} role="status" aria-label="새 링크 공개 완료"><p>새 링크의 1판을 공개했습니다. 예전 Flow는 철회된 그대로입니다.</p>
+    <header className={styles.header}><div><p>선택한 내용만 공유</p><h2 id="program-publisher-title">{republishing ? '새 링크로 다시 공개' : currentFlow?.archived ? '공개 철회·보관 상태' : draft?.flowId ? '새 버전 공개' : '공개할 내용 고르기'}</h2></div><button type="button" disabled={blocked} onClick={() => void close()}>닫기 · 초안 보관</button></header>
+    {republished ? <section className={styles.preview} role="status" aria-label="새 링크 공개 완료"><p>새 링크로 버전 1을 공개했습니다. 예전 Flow는 철회된 그대로입니다.</p>
       <ProgramShareLink flowId={republished.flowId} versionId={republished.versionId} />
       <button type="button" onClick={() => { dialog.current?.close(); onClose(); navigate({ view: 'flow', id: republished.flowId, versionId: republished.versionId }); }}>새 공개 Flow 열기</button></section> : !draft ? <p className={styles.error}>문서가 없거나 보관되었습니다. 공개할 내용을 다시 선택해 주세요.</p> : <>
       <p className={styles.boundary}>{storageScope === 'account' ? '로그인한 다른 사용자에게 선택한 내용을 공개합니다. 계정을 지워도 공개한 Flow는 남습니다.' : '이 기기의 로컬 PoC 목록에 공개합니다.'} 개인 메모·실행 날짜·진행·시간·문서 경로는 자동으로 포함하지 않습니다.</p>
-      {republishing && republishSource && <section className={styles.preview} aria-label="새 링크로 다시 공개 안내"><p>‘{republishSource.version.title}’({republishSource.version.number}판)는 철회된 채로 남습니다. 같은 내용으로 새 링크의 1판을 공개합니다.</p><p>예전 링크로는 가져오거나 출력할 수 없습니다. 새 링크를 다시 보내 주세요.</p><p>이전 판본·개인 사본·받은 제안은 철회한 Flow에 그대로 있습니다.</p></section>}
+      {republishing && republishSource && <section className={styles.preview} aria-label="새 링크로 다시 공개 안내"><p>‘{republishSource.version.title}’(버전 {republishSource.version.number})는 철회된 채로 남습니다. 같은 내용으로 새 링크에 버전 1을 공개합니다.</p><p>예전 링크로는 가져오거나 출력할 수 없습니다. 새 링크를 다시 보내 주세요.</p><p>이전 버전·개인 사본·받은 제안은 철회한 Flow에 그대로 있습니다.</p></section>}
       {privateChanged && <section className={styles.warning} aria-label="다른 탭 공개 초안 변경"><p>다른 탭에 저장된 비공개 초안이 바뀌었습니다. 이 화면의 입력은 유지했으며 자동으로 덮어쓰지 않습니다.</p><button type="button" disabled={blocked} onClick={() => { if (!unavailable()) setPrivateComparison({ stored: programClone(storedDraft) }); }}>최신 비공개 초안과 비교</button></section>}
-      {privateComparison && <section className={styles.warning} aria-label="비공개 초안 비교"><h3>어느 초안을 보관할까요?</h3><p>공개 판본 비교와 다릅니다. 선택해도 공개하지 않습니다. 내 입력을 TXT로 보관한 뒤 선택할 수 있습니다.</p>
+      {privateComparison && <section className={styles.warning} aria-label="비공개 초안 비교"><h3>어느 초안을 보관할까요?</h3><p>공개 버전 비교와 다릅니다. 선택해도 공개하지 않습니다. 내 입력을 TXT로 보관한 뒤 선택할 수 있습니다.</p>
         <details open><summary>이 화면의 입력</summary><pre className={styles.pre}>{draft ? programPublicationRecoveryText(draft) : ''}</pre></details>
         <details open><summary>비교할 때 저장된 초안</summary><pre className={styles.pre}>{privateComparison.stored ? programPublicationRecoveryText(privateComparison.stored) : '저장 초안 없음 · 다른 탭에서 공개했거나 지웠을 수 있습니다.'}</pre></details>
         <button type="button" disabled={blocked} onClick={() => void resolvePrivate('mine')}>내 입력으로 초안 보관</button><button type="button" disabled={blocked} onClick={() => void resolvePrivate('stored')}>내 입력 대신 확인한 저장 초안 열기</button><button type="button" disabled={blocked} onClick={() => setPrivateComparison(null)}>취소 · 내 입력 유지</button>
       </section>}
-      {currentFlow?.ownerId === actorId && <details className={styles.management}><summary>공개 상태 관리</summary>{currentFlow.archived ? <><p>이 Flow는 철회된 채로 둡니다. 같은 내용을 새 링크로 다시 공개할 수 있습니다.</p>{!republishing && canRepublish && <button type="button" disabled={blocked} onClick={startRepublishing}>새 링크로 다시 공개…</button>}{!canRepublish && <p>이 문서는 새 링크로 공개 중이거나 공개 연결이 바뀌었습니다.</p>}</> : <><p>공개를 철회하면 탐색 목록에서 숨깁니다. 이미 만들어진 개인 사본과 이전 판본은 남습니다.</p><button type="button" disabled={blocked} onClick={() => setArchiveTarget({ flowId: currentFlow.id, versionId: currentFlow.currentVersionId, title: data.public.versions.find(row => row.id === currentFlow.currentVersionId)?.title ?? draft.title })}>공개 목록에서 내리기</button></>}</details>}
-      {archiveTarget && <section className={styles.warning} aria-label="공개 철회 확인"><h3>‘{archiveTarget.title}’ 공개를 철회할까요?</h3><p>공개 목록에서만 숨깁니다. 원문·이전 판본·개인 사본·현재 초안은 지우지 않습니다. 나중에 같은 문서를 새 링크로 다시 공개할 수 있습니다. 이 Flow의 링크로는 더 이상 가져오거나 출력할 수 없습니다.</p>{currentFlow?.currentVersionId !== archiveTarget.versionId && <p role="alert">확인 중 판본이 바뀌었습니다. 취소한 뒤 최신 제목과 판본으로 다시 확인해 주세요.</p>}<button type="button" disabled={blocked || currentFlow?.currentVersionId !== archiveTarget.versionId} onClick={() => void archive()}>확인 · 공개 철회하고 보관</button><button type="button" disabled={blocked} onClick={() => setArchiveTarget(null)}>취소 · 공개 유지</button></section>}
+      {currentFlow?.ownerId === actorId && <details className={styles.management}><summary>공개 상태 관리</summary>{currentFlow.archived ? <><p>이 Flow는 철회된 채로 둡니다. 같은 내용을 새 링크로 다시 공개할 수 있습니다.</p>{!republishing && canRepublish && <button type="button" disabled={blocked} onClick={startRepublishing}>새 링크로 다시 공개…</button>}{!canRepublish && <p>이 문서는 새 링크로 공개 중이거나 공개 연결이 바뀌었습니다.</p>}</> : <><p>공개를 철회하면 탐색 목록에서 숨깁니다. 이미 만들어진 개인 사본과 이전 버전은 남습니다.</p><button type="button" disabled={blocked} onClick={() => setArchiveTarget({ flowId: currentFlow.id, versionId: currentFlow.currentVersionId, title: data.public.versions.find(row => row.id === currentFlow.currentVersionId)?.title ?? draft.title })}>공개 목록에서 내리기</button></>}</details>}
+      {archiveTarget && <section className={styles.warning} aria-label="공개 철회 확인"><h3>‘{archiveTarget.title}’ 공개를 철회할까요?</h3><p>공개 목록에서만 숨깁니다. 원문·이전 버전·개인 사본·현재 초안은 지우지 않습니다. 나중에 같은 문서를 새 링크로 다시 공개할 수 있습니다. 이 Flow의 링크로는 더 이상 가져오거나 출력할 수 없습니다.</p>{currentFlow?.currentVersionId !== archiveTarget.versionId && <p role="alert">확인 중 버전이 바뀌었습니다. 취소한 뒤 최신 제목과 버전으로 다시 확인해 주세요.</p>}<button type="button" disabled={blocked || currentFlow?.currentVersionId !== archiveTarget.versionId} onClick={() => void archive()}>확인 · 공개 철회하고 보관</button><button type="button" disabled={blocked} onClick={() => setArchiveTarget(null)}>취소 · 공개 유지</button></section>}
       {sourceChanged && <section className={styles.warning}><strong>개인 문서가 바뀌었습니다.</strong><p>원문 변경을 확인해 주세요. 개인 내용은 공개 초안에 자동으로 추가하지 않습니다.</p><details><summary>현재 개인 원문 읽기 · 공개되지 않음</summary><pre className={styles.pre}>{M.raw(M.getDocument(space.text, documentId))}</pre></details><button type="button" disabled={blocked} onClick={acknowledgeSource}>원문 변경 확인 · 공개 초안 유지</button></section>}
-      {versionChanged && !currentFlow?.archived && <section className={styles.warning}><strong>공개 판본이 바뀌었습니다.</strong><p>공개할 필드별로 초안을 유지할지 최신 내용을 가져올지 선택해 주세요.</p><button type="button" disabled={blocked} onClick={startComparison}>{comparison ? '최신 상태로 비교 다시 시작' : '최신 공개 판본과 비교'}</button></section>}
+      {versionChanged && !currentFlow?.archived && <section className={styles.warning}><strong>공개 버전이 바뀌었습니다.</strong><p>공개할 필드별로 초안을 유지할지 최신 내용을 가져올지 선택해 주세요.</p><button type="button" disabled={blocked} onClick={startComparison}>{comparison ? '최신 상태로 비교 다시 시작' : '최신 공개 버전과 비교'}</button></section>}
       {comparison && <PublicationConflictReview comparison={comparison} choices={choices} disabled={blocked} onChoice={(key, choice) => setChoices(previous => ({ ...previous, [key]: choice }))} onApply={() => void applyComparison()} onCancel={() => { setComparison(null); setChoices({}); }} />}
       {!preview && <details className={styles.management}><summary>반복 원본 확인</summary><p>반복 설정이 메모로 나뉜 이전 초안을 정리할 수 있습니다. 선택하거나 수정한 메모는 남기고, 공개할 항목은 별도로 고릅니다.</p>
         <button type="button" ref={seriesOpener} disabled={blocked} onClick={openSeriesReview}>반복 항목 확인하기</button></details>}
@@ -385,7 +385,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       {!publicationReady && <p className={styles.warning} role="status">반복 일정은 초안 저장·미리보기까지 사용할 수 있습니다. 개인 사본과 출력 연결이 준비되기 전에는 공개하지 않습니다.</p>}
       {preview && input ? <section className={styles.preview} aria-label="실제로 공개할 내용"><p className={styles.kicker}>공개 미리보기 · {input.items.length}개 항목</p><h3>{input.title}</h3><p className={styles.pre}>{input.summary}</p><p>출처: {input.source.label}{input.source.kind === 'simulated-example' ? ' · 합성 예시' : ' · 개인 작성'}</p>{input.source.url && <a href={input.source.url} target="_blank" rel="noreferrer noopener">입력한 원문 URL</a>}
         <p>분야: {input.category}{input.situations.length > 0 && ` · 적용 상황: ${input.situations.join(', ')}`}</p>
-        {input.derivedFrom && <p>파생 원본: {data.public.versions.find(row => row.id === input.derivedFrom?.versionId)?.title} · 판본 {data.public.versions.find(row => row.id === input.derivedFrom?.versionId)?.number}</p>}
+        {input.derivedFrom && <p>파생 원본: {data.public.versions.find(row => row.id === input.derivedFrom?.versionId)?.title} · 버전 {data.public.versions.find(row => row.id === input.derivedFrom?.versionId)?.number}</p>}
         <ol>{input.items.map(item => <li key={item.id}><h4>{item.title}</h4><p className={styles.pre}>{item.description}</p>{item.completionCriteria && <p>완료 기준: {item.completionCriteria}</p>}{item.sourceUrl && <p><a href={item.sourceUrl} target="_blank" rel="noreferrer noopener">항목 출처: {item.sourceUrl}</a></p>}<small>{item.schedule.kind === 'recurring' ? programRecurringScheduleLabel(item.schedule) : [item.schedule.kind === 'undated' ? '공개 일정: 미정' : item.schedule.kind === 'fixed' ? `공개 날짜: ${item.schedule.date}` : `공개 상대 일정: 기준일 ${item.schedule.days >= 0 ? '+' : ''}${item.schedule.days}일`, programOrdinaryTimingLabel(item.schedule.timing)].filter(Boolean).join(' · ')}</small>{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</li>)}</ol>
       </section> : <div className={styles.body}><label className={styles.field}>공개 제목<input data-publication-field="title" value={draft.title} maxLength={240} onChange={event => edit({ title: event.target.value })} placeholder="다른 사람이 알아볼 제목" /></label><label className={styles.field}>공개 소개·본문<textarea data-publication-field="summary" value={draft.summary} rows={3} maxLength={30000} onChange={event => edit({ summary: event.target.value })} placeholder="공개하고 싶은 설명을 직접 작성하세요" /></label>
         <section className={styles.choices}><h3>공개할 항목</h3>{!draft.rows.length && <p>이 문서에는 선택할 항목이 없습니다. 문서에 할 일이나 메모를 먼저 작성해 주세요.</p>}{draft.rows.map(row => {
@@ -404,12 +404,12 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
           </article>;
         })}</section>
         <details className={styles.source}><summary>분야·출처·원본 관계</summary><div className={styles.two}><label className={styles.field}>분야<input data-publication-field="category" value={draft.category} maxLength={120} onChange={event => edit({ category: event.target.value })} /></label><label className={styles.field}>적용 상황 · 쉼표로 구분<input data-publication-field="situationsText" value={draft.situationsText} onChange={event => edit({ situationsText: event.target.value })} /></label></div><label className={styles.field}>출처 설명<input data-publication-field="sourceLabel" value={draft.sourceLabel} maxLength={500} onChange={event => edit({ sourceLabel: event.target.value })} /></label><label className={styles.field}>원문 URL · 선택<input type="url" data-publication-field="sourceUrl" value={draft.sourceUrl} onChange={event => edit({ sourceUrl: event.target.value })} /></label>
-          <label className={styles.field}>다른 공개 원본에서 파생{draft.flowId ? <p>{draft.derivedFrom ? data.public.versions.find(row => row.id === draft.derivedFrom?.versionId)?.title ?? '기존 원본' : '독립 작성'} · 기존 관계 유지</p> : <select value={draft.derivedFrom?.versionId ?? ''} disabled={blocked} onChange={event => { const selected = data.public.versions.find(row => row.id === event.target.value); edit({ derivedFrom: selected ? { flowId: selected.flowId, versionId: selected.id } : null }); }}><option value="">독립 작성</option>{data.public.versions.filter(version => data.public.flows.some(flow => flow.id === version.flowId && !flow.archived)).map(version => <option key={version.id} value={version.id}>{version.title} · 판본 {version.number}</option>)}</select>}</label>
+          <label className={styles.field}>다른 공개 원본에서 파생{draft.flowId ? <p>{draft.derivedFrom ? data.public.versions.find(row => row.id === draft.derivedFrom?.versionId)?.title ?? '기존 원본' : '독립 작성'} · 기존 관계 유지</p> : <select value={draft.derivedFrom?.versionId ?? ''} disabled={blocked} onChange={event => { const selected = data.public.versions.find(row => row.id === event.target.value); edit({ derivedFrom: selected ? { flowId: selected.flowId, versionId: selected.id } : null }); }}><option value="">독립 작성</option>{data.public.versions.filter(version => data.public.flows.some(flow => flow.id === version.flowId && !flow.archived)).map(version => <option key={version.id} value={version.id}>{version.title} · 버전 {version.number}</option>)}</select>}</label>
         </details>
       </div>}
       {message && <p className={styles.error} role="alert">{message}</p>}
       <footer className={styles.footer}><div><small role="status">{saving ? '초안 저장 중…' : same(savedRef.current, draft) ? storageScope === 'account' ? '계정에 초안 저장됨' : '이 기기에 초안 저장됨' : '입력 유지 중'}</small><details ref={recovery} className={styles.recovery}><summary>초안 보관·복구</summary><div className={styles.recoveryActions}><button type="button" onClick={keepInput}>공개 초안 입력 TXT 보관</button><button type="button" disabled={blocked} onClick={() => void save()}>초안 다시 저장</button><button type="button" className={styles.discard} disabled={blocked} onClick={() => setDiscarding(!discarding)}>초안 버리기</button></div></details></div><div className={styles.actions}>{preview ? <><button type="button" disabled={blocked} onClick={() => setPreview(false)}>수정하기</button><button type="button" className={styles.primary} disabled={blocked || privateChanged || sourceChanged || versionChanged || republishBlocked || !input || !publicationReady} onClick={() => void publish()}>{publishing ? '공개 중…' : republishing ? '새 링크로 공개' : storageScope === 'account' ? '이 내용으로 공개' : '이 내용으로 PoC에 공개'}</button></> : <button type="button" className={styles.primary} disabled={!input || blocked || sourceChanged || versionChanged || republishBlocked} onClick={openPreview}>공개 내용 미리보기</button>}</div></footer>
-      {discarding && <section className={styles.warning}><p>공개 초안만 버립니다. 개인 문서와 이미 공개한 판본은 유지됩니다.</p><button type="button" disabled={blocked} onClick={() => void discard()}>공개 초안 버리기</button><button type="button" onClick={() => setDiscarding(false)}>계속 작성</button></section>}
+      {discarding && <section className={styles.warning}><p>공개 초안만 버립니다. 개인 문서와 이미 공개한 버전은 유지됩니다.</p><button type="button" disabled={blocked} onClick={() => void discard()}>공개 초안 버리기</button><button type="button" onClick={() => setDiscarding(false)}>계속 작성</button></section>}
     </>}
   </dialog>;
 }

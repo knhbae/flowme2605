@@ -120,7 +120,7 @@ export const PROGRAM_IMPORT_GENERIC_FAILURE = '저장하지 못했습니다. 입
  *  as 'conflict'), and 'unresolved' is the source hold only while the Flow is held. */
 export function programImportFailure(reason: string, context: { copyConflict: boolean; onHold: boolean }): { text: string; continueCopy: boolean } {
   if (reason === 'limit') return { text: 'Flow 문서가 100개라 더 가져올 수 없습니다. 휴지통과 보관함의 문서, 직접 만든 Flow도 함께 셉니다.', continueCopy: false };
-  if (reason === 'conflict' && context.copyConflict) return { text: '이미 다른 판본(또는 기준일)으로 가져온 사본이 있습니다.', continueCopy: true };
+  if (reason === 'conflict' && context.copyConflict) return { text: '이미 다른 버전(또는 기준일)으로 가져온 사본이 있습니다.', continueCopy: true };
   if (reason === 'unresolved' && context.onHold) return { text: '출처를 다시 확인하는 중이라 지금은 새로 가져올 수 없습니다.', continueCopy: false };
   return { text: PROGRAM_IMPORT_GENERIC_FAILURE, continueCopy: false };
 }

@@ -137,9 +137,9 @@ export function ProgramCopyProposal(props: ProgramCopyProposalProps) {
           : <label>제안 내용<textarea required={draft.field === 'title'} readOnly={busy || locked || props.disabled} value={draft.text} onChange={event => update({ ...draft, text: event.target.value })} rows={4} /></label>}
         <label>제안 이유<textarea required readOnly={busy || locked || props.disabled} value={draft.reason} onChange={event => update({ ...draft, reason: event.target.value })} rows={3} maxLength={10000} /></label>
         {draft.scheduleKind !== 'recurring' && draft.field === 'schedule' && <ProgramPublicationTiming value={draft.timing} disabled={busy || locked || props.disabled} purpose="proposal" styles={{ two: styles.fields, field: '', error: styles.error }} onChange={timing => update({ ...draft, timing })} />}
-        {draft.field === 'schedule' && <p>작성자가 채택하면 새 공개 판본이 생깁니다. 개인 사본의 일정과 지난 기록은 자동으로 바뀌지 않습니다.</p>}
+        {draft.field === 'schedule' && <p>작성자가 채택하면 새 버전이 생깁니다. 개인 사본의 일정과 지난 기록은 자동으로 바뀌지 않습니다.</p>}
       </>}
-      {!sameContext && <p role="alert" className={styles.error}>입력의 기준 판본·항목 연결이 달라졌습니다. 입력은 유지하며 다른 대상에 보내지 않습니다.</p>}
+      {!sameContext && <p role="alert" className={styles.error}>기준 버전·항목 연결이 달라졌습니다. 입력은 유지하며 다른 대상에 보내지 않습니다.</p>}
       {error ? <p role="alert" className={styles.error}>{error}</p> : <p role="status">{busy ? '저장 중…' : message}</p>}
       <div className={styles.actions}><button type="submit" disabled={busy || locked || props.disabled || !sameContext || !draft || !draft.reason.trim() || !patch || unchanged}>개선 제안 보내기</button>
         {draft && <button type="button" disabled={busy || locked || props.disabled} onClick={cancel}>제안 입력 취소</button>}</div>

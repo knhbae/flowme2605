@@ -101,7 +101,7 @@ export function ProgramCopyScheduleReview({ preview, confirmed, disabled, onConf
     {preview.personalPlans.length > 0 && <ul className={styles.items}>{preview.personalPlans.map((plan, index) => <li key={plan.ownerId}>
       <strong>개인 계획 {index + 1}</strong>
       {plan.changes.map((change, index) => <small key={index}>{change.scope === 'whole_series' ? '전체 계획' : '이후 계획'} · {change.from} → {change.to}</small>)}
-      <span>{plan.continuesAfter ? '이 판본에 연결했던 계획이 다시 활성화됩니다.' : '기존 계획은 읽기 전용으로 보관합니다.'} 개인 회차 기록 {plan.executionRecords}개를 유지합니다.</span>
+      <span>{plan.continuesAfter ? '이 버전에 연결했던 계획이 다시 활성화됩니다.' : '기존 계획은 읽기 전용으로 보관합니다.'} 개인 회차 기록 {plan.executionRecords}개를 유지합니다.</span>
     </li>)}</ul>}
     <p>지난 완료·날짜 기록을 새 회차에 복제하지 않습니다. 다른 원문 필드와 개인 메모는 바뀌지 않습니다.</p>
     <fieldset className={styles.fields} disabled={disabled}>
@@ -292,15 +292,15 @@ export function ProgramCopyInspector(props: ProgramCopyInspectorProps) {
       </div></li>)}</ul>
     </section>
 
-    <section className={styles.section}><h3>공개 판본 비교</h3>
+    <section className={styles.section}><h3>버전 비교</h3>
       <p>개인 메모와 지난 실행 기록은 유지합니다.</p>
-      <label>비교할 공개 판본<select value={target.id} onChange={event => { if (proposalPendingRef.current) return; setVersionId(event.target.value); setSelectedItem(''); setFields([]); setFeedbackTarget('general'); setError(''); setMessage(''); }}>
+      <label>비교할 버전<select value={target.id} onChange={event => { if (proposalPendingRef.current) return; setVersionId(event.target.value); setSelectedItem(''); setFields([]); setFeedbackTarget('general'); setError(''); setMessage(''); }}>
         {versions.map(version => <option key={version.id} value={version.id}>v{version.number} · {version.title}</option>)}
       </select></label>
       {comparison.ok ? <><label>비교할 항목<select ref={comparisonItemSelect} value={selectedItem} onChange={event => { setSelectedItem(event.target.value); setFields([]); setFeedbackTarget('general'); setError(''); setMessage(''); }}><option value="">항목 선택</option>
         {comparison.result.items.map(item => <option key={item.itemId} value={item.itemId}>{item.title} · {{ added: '새 항목', removed: '원문에서 제외', changed: '변경 있음', unchanged: '같은 원문' }[item.state]}</option>)}
       </select></label>
-      {row && <div>{row.state === 'removed' ? <p>이 판본에서 제외된 항목입니다. 개인 본문과 기록은 유지합니다.</p> : <>
+      {row && <div>{row.state === 'removed' ? <p>이 버전에서 제외된 항목입니다. 개인 본문과 기록은 유지합니다.</p> : <>
         {row.state === 'added' && <p>처음 가져오는 항목은 전체 원문 필드와 하위 체크를 함께 만듭니다.</p>}
         <ProgramCopyFieldChoices comparisons={row.fields} selected={fields} busy={busy} versionNumber={target.number}
           onReview={(field, opener) => {
@@ -382,7 +382,7 @@ export function ProgramCopyInspector(props: ProgramCopyInspectorProps) {
         <small>{entry.at} · v{versions.find(v => v.id === entry.toVersionId)?.number}</small>
         {entry.decisions.map(decision => <div key={decision.childId}><span>{decision.choice === 'keep-private' ? '보관한 문구 유지' : '새 원문 받기'}</span>
           <div className={styles.compare}><pre>{decision.previousTitle}</pre><pre>{decision.incomingTitle}</pre></div></div>)}
-        <button type="button" disabled={busy || locked || !!seriesDraft || !!scheduleDraft || proposalPending} onClick={() => props.navigate({ view: 'flow', id: copy.flowId, versionId: entry.toVersionId, itemId: entry.itemId })}>비교한 원문 판본 보기</button>
+        <button type="button" disabled={busy || locked || !!seriesDraft || !!scheduleDraft || proposalPending} onClick={() => props.navigate({ view: 'flow', id: copy.flowId, versionId: entry.toVersionId, itemId: entry.itemId })}>비교한 원문 버전 보기</button>
       </li>)}</ul>
     </details>}
     {!!copy.kindHandoffs?.entries.length && <details className={styles.section}><summary>이전 실행 형태와 기록</summary>
@@ -400,7 +400,7 @@ export function ProgramCopyInspector(props: ProgramCopyInspectorProps) {
         <small>{choice.at} · v{versions.find(version => version.id === choice.fromVersionId)?.number} → v{versions.find(version => version.id === choice.toVersionId)?.number}</small>
         {choice.previousStart.present && <span>당시 개인 시작일: {dateLabel(choice.previousStart.date)}</span>}
         {choice.personalPlanOwnerIds.length > 0 && <span>당시 개인 계획 {choice.personalPlanOwnerIds.length}개 · 지난 기록은 문서의 보존 기록에서 확인할 수 있습니다.</span>}
-        <button type="button" disabled={busy || locked || !!seriesDraft || !!scheduleDraft || proposalPending} onClick={() => props.navigate({ view: 'flow', id: copy.flowId, versionId: choice.fromVersionId, itemId: choice.itemId })}>이전 원문 판본 보기</button>
+        <button type="button" disabled={busy || locked || !!seriesDraft || !!scheduleDraft || proposalPending} onClick={() => props.navigate({ view: 'flow', id: copy.flowId, versionId: choice.fromVersionId, itemId: choice.itemId })}>이전 원문 버전 보기</button>
       </li>)}</ul>
     </details>}
     <ProgramCopyProposal data={data} copyId={copy.id} version={target} mutate={props.mutate} disabled={busy || locked || !!seriesDraft || !!scheduleDraft}

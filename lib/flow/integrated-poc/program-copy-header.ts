@@ -14,7 +14,7 @@ export function programCopyHeader(data: ProgramData, actorId: string, documentId
   if (target && target.id !== copy.baseVersionId) {
     const compared = compareProgramCopyVersion(data, { actorId, copyId: copy.id, versionId: target.id });
     if (compared.ok && compared.result.items.some(item => item.fields.some(field => field.sourceChanged && !field.alreadyApplied)))
-      return { ...common, kind: 'changed', text: '원본에 판본 ' + target.number + '이 있습니다', action: 'inspect' };
+      return { ...common, kind: 'changed', text: '원본에 새 버전 ' + target.number + '이 있습니다', action: 'inspect' };
   }
-  return { ...common, kind: 'current', text: 'Flow에서 가져옴' + (base ? ' · 판본 ' + base.number : ''), action: 'source' };
+  return { ...common, kind: 'current', text: 'Flow에서 가져옴' + (base ? ' · 버전 ' + base.number : ''), action: 'source' };
 }

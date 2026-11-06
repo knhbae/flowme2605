@@ -14,7 +14,7 @@ test('the empty first screen offers 새 글 쓰기 next to its line, through beg
   const empty = space.slice(space.indexOf('<p>글과 할 일을 함께 적습니다.'), space.indexOf('</div> : <>', space.indexOf('<p>글과 할 일을 함께 적습니다.')));
   assert.match(empty, /<button type="button" className=\{styles\.emptyNewWriting\} disabled=\{preparingDocumentAction\} onClick=\{\(\) => void beginWriting\(\)\}>새 글 쓰기<\/button>/);
   // Before the Flow browsing link, so it is the first thing to press.
-  assert(empty.indexOf('새 글 쓰기') < empty.indexOf('다른 사람의 Flow 둘러보기'));
+  assert(empty.indexOf('새 글 쓰기') < empty.indexOf('>Flow 찾기</button>'));
   assert.match(css, /\.space \.emptyNewWriting \{[^}]*background: var\(--flowme-b-primary\);[^}]*color: #fff;/);
 });
 

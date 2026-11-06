@@ -2208,7 +2208,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                 void (recentWhole[selectedDoc.id] ? showRecentOnly(selectedDoc.id) : showRecentWhole(selectedDoc.id)); }}>{recentWhole[selectedDoc.id] ? '최근만 보기' : '전체 보기'}</button>}
             {!collectionMode && <label>보관 위치<select value={selectedDoc.folderId} onChange={event => { const value = event.target.value; void run('폴더 이동', current => setProgramDocumentFolder(current, { ...base(current), documentId: selectedDoc.id, folderId: value })); }}>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>}
             {props.capabilities?.publication !== false && props.onPublishDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onPublishDocument!, { modalReturnFocus: true })}>선택해서 공개</button>}
-            {props.capabilities?.revisionHistory !== false && props.onRevisionHistory && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onRevisionHistory!)}>저장판본·복구</button>}
+            {props.capabilities?.revisionHistory !== false && props.onRevisionHistory && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onRevisionHistory!)}>저장본·복구</button>}
             {props.onOutputDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onOutputDocument!)}>내 도구로 가져가기</button>}
             {props.onStartReview && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onStartReview!)}>후기 쓰기</button>}
             {props.capabilities?.copyInspection !== false && props.onInspectCopy && space.copies.filter(copy => copy.documentId === selectedDoc.id).map(copy => <button key={copy.id} disabled={preparingDocumentAction} onClick={() => void openDocumentAction(() => props.onInspectCopy!(copy.id), { modalReturnFocus: true })}>내 계획·원본 변경 확인</button>)}
@@ -2518,7 +2518,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>
       {/* A new account starts here with no document; the title row keeps only a document's tools, so the
           first screen needs its own way to start writing. */}
-      <button type="button" className={styles.emptyNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글 쓰기</button>{props.capabilities?.discovery !== false && <button onClick={() => props.navigate({ view: 'discover' })}>다른 사람의 Flow 둘러보기</button>}</div> : <>
+      <button type="button" className={styles.emptyNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글 쓰기</button>{props.capabilities?.discovery !== false && <button onClick={() => props.navigate({ view: 'discover' })}>Flow 찾기</button>}</div> : <>
       {selectedTrashed && <ProgramDocumentTrashAction key={selectedDoc.id} space={space} documentId={selectedDoc.id} disabled={preparingDocumentAction} onChange={changeDocumentTrash} />}
       <ProgramDocumentProvenance data={data} documentId={selectedDoc.id} disabled={preparingDocumentAction || selectedTrashed} onOpenRevisions={props.capabilities?.revisionHistory !== false && props.onRevisionHistory ? () => void openDocumentAction(props.onRevisionHistory!) : undefined} onOpenCreatorDraft={props.capabilities?.creatorNavigation !== false ? draftId => void openDocumentAction(() => props.navigate({ view: 'creator', id: draftId })) : undefined} />
       {copyHeader && <div className={styles.copyHeader} data-state={copyHeader.kind}><span>{copyHeader.text}</span>
@@ -2526,7 +2526,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {copyHeader.action === 'source' && props.onOpenCopySource && props.capabilities?.discovery !== false && <button type="button" disabled={preparingDocumentAction} onClick={event => { const returnFocus = event.currentTarget; void openDocumentAction(id => props.onOpenCopySource!(copyHeader.flowId, id, returnFocus)); }}>원본 보기</button>}
       </div>}
       {selectedQualityHold && <p role="status" className={styles.muted}>{selectedQualityHold} 해당 원본 항목과 실행 기록은 읽기 전용으로 남깁니다. 다른 자유 메모는 계속 쓸 수 있습니다.</p>}
-      {retentionSource && <p className={styles.muted}>판본 복구 중 빠진 내용을 보관한 곳입니다. <button onClick={() => void openDocument(retentionSource)}>원래 문서로 돌아가기</button></p>}
+      {retentionSource && <p className={styles.muted}>저장본으로 되돌리며 빠진 내용을 보관한 곳입니다. <button onClick={() => void openDocument(retentionSource)}>원래 문서로 돌아가기</button></p>}
       {collectionMode && !retentionSource && !selectedTrashed && <><details className={styles.collectionDisclosure}>
         <summary>모음에 정리 · {collectionMode.state.collections.filter(row => row.documentIds.includes(selectedDoc.id)).map(row => row.title).join(', ') || '연결된 모음 없음'}</summary>
         <fieldset className={styles.collectionMembership}><legend>문서 전체 연결</legend>
@@ -2712,7 +2712,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onRegisterInputLock={lock => { inputLocks.current[id] = lock; lock?.(inputLockCount.current > 0); }}
           onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { if (collectionMode) { setMessage('기존 항목 분류는 모음이 아닙니다. 전체 문서에서 계속 작성합니다.'); return; } setFolderId(scopeId); setPeriod('all'); } else void openDocument(scopeId); }}
           onConnectFlow={(docId, lineId, insertAfter) => openDetail({ kind: 'connect', docId, lineId, insertAfter })}
-          readOnly={programDocumentContentLock(space, id) !== 'active'} disabledReason={space.documentTrash?.[id] ? '휴지통의 문서입니다. 복원하면 삭제 전 상태로 돌아갑니다.' : retainedIds.has(id) ? '판본 복구 중 보관된 내용 · 읽기 전용' : '보관한 문서입니다. 보관에서 꺼내면 이어서 쓸 수 있습니다.'}
+          readOnly={programDocumentContentLock(space, id) !== 'active'} disabledReason={space.documentTrash?.[id] ? '휴지통의 문서입니다. 복원하면 삭제 전 상태로 돌아갑니다.' : retainedIds.has(id) ? '저장본으로 되돌리며 보관된 내용 · 읽기 전용' : '보관한 문서입니다. 보관에서 꺼내면 이어서 쓸 수 있습니다.'}
         />{recentLine(id, recent, true)}</div>; })}
         {selectedDoc && !selectedArchived && <ProgramRecurrence key={`${actorId}:${selectedDoc.id}`} data={data} mutate={mutate} today={today} period="documents" date={date} documentId={selectedDoc.id} onPlanApplied={focusAppliedPlan}
           presentation={recurrencePresentation.documents[selectedDoc.id] ?? { page: 0, includeHeld: false, includeExcluded: false }} onPresentationChange={value => setRecurrencePresentation(previous => ({ ...previous, documents: { ...previous.documents, [selectedDoc.id]: value } }))}
