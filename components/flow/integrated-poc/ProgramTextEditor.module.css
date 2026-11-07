@@ -188,7 +188,6 @@
 .editor { border: 0; border-radius: 0; background: #fff; }
 .toolbar { gap: 0; padding: 0; border: 0; flex-wrap: wrap; }
 .toolbar > button { border-color: transparent; background: transparent; padding-inline: 8px; }
-.toolbar > .editorTools { order: 4; margin-left: auto; }
 .toolbar > .status, .toolbar > .saveFeedback { order: 3; margin-left: 0; padding-inline: 4px; font-size: 13px; line-height: 20px; }
 .noteStatus { order: 2; margin-left: auto; min-width: 0; }
 .noteStatus:empty { display: none; }
@@ -253,15 +252,15 @@
 .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-native-scope :is(.tle-scope-label, .tle-passive-scope)) { display: none; }
 .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-scope.tle-line-native-scope > .tle-date-source) { position: static; visibility: visible; color: transparent; max-width: none; overflow: visible; white-space: inherit; }
 .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-native-scope .tle-active-scope-icon) { left: calc(var(--tle-indent, 0px) - 10px); height: var(--tle-line); }
-.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-native-scope .tle-active-scope-name) { color: var(--flowme-b-primary-strong); -webkit-text-stroke: 0.6px currentColor; }
+.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-line-native-scope .tle-active-scope-name) { color: var(--flowme-b-muted); -webkit-text-stroke: 0.3px currentColor; }
 .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-fold-toggle, .tle-scope-open).tle-scope-control) { display: flex; align-items: center; justify-content: center; height: var(--tle-line); min-height: 0; margin: 0; padding: 0; }
 .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-fold-toggle.tle-scope-control) { width: 44px; }
 .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-fold-toggle.tle-scope-control::before) { margin: 0; }
 /* On touch ▾ is the drawn chevron (fold tap A) in writing too, so a tap elsewhere changes nothing in the row. */
 @media (pointer: coarse) {
-  .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-fold-toggle.tle-scope-control) { font-size: 0; color: var(--flowme-b-ink); }
+  .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-fold-toggle.tle-scope-control) { font-size: 0; color: var(--flowme-b-control); }
   .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-fold-toggle.tle-scope-control::before) {
-    content: ''; flex: none; box-sizing: border-box; width: 9px; height: 9px; border: solid currentColor; border-width: 0 2px 2px 0; opacity: .72; transform: rotate(45deg);
+    content: ''; flex: none; box-sizing: border-box; width: 9px; height: 9px; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(45deg);
   }
   .host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-fold-toggle.tle-scope-control[aria-expanded="false"]::before) { transform: rotate(-45deg); }
 }
@@ -372,7 +371,7 @@
 /* R6b: one status slot. The host status sits where the editor status sits and wins only when more
    severe; longer notices sit below the body in the measured notice area. */
 .toolbar > .status { min-width: 4em; }
-.toolbar > .status[data-quiet] { color: var(--flowme-b-control, #7d89a2); }
+.toolbar > .status[data-quiet] { color: var(--flowme-b-muted, #59677e); }
 .toolbar > .statusSlot { order: 3; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-width: 0; margin-left: 0; }
 .toolbar > .statusSlot > .status { margin-left: 0; }
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -410,10 +409,6 @@
 @media (max-width: 700px) {
   .toolbarSep { display: none; }
 }
-@media (min-width: 701px) {
-  .toolbar > .editorTools { order: 0; margin-left: 0; }
-  .toolbar > .statusSlot { margin-left: auto; }
-}
 .editorTools > summary { font-size: 14px; }
 
 /* R8b: the toolbar opens the Flow·반복 sheet. */
@@ -424,3 +419,37 @@
 .toolbar > .headStart { order: -1; display: flex; align-items: center; gap: 4px; flex: 0 1 auto; min-width: 0; margin-right: 4px; }
 .toolbar > .headEnd { order: 9; flex: 0 0 auto; }
 .headBelow { min-width: 0; }
+
+/* Write polish C (11/7): the tool line reads [추가] [↶] [↷] [반복] [도구] … [저장됨] at every width. Only CSS order
+   moves the status to the end; the DOM and every action stay. [추가] alone is filled: a 40px pill drawn inside a 44px
+   press area (a clear 2px border); ↶ ↷ are drawn arrows, 반복 and 도구 an icon and a word, all muted; the status is
+   12px muted (5.7:1). A warning, a recovery box and the save failure keep their rows. */
+.toolbar > .statusSlot, .toolbar > .status { order: 9; margin-left: auto; }
+.toolbar > .statusSlot > .status, .toolbar > .status { font-size: 12px; line-height: 16px; }
+.editor .toolbar > .addButton { display: inline-flex; align-items: center; gap: 4px; height: 44px; min-height: 44px; margin-right: 4px; padding: 0 14px 0 10px; border: 2px solid transparent; border-radius: 22px; background: var(--flowme-b-selected); background-clip: padding-box; color: var(--flowme-b-primary); font-size: 15px; font-weight: 600; line-height: 20px; white-space: nowrap; }
+.editor .toolbar > .addButton:is(:hover, :active):not(:disabled) { background: var(--flowme-b-selected); background-clip: padding-box; box-shadow: inset 0 0 0 1px var(--flowme-b-primary-border); }
+.editor .toolbar > button[aria-label="입력 되돌리기"], .editor .toolbar > button[aria-label="입력 다시 하기"] { display: inline-flex; align-items: center; justify-content: center; color: var(--flowme-b-muted); }
+.editor .toolbar > .repeatButton, .editor .toolbar > .editorTools > summary { display: inline-flex; align-items: center; gap: 4px; color: var(--flowme-b-muted); font-size: 14px; font-weight: 600; line-height: 20px; white-space: nowrap; }
+.editor .toolbar > .toolbarBarButton { color: var(--flowme-b-muted); }
+/* A 360px phone: the same line fits with narrower side room (press areas stay 44px and more). */
+@media (max-width: 380px) {
+  .editor .toolbar > .addButton { margin-right: 0; padding: 0 12px 0 8px; }
+  .editor .toolbar > button[aria-label="입력 되돌리기"], .editor .toolbar > button[aria-label="입력 다시 하기"] { min-width: 44px; padding-inline: 0; }
+  .editor .toolbar > .repeatButton, .editor .toolbar > .editorTools > summary { padding-inline: 4px; }
+}
+
+/* Write polish D (11/7): the line ruler stays 32px (touch). The day reads first: 17px, ink. A folder line steps back:
+   muted name (lighter stroke) and a 16px outline icon in the control color, drawn where it was; the name keeps the RAW
+   text's size, since it is painted over the RAW characters a tap places the caret on. ▾ is the control color. The
+   first line starts 8px under the tool line (textarea, mirror and ruler move together). */
+.host :global(.tle-root) { --tle-pad-top: 8px; }
+.host :global(.tle-date-label:not(.tle-property-date-label):not(.tle-heading-label)) { font-size: 17px; }
+.host :global(.tle-root[data-mode="live"] .tle-line[data-scope-kind="folder"] .tle-active-scope-icon svg) { width: 16px; height: 16px; color: var(--flowme-b-control); }
+.host :global(.tle-root[data-mode="live"] .tle-line[data-scope-kind="folder"] .tle-active-scope-icon svg path) { fill: none; stroke-width: 2; }
+.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-fold-toggle.tle-scope-control) { color: var(--flowme-b-control); }
+/* Full strength: the control color alone is 3.5:1 on white; the reading view's .72 took the drawn ⌄ under 3:1. */
+.host :global(.tle-root[data-mode="live"]:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-fold-toggle.tle-scope-control::before) { opacity: 1; }
+/* On a phone the line left of the tasks goes (the check boxes show the depth); a move brings it back, as do PCs. */
+@media (pointer: coarse) {
+  .host :global(.tle-root:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-indent-guide) { visibility: hidden; }
+}

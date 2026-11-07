@@ -30,7 +30,7 @@ test('Flow and 나 call navigate() and nothing of what it does (input, locks, sa
 
 test('the tabs are five: 74px-wide cells on phones, five rows in the side bar; the badge is the warning token', () => {
   assert(css.includes('.page[data-alpha-frame="b"] .globalNavigation { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; padding-inline: 8px; }'));
-  assert(css.includes('.page[data-alpha-frame="b"] .globalNavigation button{min-height:64px;'), 'at least 44px tall on phones');
+  assert(css.includes('.page[data-alpha-frame="b"] .globalNavigation button{min-height:52px;'), 'at least 44px tall on phones (write polish F: 52px in a 60px bar)');
   assert(css.includes('.page[data-alpha-frame="b"] .globalNavigation button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;min-height:72px;'), 'full-width 72px rows in the side bar');
   assert(css.includes('background: var(--flowme-b-warning-bg); color: var(--flowme-b-warning-ink);') && !css.includes('#f4c7a3'));
   assert(!css.includes('.page[data-alpha-frame="b"] .management > summary { display: none; }'), 'the menu left for an account that cannot open shows its button');

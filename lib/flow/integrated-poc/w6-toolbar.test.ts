@@ -15,12 +15,14 @@ test('the PC toolbar groups: ＋ 추가 | bar actions | ↶ ↷ 반복 도구, s
   const at = (part: string) => { const index = toolbar.indexOf(part); assert(index > 0, part); return index; };
   const seps = [...toolbar.matchAll(/<span className=\{styles\.toolbarSep\} aria-hidden="true" \/>/g)].map(match => match.index!);
   assert.equal(seps.length, 2);
-  assert(at('>＋ 추가</button>') < seps[0] && seps[0] < at("barButtons('toolbar')") && at("barButtons('toolbar')") < seps[1] && seps[1] < at('aria-label="입력 되돌리기"'));
+  assert(at('<ToolIcon name="add" size={18} />추가</button>') < seps[0] && seps[0] < at("barButtons('toolbar')") && at("barButtons('toolbar')") < seps[1] && seps[1] < at('aria-label="입력 되돌리기"'));
   assert(at('aria-label="입력 되돌리기"') < at('aria-label="입력 다시 하기"') && at('aria-label="입력 다시 하기"') < at('{props.repeatLabel') && at('{props.repeatLabel') < at('<details ref={toolsRef} className={styles.editorTools}'));
   assert.match(css, /\.toolbarSep \{[^}]*width: 1px;/);
-  // Phones show the bar actions in the keyboard bar, so the dividers go there; on PC the status is at the end.
+  // Phones show the bar actions in the keyboard bar, so the dividers go there. Write polish C (11/7): at every width
+  // the status ends the line (CSS order only) and 도구 follows 반복 where it stands in the DOM.
   assert.match(css, /@media \(max-width: 700px\) \{\s*\.toolbarSep \{ display: none; \}/);
-  assert.match(css, /@media \(min-width: 701px\) \{\s*\.toolbar > \.editorTools \{ order: 0; margin-left: 0; \}\s*\.toolbar > \.statusSlot \{ margin-left: auto; \}/);
+  assert(css.includes('.toolbar > .statusSlot, .toolbar > .status { order: 9; margin-left: auto; }'));
+  assert(!css.includes('.toolbar > .editorTools { order: 4; margin-left: auto; }'));
 });
 
 test('the bar icons are drawn and keep their names', () => {
@@ -32,7 +34,7 @@ test('the bar icons are drawn and keep their names', () => {
 });
 
 test('the tools menu is named 도구, repeats neither ＋ 추가 nor ↷, and closes on a press outside or a change', () => {
-  assert(editor.includes('<summary aria-label="편집 도구" title="편집 도구">도구</summary>'));
+  assert(editor.includes('<summary aria-label="편집 도구" title="편집 도구"><ToolIcon name="tools" size={18} />도구</summary>'));
   // 현재 줄에 추가 only where ＋ 추가 is hidden; 다시 실행 only where there is no ↷ (unchanged).
   assert(editor.includes('{props.directWriting && !props.noteStatus && <button type="button" disabled={insertionDisabled}'));
   assert(editor.includes('{!props.authoringMode && (props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" hidden={!!props.folderId}'));

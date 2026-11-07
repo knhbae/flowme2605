@@ -208,6 +208,14 @@ function BarIcon({ name }: { name: WritingBarAction }) {
     enter: 'M7 5v7a3 3 0 0 0 3 3h9m-4-4 4 4-4 4', menu: 'M12 5v14M5 12h14' }[name];
   return <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d={path} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
+/** Write polish C (11/7): the toolbar's drawn icons, one family and size, in place of ＋ ↶ ↷ and bare words. The
+ *  buttons keep their names (aria-label or their word); the icons are hidden from screen readers. */
+function ToolIcon({ name, size = 20 }: { name: 'add' | 'undo' | 'redo' | 'repeat' | 'tools'; size?: number }) {
+  const path = { add: 'M12 5v14M5 12h14', undo: 'M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11', redo: 'M15 14l5-5-5-5M20 9H9.5a5.5 5.5 0 0 0 0 11H13',
+    repeat: 'M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3',
+    tools: 'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6' }[name];
+  return <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" focusable="false"><path d={path} fill="none" stroke="currentColor" strokeWidth={name === 'add' ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
 const BAR_COMPOSING_NOTICE = '입력 중인 글자가 아직 끝나지 않아 실행하지 않았습니다. 글자를 마친 뒤 다시 눌러 주세요.';
 
 /** U44: the host's title, ⋯ and notices in the toolbar's line (a tablet held sideways) stay outside the editor for its
@@ -222,11 +230,12 @@ function today() {
 }
 
 /** Size only the existing surface; warnings remain in normal document flow. Whole lines of the ruler (U45: 36px on
- *  touch, 26px with a mouse) below the 20px top padding, so the last line is never cut. */
-export function programEditorVisibleHeight(top: number, bottom: number, line = 26) {
+ *  touch, 26px with a mouse) below the ruler's top padding (20px; write polish D, 11/7: 8px in the note editor, read
+ *  from the ruler like its line), so the last line is never cut. */
+export function programEditorVisibleHeight(top: number, bottom: number, line = 26, pad = 20) {
   if (!Number.isFinite(top) || !Number.isFinite(bottom)) return null;
-  const available = Math.max(64, bottom - Math.max(0, top) - 12), step = line > 0 ? line : 26;
-  return Math.max(64, 20 + Math.floor((available - 20) / step) * step);
+  const available = Math.max(64, bottom - Math.max(0, top) - 12), step = line > 0 ? line : 26, head = pad >= 0 ? pad : 20;
+  return Math.max(64, head + Math.floor((available - head) / step) * step);
 }
 
 /** Promote a checked local fragment into the whole editor, never into a writer.
@@ -2289,7 +2298,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       const below = keyboard ? null : programFlowBelow(host, host.ownerDocument.body, node => view.getComputedStyle(node as Element));
       const top = host.getBoundingClientRect().top + (keyboard ? 0 : view.scrollY);
       const ruler = host.querySelector('.tle-root'), line = ruler ? parseFloat(view.getComputedStyle(ruler).getPropertyValue('--tle-line')) : NaN;
-      const height = programEditorVisibleHeight(top, below === null ? bottom : Math.min(bottom, view.innerHeight - below + 12), Number.isFinite(line) ? line : undefined);
+      const pad = ruler ? parseFloat(view.getComputedStyle(ruler).getPropertyValue('--tle-pad-top')) : NaN;
+      const height = programEditorVisibleHeight(top, below === null ? bottom : Math.min(bottom, view.innerHeight - below + 12), Number.isFinite(line) ? line : undefined, Number.isFinite(pad) ? pad : undefined);
       if (height !== null && host.style.getPropertyValue('--program-editor-visible-height') !== `${height}px`) {
         host.style.setProperty('--program-editor-visible-height', `${height}px`);
         // ResizeObserver ordering must not leave the caret at the previous height.
@@ -2767,26 +2777,26 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     <div className={styles.toolbar}>
       {props.headStart && <div className={styles.headStart} data-editor-head="start">{props.headStart}</div>}
       {mode === 'text' && <button type="button" onClick={event => returnToDocumentMode(event.currentTarget)}>문서로 돌아가기</button>}
-      <button type="button" hidden={props.directWriting && !props.noteStatus} disabled={props.folderId ? inputLocked || !!props.readOnly || draft.invalid || composing || checkPending : insertionDisabled}
-        onClick={() => { if (props.folderId) { void openRegionInsertMenu(); return; } const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}>＋ 추가</button>
-      {/* W6: [＋ 추가] | [☐ ⇤ ⇥ ↳] | [↶ ↷] [반복] [도구]; ↶ never sits next to ↳. */}
+      <button type="button" className={styles.addButton} hidden={props.directWriting && !props.noteStatus} disabled={props.folderId ? inputLocked || !!props.readOnly || draft.invalid || composing || checkPending : insertionDisabled}
+        onClick={() => { if (props.folderId) { void openRegionInsertMenu(); return; } const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}><ToolIcon name="add" size={18} />추가</button>
+      {/* W6: [추가] | [☐ ⇤ ⇥ ↳] | [↶ ↷] [반복] [도구]; ↶ never sits next to ↳. Write polish C: the status ends the line (CSS order). */}
       {props.authoringMode && <span className={styles.toolbarSep} aria-hidden="true" />}
       {props.authoringMode && barButtons('toolbar')}
       {props.authoringMode && <span className={styles.toolbarSep} aria-hidden="true" />}
-      <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기 · Ctrl+Z'} aria-label="입력 되돌리기" onClick={() => { if (undoFolderMove() || undoRepeatCheck()) return; if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if(props.authoringMode&&!props.folderId)editorRef.current?.undo(); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
+      <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기 · Ctrl+Z'} aria-label="입력 되돌리기" onClick={() => { if (undoFolderMove() || undoRepeatCheck()) return; if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if(props.authoringMode&&!props.folderId)editorRef.current?.undo(); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}><ToolIcon name="undo" /></button>
       {props.authoringMode && <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId} title="입력 다시 하기 · Ctrl+Y" aria-label="입력 다시 하기"
-        onClick={() => { if (orderHistoryRef.current.hasEntries() || props.authoringMode) nativeHistory('historyRedo'); else if (props.onRedo && !draft.dirty) void props.onRedo(); }}>↷</button>}
+        onClick={() => { if (orderHistoryRef.current.hasEntries() || props.authoringMode) nativeHistory('historyRedo'); else if (props.onRedo && !draft.dirty) void props.onRedo(); }}><ToolIcon name="redo" /></button>}
       {/* N10 (SPEC 5): [반복] offers 이 줄 반복 (the caret's line) and 반복·Flow 만들기 in one small panel. */}
       {props.repeatLabel && props.onOpenPersonalAuthoring && <button type="button" className={styles.repeatButton} aria-haspopup="dialog" onClick={() => {
         if (!props.repeatContext) { props.onOpenPersonalAuthoring?.(); return; }
         const area = textArea(), index = area ? area.value.slice(0, area.selectionStart).split('\n').length - 1 : -1;
         openRepeatPanel(currentDoc()?.lines[index]?.id ?? null);
-      }}>{props.repeatLabel}</button>}
+      }}><ToolIcon name="repeat" size={18} />{props.repeatLabel}</button>}
       <details ref={toolsRef} className={styles.editorTools} data-editor-tools onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; event.currentTarget.querySelector('summary')?.focus();
       }}>
-        <summary aria-label="편집 도구" title="편집 도구">도구</summary>
+        <summary aria-label="편집 도구" title="편집 도구"><ToolIcon name="tools" size={18} />도구</summary>
         <div className={styles.editorToolActions}>
           {props.noteActions}
           <button type="button" aria-pressed={mode === 'text'} disabled={inputLocked || composing} onClick={event => { if (composingRef.current || inputLockedRef.current) return; closeEditorTools(event.currentTarget); setMode(mode === 'text' ? 'live' : 'text'); }}>원문 {mode === 'text' ? '닫기' : '보기'}</button>

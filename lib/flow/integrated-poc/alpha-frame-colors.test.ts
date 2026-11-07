@@ -128,8 +128,9 @@ test('the size changes leave the line ruler and the body height alone', () => {
   // Body height is still whole 26px rows below the measured top; nothing above the host changed size.
   const tsx = readFileSync(new URL('ProgramTextEditor.tsx', dir), 'utf8');
   // U45: whole lines of the ruler the editor reads (36px on touch); 26px stays the default.
-  assert(tsx.includes('export function programEditorVisibleHeight(top: number, bottom: number, line = 26) {'));
-  assert(tsx.includes('return Math.max(64, 20 + Math.floor((available - 20) / step) * step);'));
+  // Write polish D (11/7): the top padding is read from the ruler too; 20px stays the default.
+  assert(tsx.includes('export function programEditorVisibleHeight(top: number, bottom: number, line = 26, pad = 20) {'));
+  assert(tsx.includes('return Math.max(64, head + Math.floor((available - head) / step) * step);'));
 });
 
 test('the swapped pairs meet WCAG on their surfaces; the field boundaries and focus rings that failed now pass', () => {

@@ -231,16 +231,16 @@
 .page[data-alpha-frame="b"] .browseNavigation [aria-current]{color:var(--flowme-action);box-shadow:inset 0 -2px var(--flowme-action);font-weight:700}
 @media(min-width:701px) and (max-width:1100px){.page[data-alpha-frame="b"] .workPane{width:calc(100% - 48px);padding:24px}.page[data-alpha-frame="b"] .browseNavigation{width:calc(100% - 48px)}}
 @media(max-width:700px){
-.page[data-alpha-frame="b"]{padding:80px 0 calc(104px + env(safe-area-inset-bottom))}
+.page[data-alpha-frame="b"]{padding:80px 0 calc(60px + env(safe-area-inset-bottom))}
 .page[data-alpha-frame="b"]>.header{inset:0 0 auto;width:100%;height:64px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 16px;background:#fff;color:var(--flowme-text);border-bottom:1px solid var(--flowme-border)}
 .page[data-alpha-frame="b"] .brand{justify-content:flex-start;color:var(--flowme-text);font-size:21px}
 .page[data-alpha-frame="b"] .header .development{align-self:center;color:var(--flowme-text-secondary);border-color:var(--flowme-border)}
-.page[data-alpha-frame="b"] .globalNavigation{position:fixed;inset:auto 0 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;height:calc(76px + env(safe-area-inset-bottom));min-height:76px;padding:4px 12px calc(4px + env(safe-area-inset-bottom));overflow:visible;background:var(--flowme-b-chrome);border-top:1px solid var(--flowme-b-nav-active)}
-.page[data-alpha-frame="b"] .globalNavigation button{min-height:64px;gap:2px;padding:6px 4px}.page[data-alpha-frame="b"] .globalNavigation button[aria-current]{box-shadow:inset 0 3px var(--flowme-b-nav-accent)}
+.page[data-alpha-frame="b"] .globalNavigation{position:fixed;inset:auto 0 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;height:calc(60px + env(safe-area-inset-bottom));min-height:60px;padding:3px 8px calc(4px + env(safe-area-inset-bottom));overflow:visible;background:var(--flowme-b-chrome);border-top:1px solid var(--flowme-b-nav-active)}
+.page[data-alpha-frame="b"] .globalNavigation button{min-height:52px;gap:2px;padding:4px}.page[data-alpha-frame="b"] .globalNavigation button[aria-current]{box-shadow:inset 0 3px var(--flowme-b-nav-accent)}
 .page[data-alpha-frame="b"] .header .brand:focus-visible{outline-color:var(--flowme-action)}
 .page[data-alpha-frame="b"] .workPane{width:calc(100% - 24px);max-width:none;margin:0 12px;padding:20px}
 .page[data-alpha-frame="b"] .browseNavigation{width:calc(100% - 24px);margin:0 12px 12px}
-.page[data-alpha-frame="b"] :is(button,a,input,select,textarea,summary){scroll-margin-top:80px;scroll-margin-bottom:calc(104px + env(safe-area-inset-bottom))}
+.page[data-alpha-frame="b"] :is(button,a,input,select,textarea,summary){scroll-margin-top:80px;scroll-margin-bottom:calc(60px + env(safe-area-inset-bottom))}
 .page[data-alpha-frame="b"][data-writing-keyboard="true"] .globalNavigation{display:none}
 }
 
@@ -365,6 +365,16 @@
 }
 /* R6 on 둘러보기: with no warning there is no status row, so the shell around the hidden 더보기 menu takes no room. */
 .page[data-alpha-frame="b"][data-browse-layout] .sync:not(:has(> .statusRow)) { margin: 0; padding: 0; border: 0; min-height: 0; }
+/* Write polish A (11/7): the same on every screen once the shell is empty (no status, no menu): no band, no two lines
+   above the title. A status or the 관리 menu in it shows as before. */
+.page[data-alpha-frame="b"] .sync:not(:has(> *)) { margin: 0; padding: 0; border: 0; min-height: 0; height: 0; }
+/* Write polish A·F (11/7): on a phone the writing screen starts at the top (4px above the title row) and its pane ends
+   on the tabs (the page's bottom padding is the tab height). Not while the keyboard is up, nor on a short screen,
+   which keep their own paddings. The page is white there, so what the whole-line body leaves above the tabs is page, not a band. */
+@media (max-width: 700px) and (min-height: 501px) {
+  .page[data-alpha-frame="b"][data-note-layout="true"]:not([data-writing-keyboard="true"]):has([data-program-period="documents"][aria-current="page"]) { padding-top: 0; background: var(--flowme-b-surface); }
+  .page[data-alpha-frame="b"][data-note-layout="true"]:not([data-writing-keyboard="true"]):has([data-program-period="documents"][aria-current="page"]) .workPane { padding-top: 4px; padding-bottom: 0; }
+}
 /* W11: the development notice is one line here as in 쓰기, until 확인 (shared per device). */
 .page[data-alpha-frame="b"][data-browse-layout] .devNotice { margin: 0 0 8px; background: var(--flowme-b-surface-subtle); }
 .page[data-alpha-frame="b"][data-browse-layout] .devNotice > .notice { padding: 0 10px; margin: 0; border: 0; border-radius: 0; background: transparent; font-size: 13px; line-height: 20px; }
@@ -386,7 +396,7 @@
 .triedPrompt button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--flowme-b-primary-strong); font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer; }
 .triedPrompt button:first-child { background: var(--flowme-b-primary); color: #fff; }
 /* UX B3 (11/6): on phones the question sits above the bottom tabs, not over the 오늘 title and [할 일 추가]. */
-@media (max-width: 700px) { .triedPrompt { top: auto; bottom: calc(76px + env(safe-area-inset-bottom) + 12px); left: 16px; right: 16px; width: auto; transform: none; } }
+@media (max-width: 700px) { .triedPrompt { top: auto; bottom: calc(60px + env(safe-area-inset-bottom) + 12px); left: 16px; right: 16px; width: auto; transform: none; } }
 
 /* UX B3 (11/7): 나 — the account under its title, then 자료 and 계정, then 문제 해결 and 실험 folded (44px summaries). */
 .meHead { display: grid; gap: 8px; margin: -4px 0 12px; }
@@ -416,4 +426,4 @@
 .moveNotice > div { display: flex; gap: 4px; margin-left: auto; }
 .moveNotice button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--flowme-b-primary-strong); font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer; }
 .moveNotice button:first-child { background: var(--flowme-b-primary); color: #fff; }
-@media (max-width: 700px) { .moveNotice { top: auto; bottom: calc(76px + env(safe-area-inset-bottom) + 12px); left: 16px; right: 16px; width: auto; transform: none; } }
+@media (max-width: 700px) { .moveNotice { top: auto; bottom: calc(60px + env(safe-area-inset-bottom) + 12px); left: 16px; right: 16px; width: auto; transform: none; } }

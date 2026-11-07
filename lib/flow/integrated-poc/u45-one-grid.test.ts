@@ -14,7 +14,7 @@ const editor = read('../../../components/flow/integrated-poc/ProgramTextEditor.t
 const sizingAt = editor.indexOf('export function programEditorVisibleHeight(');
 const sizing = editor.slice(sizingAt, editor.indexOf('\n}\n', sizingAt) + 3).replace('export function', 'function');
 const programEditorVisibleHeight = new Function(ts.transpileModule(`${sizing}\nreturn programEditorVisibleHeight;`,
-  { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText)() as (top: number, bottom: number, line?: number) => number | null;
+  { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText)() as (top: number, bottom: number, line?: number, pad?: number) => number | null;
 const reading = '.tle-root:is(.tle-reading-view, .tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"])';
 
 test('U45: one ruler, 32px on touch (one value a check page may override), 26px with a mouse, 44px while moving', () => {
@@ -57,7 +57,11 @@ test('U45: the body is sized in whole lines of the ruler it has', () => {
   assert.equal(programEditorVisibleHeight(89, 495, 36), 380);
   assert.equal(programEditorVisibleHeight(89, 495, 40), 380);
   assert.equal(programEditorVisibleHeight(89, 495, 0), 384, 'no ruler read: the old step');
+  // Write polish D (11/7): the note editor's 8px top padding gives one more 32px line (8 + 12 × 32), none cut.
+  assert.equal(programEditorVisibleHeight(89, 495, 32, 8), 392);
+  assert.equal(programEditorVisibleHeight(89, 495, 32, Number.NaN), 372, 'no padding read: 20px');
   assert(editor.includes("const ruler = host.querySelector('.tle-root'), line = ruler ? parseFloat(view.getComputedStyle(ruler).getPropertyValue('--tle-line')) : NaN;"));
+  assert(editor.includes("const pad = ruler ? parseFloat(view.getComputedStyle(ruler).getPropertyValue('--tle-pad-top')) : NaN;"));
 });
 
 // Codex review (11/3): reading's own controls must not undo the one layout.
@@ -102,8 +106,9 @@ test('U45 folder rows: one drawing in place over RAW in every state; ▾ in the 
   // As specific as reading's own scope rules (and later), so the RAW stays in the flow there too.
   rule('.tle-line-scope.tle-line-native-scope > .tle-date-source) { position: static; visibility: visible; color: transparent;');
   rule('.tle-line-native-scope .tle-active-scope-icon) { left: calc(var(--tle-indent, 0px) - 10px); height: var(--tle-line); }');
-  // Bold by a stroke that adds no width, so the name wraps as RAW does.
-  rule('.tle-line-native-scope .tle-active-scope-name) { color: var(--flowme-b-primary-strong); -webkit-text-stroke: 0.6px currentColor; }');
+  // Bold by a stroke that adds no width, so the name wraps as RAW does. Write polish D (11/7): muted, a lighter stroke,
+  // the RAW text's size (it is painted over the characters a tap places the caret on).
+  rule('.tle-line-native-scope .tle-active-scope-name) { color: var(--flowme-b-muted); -webkit-text-stroke: 0.3px currentColor; }');
   rule(':is(.tle-fold-toggle, .tle-scope-open).tle-scope-control) { display: flex; align-items: center; justify-content: center; height: var(--tle-line);');
   rule('.tle-fold-toggle.tle-scope-control) { width: 44px; }');
   // A folded document has no caret and no row menu (reading's rule covers it), so the menu never covers ▾ there either.

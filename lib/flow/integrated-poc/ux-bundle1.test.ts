@@ -52,7 +52,7 @@ test('B2·B3·B4·C1·C2·C3·C6·B9: the layout fixes are CSS on the screens na
   assert(!detail.includes('{longSummary && <button'), 'PC also shows 더 보기 only when the summary is cut');
   assert(!detail.includes('출처 확인 기록'));
   const workspaceCss = read('components/flow/integrated-poc/AlphaWorkspace.module.css');
-  assert(workspaceCss.includes('@media (max-width: 700px) { .triedPrompt { top: auto; bottom: calc(76px + env(safe-area-inset-bottom) + 12px);'));
+  assert(workspaceCss.includes('@media (max-width: 700px) { .triedPrompt { top: auto; bottom: calc(60px + env(safe-area-inset-bottom) + 12px);'));
   assert(workspaceCss.includes('.recoveryBox > summary::-webkit-details-marker { display: none; }'));
   assert(read('components/flow/integrated-poc/ProgramSpace.module.css').includes('@media (max-width: 700px) { .space[data-note-layout="true"] .notePeriodTitle h1 { font-size: 20px; line-height: 28px; } }'));
   const editorCss = read('components/flow/integrated-poc/ProgramTextEditor.module.css');
