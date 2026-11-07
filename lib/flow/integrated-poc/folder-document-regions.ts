@@ -79,8 +79,7 @@ export function readProgramFolderRegions(state: TextWorkspaceState, documentId: 
     const before = rows[startIndex - 1]?.id ?? 'start';
     regions.push({ key: `${documentId}:${folderId}:${before}`, startIndex, endIndex,
       lineIds: doc!.lines.slice(startIndex, endIndex).map(line => line.id),
-      raw: doc!.lines.slice(startIndex, endIndex).map(line => line.text).join('\n'), depth,
-      contextRows: rows.filter(row => context.has(row.id) && (row.index < startIndex || row.index >= endIndex)),
+      raw: doc!.lines.slice(startIndex, endIndex).map(line => line.text).join('\n'), depth, contextRows: [],
     });
   }
   for (let index = 0; index < rows.length;) {
@@ -100,6 +99,17 @@ export function readProgramFolderRegions(state: TextWorkspaceState, documentId: 
     regions[0].readOnly = true;
   }
   regions.sort((a, b) => a.startIndex - b.startIndex);
+  // Region fix (11/7): each context row (a day's head line, a folder line above the part) belongs to one region — the
+  // first that starts at or after it, else the last — so the regions together hold every context row once, as the
+  // editor draws them. Each region used to carry every context row outside it: O(regions × rows) in the view and in
+  // every check that reads it (42 regions: a 1.8 MB view token, ~0.9 s a render), which left saves behind input.
+  let owner = 0;
+  for (const row of rows) {
+    if (!context.has(row.id) || !regions.length) continue;
+    while (owner < regions.length - 1 && regions[owner].startIndex < row.index) owner += 1;
+    const region = regions[owner];
+    if (row.index < region.startIndex || row.index >= region.endIndex) region.contextRows.push(row);
+  }
   const matchingDocumentIds = [...state.documents, ...state.flows].filter(entry => selection(state, entry.id, folderId).roots.length > 0).map(entry => entry.id);
   const view: ProgramFolderDocumentView = { documentId, folderId, folderPath: programFolderPath(state, folderId),
     fullRaw: M.raw(doc), workspace: state, regions, matchingDocumentIds };
@@ -129,6 +139,19 @@ export function planProgramRegionEdit(state: TextWorkspaceState, view: ProgramFo
   const doc = M.getDocument(state, view.documentId), region = view.regions.find(entry => entry.key === regionKey);
   if (!doc || !region || M.raw(doc) !== view.fullRaw || !same(doc.lines.slice(region.startIndex, region.endIndex).map(line => line.id), region.lineIds)) return fail('stale-region');
   if (typeof replacement !== 'string') return fail('invalid-replacement');
+  // Region fix (11/7): a key is checked by the editor (may it go in?) and again by its preview (its rows): the same
+  // view, region and text give the same answer, kept per view (a view is fixed; the checks above still run each time).
+  if (state !== view.workspace) return planRegion(state, view, doc, region, replacement, options);
+  let byView = planKept.get(view);
+  if (!byView) planKept.set(view, byView = new Map());
+  const id = `${regionKey}\u0000${options?.progressDate ?? ''}\u0000${replacement}`;
+  if (!byView.has(id)) byView.set(id, planRegion(state, view, doc, region, replacement, options));
+  return byView.get(id)!;
+}
+const planKept = new WeakMap<ProgramFolderDocumentView, Map<string, ProgramRegionEditResult>>();
+function planRegion(state: TextWorkspaceState, view: ProgramFolderDocumentView, doc: NonNullable<ReturnType<typeof M.getDocument>>,
+  region: ProgramFolderRegion, replacement: string, options?: { progressDate?: string }): ProgramRegionEditResult {
+  const fail = (reason: string): ProgramRegionEditResult => ({ ok: false, reason });
   const normalized = replacement.replace(/\r\n?/g, '\n');
   if (normalized === region.raw) return { ok: true, next: state, fullRaw: view.fullRaw };
   if (region.readOnly) return fail('readonly-context');

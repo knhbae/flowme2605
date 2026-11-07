@@ -549,7 +549,7 @@
 /* T2: on phones the add is a 36px ＋ circle in a 44px press area, as writing's; its name stays "할 일 추가". PC keeps words. */
 @media (max-width: 700px) {
   .space[data-note-layout="true"] .notePeriodActions > .noteAdd { position: relative; width: 44px; min-width: 44px; height: 44px; min-height: 44px; padding: 0; border: 0; background: transparent; font-size: 0; }
-  .space[data-note-layout="true"] .notePeriodActions > .noteAdd::before { content: "＋"; position: absolute; inset: 4px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--flowme-b-selected); color: var(--flowme-b-primary); font-size: 20px; font-weight: 600; line-height: 1; }
+  .space[data-note-layout="true"] .notePeriodActions > .noteAdd::before { content: "＋" / ""; position: absolute; inset: 4px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--flowme-b-selected); color: var(--flowme-b-primary); font-size: 20px; font-weight: 600; line-height: 1; }
 }
 /* T3: ‹ [date chip] › … [period chip ⌄]. Each chip draws 36px inside a 44px press area; the date input stays in the
    page, unseen, with its label (the chip opens its picker). */

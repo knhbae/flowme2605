@@ -2,7 +2,7 @@
 
 import type {OwnedWritingAck} from '@/lib/flow/integrated-poc/writing-ack';
 import type {WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
-import React, { useContext, useEffect, useId, useRef, useState } from 'react';
+import React, { useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { programEditorStatus, serverStatusWins } from '@/lib/flow/integrated-poc/program-status';
 import { ProgramServerStatusContext } from './program-status-context';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
@@ -3001,7 +3001,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // A registered task's menu also holds its 진행·날짜, so its head is the task alone and the add choices get "추가".
   const menuTargetText = row ? memoContext?.label || row.title || row.task?.title || row.text : '';
   const title = panel?.kind==='child' ? childTarget?.kind==='task' ? `‘${childTarget.title}’ 아래 하위 할 일` : childTarget?.kind==='memo' ? `‘${childTarget.title}’ 메모` : programInsertMenuTitle(childTarget?.title) :protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'repeat' ? '반복' : panel?.kind === 'progress' ? '진행 기록' : panel?.kind === 'date' ? '날짜·시간' : panel?.kind === 'folder-copy' ? '폴더 사본 만들기' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : panel?.kind === 'insert' && row?.progressTargetId ? `‘${menuTargetText.trim()}’` : programInsertMenuTitle(menuTargetText);
-  const folderView = props.folderId ? readProgramFolderRegions(draft.working, props.docId, props.folderId) : null;
+  // Region fix (11/7): one view per workspace (it was read anew on every draw: a new snapshot, every region repainted).
+  const folderView = useMemo(() => props.folderId ? readProgramFolderRegions(draft.working, props.docId, props.folderId) : null,
+    [draft.working, props.docId, props.folderId]);
   const progressConflict = progressConflictToView();
   const inputPending=!!childTarget||programTextInputPending(draft,textArea()?.value,composing,regionPending,checkPending);
   // Bar buttons turn off only for input protection, read-only, or a move they cannot make.

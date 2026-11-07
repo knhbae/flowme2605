@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
-import { planProgramRegionEdit, isProgramFolderViewCurrent, type ProgramFolderDocumentView } from '@/lib/flow/integrated-poc/folder-document-regions';
+import { planProgramRegionEdit, isProgramFolderViewCurrent, readProgramFolderRegions, type ProgramFolderDocumentView } from '@/lib/flow/integrated-poc/folder-document-regions';
 import { textEditorRows, textWorkspaceModel as M, type TextRow, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
 import { revealProgramEditorLine } from './editor-reveal';
@@ -107,20 +107,42 @@ export function createProgramRegionDraft(options: {
   return api;
 }
 
+/** Region fix (11/7): each region's editor asks for its rows on every draw; with many regions that was the whole check
+ *  and the whole document's rows again per region and per draw. A view is a fixed snapshot, so its previews are kept
+ *  by (region, text), and an unchanged region reads the rows of the view's own document (computed once per state). */
+const previewKept = new WeakMap<ProgramFolderDocumentView, Map<string, ReturnType<typeof previewRegion>>>();
+const rowsKept = new WeakMap<TextWorkspaceState, Map<string, ReturnType<typeof textEditorRows>>>();
+function documentRows(state: TextWorkspaceState, documentId: string) {
+  let byDocument = rowsKept.get(state);
+  if (!byDocument) rowsKept.set(state, byDocument = new Map());
+  if (!byDocument.has(documentId)) byDocument.set(documentId, textEditorRows(state, documentId));
+  return byDocument.get(documentId)!;
+}
 /** Preview a fragment inside its original document, never as a standalone model. */
 export function previewProgramRegionText(view: ProgramFolderDocumentView, key: string, raw: string) {
+  let byView = previewKept.get(view);
+  if (!byView) previewKept.set(view, byView = new Map());
+  const id = `${key}\u0000${raw}`;
+  if (!byView.has(id)) byView.set(id, previewRegion(view, key, raw));
+  return byView.get(id)!;
+}
+// Whether a view is still its own snapshot, asked once per view for its previews (a write checks it again in full).
+const currentKept = new WeakMap<ProgramFolderDocumentView, boolean>();
+function previewRegion(view: ProgramFolderDocumentView, key: string, raw: string) {
   const region = view.regions.find(entry => entry.key === key);
-  if (!region || !isProgramFolderViewCurrent(view.workspace, view)) return null;
+  if (!currentKept.has(view)) currentKept.set(view, isProgramFolderViewCurrent(view.workspace, view));
+  if (!region || !currentKept.get(view)) return null;
   const prefix = view.fullRaw.split('\n').slice(0, region.startIndex).join('\n');
   const offset = prefix.length + (region.startIndex ? 1 : 0);
   const lines = view.fullRaw.split('\n');
   const incoming = raw ? raw.split('\n') : [];
   lines.splice(region.startIndex, region.endIndex - region.startIndex, ...incoming);
   const fullRaw = lines.join('\n');
-  const checked = planProgramRegionEdit(view.workspace, view, key, raw);
+  // An unchanged region is the view's own document (the check would hand back that same state).
+  const checked = raw === region.raw ? { ok: true as const, next: view.workspace } : planProgramRegionEdit(view.workspace, view, key, raw);
   const edited = checked.ok ? { state: checked.next, reason: null } : M.editTextResult(view.workspace, view.documentId, fullRaw);
   if (edited.reason || M.raw(M.getDocument(edited.state, view.documentId)) !== fullRaw) return { fullRaw, offset, rows: [], lineId: () => null };
-  const rows = textEditorRows(edited.state, view.documentId).slice(region.startIndex, region.startIndex + incoming.length)
+  const rows = documentRows(edited.state, view.documentId).slice(region.startIndex, region.startIndex + incoming.length)
     .map(row => ({ ...row, subtreeEndIndex: Math.min(incoming.length, row.subtreeEndIndex - region.startIndex) }));
   const existingIds = new Set(M.getDocument(view.workspace, view.documentId)?.lines.map(line => line.id));
   return { fullRaw, offset, rows, lineId: (index: number) => existingIds.has(rows[index]?.id) ? rows[index].id : null };
@@ -139,6 +161,8 @@ function NativeProgramRegion(props: {
   listEnterV2?: boolean;
   composing(): boolean;
   rows(): ReturnType<typeof textEditorRows>;
+  /** The view the rows come from: a new one (after a save) repaints this region once; `rows` itself is read fresh. */
+  version: unknown;
   canApply(raw: string): boolean;
   onRejected(): void;
   onChange(raw: string): void;
@@ -197,7 +221,9 @@ function NativeProgramRegion(props: {
     // A confirmed save normally has the same bytes. Avoid resetting browser history.
     if (instance.getValue() !== props.raw) instance.setValue(props.raw, { preserveSelection: true });
     area.readOnly = props.readOnly; instance.refresh();
-  }, [props.raw, props.readOnly, props.rows, props.composing]);
+    // Region fix (11/7): keyed on the view, not on `rows` (a new function each draw): every region's editor used to
+    // repaint on every key typed in any region (42 regions: 42 repaints a key).
+  }, [props.raw, props.readOnly, props.version, props.composing]);
   useEffect(() => { editor.current?.setMode(props.mode ?? 'live'); }, [props.mode]);
   return <div ref={host} className={props.className} data-readonly={props.readOnly ? 'true' : 'false'}
     style={{ height: Math.max(3, Math.min(14, props.raw.split('\n').length + 1)) * 44 + 24 }} />;
@@ -239,6 +265,14 @@ export function ProgramFolderRegionEditor(props: {
   }));
   const controllerRef = useRef(controller); controllerRef.current = controller;
   const state = controller.getState(), view = state.pending?.view ?? props.view;
+  /** Region fix (11/7): the view a key is checked and kept against. A save that landed between two keys (a slow phone
+   *  saves while you type) leaves the last drawn view behind the workspace: read it again, by the same region keys, so
+   *  the key is not refused as stale and taken back out of the text (which moved the caret and reordered the words). */
+  const viewNow = (): ProgramFolderDocumentView => {
+    const captured = controller.getState().pending?.view ?? latest.current.view, workspace = latest.current.workspace();
+    if (captured.workspace === workspace) return captured;
+    return readProgramFolderRegions(workspace, captured.documentId, captured.folderId) ?? captured;
+  };
   useEffect(() => {
     latest.current.onRegister({ ...controller, undo: () => {
       if (controller.isComposing() || latest.current.locked || latest.current.readOnly) return false;
@@ -250,7 +284,7 @@ export function ProgramFolderRegionEditor(props: {
       return port && (allowReadOnly || !port.area.readOnly) ? port : null;
     }, canApplyActive: raw => {
       const key = controller.getState().pending?.key ?? activeKey.current;
-      return !!key && planProgramRegionEdit(latest.current.workspace(), controller.getState().pending?.view ?? latest.current.view, key, raw).ok;
+      return !!key && planProgramRegionEdit(latest.current.workspace(), viewNow(), key, raw).ok;
     }, revealLine: (lineId, column) => {
       const region = latest.current.view.regions.find(entry => !entry.readOnly && entry.lineIds.includes(lineId));
       const port = region && surfaces.current.get(region.key);
@@ -298,19 +332,19 @@ export function ProgramFolderRegionEditor(props: {
         mode={props.mode} listEnterV2={props.listEnterV2}
         raw={state.pending?.key === entry.region.key ? state.pending.raw : entry.region.raw}
         readOnly={props.readOnly || props.locked || !!state.pending && state.pending.key !== entry.region.key}
-        composing={controller.isComposing} className={styles.regionHost}
+        composing={controller.isComposing} className={styles.regionHost} version={view}
         rows={() => {
           const pending = controller.getState().pending;
           return previewProgramRegionText(pending?.view ?? view, entry.region!.key,
             surfaces.current.get(entry.region!.key)?.instance.getValue() ?? (pending?.key === entry.region!.key ? pending.raw : entry.region!.raw))?.rows ?? [];
         }}
-        canApply={raw => planProgramRegionEdit(latest.current.workspace(), controller.getState().pending?.view ?? latest.current.view, entry.region!.key, raw).ok}
+        canApply={raw => planProgramRegionEdit(latest.current.workspace(), viewNow(), entry.region!.key, raw).ok}
         onRejected={() => setNotice('이 조작은 전체 문서에서 할 수 있습니다. 입력은 그대로 남아 있습니다.')}
-        onChange={raw => { if (controller.update(view, entry.region!.key, raw)) { setNotice(''); schedule(); } }}
+        onChange={raw => { if (controller.update(viewNow(), entry.region!.key, raw)) { setNotice(''); schedule(); } }}
         onCompose={(composing, raw) => {
           if (timer.current) clearTimeout(timer.current);
           if (composing) controller.compose(true);
-          else { controller.update(view, entry.region!.key, raw); controller.compose(false); schedule(); }
+          else { controller.update(viewNow(), entry.region!.key, raw); controller.compose(false); schedule(); }
         }}
         onRegister={port => { if (port) surfaces.current.set(entry.region!.key, port); else surfaces.current.delete(entry.region!.key); }}
         onSlash={props.onInsertMenu ? () => { activeKey.current = entry.region!.key; latest.current.onInsertMenu?.(); } : undefined}

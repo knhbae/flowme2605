@@ -54,6 +54,8 @@ test('T4·T5·T7·T8: finished rows are not struck through and their box is not 
 test('T2·T6·T10·T11: the phone ＋ circle, the row folder, the quiet saved state, 56px rows', () => {
   assert.match(space, /className=\{styles\.noteAdd\} aria-expanded=\{noteQuickOpen\}.*>할 일 추가<\/button>/);
   assert.match(css, /@media \(max-width: 700px\) \{\n  \.space\[data-note-layout="true"\] \.notePeriodActions > \.noteAdd \{/);
+  // TA-P3-1: the drawn ＋ has empty alt text, so the button is read as its words only ("할 일 추가").
+  assert.match(css, /\.noteAdd::before \{ content: "＋" \/ "";/);
   assert.match(space, /<span className=\{styles\.rowFolder\}>\/ \{scope\}<\/span>/);
   assert.match(space, /if \(!actualFolderId \|\| actualFolderId === 'folder-unfiled'\) return null;/);
   assert.match(alpha, /data-quiet=\{!pendingUnknown && !pending && !snapshot\?\.retryableRejectedDraft/);
