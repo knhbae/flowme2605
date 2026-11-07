@@ -119,6 +119,8 @@ export interface ProgramTextEditorProps {
   onPosition?: (selection: ProgramTextPosition, lineId: string | null) => void;
   initialPosition?: ProgramTextPosition;
   onOpenScope?: (scopeId: string) => void;
+  /** 7k stage 1 (11/7): a folder line's own entrance — this document's parts of that folder, written in place. */
+  onGatherFolder?: (scopeId: string) => void;
   taskAccess?: (taskId: string, current?:TextWorkspaceState) => ProgramReferenceAccess;
   folderCopyProblem?: (state: TextWorkspaceState, docId: string, lineIds: readonly string[]) => string | null;
   onOpenTaskOrigin?: (documentId: string, lineId: string) => void;
@@ -1237,7 +1239,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function redoInput() {
     const props = propsRef.current, state = draftRef.current?.getState();
     if (redoBarFolder() || redoBarDate()) return;
-    if (orderHistoryRef.current.hasEntries() || props.authoringMode) nativeHistory('historyRedo'); else if (props.onRedo && !state?.dirty) void props.onRedo();
+    // 7k stage 1: in a folder view ↷ goes where its ↶ went (the saved steps), not to the hidden whole editor's history.
+    if (orderHistoryRef.current.hasEntries() || props.authoringMode && !props.folderId) nativeHistory('historyRedo'); else if (props.onRedo && !state?.dirty) void props.onRedo();
   }
   function openRepeatFromTools() {
     const props = propsRef.current;
@@ -1895,8 +1898,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (action.type === 'progress-open') { if (!showCheckChips(lineId)) openProgress(lineId); return; }
     if (action.type === 'task-date') { openProgress(lineId, 'date'); return; }
     if (action.type === 'scope-open') {
-      const scopeId = currentRow(lineId)?.scopeId;
-      if (scopeId) void saveNow().then(saved => { if (saved) propsRef.current.onOpenScope?.(scopeId); });
+      // 7k stage 1: a folder line's entrance gathers this document's parts of it (the 분류 tab stays in the line's ⋮).
+      const row = currentRow(lineId), scopeId = row?.scopeId, gather = row?.scopeKind === 'folder' && propsRef.current.onGatherFolder;
+      if (scopeId) void saveNow().then(saved => { if (saved) (gather || propsRef.current.onOpenScope)?.(scopeId); });
       return;
     }
     if (['reference-open', 'task-origin'].includes(action.type)) { setPanel({ kind: 'reference', lineId }); return; }
@@ -2824,7 +2828,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     ? readFolderPickerChoices(createFolderPickerIndex(draft.working.folders), '', null, { recentIds: pickerRecent.current }).candidates.slice(0, 12) : null;
   // ↶ ↷ in the toolbar and in the bar's ⋯ row are off for the same reasons.
   const undoOff = inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending;
-  const redoOff = inputLocked || !!props.readOnly || draft.saving || !!props.folderId;
+  // 7k stage 1: in a folder view ↷ redoes a saved step as ↶ undoes one (redoInput); none while its input waits.
+  const redoOff = inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty;
   const editorStatus = programEditorStatus({ readOnly: !!props.readOnly, readOnlyLabel: props.disabledReason, error: !!draft.error,
     locked: inputLocked, saving: draft.saving, checking: checkPending, pending: inputPending });
   const serverWins = serverStatusWins(serverView, editorStatus);
@@ -3044,8 +3049,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       {props.headEnd && <div className={styles.headEnd} data-editor-head="end">{props.headEnd}</div>}
     </div>
     {props.headBelow && <div className={styles.headBelow} data-editor-head="below">{props.headBelow}</div>}
-    {props.folderId && <div className={regionStyles.actions} aria-label="문서 조회 범위"><p>{currentDoc()?.title || '현재 글'} · 분류: {folderView?.folderPath ?? '선택한 분류'} · 하위 분류 포함</p>
-      <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || composingRef.current} onClick={props.onContinueWholeDocument ? continueWholeDocument : props.onShowWholeDocument}>전체 문서 보기</button><button type="button" onClick={props.onShowFolderTasks}>폴더 전체 할 일</button>
+    {props.folderId && <div className={regionStyles.actions} aria-label="문서 조회 범위" data-folder-gather>
+      {/* 7k stage 1: the gathered folder says what is shown; only 전체 보기 ends it (the 쓰기 tab keeps it). */}<p><strong>/{folderView?.folderPath ?? '선택한 폴더'}</strong>만 보는 중 <small>{currentDoc()?.title || '현재 글'} · 하위 폴더 포함</small></p>
+      <button type="button" data-gather-end disabled={inputLocked || !!props.readOnly || draft.saving || composingRef.current} onClick={props.onContinueWholeDocument ? continueWholeDocument : props.onShowWholeDocument}>전체 보기</button><button type="button" onClick={props.onShowFolderTasks}>폴더 전체 할 일</button>
       {!folderView?.regions.length && <p>이 분류에 맞는 내용이 없습니다. 전체 문서에서 확인할 수 있습니다.</p>}
     </div>}
     <div ref={hostRef} className={`${styles.host}${props.directWriting ? ` ${styles.directWriting}` : ''}`} hidden={!!props.folderId} data-native-editor="v11-core" />
@@ -3101,7 +3107,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {props.onOpenPersonalAuthoring && <><h4>묶음 반복</h4><button type="button" onClick={() => { closePanel(); props.onOpenPersonalAuthoring?.(); }}>반복·Flow 만들기…<small>여러 할 일과 단계</small></button></>}
       </div>)(repeatTarget(panel.lineId))}
       {panel.kind === 'insert' && <div className={styles.choices}>
-        {/* VA-P3-1 (11/7): the folder line's own open, by name (the unseen open area on its line no longer takes taps). */}
+        {/* VA-P3-1 (11/7): the folder line's own entrance, by name. 7k stage 1: first this document's parts of the folder
+            (gathered, written in place); the 분류 tab's view of it stays next to it. */}
+        {row?.kind === 'scope' && row.scopeKind === 'folder' && row.scopeId && props.onGatherFolder && <button type="button" data-gather-folder onClick={() => {
+          const scopeId = currentRow(panel.lineId)?.scopeId; dismissPanel(false, false);
+          if (scopeId) void saveNow().then(saved => { if (saved) propsRef.current.onGatherFolder?.(scopeId); });
+        }}>이 폴더만 모아 보기</button>}
         {row?.kind === 'scope' && row.scopeKind === 'folder' && row.scopeId && props.onOpenScope && <button type="button" data-open-scope onClick={() => {
           const scopeId = currentRow(panel.lineId)?.scopeId; dismissPanel(false, false);
           if (scopeId) void saveNow().then(saved => { if (saved) propsRef.current.onOpenScope?.(scopeId); });

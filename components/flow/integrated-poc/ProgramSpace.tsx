@@ -300,6 +300,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       || M.tasks(space.text).some(task => task.docId !== id && taskIds.includes(task.id));
   }
   const [date, setDate] = useState(today), [folderId, setFolderId] = useState(''), [query, setQuery] = useState('');
+  /** 7k stage 1: the folder the writing view last gathered (its folderId while 쓰기 was shown), for the 쓰기 tab. */
+  const writingFolder = useRef('');
+  useEffect(() => { if (period === 'documents') writingFolder.current = folderId; }, [period, folderId]);
   const [queryDraft, setQueryDraft] = useState(''), queryComposing = useRef(false);
   useEffect(() => { if (!queryComposing.current) setQueryDraft(query); }, [query]);
   const [collectionId, setCollectionId] = useState(''), [quickDocumentId, setQuickDocumentId] = useState('');
@@ -1284,7 +1287,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const release = lockInput();
     try {
       if (!await flushAllEditors()) { showViewChangeBlocked(); return false; }
-      if (main) { setQuery(''); if (nextPeriod === 'documents' || nextPeriod === 'today') setFolderId(''); }
+      // 7k stage 1: the 쓰기 tab keeps the writing view's gathered folder (only 전체 보기 ends it); a folder picked in 분류
+      // does not carry into 쓰기, and 오늘 shows everything.
+      if (main) { setQuery(''); if (nextPeriod === 'documents') setFolderId(writingFolder.current); else if (nextPeriod === 'today') setFolderId(''); }
       setPeriod(nextPeriod); if (collectionMode) setLibraryOpen(false); if (nextPeriod === 'today') setDate(today); setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setOrderNotice(null); return true;
     } finally { release(); }
   }
@@ -2730,6 +2735,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             return view ? accept(recentNarrow(id, view, before), recentNarrow(id, view, next)) : accept(before, next, ack);
           }); }}
           onRegisterInputLock={lock => { inputLocks.current[id] = lock; lock?.(inputLockCount.current > 0); }}
+          onGatherFolder={collectionMode ? undefined : scopeId => { if (space.text.folders.some(item => item.id === scopeId)) void changeFolder(scopeId); }}
           onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { if (collectionMode) { setMessage('기존 항목 분류는 모음이 아닙니다. 전체 문서에서 계속 작성합니다.'); return; } setFolderId(scopeId); setPeriod('all'); } else void openDocument(scopeId); }}
           onConnectFlow={(docId, lineId, insertAfter) => openDetail({ kind: 'connect', docId, lineId, insertAfter })}
           readOnly={programDocumentContentLock(space, id) !== 'active'} disabledReason={space.documentTrash?.[id] ? '휴지통의 문서입니다. 복원하면 삭제 전 상태로 돌아갑니다.' : retainedIds.has(id) ? '저장본으로 되돌리며 보관된 내용 · 읽기 전용' : '보관한 문서입니다. 보관에서 꺼내면 이어서 쓸 수 있습니다.'}
