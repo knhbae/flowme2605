@@ -66,6 +66,12 @@ export function createProgramRegionDraft(options: {
   persist(): Promise<boolean>;
   readonly(): boolean;
   notify(): void;
+  /** Region fix 2 (11/8): the document's save is running. The region keeps taking keys meanwhile (it used to turn
+   *  read-only, and keys typed then were lost without a word); its own write waits for that save (`idle`). */
+  busy?(): boolean;
+  idle?(): Promise<void>;
+  /** The same view read again from the current workspace (a save or a refresh landed after this one was drawn). */
+  refresh?(view: ProgramFolderDocumentView): ProgramFolderDocumentView | null;
 }) {
   let pending: { view: ProgramFolderDocumentView; key: string; raw: string } | null = null;
   let composing = false, error = '', flight: Promise<boolean> | null = null;
@@ -89,15 +95,29 @@ export function createProgramRegionDraft(options: {
     },
     discard() { if (composing || flight) return; pending = null; error = ''; options.notify(); },
     flush(): Promise<boolean> {
-      if (flight) return flight;
+      // Region fix 2: input typed while the last write was still going (the region takes keys during a save now) is
+      // written once that write ends, not left pending until another key.
+      if (flight) return flight.then(done => pending && !composing ? api.flush() : done);
       if (composing) { error = programRegionError('composition'); options.notify(); return Promise.resolve(false); }
       if (!pending) return options.persist();
       if (options.readonly()) { error = programRegionError('readonly'); options.notify(); return Promise.resolve(false); }
+      // Region fix 2: while the document's save runs, this write waits for it (then flushes what is pending then).
+      if (options.busy?.() && options.idle) return options.idle().then(() => api.flush());
       const capture = pending;
       const now = new Date(), progressDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-      const plan = planProgramRegionEdit(options.workspace(), capture.view, capture.key, capture.raw, { progressDate });
+      let view = capture.view, plan = planProgramRegionEdit(options.workspace(), view, capture.key, capture.raw, { progressDate });
+      let accepted = plan.ok && options.accept(plan.next, view.workspace);
+      // Region fix 2: refused only because the view is behind the workspace (a save or a refresh landed since it was
+      // read): read it again and write once more — only when this region still reads as it did when typing began.
+      if (!accepted && (!plan.ok ? ['stale-workspace', 'stale-region', 'invalid-view'].includes(plan.reason) : true) && options.refresh) {
+        const fresh = options.refresh(view), was = view.regions.find(region => region.key === capture.key), now2 = fresh?.regions.find(region => region.key === capture.key);
+        if (fresh && was && now2 && now2.raw === was.raw && !now2.readOnly) {
+          view = fresh; plan = planProgramRegionEdit(options.workspace(), view, capture.key, capture.raw, { progressDate });
+          accepted = plan.ok && options.accept(plan.next, view.workspace);
+        }
+      }
       if (!plan.ok) { error = programRegionError(plan.reason); options.notify(); return Promise.resolve(false); }
-      if (!options.accept(plan.next, capture.view.workspace)) { error = programRegionError('stale-workspace'); options.notify(); return Promise.resolve(false); }
+      if (!accepted) { error = programRegionError('stale-workspace'); options.notify(); return Promise.resolve(false); }
       // Once accepted, the shared full-document draft owns failures and retries.
       pending = null; error = ''; options.notify();
       flight = options.persist().finally(() => { flight = null; options.notify(); });
@@ -233,6 +253,8 @@ export function ProgramFolderRegionEditor(props: {
   view: ProgramFolderDocumentView;
   readOnly: boolean;
   locked: boolean;
+  /** Region fix 2: the document's save is running (the regions still take keys; their write waits for it). */
+  saving?: boolean;
   mode?: 'live' | 'text';
   /** Same list Enter v2 setting as the body editor. */
   listEnterV2?: boolean;
@@ -262,6 +284,10 @@ export function ProgramFolderRegionEditor(props: {
     workspace: () => latest.current.workspace(), accept: (next, before) => latest.current.onAccept(next, before),
     persist: () => latest.current.onPersist(), readonly: () => latest.current.readOnly,
     notify: () => { rerender(value => value + 1); const state = controllerRef.current?.getState(); if (state) latest.current.onPending(!!state.pending || state.composing, state.composing); },
+    busy: () => !!latest.current.saving,
+    // Settled a little after the save ends, so the page has drawn what it saved (the write is checked against that).
+    idle: () => new Promise<void>(resolve => { const started = Date.now(); const tick = () => { if (!latest.current.saving || Date.now() - started > 15_000) setTimeout(resolve, 120); else setTimeout(tick, 60); }; tick(); }),
+    refresh: view => readProgramFolderRegions(latest.current.workspace(), view.documentId, view.folderId),
   }));
   const controllerRef = useRef(controller); controllerRef.current = controller;
   const state = controller.getState(), view = state.pending?.view ?? props.view;

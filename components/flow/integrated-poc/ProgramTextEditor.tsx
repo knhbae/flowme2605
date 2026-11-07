@@ -3278,7 +3278,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       <span aria-hidden="true">＋</span>오늘 {programCalendarDate(today(), today())} 쓰기</button>}
     <div ref={hostRef} className={`${styles.host}${props.directWriting ? ` ${styles.directWriting}` : ''}`} hidden={!!props.folderId} data-native-editor="v11-core" />
     {notices}
-    {folderView && <ProgramFolderRegionEditor key={`${props.docId}:${props.folderId}`} styles={regionStyles} view={folderView} readOnly={!!props.readOnly} locked={inputLocked || draft.saving} mode={mode} listEnterV2={!!props.authoringMode}
+    {folderView && <ProgramFolderRegionEditor key={`${props.docId}:${props.folderId}`} styles={regionStyles} view={folderView} readOnly={!!props.readOnly} locked={inputLocked} saving={draft.saving} mode={mode} listEnterV2={!!props.authoringMode}
       workspace={currentState} onAccept={acceptRegion} onPersist={saveFullDraft} onDownload={downloadDraft}
       onContinueWholeDocument={continueWholeDocument} onInsertMenu={props.authoringMode ? () => { void openRegionInsertMenu(); } : undefined}
       afterActive={props.authoringMode ? writingBar : undefined}

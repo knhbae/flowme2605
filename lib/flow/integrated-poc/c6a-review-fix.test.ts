@@ -18,7 +18,8 @@ test('P1: every save of the space is refused while picking; input typed into a d
   assert.equal(space.match(/props\.on(Undo|Redo)\b/g)?.length, 2, 'the host undo/redo only in the gate');
   assert(!space.includes('const { data, mutate, today } = props'));
   // A document's own commit is not refused (its input would be lost); 고르기 never starts with one unsaved.
-  assert.match(body('editorCommit'), /await countedMutate\(label, current => \{/);
+  // Region fix 2 (11/8): the commit is one attempt function, tried again while the single writer is busy.
+  assert.match(body('editorCommit'), /const attempt = \(\) => countedMutate\(label, current => \{/);
   // The ref follows the state at once, on the way in and out.
   assert.match(body('startSelecting'), /selectingNow\.current = true;/);
   assert.match(body('stopSelecting'), /selectingNow\.current = false;/);

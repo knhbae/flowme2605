@@ -2000,11 +2000,19 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       }
     }
     let receipt: { before: typeof space; after: typeof space } | null = null;
-    const result = await countedMutate(label, current => {
-      const transition = programTextTransition(current, { actorId, documentId: docId, expected: options?.expectedWorkspace ?? space.text, next: nextText, position: positions.current[docId] });
+    const expectedText = options?.expectedWorkspace ?? space.text;
+    const attempt = () => countedMutate(label, current => {
+      const transition = programTextTransition(current, { actorId, documentId: docId, expected: expectedText, next: nextText, position: positions.current[docId] });
       if (transition.ok) receipt = { before: programClone(current.spaces[actorId]), after: programClone(transition.data.spaces[actorId]) };
       return transition;
-    }, { groupId: options?.groupId, onPrivateMutation: options?.onPrivateMutation,...(props.writingCompute&&!moveFlush.current?{alphaWriting:{documentId:docId,expected:options?.expectedWorkspace??space.text,next:nextText,position:positions.current[docId],workingGeneration:options?.writingGeneration??0}}:{}) });
+    }, { groupId: options?.groupId, onPrivateMutation: options?.onPrivateMutation,...(props.writingCompute&&!moveFlush.current?{alphaWriting:{documentId:docId,expected:expectedText,next:nextText,position:positions.current[docId],workingGeneration:options?.writingGeneration??0}}:{}) });
+    let result = await attempt();
+    // Region fix 2 (11/8): the single writer was busy for a moment (another save, or a background refresh on a slow
+    // phone): nothing was sent, so try again for a few seconds instead of failing the write into the 복구함.
+    for (let tries = 0; !result.ok && result.reason === 'busy' && tries < 40; tries++) {
+      await new Promise(resolve => setTimeout(resolve, 150));
+      result = await attempt();
+    }
     // The controller refuses 'unresolved' (a result still pending) and 'busy' before anything is sent.
     if (!result.ok && (result.reason === 'unresolved' || result.reason === 'busy')) options?.onNotSent?.();
     const authority = moveFlush.current;
