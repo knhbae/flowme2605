@@ -192,6 +192,10 @@ type SourceOrigin = { actorId: string; documentId: string; taskId: string; top: 
   /** C5: opened from the calendar, with the day open in its sheet or panel. */
   view: { period: ProgramPeriod; date: string; folderId: string; query: string; monthView?: 'grid'; dayOpen?: boolean } };
 const MONTH_VIEW_KEY = 'flow:poc:personal-workspace:v1:month-view';
+/** PRD X1~X4 (11/8, user's choice): the writing head's 날짜별 | 폴더별 and its folder chips are held back until the folder
+ *  screen is redesigned. A folder line's ⋮ (이 폴더만 모아 보기 · 분류에서 이 폴더 보기) and the 분류 tab stay; the
+ *  device's last gathered folder (VIEW_FOLDER_KEY) is left as it is and no longer read. */
+export const PROGRAM_WRITING_VIEW_SWITCH = false;
 const CARRY_OPEN_KEY = 'flow:alpha:carryover-open:v1';
 const periods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['week', '주간'], ['month', '월간'], ['all', '분류'], ['undated', '날짜 미정']];
 const mainPeriods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['all', '분류']];
@@ -799,7 +803,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   /** 7k stage 2: the writing view's 날짜별 | 폴더별 and, by folder, the chips of this document's folders. A chip gathers
    *  that folder (stage 1's region editor; saved first); 날짜별 shows the whole document again. */
   function viewSwitch(id: string) {
-    if (collectionMode || selected !== id || period !== 'documents') return null;
+    if (!PROGRAM_WRITING_VIEW_SWITCH || collectionMode || selected !== id || period !== 'documents') return null;
     const folders = docFoldersOf(id);
     if (!folders.length) return null;
     const gather = (scopeId: string) => { keepViewFolder(id, scopeId); if (scopeId !== folderId) void changeFolder(scopeId); };

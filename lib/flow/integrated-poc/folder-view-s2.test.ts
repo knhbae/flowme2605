@@ -12,7 +12,8 @@ const css = read('components/flow/integrated-poc/ProgramSpace.module.css');
 
 test('the switch: only in writing a document that has folders, not in a collection; it sits in the head line', () => {
   const fn = space.slice(space.indexOf('function viewSwitch('), space.indexOf('function recentLine('));
-  assert.match(fn, /if \(collectionMode \|\| selected !== id \|\| period !== 'documents'\) return null;/);
+  // PRD X1~X4 (11/8): held back until the folder screen is redesigned; the rule behind it stays for that.
+  assert.match(fn, /if \(!PROGRAM_WRITING_VIEW_SWITCH \|\| collectionMode \|\| selected !== id \|\| period !== 'documents'\) return null;/);
   assert.match(fn, /if \(!folders\.length\) return null;/);
   assert.match(space, /headBelow=\{headInToolbar && selected === id \|\| recentTop \|\| views \|\| flowBand && selected === id \? <>\{headInToolbar && selected === id \? docNotices : null\}\{selected === id \? flowBand : null\}\{views\}\{recentTop\}<\/> : undefined\}/);
 });
