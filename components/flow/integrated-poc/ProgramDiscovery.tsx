@@ -21,6 +21,7 @@ import { programImportAddsNothing, programImportFirstDate, programImportItemView
 import { programRepeatFixed } from '@/lib/flow/integrated-poc/repeat-line';
 import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
 import { programImportPreview } from '@/lib/flow/integrated-poc/import-preview';
+import { programCanonicalLink, programFlowsByLink, programLooksLikeLink } from '@/lib/flow/integrated-poc/link-lookup';
 import { numberEul, numberIga } from '@/lib/flow/integrated-poc/number-particle';
 import { programFlowProgress, programFlowProgressText } from '@/lib/flow/integrated-poc/flow-loop';
 import { programFlowAttributionLabel } from '@/lib/flow/integrated-poc/alpha-official-actors';
@@ -64,6 +65,9 @@ export type ProgramDiscoveryProps = {
   copySourceReturn?: boolean;
   onStartText: (raw: string, title: string) => Promise<boolean>;
   onCreateFlow?: () => void;
+  /** Flow pipeline S8, with no Flow made from a pasted link: keep it under today in my writing, or start a Flow from it. */
+  onKeepLink?: (link: string) => Promise<boolean>;
+  onCreateFromLink?: (link: string) => Promise<boolean>;
   navigationState?: ProgramDiscoveryNavigationState;
   onNavigationStateChange?: (state: ProgramDiscoveryNavigationState) => void;
   onRegisterNavigation?: (navigation: ProgramDiscoveryNavigation | null) => void;
@@ -152,7 +156,7 @@ export function TransientOutputEditor({ draft, stale, onChange, onDiscard }: { d
   </section>;
 }
 
-export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersionId, selectedItemId, selectedOutputReturn, today, onUseVersion, onStartText, onCreateFlow, navigationState, onNavigationStateChange, onRegisterNavigation, storageScope = 'local', actorId = data.activeActorId, pendingDocumentIds = () => [], onReturnToSpace, copySourceReturn = false }: ProgramDiscoveryProps) {
+export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersionId, selectedItemId, selectedOutputReturn, today, onUseVersion, onStartText, onCreateFlow, onKeepLink, onCreateFromLink, navigationState, onNavigationStateChange, onRegisterNavigation, storageScope = 'local', actorId = data.activeActorId, pendingDocumentIds = () => [], onReturnToSpace, copySourceReturn = false }: ProgramDiscoveryProps) {
   const officialActors = useAlphaOfficialActors();
   const [local, setLocal] = useState(createProgramDiscoveryNavigationState);
   const state = navigationState ?? local; const stateRef = useRef(state); stateRef.current = state;
@@ -542,7 +546,12 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   const categories = [...new Set(flows.map(row => row.category))];
   const situations = [...new Set(flows.filter(row => !state.category || row.category === state.category).flatMap(row => row.situations))];
   const needle = state.query.trim().toLocaleLowerCase('ko');
-  const visible = programSortFlowsByRecent(flows.flatMap(row => {
+  // Flow pipeline S8: a link in the search box finds the Flows made from it (the same source link, on the Flow or an
+  // item), from the public list already here; nothing is fetched. No match: keep the link in my writing, or start a Flow.
+  const linkQuery = programLooksLikeLink(state.query) ? state.query.trim() : null;
+  const linkCanonical = linkQuery ? programCanonicalLink(linkQuery) : null;
+  const linkMatches = linkQuery ? programFlowsByLink(data, linkQuery) : [];
+  const visible = linkQuery ? linkMatches.map(match => ({ flow: match.flow, version: match.version })) : programSortFlowsByRecent(flows.flatMap(row => {
     const current = data.public.versions.find(candidate => candidate.id === row.currentVersionId);
     return current && (!state.category || row.category === state.category) && (!state.situation || row.situations.includes(state.situation))
       && (!needle || [current.title, current.summary, row.category, ...row.situations, ...current.items.map(item => item.title)].join('\n').toLocaleLowerCase('ko').includes(needle))
@@ -563,24 +572,36 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
       {showPastedInput && <div className={styles.paste}><p>{urlResult && urlResult.kind !== 'known-source' ? <>{urlResult.kind === 'unsupported' ? '이 주소에서 내용을 가져오는 기능은 지원하지 않습니다.' : 'URL을 사용하지 않고 원문을 직접 넣을 수 있습니다.'} 필요한 원문을 붙여넣고 직접 확인해 주세요.</> : state.url.trim() ? '입력한 원문은 유지됩니다. 현재 주소에서 가져온 내용은 아닙니다.' : '주소 없이도 입력한 원문을 계속 편집할 수 있습니다.'}</p><label className={styles.field}>문서 제목<input value={state.pastedTitle} disabled={pending} maxLength={240} onChange={event => update({ pastedTitle: event.target.value })} /></label><label className={styles.field}>확인할 원문<textarea rows={8} value={state.pastedText} disabled={pending} maxLength={30000} onChange={event => update({ pastedText: event.target.value })} /></label><button type="button" className={styles.primary} disabled={pending || !state.pastedText.trim()} onClick={prepareTransient}>{state.transient ? '원문으로 출력 초안 다시 만들기' : '저장 없이 출력할 내용 확인'}</button>{state.transient && <small>다시 만들면 아래 출력 초안의 편집·선택·확정을 대체합니다.</small>}<details><summary>개인 문서로도 보관하기 · 선택</summary><button type="button" disabled={pending || !state.pastedText.trim()} onClick={() => void run(() => onStartText(state.pastedText, state.pastedTitle.trim() || '붙여넣은 원문'), '원문을 문서로 열었습니다.')}>원문 확인 후 문서로 열기</button></details><p className={styles.muted}>자동 Flow 변환이나 출처 검증을 뜻하지 않습니다.</p></div>}
       {state.transient && <TransientOutputEditor draft={state.transient} stale={state.transientSource?.text !== state.pastedText || state.transientSource?.title !== state.pastedTitle || state.transientSource?.url !== state.url} onChange={draft => update({ transient: draft })} onDiscard={() => update({ transient: null, transientSource: null })} />}{status}
     </section>}
-    <div className={styles.listFilters}><label className={styles.searchField}><span className={styles.visuallyHidden}>공개 Flow 검색</span><input id="program-public-search" type="search" value={queryDraft} placeholder="제목·할 일로 찾기"
+    <div className={styles.listFilters}><label className={styles.searchField}><span className={styles.visuallyHidden}>공개 Flow 검색</span><input id="program-public-search" type="search" value={queryDraft} placeholder="제목·할 일·링크로 찾기"
         onCompositionStart={() => { composing.current = true; }}
         onCompositionEnd={event => { composing.current = false; setQueryDraft(event.currentTarget.value); update({ query: event.currentTarget.value }); }}
         onChange={event => { setQueryDraft(event.target.value); if (!composing.current && !(event.nativeEvent as InputEvent).isComposing) update({ query: event.target.value }); }} /></label>
       <div className={styles.filterRow}><label className={styles.filterSelect}><span className={styles.visuallyHidden}>분야</span><select id="program-public-category" value={state.category} onChange={event => update({ category: event.target.value, situation: '' })}><option value="">분야</option>{categories.map(category => <option key={category}>{category}</option>)}</select></label>
         <label className={styles.filterSelect}><span className={styles.visuallyHidden}>상황</span><select id="program-public-situation" value={state.situation} onChange={event => update({ situation: event.target.value })}><option value="">상황</option>{situations.map(situation => <option key={situation}>{situation}</option>)}</select></label>
         <p className={styles.resultCount} role="status">{visible.length}개</p></div></div>
+    {linkQuery && <section className={styles.linkLookup} aria-label="링크로 찾기" data-link-lookup={!linkCanonical ? 'invalid' : linkMatches.length ? 'found' : 'none'}>
+      {!linkCanonical ? <p className={styles.error} role="alert">공개 HTTP(S) 주소를 확인해 주세요. 로그인 정보·비밀 값·로컬 주소는 받을 수 없습니다.</p>
+        : linkMatches.length ? <h2>이 글로 만든 Flow {linkMatches.length}개</h2> : <>
+          <h2>이 링크로 만든 공개 Flow가 아직 없습니다</h2>
+          {(onKeepLink || onCreateFromLink) && <div className={styles.linkActions}>
+            {onKeepLink && <button type="button" data-link-keep disabled={pending} onClick={() => void run(() => onKeepLink(linkCanonical), '링크를 두었습니다.')}>내 글에 링크로 두기</button>}
+            {onCreateFromLink && <button type="button" className={styles.primary} data-link-create disabled={pending} onClick={() => void run(() => onCreateFromLink(linkCanonical), '새 글을 열었습니다.')}>이 링크로 Flow 만들기</button>}</div>}
+          <p className={styles.muted}>링크로 두기는 쓰던 글의 오늘 아래에 한 줄을 남깁니다. 만들기는 출처가 채워진 새 글을 엽니다.</p></>}
+      {status}
+    </section>}
     <ul className={styles.flowCards}>{visible.map(({ flow: row, version: current }) => {
       const lines = programFlowCardLines(row, current, { needsReview: !!programCatalogMetadata(current.id)?.sourceNeedsReview, inMyDocuments: copies.has(row.id) });
+      const match = linkQuery ? linkMatches.find(entry => entry.flow.id === row.id) : undefined;
       return <li key={row.id}><button type="button" id={`program-discovery-${row.id}`} className={styles.flowCard} onClick={() => openFlow(row.id)}>
         <span className={styles.cardTitleRow}><span className={styles.cardTitle}>{lines.title}</span>{lines.badge && <span className={styles.cardBadge} data-badge={lines.badge}>{lines.badge}</span>}</span>
         <span className={styles.cardSummary}>{lines.summary}</span>
         {lines.firstItem && <span className={styles.cardFirst}>{lines.firstItem}</span>}
         <span className={styles.cardMeta}>{lines.meta}</span>
         <span className={styles.cardSource}>{lines.source}</span>
+        {match?.on === 'item' && <span className={styles.cardSource} data-link-on="item">항목 출처: {match.items.join(', ')}</span>}
       </button></li>;
     })}</ul>
-    {!visible.length && <div className={styles.empty}>{flows.length ? <><h2>맞는 자료가 없습니다</h2><p>검색어나 분야·상황을 바꿔 보세요.</p><button type="button" onClick={() => { setQueryDraft(''); update({ query: '', category: '', situation: '' }); }}>검색 조건 지우기</button></> : <h2>아직 공개된 Flow가 없어요</h2>}</div>}
+    {!visible.length && !linkQuery && <div className={styles.empty}>{flows.length ? <><h2>맞는 자료가 없습니다</h2><p>검색어나 분야·상황을 바꿔 보세요.</p><button type="button" onClick={() => { setQueryDraft(''); update({ query: '', category: '', situation: '' }); }}>검색 조건 지우기</button></> : <h2>아직 공개된 Flow가 없어요</h2>}</div>}
     <p className={styles.muted}>{storageScope === 'account' ? <>공개된 Flow 목록입니다. 개인 사본·실행 기록·비공개 제작 초안은 포함되지 않습니다. <button type="button" className={styles.linkButton} onClick={() => navigate({ view: 'space' })}>내 문서 보기</button></> : <>공개 목록은 이 기기의 로컬 PoC입니다. 기존에 저장한 Flow는 <button type="button" className={styles.linkButton} onClick={() => navigate({ view: 'legacy' })}>기존 내 Flow</button>에서 찾을 수 있습니다.</>}</p>
     <nav className={styles.contextLinks} aria-label="Flow 보조 메뉴"><button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'community' })}>이야기 보기</button>{storageScope === 'account' && <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'activity' })}>내 활동</button>}</nav>
   </section>;

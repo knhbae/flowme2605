@@ -29,7 +29,8 @@ import { AUTOMATIC_READ_INPUT_EVENTS, automaticReadSchedule } from '@/lib/flow/i
 import { pendingResultUnknown } from '@/lib/flow/integrated-poc/save-status';
 import { programServerStatus } from '@/lib/flow/integrated-poc/program-status';
 import { ProgramServerStatusContext, type ProgramServerStatusView } from './program-status-context';
-import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
+import { addProgramLinkMemo, createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
+import { programCanonicalLink, programLinkHome, programLinkMemoRaw } from '@/lib/flow/integrated-poc/link-lookup';
 import { programFencedRecoveryRaw } from '@/lib/flow/integrated-poc/recovery-restore';
 import { captureProgramImportLinks, cancelProgramImportLinks, programImportTargets, programImportReceiptOwnsLinks, type ProgramImportLinks } from '@/lib/flow/integrated-poc/program-import-links';
 import { programExecutionTasks, programLocalDate } from '@/lib/flow/integrated-poc/execution';
@@ -1419,6 +1420,31 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (result.ok) { setDiscoveryState(createProgramDiscoveryNavigationState()); await navigate({ view: 'space', id: result.result }); }
     return result.ok;
   }
+  /** Flow pipeline S8 [내 글에 링크로 두기]: under today in the writing document I was last in (where its caret was kept),
+   *  when that is a writing document of mine open to writing with no input waiting; otherwise in a new one. */
+  async function keepLink(link: string) {
+    const owner = session.userId, epoch = sessionEpochRef.current, space = currentData.current?.spaces[owner], canonical = programCanonicalLink(link), today = programLocalDate();
+    if (!space || !canonical) return false;
+    const home = programLinkHome(space, pendingImportDocuments());
+    const result = home
+      ? await mutate('링크 메모 두기', fresh => addProgramLinkMemo(fresh, { actorId: owner, requestId: programId('request'), expectedSpace: fresh.spaces[owner], documentId: home, link: canonical, today }))
+      : await mutate('링크 메모 새 글', fresh => createProgramDocument(fresh, { actorId: owner, requestId: programId('request'), expectedSpace: fresh.spaces[owner], title: '링크 메모', raw: programLinkMemoRaw('', today, canonical) ?? '' }));
+    if (!result.ok || epoch !== sessionEpochRef.current || owner !== currentOwnerRef.current) return false;
+    const documentId = home ?? result.result;
+    setDiscoveryState(createProgramDiscoveryNavigationState()); await navigate({ view: 'space', id: documentId });
+    if (destinationRef.current.view === 'space' && destinationRef.current.id === documentId)
+      setImportArrival({ actorId: owner, documentId, text: home ? '오늘 아래에 링크를 한 줄 두었습니다.' : '쓰던 글을 찾지 못해 새 글에 링크를 두었습니다.', revision: null, calendar: null });
+    return true;
+  }
+  /** S8 [이 링크로 Flow 만들기]: a new document with the link as its source line; 선택해서 공개 then brings it as the source link. */
+  async function createFromLink(link: string) {
+    const owner = session.userId, canonical = programCanonicalLink(link);
+    if (!canonical || !await startText(`- 출처: ${canonical}`, '링크로 만드는 Flow')) return false;
+    const arrived = destinationRef.current;
+    if (arrived.view === 'space' && arrived.id && owner === currentOwnerRef.current)
+      setImportArrival({ actorId: owner, documentId: arrived.id, text: '출처 링크를 넣은 새 글입니다. 해 본 일을 할 일로 적은 뒤 글 메뉴의 ‘선택해서 공개’를 누르면 출처 칸이 채워져 있습니다.', revision: null, calendar: null });
+    return true;
+  }
   async function restoreSocial(index: number) {
     const entry = socialRecoveries?.entries[index], current = currentData.current;
     if (!entry || !current) return;
@@ -1879,7 +1905,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         </div>}</div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} storageScope="account"
         selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined}
-        selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} actorId={session.userId} pendingDocumentIds={pendingImportDocuments} copySourceReturn={flowReturn?.kind === 'copy'} onReturnToSpace={flowReturn?.actorId === session.userId ? () => { void returnFromFlows(); } : undefined} onUseVersion={useVersion} onStartText={startText} onCreateFlow={openCreatorEntry} navigationState={discoveryState} onNavigationStateChange={setDiscoveryState} /></div>}
+        selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} actorId={session.userId} pendingDocumentIds={pendingImportDocuments} copySourceReturn={flowReturn?.kind === 'copy'} onReturnToSpace={flowReturn?.actorId === session.userId ? () => { void returnFromFlows(); } : undefined} onUseVersion={useVersion} onStartText={startText} onCreateFlow={openCreatorEntry} onKeepLink={keepLink} onCreateFromLink={createFromLink} navigationState={discoveryState} onNavigationStateChange={setDiscoveryState} /></div>}
       {seen.community && <div hidden={!['community', 'activity'].includes(destination.view)}><ProgramCommunity key={`community:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()}
         view={communityView} selectedPostId={communitySelection} selectedReplyId={destination.view === 'community' ? destination.replyId : undefined} presentation={communityState} onPresentationChange={setCommunityState}
         storageScope="account" mediaPort={mediaPort} draftSaveRecovery={localParticipationRecovery}

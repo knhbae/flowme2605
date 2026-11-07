@@ -131,3 +131,9 @@
 .repeatStart input { width:auto !important; flex:1 1 160px; max-width:200px; }
 .repeatStart small { flex-basis:100%; }
 .repeatChoices .repeatProblem { color:var(--flowme-b-error-ink); }
+
+/* Flow pipeline S8 (11/8): a pasted link — the Flows made from it, or keep it / start a Flow. Visual A tokens. */
+.linkLookup{display:grid;gap:10px;margin:4px 0 12px}
+.linkLookup h2{margin:0;font-size:16px;line-height:1.5}
+.linkActions{display:flex;flex-wrap:wrap;gap:8px}
+.page .linkActions button{min-height:48px;flex:1 1 160px;word-break:keep-all}

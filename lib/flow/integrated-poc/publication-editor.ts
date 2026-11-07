@@ -8,6 +8,7 @@ import { textWorkspaceModel as M } from './text-workspace';
 import { programRecurringDraftFromSchedule, programRecurringScheduleFromDraft, programRecurringScheduleLabel } from './public-recurrence-contract';
 import { programPublicationSeriesSourcesCurrent, inspectProgramPublicationSeries, applyProgramPublicationSeriesReview } from './publication-series-draft';
 import { programOrdinaryTimingDraft, programOrdinaryTimingFromDraft } from './public-ordinary-time';
+import { programDocumentSourceLink } from './link-lookup';
 
 const same = programSame;
 export const publicationDraftAt = (data: ProgramData, actorId: string, documentId: string) => data.spaces[actorId]?.publicationDrafts.find(row => row.documentId === documentId) ?? null;
@@ -132,7 +133,8 @@ export function createProgramPublicationDraft(data: ProgramData, documentId: str
     flowId: linked?.id ?? null, expectedVersionId: current?.id ?? null, sourceDocumentFingerprint: fingerprint,
     title: current?.title ?? '', summary: current?.summary ?? '', category: linked?.category ?? '경험과 지식', situationsText: linked?.situations.join(', ') ?? '',
     sourceKind: current?.source.kind === 'simulated-example' ? 'simulated-example' : 'user-text', sourceLabel: current?.source.label ?? '직접 작성한 내용',
-    sourceUrl: current?.source.url ?? '', derivedFrom: linked?.derivedFrom ?? null, rows, updatedAt: now };
+    // Flow pipeline S8: a document made from a link ([이 링크로 Flow 만들기]) brings that link as the source link.
+    sourceUrl: current?.source.url ?? programDocumentSourceLink(M.raw(M.getDocument(space.text, documentId))) ?? '', derivedFrom: linked?.derivedFrom ?? null, rows, updatedAt: now };
   const source = inspectProgramPublicationSeries(data, actorId, draft);
   if (!source.ok) return null;
   const grouped = applyProgramPublicationSeriesReview(data, actorId, draft, source.review, source.review.candidates.map(candidate => candidate.sourceKey), now);

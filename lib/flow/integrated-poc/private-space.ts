@@ -13,6 +13,7 @@ import { programRecurringScheduleLabel, programRecurringScheduleStart } from './
 import { programPublicCopyItemStart } from './public-copy-recurrence';
 import { programOrdinaryScheduleLabel } from './public-ordinary-time';
 import { isPublicCatalogFlowOnHold } from '../public-source-review-policy';
+import { programLinkMemoRaw } from './link-lookup';
 import { PROGRAM_IMPORT_REPEAT_LINE, programImportMonths, programImportRepeatLines, programImportRepeatOf, programImportRepeatRule, programImportRepeats, type ProgramImportRepeat } from './public-repeat-import';
 
 /** Compare the selected actor's entire private baseline before any mutation. */
@@ -215,6 +216,21 @@ export function addProgramQuickTask(data: ProgramData, input: ProgramPrivateMuta
     const added = M.tasks(next).find(task => !beforeIds.has(task.id));
     if (!added) return { result: '', reason: 'invalid' };
     space.text = next; return { result: added.id };
+  });
+}
+
+/** Flow pipeline S8 [내 글에 링크로 두기]: the link as a memo line under today's head (programLinkMemoRaw's safe place). */
+export function addProgramLinkMemo(data: ProgramData, input: ProgramPrivateMutationBase & { documentId: string; link: string; today: string }): ProgramTransition<string> {
+  return mutate(data, input, 'private-link-memo', { documentId: input.documentId, link: input.link, today: input.today }, space => {
+    const doc = M.getDocument(space.text, input.documentId);
+    if (!doc) return { result: '', reason: 'missing' };
+    if (programDocumentContentLock(space, doc.id) !== 'active') return { result: doc.id, reason: 'unresolved' };
+    if (!programDate(input.today)) return { result: '', reason: 'invalid' };
+    const raw = programLinkMemoRaw(M.raw(doc), input.today, input.link);
+    if (raw === null) return { result: '', reason: 'invalid' };
+    const edit = M.editTextResult(space.text, doc.id, raw, { folderText: true });
+    if (edit.reason !== null || M.raw(M.getDocument(edit.state, doc.id)) !== raw) return { result: doc.id, reason: 'unresolved' };
+    space.text = edit.state; return { result: doc.id };
   });
 }
 
