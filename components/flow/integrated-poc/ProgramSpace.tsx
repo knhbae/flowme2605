@@ -764,6 +764,50 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }, [selected, period, recentWhole]);
   const recentDay = (date: string) => `${Number(date.slice(5, 7))}월 ${Number(date.slice(8, 10))}일`;
   /** The lines above (`atEnd` false) or under the editor: [미정]'s folded finished tasks (W-b) and the folded days there. */
+  /** 7k stage 2 (11/7): the folders a document writes (its folder lines, in their first order), for the 폴더별 chips. */
+  const docFoldersKept = useRef(new WeakMap<TextWorkspaceState, Map<string, { id: string; title: string; path: string }[]>>());
+  function docFoldersOf(id: string) {
+    let byDoc = docFoldersKept.current.get(space.text);
+    if (!byDoc) docFoldersKept.current.set(space.text, byDoc = new Map());
+    if (!byDoc.has(id)) {
+      const seen = new Set<string>(), list: { id: string; title: string; path: string }[] = [];
+      for (const row of M.getDocument(space.text, id) ? M.rowMeta(space.text, id) : []) {
+        if (row.kind !== 'scope' || row.scopeKind !== 'folder' || !row.scopeId || seen.has(row.scopeId)) continue;
+        const folder = space.text.folders.find(item => item.id === row.scopeId);
+        if (!folder) continue;
+        seen.add(folder.id); list.push({ id: folder.id, title: folder.title, path: folderOptions.find(item => item.id === folder.id)?.title ?? folder.title });
+      }
+      byDoc.set(id, list);
+    }
+    return byDoc.get(id)!;
+  }
+  /** The folder this device last gathered in a document (7k stage 2: 폴더별 opens on it). Storage may be unavailable. */
+  const VIEW_FOLDER_KEY = 'flowme-writing-folder-view:v1';
+  function lastViewFolder(id: string): string | null {
+    try { const kept = JSON.parse(localStorage.getItem(VIEW_FOLDER_KEY) || '{}'); return typeof kept?.[id] === 'string' ? kept[id] : null; } catch { return null; }
+  }
+  function keepViewFolder(id: string, scopeId: string) {
+    try { const kept = JSON.parse(localStorage.getItem(VIEW_FOLDER_KEY) || '{}') ?? {}; kept[id] = scopeId; localStorage.setItem(VIEW_FOLDER_KEY, JSON.stringify(kept)); } catch { /* the choice just is not kept */ }
+  }
+  /** 7k stage 2: the writing view's 날짜별 | 폴더별 and, by folder, the chips of this document's folders. A chip gathers
+   *  that folder (stage 1's region editor; saved first); 날짜별 shows the whole document again. */
+  function viewSwitch(id: string) {
+    if (collectionMode || selected !== id || period !== 'documents') return null;
+    const folders = docFoldersOf(id);
+    if (!folders.length) return null;
+    const gather = (scopeId: string) => { keepViewFolder(id, scopeId); if (scopeId !== folderId) void changeFolder(scopeId); };
+    const byFolder = () => { if (folderId) return; const last = lastViewFolder(id); gather(folders.some(folder => folder.id === last) ? last! : folders[0].id); };
+    return <div className={styles.viewSwitch} data-view-switch>
+      <div className={styles.viewModes} role="group" aria-label="쓰기 보기">
+        <button type="button" aria-pressed={!folderId} data-view-mode="date" disabled={preparingDocumentAction} onClick={() => { if (folderId) void changeFolder(''); }}>날짜별</button>
+        <button type="button" aria-pressed={!!folderId} data-view-mode="folder" disabled={preparingDocumentAction} onClick={byFolder}>폴더별</button>
+      </div>
+      {folderId && <div className={styles.viewChips} role="group" aria-label="모아 볼 폴더">
+        {folders.map(folder => <button type="button" key={folder.id} data-view-folder={folder.id} aria-pressed={folder.id === folderId} title={folder.path}
+          disabled={preparingDocumentAction} onClick={() => gather(folder.id)}>{folder.title}</button>)}
+      </div>}
+    </div>;
+  }
   function recentLine(id: string, view: ProgramRecentView | null, atEnd: boolean) {
     // [미정]'s line goes under the body with the old days' line, and both at once are one line of two buttons: each line
     // took the body two lines, the very ones the folds had freed for today's first task (390 check).
@@ -2654,7 +2698,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{authoringSheet.current?.close();void openDocument(documentId,taskId);}}/>
           </dialog>
           : showsPersonalAuthoring(selectedDoc.id)&&<div ref={authoringBox}><ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openDocument(documentId,taskId);}}/></div>)}
-        {opened.filter(id => docs.some(doc => doc.id === id)).map(id => { const recent = recentViewOf(id), recentTop = recentLine(id, recent, false);
+        {opened.filter(id => docs.some(doc => doc.id === id)).map(id => { const recent = recentViewOf(id), recentTop = recentLine(id, recent, false), views = viewSwitch(id);
           const initial = positions.current[id] ?? (space.position.documentId === id ? space.position : undefined);
           return <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor key={recent ? `recent:${recentDoneShown[id] ? 'done' : 'folded'}` : 'whole'}
           authoringMode={!!props.nativeAuthoringEnabled} onOpenPersonalAuthoring={() => requestPersonalAuthoring(id)} hostContext={props.pmTextHost}
@@ -2666,7 +2710,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           noteStatus={selected === id ? props.noteStatus : undefined}
           noteActions={selected === id ? <>{props.noteHeader && !props.hostMainTabs && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}{headInToolbar && phoneLayout && selectedDocumentTools}</> : undefined}
           headStart={headInToolbar && selected === id ? docTitle : undefined} headEnd={headInToolbar && selected === id && !phoneLayout ? docActions : undefined}
-          headBelow={headInToolbar && selected === id || recentTop ? <>{headInToolbar && selected === id ? docNotices : null}{recentTop}</> : undefined}
+          headBelow={headInToolbar && selected === id || recentTop || views ? <>{headInToolbar && selected === id ? docNotices : null}{views}{recentTop}</> : undefined}
           onWritingExample={selected === id && writingExampleReady ? () => { void applyWritingExample(); } : undefined}
           folderId={collectionMode ? '' : folderId} directWriting={!!collectionMode} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
           onContinueWholeDocument={stage => {
@@ -2757,7 +2801,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             return view ? accept(recentNarrow(id, view, before), recentNarrow(id, view, next)) : accept(before, next, ack);
           }); }}
           onRegisterInputLock={lock => { inputLocks.current[id] = lock; lock?.(inputLockCount.current > 0); }}
-          onGatherFolder={collectionMode ? undefined : scopeId => { if (space.text.folders.some(item => item.id === scopeId)) void changeFolder(scopeId); }}
+          onGatherFolder={collectionMode ? undefined : scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { keepViewFolder(id, scopeId); void changeFolder(scopeId); } }}
           onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { if (collectionMode) { setMessage('기존 항목 분류는 모음이 아닙니다. 전체 문서에서 계속 작성합니다.'); return; } setFolderId(scopeId); setPeriod('all'); } else void openDocument(scopeId); }}
           onConnectFlow={(docId, lineId, insertAfter) => openDetail({ kind: 'connect', docId, lineId, insertAfter })}
           readOnly={programDocumentContentLock(space, id) !== 'active'} disabledReason={space.documentTrash?.[id] ? '휴지통의 문서입니다. 복원하면 삭제 전 상태로 돌아갑니다.' : retainedIds.has(id) ? '저장본으로 되돌리며 보관된 내용 · 읽기 전용' : '보관한 문서입니다. 보관에서 꺼내면 이어서 쓸 수 있습니다.'}

@@ -29,7 +29,8 @@ test('U44: the title row and its notices are drawn in one place: their own row, 
   assert(space.includes("export const PROGRAM_PHONE_HEAD_QUERY = '(max-width: 700px)';"));
   assert(space.includes('const tabletHead = () => tabletHeadQuery ??= window.matchMedia(`${PROGRAM_TABLET_HEAD_QUERY}, ${PROGRAM_PHONE_HEAD_QUERY}`);'));
   // 11/5 쓰기 '최근만 쓰기': the folded days' line (recentTop) joins them above the body, notices first.
-  assert(space.includes('headBelow={headInToolbar && selected === id || recentTop ? <>{headInToolbar && selected === id ? docNotices : null}{recentTop}</> : undefined}'));
+  // 7k stage 2 (11/7): the 날짜별 | 폴더별 line joins them (views), before the recent part's line.
+  assert(space.includes('headBelow={headInToolbar && selected === id || recentTop || views ? <>{headInToolbar && selected === id ? docNotices : null}{views}{recentTop}</> : undefined}'));
   // The title keeps its button (the document sheet) and ⋯ its menu; the notices are the same ones, above the body.
   assert.match(space, /const docTitle = <>\{sourceOriginOpen && <button[^]*?ref=\{titleToggle\}[^]*?onPointerDown=\{findPointerDown\} onClick=\{openFindPanel\}>/);
   assert(space.includes('const docActions = <>{props.hostMainTabs ? selectedDocumentTools && <div className={styles.titleActions}>{selectedDocumentTools}</div>'));

@@ -24,7 +24,8 @@ test("the folder line's ⋮ offers 이 폴더만 모아 보기 first (after a sa
 });
 
 test('the space gathers through changeFolder (it saves first), and not in a collection', () => {
-  assert.match(space, /onGatherFolder=\{collectionMode \? undefined : scopeId => \{ if \(space\.text\.folders\.some\(item => item\.id === scopeId\)\) void changeFolder\(scopeId\); \}\}/);
+  // Stage 2 (11/7): it also keeps the folder for this document's 폴더별.
+  assert.match(space, /onGatherFolder=\{collectionMode \? undefined : scopeId => \{ if \(space\.text\.folders\.some\(item => item\.id === scopeId\)\) \{ keepViewFolder\(id, scopeId\); void changeFolder\(scopeId\); \} \}\}/);
 });
 
 test('the 쓰기 tab keeps the gathered folder; 오늘 shows everything; a folder picked in 분류 does not carry into 쓰기', () => {
