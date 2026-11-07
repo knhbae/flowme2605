@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { restoreProgramDialogFocus } from '@/lib/flow/integrated-poc/dialog-return-focus';
 import { programClone, programFailure, programResult, type ProgramData, type ProgramPublicationDraft, type ProgramPublicationDraftRow } from '@/lib/flow/integrated-poc/contract';
 import { numberGwa } from '@/lib/flow/integrated-poc/number-particle';
@@ -17,6 +17,10 @@ import { ProgramPublicationSourceReviewPanel } from './ProgramPublicationSourceR
 import { ProgramPublicationTiming } from './ProgramPublicationTiming';
 import { programOrdinaryTimingLabel } from '@/lib/flow/integrated-poc/public-ordinary-time';
 import { ProgramShareLink } from './ProgramShareLink';
+import { applyProgramPublicationAnchor, planProgramPublicationAnchor, programAnchorChip, programPublicationRowDates, programPublicationTakerPreview, restoreProgramPublicationAnchor,
+  type ProgramAnchorMode, type ProgramAnchorUndo } from '@/lib/flow/integrated-poc/publication-anchor';
+import { readProgramRepeatMarker, programRepeatLabel } from '@/lib/flow/integrated-poc/repeat-line';
+import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
 import styles from './ProgramPublisher.module.css';
 import { fullRowText, canRepublishProgramDocument, createProgramRepublishDraft, programPublicationRepublishSource } from '@/lib/flow/integrated-poc/publication-editor';
 
@@ -37,7 +41,7 @@ export function PublicationConflictReview({ comparison, choices, disabled, onCho
   </section>;
 }
 
-export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, onRegisterEditors, externalRecovery, storageScope = 'local', readCurrentData }: ProgramPublisherProps) {
+export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, onRegisterEditors, externalRecovery, storageScope = 'local', readCurrentData, today }: ProgramPublisherProps) {
   const actorId = useRef(data.activeActorId).current; const dataRef = useRef(data); dataRef.current = data;
   const [draft, setDraft] = useState(() => createProgramPublicationDraft(data, documentId, new Date().toISOString()));
   const [republishing, setRepublishing] = useState(() => {
@@ -110,6 +114,37 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     setCurrent({ ...draftRef.current, ...patch, updatedAt: new Date().toISOString() }); setPreview(false); setComparison(null); setChoices({}); void save();
   };
   const editRow = (itemId: string, patch: Partial<ProgramPublicationDraftRow>) => { if (draftRef.current) edit({ rows: draftRef.current.rows.map(row => row.itemId === itemId ? { ...row, ...patch } : row) }); };
+  // Flow pipeline S7 (11/8): '날짜를 기준일 기준으로'. Which day is the 기준일, its name (kept in the summary's first line),
+  // what [원래대로] puts back, and the day a taker picks in the preview. Screen state; the draft keeps only its rows/summary.
+  const [anchorMode, setAnchorMode] = useState<ProgramAnchorMode>('first');
+  const [anchorName, setAnchorName] = useState(() => /^기준일: (.+)$/.exec(draft?.summary.split('\n')[0] ?? '')?.[1] ?? '');
+  const [anchorUndo, setAnchorUndo] = useState<ProgramAnchorUndo | null>(null);
+  const [anchorNote, setAnchorNote] = useState('');
+  const [takerDate, setTakerDate] = useState(today);
+  /** A change made here (not typed): into the native fields too, so a save reading them keeps it (as resolvePrivate does). */
+  const commitDraft = (next: ProgramPublicationDraft) => {
+    for (const element of textInputs()) {
+      const field = element.dataset.publicationField ?? '', itemId = element.closest<HTMLElement>('[data-publication-item]')?.dataset.publicationItem;
+      const value = programPublicationNativeValue(next, field, itemId);
+      if (value !== undefined) element.value = value;
+    }
+    setCurrent({ ...next, updatedAt: new Date().toISOString() }); setPreview(false); setComparison(null); setChoices({}); void save();
+  };
+  const convertDates = () => {
+    if (unavailable() || !space) return; const current = read(); if (!current) return;
+    const base = anchorUndo ? restoreProgramPublicationAnchor(current, anchorUndo).draft : current;
+    const plan = planProgramPublicationAnchor(base, programPublicationRowDates(space.text, documentId), anchorMode);
+    if (!plan.rows.length || !plan.anchor) return;
+    const applied = applyProgramPublicationAnchor(base, plan, anchorName);
+    commitDraft(applied.draft); setAnchorUndo(applied.undo); setTakerDate(plan.anchor);
+    setAnchorNote(`할 일 ${plan.rows.length}개를 ${anchorName.trim() || '기준일'} 기준으로 바꿨습니다. 공개하면 내 날짜 대신 ‘${programAnchorChip(anchorName, plan.rows[0].days)}’처럼 보입니다.`);
+  };
+  const restoreDates = () => {
+    if (unavailable() || !anchorUndo) return; const current = read(); if (!current) return;
+    const back = restoreProgramPublicationAnchor(current, anchorUndo);
+    commitDraft(back.draft); setAnchorUndo(null);
+    setAnchorNote(back.kept ? `바꾸기 전으로 돌렸습니다. 그 뒤 직접 고친 ${back.kept}개는 그대로 두었습니다.` : '바꾸기 전으로 돌렸습니다.');
+  };
   const unavailable = () => publishingRef.current || locks.current > 0 || composing.current.size > 0;
   const beginAction = () => { publishingRef.current = true; setPublishing(true); syncReadonly(); };
   const endAction = () => { publishingRef.current = false; setPublishing(false); syncReadonly(); };
@@ -200,6 +235,17 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     finally { endAction(); }
   };
   const space = data.spaces[actorId]; const originalRows = space ? M.rowMeta(space.text, documentId) : [];
+  // S7: the rows' own dates, and what [바꾸기] would do now (from before an earlier 바꾸기, so pressing again re-applies).
+  const rowDates = useMemo(() => space ? programPublicationRowDates(space.text, documentId) : new Map<string, string>(), [space?.text, documentId]);
+  const anchorPlan = draft ? planProgramPublicationAnchor(anchorUndo ? restoreProgramPublicationAnchor(draft, anchorUndo).draft : draft, rowDates, anchorMode) : null;
+  const scheduleChip = (row: ProgramPublicationDraftRow) => {
+    const marker = readProgramRepeatMarker(row.title.trim());
+    if (row.scheduleKind === 'recurring' && row.recurrence) { const rule = programRecurringScheduleFromDraft(row.recurrence); return { text: `↻ ${rule ? programRecurringScheduleLabel(rule).split(' · ')[0] : '반복'}`, kind: 'repeat' }; }
+    if (marker && row.scheduleKind === 'undated') return { text: `↻ ${programRepeatLabel(marker.rule)}`, kind: 'repeat' };
+    if (row.scheduleKind === 'relative' && /^[+-]?\d+$/.test(row.scheduleValue)) return { text: programAnchorChip(anchorName, Number(row.scheduleValue)), kind: 'relative' };
+    if (row.scheduleKind === 'fixed' && row.scheduleValue) return { text: programCalendarDate(row.scheduleValue, today), kind: 'fixed' };
+    return { text: '날짜 미정', kind: 'undated' };
+  };
   const currentFlow = draft?.flowId ? data.public.flows.find(row => row.id === draft.flowId) : undefined;
   const republishSource = draft ? programPublicationRepublishSource(data, actorId, draft) : null;
   const canRepublish = !!republishSource && canRepublishProgramDocument(data, actorId, documentId);
@@ -387,13 +433,41 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       {preview && input ? <section className={styles.preview} aria-label="실제로 공개할 내용"><p className={styles.kicker}>공개 미리보기 · {input.items.length}개 항목</p><h3>{input.title}</h3><p className={styles.pre}>{input.summary}</p><p>출처: {input.source.label}{input.source.kind === 'simulated-example' ? ' · 합성 예시' : ' · 개인 작성'}</p>{input.source.url && <a href={input.source.url} target="_blank" rel="noreferrer noopener">입력한 원문 URL</a>}
         <p>분야: {input.category}{input.situations.length > 0 && ` · 적용 상황: ${input.situations.join(', ')}`}</p>
         {input.derivedFrom && <p>파생 원본: {data.public.versions.find(row => row.id === input.derivedFrom?.versionId)?.title} · 버전 {data.public.versions.find(row => row.id === input.derivedFrom?.versionId)?.number}</p>}
-        <ol>{input.items.map(item => <li key={item.id}><h4>{item.title}</h4><p className={styles.pre}>{item.description}</p>{item.completionCriteria && <p>완료 기준: {item.completionCriteria}</p>}{item.sourceUrl && <p><a href={item.sourceUrl} target="_blank" rel="noreferrer noopener">항목 출처: {item.sourceUrl}</a></p>}<small>{item.schedule.kind === 'recurring' ? programRecurringScheduleLabel(item.schedule) : [item.schedule.kind === 'undated' ? '공개 일정: 미정' : item.schedule.kind === 'fixed' ? `공개 날짜: ${item.schedule.date}` : `공개 상대 일정: 기준일 ${item.schedule.days >= 0 ? '+' : ''}${item.schedule.days}일`, programOrdinaryTimingLabel(item.schedule.timing)].filter(Boolean).join(' · ')}</small>{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</li>)}</ol>
+        <ol>{input.items.map(item => <li key={item.id}><h4>{item.title}</h4><p className={styles.pre}>{item.description}</p>{item.completionCriteria && <p>완료 기준: {item.completionCriteria}</p>}{item.sourceUrl && <p><a href={item.sourceUrl} target="_blank" rel="noreferrer noopener">항목 출처: {item.sourceUrl}</a></p>}<small>{item.schedule.kind === 'recurring' ? programRecurringScheduleLabel(item.schedule) : [item.schedule.kind === 'undated' ? '공개 일정: 미정' : item.schedule.kind === 'fixed' ? `공개 날짜: ${item.schedule.date}` : `공개 상대 일정: ${programAnchorChip(anchorName, item.schedule.days)}`, programOrdinaryTimingLabel(item.schedule.timing)].filter(Boolean).join(' · ')}</small>{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</li>)}</ol>
+        {/* S7: where a taker's import puts each item for the day they pick (stage 1's sheet preview, the same function). */}
+        {input.items.some(item => item.schedule.kind === 'relative' || item.schedule.kind === 'recurring' && item.schedule.start.kind === 'relative') && (taker => <section className={styles.takerPreview} aria-labelledby="program-taker-title" data-taker-preview>
+          <h4 id="program-taker-title">받는 사람이 가져가면</h4>
+          <label className={styles.field}>받는 사람이 고른 {anchorName.trim() || '기준일'}<input type="date" value={takerDate} onChange={event => { if (event.target.value) setTakerDate(event.target.value); }} /></label>
+          <ul className={styles.placeList}>
+            {taker.dated.map(day => <li key={day.date} data-place-date={day.date}><b>{day.date === today ? `오늘 ${programCalendarDate(day.date, today, false)}` : programCalendarDate(day.date, today)}</b><span>{day.titles.join(' · ')}</span><em>{day.count}개</em></li>)}
+            {taker.repeats.map(row => <li key={row.itemId} data-place-repeat><b>{row.label}</b><span>↻ {row.title}{row.first ? ` · ${programDateLabel(row.first, today, false)}부터` : ''}</span><em>반복</em></li>)}
+            {taker.undated.count > 0 && <li data-place-undated><b>날짜 미정</b><span>{taker.undated.titles.join(' · ')}</span><em>{taker.undated.count}개</em></li>}
+          </ul></section>)(programPublicationTakerPreview(input.items, input.title, takerDate, today))}
       </section> : <div className={styles.body}><label className={styles.field}>공개 제목<input data-publication-field="title" value={draft.title} maxLength={240} onChange={event => edit({ title: event.target.value })} placeholder="다른 사람이 알아볼 제목" /></label><label className={styles.field}>공개 소개·본문<textarea data-publication-field="summary" value={draft.summary} rows={3} maxLength={30000} onChange={event => edit({ summary: event.target.value })} placeholder="공개하고 싶은 설명을 직접 작성하세요" /></label>
+        {/* S7: the Flow's source link, up from 분야·출처·원본 관계 (each item's own link stays in its row). */}
+        <label className={styles.field}>출처 링크 · 선택<input type="url" data-publication-field="sourceUrl" value={draft.sourceUrl} onChange={event => edit({ sourceUrl: event.target.value })} placeholder="https:// 참고한 글이나 영상" /></label>
+        {/* S7: '날짜를 기준일 기준으로' — the chosen rows' own dates as days from the first or the last day; no private date goes out. */}
+        {anchorPlan && <section className={styles.anchorConvert} aria-labelledby="program-anchor-title" data-anchor-convert>
+          <h3 id="program-anchor-title">날짜를 기준일 기준으로</h3>
+          <p>고른 할 일의 날짜를 기준일에서 며칠 전·후로 바꿉니다. 내 실제 날짜는 공개되지 않습니다.</p>
+          <div className={styles.anchorModes} role="group" aria-label="기준일로 삼을 날">
+            <button type="button" aria-pressed={anchorMode === 'first'} disabled={blocked} onClick={() => setAnchorMode('first')}>처음 날이 기준일 (+n일)</button>
+            <button type="button" aria-pressed={anchorMode === 'last'} disabled={blocked} onClick={() => setAnchorMode('last')}>마지막 날이 기준일 (−n일)</button></div>
+          <div className={styles.anchorRow}><label className={styles.field}>기준일 이름<input value={anchorName} maxLength={40} disabled={blocked} placeholder="예: 이사일 · 받는 사람이 고르는 날" onChange={event => setAnchorName(event.target.value)} /></label>
+            <button type="button" className={styles.primary} data-anchor-apply disabled={blocked || !anchorPlan.rows.length} onClick={convertDates}>바꾸기</button>
+            {anchorUndo && <button type="button" data-anchor-restore disabled={blocked} onClick={restoreDates}>원래대로</button>}</div>
+          {!anchorPlan.rows.length ? <p className={styles.anchorHint} data-anchor-none>고른 할 일에 날짜가 없습니다. 날짜 머리 줄 아래 할 일이나 ‘날짜:’가 있는 할 일을 골라 주세요.</p> : <>
+            {anchorPlan.single && <p className={styles.anchorHint}>한 날짜뿐이라 모두 ‘{programAnchorChip(anchorName, 0)}’이 됩니다.</p>}
+            {anchorPlan.handSet > 0 && <p className={styles.anchorHint}>직접 정한 일정 {anchorPlan.handSet}개는 그대로 둡니다.</p>}
+            {anchorName.trim() && <p className={styles.anchorHint}>이름은 소개 첫 줄에 ‘기준일: {anchorName.trim()}’로 들어갑니다.</p>}</>}
+          {anchorNote && <p className={styles.anchorHint} role="status">{anchorNote}</p>}
+        </section>}
         <section className={styles.choices}><h3>공개할 항목</h3>{!draft.rows.length && <p>이 문서에는 선택할 항목이 없습니다. 문서에 할 일이나 메모를 먼저 작성해 주세요.</p>}{draft.rows.map(row => {
           const original = originalRows.find(value => value.id === row.rowId); const noteText = row.origin === 'note' ? original?.text.trim() ?? '' : '';
           const subchecks = row.seriesSource ? programPublicationSeriesSubchecks(row) : original?.task?.subchecks ?? [];
           const hasOrdinarySource = row.origin === 'task' && !!space && hasProgramOrdinaryPublicationSource(space, documentId, row.rowId);
-          return <article className={styles.choice} data-publication-item={row.itemId} key={row.itemId}><label className={styles.check}><input type="checkbox" checked={row.selected} disabled={blocked} onChange={event => editRow(row.itemId, { selected: event.target.checked, ...(event.target.checked && row.origin === 'note' && !row.description ? { description: noteText } : {}) })} /><span>{row.origin === 'note' ? `메모 선택: ${noteText.slice(0, 90) || '이전에 선택한 메모'}` : row.title || '제목 없는 항목'}{row.origin === 'previous-public' && <small>이전 공개 항목 · 현재 문서에 없음</small>}</span></label>
+          return <article className={styles.choice} data-publication-item={row.itemId} key={row.itemId}><label className={styles.check}><input type="checkbox" checked={row.selected} disabled={blocked} onChange={event => editRow(row.itemId, { selected: event.target.checked, ...(event.target.checked && row.origin === 'note' && !row.description ? { description: noteText } : {}) })} /><span>{row.origin === 'note' ? `메모 선택: ${noteText.slice(0, 90) || '이전에 선택한 메모'}` : row.title || '제목 없는 항목'}{row.origin === 'previous-public' && <small>이전 공개 항목 · 현재 문서에 없음</small>}
+              {row.selected && row.origin !== 'note' && (chip => <span className={styles.scheduleChip} data-schedule-chip={chip.kind}>{chip.text}</span>)(scheduleChip(row))}</span></label>
             {row.selected && <div className={styles.itemForm}><label className={styles.field}>공개용 항목 제목<input data-publication-field="title" value={row.title} maxLength={500} onChange={event => editRow(row.itemId, { title: event.target.value })} /></label><label className={styles.field}>공개용 설명<textarea rows={3} data-publication-field="description" value={row.description} maxLength={30000} onChange={event => editRow(row.itemId, { description: event.target.value })} /></label>
               {row.scheduleKind === 'recurring' && row.recurrence && <ProgramPublicationRecurrence value={row.recurrence} disabled={blocked} styles={styles} onChange={recurrence => editRow(row.itemId, { recurrence })} />}
               {row.scheduleKind !== 'recurring' && <details><summary>시간·시간대</summary><ProgramPublicationTiming value={row.timing} disabled={blocked} styles={styles} onChange={timing => editRow(row.itemId, { timing })} /></details>}
@@ -404,7 +478,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
             </div>}
           </article>;
         })}</section>
-        <details className={styles.source}><summary>분야·출처·원본 관계</summary><div className={styles.two}><label className={styles.field}>분야<input data-publication-field="category" value={draft.category} maxLength={120} onChange={event => edit({ category: event.target.value })} /></label><label className={styles.field}>적용 상황 · 쉼표로 구분<input data-publication-field="situationsText" value={draft.situationsText} onChange={event => edit({ situationsText: event.target.value })} /></label></div><label className={styles.field}>출처 설명<input data-publication-field="sourceLabel" value={draft.sourceLabel} maxLength={500} onChange={event => edit({ sourceLabel: event.target.value })} /></label><label className={styles.field}>원문 URL · 선택<input type="url" data-publication-field="sourceUrl" value={draft.sourceUrl} onChange={event => edit({ sourceUrl: event.target.value })} /></label>
+        <details className={styles.source}><summary>분야·출처·원본 관계</summary><div className={styles.two}><label className={styles.field}>분야<input data-publication-field="category" value={draft.category} maxLength={120} onChange={event => edit({ category: event.target.value })} /></label><label className={styles.field}>적용 상황 · 쉼표로 구분<input data-publication-field="situationsText" value={draft.situationsText} onChange={event => edit({ situationsText: event.target.value })} /></label></div><label className={styles.field}>출처 설명<input data-publication-field="sourceLabel" value={draft.sourceLabel} maxLength={500} onChange={event => edit({ sourceLabel: event.target.value })} /></label>
           <label className={styles.field}>다른 공개 원본에서 파생{draft.flowId ? <p>{draft.derivedFrom ? data.public.versions.find(row => row.id === draft.derivedFrom?.versionId)?.title ?? '기존 원본' : '독립 작성'} · 기존 관계 유지</p> : <select value={draft.derivedFrom?.versionId ?? ''} disabled={blocked} onChange={event => { const selected = data.public.versions.find(row => row.id === event.target.value); edit({ derivedFrom: selected ? { flowId: selected.flowId, versionId: selected.id } : null }); }}><option value="">독립 작성</option>{data.public.versions.filter(version => data.public.flows.some(flow => flow.id === version.flowId && !flow.archived)).map(version => <option key={version.id} value={version.id}>{version.title} · 버전 {version.number}</option>)}</select>}</label>
         </details>
       </div>}

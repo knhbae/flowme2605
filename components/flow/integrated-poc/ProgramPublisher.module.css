@@ -12,3 +12,26 @@
 /* FC5 (UX 13): after a publish the dialog shows "공개했습니다" with the link, then 공개한 Flow 보기 or 닫기. */
 .publishedPanel{display:grid;gap:12px;padding:24px 26px}.publishedPanel h2{margin:0;font-size:20px;line-height:28px}.publishedPanel>p{margin:0;color:var(--flowme-b-muted)}
 .publishedActions{display:flex;flex-wrap:wrap;gap:8px}.publishedActions button{min-height:44px;flex:1 1 160px}
+
+/* Flow pipeline S7 (11/8): 날짜를 기준일 기준으로, the rows' schedule chips and the taker's preview. Visual A tokens only. */
+.anchorConvert{display:grid;gap:8px;margin:4px 0 16px;padding:14px;border:1px solid var(--flowme-b-line);border-radius:12px;background:var(--flowme-b-surface-subtle)}
+.anchorConvert h3{margin:0;font-size:15px}
+.anchorConvert p{margin:0}
+.anchorModes{display:flex;flex-wrap:wrap;gap:6px}
+.dialog .anchorModes button{min-height:36px;padding:0 12px;border:1px solid var(--flowme-b-line);border-radius:18px;background:#fff;color:var(--flowme-b-ink);font-size:13px;font-weight:600}
+.dialog .anchorModes button[aria-pressed="true"]{border-color:var(--flowme-b-primary);background:var(--flowme-b-primary);color:#fff}
+.anchorRow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px}
+.anchorRow>label{flex:1 1 180px;margin:0}
+.dialog .anchorRow>button{min-height:44px;flex:none}
+.anchorHint{font-size:13px;line-height:1.5;color:var(--flowme-b-muted)}
+.scheduleChip{display:inline-block;margin-left:8px;padding:0 8px;border-radius:10px;background:var(--flowme-b-canvas);color:var(--flowme-b-muted);font-size:12px;font-weight:600;line-height:20px;white-space:nowrap;vertical-align:1px}
+.scheduleChip[data-schedule-chip="relative"]{background:var(--flowme-b-selected);color:var(--flowme-b-primary)}
+.takerPreview{display:grid;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--flowme-b-line)}
+.takerPreview h4{margin:0}
+.placeList{list-style:none;margin:0;padding:4px 12px;border:1px solid var(--flowme-b-line);border-radius:12px;display:grid}
+.placeList li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:baseline;gap:8px;padding:8px 0;border-top:1px solid var(--flowme-b-line);font-size:14px;line-height:20px}
+.placeList li:first-child{border-top:0}
+.placeList li>b{font-weight:600;white-space:nowrap}
+.placeList li>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.placeList li>em{font-style:normal;font-size:13px;color:var(--flowme-b-muted);white-space:nowrap}
+.placeList li[data-place-undated]>b{color:var(--flowme-b-muted)}
