@@ -16,7 +16,11 @@ export const PROGRAM_RECENT_WRITING = Object.freeze({ lines: 200, days: 7 });
  *  W-b: the finished tasks of [미정] folded then (the lines under them fold along; one checked later stays in view, one
  *  unchecked elsewhere comes back), and whether [미정] folded whole, holding nothing but folders, blank lines and
  *  finished tasks (its date line and all, '날짜 미정 · 끝낸 일 n개'). */
-export interface ProgramRecentHold { documentId: string; since: string; lineIds: ReadonlySet<string>; done: ReadonlySet<string>; undated: boolean }
+export interface ProgramRecentHold { documentId: string; since: string; lineIds: ReadonlySet<string>; done: ReadonlySet<string>; undated: boolean;
+  /** Visual A (11/7): the empty lines that were left at the very top once the rest folded (before the first line in
+   *  view): they fold too, so the first day starts right under the tools. Fixed for the session like the rest; an empty
+   *  line typed there later stays in view. */
+  lead?: ReadonlySet<string> }
 export interface ProgramRecentDone { count: number; whole: boolean }
 export interface ProgramRecentFold { lineIds: string[]; through: string; days: number; tasks: number; open: number; atEnd: boolean }
 export type ProgramRecentExtend = { ok: true; state: TextWorkspaceState } | { ok: false; reason: 'document' | 'hidden-line' | 'hidden-order' | 'invalid' | 'hidden-context' | 'visible-context' };
@@ -64,7 +68,11 @@ export function programRecentHold(state: TextWorkspaceState, documentId: string,
     finished: entry.finished.filter(row => !referred.has(row.id) && !rows.slice(row.index, row.subtreeEndIndex).some(line => keep.has(line.id))) }));
   const done = new Set(undated.flatMap(entry => entry.finished.map(row => row.id)));
   if (!lineIds.size && !done.size) return null;
-  const hold: ProgramRecentHold = { documentId, since, lineIds, done, undated: undated.some(entry => onlyFinished(rows, entry.section, entry.finished)) };
+  const base: ProgramRecentHold = { documentId, since, lineIds, done, undated: undated.some(entry => onlyFinished(rows, entry.section, entry.finished)) };
+  const folded = programRecentHidden(state, base), lead = new Set<string>();
+  let shown = false;
+  for (const row of rows) { if (folded.has(row.id)) continue; if (row.kind === 'blank') { lead.add(row.id); continue; } shown = true; break; }
+  const hold: ProgramRecentHold = shown && lead.size ? { ...base, lead } : base;
   const hidden = programRecentHidden(state, hold), restricted = restrictProgramRecent(state, documentId, hidden);
   if (!M.validate(restricted)) return null;
   const alone = new Map(rowsOf(restricted, documentId).map(row => [row.id, rowShape(row)]));
@@ -91,6 +99,8 @@ export function programRecentHidden(state: TextWorkspaceState, hold: ProgramRece
       }
       for (const task of folded) for (const row of all.slice(task.index, task.subtreeEndIndex)) hidden.add(row.id);
     }
+    // Visual A: the empty lines left at the very top when the session began, while they are still empty.
+    if (hold.lead?.size) for (const row of all) if (hold.lead.has(row.id) && row.kind === 'blank') hidden.add(row.id);
   }
   if (!hiddenKnown.has(state)) hiddenKnown.set(state, new WeakMap());
   hiddenKnown.get(state)!.set(hold, hidden);
@@ -225,6 +235,8 @@ export function programRecentFolds(state: TextWorkspaceState, documentId: string
   let run: TextRow[] = [];
   const close = (atEnd: boolean) => {
     if (!run.length) return;
+    // Visual A: the empty lines folded at the very top (hold.lead) are no '지난 기록'.
+    if (run.every(row => row.kind === 'blank')) { run = []; return; }
     const dates = run.filter(row => row.kind === 'date' && programDate(row.date)).map(row => row.date!), tasks = run.filter(row => row.kind === 'task' && row.isCanonical);
     folds.push({ lineIds: run.map(row => row.id), through: dates.reduce((last, date) => date > last ? date : last, ''), days: dates.length,
       tasks: tasks.length, open: tasks.filter(row => !row.done).length, atEnd });

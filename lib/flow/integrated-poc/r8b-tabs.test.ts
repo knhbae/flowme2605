@@ -88,7 +88,8 @@ test('title rows: the writing title opens the document sheet, ⋯ keeps document
   assert(space.includes('{props.hostMainTabs ? selectedDocumentTools && <div className={styles.titleActions}>{selectedDocumentTools}</div>'));
   // The editor's "…" no longer carries 새 글·글 찾기·글 작업 under the host tabs; the sheet starts with ＋ 새 글.
   // W6: the writing example moved from the editor's 도구 to the empty document's ＋ menu.
-  assert(space.includes('{props.noteHeader && !props.hostMainTabs && <>{period === \'documents\' && findActions}{selectedDocumentTools}</>}</> : undefined}'));
+  // Visual A (11/7): on a phone, where the title shares the editor's line, 글 작업 is in that line's one ⋯ menu.
+  assert(space.includes('{props.noteHeader && !props.hostMainTabs && <>{period === \'documents\' && findActions}{selectedDocumentTools}</>}{headInToolbar && phoneLayout && selectedDocumentTools}</> : undefined}'));
   assert(space.includes('{props.hostMainTabs && <button type="button" className={styles.sheetNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>＋ 새 글</button>}'));
   assert(space.includes("period === 'today' ? (date === today ? `오늘 · ${programCalendarDate(today, today)}` : programCalendarDate(date, today))"));
   assert(space.includes("period === 'all' ? (collectionMode ? '전체 할 일' : folder ? folder.title : '분류')"));

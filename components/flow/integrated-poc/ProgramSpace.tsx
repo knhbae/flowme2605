@@ -199,8 +199,13 @@ export const PROGRAM_MOVE_GESTURE_V1 = Object.freeze({ version: 1, holdMs: 350, 
 // A tap on 글 찾기 or the title while a composition or a document action is on: the find waits, and says so until then.
 const FIND_BLOCKED = '입력과 저장을 마친 뒤 글 찾기를 열어 주세요. 현재 입력은 그대로 있습니다.';
 export const PROGRAM_TABLET_HEAD_QUERY = '(min-width: 1000px) and (max-height: 900px) and (orientation: landscape) and (pointer: coarse)';
-let tabletHeadQuery: MediaQueryList | null = null;
-const tabletHead = () => tabletHeadQuery ??= window.matchMedia(PROGRAM_TABLET_HEAD_QUERY);
+// Visual A (11/7): a phone takes the same one head line ([title] … [↶][＋][⋯]); its ⋯ also holds the document's own
+// actions (글 작업), so the line has one menu.
+export const PROGRAM_PHONE_HEAD_QUERY = '(max-width: 700px)';
+let tabletHeadQuery: MediaQueryList | null = null, phoneHeadQuery: MediaQueryList | null = null;
+const tabletHead = () => tabletHeadQuery ??= window.matchMedia(`${PROGRAM_TABLET_HEAD_QUERY}, ${PROGRAM_PHONE_HEAD_QUERY}`);
+const phoneHead = () => phoneHeadQuery ??= window.matchMedia(PROGRAM_PHONE_HEAD_QUERY);
+function watchPhoneHead(change: () => void) { const query = phoneHead(); query.addEventListener('change', change); return () => query.removeEventListener('change', change); }
 function watchTabletHead(change: () => void) { const query = tabletHead(); query.addEventListener('change', change); return () => query.removeEventListener('change', change); }
 
 function initialProgramDocumentId(props: ProgramSpaceProps, space: ProgramPrivateSpace) {
@@ -489,6 +494,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     headCarry.current = carryProgramHead(selectedRef.current, root.current, documentMenu.current, document.activeElement); change();
   }), []);
   const tabletLandscape = useSyncExternalStore(watchHead, () => tabletHead().matches, () => false);
+  const phoneLayout = useSyncExternalStore(watchPhoneHead, () => phoneHead().matches, () => false);
   useLayoutEffect(() => {
     const carry = headCarry.current; headCarry.current = null;
     if (carry) restoreProgramHead(carry, selectedRef.current, root.current, documentMenu.current, titleToggle.current, document.activeElement);
@@ -768,8 +774,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const done = view.done.whole ? `날짜 미정 · 끝낸 일 ${view.done.count}개` : `✓ 날짜 미정에서 끝낸 일 ${view.done.count}개`;
     const past = `지난 기록 · ${through ? `${recentDay(through)}까지 ` : ''}${sum('days')}일 · 할 일 ${sum('tasks')}개 · 남은 일 ${sum('open')}개`;
     return <div className={`${styles.recentFold} ${styles.recentPair}`} data-recent-done data-recent-fold="end">
-      <button type="button" data-recent-action="done-show" title={done} aria-label={`${done} · 보기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>✓ 끝낸 일 {view.done.count}개 보기</button>
-      <button type="button" data-recent-action="past-show" title={past} aria-label={`${past} · 펼치기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentWhole(id)}>지난 기록 {sum('days')}일 펼치기</button></div>;
+      <button type="button" data-recent-action="done-show" title={done} aria-label={`${done} · 보기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>날짜 미정 끝낸 일 {view.done.count}개</button>
+      <button type="button" data-recent-action="past-show" title={past} aria-label={`${past} · 펼치기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentWhole(id)}>지난 {sum('days')}일 펼치기</button></div>;
   }
   /** W-b: '✓ 날짜 미정에서 끝낸 일 n개 [보기]' ('날짜 미정 · 끝낸 일 n개' when [미정] folded whole), or [접기] once shown. */
   function recentDoneLine(id: string, view: ProgramRecentView | null) {
@@ -2631,8 +2637,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onRegisterExternalGuard={read => { externalReaders.current[id] = read; }}
           docId={id} workspace={recent ? recent.workspace : space.text} active={selected === id && period === 'documents'} initialPosition={recent && initial ? recentPosition(id, recent, initial, false) : initial}
           noteStatus={selected === id ? props.noteStatus : undefined}
-          noteActions={selected === id ? <>{props.noteHeader && !props.hostMainTabs && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}</> : undefined}
-          headStart={headInToolbar && selected === id ? docTitle : undefined} headEnd={headInToolbar && selected === id ? docActions : undefined}
+          noteActions={selected === id ? <>{props.noteHeader && !props.hostMainTabs && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}{headInToolbar && phoneLayout && selectedDocumentTools}</> : undefined}
+          headStart={headInToolbar && selected === id ? docTitle : undefined} headEnd={headInToolbar && selected === id && !phoneLayout ? docActions : undefined}
           headBelow={headInToolbar && selected === id || recentTop ? <>{headInToolbar && selected === id ? docNotices : null}{recentTop}</> : undefined}
           onWritingExample={selected === id && writingExampleReady ? () => { void applyWritingExample(); } : undefined}
           folderId={collectionMode ? '' : folderId} directWriting={!!collectionMode} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}

@@ -486,3 +486,46 @@
    viewport; when it cannot tell, nothing changes) the tool line steps aside so the body shows more lines. Its status
    stays for screen readers, ↶ ↷ are in the bar's ⋯, and an open recovery box brings the line back. */
 :global([data-writing-keyboard="true"]) .editor:has(.writingBar) .toolbar:not(:has(details[open])) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Visual A (11/7, the user's pick: a calm document). The colors are the existing tokens; the accent is kept for today,
+   the caret, ＋ and the current tab. Lines keep their 32px ruler and their RAW text; only their paint changes. */
+/* A finished task steps back: a pale box with a muted check (5.0:1 on it), muted words, no line through them. */
+.host :global(.tle-check-glyph) { border-width: 1.5px; }
+.host :global(.tle-check-glyph[data-checked="true"]) { border-color: var(--flowme-b-line); background: var(--flowme-b-canvas); color: var(--flowme-b-muted); }
+.host :global(.tle-task-title-complete) { text-decoration: none; }
+/* A folder line is a quiet head, "/ 이름", muted, no icon. The name keeps the RAW size: it is painted over the RAW
+   characters a tap puts the caret on (U45), so 13px would move the caret off the tapped letter. The '/' is drawn
+   where the RAW '/' is, right before the name. An open folder's ▾ shows only on the folder the caret is in; a folded
+   one keeps its ▸ (it is the only way to open it again). */
+.host :global(.tle-root[data-mode="live"] .tle-line-native-scope .tle-active-scope-icon) { display: none; }
+.host :global(.tle-root[data-mode="live"] .tle-line-native-scope .tle-active-scope-name) { position: relative; }
+.host :global(.tle-root[data-mode="live"] .tle-line-native-scope .tle-active-scope-name::before) { content: '/'; position: absolute; right: 100%; color: var(--flowme-b-muted); -webkit-text-stroke: 0; }
+.host :global(.tle-root[data-mode="live"] .tle-fold-toggle.tle-scope-control[aria-expanded="true"]:not([data-caret-scope])) { visibility: hidden; }
+/* Head lines: today, yesterday and tomorrow are named (today in the accent), their date after it, smaller and muted.
+   The label's own text stays the date, so a tap on it maps as before. */
+.host :global(.tle-line-date > .tle-date-label[data-relative]) { font-size: 14px; font-weight: 500; color: var(--flowme-b-muted); }
+.host :global(.tle-line-date > .tle-date-label[data-relative]::before) { margin-right: 8px; font-size: 17px; font-weight: 700; color: var(--flowme-b-ink); }
+.host :global(.tle-line-date > .tle-date-label[data-relative="today"]::before) { content: '오늘'; color: var(--flowme-b-primary); }
+.host :global(.tle-line-date > .tle-date-label[data-relative="yesterday"]::before) { content: '어제'; }
+.host :global(.tle-line-date > .tle-date-label[data-relative="tomorrow"]::before) { content: '내일'; }
+/* On a phone the title and the tools are one head line: [title ⌄] … [↶][＋][⋯]. ↷ and 반복 are in ⋯ (and in the
+   writing bar's ⋯ while typing); ＋ is a 36px round button in a 44px press area; the quiet status steps aside (a
+   warning or a recovery box stays). PCs keep their tool line. */
+.menuPhone { display: none; }
+@media (max-width: 700px) {
+  .toolbar:has(> .headStart) { min-height: 52px; flex-wrap: nowrap; }
+  .toolbar > .headStart { flex: 1 1 auto; margin-right: 0; }
+  .editor .toolbar > button[aria-label="입력 다시 하기"], .editor .toolbar > .repeatButton { display: none; }
+  .toolbar > button[aria-label="입력 되돌리기"] { order: 1; }
+  .editor .toolbar > .addButton { order: 2; justify-content: center; width: 44px; min-width: 44px; padding: 0; margin: 0 2px; border-width: 4px; border-radius: 22px; font-size: 0; gap: 0; }
+  .editor .toolbar > .addButton > svg { width: 20px; height: 20px; }
+  .toolbar > .editorTools { order: 3; }
+  .editor .toolbar > .editorTools > summary { width: 44px; min-width: 44px; padding: 0; font-size: 0; gap: 0; }
+  .editor .toolbar > .editorTools > summary > svg { display: none; }
+  .editor .toolbar > .editorTools > summary::after { content: ''; width: 20px; height: 20px; background: currentColor;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='5' cy='12' r='1.7'/><circle cx='12' cy='12' r='1.7'/><circle cx='19' cy='12' r='1.7'/></svg>") center / 20px no-repeat;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='5' cy='12' r='1.7'/><circle cx='12' cy='12' r='1.7'/><circle cx='19' cy='12' r='1.7'/></svg>") center / 20px no-repeat; }
+  .toolbar > .statusSlot { order: 4; }
+  .toolbar > .statusSlot:not([data-warn]):not(:has(details)) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .editorToolActions .menuPhone { display: block; }
+}

@@ -105,8 +105,8 @@ test('W-b: [미정]\'s folded finished tasks have their line under the body, [�
   assert(space.includes('data-recent-action="done-fold" onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, false)}>접기</button>'));
   // Both under the body: one line of two buttons, their full words as names.
   assert(space.includes('if (atEnd && view?.done.count && view.folds.some(fold => fold.atEnd)) return recentPairLine(id, view);'));
-  assert(space.includes("aria-label={`${done} · 보기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>✓ 끝낸 일 {view.done.count}개 보기</button>"));
-  assert(space.includes("aria-label={`${past} · 펼치기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentWhole(id)}>지난 기록 {sum('days')}일 펼치기</button>"));
+  assert(space.includes("aria-label={`${done} · 보기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>날짜 미정 끝낸 일 {view.done.count}개</button>"));
+  assert(space.includes("aria-label={`${past} · 펼치기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentWhole(id)}>지난 {sum('days')}일 펼치기</button>"));
   assert(space.includes('const recentDoneKey = `flow:alpha:writing-done:v1:${actorId}`;'));
   assert(space.includes('return recentHolds.current[id] = programRecentHold(space.text, id, today, { done: !recentDoneShownRef.current[id], keep });'));
   // Under the body with the old days' line, so the body keeps the lines its fold freed.

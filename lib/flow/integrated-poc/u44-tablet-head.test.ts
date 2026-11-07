@@ -24,7 +24,10 @@ test('U44: one line only on a landscape touch screen at least 1000px wide and at
 
 test('U44: the title row and its notices are drawn in one place: their own row, or the open editor\'s line', () => {
   assert(space.includes('{!headInToolbar && <><div className={styles.docHeading}>{docTitle}{docActions}</div>{docNotices}</>}'));
-  assert(space.includes('headStart={headInToolbar && selected === id ? docTitle : undefined} headEnd={headInToolbar && selected === id ? docActions : undefined}'));
+  // Visual A (11/7): a phone (≤700px) takes the same line; its ⋯ (글 작업) goes into the editor's menu there.
+  assert(space.includes('headStart={headInToolbar && selected === id ? docTitle : undefined} headEnd={headInToolbar && selected === id && !phoneLayout ? docActions : undefined}'));
+  assert(space.includes("export const PROGRAM_PHONE_HEAD_QUERY = '(max-width: 700px)';"));
+  assert(space.includes('const tabletHead = () => tabletHeadQuery ??= window.matchMedia(`${PROGRAM_TABLET_HEAD_QUERY}, ${PROGRAM_PHONE_HEAD_QUERY}`);'));
   // 11/5 쓰기 '최근만 쓰기': the folded days' line (recentTop) joins them above the body, notices first.
   assert(space.includes('headBelow={headInToolbar && selected === id || recentTop ? <>{headInToolbar && selected === id ? docNotices : null}{recentTop}</> : undefined}'));
   // The title keeps its button (the document sheet) and ⋯ its menu; the notices are the same ones, above the body.

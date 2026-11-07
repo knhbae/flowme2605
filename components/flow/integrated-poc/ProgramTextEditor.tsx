@@ -2990,6 +2990,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <summary aria-label="편집 도구" title="편집 도구"><ToolIcon name="tools" size={18} />도구</summary>
         <div className={styles.editorToolActions}>
           {props.noteActions}
+          {/* Visual A: on a phone ↷ and 반복 leave the head line for this menu (CSS shows them there only). */}
+          {props.authoringMode && <button type="button" className={styles.menuPhone} disabled={redoOff} onClick={event => { closeEditorTools(event.currentTarget); redoInput(); }}>입력 다시 하기</button>}
+          {props.repeatLabel && props.onOpenPersonalAuthoring && <button type="button" className={styles.menuPhone} onClick={event => { closeEditorTools(event.currentTarget); openRepeatFromTools(); }}>{props.repeatLabel}</button>}
           <button type="button" aria-pressed={mode === 'text'} disabled={inputLocked || composing} onClick={event => { if (composingRef.current || inputLockedRef.current) return; closeEditorTools(event.currentTarget); setMode(mode === 'text' ? 'live' : 'text'); }}>원문 {mode === 'text' ? '닫기' : '보기'}</button>
           <button type="button" hidden={!!props.folderId} disabled={disabled || composing} onClick={event => { closeEditorTools(event.currentTarget); void copyFolderText(); }}>문서 TXT 복사</button>
           {props.directWriting && !props.noteStatus && <button type="button" disabled={insertionDisabled} onClick={event => { closeEditorTools(event.currentTarget); const index = editorRef.current?.getSelection().lineIndex ?? 0;openCurrentInsertMenu(index); }}>현재 줄에 추가</button>}

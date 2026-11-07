@@ -432,3 +432,13 @@
 .moveNotice button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--flowme-b-primary-strong); font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer; }
 .moveNotice button:first-child { background: var(--flowme-b-primary); color: #fff; }
 @media (max-width: 700px) { .moveNotice { top: auto; bottom: calc(60px + env(safe-area-inset-bottom) + 12px); left: 16px; right: 16px; width: auto; transform: none; } }
+/* Visual A (11/7): the phone tabs are white like the page: a hairline on top, muted tabs (5.7:1), the current one in the
+   accent (7.1:1) with a firmer line, no dark block. The PC rail keeps its frame. */
+@media (max-width: 700px) {
+  .page[data-alpha-frame="b"] .globalNavigation { background: var(--flowme-b-surface); border-top: 1px solid var(--flowme-b-line); }
+  .page[data-alpha-frame="b"] .globalNavigation button { color: var(--flowme-b-muted); }
+  .page[data-alpha-frame="b"] .globalNavigation button:not([aria-current]):hover:not(:disabled) { background: var(--flowme-b-surface-subtle); color: var(--flowme-b-ink); }
+  .page[data-alpha-frame="b"] .globalNavigation button[aria-current], .page[data-alpha-frame="b"] .globalNavigation button[aria-current]:hover:not(:disabled) { background: transparent; color: var(--flowme-b-primary); box-shadow: none; }
+  .page[data-alpha-frame="b"] .globalNavigation button[aria-current] svg path { stroke-width: 2.4; }
+  .page[data-alpha-frame="b"] .globalNavigation button:focus-visible { outline-color: var(--flowme-b-primary); }
+}

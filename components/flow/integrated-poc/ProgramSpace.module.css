@@ -524,3 +524,9 @@
 .space .recentPair button + button::before { content: '·'; margin-right: 8px; color: var(--flowme-b-line); }
 /* Input v2 stage 1 (Q2): the title row steps aside too while the keyboard is up (see the editor's tool line). */
 :global([data-writing-keyboard="true"]) .space .docHeading:has(.titleButton) { display: none; }
+/* Visual A (11/7): on a phone the document's own actions (글 작업) are one more item in the head line's ⋯ menu; they open
+   in place there instead of as a dropdown of their own. */
+.space [data-editor-tools] > div > details > summary { display: flex; align-items: center; min-height: 44px; padding: 8px 12px; border: 1px solid var(--flowme-b-line); border-radius: 8px; color: var(--flowme-b-primary); list-style: none; cursor: pointer; }
+.space [data-editor-tools] > div > details > summary::-webkit-details-marker { display: none; }
+.space [data-editor-tools] .documentToolsMarker { display: none; }
+.space [data-editor-tools] .documentTools { position: static; z-index: auto; width: 100%; max-height: none; margin-top: 6px; padding: 8px 0 0; border: 0; border-radius: 0; box-shadow: none; }
