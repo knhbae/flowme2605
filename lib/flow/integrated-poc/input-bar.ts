@@ -75,3 +75,61 @@ export function programLineDays(raw: string): (string | null)[] {
   let day: string | null = null;
   return raw.split('\n').map(line => { const head = header(line); if (head) day = head.date; return day; });
 }
+
+/** Input v2 stage 2 (11/7): a `[` line of its own read as a day for the date chips' first chip. `[d` or `[dd`: that
+ *  day this month (next month when it is past; none when this month has no such day). `[m/d` (`-` or `.` too): this
+ *  year, next year when it is more than 60 days past. `[yyyy-m-d`: that day. Anything else (`[`, `[2026`, `[11/`): none. */
+export function programBracketDate(text: string, today: string): string | null {
+  const [year, month] = today.split('-').map(Number);
+  const day = /^\[(\d{1,2})$/.exec(text);
+  if (day) {
+    const here = isoDate(year, month, Number(day[1]));
+    if (!here || here >= today) return here;
+    return isoDate(month === 12 ? year + 1 : year, month === 12 ? 1 : month + 1, Number(day[1]));
+  }
+  const monthDay = /^\[(\d{1,2})[-/.](\d{1,2})$/.exec(text);
+  if (monthDay) {
+    const here = isoDate(year, Number(monthDay[1]), Number(monthDay[2]));
+    if (!here) return null;
+    return here < shiftDays(today, -60) ? isoDate(year + 1, Number(monthDay[1]), Number(monthDay[2])) : here;
+  }
+  const full = /^\[(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/.exec(text);
+  return full ? isoDate(Number(full[1]), Number(full[2]), Number(full[3])) : null;
+}
+function isoDate(year: number, month: number, day: number): string | null {
+  const at = new Date(Date.UTC(year, month - 1, day));
+  if (at.getUTCFullYear() !== year || at.getUTCMonth() !== month - 1 || at.getUTCDate() !== day) return null;
+  return at.toISOString().slice(0, 10);
+}
+const shiftDays = (date: string, days: number) => new Date(Date.parse(`${date}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
+
+/** One native edit replacing `raw[start, end)` with `text`; the caret at `caret` (in the new raw). */
+export type ProgramBarReplacement = { start: number; end: number; text: string; caret: number; nextRaw: string };
+/** A date chip pressed on a `[…` line (stage 2): the `[…` line goes (its text and one line break) and the day's head
+ *  line goes where the stage 1 chip puts it (programDateHeaderPlan) in what is left, as one change: the two are made
+ *  into one range by their common start and end, so one ↶ brings back the `[…` line. The `[…` line is no head line
+ *  (no `]`), so no other line's day changes. Already on an empty line of that day's block: only the `[…` text goes. */
+export function programBracketDatePlan(raw: string, start: number, end: number, date: string): ProgramBarReplacement | null {
+  if (start < 0 || end < start || end > raw.length || (start > 0 && raw[start - 1] !== '\n') || (end < raw.length && raw[end] !== '\n')) return null;
+  const last = end === raw.length, from = last && start > 0 ? start - 1 : start, to = last ? end : end + 1;
+  const rest = raw.slice(0, from) + raw.slice(to), plan = programDateHeaderPlan(rest, from, date);
+  let nextRaw: string, caret: number;
+  if (plan) { nextRaw = rest.slice(0, plan.offset) + plan.text + rest.slice(plan.offset); caret = plan.caret; }
+  else { nextRaw = raw.slice(0, start) + raw.slice(end); caret = start; }
+  let head = 0;
+  while (head < raw.length && head < nextRaw.length && raw[head] === nextRaw[head]) head += 1;
+  let tail = 0;
+  while (tail < raw.length - head && tail < nextRaw.length - head && raw[raw.length - 1 - tail] === nextRaw[nextRaw.length - 1 - tail]) tail += 1;
+  return { start: head, end: raw.length - tail, text: nextRaw.slice(head, nextRaw.length - tail), caret, nextRaw };
+}
+/** 오늘 시작 줄 (stage 2): today's head line from above the body, offered only where the date chip would put it at the
+ *  top (a newest-first document, or an empty one) and only while the document has no head line for today. */
+export function programTodayStartPlan(raw: string, today: string): ProgramBarInsertion | null {
+  const lines = raw.split('\n'), heads = lines.flatMap((line, index) => { const head = header(line); return head ? [{ index, date: head.date }] : []; });
+  if (heads.some(head => head.date === today)) return null;
+  const plan = programDateHeaderPlan(raw, 0, today);
+  if (!plan) return null;
+  if (!raw) return plan;
+  const first = heads[0];
+  return first && plan.offset <= lineStart(lines, first.index) ? plan : null;
+}

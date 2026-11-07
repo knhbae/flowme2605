@@ -97,7 +97,7 @@ test('the editor wires the bar: one write per chip through its existing paths, h
   assert(editor.includes("onClick={() => setBarMode('date')}") && editor.includes("onClick={() => setBarMode('more')}"));
   // A task line takes N9's own date chip; any other line the head-line plan, through insertNative.
   const choice = editor.slice(editor.indexOf('function runDateChoice('), editor.indexOf('function pickBarDate('));
-  assert(choice.includes('const done = applyDateChip(line.id, date), state = draftRef.current?.getState();') && choice.includes('if (plan) insertNative(plan.offset, plan.text, plan.caret);'));
+  assert(choice.includes('const done = applyDateChip(line.id, date), state = draftRef.current?.getState();') && choice.includes('if (plan && insertNative(plan.offset, plan.text, plan.caret) && plan.text.includes(`[${date}]`)) chainFolders(date, before);'));
   // N9's path is not in the native history: ↶ right after it sets the old date back the same way, ↷ the chip's again.
   assert(editor.includes('if (undoBarDate()) return;') && editor.includes('if (redoBarFolder() || redoBarDate()) return;'));
   assert(editor.includes("apply(last.after, '항목 날짜·시간', { taskId: last.taskId, date: last.date, time: last.time }) : apply(last.before, '항목 날짜·시간 되돌리기')"));

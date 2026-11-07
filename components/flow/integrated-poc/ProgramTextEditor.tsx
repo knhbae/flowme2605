@@ -8,7 +8,7 @@ import { ProgramServerStatusContext } from './program-status-context';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
-import { programDateHeaderPlan, programFolderSeedPlan } from '@/lib/flow/integrated-poc/input-bar';
+import { programBracketDate, programBracketDatePlan, programDateHeaderPlan, programFolderSeedPlan, programTodayStartPlan } from '@/lib/flow/integrated-poc/input-bar';
 import type { ProgramPrivateSpace } from '@/lib/flow/integrated-poc/contract';
 import { programRepeatLine, programRepeatSeen, settleProgramRepeatLines, PROGRAM_REPEAT_BLOCK_TEXT, PROGRAM_REPEAT_UNDO_REFUSED, type ProgramRepeatCheck } from '@/lib/flow/integrated-poc/repeat-commands';
 import { parseProgramRepeatWords, programRepeatTitle, readProgramRepeatMarker } from '@/lib/flow/integrated-poc/repeat-line';
@@ -22,6 +22,9 @@ import { createFolderPickerDismissal, createFolderPickerHold, createFolderPicker
   planFolderPickerLink, readFolderPickerChoices, readFolderPickerCommand, readFolderPickerCompositionLine, readFolderPickerLine, type FolderPickerCandidate, type FolderPickerChoice, type FolderPickerCompositionOwner,
   type FolderPickerDefault } from '@/lib/flow/integrated-poc/folder-picker';
 
+/** The phone bar's rows (input v2): its tools, the date chips, ⋯, and (stage 2) the folder chips. */
+type BarMode = 'tools' | 'date' | 'more' | 'folders';
+type BarTrigger = { kind: 'bracket' | 'slash'; lineId: string } | { kind: 'chain'; lineId: string; raw: string; before: TextWorkspaceState };
 type FolderPickerView = { lineId: string; signature: string; parentId: string | null; parentLabel: string; linked: boolean;
   enter: FolderPickerDefault | null; candidates: FolderPickerCandidate[]; navigation: number; indent: boolean;
   left: number; top: number; width: number; above: boolean; listHeight: number; barHeight: number; phone: boolean };
@@ -227,6 +230,8 @@ function ToolIcon({ name, size = 20 }: { name: 'add' | 'undo' | 'redo' | 'repeat
   return <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" focusable="false"><path d={path} fill="none" stroke="currentColor" strokeWidth={name === 'add' ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
 const BAR_COMPOSING_NOTICE = '입력 중인 글자가 아직 끝나지 않아 실행하지 않았습니다. 글자를 마친 뒤 다시 눌러 주세요.';
+/** Input v2 stage 2: a chip pressed after its line changed (a save, another device, a finished composition) does nothing. */
+const BAR_LINE_CHANGED = '줄이 바뀌어 다시 열어 주세요. 원문은 그대로입니다.';
 
 /** U44: the host's title, ⋯ and notices in the toolbar's line (a tablet held sideways) stay outside the editor for its
  *  typing, keys and focus, as they are on their own row elsewhere. */
@@ -452,12 +457,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // Input v2 stage 1 (11/7): the bar turns into a chip row for 날짜 or ⋯ without moving focus (the keyboard stays). It goes
   // back to its tools after a chip runs, on ×, or when the caret leaves the line it was opened on. A date chip's day
   // rides with the held press ('date'); 폴더 writes its `- /` line once and the folder suggestions take over.
-  const [barMode, setBarModeState] = useState<'tools' | 'date' | 'more'>('tools'), barModeRef = useRef<{ mode: 'tools' | 'date' | 'more'; line: number }>({ mode: 'tools', line: -1 });
+  const [barMode, setBarModeState] = useState<BarMode>('tools'), barModeRef = useRef<{ mode: BarMode; line: number }>({ mode: 'tools', line: -1 });
   const barDateUndo = useRef<{ docId: string; taskId: string; before: TextWorkspaceState; after: TextWorkspaceState; date: string; time: string; raw: string; redo: boolean } | null>(null);
-  const barChipDate = useRef<string | null>(null), folderSeedRef = useRef<{ docId: string; lineId: string; inPlace: boolean; before: TextWorkspaceState } | null>(null), datePickRef = useRef<HTMLInputElement>(null);
+  // Stage 2: `origin` is what the seed came from ('/' or '-/'); × then puts that back (none: the 폴더 button, × takes it away).
+  const barChipDate = useRef<string | null>(null), folderSeedRef = useRef<{ docId: string; lineId: string; inPlace: boolean; before: TextWorkspaceState; origin?: '/' | '-/' } | null>(null), datePickRef = useRef<HTMLInputElement>(null);
+  // Input v2 stage 2 (11/7): the line a chip row was opened from — a typed `[` (date chips), a typed `/` (folder chips),
+  // or the empty line under a head line a date chip just wrote ('chain': the folder chips follow). Context for its writes.
+  const barTriggerRef = useRef<BarTrigger | null>(null), [bracketText, setBracketText] = useState('');
   // IV-P3-1 (11/7): a folder line the bar's 폴더 or the '/' menu wrote (its text and link in one go): the next ↶, while the
   // text is as it left it, puts back the document from before the press; ↷ then the folder again.
-  const barFolderUndo = useRef<{ docId: string; before: TextWorkspaceState; after: TextWorkspaceState; raw: string; redo: boolean } | null>(null);
+  // Stage 2: `then` — after a chain's folder: the document before the date chip's head line (the second ↶ goes there).
+  const barFolderUndo = useRef<{ docId: string; before: TextWorkspaceState; after: TextWorkspaceState; raw: string; redo: boolean; then?: TextWorkspaceState } | null>(null);
   // S5: why the last ⇤·⇥ was refused inside the editor's own check (the model's reason, or a linked folder line).
   const indentRefusal = useRef<ProgramIndentRefusal | null>(null);
   // N5 3b review: which lines the shown D11 reason is about, so a later D11 B move takes down only a reason that ended.
@@ -1100,9 +1110,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (barModeRef.current.mode !== 'tools' && (!area || caretLine(area) !== barModeRef.current.line)) setBarMode('tools');
   }
   const caretLine = (area: HTMLTextAreaElement) => area.value.slice(0, area.selectionStart).split('\n').length - 1;
-  function setBarMode(mode: 'tools' | 'date' | 'more') {
-    const area = textArea();
+  function setBarMode(mode: BarMode, trigger: BarTrigger | null = null) {
+    const area = textArea(), previous = barTriggerRef.current;
     barModeRef.current = { mode, line: area ? caretLine(area) : -1 };
+    barTriggerRef.current = trigger;
+    // A '/' row closing hands its slash context back (the ＋ menu, when it is what opened, keeps its own).
+    if (previous?.kind === 'slash' && !panelRef.current && slashCommandRef.current?.lineId === previous.lineId) slashCommandRef.current = null;
     setBarModeState(mode);
   }
   /** 날짜 chips: the day goes with the held press, so a chip pressed mid-composition runs once it ends. */
@@ -1129,13 +1142,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
    *  already has (N9 날짜 칩 for a task, insertNative for a head line or the `- /` line), so one press is one ↶. */
   function runBarWrite(action: 'date' | 'folder' | 'undo' | 'redo' | 'repeat') {
     // A press from a chip row gives the bar its tools back (the ＋ menu's dialog does it when it opens).
+    const trigger = barTriggerRef.current;
     if (barModeRef.current.mode !== 'tools') setBarMode('tools');
     if (action === 'undo') { undoInput(); return; }
     if (action === 'redo') { redoInput(); return; }
     if (action === 'repeat') { openRepeatFromTools(); return; }
     const area = textArea();
     if (propsRef.current.folderId || !area) return;
-    if (action === 'date') { const date = barChipDate.current; barChipDate.current = null; if (date) runDateChoice(date); return; }
+    if (action === 'date') { const date = barChipDate.current; barChipDate.current = null; if (date) runDateChoice(date, trigger); return; }
     const plan = programFolderSeedPlan(area.value, area.selectionStart), before = currentState();
     folderSeedRef.current = null;
     if (!insertNative(plan.offset, plan.text, plan.caret)) return;
@@ -1156,7 +1170,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function stepBarFolder(redo: boolean) {
     const last = barFolderUndo.current, state = draftRef.current?.getState();
     if (!last || !state || last.docId !== propsRef.current.docId || state.raw !== last.raw) { if (last && state && state.raw !== last.raw) barFolderUndo.current = null; return false; }
-    if (last.redo !== redo) return false;
+    if (last.redo !== redo) {
+      // Stage 2: after a chain's folder was taken back, the next ↶ takes back the head line its date chip wrote.
+      if (redo || !last.then) return false;
+      if (actionsDisabled() || composingRef.current || regionPendingRef.current) return true;
+      const back = apply(last.then, '날짜 줄 되돌리기');
+      barFolderUndo.current = null; void back;
+      return true;
+    }
     if (actionsDisabled() || composingRef.current || regionPendingRef.current) return true;
     const done = apply(redo ? last.after : last.before, redo ? '폴더 선택' : '폴더 선택 되돌리기');
     // The folder step's own notice (and its 되돌리기) would now undo something already undone.
@@ -1167,10 +1188,19 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     return true;
   }
   /** A task line (N9): its own date, as the line menu's chip sets it. Any other line: the day's head line (Q1, R1). */
-  function runDateChoice(date: string) {
+  function runDateChoice(date: string, trigger: BarTrigger | null = null) {
     const area = textArea(), doc = currentDoc();
     if (!area || !doc) return;
     const line = doc.lines[caretLine(area)], target = line ? currentRow(line.id)?.progressTargetId : undefined;
+    // Stage 2: the chips a typed `[` opened: that `[…` line turns into the day's head line, in one edit (one ↶).
+    if (trigger?.kind === 'bracket') {
+      const index = doc.lines.findIndex(item => item.id === trigger.lineId), bracket = doc.lines[index];
+      if (!bracket || !/^\[[0-9/.-]*$/.test(bracket.text) || area.value !== draftRef.current?.getState().raw) { setMessage(BAR_LINE_CHANGED); return; }
+      const start = doc.lines.slice(0, index).reduce((sum, item) => sum + item.text.length + 1, 0), before = currentState();
+      const plan = programBracketDatePlan(area.value, start, start + bracket.text.length, date);
+      if (plan && applyNativeRange(plan.start, plan.end, plan.text, plan.caret, plan.nextRaw)) chainFolders(date, before);
+      return;
+    }
     const task = target ? M.tasks(currentState()).find(item => item.id === target) : undefined;
     if (line && target && task) {
       const before = currentState(), raw = draftRef.current?.getState().raw, docId = propsRef.current.docId, time = task.time ?? '';
@@ -1180,8 +1210,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       void done;
       return;
     }
-    const plan = programDateHeaderPlan(area.value, area.selectionStart, date);
-    if (plan) insertNative(plan.offset, plan.text, plan.caret);
+    const plan = programDateHeaderPlan(area.value, area.selectionStart, date), before = currentState();
+    // Stage 2: a new head line (not a day already there) is followed by the folder chips for its first line.
+    if (plan && insertNative(plan.offset, plan.text, plan.caret) && plan.text.includes(`[${date}]`)) chainFolders(date, before);
   }
   /** N9's date path is not in the native history, so ↶ right after a bar date chip (the text still as the chip left
    *  it) puts back the document as it was right before the chip, and ↷ then the chip's (through N9's own path again).
@@ -1209,11 +1240,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     try { input.showPicker(); } catch { input.focus(); }
   }
   function datePicked(value: string) {
-    const area = textArea();
+    const area = textArea(), trigger = barTriggerRef.current;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !area) return;
     setBarMode('tools'); area.focus({ preventScroll: true });
     if (composingRef.current) return;
-    runDateChoice(value);
+    runDateChoice(value, trigger);
   }
   /** × on suggestions the 폴더 button opened: the `- /` it wrote goes too, if the line is still just that. */
   function closeBarPicker() {
@@ -1224,6 +1255,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const area = textArea(), controller = draftRef.current, doc = currentDoc();
     if (!area || !controller || !doc || composingRef.current || inputLockedRef.current || area.value !== controller.getState().raw) return;
     const index = doc.lines.findIndex(line => line.id === seed.lineId);
+    // Stage 2: a seed made from a typed '/' or '-/' gives that back (the line still just its `- /`).
+    if (seed.origin && index >= 0) {
+      const text = doc.lines[index].text, indent = /^[ \t]*/.exec(text)![0];
+      if (text !== `${indent}- /`) return;
+      const at = doc.lines.slice(0, index).reduce((sum, line) => sum + line.text.length + 1, 0) + indent.length;
+      editorRef.current?.replaceRange(at, at + 3, seed.origin, { selectionAfter: { start: at + seed.origin.length, end: at + seed.origin.length } });
+      return;
+    }
     if (index < 0 || doc.lines[index].text !== '- /' || !seed.inPlace && index === 0) return;
     const start = doc.lines.slice(0, index).reduce((sum, line) => sum + line.text.length + 1, 0), from = seed.inPlace ? start : start - 1;
     editorRef.current?.replaceRange(from, start + 3, '', { selectionAfter: { start: from, end: from } });
@@ -1282,6 +1321,147 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!doc || !line) return;
     const start = doc.lines.slice(0, doc.lines.indexOf(line)).reduce((sum, item) => sum + item.text.length + 1, 0) + line.text.indexOf('/');
     if (insertNative(start, '- /', start + 3)) { textArea()?.focus({ preventScroll: true }); requestAnimationFrame(syncPicker); }
+  }
+  /** Input v2 stage 2 (11/7), C1: the phone bar is up (its CSS shows it only while the body has focus on a narrow screen,
+   *  in writing, not in a folder view). The PC has no bar and keeps its '/' menu. */
+  const barShownNow = () => !!propsRef.current.authoringMode && !propsRef.current.folderId && !!barRef.current?.getClientRects().length;
+  /** Stage 2: what one typed character opens on the phone bar (C1–C6): a lone `[` on an empty line the date chips, a
+   *  lone `/` the folder chips, `-/` its `- /` and the folder suggestions. An open row closes once its line leaves its
+   *  form (`[a`, `/x`, a `]`, anything typed on a chain's empty line); the text stays as typed. */
+  function handleBarTrigger(beforeRaw: string, inputType: string) {
+    const area = textArea(), controller = draftRef.current;
+    if (!area || !controller) return;
+    const raw = area.value, caret = area.selectionStart, rowStart = raw.lastIndexOf('\n', caret - 1) + 1, next = raw.indexOf('\n', caret);
+    const rowEnd = next < 0 ? raw.length : next, text = raw.slice(rowStart, rowEnd), index = raw.slice(0, caret).split('\n').length - 1;
+    const open = barTriggerRef.current;
+    if (open && barModeRef.current.mode !== 'tools') {
+      const line = currentDoc()?.lines[index], form = open.kind === 'bracket' ? /^\[[0-9/.-]*$/ : open.kind === 'slash' ? /^[ \t]*\/$/ : /^$/;
+      if (!line || line.id !== open.lineId || !form.test(text)) setBarMode('tools');
+      else if (open.kind === 'bracket') setBracketText(text);
+    }
+    if (!barShownNow() || composingRef.current || !['insertText', 'insertReplacementText'].includes(inputType)) return;
+    // C3–C4: one character typed at the end of its line (a paste, a deletion or a replacement does not count).
+    if (area.selectionEnd !== caret || caret !== rowEnd || caret < 1 || raw.slice(0, caret - 1) + raw.slice(caret) !== beforeRaw) return;
+    if (inputLockedRef.current || propsRef.current.readOnly || panelRef.current || regionPendingRef.current || checkPendingRef.current) return;
+    // C5: not inside a code fence.
+    if (raw.split('\n').slice(0, index).filter(line => /^\s*(```|~~~)/.test(line)).length % 2) return;
+    const previous = text.slice(0, -1);
+    queueMicrotask(() => {
+      if (composingRef.current || area.value !== raw || area.selectionStart !== caret || controller.getState().invalid || controller.getState().raw !== raw) return;
+      const line = currentDoc()?.lines[index];
+      if (!line || line.text !== text) return;
+      if (previous === '' && text === '[') { setBracketText(text); setBarMode('date', { kind: 'bracket', lineId: line.id }); return; }
+      if (/^[ \t]*$/.test(previous) && /^[ \t]*\/$/.test(text)) { openSlashFolders(index); return; }
+      if (/^[ \t]*-$/.test(previous) && /^[ \t]*-\/$/.test(text)) fixDashSlash(index);
+    });
+  }
+  const barTriggerFn = useRef(handleBarTrigger); barTriggerFn.current = handleBarTrigger;
+  /** Stage 2: a typed '/' on an empty line opens the folder chips (with [메뉴] for the ＋ menu); the keyboard stays. */
+  function openSlashFolders(index: number) {
+    const controller = draftRef.current, line = currentDoc()?.lines[index];
+    if (!controller || !line || line.text.trim() !== '/') return;
+    setBarMode('folders', { kind: 'slash', lineId: line.id });
+    slashCommandRef.current = { lineId: line.id, raw: controller.getState().raw, workspace: currentState(), generation: controller.generation() };
+  }
+  /** Stage 2: `-/` becomes `- /` (one edit of its own, one ↶) and the folder suggestions answer it; × gives `-/` back. */
+  function fixDashSlash(index: number) {
+    const doc = currentDoc(), line = doc?.lines[index], before = currentState(), raw = textArea()?.value;
+    if (!doc || !line || !/^[ \t]*-\/$/.test(line.text) || raw === undefined) return;
+    const start = doc.lines.slice(0, index).reduce((sum, item) => sum + item.text.length + 1, 0) + line.text.length - 2;
+    slashCommandRef.current = null;
+    if (!applyNativeRange(start, start + 2, '- /', start + 3, raw.slice(0, start) + '- /' + raw.slice(start + 2))) return;
+    const seeded = currentDoc()?.lines[index];
+    if (seeded && /^[ \t]*- \/$/.test(seeded.text)) folderSeedRef.current = { docId: propsRef.current.docId, lineId: seeded.id, inPlace: true, before, origin: '-/' };
+    requestAnimationFrame(syncPicker);
+  }
+  /** Stage 2: one native edit replacing a range (a `[` line's date chip), checked and applied as insertNative does. */
+  function applyNativeRange(start: number, end: number, text: string, caret: number, nextRaw: string) {
+    const controller = draftRef.current, area = textArea();
+    if (!controller || !area || inputLockedRef.current || propsRef.current.readOnly || controller.getState().invalid || composingRef.current || panelComposingRef.current || regionPendingRef.current || checkPendingRef.current) { setMessage('현재는 항목을 추가할 수 없습니다. 입력은 유지했습니다.'); return false; }
+    const raw = controller.getState().raw;
+    if (area.value !== raw || raw.slice(0, start) + text + raw.slice(end) !== nextRaw) { setMessage(BAR_LINE_CHANGED); return false; }
+    if (!controller.prepareRaw(nextRaw, { inputType: 'insertText', compositionGeneration: compositionGeneration.current }, true)) { setMessage('이 위치에는 추가할 수 없습니다. 원문은 유지했습니다.'); return false; }
+    const applied = editorRef.current?.replaceRange(start, end, text, { selectionAfter: { start: caret, end: caret } });
+    if (!applied || controller.getState().invalid || controller.getState().raw !== nextRaw) { setMessage('브라우저가 추가를 적용하지 못했습니다. 현재 입력은 유지했습니다.'); return false; }
+    editorRef.current?.refreshViewport(); rememberPosition();
+    revealProgramEditorLine(area, nextRaw.slice(0, caret).split('\n').length - 1);
+    return true;
+  }
+  /** Stage 2: a date chip that wrote a new head line hands the bar to the folder chips for the empty line under it. */
+  function chainFolders(date: string, before: TextWorkspaceState) {
+    const area = textArea(), doc = currentDoc();
+    if (!area || !doc || !propsRef.current.authoringMode || propsRef.current.folderId) return;
+    const index = caretLine(area), line = doc.lines[index];
+    const above = doc.lines.slice(0, index).reverse().find(item => item.text.trim());
+    if (!line || line.text.trim() || above?.text.trim() !== `[${date}]`) return;
+    setBarMode('folders', { kind: 'chain', lineId: line.id, raw: area.value, before });
+  }
+  /** Stage 2: a folder chip. A typed '/' turns into `- /이름` and its link (the '/' menu's folder path); the empty line
+   *  under a new head line gets them (applyLineFolder). Either is one change, one ↶. */
+  function runBarFolder(scopeId: string) {
+    const trigger = barTriggerRef.current;
+    if (!trigger || composingRef.current) { if (composingRef.current) setMessage(BAR_COMPOSING_NOTICE); return; }
+    if (trigger.kind === 'slash') {
+      // The line is still the lone '/' it was opened on (a save in between does not change that): its context is now.
+      const controller = draftRef.current, line = currentDoc()?.lines.find(item => item.id === trigger.lineId);
+      if (!controller || !line || line.text.trim() !== '/' || textArea()?.value !== controller.getState().raw) { setBarMode('tools'); setMessage(BAR_LINE_CHANGED); return; }
+      slashCommandRef.current = { lineId: line.id, raw: controller.getState().raw, workspace: currentState(), generation: controller.generation() };
+      void applySlashFolder(scopeId); setBarMode('tools'); return;
+    }
+    if (trigger.kind === 'chain') { setBarMode('tools'); void applyLineFolder(trigger, scopeId); }
+  }
+  /** Stage 2: the folder chips' line under a new head line: `- /이름` and its link in one change, after the same context
+   *  check as the '/' menu (the line, its text, nothing else changed since the head line came). */
+  async function applyLineFolder(trigger: Extract<BarTrigger, { kind: 'chain' }>, scopeId: string) {
+    const controller = draftRef.current, doc = currentDoc(), area = textArea(), docId = propsRef.current.docId;
+    if (!controller || !doc || !area || inputLockedRef.current || propsRef.current.readOnly || composingRef.current || regionPendingRef.current || checkPendingRef.current) return;
+    const before = currentState(), raw = controller.getState().raw, line = doc.lines.find(item => item.id === trigger.lineId);
+    if (raw !== trigger.raw || area.value !== raw || !line || line.text.trim()) { setMessage(BAR_LINE_CHANGED); return; }
+    const slot = { ...before, documents: before.documents.map(entry => entry.id !== docId ? entry
+      : { ...entry, lines: entry.lines.map(item => item.id === line.id ? { ...item, text: `${/^ */.exec(line.text)![0]}- /` } : item) }) };
+    const row = M.rowMeta(slot, docId).find(item => item.id === line.id);
+    if (!row || doc.lines.slice(row.index + 1, row.subtreeEndIndex).some(item => item.text.trim())) { setMessage('이 줄 아래에 들여 쓴 줄이 있어 폴더를 넣지 않았습니다.'); return; }
+    const linked = planFolderPickerLink(slot, docId, line.id, scopeId);
+    if (linked.problem) { setMessage(linked.problem); return; }
+    const done = apply(linked.state, '폴더 선택'), written = draftRef.current?.getState();
+    // One ↶ takes the folder line back and leaves the head line (IV-P3-1's record); the next ↶ takes the head line too.
+    if (written && written.raw !== raw) barFolderUndo.current = { docId, before, after: written.working, raw: written.raw, redo: false, then: trigger.before };
+    if (!await done) return;
+    const lines = M.getDocument(currentState(), docId)?.lines ?? [], at = lines.findIndex(item => item.id === line.id);
+    if (at < 0) return;
+    const caret = lines.slice(0, at + 1).reduce((length, item) => length + item.text.length + 1, -1);
+    pickerRecent.current = [scopeId, ...pickerRecent.current.filter(id => id !== scopeId)].slice(0, 30);
+    textArea()?.focus({ preventScroll: true }); textArea()?.setSelectionRange(caret, caret); editorRef.current?.refresh();
+  }
+  /** Stage 2: [＋ 새 폴더] on the folder chips: the line becomes `- /` (a typed '/' keeps its place) and the folder
+   *  suggestions take the name; × on them gives the '/' back (a chain's line goes back to empty). */
+  function barNewFolder() {
+    const trigger = barTriggerRef.current, area = textArea(), doc = currentDoc();
+    if (!trigger || !area || !doc) return;
+    if (composingRef.current) { setMessage(BAR_COMPOSING_NOTICE); return; }
+    const index = doc.lines.findIndex(item => item.id === trigger.lineId), line = doc.lines[index], before = currentState();
+    setBarMode('tools'); slashCommandRef.current = null;
+    if (!line || (trigger.kind === 'chain' ? line.text.trim() || area.value !== trigger.raw : line.text.trim() !== '/')) { setMessage(BAR_LINE_CHANGED); return; }
+    const start = doc.lines.slice(0, index).reduce((sum, item) => sum + item.text.length + 1, 0);
+    const at = trigger.kind === 'slash' ? start + line.text.indexOf('/') : start + line.text.length;
+    if (!insertNative(at, trigger.kind === 'slash' ? '- ' : '- /', at + 3)) return;
+    const seeded = currentDoc()?.lines[index];
+    if (seeded) folderSeedRef.current = { docId: propsRef.current.docId, lineId: seeded.id, inPlace: true, before, ...(trigger.kind === 'slash' ? { origin: '/' as const } : {}) };
+    area.focus({ preventScroll: true }); requestAnimationFrame(syncPicker);
+  }
+  /** Stage 2: [메뉴] on a typed '/' row: the ＋ menu as the '/' opened it before (the panel takes the keyboard down). */
+  function barMenu() {
+    const trigger = barTriggerRef.current, doc = currentDoc(), index = trigger && doc ? doc.lines.findIndex(item => item.id === trigger.lineId) : -1;
+    setBarMode('tools');
+    if (index >= 0) openCurrentInsertMenu(index);
+  }
+  /** Stage 2 (오늘 시작 줄): today's head line from above the body, in the same press that brings the keyboard up. */
+  function startToday() {
+    const area = textArea();
+    if (!area) return;
+    area.focus({ preventScroll: true });
+    const plan = programTodayStartPlan(area.value, today()), before = currentState();
+    if (plan && insertNative(plan.offset, plan.text, plan.caret)) chainFolders(today(), before);
   }
   /** D11: say why these folder lines do not move by text, and remember which ones it was about (N5 3b review). */
   function refuseFolderIndent(lineIds: string[]) {
@@ -2103,6 +2283,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
             }
           }
           requestAuthoringSlash(beforeRaw,historyType||input?.inputType||'');
+          barTriggerFn.current(beforeRaw,historyType||input?.inputType||'');
           scheduleSave();
         }
         else if (timerRef.current) clearTimeout(timerRef.current);
@@ -2114,6 +2295,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const textarea = host.querySelector<HTMLTextAreaElement>('textarea');
     let lastAuthoringSlash='';
     function requestAuthoringSlash(beforeRaw:string,inputType:string){
+      // Input v2 stage 2: on the phone bar a lone '/' opens the folder chips instead (their [메뉴] opens this menu).
+      if(barShownNow())return;
       if(!propsRef.current.authoringMode||!textarea||composingRef.current
         ||!['insertText','insertReplacementText','insertCompositionText'].includes(inputType))return;
       const raw=textarea.value,caret=textarea.selectionStart;
@@ -2826,6 +3009,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // Input v2 stage 1: a '/' line's menu leads with the folders, the recent ones first ('얹기'; the menu itself stays).
   const slashFolders = panel?.kind === 'insert' && props.authoringMode && !props.folderId && slashCommandRef.current?.lineId === panel.lineId
     ? readFolderPickerChoices(createFolderPickerIndex(draft.working.folders), '', null, { recentIds: pickerRecent.current }).candidates.slice(0, 12) : null;
+  // Stage 2: the bar's folder chips, the same choices and order as the '/' menu's.
+  const barFolderChoices = barMode === 'folders' && props.authoringMode && !props.folderId
+    ? readFolderPickerChoices(createFolderPickerIndex(draft.working.folders), '', null, { recentIds: pickerRecent.current }).candidates.slice(0, 12) : [];
+  // Stage 2 (오늘 시작 줄): offered above the body while today has no head line and it would go first.
+  const todayStart = props.authoringMode && !props.folderId && !props.readOnly && props.active !== false
+    ? (doc => doc ? programTodayStartPlan(M.raw(doc), today()) : null)(currentDoc()) : null;
   // ↶ ↷ in the toolbar and in the bar's ⋯ row are off for the same reasons.
   const undoOff = inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending;
   // 7k stage 1: in a folder view ↷ redoes a saved step as ↶ undoes one (redoInput); none while its input waits.
@@ -2904,9 +3093,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       {place === 'bar' && <button type="button" data-bar-mode="more" aria-label="더 보기 · 되돌리기·반복·추가 메뉴" title="되돌리기·다시 하기·반복·추가 메뉴" disabled={barOff}
         onPointerDown={keep} onClick={() => setBarMode('more')}>{BAR_MORE_ICON}</button>}
     </>;
+    // Stage 2: from a typed `[`, the day its digits name comes first ("11월 12일 목"; another year with the year).
+    const typed = barTriggerRef.current?.kind === 'bracket' ? programBracketDate(bracketText, today()) : null;
+    const typedLabel = typed && ((year, month, day) => `${year !== Number(today().slice(0, 4)) ? `${year}년 ` : ''}${month}월 ${day}일 ${'일월화수목금토'[new Date(Date.UTC(year, month - 1, day)).getUTCDay()]}`)(...typed.split('-').map(Number) as [number, number, number]);
     const dates = <>
       <span className={styles.barHeading}>{barLine.isTask ? '할 일 날짜' : '날짜 줄'}</span>
       <div className={styles.barChips} role="group" aria-label="날짜 고르기">
+        {typed && <button type="button" key="typed" data-bar-chip="typed" disabled={barOff} data-held={heldBar === 'date' && barChipDate.current === typed ? 'true' : undefined}
+          aria-label={typedLabel ?? typed} onPointerDown={keep} onClick={() => pressDateChip(typed)}>{typedLabel}</button>}
         {programLineDateChips(today()).map(chip => <button type="button" key={chip.key} data-bar-chip={chip.key} disabled={barOff}
           data-held={heldBar === 'date' && barChipDate.current === chip.date ? 'true' : undefined} aria-label={`${chip.label} · ${chip.detail}`}
           onPointerDown={keep} onClick={() => pressDateChip(chip.date)}>{chip.label}<small>{barDay(chip.date)}</small></button>)}
@@ -2921,7 +3115,18 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       {barButton('menu', <BarIcon name="menu" />, '추가 메뉴', '/', false)}
       {close('도구 닫기')}
     </>;
-    return place === 'bar' && barMode === 'date' && body ? dates : place === 'bar' && barMode === 'more' ? more : tools;
+    // Stage 2: the folder chips (from a typed '/', or after a new head line): folders, ＋ 새 폴더, [메뉴] for a '/', ×.
+    const folders = <>
+      <span className={styles.barHeading}>폴더</span>
+      <div className={styles.barChips} role="group" aria-label="폴더 고르기">
+        {barFolderChoices.map(folder => <button type="button" key={folder.id} data-bar-folder={folder.id} disabled={barOff} title={folder.path}
+          onPointerDown={keep} onClick={() => runBarFolder(folder.id)}>{folder.title}</button>)}
+        <button type="button" data-bar-folder="new" disabled={barOff} onPointerDown={keep} onClick={barNewFolder}>＋ 새 폴더</button>
+      </div>
+      {barTriggerRef.current?.kind === 'slash' && <button type="button" className={styles.barMenu} data-bar-slash-menu disabled={barOff} onPointerDown={keep} onClick={barMenu}>메뉴</button>}
+      {close('폴더 닫기')}
+    </>;
+    return place === 'bar' && barMode === 'date' && body ? dates : place === 'bar' && barMode === 'more' ? more : place === 'bar' && barMode === 'folders' && body ? folders : tools;
   }
   /** W2: the move notice and the last message sit under the body (right above the keyboard bar while typing on
    *  a phone), never between the toolbar and the body: the body keeps its top and ends above them instead.
@@ -3054,6 +3259,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       <button type="button" data-gather-end disabled={inputLocked || !!props.readOnly || draft.saving || composingRef.current} onClick={props.onContinueWholeDocument ? continueWholeDocument : props.onShowWholeDocument}>전체 보기</button><button type="button" onClick={props.onShowFolderTasks}>폴더 전체 할 일</button>
       {!folderView?.regions.length && <p>이 분류에 맞는 내용이 없습니다. 전체 문서에서 확인할 수 있습니다.</p>}
     </div>}
+    {/* Input v2 stage 2: 오늘 시작 줄 — today's head line in one press (focus first, so a phone's keyboard comes up). */}
+    {todayStart && <button type="button" className={styles.todayStart} data-today-start disabled={inputLocked || draft.saving} onClick={startToday}>
+      <span aria-hidden="true">＋</span>오늘 {programCalendarDate(today(), today())} 쓰기</button>}
     <div ref={hostRef} className={`${styles.host}${props.directWriting ? ` ${styles.directWriting}` : ''}`} hidden={!!props.folderId} data-native-editor="v11-core" />
     {notices}
     {folderView && <ProgramFolderRegionEditor key={`${props.docId}:${props.folderId}`} styles={regionStyles} view={folderView} readOnly={!!props.readOnly} locked={inputLocked || draft.saving} mode={mode} listEnterV2={!!props.authoringMode}
