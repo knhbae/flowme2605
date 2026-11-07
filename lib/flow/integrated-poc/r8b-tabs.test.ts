@@ -41,7 +41,7 @@ test('the host tabs go to the space first when needed, then ask the port; Flow a
   const calls: string[] = [];
   const port = { choose: async (tab: string) => { calls.push(`choose ${tab}`); return true; } };
   const make = (view: string) => evaluate<(tab: string) => Promise<void>>(fn(alpha, 'chooseMainTab'), {
-    destination: { view }, navigate: async (next: { view: string }) => { calls.push(`navigate ${next.view}`); }, mainTabs: { current: port },
+    destination: { view }, navigate: async (next: { view: string }) => { calls.push(`navigate ${next.view}`); }, mainTabs: { current: port }, moveFlight: { current: null },
   });
   await make('community')('today');
   await make('space')('all');

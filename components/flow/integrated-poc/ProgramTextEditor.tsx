@@ -452,7 +452,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // rides with the held press ('date'); 폴더 writes its `- /` line once and the folder suggestions take over.
   const [barMode, setBarModeState] = useState<'tools' | 'date' | 'more'>('tools'), barModeRef = useRef<{ mode: 'tools' | 'date' | 'more'; line: number }>({ mode: 'tools', line: -1 });
   const barDateUndo = useRef<{ docId: string; taskId: string; before: TextWorkspaceState; after: TextWorkspaceState; date: string; time: string; raw: string; redo: boolean } | null>(null);
-  const barChipDate = useRef<string | null>(null), folderSeedRef = useRef<{ docId: string; lineId: string; inPlace: boolean } | null>(null), datePickRef = useRef<HTMLInputElement>(null);
+  const barChipDate = useRef<string | null>(null), folderSeedRef = useRef<{ docId: string; lineId: string; inPlace: boolean; before: TextWorkspaceState } | null>(null), datePickRef = useRef<HTMLInputElement>(null);
+  // IV-P3-1 (11/7): a folder line the bar's 폴더 or the '/' menu wrote (its text and link in one go): the next ↶, while the
+  // text is as it left it, puts back the document from before the press; ↷ then the folder again.
+  const barFolderUndo = useRef<{ docId: string; before: TextWorkspaceState; after: TextWorkspaceState; raw: string; redo: boolean } | null>(null);
   // S5: why the last ⇤·⇥ was refused inside the editor's own check (the model's reason, or a linked folder line).
   const indentRefusal = useRef<ProgramIndentRefusal | null>(null);
   // N5 3b review: which lines the shown D11 reason is about, so a later D11 B move takes down only a reason that ended.
@@ -636,6 +639,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       dismissPicker();
       const doc = currentDoc(), at = doc?.lines.findIndex(line => line.id === lineId) ?? -1;
       if (doc && at >= 0) { const end = doc.lines.slice(0, at + 1).reduce((length, line) => length + line.text.length + 1, -1); area.setSelectionRange(end, end); }
+      rememberBarFolder(lineId);
       editorRef.current?.refresh(); scheduleSave(); return;
     }
     if (choice.kind === 'outdent') { pickerHold.cancel(); setPickerHeld(false); editorRef.current?.indent(true); queueMicrotask(syncPicker); return; }
@@ -652,6 +656,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       const caret = lines.slice(0, at + 1).reduce((length, line) => length + line.text.length + 1, -1);
       area.setSelectionRange(caret, caret); editorRef.current?.refresh();
       pickerRecent.current = [choice.folder.id, ...pickerRecent.current.filter(id => id !== choice.folder.id)].slice(0, 30);
+      rememberBarFolder(lineId);
       if (linked.moved && old?.kind === 'scope') showFolderMove(before, installed.working, lineId, old.scopeId, before.folders.find(item => item.id === old.scopeId)?.title ?? '');
     }
     void pending;
@@ -1129,12 +1134,35 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const area = textArea();
     if (propsRef.current.folderId || !area) return;
     if (action === 'date') { const date = barChipDate.current; barChipDate.current = null; if (date) runDateChoice(date); return; }
-    const plan = programFolderSeedPlan(area.value, area.selectionStart);
+    const plan = programFolderSeedPlan(area.value, area.selectionStart), before = currentState();
     folderSeedRef.current = null;
     if (!insertNative(plan.offset, plan.text, plan.caret)) return;
     const seeded = currentDoc()?.lines[area.value.slice(0, plan.caret).split('\n').length - 1];
-    if (seeded?.text === '- /') folderSeedRef.current = { docId: propsRef.current.docId, lineId: seeded.id, inPlace: plan.text === '- /' };
+    if (seeded?.text === '- /') folderSeedRef.current = { docId: propsRef.current.docId, lineId: seeded.id, inPlace: plan.text === '- /', before };
     requestAnimationFrame(syncPicker);
+  }
+  /** IV-P3-1: the suggestions finished the `- /` line the bar's 폴더 wrote: one ↶ takes back both (a typed `- /` keeps
+   *  the usual folder steps). */
+  function rememberBarFolder(lineId: string) {
+    const seed = folderSeedRef.current, state = draftRef.current?.getState();
+    if (!seed || !state || seed.lineId !== lineId || seed.docId !== propsRef.current.docId) return;
+    folderSeedRef.current = null;
+    barFolderUndo.current = { docId: seed.docId, before: seed.before, after: state.working, raw: state.raw, redo: false };
+  }
+  function undoBarFolder() { return stepBarFolder(false); }
+  function redoBarFolder() { return stepBarFolder(true); }
+  function stepBarFolder(redo: boolean) {
+    const last = barFolderUndo.current, state = draftRef.current?.getState();
+    if (!last || !state || last.docId !== propsRef.current.docId || state.raw !== last.raw) { if (last && state && state.raw !== last.raw) barFolderUndo.current = null; return false; }
+    if (last.redo !== redo) return false;
+    if (actionsDisabled() || composingRef.current || regionPendingRef.current) return true;
+    const done = apply(redo ? last.after : last.before, redo ? '폴더 선택' : '폴더 선택 되돌리기');
+    // The folder step's own notice (and its 되돌리기) would now undo something already undone.
+    folderNoticeRef.current = null; setFolderNotice(null);
+    const raw = draftRef.current?.getState().raw;
+    barFolderUndo.current = raw !== undefined && raw !== last.raw ? { ...last, raw, redo: !redo } : null;
+    void done;
+    return true;
   }
   /** A task line (N9): its own date, as the line menu's chip sets it. Any other line: the day's head line (Q1, R1). */
   function runDateChoice(date: string) {
@@ -1201,13 +1229,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   /** The toolbar's ↶ ↷ 반복, also run from the bar's ⋯ row (Q2: hidden with the toolbar while the keyboard is up). */
   function undoInput() {
     const props = propsRef.current, state = draftRef.current?.getState();
+    if (undoBarFolder()) return;
     if (undoFolderMove() || undoRepeatCheck()) return;
     if (undoBarDate()) return;
     if (props.folderId && regionPendingRef.current) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if (props.authoringMode && !props.folderId) editorRef.current?.undo(); else if (props.onUndo && !state?.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo();
   }
   function redoInput() {
     const props = propsRef.current, state = draftRef.current?.getState();
-    if (redoBarDate()) return;
+    if (redoBarFolder() || redoBarDate()) return;
     if (orderHistoryRef.current.hasEntries() || props.authoringMode) nativeHistory('historyRedo'); else if (props.onRedo && !state?.dirty) void props.onRedo();
   }
   function openRepeatFromTools() {
@@ -1234,7 +1263,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (linked.problem) { setMessage(linked.problem); return; }
     dismissPanel(false, false);
     // Not as a picker target: the draft would re-plan from the '/' line, which is not a `- /` line yet.
-    if (!await apply(linked.state, '폴더 선택')) return;
+    const done = apply(linked.state, '폴더 선택'), written = draftRef.current?.getState();
+    // IV-P3-1: one ↶ puts the '/' line back as it was (installed before the save starts, so a ↶ during it counts).
+    if (written && written.raw !== raw) barFolderUndo.current = { docId, before, after: written.working, raw: written.raw, redo: false };
+    if (!await done) return;
     const lines = M.getDocument(currentState(), docId)?.lines ?? [], at = lines.findIndex(item => item.id === line.id);
     if (at < 0) return;
     const caret = lines.slice(0, at + 1).reduce((length, item) => length + item.text.length + 1, -1);
@@ -3069,6 +3101,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {props.onOpenPersonalAuthoring && <><h4>묶음 반복</h4><button type="button" onClick={() => { closePanel(); props.onOpenPersonalAuthoring?.(); }}>반복·Flow 만들기…<small>여러 할 일과 단계</small></button></>}
       </div>)(repeatTarget(panel.lineId))}
       {panel.kind === 'insert' && <div className={styles.choices}>
+        {/* VA-P3-1 (11/7): the folder line's own open, by name (the unseen open area on its line no longer takes taps). */}
+        {row?.kind === 'scope' && row.scopeKind === 'folder' && row.scopeId && props.onOpenScope && <button type="button" data-open-scope onClick={() => {
+          const scopeId = currentRow(panel.lineId)?.scopeId; dismissPanel(false, false);
+          if (scopeId) void saveNow().then(saved => { if (saved) propsRef.current.onOpenScope?.(scopeId); });
+        }}>분류에서 이 폴더 보기</button>}
         {slashFolders && <section className={styles.menuSection} aria-label="폴더 줄 넣기"><h4>폴더</h4><div className={styles.dateChips} role="group" aria-label="폴더 고르기">
           {slashFolders.map(folder => <button type="button" key={folder.id} data-slash-folder={folder.id} disabled={insertionDisabled} title={folder.path}
             onClick={() => void applySlashFolder(folder.id)}>{folder.title}</button>)}

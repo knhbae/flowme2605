@@ -99,7 +99,7 @@ test('the editor wires the bar: one write per chip through its existing paths, h
   const choice = editor.slice(editor.indexOf('function runDateChoice('), editor.indexOf('function pickBarDate('));
   assert(choice.includes('const done = applyDateChip(line.id, date), state = draftRef.current?.getState();') && choice.includes('if (plan) insertNative(plan.offset, plan.text, plan.caret);'));
   // N9's path is not in the native history: ↶ right after it sets the old date back the same way, ↷ the chip's again.
-  assert(editor.includes('if (undoBarDate()) return;') && editor.includes('if (redoBarDate()) return;'));
+  assert(editor.includes('if (undoBarDate()) return;') && editor.includes('if (redoBarFolder() || redoBarDate()) return;'));
   assert(editor.includes("apply(last.after, '항목 날짜·시간', { taskId: last.taskId, date: last.date, time: last.time }) : apply(last.before, '항목 날짜·시간 되돌리기')"));
   // 폴더 writes `- /` through insertNative and opens the existing suggestions; × takes back only that untouched line.
   const write = editor.slice(editor.indexOf('function runBarWrite('), editor.indexOf('function runDateChoice('));
@@ -109,7 +109,7 @@ test('the editor wires the bar: one write per chip through its existing paths, h
   assert(editor.includes('onClick={undoInput}') && editor.includes('onClick={redoInput}') && editor.includes("if (action === 'undo') { undoInput(); return; }"));
   // The '/' menu leads with folders; a folder is one apply with the slash context check.
   const slash = editor.slice(editor.indexOf('async function applySlashFolder('), editor.indexOf('function slashNewFolder('));
-  assert(slash.includes("setMessage('추가 위치의 문맥이 바뀌었습니다. 현재 줄에서 다시 열어 주세요.')") && slash.includes("await apply(linked.state, '폴더 선택')"));
+  assert(slash.includes("setMessage('추가 위치의 문맥이 바뀌었습니다. 현재 줄에서 다시 열어 주세요.')") && slash.includes("const done = apply(linked.state, '폴더 선택')"));
   // Focus mode is CSS on the existing keyboard signal only.
   const css = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.module.css', import.meta.url), 'utf8');
   assert(css.includes(':global([data-writing-keyboard="true"]) .editor:has(.writingBar) .toolbar:not(:has(details[open]))'));

@@ -72,6 +72,10 @@ const AlphaPreservationPanel = dynamic(() => import('./AlphaPreservationPanel').
 const capability = { discovery: true, publication: true, copyInspection: true, revisionHistory: false, creatorNavigation: true, taskClassification: true };
 type Controller = ReturnType<typeof createAlphaSyncController>;
 type UiRecovery = ReturnType<typeof createAlphaUiRecovery>;
+/** What became of a move (navigate()). */
+type ProgramMoveResult = 'moved' | 'refused' | 'not-saved' | 'late' | 'stayed' | 'superseded' | 'dropped';
+/** Save wait P3: a move waiting on its save, the place it goes once saved, and its result for a press that took it over. */
+type ProgramMoveFlight = { target: { next: ProgramDestination; chooseCreatorEntry: boolean }; done: Promise<ProgramMoveResult> };
 // Presentation identity only. Never copy private draft text into announcement state.
 function reviewAnnouncementState(snapshot: AlphaSyncSnapshot | null | undefined) {
   return JSON.stringify([snapshot?.ownerId, snapshot?.status, snapshot?.busy, snapshot?.pending?.requestId,
@@ -180,6 +184,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // Save wait (11/7): what a move waiting on its save shows (navigate()). moveSeq marks the latest move; moveStay ends its wait.
   const [moveWait, setMoveWait] = useState<{ seq: number; phase: 'saving' | 'late' | 'late-saved' | 'not-saved' } | null>(null);
   const moveSeq = useRef(0), moveStay = useRef<(() => void) | null>(null), moveOpener = useRef<HTMLElement | null>(null);
+  // Save wait P3: the move waiting now, with the place it goes once saved (the last one pressed meanwhile).
+  const moveFlight = useRef<ProgramMoveFlight | null>(null);
   /** 머무르기 or 닫기: the notice goes and focus goes back to what started the move (a tab, usually). */
   function closeMoveNotice(stay: boolean) {
     if (stay) moveStay.current?.(); else setMoveWait(null);
@@ -1203,9 +1209,40 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   /** What became of a move: 'moved'; not moved because a save or held input refused it ('refused' before saving,
    *  'not-saved', 'late'); or because the person stayed, a newer move took over, or the session changed meanwhile. */
   async function navigate(next: ProgramDestination, chooseCreatorEntry = false): Promise<'moved' | 'refused' | 'not-saved' | 'late' | 'stayed' | 'superseded' | 'dropped'> {
-    if (externalRef.current || controller.current?.snapshot().pending) { setMessage('먼저 저장 결과와 보관 입력을 확인해 주세요.'); return 'refused'; }
+    // Save wait P3 (11/7): a press while a move already waits on a save that went out takes that move over. The save
+    // is not cut short and nothing is skipped: once it ends the move goes to the last place pressed, whose caller then
+    // hears how it went; the caller taken over hears 'superseded'.
+    const flight = moveFlight.current;
+    if (flight && (externalRef.current || controller.current?.snapshot().pending)) {
+      const mine = { next, chooseCreatorEntry };
+      flight.target = mine;
+      const result = await flight.done;
+      return flight.target === mine ? result : 'superseded';
+    }
+    if (externalRef.current) { setMessage('먼저 저장 결과와 보관 입력을 확인해 주세요.'); return 'refused'; }
+    // Save wait P3: a save already on its way (an autosave, say) no longer refuses the press: the move first waits for
+    // its answer, under the same notice, 머무르기 and limit, then saves the editors and moves. An answer that is not a
+    // save (a conflict, a lost answer) does not move. Held outside input still refuses.
+    const afterPending = !!controller.current?.snapshot().pending;
     const visit = destinationRef.current, epoch = sessionEpochRef.current, store = controller.current;
     if (!captureInput()) return 'refused';
+    const own = { next, chooseCreatorEntry };
+    let settle: (result: ProgramMoveResult) => void = () => {};
+    const current: ProgramMoveFlight = { target: own, done: new Promise<ProgramMoveResult>(resolve => { settle = resolve; }) };
+    moveFlight.current = current;
+    let result: ProgramMoveResult = 'dropped';
+    try { result = await moveAfterSave(current, visit, epoch, store, afterPending); }
+    finally { if (moveFlight.current === current) moveFlight.current = null; settle(result); }
+    return current.target === own ? result : 'superseded';
+  }
+  /** Save wait P3: until the save on its way has its answer; false when that answer is not a save (or none comes). */
+  async function pendingSettled(store: typeof controller.current) {
+    const failed = (status: string | undefined) => ['conflict', 'recovery-required', 'session-expired', 'checking-result'].includes(status ?? '');
+    for (let waited = 0; store && store === controller.current && store.snapshot().pending && !failed(store.snapshot().status) && waited < 60_000; waited += 100)
+      await new Promise(resolve => setTimeout(resolve, 100));
+    return !!store && store === controller.current && !store.snapshot().pending && !failed(store.snapshot().status);
+  }
+  async function moveAfterSave(flight: ProgramMoveFlight, visit: ProgramDestination, epoch: typeof sessionEpochRef.current, store: typeof controller.current, afterPending = false): Promise<ProgramMoveResult> {
     // Save wait (11/7): the move still saves every editor first and never skips it. Past 0.8 s it says so and offers 머무르기;
     // past 10 s, or when the save cannot finish, it does not move and says the input is on this device (복구함). A wait
     // that ends without moving lets the save go on. A newer move takes over: the older one stops waiting and does not move.
@@ -1219,7 +1256,10 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     let outcome: ProgramMoveWaitOutcome;
     try {
       outcome = await waitProgramMoveFlush({
-        flush: async () => { for (const port of allEditors()) if (port && !await port.flushAll()) return false; return true; },
+        flush: async () => {
+          if (afterPending && !await pendingSettled(store)) return false;
+          for (const port of allEditors()) if (port && !await port.flushAll()) return false; return true;
+        },
         onWaiting: () => { if (moveSeq.current === seq) setMoveWait({ seq, phase: 'saving' }); },
         stayed,
         onLateSettled: saved => setMoveWait(shown => shown?.seq === seq && shown.phase === 'late' ? { seq, phase: saved ? 'late-saved' : 'not-saved' } : shown),
@@ -1233,6 +1273,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     setMoveWait(null);
     if (disposed.current || visit !== destinationRef.current || epoch !== sessionEpochRef.current || store !== controller.current
       || currentOwnerRef.current !== session.userId) return 'dropped';
+    // The last place pressed while this move waited (save wait P3), or its own.
+    let { next } = flight.target;
+    const { chooseCreatorEntry } = flight.target;
     if (chooseCreatorEntry) { creatorEntryReturn.current = visit; setCatalogDetailOpen(false); }
     setCreatorEntryChoices(next.view === 'creator' && chooseCreatorEntry);
     if (next.view === 'creator') { setCreatorSeen(true); setCreatorSelection(next.id); }
@@ -1556,7 +1599,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // A new saved input, or saved input on opening the app, gets one line until the user closes it.
   const savedNoticeShown = savedTotal > 0 && (savedNoticeClosedAt === null || savedTotal > savedNoticeClosedAt);
   async function chooseMainTab(tab: ProgramMainTab) {
-    if (destination.view !== 'space') await navigate({ view: 'space' });
+    // Save wait P3: while another move waits, this tab takes it over (it comes back to the space first).
+    if (destination.view !== 'space' || moveFlight.current) await navigate({ view: 'space' });
     await mainTabs.current?.choose(tab);
   }
   // UX B3 (11/7): the Flow and 나 tabs move by navigate() alone, which keeps input, locks the editors, saves them all and

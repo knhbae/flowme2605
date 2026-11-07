@@ -442,3 +442,8 @@
   .page[data-alpha-frame="b"] .globalNavigation button[aria-current] svg path { stroke-width: 2.4; }
   .page[data-alpha-frame="b"] .globalNavigation button:focus-visible { outline-color: var(--flowme-b-primary); }
 }
+/* WP-P3-1 (11/7): the phone tabs sit above the page: on a short screen (390x480) the empty first screen's cards, in a
+   positioned .space later in the page, were drawn over them and took their taps. */
+@media (max-width: 700px) {
+  .page[data-alpha-frame="b"] .globalNavigation { z-index: 40; }
+}

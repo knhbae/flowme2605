@@ -18,7 +18,8 @@ test('Flow and 나 call navigate() and nothing of what it does (input, locks, sa
   }
   // navigate() keeps input, locks every editor, saves them all, checks, then moves (since save wait 11/7 the save is
   // waited on with a notice and a limit; move-save-wait.test.ts).
-  const move = body('navigate');
+  // Save wait P3 (11/7): the wait and the move are moveAfterSave(), which navigate() hands them to.
+  const move = body('navigate') + body('moveAfterSave');
   for (const step of ["if (!captureInput()) return 'refused';",'allEditors().map(port => port?.lockInput())', 'if (port && !await port.flushAll()) return false;', "if (outcome !== 'saved')"])
     assert(move.includes(step), step);
   const tabs = workspace.slice(workspace.indexOf('data-main-tab="flow"'), workspace.indexOf('</nav>}', workspace.indexOf('data-main-tab="flow"')));
