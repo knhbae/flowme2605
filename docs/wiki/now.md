@@ -144,3 +144,4 @@
 - 11/8 04:2x 누적본 운영 반영: 75eaee53 / MmoYvyV4-L4lXOI-45Nf2 (light deploy run 22, QA_GO cumulative-75ee-qa-20261108-0420, package 3bce345f…, DB 0, 경로 정상). 4배 감속 42·80구역·261줄 9/9, 키 빠짐 0/89. P3: 날짜별/폴더별 단추 40px, 폴더 기억 키 로그아웃 때 남음, 새로고침 폭주 60초에서 80구역 1/6 복구함(다시 저장 가능). 다음: Flow 1·2·4 묶음(135889a3) QA 중.
 - 11/8 05:3x Flow 1·2·4단계 운영 반영: 135889a3 / X7qXi90w6Tkmrnp0p2nEL (light deploy run 23, QA_GO flow-s124-qa-20261108-0527, package 2e8a1633…, DB 0, 경로 정상). P3: 흰색 리터럴 3줄, scheme 없는 youtube.com은 낱말 검색, 띠 접기 키 로그아웃 때 남음. Flow 3단계 연결 줄 보류, 5·6단계는 ★승인 대상. 개발 대기(사용자 실폰 피드백 뒤 결정).
 - 11/8 05:4x 디스크 정리: D: 9.6GB → 44GB. 11/5~11/8 QA 폴더의 다시 만들 수 있는 .next 43개(약 34GB) 삭제. 운영(flow-s124-qa)·직전(cumulative-75ee-qa)·N6r 복귀·의존성 루트·manifest guard는 제외, 삭제 뒤 운영 BUILD_ID·health 200 확인.
+- 11/8 08:17 사용자 실폰(폴더별 보기·Flow 탭): "난잡함, 기획·요구사항·UX 먼저 했나" → 기능 개발 멈춤, 기획 PRD 작성 시작(planning/20261108-prd/). 그 뒤 UX 전체 화면 설계 → 사용자 확인 → 개발.
