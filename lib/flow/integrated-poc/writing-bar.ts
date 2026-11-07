@@ -1,7 +1,8 @@
 import type { TextEditorRowMeta, TextWorkspaceState } from './text-workspace';
 
-/** Writing model A keyboard bar / toolbar buttons, in bar order (☐ ← → ↵ ＋). */
-export type WritingBarAction = 'task' | 'outdent' | 'indent' | 'enter' | 'menu';
+/** Writing model A keyboard bar / toolbar buttons (☐ ← → ↵ ＋). Input v2 stage 1 (11/7) adds the bar's writes from
+ *  its chip rows: a date chip, the folder line, and ↶ ↷ 반복 from ⋯. All are held through a composition alike. */
+export type WritingBarAction = 'task' | 'outdent' | 'indent' | 'enter' | 'menu' | 'date' | 'folder' | 'undo' | 'redo' | 'repeat';
 /** `markerLock`: why ☐ cannot act on this line. `structureLock`: why ← or → is off beyond the usual
  *  first-item and depth rules (a folder view keeps saved lines' structure). */
 export type WritingBarLine = { canOutdent: boolean; canIndent: boolean; isTask: boolean; markerLock: string | null; structureLock?: string | null };

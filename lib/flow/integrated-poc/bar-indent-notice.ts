@@ -3,7 +3,8 @@ import type { WritingBarAction } from './writing-bar';
 // S5 (real accounts, 10/31): → on the writing bar did nothing and said nothing. A press held for a save was dropped
 // by the next keystroke, and a refused indent was ignored. Every way a bar press ends without acting says why.
 
-const NAME: Record<WritingBarAction, string> = { indent: '들여쓰기', outdent: '내어쓰기', task: '할 일 표시', enter: '메모 줄 추가', menu: '추가 메뉴' };
+const NAME: Record<WritingBarAction, string> = { indent: '들여쓰기', outdent: '내어쓰기', task: '할 일 표시', enter: '메모 줄 추가', menu: '추가 메뉴',
+  date: '날짜 넣기', folder: '폴더 줄 넣기', undo: '되돌리기', redo: '다시 하기', repeat: '반복 열기' };
 const head = (action: WritingBarAction) => `${NAME[action]}를 하지 않았습니다.`;
 
 /** Why a held press was let go before it ran. */

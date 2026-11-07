@@ -453,3 +453,36 @@
 @media (pointer: coarse) {
   .host :global(.tle-root:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-indent-guide) { visibility: hidden; }
 }
+
+/* Input v2 stage 1 (11/7): the phone bar [☐][날짜][폴더][⇤][⇥][↳][⋯]. 날짜 and 폴더 carry a word (only their icons
+   under 380px). 날짜 and ⋯ turn the bar into a chip row in place, as tall as the bar; × gives the tools back. */
+@media (max-width: 700px) {
+  .editor:has(.host textarea:focus, [data-folder-region] textarea:focus, .writingBar :focus) .writingBar { gap: 2px; padding: 0 4px; }
+  .writingBar > button.barWide { flex: 0 0 auto; width: auto; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 2px; padding: 0 4px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  /* Seven buttons: each 44px (the page's 48px button floor made them 48), so with the words on 날짜·폴더 a 390px bar
+     leaves the status about 40px, where '저장됨' fits at 12px. The date picker's input takes no room. */
+  .editor .writingBar > button { min-width: 44px; }
+  .writingBar > .barStatus:not([data-warn]) { font-size: 12px; }
+  .editor .writingBar > input[type="date"] { position: absolute; left: 0; bottom: 0; width: 1px; height: 1px; min-height: 0; padding: 0; border: 0; opacity: 0; pointer-events: none; }
+  .writingBar > button.barWide > svg { flex: none; width: 18px; height: 18px; }
+  .barHeading { flex: none; max-width: 76px; padding: 0 2px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--flowme-b-muted); font-size: 13px; }
+  .barChips { display: flex; flex: 1; min-width: 0; gap: 4px; overflow-x: auto; scrollbar-width: none; align-items: center; }
+  /* A chip is its word over its day, so four fit beside the heading and × on a 360px phone. */
+  .barChips > button { position: relative; isolation: isolate; flex: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; min-width: 44px; height: 44px; min-height: 44px; padding: 0 8px; border: 0; border-radius: 0; background: transparent; color: var(--flowme-b-primary); font-size: 14px; font-weight: 600; line-height: 16px; white-space: nowrap; }
+  .barChips > button::before { content: ''; position: absolute; z-index: -1; inset: 2px 0; border: 1px solid var(--flowme-b-line); border-radius: 12px; background: var(--flowme-b-surface-subtle); }
+  .barChips > button > small { color: var(--flowme-b-muted); font-size: 12px; font-weight: 400; line-height: 14px; }
+  /* In a chip row the bar's quiet copy of the status steps aside (the tool line keeps the live one); a warning stays. */
+  .writingBar:has(.barChips, .barClose) > .barStatus:not([data-warn]) { display: none; }
+  .barChips > button[data-held='true']::before { box-shadow: inset 0 0 0 2px var(--flowme-b-primary-strong); }
+  .writingBar > button.barClose { margin-left: auto; color: var(--flowme-b-muted); }
+}
+@media (max-width: 380px) {
+  .writingBar > button.barWide { width: 44px; padding: 0; }
+  .writingBar > button.barWide > span, .barHeading { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  /* No room left for a quiet status beside seven buttons; a warning still shows (the tool line keeps the live one). */
+  .writingBar > .barStatus:not([data-warn]) { display: none; }
+}
+/* Input v2 stage 1 (Q2): while the keyboard is up on a phone (the page's data-writing-keyboard, read from the visual
+   viewport; when it cannot tell, nothing changes) the tool line steps aside so the body shows more lines. Its status
+   stays for screen readers, ↶ ↷ are in the bar's ⋯, and an open recovery box brings the line back. */
+:global([data-writing-keyboard="true"]) .editor:has(.writingBar) .toolbar:not(:has(details[open])) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

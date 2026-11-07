@@ -98,7 +98,9 @@ test('title rows: the writing title opens the document sheet, ⋯ keeps document
 
 test('toolbar: ↶ ↷ and 반복 N; the Flow·반복 box is a sheet that stays mounted, and the "…" keeps editing tools', () => {
   const editor = read('ProgramTextEditor.tsx');
-  assert(editor.includes("{props.authoringMode && <button type=\"button\" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId} title=\"입력 다시 하기 · Ctrl+Y\" aria-label=\"입력 다시 하기\""));
+  // Input v2 stage 1: ↷'s rule is shared with the bar's ⋯ row (redoOff), unchanged.
+  assert(editor.includes("{props.authoringMode && <button type=\"button\" disabled={redoOff} title=\"입력 다시 하기 · Ctrl+Y\" aria-label=\"입력 다시 하기\""));
+  assert(editor.includes('const redoOff = inputLocked || !!props.readOnly || draft.saving || !!props.folderId;'));
   // N10 (SPEC 5): [반복] opens 이 줄 반복 beside 반복·Flow 만들기; with no repeat context it opens the sheet as before.
   assert(editor.includes('{props.repeatLabel && props.onOpenPersonalAuthoring && <button type="button" className={styles.repeatButton} aria-haspopup="dialog" onClick={() => {'));
   assert(editor.includes('if (!props.repeatContext) { props.onOpenPersonalAuthoring?.(); return; }') && editor.includes('반복·Flow 만들기…<small>여러 할 일과 단계</small>'));

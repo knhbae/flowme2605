@@ -375,6 +375,11 @@
   .page[data-alpha-frame="b"][data-note-layout="true"]:not([data-writing-keyboard="true"]):has([data-program-period="documents"][aria-current="page"]) { padding-top: 0; background: var(--flowme-b-surface); }
   .page[data-alpha-frame="b"][data-note-layout="true"]:not([data-writing-keyboard="true"]):has([data-program-period="documents"][aria-current="page"]) .workPane { padding-top: 4px; padding-bottom: 0; }
 }
+/* Input v2 stage 1 (Q2, focus mode): with the keyboard up the note screens' header holds nothing (its tabs are hidden
+   then), so it takes no room either; the title row and tool line step aside in their own files. */
+@media (max-width: 700px) {
+  .page[data-alpha-frame="b"][data-note-layout="true"][data-writing-keyboard="true"] > .header { min-height: 0; height: 0; }
+}
 /* W11: the development notice is one line here as in 쓰기, until 확인 (shared per device). */
 .page[data-alpha-frame="b"][data-browse-layout] .devNotice { margin: 0 0 8px; background: var(--flowme-b-surface-subtle); }
 .page[data-alpha-frame="b"][data-browse-layout] .devNotice > .notice { padding: 0 10px; margin: 0; border: 0; border-radius: 0; background: transparent; font-size: 13px; line-height: 20px; }

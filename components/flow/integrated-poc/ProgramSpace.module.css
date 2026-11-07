@@ -522,3 +522,5 @@
 .recentPair { justify-content: flex-start; gap: 0; padding: 0 8px; }
 .space .recentPair button { flex: 0 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .space .recentPair button + button::before { content: '·'; margin-right: 8px; color: var(--flowme-b-line); }
+/* Input v2 stage 1 (Q2): the title row steps aside too while the keyboard is up (see the editor's tool line). */
+:global([data-writing-keyboard="true"]) .space .docHeading:has(.titleButton) { display: none; }
