@@ -123,16 +123,32 @@ export function restrictProgramRecent(state: TextWorkspaceState, documentId: str
 /** `restricted` with the hidden items of `full` put back where they were: each run of them right before the first item
  *  that followed it in `full` and is still in `restricted`, else at the end. Leaving the hidden items out of the result
  *  gives `restricted` again, and weaving `full`'s own restriction gives `full` again. */
-export function weaveProgramRecent<T>(full: readonly T[], restricted: readonly T[], hidden: (item: T) => boolean, key: (item: T) => string): T[] {
+export function weaveProgramRecent<T>(full: readonly T[], restricted: readonly T[], hidden: (item: T) => boolean, key: (item: T) => string,
+  tailBeforeNew = false): T[] {
   const present = new Set(restricted.map(key)), before = new Map<string, T[]>();
   let waiting: T[] = [];
   for (const item of full) {
     if (hidden(item)) { waiting.push(item); continue; }
     if (waiting.length && present.has(key(item))) { before.set(key(item), [...before.get(key(item)) ?? [], ...waiting]); waiting = []; }
   }
-  return [...restricted.flatMap(item => [...before.get(key(item)) ?? [], item]), ...waiting];
+  const woven = restricted.flatMap(item => [...before.get(key(item)) ?? [], item]);
+  if (!tailBeforeNew || !waiting.length) return [...woven, ...waiting];
+  // P1 (11/7): a list the model appends to (folder links): the last run goes back before what is new since `full`, as
+  // the model would have it. Else a folder chosen in the recent view left the tab's structural copy unprovable.
+  const known = new Set(full.map(key));
+  let at = woven.length;
+  while (at > 0 && !known.has(key(woven[at - 1]))) at--;
+  return [...woven.slice(0, at), ...waiting, ...woven.slice(at)];
 }
 
+/** How many lines open `lines` folded and empty: they read the same only at the very top. */
+function leadingFoldedBlanks(state: TextWorkspaceState, documentId: string, lines: readonly TextLine[], hidden: ReadonlySet<string>) {
+  if (!lines.length || !hidden.has(lines[0].id)) return 0;
+  const rows = rowsOf(state, documentId);
+  let count = 0;
+  while (count < lines.length && hidden.has(lines[count].id) && rows[count]?.id === lines[count].id && rows[count].kind === 'blank') count++;
+  return count;
+}
 /** The folded lines' order: their IDs as the document has them. */
 const hiddenOrder = (lines: readonly TextLine[], hidden: ReadonlySet<string>) => lines.filter(line => hidden.has(line.id)).map(line => line.id).join('\n');
 /** The whole workspace a save of the writing view's `next` makes: `base`'s hidden lines (and what belongs to them) put
@@ -146,9 +162,12 @@ export function extendProgramRecent(base: TextWorkspaceState, next: TextWorkspac
   const baseDoc = base.documents.find(doc => doc.id === documentId), nextDoc = next.documents.find(doc => doc.id === documentId);
   if (!baseDoc || !nextDoc) return { ok: false, reason: 'document' };
   if (nextDoc.lines.some(line => hidden.has(line.id))) return { ok: false, reason: 'hidden-line' };
-  const lines = weaveProgramRecent(baseDoc.lines, nextDoc.lines, line => hidden.has(line.id), line => line.id);
+  // P1 (11/7): folded empty lines that open the document (visual A's lead) go back first. Woven like the other runs
+  // they went before the first line in view, so lines typed above it took them into their section ('hidden-context').
+  const head = leadingFoldedBlanks(base, documentId, baseDoc.lines, hidden);
+  const lines = [...baseDoc.lines.slice(0, head), ...weaveProgramRecent(baseDoc.lines.slice(head), nextDoc.lines, line => hidden.has(line.id), line => line.id)];
   const state: TextWorkspaceState = { ...next, documents: next.documents.map(doc => doc.id === documentId ? { ...doc, lines } : doc),
-    bindings: weaveProgramRecent(base.bindings, next.bindings, binding => hidden.has(binding.lineId), binding => binding.lineId),
+    bindings: weaveProgramRecent(base.bindings, next.bindings, binding => hidden.has(binding.lineId), binding => binding.lineId, true),
     taskScopes: { ...next.taskScopes, ...pick(base.taskScopes, hidden) }, itemScopes: { ...next.itemScopes, ...pick(base.itemScopes, hidden) },
     progressRecords: weaveProgramRecent(base.progressRecords, next.progressRecords, record => hidden.has(record.taskId), record => `${record.taskId}\u0000${record.date}`) };
   if (!check) return { ok: true, state };

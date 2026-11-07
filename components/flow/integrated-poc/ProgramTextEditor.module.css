@@ -502,9 +502,9 @@
 .host :global(.tle-root[data-mode="live"] .tle-line-native-scope .tle-active-scope-name::before) { content: '/'; position: absolute; right: 100%; color: var(--flowme-b-muted); -webkit-text-stroke: 0; }
 .host :global(.tle-root[data-mode="live"] .tle-fold-toggle.tle-scope-control[aria-expanded="true"]:not([data-caret-scope])) { visibility: hidden; }
 /* VA-P3-1 (11/7): with no icon drawn there, the line-start area that opened the folder was an unseen target, and a phone
-   tap on the name's first letter was pulled onto it (touch adjustment) in the reading view. It takes no taps now: every
-   letter places the caret as the rest do, and the folder opens from the line's ⋮ menu (분류에서 이 폴더 보기). */
-.host :global(.tle-root[data-mode="live"] .tle-scope-open.tle-scope-control) { pointer-events: none; }
+   tap on the name's first letter was pulled onto it (touch adjustment) in the reading view. A tap on it now places the
+   caret like a tap on the text (the editor's tapScopeStart) and a hold still picks the line up to move (P1, 11/7); the
+   folder opens from the line's ⋮ menu (분류에서 이 폴더 보기). */
 /* P3 C7 (11/7): an imported Flow's '원문 소개:' line reads as its intro: a small '소개' label sits where the unseen
    '원문 소개:' is (the RAW stays in the flow, so wrapping and taps are as before), the words muted. The text is unchanged. */
 .host :global(.tle-line-intro > .tle-memo-syntax::after) { display: none; }

@@ -13,8 +13,14 @@ const editorCss = read('components/flow/integrated-poc/ProgramTextEditor.module.
 const vendor = read('lib/flow/integrated-poc/vendor/text-editor.cjs');
 const fn = (source: string, head: string) => { const at = source.indexOf(head); assert.ok(at >= 0, head); return source.slice(at, source.indexOf('\n  }\n', at)); };
 
-test('reading view: the folder line start is not a button; the folder opens from the line menu, after a save', () => {
-  assert.match(editorCss, /\.tle-root\[data-mode="live"\] \.tle-scope-open\.tle-scope-control\) \{ pointer-events: none; \}/);
+test('writing view: a tap on a folder line start places the caret, a hold moves; the folder opens from the line menu, after a save', () => {
+  // P1 (11/7): the control takes taps again (for the hold); a pointer tap goes to the caret, a key press still opens.
+  assert.doesNotMatch(editorCss, /\.tle-scope-open\.tle-scope-control\) \{ pointer-events: none; \}/);
+  assert.ok(vendor.includes("if (button.classList.contains('tle-scope-control') && mode === 'live' && event.detail !== 0) { tapScopeStart(event, index()); return; }"));
+  const tap = vendor.slice(vendor.indexOf('function tapScopeStart('), vendor.indexOf('function gestureHandle('));
+  assert.match(tap, /textarea\.setSelectionRange\(offset, offset\);/);
+  assert.match(tap, /Math\.min\(column, limit\)/);
+  assert.match(vendor, /if \(type === 'scope-open'\) gestureHandle\(button, index, type\);/);
   const item = editor.slice(editor.indexOf('data-open-scope'), editor.indexOf('data-open-scope') + 400);
   assert.ok(item.includes("row.scopeKind === 'folder'") || editor.includes("row.scopeKind === 'folder' && row.scopeId && props.onOpenScope && <button type=\"button\" data-open-scope"));
   assert.match(item, /saveNow\(\)\.then\(saved => \{ if \(saved\) propsRef\.current\.onOpenScope\?\.\(scopeId\); \}\)/);
