@@ -1275,6 +1275,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (undoBarDate()) return;
     if (props.folderId && regionPendingRef.current) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if (props.authoringMode && !props.folderId) editorRef.current?.undo(); else if (props.onUndo && !state?.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo();
   }
+  /** The steps ↶ ↷ take before the text's own history, in the same order (undoInput, redoInput); true when one ran. */
+  function historyStep(type: 'historyUndo' | 'historyRedo') {
+    return type === 'historyUndo' ? undoBarFolder() || undoFolderMove() || undoRepeatCheck() || undoBarDate() : redoBarFolder() || redoBarDate();
+  }
+  const historyStepFn = useRef(historyStep); historyStepFn.current = historyStep;
   function redoInput() {
     const props = propsRef.current, state = draftRef.current?.getState();
     if (redoBarFolder() || redoBarDate()) return;
@@ -2335,7 +2340,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const preventLockedInput = (event: Event) => {
       controller.cancelPreparedRaw();
       const type = (event as InputEvent).inputType;
-      if (type === 'historyUndo' && undoFolderMove()) { event.preventDefault(); event.stopImmediatePropagation(); return; }
+      // Ctrl+Z · Ctrl+Y · Ctrl+Shift+Z (and the browser's own undo) take the same steps as ↶ ↷ (P3, 11/7): a folder or
+      // date chosen from a chip, a folder step, a repeat check go back as one step; else the text's own history.
+      if ((type === 'historyUndo' || type === 'historyRedo') && !composingRef.current && historyStepFn.current(type)) { event.preventDefault(); event.stopImmediatePropagation(); return; }
       if (type === 'historyUndo') explainRawFolderUndo();
       if ((inputLockedRef.current || (controller.getState().saving && (type === 'historyUndo' || type === 'historyRedo'))) && !composingRef.current) { event.preventDefault(); event.stopImmediatePropagation(); }
       if (!event.defaultPrevented && !composingRef.current && textarea && propsRef.current.validateWorkspace && !type?.startsWith('history')) {
@@ -3208,6 +3215,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (event.key === 'Tab') folderIndentSkipped.current = false;
     if (inEditorHead(event.target)) return;
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
+    // P3 (11/7): Ctrl+Z · Ctrl+Y · Ctrl+Shift+Z on the body take ↶ ↷'s own steps first. Here too, not only in
+    // beforeinput: a browser sends no redo there when its own redo list is empty (as right after such a step).
+    else if ((event.ctrlKey || event.metaKey) && !event.altKey && ['z', 'y'].includes(event.key.toLowerCase()) && event.target === textArea()
+      && !event.nativeEvent.isComposing && !composingRef.current
+      && historyStep(event.key.toLowerCase() === 'y' || event.shiftKey ? 'historyRedo' : 'historyUndo')) { event.preventDefault(); event.stopPropagation(); return; }
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
   }}>
     {folderPicker}
