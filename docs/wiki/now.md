@@ -48,6 +48,7 @@
 | 오늘 화면 시각 A | `inbox/today-a-spec-20261107-1738.md` | T1~T11 대부분 CSS, 폴더는 묶지 않고 '/ 이름' |
 | Flow 콘텐츠 예전 vs 지금 | `inbox/flow-content-review-20261108-0011.md`, `planning/20261108-flow-content-review/REVIEW.md` | 비전 고리 한 번도 안 돎. 지인 시험 보류, 제작자 축 재개(AI 생성 아님, 연결) — 결정 기록 11/8 |
 | Flow 경험 파이프라인 | `planning/20261108-flow-pipeline/` (기획 작성 중) | 만남 → 가져오기 → 캘린더·오늘 → 할 일 → 끝난 뒤 → 다시 만들기·공유 |
+| PRD 1판 | `planning/20261108-prd/PRD.md`, 보고 `inbox/prd-20261108-0822.md` | 결정 4개(결정 기록 11/8). 다음 UX 필수 흐름 셋 한 벌 → 사용자 확인 → 개발 |
 | 쓰기 모델·폴더 문법 | `planning/writing-model-20261029/`, `FOLDER-GRAMMAR.md` | 모델 A(10/29) |
 
 ## 기록 (11/5~, 새 줄이 아래. 11/4 이전과 N1~N6 시기 절은 [보관](tasks/2026-11-07-now-archive.md), 전체는 git 기록)
@@ -145,3 +146,4 @@
 - 11/8 05:3x Flow 1·2·4단계 운영 반영: 135889a3 / X7qXi90w6Tkmrnp0p2nEL (light deploy run 23, QA_GO flow-s124-qa-20261108-0527, package 2e8a1633…, DB 0, 경로 정상). P3: 흰색 리터럴 3줄, scheme 없는 youtube.com은 낱말 검색, 띠 접기 키 로그아웃 때 남음. Flow 3단계 연결 줄 보류, 5·6단계는 ★승인 대상. 개발 대기(사용자 실폰 피드백 뒤 결정).
 - 11/8 05:4x 디스크 정리: D: 9.6GB → 44GB. 11/5~11/8 QA 폴더의 다시 만들 수 있는 .next 43개(약 34GB) 삭제. 운영(flow-s124-qa)·직전(cumulative-75ee-qa)·N6r 복귀·의존성 루트·manifest guard는 제외, 삭제 뒤 운영 BUILD_ID·health 200 확인.
 - 11/8 08:17 사용자 실폰(폴더별 보기·Flow 탭): "난잡함, 기획·요구사항·UX 먼저 했나" → 기능 개발 멈춤, 기획 PRD 작성 시작(planning/20261108-prd/). 그 뒤 UX 전체 화면 설계 → 사용자 확인 → 개발.
+- 11/8 08:4x PRD 1판 사용자 결정 4개(모두 권고안). 개발: 날짜별|폴더별 전환 숨김(작은 수정). UX: 필수 흐름 셋 한 벌 설계 시작.
