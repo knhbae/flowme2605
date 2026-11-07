@@ -9,6 +9,7 @@ import { programFolderCopyAccessProblem } from '@/lib/flow/integrated-poc/folder
 import { completingInSession, finishCompleting, type CompletingTasks } from '@/lib/flow/integrated-poc/automatic-read-wait';
 import { addProgramQuickTask, archiveProgramDocument, completeProgramTask, createProgramDocument, createProgramFolder, deleteProgramFolder, linkProgramTask, moveProgramFolder, recordProgramTaskProgress, renameProgramDocument, renameProgramFolder, setProgramDocumentFolder, updateProgramTask } from '@/lib/flow/integrated-poc/private-space';
 import { programDateRange, programExecutionTasks, programShiftDate, programShiftMonth, programTaskProgress, type ProgramPeriod } from '@/lib/flow/integrated-poc/execution';
+import { programDateChipLabel, programDayHeadingParts, programPeriodTitleParts } from '@/lib/flow/integrated-poc/today-title';
 import { programManualOrderDays, programOrderedExecutionRows, programTextExecutionKey, readProgramDayOrder, reorderProgramExecutionTimeline, resetProgramExecutionDayOrder,
   restoreProgramExecutionDayOrder, type ProgramDayOrder } from '@/lib/flow/integrated-poc/recurrence-order';
 import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
@@ -2211,6 +2212,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const actualFolderId = space.text.flows.find(flow => flow.id === task.scopeId)?.folderId ?? task.folderId;
     return folderOptions.find(item => item.id === actualFolderId)?.title ?? task.folder;
   };
+  /** T6: the folder a row shows first ("/ 회사 일"); none for 미분류, no folder, or a collection. */
+  const rowFolderTitle = (task: TextTask) => {
+    if (collectionMode) return null;
+    const actualFolderId = space.text.flows.find(flow => flow.id === task.scopeId)?.folderId ?? task.folderId;
+    if (!actualFolderId || actualFolderId === 'folder-unfiled') return null;
+    return folderOptions.find(item => item.id === actualFolderId)?.title ?? null;
+  };
 
   // W6: the writing example is offered in the empty document's ＋ menu, not in the editor's 도구.
   const writingExampleReady = !!selectedDoc && programDocumentContentLock(space, selectedDoc.id) === 'active' && !M.raw(selectedDoc).trim();
@@ -2406,9 +2414,19 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // N9 (U47): with no document at all the title is the tab's name, not a list button; '새 글 쓰기' starts the first one.
   const noDocuments = !docs.length && !selectedDoc && !selected;
   const documentTitleText = selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : noDocuments ? '쓰기' : '필요한 내용을 먼저 적으세요';
-  const periodTitle = <h1>{period === 'today' ? (date === today ? `오늘 · ${programCalendarDate(today, today)}` : programCalendarDate(date, today))
+  // Today visual A (T1): "오늘" and its date in two parts (one line on a 390 phone); a week likewise.
+  const titleParts = programPeriodTitleParts(period, date, today);
+  const periodTitle = <h1>{titleParts ? <><span className={styles.titleMain}>{titleParts.main}</span><span className={styles.titleSub}>{titleParts.sub}{period === 'week' && folder ? ` · ${folder.title}` : ''}</span></>
     : period === 'all' ? (collectionMode ? '전체 할 일' : folder ? folder.title : '분류')
     : `${period === 'month' ? programMonthTitle(date, today) : periods.find(([key]) => key === period)?.[1]}${folder ? ` · ${folder.title}` : ''}`}</h1>;
+  // T3: the date chip's count, today's rows still open (what the list shows; presentation only).
+  const openOnDate = executionList.filter(item => item.kind === 'row' && item.group === 'on-date'
+    && (item.entry.kind === 'text-task' ? !item.entry.task.done : item.entry.row.completion !== 'completed')).length;
+  const openDatePicker = () => {
+    const input = document.getElementById('program-query-date') as HTMLInputElement | null;
+    if (!input) return;
+    try { input.showPicker(); } catch { input.focus(); }
+  };
   // C5: in the month, the title row ends with [목록|달력] (each 52×44), remembered on this device.
   const monthTitleRow = <div className={styles.monthTitleRow}>{periodTitle}<div className={styles.monthViews} role="group" aria-label="월간 보기 방식">
     <button type="button" aria-pressed={monthView === 'list'} onClick={() => { if (!keepWrittenDay()) { setAddingDate(null); setMonthView('list'); } }}>목록</button>
@@ -2441,7 +2459,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   function renderListItem(item: ProgramExecutionListItem): React.ReactNode {
           if (selecting && item.kind === 'row') return renderSelectRow(item);
           if (item.kind === 'heading') return <React.Fragment key={item.key}>
-            {!hideDayHeadings && <li className={styles.dayHeading} data-late={item.late || undefined} data-day-heading={item.addDate ?? undefined}><h2 className={styles.executionGroup}>{item.label}</h2>
+            {/* T9: 오늘·어제·내일 and the date beside it, as in writing; the heading's spoken name stays the label. */}
+            {!hideDayHeadings && <li className={styles.dayHeading} data-late={item.late || undefined} data-day-heading={item.addDate ?? undefined}><h2 className={styles.executionGroup} aria-label={item.addDate ? item.label : undefined}>
+              {item.addDate ? (heading => <><span className={styles.dayMain} data-relative={heading.relative ?? undefined}>{heading.main}</span>{heading.sub && <span className={styles.daySub}>{heading.sub}</span>}</>)(programDayHeadingParts(item.addDate, today)) : item.label}</h2>
               {selecting ? selectDayButton(item) : dayHeadingControls(item)}</li>}
             {!selecting && dayAddRow(item)}
           </React.Fragment>;
@@ -2504,7 +2524,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               : <span className={styles.taskTitleText}>{task.title}</span>)(repeatShown)}
               {/* R4's waits, now visible on the row. The title's aria-busy and the host notice still do the announcing. */}
               <small>{sourceWaitingTask === task.id ? <span className={styles.rowBusy}>원문 여는 중…</span> : <>
-                {completingTaskIds.has(task.id) && <><span className={styles.rowBusy}>{value === 100 ? '다시 열기 대기 중' : '완료 대기 중'}</span> · </>}
+                {/* T6: the row's folder first, small, as "/ 회사 일" (none for 미분류 or no folder); rows stay in their order. */}
+                {(scope => scope && <><span className={styles.rowFolder}>/ {scope}</span> · </>)(rowFolderTitle(task))}
+                {completingTaskIds.has(task.id) &&<><span className={styles.rowBusy}>{value === 100 ? '다시 열기 대기 중' : '완료 대기 중'}</span> · </>}
                 {meta.late && <><em className={styles.rowLate}>{meta.late}</em> · </>}
                 {[...meta.parts, ...(task.time ? [task.time] : []), ...(carryPlaces.has(task.id) ? [`${carryPlaces.get(task.id)!.place || '분류 없음'} · 분류 ${carryPlaces.get(task.id)!.count}곳`] : [])]
                   .map((part, index) => <React.Fragment key={index}>{part} · </React.Fragment>)}
@@ -2745,11 +2767,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onRegisterEditors={port => { recurrencePorts.current[selectedDoc.id] = port; }}
           onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={onUndo} onRedo={onRedo} />}
       </div>
-      <div ref={monthBox} hidden={period === 'documents'} className={styles.executionView} data-note-today={compactNoteToday || undefined}>
+      <div ref={monthBox} hidden={period === 'documents'} className={styles.executionView} data-note-today={compactNoteToday || undefined} data-period={period}>
         {period !== 'all' && !selecting && <label className={styles.periodPicker}>기간<select aria-label="기간 보기" value={period} onChange={event => { void changePeriod(event.target.value as ProgramPeriod); }}>{periods.filter(([key]) => !['documents', 'all'].includes(key)).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>}
         <ProgramRecurrencePlanRecovery data={data} today={today} folderId={folderId || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         <div className={styles.periodHeading}>{selecting ? selectTitle : compactNoteToday ? <div className={styles.notePeriodTitle}>{periodTitle}<div className={styles.notePeriodActions}>
-          <button type="button" aria-expanded={noteQuickOpen} aria-controls="program-note-quick-task" onClick={() => setNoteQuickOpen(value => !value)}>할 일 추가</button>
+          <button type="button" className={styles.noteAdd} aria-expanded={noteQuickOpen} aria-controls="program-note-quick-task" onClick={() => setNoteQuickOpen(value => !value)}>할 일 추가</button>
           <details ref={noteFindMenu} className={styles.notePeriodTools} onKeyDown={event => {
             if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
             event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; noteFindMenuSummary.current?.focus({ preventScroll: true });
@@ -2757,7 +2779,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {/* I7: the day heading is hidden here, so its button sits in this menu. */}
             {hideDayHeadings && manualOrderDays.has(date) && !moving && <button type="button" disabled={orderPending}
               onClick={() => { if (noteFindMenu.current) noteFindMenu.current.open = false; void resetDayOrder(date); }}>오늘 순서를 시간순으로</button>}</div></details>
-        </div></div> : period === 'month' ? monthTitleRow : periodTitle}{!selecting && !['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date); }}>‹</button><label>날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value) && !keepWrittenDay()) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date); }}>›</button></div>}</div>
+        </div></div> : period === 'month' ? monthTitleRow : periodTitle}{!selecting && !['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date); }}>‹</button>
+          {/* T3: the date as a chip that opens the date input's own picker; the input stays (unseen) with its label. */}
+          <button type="button" className={styles.dateChip} onClick={openDatePicker}>{programDateChipLabel(period, date, today, openOnDate)}</button><label className={styles.dateField}>날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value) && !keepWrittenDay()) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date); }}>›</button></div>}</div>
         {props.noteHeader && <div className={styles.periodNotice}>{props.noteHeader}</div>}
         {selecting && selectBlocks && [...selectBlocks.values()].some(Boolean) && <p className={styles.selectNote}>반복 회차·끝낸 할 일은 고를 수 없습니다</p>}
         {props.noteStatus && <div className={styles.periodStatus}>{props.noteStatus}{!compactNoteToday && period !== 'documents' && !selecting && findActions}</div>}

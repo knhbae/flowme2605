@@ -54,9 +54,9 @@ test('checks look like the R7 today rows: bordered box, navy fill with a white â
   assert.match(css, /\.tle-check-glyph\[data-checked="true"\] \{ border-color: var\(--flowme-b-primary\); background: var\(--flowme-b-primary\); \}/);
   const badge = css.slice(css.indexOf('.tle-progress-badge {'), css.indexOf('}', css.indexOf('.tle-progress-badge {')));
   assert(badge.includes('width: 42px; height: 24px;') && badge.includes('border: 1px solid #dfd2b8; border-radius: 12px; background: #fcf8ed;'));
-  // The same pill colors as the today row (ProgramSpace.module.css).
+  // Today visual A (T8, 11/7): the today row's pill is in the canvas and line tokens with an ink percent now.
   const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.module.css', import.meta.url), 'utf8');
-  assert(space.includes('border: 1px solid #dfd2b8; border-radius: 12px; background: #fcf8ed; color: #785627;'));
+  assert(space.includes('border: 1px solid var(--flowme-b-line); border-radius: 12px; background: var(--flowme-b-canvas); color: var(--flowme-b-ink);'));
   assert.match(css, /\.tle-progress-hit \{ color: #785627;/);
   // Line ruler values are untouched; the box stays centred on the line (W4: 20px).
   assert(css.includes('top: calc((var(--tle-line) - 20px) / 2)') && css.includes('top: calc((var(--tle-line) - 24px) / 2)'));

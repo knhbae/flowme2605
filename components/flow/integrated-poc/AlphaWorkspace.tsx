@@ -1686,7 +1686,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     && !!freshSpace && !freshSpace.text.documents.length && !freshSpace.text.flows.length;
   // The status and its recovery box, and the notices that always show (today, 분류, no document).
   const serverStatusMain = <>
-        {!localParticipationRecovery && !quietFresh && <p role={reviewOwnsAnnouncement ? undefined : 'status'} aria-live={reviewOwnsAnnouncement ? 'off' : 'polite'} data-save-state={snapshot?.status}>{pendingUnknown ? '저장 여부 확인 못 함' : pending ? '저장 중…' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
+        {!localParticipationRecovery && !quietFresh && <p role={reviewOwnsAnnouncement ? undefined : 'status'} aria-live={reviewOwnsAnnouncement ? 'off' : 'polite'} data-save-state={snapshot?.status}
+          data-quiet={!pendingUnknown && !pending && !snapshot?.retryableRejectedDraft && !snapshot?.retryableNativeHandoff && !snapshot?.retryableRejectedSocialDraft && ['ready', 'saved', 'same-location'].includes(snapshot?.status ?? '') || undefined}>{pendingUnknown ? '저장 여부 확인 못 함' : pending ? '저장 중…' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
         {inputRecoveryBox(true)}
       </>;
   const serverStatusExtras = <>

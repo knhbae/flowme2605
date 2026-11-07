@@ -134,7 +134,8 @@
 .task > .check { margin-top: 0; }
 .taskTitle { min-width: 0; padding: 8px; }
 /* N10: a repeat line shows its title and the chip, not the marker it was written with. */
-.repeatChip { margin-inline-start: 6px; padding: 0 6px; border-radius: 999px; background: #eef2ff; color: var(--flowme-b-primary); font-size: 0.85em; font-weight: 500; white-space: nowrap; }
+/* Today visual A (T7): the repeat chip in the writing view's quiet chip colors (no off-token blue). */
+.repeatChip { display: inline-block; vertical-align: 1px; height: 18px; margin-inline-start: 6px; padding: 0 6px; border-radius: 9px; background: var(--flowme-b-canvas); color: var(--flowme-b-muted); font-size: 12px; font-weight: 600; line-height: 18px; white-space: nowrap; }
 .taskTitleText { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; word-break: keep-all; overflow-wrap: anywhere; }
 .taskTitle small { margin-top: 4px; }
 .taskTitle small { color: var(--flowme-b-muted); font-size: 12px; line-height: 20px; font-weight: 400; }
@@ -268,8 +269,9 @@
 .space[data-note-layout="true"] .taskTitle small { font-size: 13px; line-height: 20px; }
 .space[data-note-layout="true"] .taskTitle small > span { display: block; }
 .space[data-note-layout="true"] .check { border-color: transparent; background: transparent; color: var(--flowme-b-primary); }
-.space[data-note-layout="true"] .partialProgress { font-size: 13px; font-weight: 600; color: #785627; }
-.space[data-note-layout="true"] .partialProgress > span { display: inline-block; border: 1px solid #dfd2b8; border-radius: 4px; padding: 2px; background: #fcf8ed; }
+/* T8: a partial record's chip in the canvas and line tokens, its percent in ink. */
+.space[data-note-layout="true"] .partialProgress { font-size: 12px; font-weight: 600; color: var(--flowme-b-ink); }
+.space[data-note-layout="true"] .partialProgress > span { display: inline-block; border: 1px solid var(--flowme-b-line); border-radius: 4px; padding: 2px; background: var(--flowme-b-canvas); }
 .space[data-note-layout="true"] .periods button[aria-current="page"] { box-shadow: none; background: var(--flowme-b-canvas); }
 .space[data-note-layout="true"] .contextActions { display: contents; }
 .space[data-note-layout="true"] .contextActions .periods { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; max-width: 1040px; margin: 0 auto; padding: 8px max(20px,env(safe-area-inset-left)) max(8px,env(safe-area-inset-bottom)); box-sizing: border-box; background: #fff; border-top: 1px solid var(--flowme-b-line); }
@@ -333,22 +335,29 @@
 .space .taskTitleText, .space[data-note-layout="true"] .taskTitleText { line-height: 22px; }
 .space .taskTitle small, .space[data-note-layout="true"] .taskTitle small { display: block; margin-top: 0; font-size: 12px; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .space .taskTitle small > span, .space[data-note-layout="true"] .taskTitle small > span, .space .taskTitle .taskOrigin { display: inline; }
-.space .task[data-done] .taskTitleText { color: var(--flowme-b-muted); text-decoration: line-through; }
+/* T5: a finished row reads muted, without a strike line (as in writing). */
+.space .task[data-done] .taskTitleText { color: var(--flowme-b-muted); text-decoration: none; }
 .rowLate { font-style: normal; font-weight: 700; color: #986209; }
 .rowBusy { color: var(--flowme-b-primary-strong); font-weight: 600; }
 @media (max-width: 760px) { .taskFolder { display: none; } }
 
 .space .check, .space[data-note-layout="true"] .check { display: inline-flex; align-items: center; justify-content: center; border-color: transparent; background: transparent; }
 .space .check[aria-pressed=true] { background: transparent; }
-.space .check > .checkMark[data-check] { position: relative; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; padding: 0; border: 2px solid var(--flowme-b-control); border-radius: 6px; background: var(--flowme-b-surface); color: var(--flowme-b-primary); font-size: 13px; font-weight: 700; line-height: 1; }
-.space .check > .checkMark[data-check="done"] { border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); }
-.space .check > .checkMark[data-check="done"]::after { content: ""; position: absolute; left: 6px; top: 2px; width: 6px; height: 11px; border: solid #ffffff; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
+/* T4: the writing view's box: 20px, a 1.5px control line; finished = canvas with a line border and a muted check (5.0:1),
+   not a filled blue box (a finished row no longer reads stronger than an open one). T8: the partial chip likewise. */
+.space .check > .checkMark[data-check] { position: relative; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; padding: 0; border: 1.5px solid var(--flowme-b-control); border-radius: 6px; background: var(--flowme-b-surface); color: var(--flowme-b-primary); font-size: 13px; font-weight: 700; line-height: 1; }
+.space .check > .checkMark[data-check="done"] { border-color: var(--flowme-b-line); background: var(--flowme-b-canvas); }
+.space .check > .checkMark[data-check="done"]::after { content: ""; position: absolute; left: 5.5px; top: 2px; width: 5px; height: 10px; border: solid var(--flowme-b-muted); border-width: 0 2px 2px 0; transform: rotate(45deg); }
 .space .check > .checkMark[data-check="busy"] { border-style: dashed; border-color: var(--flowme-b-primary); }
-.space .check > .checkMark[data-check="partial"] { width: auto; min-width: 40px; height: 24px; padding: 0 6px; border: 1px solid #dfd2b8; border-radius: 12px; background: #fcf8ed; color: #785627; font-size: 12px; }
+.space .check > .checkMark[data-check="partial"] { width: auto; min-width: 40px; height: 24px; padding: 0 6px; border: 1px solid var(--flowme-b-line); border-radius: 12px; background: var(--flowme-b-canvas); color: var(--flowme-b-ink); font-size: 12px; font-weight: 600; }
 
 .space .dayHeading { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; margin-top: 16px; }
-.space .dayHeading .executionGroup { margin: 0; font-size: 13px; line-height: 20px; font-weight: 700; color: var(--flowme-b-muted); }
-.space .dayHeading[data-late] .executionGroup { color: #986209; }
+/* T9: a day heading as in writing: 오늘 (primary)·어제·내일 or the date at 17/700, the date beside it 14/500 muted. The past
+   rows' heading reads in ink; their "n일 지남" keeps the warning color on the row. */
+.space .dayHeading .executionGroup { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; margin: 0; font-size: 17px; line-height: 24px; font-weight: 700; color: var(--flowme-b-ink); }
+.space .dayHeading .executionGroup .dayMain[data-relative="오늘"] { color: var(--flowme-b-primary); }
+.space .dayHeading .executionGroup .daySub { font-size: 14px; font-weight: 500; color: var(--flowme-b-muted); }
+.space .dayHeading[data-late] .executionGroup { color: var(--flowme-b-ink); }
 /* I7: '직접 정렬 · 시간순으로' between the day and its ＋ (C6-C9-I7 1-2). */
 .space .manualOrder { flex: 0 0 auto; margin-left: auto; font-size: 12px; line-height: 20px; color: var(--flowme-b-muted); }
 .space .timeOrder { flex: 0 0 auto; min-height: 44px; padding: 0 6px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 13px; }
@@ -530,3 +539,29 @@
 .space [data-editor-tools] > div > details > summary::-webkit-details-marker { display: none; }
 .space [data-editor-tools] .documentToolsMarker { display: none; }
 .space [data-editor-tools] .documentTools { position: static; z-index: auto; width: 100%; max-height: none; margin-top: 6px; padding: 8px 0 0; border: 0; border-radius: 0; box-shadow: none; }
+
+/* Today visual A (bundle 6, 11/7): the 오늘 screen in the writing view's look (tokens only). Lists, order and saves are
+   unchanged; T4·T5·T7·T8·T9 are in their own rules above. */
+/* T1: the title in two parts, one line: "오늘" 22/700 ink and the date 14/500 muted beside it. */
+.space .periodHeading h1 .titleMain { font-size: 22px; line-height: 32px; font-weight: 700; color: var(--flowme-b-ink); }
+.space .periodHeading h1 .titleSub { margin-inline-start: 8px; font-size: 14px; line-height: 32px; font-weight: 500; color: var(--flowme-b-muted); }
+.space[data-note-layout="true"] .periodHeading h1:has(> .titleMain) { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 22px; line-height: 32px; }
+/* T2: on phones the add is a 36px ＋ circle in a 44px press area, as writing's; its name stays "할 일 추가". PC keeps words. */
+@media (max-width: 700px) {
+  .space[data-note-layout="true"] .notePeriodActions > .noteAdd { position: relative; width: 44px; min-width: 44px; height: 44px; min-height: 44px; padding: 0; border: 0; background: transparent; font-size: 0; }
+  .space[data-note-layout="true"] .notePeriodActions > .noteAdd::before { content: "＋"; position: absolute; inset: 4px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--flowme-b-selected); color: var(--flowme-b-primary); font-size: 20px; font-weight: 600; line-height: 1; }
+}
+/* T3: ‹ [date chip] › … [period chip ⌄]. Each chip draws 36px inside a 44px press area; the date input stays in the
+   page, unseen, with its label (the chip opens its picker). */
+.space .executionView .dateNav > .dateChip { box-sizing: border-box; flex: 0 1 auto; width: auto; min-width: 0; height: 44px; min-height: 44px; padding: 0 14px; border: 4px solid transparent; border-radius: 22px; background: var(--flowme-b-canvas); background-clip: padding-box; color: var(--flowme-b-ink); font-size: 14px; font-weight: 600; line-height: 36px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.space .executionView .dateNav > .dateField { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.space .executionView > .periodPicker select { box-sizing: border-box; appearance: none; -webkit-appearance: none; height: 44px; min-height: 44px; padding: 0 30px 0 14px; border: 4px solid transparent; border-radius: 22px; background: var(--flowme-b-canvas) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%2359677e' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center; background-clip: padding-box; color: var(--flowme-b-muted); font-size: 14px; font-weight: 600; line-height: 36px; }
+/* 1280: the date row ends where the list does (760, was 860: 11/6 audit C4). The month keeps its calendar width. */
+@media (min-width: 701px) { .space[data-note-layout="true"] .executionView:is([data-period="today"], [data-period="week"]) { max-width: 760px; } }
+/* T6: the row's folder leads its meta line ("/ 회사 일", muted); the folder at the end of the origin is not repeated. */
+.space .taskTitle small .rowFolder { color: var(--flowme-b-muted); }
+.space .taskTitle .taskFolder { display: none; }
+/* T10: the quiet saved state is not shown on these lists (still read out); a warning or its recovery box stays. */
+.space .executionView > .periodStatus p[data-quiet="true"] { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* T11: rows at least 56px without rules between them; the check (48) and ⋯ (44) press areas are unchanged. */
+.space .executionView .task, .space[data-note-layout="true"] .executionView .task { min-height: 56px; padding-block: 4px; border-block: 0; }

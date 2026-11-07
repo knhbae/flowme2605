@@ -91,7 +91,8 @@ test('title rows: the writing title opens the document sheet, ⋯ keeps document
   // Visual A (11/7): on a phone, where the title shares the editor's line, 글 작업 is in that line's one ⋯ menu.
   assert(space.includes('{props.noteHeader && !props.hostMainTabs && <>{period === \'documents\' && findActions}{selectedDocumentTools}</>}{headInToolbar && phoneLayout && selectedDocumentTools}</> : undefined}'));
   assert(space.includes('{props.hostMainTabs && <button type="button" className={styles.sheetNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>＋ 새 글</button>}'));
-  assert(space.includes("period === 'today' ? (date === today ? `오늘 · ${programCalendarDate(today, today)}` : programCalendarDate(date, today))"));
+  // Today visual A (T1, 11/7): the title in two parts (today-title.ts): 오늘 + its date; another day by date.
+  assert(space.includes('const titleParts = programPeriodTitleParts(period, date, today);'));
   assert(space.includes("period === 'all' ? (collectionMode ? '전체 할 일' : folder ? folder.title : '분류')"));
   // On phones the fixed header bar gives way to the title rows; the tabs stay at the bottom.
   assert(alphaCss.includes('.page[data-alpha-frame="b"][data-note-layout="true"] > .header > :not(.globalNavigation) { display: none; }'));
