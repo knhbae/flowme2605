@@ -9,6 +9,11 @@ import { inspectProgramOutputSeries, isProgramOutputRecurrenceWindow, validProgr
   type ProgramOutputRecurrenceWindow, type ProgramOutputSeries } from './public-output-recurrence';
 
 export type ProgramOutputFormat = 'txt' | 'csv' | 'ics';
+/** Flow pipeline S9: an ICS file goes out once; later changes in the app do not reach the phone's calendar. (Each
+ *  event's UID is the item's own id, so taking the file again replaces rather than doubles in calendars that match
+ *  UIDs; a public series' UID also names its output range.) */
+export const PROGRAM_ICS_ONCE = { head: '한 번 보내는 파일입니다.',
+  body: '앱에서 날짜를 바꿔도 휴대폰 캘린더에는 바뀌지 않습니다. 바뀌면 다시 받아 주세요. 같은 파일을 두 번 넣으면 캘린더에 겹칠 수 있습니다.' } as const;
 export type ProgramOutputFailure = 'invalid-version' | 'invalid-selection' | 'duplicate-item' | 'unknown-item'
   | 'no-items' | 'invalid-date' | 'missing-anchor' | 'invalid-format' | 'invalid-now' | 'no-dated-items' | 'invalid-return-context'
   | 'missing-recurrence-window' | 'invalid-recurrence-window' | 'invalid-recurrence-start' | 'missing-recurrence-start' | 'empty-recurrence-window';

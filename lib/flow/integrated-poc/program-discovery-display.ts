@@ -3,6 +3,8 @@ import { resolveProgramItemDate } from './private-space';
 import { programRecurringScheduleLabel } from './public-recurrence-contract';
 import { programOrdinaryTimingLabel } from './public-ordinary-time';
 import { programImportItemView } from './public-repeat-import';
+import { programDateLabel } from './date-label';
+import type { ProgramImportSpan } from './import-preview';
 
 // Flow 찾기 FC1·FC2 (planning/flow-content-20261030/FC-SPEC.md). Pure display values shared by the card, the
 // detail and the import sheet; nothing here is stored and no version or flow field is added.
@@ -131,9 +133,16 @@ export function programObjectParticle(word: string): string {
 }
 /** The arrival notice on the copy document. UX B1 (11/6): its [되돌리기] button stands for the undo (the notice no longer
  *  sends the person to 더보기); an account whose server undo is held gets the trash route instead. */
-export function programImportArrivalNotice(title: string, undoHeld: boolean, repeats = ''): string {
-  return `‘${title}’${programObjectParticle(title)} 가져왔습니다.${repeats ? ` ${repeats}` : ''} 날짜가 있는 할 일은 오늘에도 보입니다.${undoHeld
+export function programImportArrivalNotice(title: string, undoHeld: boolean, repeats = '', span?: ProgramImportSpan & { today: string }): string {
+  return `‘${title}’${programObjectParticle(title)} 가져왔습니다.${span ? ` ${programImportSpanText(span)}` : ''}${repeats ? ` ${repeats}` : ''}${span ? '' : ' 날짜가 있는 할 일은 오늘에도 보입니다.'}${undoHeld
     ? ' 필요 없으면 문서를 휴지통으로 옮길 수 있습니다. 다시 쓰려면 휴지통에서 복원합니다.' : ''}`;
+}
+/** Flow pipeline S2: "오늘부터 11월 21일까지 5개, 날짜 미정 1개." One day: "11월 12일에 2개."; none dated: where they are. */
+export function programImportSpanText(span: ProgramImportSpan & { today: string }): string {
+  const label = (date: string) => programDateLabel(date, span.today, false), undated = span.undated ? `날짜 미정 ${span.undated}개` : '';
+  if (!span.first || !span.last || !span.dated) return undated ? `${undated}는 오늘 › 날짜 미정에 있습니다.` : '';
+  const dated = span.first === span.last ? `${label(span.first)}에 ${span.dated}개` : `${label(span.first)}부터 ${label(span.last)}까지 ${span.dated}개`;
+  return `${[dated, undated].filter(Boolean).join(', ')}.`;
 }
 /** 공식 반복 Flow: '반복 2개를 넣었습니다. 이미 있던 반복 1개는 넣지 않았습니다.' ('' with neither). */
 export function programImportRepeatNotice(written: number, existing: number): string {

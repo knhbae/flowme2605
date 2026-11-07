@@ -7,11 +7,14 @@ import type { ProgramOrderedExecutionRow } from './recurrence-order';
 export type ProgramMonthState = 'late' | 'open' | 'done';
 export type ProgramMonthCell = {
   date: string; day: number; count: number; late: number; done: number;
-  /** One dot per row by urgency (지남, 남음, 끝냄), three at most; `more` is the rest. */
-  dots: ProgramMonthState[]; more: number;
-  /** Wide screens: three titles in list order, or two and `titleMore`. */
-  titles: { text: string; state: ProgramMonthState }[]; titleMore: number;
+  /** One dot per row by urgency (지남, 남음, 끝냄), three at most; `more` is the rest. Flow pipeline S3: a day with rows of
+   *  the marked Flow starts with one 'flow' dot standing for them. */
+  dots: (ProgramMonthState | 'flow')[]; more: number;
+  /** Wide screens: three titles in list order, or two and `titleMore`; a marked Flow's titles say so. */
+  titles: { text: string; state: ProgramMonthState; flow?: true }[]; titleMore: number;
   label: string; today: boolean; selected: boolean;
+  /** S3: how many of the day's rows belong to the marked Flow. */
+  flow: number;
 };
 
 const WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일'];
@@ -33,21 +36,24 @@ function state(row: ProgramOrderedExecutionRow, today: string): ProgramMonthStat
 }
 const title = (row: ProgramOrderedExecutionRow) => row.kind === 'text-task' ? row.task.title : row.row.title;
 
-export function programMonthGrid(rows: readonly ProgramOrderedExecutionRow[], date: string, today: string, selected: string) {
+export function programMonthGrid(rows: readonly ProgramOrderedExecutionRow[], date: string, today: string, selected: string,
+  flow?: { test: (row: ProgramOrderedExecutionRow) => boolean; title: string }) {
   const first = `${date.slice(0, 7)}-01`, byDay = new Map<string, ProgramOrderedExecutionRow[]>();
   for (const row of rows) if (row.date && row.date.slice(0, 7) === first.slice(0, 7)) byDay.set(row.date, [...(byDay.get(row.date) ?? []), row]);
   const cells: (ProgramMonthCell | null)[] = Array.from({ length: weekday(first) }, () => null);
   for (let day = first; day.slice(0, 7) === first.slice(0, 7); day = programShiftDate(day, 1)!) {
-    const list = byDay.get(day) ?? [], states = list.map(row => state(row, today));
+    const list = byDay.get(day) ?? [], states = list.map(row => state(row, today)), marked = list.map(row => !!flow?.test(row));
     const late = states.filter(entry => entry === 'late').length, done = states.filter(entry => entry === 'done').length;
-    const dots = [...states].sort((a, b) => rank[a] - rank[b]);
+    const flowCount = marked.filter(Boolean).length;
+    // S3: the marked Flow's rows are one 'flow' dot, first; the others keep theirs by urgency.
+    const dots: (ProgramMonthState | 'flow')[] = [...(flowCount ? ['flow' as const] : []), ...states.filter((_, index) => !marked[index]).sort((a, b) => rank[a] - rank[b])];
     const shown = list.length > 3 ? 2 : list.length;
     const [month, number] = [Number(day.slice(5, 7)), Number(day.slice(8, 10))];
     const label = `${day === today ? '오늘, ' : ''}${month}월 ${number}일 ${LONG[weekday(day)]}, ${list.length
-      ? `할 일 ${list.length}개${late ? `, ${late}개 지남` : ''}${done === list.length ? ', 모두 끝냄' : ''}` : '할 일 없음'}`;
-    cells.push({ date: day, day: number, count: list.length, late, done, dots: dots.slice(0, 3), more: Math.max(0, list.length - 3),
-      titles: list.slice(0, shown).map((row, index) => ({ text: title(row), state: states[index] })), titleMore: list.length - shown,
-      label, today: day === today, selected: day === selected });
+      ? `할 일 ${list.length}개${late ? `, ${late}개 지남` : ''}${done === list.length ? ', 모두 끝냄' : ''}${flowCount && flow ? `, ${flow.title} ${flowCount}개` : ''}` : '할 일 없음'}`;
+    cells.push({ date: day, day: number, count: list.length, late, done, dots: dots.slice(0, 3), more: Math.max(0, dots.length - 3),
+      titles: list.slice(0, shown).map((row, index) => ({ text: title(row), state: states[index], ...(marked[index] ? { flow: true as const } : {}) })), titleMore: list.length - shown,
+      label, today: day === today, selected: day === selected, flow: flowCount });
   }
   while (cells.length % 7) cells.push(null);
   const weeks: (ProgramMonthCell | null)[][] = [];

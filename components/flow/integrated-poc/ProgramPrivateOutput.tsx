@@ -3,7 +3,7 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { ProgramData } from '@/lib/flow/integrated-poc/contract';
 import { inspectProgramPrivateOutput, makeProgramPrivateOutput } from '@/lib/flow/integrated-poc/private-output';
-import type { ProgramOutput, ProgramOutputFormat } from '@/lib/flow/integrated-poc/output';
+import { PROGRAM_ICS_ONCE, type ProgramOutput, type ProgramOutputFormat } from '@/lib/flow/integrated-poc/output';
 import { programLocalDate, programShiftDate } from '@/lib/flow/integrated-poc/execution';
 import { PRIVATE_OUTPUT_OCCURRENCES_V1, validPrivateOutputOccurrenceRange, type PrivateOutputOccurrenceRange } from '@/lib/flow/integrated-poc/private-output-occurrences';
 import styles from './ProgramPrivateOutput.module.css';
@@ -89,6 +89,7 @@ export function ProgramPrivateOutput({ data, documentId, onClose }: ProgramPriva
         <label><input type="checkbox" disabled={busy || !returnPageUrl} checked={includeReturn} onChange={event => setIncludeReturn(event.target.checked)} /> 이 브라우저로 돌아오는 링크 포함</label>
         <p>{returnPageUrl ? '같은 로컬 PoC 주소·브라우저 프로필에서만 열립니다. 링크에는 개인 문서와 항목 식별자가 들어가며, 다른 기기나 계정에서 내용을 동기화하지 않습니다.' : '현재 주소에서는 안전한 복귀 링크를 만들 수 없습니다. 링크 없이 파일을 받을 수 있습니다.'}</p>
         {includeReturn && inspected.rows.some(row => selected.includes(row.id) && !row.returnTarget) && <p>원래 항목의 위치를 정확히 확인하지 못한 항목에는 복귀 링크를 넣지 않습니다. 해당 항목의 출력 내용은 유지합니다.</p>}
+        {format === 'ics' && <p data-ics-once><strong>{PROGRAM_ICS_ONCE.head}</strong> {PROGRAM_ICS_ONCE.body}</p>}
         {format === 'ics' && <p>실행 시간이 있는 항목은 해당 시각으로, 시간이 없으면 종일 일정으로 출력합니다. 날짜 미정 항목 {inspected.rows.filter(row => selected.includes(row.id) && !row.date).length}개는 ICS에서 제외합니다. 진행과 메모는 일정 설명에 담습니다.</p>}
       </section>}
       {review && <section className={styles.section}><h3>실제 파일 내용</h3><p>{new TextEncoder().encode(review.output.payload).byteLength.toLocaleString('ko-KR')}바이트{mode === 'tasks' ? ` · ${review.output.itemIds.length}개 항목` : ''}</p><textarea className={styles.preview} aria-label="실제 출력 내용" readOnly value={review.output.payload} rows={10} />{stale && <p role="alert">내용이나 선택이 바뀌었습니다. 미리보기를 다시 확인하세요.</p>}</section>}

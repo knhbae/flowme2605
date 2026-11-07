@@ -32,7 +32,8 @@ import { ProgramServerStatusContext, type ProgramServerStatusView } from './prog
 import { createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
 import { programFencedRecoveryRaw } from '@/lib/flow/integrated-poc/recovery-restore';
 import { captureProgramImportLinks, cancelProgramImportLinks, programImportTargets, programImportReceiptOwnsLinks, type ProgramImportLinks } from '@/lib/flow/integrated-poc/program-import-links';
-import { programLocalDate } from '@/lib/flow/integrated-poc/execution';
+import { programExecutionTasks, programLocalDate } from '@/lib/flow/integrated-poc/execution';
+import { programImportSpan } from '@/lib/flow/integrated-poc/import-preview';
 import { PROGRAM_TRIED_ASK, PROGRAM_TRIED_EMPTY, programFlowsJustFinished, programPendingFinish, programTriedAdd, programTriedDone, programTriedDraft, programTriedShow, type ProgramTriedQueue } from '@/lib/flow/integrated-poc/flow-loop';
 import { textWorkspaceModel as M, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { ProgramSpace, useProgramMobileWritingChrome, type ProgramMainTab } from './ProgramSpace';
@@ -197,7 +198,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const [importUndoBusy, setImportUndoBusy] = useState(false), importUndoLock = useRef(false);
   // UX B1 (11/6): a new document's arrival notice stays on that document only, with [되돌리기] while the import is
   // still the last server change (`revision`); null when this account's undo is held (the notice says the trash way).
-  const [importArrival, setImportArrival] = useState<{ actorId: string; documentId: string; text: string; revision: number | null } | null>(null);
+  const [importArrival, setImportArrival] = useState<{ actorId: string; documentId: string; text: string; revision: number | null;
+    /** Flow pipeline S2: [달력에서 보기] opens the month of the first dated item (none without a dated one). */
+    calendar: { first: string; title: string; count: number } | null } | null>(null);
   const [importArrivalBusy, setImportArrivalBusy] = useState(false);
   useEffect(() => {
     setImportUndo(previous => previous && (previous.batch.actorId !== session.userId || destination.view !== 'space' || destination.id !== previous.batch.documentId) ? null : previous);
@@ -1403,8 +1406,10 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         // A new document: its repeat lines go with the document itself (휴지통 or 되돌리기, as the notice says).
         const written = captureProgramImportLinks(owner, copy.id, copy.documentId, before, live!.spaces[owner]).repeat?.length ?? 0;
         const undoHeld = !!live?.spaces[session.userId]?.personalAuthoring;
-        setImportArrival({ actorId: owner, documentId: copy.documentId, text: programImportArrivalNotice(version.title, undoHeld, programImportRepeatNotice(written, existingRepeats)),
-          revision: undoHeld ? null : confirmed?.account?.revision ?? null });
+        // Flow pipeline S2: the span says where the document's tasks landed (read off the saved copy, as the lists do).
+        const placed = programExecutionTasks(live!.spaces[owner]).filter(task => task.docId === copy.documentId), span = programImportSpan(placed);
+        setImportArrival({ actorId: owner, documentId: copy.documentId, text: programImportArrivalNotice(version.title, undoHeld, programImportRepeatNotice(written, existingRepeats), { ...span, today: programLocalDate() }),
+          revision: undoHeld ? null : confirmed?.account?.revision ?? null, calendar: span.first ? { first: span.first, title: version.title, count: placed.length } : null });
       }
     }
     return { ok: true };
@@ -1863,6 +1868,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         onOpenCopySource={(flowId, id, focus) => { void openFlowsFromDocument(id, flowId, focus); }} onBrowseFlows={(id, focus, writing) => { void openFlowsFromDocument(id, undefined, focus, writing); }}
         importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring, ...(importUndo.batch.repeat ?? [])][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } }
           : importArrival ? { actorId: importArrival.actorId, documentId: importArrival.documentId, text: importArrival.text, busy: importArrivalBusy, actionLabel: '되돌리기', busyLabel: '되돌리는 중…',
+            ...(importArrival.calendar ? { calendar: importArrival.calendar } : {}),
             onCancel: importArrival.revision !== null && snapshot?.account?.revision === importArrival.revision && !!snapshot?.canUndo && !external ? () => { void undoImportArrival(); } : undefined } : undefined}
         onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></ProgramServerStatusContext.Provider>
         {/* Over the top of the space, apart from the check notices and the tabs below; pressing it leaves the caret where it is. */}

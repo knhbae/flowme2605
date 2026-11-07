@@ -515,6 +515,12 @@
 .copyHeader[data-state="changed"] { background:#edf0fa; }
 .copyHeader[data-state="unverified"] { border:1px dashed #986209; background:#fcf8ed; color:#795008; }
 .importNotice { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:6px 0; font-size:13px; }
+/* Flow pipeline S2/S3 (11/8): the notice's [달력에서 보기] (the primary action), and the mark chip over the month grid. */
+.space .importNotice > .importCalendar { background: var(--flowme-b-primary); border-color: var(--flowme-b-primary); color: #ffffff; font-weight: 600; }
+.space .flowHighlight { display: flex; align-items: center; gap: 2px; width: fit-content; max-width: 100%; min-height: 36px; margin: 0 0 8px; padding: 0 2px 0 12px; border-radius: 18px; background: var(--flowme-b-selected); color: var(--flowme-b-primary-strong); font-size: 14px; font-weight: 600; }
+.space .flowHighlight > span { display: inline-flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.space .flowHighlight i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--flowme-b-primary); }
+.space .flowHighlight > button { flex: none; min-width: 36px; min-height: 36px; padding: 0; border: 0; border-radius: 18px; background: transparent; color: inherit; font-size: 18px; }
 /* S4 v19: the find notice takes no room; it floats over the head row, above the editor's toolbar, under dialogs. */
 .floatingNotice { position:relative; z-index:20; height:0; }
 .floatingNotice > .error { position:absolute; top:0; left:0; right:0; margin:0; box-shadow:0 4px 16px var(--flowme-b-shadow); }

@@ -312,7 +312,8 @@ test('F5, P3 and N1: the old repeat card waits out an automatic read; a slow che
   assert(convert.includes('expectedSpace: current.spaces[actorId], seriesId: legacyRepeat.id, today }), true, undefined, undefined, true);'));
   assert(convert.includes("if (!result.ok && !['missing', 'unresolved'].includes(result.reason)) return;"), 'a save that did not run keeps the card');
   assert(host.includes('taskId, today, expected, seen }), true, undefined, undefined, true, true);'), 'the check rebuilds on a conflict');
-  assert(host.includes('const view = presentation.current, check = await finishRepeatRound(taskId, expected, programRepeatSeen(space, taskId));\n    if (!checkViewOwns(view)) return;'));
+  // Flow pipeline S11 (11/8): the band finishes a round quietly (its row says it); the list still speaks only in its own view.
+  assert(host.includes("const view = presentation.current, check = await finishRepeatRound(taskId, expected, programRepeatSeen(space, taskId));\n    const saved = !!check && check !== 'refused';\n    if (quiet || !checkViewOwns(view)) return saved;"));
   // N1: the editor also sends the log as it showed it at the press, before its own save lets a newer account in.
   const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   const finish = editor.slice(editor.indexOf('  async function finishRepeatHere('), editor.indexOf('  async function undoRepeatHere('));

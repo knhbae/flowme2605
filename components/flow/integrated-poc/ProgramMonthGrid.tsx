@@ -10,8 +10,10 @@ import styles from './ProgramMonthGrid.module.css';
  *  Enter, Space or a press opens the day. Days outside the month stay blank. Narrow cells show dots, wide ones titles.
  *  `onPick` says whether the host took the day: it refuses one while a written ＋ line waits, and the focus stays. */
 export function ProgramMonthGrid(props: { rows: readonly ProgramOrderedExecutionRow[]; date: string; today: string; titles: boolean;
-  onPick: (day: string, open: boolean) => boolean }) {
-  const grid = programMonthGrid(props.rows, props.date, props.today, props.date);
+  onPick: (day: string, open: boolean) => boolean;
+  /** Flow pipeline S3: the Flow whose days are marked (a blue dot first; its titles in blue on wide cells). */
+  flow?: { test: (row: ProgramOrderedExecutionRow) => boolean; title: string } }) {
+  const grid = programMonthGrid(props.rows, props.date, props.today, props.date, props.flow);
   const [focusDate, setFocusDate] = useState(props.date);
   const box = useRef<HTMLDivElement | null>(null), moved = useRef(false);
   const tabDate = programMonthTabStop(grid, focusDate, props.date);
@@ -30,16 +32,16 @@ export function ProgramMonthGrid(props: { rows: readonly ProgramOrderedExecution
     if (target.slice(0, 7) !== props.date.slice(0, 7) && !props.onPick(target, false)) return;
     moved.current = true; setFocusDate(target);
   }
-  return <div ref={box} className={styles.month} data-titles={props.titles || undefined}>
+  return <div ref={box} className={styles.month} data-titles={props.titles || undefined} data-flow-on={props.flow ? '' : undefined}>
     <div className={styles.weekdays} aria-hidden="true">{grid.weekdays.map(day => <span key={day}>{day}</span>)}</div>
     <div className={styles.grid} role="group" aria-label={`${grid.title} 달력`} onKeyDown={onKeyDown}>
       {grid.weeks.flat().map((cell, index) => cell
-        ? <button key={cell.date} type="button" className={styles.day} data-month-day={cell.date} data-today={cell.today || undefined} data-selected={cell.selected || undefined}
+        ? <button key={cell.date} type="button" className={styles.day} data-month-day={cell.date} data-today={cell.today || undefined} data-selected={cell.selected || undefined} data-flow={cell.flow || undefined}
           tabIndex={cell.date === tabDate ? 0 : -1} aria-label={cell.label} aria-current={cell.today ? 'date' : undefined}
           onFocus={() => setFocusDate(cell.date)} onClick={() => { if (props.onPick(cell.date, true)) setFocusDate(cell.date); }}>
           <span className={styles.number} aria-hidden="true">{cell.day}</span>
           {props.titles
-            ? <span className={styles.titles} aria-hidden="true">{cell.titles.map((title, at) => <span key={at} data-state={title.state}>{title.text}</span>)}
+            ? <span className={styles.titles} aria-hidden="true">{cell.titles.map((title, at) => <span key={at} data-state={title.state} data-flow={title.flow}>{title.text}</span>)}
               {cell.titleMore > 0 && <span className={styles.more}>+{cell.titleMore}</span>}</span>
             : <span className={styles.dots} aria-hidden="true">{cell.dots.map((dot, at) => <i key={at} data-state={dot} />)}
               {cell.more > 0 && <span className={styles.more}>+{cell.more}</span>}</span>}

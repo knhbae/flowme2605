@@ -52,6 +52,29 @@
 /* UX B2 (11/6): .page input{width:100%} made the radio take half the card; it keeps its own size. */
 .page .destinationChoice input{flex:none;width:20px;height:20px;min-height:0;margin:3px 0 0}
 .sheetBody>.primary{width:100%}
+/* Flow pipeline S1 (11/8): 언제 · 이렇게 놓입니다 · 어디에. Visual A tokens; the sheet's main button keeps the detail's palette. */
+.sheetSummary{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:14px;color:var(--flowme-b-muted)}
+.page .sheetSummary .sheetChoose{min-height:32px;height:32px;padding:0 4px;font-size:14px}
+.sheetPart{display:grid;gap:6px;min-width:0}
+.sheetLabel{margin:0;font-size:13px;line-height:18px;font-weight:700;color:var(--flowme-b-muted)}
+.page .whenChip{display:flex;align-items:center;gap:8px;width:100%;min-height:48px;padding:0 14px;border:1px solid var(--flowme-b-line);border-radius:12px;background:var(--flowme-b-canvas);color:var(--flowme-b-ink);font-size:15px;text-align:left}
+.whenChip>span:first-child{color:var(--flowme-b-muted);font-size:14px}
+.whenValue{font-weight:600}
+.whenChange{margin-left:auto;color:var(--flowme-b-primary);font-weight:600;font-size:14px}
+.sheetHint{margin:0;font-size:13px;line-height:20px;color:var(--flowme-b-muted)}
+.placeList{list-style:none;margin:0;padding:4px 12px;border:1px solid var(--flowme-b-line);border-radius:12px;display:grid}
+.placeList li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:baseline;gap:8px;min-height:36px;padding:8px 0;border-top:1px solid var(--flowme-b-line);font-size:14px;line-height:20px}
+.placeList li:first-child{border-top:0}
+.placeList li>b{font-weight:600;white-space:nowrap}
+.placeList li>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--flowme-b-ink)}
+.placeList li>em{font-style:normal;font-size:13px;color:var(--flowme-b-muted);white-space:nowrap}
+.placeList li[data-today]>b,.placeList li[data-today]>em{color:var(--flowme-b-primary)}
+.placeList li[data-place-undated]>b{color:var(--flowme-b-muted)}
+.placeList li.placeMore{display:block;color:var(--flowme-b-muted);font-size:13px}
+.whereRow{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 8px 8px 14px;border:1px solid var(--flowme-b-line);border-radius:12px}
+.whereRow>span{display:grid;min-width:0;font-weight:600;overflow-wrap:anywhere}
+.whereRow small{font-weight:400;font-size:13px;color:var(--flowme-b-muted)}
+.page .whereRow>button{margin-left:auto;flex:none;min-height:44px;padding:0 12px;border:0;background:transparent;color:var(--flowme-b-primary);font-weight:600}
 @media(max-width:900px){.detailLayout{grid-template-columns:minmax(0,1fr) 260px;gap:20px}}
 @media(max-width:700px){.flowCards{grid-template-columns:minmax(0,1fr)}
 .detailLayout{display:block}.flowDetail[data-has-action]{padding-bottom:calc(48px + 72px)}

@@ -14,7 +14,7 @@ test('the switch: only in writing a document that has folders, not in a collecti
   const fn = space.slice(space.indexOf('function viewSwitch('), space.indexOf('function recentLine('));
   assert.match(fn, /if \(collectionMode \|\| selected !== id \|\| period !== 'documents'\) return null;/);
   assert.match(fn, /if \(!folders\.length\) return null;/);
-  assert.match(space, /headBelow=\{headInToolbar && selected === id \|\| recentTop \|\| views \? <>\{headInToolbar && selected === id \? docNotices : null\}\{views\}\{recentTop\}<\/> : undefined\}/);
+  assert.match(space, /headBelow=\{headInToolbar && selected === id \|\| recentTop \|\| views \|\| flowBand && selected === id \? <>\{headInToolbar && selected === id \? docNotices : null\}\{selected === id \? flowBand : null\}\{views\}\{recentTop\}<\/> : undefined\}/);
 });
 
 test('날짜별 / 폴더별 / a chip go through changeFolder (saved first); 폴더별 opens on the folder kept for this document', () => {

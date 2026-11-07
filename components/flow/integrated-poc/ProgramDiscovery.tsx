@@ -3,7 +3,7 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
 import { programId, type ProgramData } from '@/lib/flow/integrated-poc/contract';
 import type { ProgramMutate, ProgramNavigate } from '@/lib/flow/integrated-poc/ui-contract';
-import { classifyProgramUrl, makeProgramOutput, type ProgramOutput, type ProgramOutputFormat } from '@/lib/flow/integrated-poc/output';
+import { classifyProgramUrl, makeProgramOutput, PROGRAM_ICS_ONCE, type ProgramOutput, type ProgramOutputFormat } from '@/lib/flow/integrated-poc/output';
 import { programCatalogMetadata } from '@/lib/flow/integrated-poc/catalog';
 import { isPublicCatalogFlowOnHold } from '@/lib/flow/public-source-review-policy';
 import { PROGRAM_PUBLIC_RECURRENCE_WINDOW } from '@/lib/flow/integrated-poc/public-recurrence-contract';
@@ -20,6 +20,7 @@ import { programImportTargets } from '@/lib/flow/integrated-poc/program-import-l
 import { programImportAddsNothing, programImportFirstDate, programImportItemView, programImportRepeatChoice, programImportRepeatOf, programImportRepeatRule, programImportRepeats, programImportSentence } from '@/lib/flow/integrated-poc/public-repeat-import';
 import { programRepeatFixed } from '@/lib/flow/integrated-poc/repeat-line';
 import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
+import { programImportPreview } from '@/lib/flow/integrated-poc/import-preview';
 import { numberEul, numberIga } from '@/lib/flow/integrated-poc/number-particle';
 import { programFlowProgress, programFlowProgressText } from '@/lib/flow/integrated-poc/flow-loop';
 import { programFlowAttributionLabel } from '@/lib/flow/integrated-poc/alpha-official-actors';
@@ -107,6 +108,8 @@ const failureText: Record<string, string> = {
   'confirmation-required': '수정한 결과를 확인한 뒤 출력 내용을 확정해 주세요.',
 };
 const errorText = (reason: string) => failureText[reason] ?? '내용이 달라졌습니다. 지금 버전과 고른 항목을 다시 확인해 주세요.';
+/** Flow pipeline S1: the preview shows five days, then "날짜 n개 더". */
+const PLACE_ROWS = 5;
 
 export function TransientOutputEditor({ draft, stale, onChange, onDiscard }: { draft: TransientOutputDraft; stale: boolean; onChange: (draft: TransientOutputDraft) => void; onDiscard: () => void }) {
   const [message, setMessage] = useState(''), [busy, setBusy] = useState(false), [discarding, setDiscarding] = useState(false);
@@ -162,6 +165,9 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   const [targetDocumentId, setTargetDocumentId] = useState<string>();
   const [pickingDocument, setPickingDocument] = useState(false);
   const [importFailure, setImportFailure] = useState<{ text: string; continueCopy: boolean } | null>(null);
+  // Flow pipeline S1: '어디에' is one line until [바꾸기] (open from the start for '다른 문서에 넣기').
+  const [whereOpen, setWhereOpen] = useState(false);
+  const anchorPicker = useRef<HTMLInputElement>(null);
   // 공식 반복 Flow: what is typed in the sheet's repeat rows (first dates, months), per sheet opened.
   const [repeatTyped, setRepeatTyped] = useState<{ starts: Record<string, string>; months: Record<string, string> }>({ starts: {}, months: {} });
   // Per-version view toggles; they are presentation only and never stored.
@@ -324,7 +330,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     if (!result.ok) { setFailed(true); setMessage(errorText(result.reason)); return; }
     update({ transient: result.draft, transientSource: { text: state.pastedText, title: state.pastedTitle, url: state.url } }); setFailed(false); setMessage('');
   };
-  const openSheet = (existing = false) => { if (pendingRef.current) return; setRepeatTyped({ starts: {}, months: {} }); setImportDestination(existing ? 'existing' : 'new'); setTargetDocumentId(undefined); setImportFailure(null); setSheetOpen(true); if (!sheet.current?.open) sheet.current?.showModal(); if (existing) setPickingDocument(true); };
+  const openSheet = (existing = false) => { if (pendingRef.current) return; setRepeatTyped({ starts: {}, months: {} }); setImportDestination(existing ? 'existing' : 'new'); setWhereOpen(existing); setTargetDocumentId(undefined); setImportFailure(null); setSheetOpen(true); if (!sheet.current?.open) sheet.current?.showModal(); if (existing) setPickingDocument(true); };
   const closeSheet = () => { if (pendingRef.current) return; setSheetOpen(false); sheet.current?.close(); };
   // FC2: one import per press. The host saves, opens the copy document and says so there; a failure keeps the
   // sheet, the anchor and the selection, and names its reason (D1).
@@ -364,6 +370,14 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     const outputOpen = outputVersion === version.id || !!selectedOutputReturn;
     const kindLabel = programFlowAttributionLabel(flow, version, officialActors, data);
     const importLabel = choosing ? `할 일 ${useItemIds.length}개 가져오기` : '내 계획으로 가져오기';
+    // Flow pipeline S1: where the sheet's choices put each item, by the import's own date functions (nothing saved).
+    // A copy taken again into another document carries its own dates; the sheet lists its items there instead.
+    const preview = !(importDestination === 'existing' && storedCopy) ? programImportPreview(version, useItemIds, detail.anchor || null, sheetRepeats, today, { ...(repeatChoice ?? {}), recurrenceStarts }) : null;
+    const anchorName = sourceMeta?.anchorLabel ?? '기준일';
+    const anchorMissing = version.items.filter(item => useItemIds.includes(item.id) && (item.schedule.kind === 'relative' || item.schedule.kind === 'recurring' && item.schedule.start.kind === 'relative')).length;
+    const openAnchorPicker = () => { const input = anchorPicker.current; if (!input || pendingRef.current) return; try { input.showPicker(); } catch { input.focus(); } };
+    const whereShown = whereOpen || importDestination === 'existing';
+    const canChoose = !flow.archived && !existingCopy && !storedCopy && version.items.length > 1 && importDestination === 'new';
     // Head re-review 2 P2: PC keeps its earlier '더 보기' rule (over 90 characters or a line break) and, without it,
     // the plain closing-line look; phones show it only when the two lines really cut text.
     const longSummary = version.summary.length > 90 || version.summary.includes('\n');
@@ -445,6 +459,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
             {selectedSeries.some(item => item.schedule.kind === 'recurring' && !item.schedule.rule.end) && <><label className={styles.field}>시작 후 건너뛸 주<input type="number" min={0} max={PROGRAM_PUBLIC_RECURRENCE_WINDOW.maxWeekOffset} value={recurrenceWindow.openEndedOffsetWeeks} onChange={event => patchDetail({ recurrenceWindow: { ...recurrenceWindow, openEndedOffsetWeeks: Number(event.currentTarget.value) } })} /></label><label className={styles.field}>받을 기간 · 주<input type="number" min={1} max={PROGRAM_PUBLIC_RECURRENCE_WINDOW.maxWeeks} value={recurrenceWindow.openEndedWeeks} onChange={event => patchDetail({ recurrenceWindow: { ...recurrenceWindow, openEndedWeeks: Number(event.currentTarget.value) } })} /></label></>}
           </fieldset></details>}
           <label className={styles.field}>파일 형식<select value={detail.format} disabled={pending} onChange={event => patchDetail({ format: event.target.value as ProgramOutputFormat })}><option value="txt">텍스트 · 메모</option><option value="csv">CSV · 스프레드시트</option><option value="ics">ICS · 캘린더</option></select></label>
+          {detail.format === 'ics' && <p className={styles.muted} data-ics-once><strong>{PROGRAM_ICS_ONCE.head}</strong> {PROGRAM_ICS_ONCE.body}</p>}
           {output?.ok && output.series?.map(series => <p key={series.itemId} className={styles.muted}>{version.items.find(item => item.id === series.itemId)?.title}: {series.scope ?? '시작일 미정 · 반복 규칙은 텍스트·CSV에 보존'}{series.time ? ` · ${series.time} ${series.timeZone ?? '(시간대 미정)'}` : ' · 종일'}</p>)}
           {detail.format === 'ics' && selectedSeries.length > 0 && <p className={styles.muted}>선택한 범위만 반복 묶음으로 받습니다. 범위가 겹치는 파일을 모두 가져오면 캘린더에 회차가 중복될 수 있습니다.</p>}
           {output?.ok ? <><p className={styles.outputSize}>{output.itemIds.length}개 항목 · {new TextEncoder().encode(output.payload).byteLength.toLocaleString('ko-KR')}바이트</p>{detail.format === 'ics' && output.undatedItemIds.length > 0 && <p className={styles.notice}>날짜 없는 {output.undatedItemIds.length}개는 캘린더 파일에 들어가지 않습니다. 텍스트·CSV에는 포함됩니다.</p>}<div className={styles.actions}><button type="button" className={styles.primary} disabled={pending} onClick={() => void transfer('download')}>{detail.format.toUpperCase()} 파일 받기</button><button type="button" disabled={pending} onClick={() => void transfer('copy')}>내용 복사</button></div><details><summary>실제 출력 내용</summary><textarea className={styles.preview} aria-label="실제 출력 내용" value={output.payload} readOnly rows={10} /></details></> : <p className={styles.notice}>{errorText(output && !output.ok ? output.reason : 'invalid-version')}</p>}
@@ -460,20 +475,28 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
       </aside>}</div>
       <dialog ref={sheet} className={styles.importSheet} aria-labelledby={`${uid}-sheet`} onCancel={event => { if (pendingRef.current) event.preventDefault(); else setSheetOpen(false); }} onClose={() => setSheetOpen(false)}>
         {sheetOpen && <div className={styles.sheetBody}>
-          <div className={styles.row}><h2 id={`${uid}-sheet`}>어디에 넣을까요?</h2><button type="button" disabled={pending} onClick={closeSheet}>닫기</button></div>
-          <p className={styles.sheetSummary}>{[version.title, `할 일 ${useItemIds.length}개`, anchorNeeded ? `기준일 ${detail.anchor ? programShortDate(detail.anchor) : '미정'}` : ''].filter(Boolean).join(' · ')}</p>
-          {anchorNeeded && !detail.anchor && <label className={styles.field}>{sourceMeta?.anchorLabel ?? '기준일'}<input type="date" value={detail.anchor} disabled={pending} onChange={event => patchDetail({ anchor: event.target.value })} /><small>비워 두면 날짜 미정으로 들어갑니다.</small></label>}
+          <div className={styles.row}><h2 id={`${uid}-sheet`}>가져오기</h2><button type="button" disabled={pending} onClick={closeSheet}>닫기</button></div>
+          <p className={styles.sheetSummary}>{version.title} · 할 일 {useItemIds.length}개{canChoose && <button type="button" className={`${styles.linkButton} ${styles.sheetChoose}`} disabled={pending} onClick={() => { closeSheet(); setChoosingVersion(version.id); }}>고르기</button>}</p>
+          {/* Flow pipeline S1 '언제': the 기준일 as one chip line that opens the phone's date picker (the input stays, unseen). */}
+          {anchorNeeded && <section className={styles.sheetPart} aria-labelledby={`${uid}-when`} data-import-when><h3 id={`${uid}-when`} className={styles.sheetLabel}>언제</h3>
+            <button type="button" className={styles.whenChip} disabled={pending} onClick={openAnchorPicker}
+              aria-label={`${anchorName} ${detail.anchor ? `${programCalendarDate(detail.anchor, today)} · 바꾸기` : '정하기'}`}>
+              <span>{anchorName}</span>{detail.anchor && <span className={styles.whenValue}>{programCalendarDate(detail.anchor, today)}</span>}<span className={styles.whenChange}>{detail.anchor ? '바꾸기' : '정하기'}</span></button>
+            <label className={styles.visuallyHidden}>{anchorName}<input ref={anchorPicker} type="date" tabIndex={-1} value={detail.anchor} disabled={pending} onChange={event => patchDetail({ anchor: event.target.value })} /></label>
+            {!detail.anchor && <p className={styles.sheetHint}>정하면 날짜가 나옵니다. 비워 두면 {anchorMissing}개는 ‘날짜 미정’으로 들어가고, 가져온 뒤 정할 수 있습니다.</p>}
+          </section>}
+          {/* S1 '이렇게 놓입니다': the dates the import writes (the same functions), today in blue, repeats and 미정 below. */}
+          {preview && (preview.dated.length > 0 || preview.repeats.length > 0 || preview.undated.count > 0) && <section className={styles.sheetPart} aria-labelledby={`${uid}-place`}>
+            <h3 id={`${uid}-place`} className={styles.sheetLabel}>이렇게 놓입니다</h3>
+            <ul className={styles.placeList} data-import-preview>
+              {preview.dated.slice(0, PLACE_ROWS).map(day => <li key={day.date} data-place-date={day.date} data-today={day.date === today || undefined}><b>{day.date === today ? `오늘 ${programCalendarDate(day.date, today, false)}` : programCalendarDate(day.date, today)}</b><span>{day.titles.join(' · ')}</span><em>{day.count}개</em></li>)}
+              {preview.dated.length > PLACE_ROWS && <li className={styles.placeMore} data-place-more>날짜 {preview.dated.length - PLACE_ROWS}개 더</li>}
+              {preview.repeats.map(row => <li key={row.itemId} data-place-repeat={row.first ?? ''}><b>{row.label}</b><span>↻ {row.title} · {row.first ? `${programDateLabel(row.first, today, false)}부터` : '시작일 미정'}</span><em>반복</em></li>)}
+              {preview.undated.count > 0 && <li data-place-undated><b>날짜 미정</b><span>{preview.undated.titles.join(' · ')}</span><em>{preview.undated.count}개</em></li>}
+            </ul>
+            {!preview.dated.length && !preview.repeats.length && !anchorNeeded && <p className={styles.sheetHint}>달력에는 놓이지 않습니다. 오늘 › 날짜 미정에서 보입니다.</p>}
+          </section>}
           {undatedStarts.map(item => <label key={item.id} className={styles.field}>반복 시작일(선택) · {item.title}<input type="date" disabled={pending} value={detail.recurrenceStarts?.[item.id] ?? ''} onChange={event => { const starts = { ...detail.recurrenceStarts }; if (event.target.value) starts[item.id] = event.target.value; else delete starts[item.id]; patchDetail({ recurrenceStarts: starts }); }} /><small>비우면 가져온 뒤 정할 수 있습니다.</small></label>)}
-          <fieldset className={styles.destinationChoices} disabled={pending}><legend className={styles.visuallyHidden}>넣을 곳</legend>
-            <label className={styles.destinationChoice}><input type="radio" name={`${uid}-destination`} checked={importDestination === 'new'} onChange={() => setImportDestination('new')} /><span><strong>새 문서</strong><small>‘{version.title}’ 문서를 미분류에 만듭니다.</small></span></label>
-            <label className={styles.destinationChoice}><input type="radio" name={`${uid}-destination`} checked={importDestination === 'existing'} disabled={!!privateSpace?.documentTrash?.[storedCopy?.documentId ?? '']} onChange={() => { setImportDestination('existing'); setPickingDocument(true); }} /><span><strong>기존 문서 끝에 넣기</strong><small>고른 문서 끝에 할 일을 연결합니다.</small></span></label></fieldset>
-          {importDestination === 'existing' && <div className={styles.targetPreview}>
-            <button type="button" disabled={pending} onClick={() => setPickingDocument(true)}>{targetDocumentId ? (programImportTargets(data, actorId, storedCopy?.documentId, []).find(doc => doc.id === targetDocumentId)?.title ?? '문서') + ' · 바꾸기' : '넣을 문서 고르기'}</button>
-            <p>{storedCopy ? '이미 가져온 사본의 할 일을 연결합니다. 새 사본은 만들지 않습니다.' : '넣은 할 일은 미분류의 사본 문서와 연결됩니다. 어느 쪽에서 체크해도 같이 바뀝니다.'}{sheetRepeats.some(repeat => !repeat.existing) ? ' 반복 할 일은 연결 없이 내 줄로 들어갑니다.' : ''}</p>
-            {storedCopy && privateSpace.archivedDocumentIds.includes(storedCopy.documentId) && <p>보관한 사본 문서는 다시 꺼내집니다.</p>}
-            {targetDocumentId && (targetItems.length ? <><p>고른 문서 끝에 할 일 {targetItems.length}개가 들어갑니다.</p><ul>{targetItems.slice(0, 3).map(item => <li key={item.id}>{item.schedule.kind === 'recurring' ? '반복 참조: ' : programImportItemView(item) ? '↻ ' : ''}{programImportItemView(item)?.title ?? item.title}</li>)}</ul>{targetItems.length > 3 && <p>… {targetItems.length - 3}개 더</p>}</>
-              : <p className={styles.repeatNone} data-import-nothing>{nothingReason}</p>)}
-          </div>}
           {sheetRepeats.length > 0 && <section className={styles.repeatChoices} aria-labelledby={`${uid}-repeats`}><h3 id={`${uid}-repeats`}>반복 할 일 · 내 반복 줄로 들어갑니다</h3>
             {sheetRepeats.every(repeat => repeat.existing) && <p className={styles.repeatNone}>넣을 반복 할 일이 없습니다</p>}
             <ul>{sheetRepeats.map(repeat => {
@@ -490,6 +513,21 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
                     : <label className={styles.repeatStart}><span>첫 날짜</span><input type="date" disabled={pending} value={repeatTyped.starts[repeat.itemId] ?? ''} onChange={event => setTyped('starts', event.target.value)} /><small>비우면 {programCalendarDate(first, today, false)}</small></label>)}</>}
               </li>;
             })}</ul></section>}
+          {/* S1 '어디에': one line (new document, as before) until [바꾸기] shows the choice as it was. */}
+          <section className={styles.sheetPart} aria-labelledby={`${uid}-where`} data-import-where={whereShown ? 'open' : 'line'}><h3 id={`${uid}-where`} className={styles.sheetLabel}>어디에</h3>
+            {!whereShown ? <div className={styles.whereRow}><span>{storedCopy ? `‘${copyTitle || version.title}’ 문서` : `새 문서 ‘${version.title}’`}<small>오늘·달력에 같이 보입니다</small></span>
+              <button type="button" disabled={pending} onClick={() => setWhereOpen(true)}>바꾸기</button></div> : <>
+            <fieldset className={styles.destinationChoices} disabled={pending}><legend className={styles.visuallyHidden}>넣을 곳</legend>
+              <label className={styles.destinationChoice}><input type="radio" name={`${uid}-destination`} checked={importDestination === 'new'} onChange={() => setImportDestination('new')} /><span><strong>새 문서</strong><small>‘{version.title}’ 문서를 미분류에 만듭니다.</small></span></label>
+              <label className={styles.destinationChoice}><input type="radio" name={`${uid}-destination`} checked={importDestination === 'existing'} disabled={!!privateSpace?.documentTrash?.[storedCopy?.documentId ?? '']} onChange={() => { setImportDestination('existing'); setPickingDocument(true); }} /><span><strong>기존 문서 끝에 넣기</strong><small>고른 문서 끝에 할 일을 연결합니다.</small></span></label></fieldset>
+            {importDestination === 'existing' && <div className={styles.targetPreview}>
+              <button type="button" disabled={pending} onClick={() => setPickingDocument(true)}>{targetDocumentId ? (programImportTargets(data, actorId, storedCopy?.documentId, []).find(doc => doc.id === targetDocumentId)?.title ?? '문서') + ' · 바꾸기' : '넣을 문서 고르기'}</button>
+              <p>{storedCopy ? '이미 가져온 사본의 할 일을 연결합니다. 새 사본은 만들지 않습니다.' : '넣은 할 일은 미분류의 사본 문서와 연결됩니다. 어느 쪽에서 체크해도 같이 바뀝니다.'}{sheetRepeats.some(repeat => !repeat.existing) ? ' 반복 할 일은 연결 없이 내 줄로 들어갑니다.' : ''}</p>
+              {storedCopy && privateSpace.archivedDocumentIds.includes(storedCopy.documentId) && <p>보관한 사본 문서는 다시 꺼내집니다.</p>}
+              {targetDocumentId && (targetItems.length ? <><p>고른 문서 끝에 할 일 {targetItems.length}개가 들어갑니다.</p><ul>{targetItems.slice(0, 3).map(item => <li key={item.id}>{item.schedule.kind === 'recurring' ? '반복 참조: ' : programImportItemView(item) ? '↻ ' : ''}{programImportItemView(item)?.title ?? item.title}</li>)}</ul>{targetItems.length > 3 && <p>… {targetItems.length - 3}개 더</p>}</>
+                : <p className={styles.repeatNone} data-import-nothing>{nothingReason}</p>)}
+            </div>}</>}
+          </section>
           {privateSpace?.documentTrash?.[storedCopy?.documentId ?? ''] && <p>사본 문서가 휴지통에 있습니다. 복원한 뒤 넣을 수 있습니다.</p>}
           {nothingForNew && <p className={styles.repeatNone} data-import-nothing>{nothingNewReason}</p>}
           <button type="button" className={styles.primary} data-testid="program-import-run" disabled={pending || !canUseVersion || !repeatChoice || nothingToImport || nothingForTarget || nothingForNew || importDestination === 'existing' && !targetDocumentId} onClick={() => void runImport()}>{pending ? '가져오는 중…' : importDestination === 'existing' ? '고른 문서에 넣기' : '가져오기'}</button>

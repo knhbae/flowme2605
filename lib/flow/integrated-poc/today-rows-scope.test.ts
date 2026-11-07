@@ -19,7 +19,10 @@ test('R4 waits stay as they were and become visible: the check keeps its busy gu
   const check = buttons.filter(button => attribute(button, 'className').includes('styles.check'));
   assert.equal(check.length, 1);
   assert.equal(attribute(check[0], 'aria-busy'), '{completingTaskIds.has(task.id) || undefined}');
-  assert.match(attribute(check[0], 'onClick'), /const ids = completingInSession\(completingTasks, sourceSession\.current\);\s*if \(ids\.has\(task\.id\)\) return;/);
+  // Flow pipeline S11 (11/8): the tap is one function the band shares; its guards stay in it.
+  assert.match(attribute(check[0], 'onClick'), /void checkTaskFromList\(task\)/);
+  const shared = source.slice(source.indexOf('function checkTaskFromList('), source.indexOf('const repeatNoticeContent ='));
+  assert.equal(shared.match(/const ids = completingInSession\(completingTasks, sourceSession\.current\);\s*if \(ids\.has\(task\.id\)\) return Promise\.resolve\('ignored'\);/g)?.length, 2);
   assert.match(attribute(check[0], 'aria-label'), /완료 대기 중/);
   const title = buttons.filter(button => attribute(button, 'className') === '{styles.taskTitle}');
   assert.equal(title.length, 1);

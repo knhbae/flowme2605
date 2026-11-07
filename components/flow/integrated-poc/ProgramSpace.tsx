@@ -11,12 +11,13 @@ import { addProgramQuickTask, archiveProgramDocument, completeProgramTask, creat
 import { programDateRange, programExecutionTasks, programShiftDate, programShiftMonth, programTaskProgress, type ProgramPeriod } from '@/lib/flow/integrated-poc/execution';
 import { programDateChipLabel, programDayHeadingParts, programPeriodTitleParts } from '@/lib/flow/integrated-poc/today-title';
 import { programManualOrderDays, programOrderedExecutionRows, programTextExecutionKey, readProgramDayOrder, reorderProgramExecutionTimeline, resetProgramExecutionDayOrder,
-  restoreProgramExecutionDayOrder, type ProgramDayOrder } from '@/lib/flow/integrated-poc/recurrence-order';
+  restoreProgramExecutionDayOrder, type ProgramDayOrder, type ProgramOrderedExecutionRow } from '@/lib/flow/integrated-poc/recurrence-order';
 import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
 import { carryProgramHead, restoreProgramHead, type ProgramHeadCarry } from '@/lib/flow/integrated-poc/tablet-head-carry';
 import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeLive, programCheckNoticeView, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
 import { ProgramMonthGrid } from './ProgramMonthGrid';
+import { ProgramFlowTodayBand, type ProgramFlowBandRow } from './ProgramFlowTodayBand';
 import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
 import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
@@ -143,7 +144,9 @@ export type ProgramSpaceProps = {
   onOpenCopySource?: (flowId: string, documentId: string, returnFocus?: HTMLElement) => void;
   onBrowseFlows?: (documentId?: string, returnFocus?: HTMLElement, writing?: ProgramWritingReturn) => void;
   /** UX B1 (11/6): a new document's arrival notice uses the same slot with its own button (되돌리기). */
-  importNotice?: { actorId: string; documentId: string; lineId?: string; text: string; busy: boolean; onCancel?: () => void; actionLabel?: string; busyLabel?: string };
+  importNotice?: { actorId: string; documentId: string; lineId?: string; text: string; busy: boolean; onCancel?: () => void; actionLabel?: string; busyLabel?: string;
+    /** Flow pipeline S2: [달력에서 보기] — the month of `first`, that day chosen, this Flow's days marked (S3). */
+    calendar?: { first: string; title: string; count: number } };
   onRevisionHistory?: (documentId: string) => void;
   onOutputDocument?: (documentId: string) => void;
   onStartReview?: (documentId: string) => Promise<void>;
@@ -421,6 +424,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // sheet, and the content's width: from 840px the day sits in a panel beside the grid, from 761px cells show titles.
   const [monthView, setMonthViewState] = useState<'list' | 'grid'>('list');
   const [dayOpen, setDayOpen] = useState(false), [monthWidth, setMonthWidth] = useState(0);
+  // Flow pipeline S3: the Flow just taken, marked on the month's days. Screen state only: × or leaving 오늘 ends it.
+  const [flowHighlight, setFlowHighlight] = useState<{ documentId: string; title: string; count: number } | null>(null);
+  useEffect(() => { if (programMainTabOf(period) !== 'today') setFlowHighlight(null); }, [period]);
+  useEffect(() => { setFlowHighlight(null); }, [actorId]);
   // The day sheet's ＋ line is being composed in (Korean): a sheet/panel switch waits for it (C5 re-review).
   const sheetComposing = useRef(false), [sheetSettled, setSheetSettled] = useState(0);
   const endSheetComposing = () => { if (!sheetComposing.current) return; sheetComposing.current = false; setSheetSettled(count => count + 1); };
@@ -1062,6 +1069,19 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [completingTaskIds, setCompletingTaskIds] = useState<ReadonlySet<string>>(() => new Set());
   const sourceMounted = useRef(true), sourceSession = useRef(sourceEpoch);
   sourceSession.current = sourceEpoch;
+  // Flow pipeline S11: over a writing document of mine (not a Flow document, not a gathered folder), the unfinished tasks
+  // of the Flows I took that 오늘 lists (its own query and order: today's and earlier ones still open). Drawn only.
+  const bandDocumentId = period === 'documents' && !folderId && !!selectedDoc && !selectedArchived && !selectedTrashed
+    && space.text.documents.some(doc => doc.id === selectedDoc.id) ? selectedDoc.id : null;
+  const flowDocuments = useMemo(() => new Map(space.copies.filter(copy => !space.documentTrash?.[copy.documentId] && !space.archivedDocumentIds.includes(copy.documentId))
+    .flatMap(copy => (doc => doc ? [[copy.documentId, doc.title] as const] : [])(space.text.flows.find(row => row.id === copy.documentId)))), [space]);
+  const flowTodayTasks = useMemo(() => !bandDocumentId || !flowDocuments.size ? []
+    : programOrderedExecutionRows(data, { period: 'today', date: today, today, folderId: '', query: '', includeHeld: false, includeExcluded: false, page: 0 }).rows
+      .flatMap(row => row.kind === 'text-task' && flowDocuments.has(row.task.docId) ? [row.task] : []), [!!bandDocumentId, flowDocuments, data, today]);
+  // A row checked in the band stays (faded, where it was) until the screen is left; a finished round has moved on.
+  const [bandChecked, setBandChecked] = useState<ReadonlyMap<string, { task: TextTask; index: number }>>(() => new Map());
+  const [bandFailed, setBandFailed] = useState<string | null>(null);
+  useEffect(() => { setBandChecked(new Map()); setBandFailed(null); }, [actorId, period, selected, folderId]);
   // The source open now waiting out the host's check, shown on its row and in the
   // host notice. A token, so an older wait on the same task cannot clear a newer one.
   const sourceWaiting = useRef<object | null>(null);
@@ -1816,6 +1836,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (open && !wideMonth) setDayOpen(true);
     return true;
   }
+  /** Flow pipeline S2/S3: [달력에서 보기] — 오늘 › 월간 as the calendar (for this visit: the stored choice stays), the month of
+   *  the Flow's first date with that day chosen, and its days marked until × or leaving 오늘. Nothing is saved. */
+  async function showFlowOnCalendar(documentId: string, target: { first: string; title: string; count: number }) {
+    if (!await changePeriod('month', true)) return;
+    setFolderId(''); setMonthViewState('grid'); setDayOpen(false); setDate(target.first);
+    setFlowHighlight({ documentId, title: target.title, count: target.count });
+  }
   /** C6a: into 고르기 (2-1). From the calendar it goes to the list at the chosen day's group first. */
   function startSelecting() {
     if (selectBlocked || props.sourceReturnWaits?.() || props.hostBusy?.() || keepWrittenDay()) return;
@@ -2152,12 +2179,45 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   const repeatNextText = (title: string, check: ProgramRepeatCheck) => `${programRepeatTitle(title)} · ${check.applied ? '' : '다른 곳에서 이미 끝낸 회차입니다 · '}다음은 ${programCalendarDate(check.after, today)}`;
   // QA P3: as with C2/C6, a slow save's answer speaks only in the view the tap was made in.
-  async function finishRepeatFromList(taskId: string, title: string, expected: string | null) {
+  async function finishRepeatFromList(taskId: string, title: string, expected: string | null, quiet = false) {
     const view = presentation.current, check = await finishRepeatRound(taskId, expected, programRepeatSeen(space, taskId));
-    if (!checkViewOwns(view)) return;
+    const saved = !!check && check !== 'refused';
+    if (quiet || !checkViewOwns(view)) return saved;
     // QA F1: a check that changed nothing here (the round was finished elsewhere first) offers no 되돌리기.
     setRepeatNotice(check && check !== 'refused' ? { actorId, text: repeatNextText(title, check), check: check.applied ? check : null }
       : { actorId, text: check === 'refused' ? '다른 곳에서 이 반복을 먼저 바꿨습니다. 지금 날짜를 확인해 주세요' : '반복 회차를 저장하지 못했습니다', check: null, refused: true });
+    return saved;
+  }
+  /** The 오늘 list's check, and the S11 band's (Flow pipeline 11/8: one function, so both save the same). A repeat line
+   *  finishes its round; a task between 0 and 100% opens its chips (the band, which shows no notice, its form); any other
+   *  is done, or opened again, as of today. Resolves 'saved', 'failed', or 'ignored' (a tap while one waits; chips or form). */
+  function checkTaskFromList(task: TextTask, from: 'list' | 'band' = 'list'): Promise<'saved' | 'failed' | 'ignored'> {
+    const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
+    // N10: a repeat line's tap finishes its round (the box stays empty, the date moves on); no chips.
+    const repeat = programRepeatLine(space, task.id);
+    if (repeat && !repeat.block) {
+      const ids = completingInSession(completingTasks, sourceSession.current);
+      if (ids.has(task.id)) return Promise.resolve('ignored');
+      ids.add(task.id); setCompletingTaskIds(new Set(ids));
+      return finishRepeatFromList(task.id, task.title, task.date, from === 'band').then(saved => saved ? 'saved' as const : 'failed' as const).finally(() => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); });
+    }
+    // A record dated after today keeps the form (review P2): today's record would not change what shows.
+    if (value > 0 && value < 100 && (from === 'band' || (progress?.date ?? '') > today)) { setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); return Promise.resolve('ignored'); }
+    if (value > 0 && value < 100) { setCheckNotice({ actorId, stage: 'chips', targetId: task.id, title: task.title, before: value, after: value, shownAt: Date.now(), key: ++checkNoticeKeys.current }); return Promise.resolve('ignored'); }
+    // A repeat tap while the first still waits or saves would act on a stale
+    // value, so ignore it; the first tap waits out a refresh by itself.
+    const ids = completingInSession(completingTasks, sourceSession.current);
+    if (ids.has(task.id)) return Promise.resolve('ignored');
+    ids.add(task.id); setCompletingTaskIds(new Set(ids));
+    const done = () => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); };
+    let after: number | null = null;
+    const view = presentation.current;
+    return run(value === 100 ? '다시 열기' : '완료', current => {
+      const next = completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 });
+      if (next.ok) after = M.currentProgress(next.data.spaces[actorId].text, task.id);
+      return next;
+    }, true, undefined, undefined, true).then(result => { done(); if (result.ok && from === 'list' && checkViewOwns(view)) checkSaved(task.id, task.title, value, after); return result.ok ? 'saved' as const : 'failed' as const; },
+      () => { done(); return 'failed' as const; });
   }
   async function undoRepeatFromList(check: ProgramRepeatCheck) {
     const view = presentation.current, done = await undoRepeatRound(check);
@@ -2264,6 +2324,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const actualFolderId = space.text.flows.find(flow => flow.id === task.scopeId)?.folderId ?? task.folderId;
     return folderOptions.find(item => item.id === actualFolderId)?.title ?? task.folder;
   };
+  // Flow pipeline S3: the highlight while its document is still mine to see (an undo or the trash ends it quietly).
+  const shownHighlight = flowHighlight && flowDocuments.has(flowHighlight.documentId) ? flowHighlight : null;
+  const highlightCopyId = shownHighlight ? space.copies.find(copy => copy.documentId === shownHighlight.documentId)?.id ?? null : null;
+  const highlightRow = shownHighlight ? { title: shownHighlight.title, test: (row: ProgramOrderedExecutionRow) => row.kind === 'text-task'
+    ? row.task.docId === shownHighlight.documentId : !!highlightCopyId && row.row.savedCopyId === highlightCopyId } : undefined;
+  /** S3 (with today A's T6 place): a Flow document's row shows that Flow's name where a folder would be. */
+  const rowFlowTitle = (task: TextTask) => collectionMode ? null : flowDocuments.get(task.docId) ?? null;
   /** T6: the folder a row shows first ("/ 회사 일"); none for 미분류, no folder, or a collection. */
   const rowFolderTitle = (task: TextTask) => {
     if (collectionMode) return null;
@@ -2542,42 +2609,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           return <li key={entry.key} className={styles.task} data-task-id={task.id} data-done={value === 100 || undefined} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
-            <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskIds.has(task.id) ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskIds.has(task.id) || undefined} onClick={() => {
-              // N10: a repeat line's tap finishes its round (the box stays empty, the date moves on); no chips.
-              const repeat = programRepeatLine(space, task.id);
-              if (repeat && !repeat.block) {
-                const ids = completingInSession(completingTasks, sourceSession.current);
-                if (ids.has(task.id)) return;
-                ids.add(task.id); setCompletingTaskIds(new Set(ids));
-                void finishRepeatFromList(task.id, task.title, task.date).finally(() => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); });
-                return;
-              }
-              // A record dated after today keeps the form (review P2): today's record would not change what shows.
-              if (value > 0 && value < 100 && (progress?.date ?? '') > today) { setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }
-              else if (value > 0 && value < 100) setCheckNotice({ actorId, stage: 'chips', targetId: task.id, title: task.title, before: value, after: value, shownAt: Date.now(), key: ++checkNoticeKeys.current });
-              else {
-                // A repeat tap while the first still waits or saves would act on a stale
-                // value, so ignore it; the first tap waits out a refresh by itself.
-                const ids = completingInSession(completingTasks, sourceSession.current);
-                if (ids.has(task.id)) return;
-                ids.add(task.id); setCompletingTaskIds(new Set(ids));
-                const done = () => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); };
-                let after: number | null = null;
-                const view = presentation.current;
-                void run(value === 100 ? '다시 열기' : '완료', current => {
-                  const next = completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 });
-                  if (next.ok) after = M.currentProgress(next.data.spaces[actorId].text, task.id);
-                  return next;
-                }, true, undefined, undefined, true).then(result => { done(); if (result.ok && checkViewOwns(view)) checkSaved(task.id, task.title, value, after); }, done);
-              }
-            }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
+            <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskIds.has(task.id) ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskIds.has(task.id) || undefined} onClick={() => { void checkTaskFromList(task); }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
               {completingTaskIds.has(task.id) ? '…' : value > 0 && value < 100 ? `${value}%` : ''}</span></button>
             <button className={styles.taskTitle} aria-label={`${repeatShown ? `${programRepeatTitle(task.title)} · ${repeatShown.block ? '반복 멈춤' : `반복 ${repeatShown.marker.label}`}` : task.title}${origin.label !== '직접 작성' ? ` · ${origin.label}` : ''} · ${task.docTitle} 원문 열기`} aria-busy={sourceWaitingTask === task.id || undefined} onClick={event => moving ? void moveBefore(moving, entry.key) : openFromList(task, event.currentTarget)}>{(line => line ? <span className={styles.taskTitleText}>{programRepeatTitle(task.title)}<span className={styles.repeatChip}>{line.block ? '반복 멈춤' : `↻ ${line.marker.label}`}</span></span>
               : <span className={styles.taskTitleText}>{task.title}</span>)(repeatShown)}
               {/* R4's waits, now visible on the row. The title's aria-busy and the host notice still do the announcing. */}
               <small>{sourceWaitingTask === task.id ? <span className={styles.rowBusy}>원문 여는 중…</span> : <>
                 {/* T6: the row's folder first, small, as "/ 회사 일" (none for 미분류 or no folder); rows stay in their order. */}
-                {(scope => scope && <><span className={styles.rowFolder}>/ {scope}</span> · </>)(rowFolderTitle(task))}
+                {(flow => flow ? <><span className={styles.rowFolder} data-row-flow>{flow}</span> · </>
+                  : (scope => scope && <><span className={styles.rowFolder}>/ {scope}</span> · </>)(rowFolderTitle(task)))(rowFlowTitle(task))}
                 {completingTaskIds.has(task.id) &&<><span className={styles.rowBusy}>{value === 100 ? '다시 열기 대기 중' : '완료 대기 중'}</span> · </>}
                 {meta.late && <><em className={styles.rowLate}>{meta.late}</em> · </>}
                 {[...meta.parts, ...(task.time ? [task.time] : []), ...(carryPlaces.has(task.id) ? [`${carryPlaces.get(task.id)!.place || '분류 없음'} · 분류 ${carryPlaces.get(task.id)!.count}곳`] : [])]
@@ -2589,6 +2629,28 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>
           </li>;
   }
+  // Flow pipeline S11: the band's rows — open ones in 오늘's order, and those checked here kept (faded) where they were.
+  const bandRows: ProgramFlowBandRow[] = (() => {
+    if (!bandDocumentId) return [];
+    const valueOf = (task: TextTask) => taskProgress(task.id).current ?? (task.done ? 100 : 0);
+    const list = flowTodayTasks.filter(task => valueOf(task) !== 100 && !bandChecked.has(task.id)).map(task => ({ task, done: false }));
+    for (const [, kept] of [...bandChecked].sort((a, b) => a[1].index - b[1].index)) list.splice(Math.min(kept.index, list.length), 0, { task: kept.task, done: true });
+    return list.map(({ task, done }) => { const repeat = programRepeatLine(space, task.id);
+      return { id: task.id, title: repeat ? programRepeatTitle(task.title) : task.title, flowTitle: flowDocuments.get(task.docId) ?? task.docTitle, flowDocumentId: task.docId,
+        done, busy: completingTaskIds.has(task.id), repeat: repeat && !repeat.block ? `↻ ${repeat.marker.label}` : null }; });
+  })();
+  function checkFromBand(id: string) {
+    const kept = bandChecked.get(id), index = bandRows.findIndex(row => row.id === id);
+    const live = M.tasks(space.text).find(task => task.id === id) ?? kept?.task;
+    if (!live || index < 0) return;
+    setBandFailed(null);
+    void checkTaskFromList(live, 'band').then(outcome => {
+      if (outcome === 'failed') { setBandFailed(id); return; }
+      if (outcome === 'saved') setBandChecked(current => { const next = new Map(current); if (kept) next.delete(id); else next.set(id, { task: live, index }); return next; });
+    });
+  }
+  const flowBand = bandRows.length > 0 && <ProgramFlowTodayBand rows={bandRows} open={bandRows.filter(row => !row.done).length} failed={bandFailed}
+    onCheck={checkFromBand} onOpenFlow={documentId => { void openDocument(documentId); }} onShowToday={() => { void chooseMainTab('today'); }} />;
   const copyHeader = useMemo(() => selectedDoc ? programCopyHeader(data, actorId, selectedDoc.id) : null, [data, actorId, selectedDoc?.id]);
   // U44: on a tablet held sideways the title and ⋯ go into the open document's tool line, and the notices that sat
   // between them and the tools go under that line, above the body. Only their place changes: the editor keeps its key
@@ -2603,7 +2665,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       : (!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</>;
   const docNotices = <>
     {props.noteHeader}
-    {props.importNotice?.actorId === actorId && props.importNotice.documentId === selected && <div className={styles.importNotice}><span role="status">{props.importNotice.text}</span>{props.importNotice.onCancel && <button type="button" disabled={props.importNotice.busy} onClick={props.importNotice.onCancel}>{props.importNotice.busy ? props.importNotice.busyLabel ?? '연결을 빼는 중…' : props.importNotice.actionLabel ?? '이번 가져오기 취소'}</button>}</div>}
+    {props.importNotice?.actorId === actorId && props.importNotice.documentId === selected && <div className={styles.importNotice}><span role="status">{props.importNotice.text}</span>{props.importNotice.onCancel && <button type="button" disabled={props.importNotice.busy} onClick={props.importNotice.onCancel}>{props.importNotice.busy ? props.importNotice.busyLabel ?? '연결을 빼는 중…' : props.importNotice.actionLabel ?? '이번 가져오기 취소'}</button>}
+      {props.importNotice.calendar && <button type="button" className={styles.importCalendar} data-import-calendar disabled={props.importNotice.busy}
+        onClick={() => { const notice = props.importNotice; if (notice?.calendar) void showFlowOnCalendar(notice.documentId, notice.calendar); }}>달력에서 보기</button>}</div>}
     <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice data-quiet={props.noteNoticeShown ? 'true' : undefined}>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
     {!selectedDoc && props.noteStatus}
     {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>
@@ -2718,7 +2782,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           noteStatus={selected === id ? props.noteStatus : undefined}
           noteActions={selected === id ? <>{props.noteHeader && !props.hostMainTabs && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}{headInToolbar && phoneLayout && selectedDocumentTools}</> : undefined}
           headStart={headInToolbar && selected === id ? docTitle : undefined} headEnd={headInToolbar && selected === id && !phoneLayout ? docActions : undefined}
-          headBelow={headInToolbar && selected === id || recentTop || views ? <>{headInToolbar && selected === id ? docNotices : null}{views}{recentTop}</> : undefined}
+          headBelow={headInToolbar && selected === id || recentTop || views || flowBand && selected === id ? <>{headInToolbar && selected === id ? docNotices : null}{selected === id ? flowBand : null}{views}{recentTop}</> : undefined}
           onWritingExample={selected === id && writingExampleReady ? () => { void applyWritingExample(); } : undefined}
           folderId={collectionMode ? '' : folderId} directWriting={!!collectionMode} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
           onContinueWholeDocument={stage => {
@@ -2901,8 +2965,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           </dialog></div>}
         {/* N11a: the 밀린 일 card, over 오늘's list (never with the calendar). */}
         {!monthGrid && carryCardContent}{carrySheetContent}
+        {/* Flow pipeline S3: the Flow taken just now, its days marked; × lets it go (nothing saved). */}
+        {monthGrid && shownHighlight && <div className={styles.flowHighlight} data-flow-highlight={shownHighlight.documentId}>
+          <span><i aria-hidden="true" />{shownHighlight.title} · {shownHighlight.count}개</span>
+          <button type="button" aria-label={`${shownHighlight.title} 표시 끄기`} onClick={() => setFlowHighlight(null)}>×</button></div>}
         {monthGrid ? <div className={styles.monthLayout} data-wide={wideMonth || undefined}>
-          <ProgramMonthGrid rows={executionRows} date={date} today={today} titles={monthWidth >= 761} onPick={pickMonthDay} />
+          <ProgramMonthGrid rows={executionRows} date={date} today={today} titles={monthWidth >= 761} onPick={pickMonthDay} flow={highlightRow} />
           {/* The chosen day: a sheet on a narrow screen (its row notices inside while open), a panel beside the grid
               when wide. One element either way, so its ＋ line survives the switch. */}
           <dialog ref={daySheet} className={daySheetLook ? `${styles.findDialog} ${styles.daySheet}` : styles.dayPanel}

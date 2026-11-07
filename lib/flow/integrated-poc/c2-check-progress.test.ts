@@ -131,8 +131,9 @@ test('mid-composition: a notice button keeps the caret and runs once the composi
 });
 
 test('오늘: the check tap completes and announces; a partial task gets the chips, not the detail', () => {
-  assert.match(space, /if \(value > 0 && value < 100\) setCheckNotice\(\{ actorId, stage: 'chips', targetId: task\.id,/);
-  assert.match(space, /\}, true, undefined, undefined, true\)\.then\(result => \{ done\(\); if \(result\.ok && checkViewOwns\(view\)\) checkSaved\(task\.id, task\.title, value, after\); \}, done\);/);
+  // Flow pipeline S11 (11/8): the same steps, now in checkTaskFromList (the band calls it too; only the list announces).
+  assert.match(space, /if \(value > 0 && value < 100\) \{ setCheckNotice\(\{ actorId, stage: 'chips', targetId: task\.id,/);
+  assert.match(space, /\}, true, undefined, undefined, true\)\.then\(result => \{ done\(\); if \(result\.ok && from === 'list' && checkViewOwns\(view\)\) checkSaved\(task\.id, task\.title, value, after\); return result\.ok \? 'saved' as const : 'failed' as const; \},\n\s+\(\) => \{ done\(\); return 'failed' as const; \}\);/);
   assert.match(space, /const next = recordProgramTaskProgress\(current, \{ \.\.\.base\(current\), taskId: task\.id, date: today, percent \}\);/);
   // [직접] opens the task's detail with its 진행 기록 open.
   assert.match(space, /data-detail-section="progress" open=\{directProgress \|\| undefined\}>/);
@@ -204,7 +205,7 @@ test('review P2 (3): on 오늘 a record dated after today sends a step, and a pa
   const after = ok(recordProgramTaskProgress(data, { ...base(data), taskId: added.result, date: TODAY, percent: 75 })).data;
   assert.equal(M.currentProgress(after.spaces[after.activeActorId].text, added.result), 50);
   assert.match(space, /if \(\(M\.latestProgress\(dataRef\.current\.spaces\[actorId\]\.text, task\.id\)\?\.date \?\? ''\) > today\) \{\n      setCheckNotice\(null\); setRecordDate\(today\); setPercent\(String\(progressNow\)\); openDetail\(\{ kind: 'task', id: task\.id \}\);/);
-  assert.match(space, /if \(value > 0 && value < 100 && \(progress\?\.date \?\? ''\) > today\) \{ setRecordDate\(today\); setPercent\(String\(value\)\); openDetail\(\{ kind: 'task', id: task\.id \}\); \}/);
+  assert.match(space, /if \(value > 0 && value < 100 && \(from === 'band' \|\| \(progress\?\.date \?\? ''\) > today\)\) \{ setRecordDate\(today\); setPercent\(String\(value\)\); openDetail\(\{ kind: 'task', id: task\.id \}\); return Promise\.resolve\('ignored'\); \}/);
   // And whatever the save leaves is what the notice says: another value is "바뀌지 않았습니다", not "기록했습니다".
   assert.match(space, /if \(saved !== percent\) \{ failed\(saved, 'changed'\); return; \}/);
   assert.match(space, /if \(after !== 100\) return;/);
@@ -301,7 +302,7 @@ test('re-review (1): a choice that waited for a save gives way to newer input on
 });
 
 test('re-review (2): on 오늘 a check answered after the view changed brings no notice back to the new view', () => {
-  assert.match(space, /const view = presentation\.current;\n                void run\(value === 100 \? '다시 열기' : '완료', current => \{/);
+  assert.match(space, /const view = presentation\.current;\n    return run\(value === 100 \? '다시 열기' : '완료', current => \{/);
   assert.match(space, /const checkViewOwns = \(view: typeof presentation\.current\) => dataRef\.current\.activeActorId === actorId && view\.period === presentation\.current\.period\n    && view\.date === presentation\.current\.date && view\.folderId === presentation\.current\.folderId && view\.query === presentation\.current\.query;/);
   // A chip's answer already keeps to its notice, which a change of view clears.
   assert.match(space, /useEffect\(\(\) => \{ setCheckNotice\(null\); \}, \[actorId, period, date, folderId, query\]\);/);

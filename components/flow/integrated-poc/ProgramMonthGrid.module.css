@@ -20,3 +20,9 @@
 .titles [data-state="done"] { color: var(--flowme-b-muted); text-decoration: line-through; }
 .titles [data-state="late"] { color: #986209; }
 .more { color: var(--flowme-b-muted); }
+/* Flow pipeline S3: a Flow marked from [달력에서 보기] — its days get one large blue dot (primary, selected ring), the other
+   open dots go grey for the while; on wide cells its titles are blue. No new colour. */
+.month[data-flow-on] .dots i[data-state="open"] { background: var(--flowme-b-control); }
+.dots i[data-state="flow"] { box-sizing: content-box; width: 8px; height: 8px; border: 2px solid var(--flowme-b-selected); background: var(--flowme-b-primary); }
+.month[data-flow-on] .titles [data-state="open"]:not([data-flow]) { color: var(--flowme-b-muted); }
+.titles [data-flow] { color: var(--flowme-b-primary); font-weight: 600; }
