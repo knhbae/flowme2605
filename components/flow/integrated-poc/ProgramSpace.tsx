@@ -146,7 +146,9 @@ export type ProgramSpaceProps = {
   /** UX B1 (11/6): a new document's arrival notice uses the same slot with its own button (되돌리기). */
   importNotice?: { actorId: string; documentId: string; lineId?: string; text: string; busy: boolean; onCancel?: () => void; actionLabel?: string; busyLabel?: string;
     /** Flow pipeline S2: [달력에서 보기] — the month of `first`, that day chosen, this Flow's days marked (S3). */
-    calendar?: { first: string; title: string; count: number } };
+    calendar?: { first: string; title: string; count: number };
+    /** Core3 P2b (FIG 13): a new document's arrival is said as the bottom toast (ink, white words). */
+    toast?: boolean };
   onRevisionHistory?: (documentId: string) => void;
   onOutputDocument?: (documentId: string) => void;
   onStartReview?: (documentId: string) => Promise<void>;
@@ -2672,7 +2674,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       : (!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</>;
   const docNotices = <>
     {props.noteHeader}
-    {props.importNotice?.actorId === actorId && props.importNotice.documentId === selected && <div className={styles.importNotice}><span role="status">{props.importNotice.text}</span>{props.importNotice.onCancel && <button type="button" disabled={props.importNotice.busy} onClick={props.importNotice.onCancel}>{props.importNotice.busy ? props.importNotice.busyLabel ?? '연결을 빼는 중…' : props.importNotice.actionLabel ?? '이번 가져오기 취소'}</button>}
+    {props.importNotice?.actorId === actorId && props.importNotice.documentId === selected && <div className={styles.importNotice} data-arrival-toast={props.importNotice.toast ? '' : undefined}><span role="status">{props.importNotice.text}</span>{props.importNotice.onCancel && <button type="button" disabled={props.importNotice.busy} onClick={props.importNotice.onCancel}>{props.importNotice.busy ? props.importNotice.busyLabel ?? '연결을 빼는 중…' : props.importNotice.actionLabel ?? '이번 가져오기 취소'}</button>}
       {props.importNotice.calendar && <button type="button" className={styles.importCalendar} data-import-calendar disabled={props.importNotice.busy}
         onClick={() => { const notice = props.importNotice; if (notice?.calendar) void showFlowOnCalendar(notice.documentId, notice.calendar); }}>달력에서 보기</button>}</div>}
     <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice data-quiet={props.noteNoticeShown ? 'true' : undefined}>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>

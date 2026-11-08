@@ -8,7 +8,7 @@ import { programCatalogMetadata } from '@/lib/flow/integrated-poc/catalog';
 import { isPublicCatalogFlowOnHold } from '@/lib/flow/public-source-review-policy';
 import { PROGRAM_PUBLIC_RECURRENCE_WINDOW } from '@/lib/flow/integrated-poc/public-recurrence-contract';
 import { PROGRAM_IMPORT_GENERIC_FAILURE, programFlowCardLines, programImportCheckPasses, programImportFailure, programItemDateLabel, programLiveCopies, programLiveCopy, programShortDate,
-  programSortFlowsByRecent, programSourceLine, programVersionScheduleShape, programVersionUsesAnchor } from '@/lib/flow/integrated-poc/program-discovery-display';
+  programSortFlowsByRecent, programSourceLine, programSummaryAnchor, programVersionScheduleShape, programVersionUsesAnchor } from '@/lib/flow/integrated-poc/program-discovery-display';
 import { defaultProgramOutputRecurrenceWindow } from '@/lib/flow/integrated-poc/public-output-recurrence';
 import { programPublicOutputBase, resolveProgramPublicOutputReturn } from '@/lib/flow/integrated-poc/public-output-return';
 import type { ProgramDiscoveryDetailPresentation } from '@/lib/flow/integrated-poc/navigation';
@@ -23,7 +23,7 @@ import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc
 import { programImportPreview } from '@/lib/flow/integrated-poc/import-preview';
 import { programCanonicalLink, programFlowsByLink, programLooksLikeLink } from '@/lib/flow/integrated-poc/link-lookup';
 import { numberEul, numberIga } from '@/lib/flow/integrated-poc/number-particle';
-import { programFlowProgress, programFlowProgressText } from '@/lib/flow/integrated-poc/flow-loop';
+import { programFlowProgress, programFlowProgressShort, programFlowProgressText } from '@/lib/flow/integrated-poc/flow-loop';
 import { PROGRAM_OFFICIAL_LABEL, programFlowAttributionLabel } from '@/lib/flow/integrated-poc/alpha-official-actors';
 import { useAlphaOfficialActors } from './AlphaOfficialActors';
 import styles from './ProgramDiscovery.module.css';
@@ -70,6 +70,8 @@ export type ProgramDiscoveryProps = {
   onCreateFromLink?: (link: string) => Promise<boolean>;
   /** Core3 P2: the Flow head's [이야기] (the host's sub-tabs are gone). */
   onOpenStories?: () => void;
+  /** Core3 P2b: '기준일 바꾸기' beside 내 진행 opens my copy's settings (the existing 내 기준일 change with its preview). */
+  onChangeCopyAnchor?: (copyId: string) => void;
   navigationState?: ProgramDiscoveryNavigationState;
   onNavigationStateChange?: (state: ProgramDiscoveryNavigationState) => void;
   onRegisterNavigation?: (navigation: ProgramDiscoveryNavigation | null) => void;
@@ -158,7 +160,7 @@ export function TransientOutputEditor({ draft, stale, onChange, onDiscard }: { d
   </section>;
 }
 
-export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersionId, selectedItemId, selectedOutputReturn, today, onUseVersion, onStartText, onCreateFlow, onKeepLink, onCreateFromLink, onOpenStories, navigationState, onNavigationStateChange, onRegisterNavigation, storageScope = 'local', actorId = data.activeActorId, pendingDocumentIds = () => [], onReturnToSpace, copySourceReturn = false }: ProgramDiscoveryProps) {
+export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersionId, selectedItemId, selectedOutputReturn, today, onUseVersion, onStartText, onCreateFlow, onKeepLink, onCreateFromLink, onOpenStories, onChangeCopyAnchor, navigationState, onNavigationStateChange, onRegisterNavigation, storageScope = 'local', actorId = data.activeActorId, pendingDocumentIds = () => [], onReturnToSpace, copySourceReturn = false }: ProgramDiscoveryProps) {
   const officialActors = useAlphaOfficialActors();
   const [local, setLocal] = useState(createProgramDiscoveryNavigationState);
   const state = navigationState ?? local; const stateRef = useRef(state); stateRef.current = state;
@@ -379,7 +381,8 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     // Flow pipeline S1: where the sheet's choices put each item, by the import's own date functions (nothing saved).
     // A copy taken again into another document carries its own dates; the sheet lists its items there instead.
     const preview = !(importDestination === 'existing' && storedCopy) ? programImportPreview(version, useItemIds, detail.anchor || null, sheetRepeats, today, { ...(repeatChoice ?? {}), recurrenceStarts }) : null;
-    const anchorName = sourceMeta?.anchorLabel ?? '기준일';
+    // Core3 P2b: the 기준일's own name (the catalog's, or the one stage 2 wrote as the summary's first line), as the card says.
+    const anchorName = sourceMeta?.anchorLabel ?? programSummaryAnchor(version.summary) ?? '기준일';
     const anchorMissing = version.items.filter(item => useItemIds.includes(item.id) && (item.schedule.kind === 'relative' || item.schedule.kind === 'recurring' && item.schedule.start.kind === 'relative')).length;
     const openAnchorPicker = () => { const input = anchorPicker.current; if (!input || pendingRef.current) return; try { input.showPicker(); } catch { input.focus(); } };
     const whereShown = whereOpen || importDestination === 'existing';
@@ -402,6 +405,8 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     // 실행 고리 1안: a copy I can open says how far I got, read from my own space (no request).
     const progress = existingCopy && !flow.archived && !privateSpace.archivedDocumentIds.includes(existingCopy.documentId) ? programFlowProgress(data, actorId, flow.id, today) : null;
     const progressText = progress && programFlowProgressText(progress);
+    // Core3 P2b (FIG 11): a copy I took says "내 진행 2/6 · 기준일 바꾸기" in one line instead of the longer note.
+    const progressShort = progress && programFlowProgressShort(progress);
     const stateNote = flow.archived ? '공개가 철회된 Flow입니다. 가져간 사본은 그대로입니다.'
       : existingCopy ? privateSpace.archivedDocumentIds.includes(existingCopy.documentId) ? '보관한 내 문서를 읽기 전용으로 엽니다.' : progressText || '이미 가져온 내 문서를 엽니다. 날짜·진행 기록은 그대로입니다.'
         : storedCopy ? '이 Flow의 개인 사본이 있지만 지금 바로 열 수 없습니다. 내 공간에서 휴지통과 보관 상태를 확인해 주세요. 새 사본은 만들지 않습니다.'
@@ -430,11 +435,13 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
           <div className={styles.pcOnly}>{extras}</div>
           {existingCopy && copyVersion && existingCopy.baseVersionId !== version.id && <p className={styles.versionLine}>내 사본은 버전 {copyVersion.number}입니다. 원본에 버전 {version.number}{numberIga(version.number)} 있습니다. <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>변경 확인</button></p>}
         </section>
-        {stateNote && <p className={flow.archived || existingCopy ? styles.muted : styles.notice} data-flow-progress={progressText ? '' : undefined}>{stateNote}</p>}
-        {anchorUsed && !flow.archived && <><label className={`${styles.field} ${styles.anchorRow}`}><span>{sourceMeta?.anchorLabel ?? '기준일'}</span><input type="date" value={detail.anchor} disabled={pending} aria-describedby={`${uid}-anchor-hint`} onChange={event => patchDetail({ anchor: event.target.value })} /></label>
-          {/* Phones: the rows already read "기준일 30일 전" and change at once, so only a version's own hint is shown. */}
-          <p id={`${uid}-anchor-hint`} className={sourceMeta?.anchorHint ? styles.anchorHint : `${styles.anchorHint} ${styles.anchorGeneralHint}`}>{sourceMeta?.anchorHint || '넣으면 아래 날짜가 바로 바뀝니다. 고정 날짜는 그대로입니다.'}</p></>}
-        <section aria-labelledby={`${uid}-items`}><div className={`${styles.row} ${styles.itemsHead}`}><h2 id={`${uid}-items`} className={styles.itemsLabel}>할 일 <span>{choosing ? `${useItemIds.length}/${version.items.length}` : version.items.length}</span><span className={styles.phoneOnly}>개</span></h2>
+        {existingCopy && progressShort ? <p className={styles.copyLine} data-flow-progress data-copy-line><span>{progressShort}</span>
+          {anchorUsed && onChangeCopyAnchor && <> · <button type="button" className={styles.linkButton} disabled={pending} onClick={() => onChangeCopyAnchor(existingCopy.id)}>기준일 바꾸기</button></>}</p>
+          : stateNote && <p className={flow.archived || existingCopy ? styles.muted : styles.notice} data-flow-progress={progressText ? '' : undefined}>{stateNote}</p>}
+        {/* Core3 P2b (FIG 11): no 기준일 field above the list; the list's head says the dates come with it, and the
+            sheet's 언제 sets it (내 도구로 받기 keeps its own field below). */}
+        <section aria-labelledby={`${uid}-items`}><div className={`${styles.row} ${styles.itemsHead}`}><h2 id={`${uid}-items`} className={styles.itemsLabel}>할 일 <span>{choosing ? `${useItemIds.length}/${version.items.length}` : version.items.length}</span><span className={styles.phoneOnly}>개</span>
+          {anchorUsed && !flow.archived && !existingCopy && !detail.anchor && <span className={styles.itemsHint} data-anchor-hint> · {anchorName} 정하면 날짜가 나옵니다</span>}</h2>
           {chooseButton(styles.pcOnly)}</div>
           {selectedItemId && !version.items.some(item => item.id === selectedItemId) && <p className={styles.notice} role="status">이 버전에는 연결된 항목이 없습니다. 다른 항목으로 바꾸지 않고 지정된 버전을 표시합니다.</p>}
           <ol ref={taskList} className={styles.taskRows}>{version.items.map((item, index) => {
@@ -459,6 +466,9 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
         </section>
         {outputOpen && !flow.archived && <section className={styles.outputSection} aria-labelledby={`${uid}-output`}><h2 id={`${uid}-output`}>내 도구로 받기</h2>
           <p className={styles.muted}>개인 사본을 만들지 않고 받을 수 있습니다.{choosing ? ' 고른 할 일만 받습니다.' : ''}</p>
+          {anchorUsed && <><label className={`${styles.field} ${styles.anchorRow}`}><span>{anchorName}</span><input type="date" value={detail.anchor} disabled={pending} aria-describedby={`${uid}-anchor-hint`} onChange={event => patchDetail({ anchor: event.target.value })} /></label>
+            {/* Phones: the rows already read "기준일 30일 전" and change at once, so only a version's own hint is shown. */}
+            <p id={`${uid}-anchor-hint`} className={sourceMeta?.anchorHint ? styles.anchorHint : `${styles.anchorHint} ${styles.anchorGeneralHint}`}>{sourceMeta?.anchorHint || '넣으면 할 일 날짜가 바로 바뀝니다. 고정 날짜는 그대로입니다.'}</p></>}
           {undatedStarts.map(item => <label key={item.id} className={styles.field}>시작일 · {item.title}<input type="date" disabled={pending} value={detail.recurrenceStarts?.[item.id] ?? ''} onChange={event => { const starts = { ...detail.recurrenceStarts }; if (event.target.value) starts[item.id] = event.target.value; else delete starts[item.id]; patchDetail({ recurrenceStarts: starts }); }} /><small>출력과 새 개인 사본에 사용할 날짜입니다. 공개 원본은 바뀌지 않습니다.</small></label>)}
           {selectedSeries.length > 0 && <details className={styles.recurrenceOptions}><summary>반복 출력 범위</summary><fieldset disabled={pending} className={styles.transientFields}>
             {selectedSeries.some(item => item.schedule.kind === 'recurring' && item.schedule.rule.end) && <><label className={styles.field}>첫 회차<input type="number" min={1} max={PROGRAM_PUBLIC_RECURRENCE_WINDOW.maxOffset + 1} value={recurrenceWindow.offset + 1} onChange={event => patchDetail({ recurrenceWindow: { ...recurrenceWindow, offset: event.currentTarget.value === '' ? -1 : Number(event.currentTarget.value) - 1 } })} /></label><label className={styles.field}>회차 수<input type="number" min={1} max={PROGRAM_PUBLIC_RECURRENCE_WINDOW.maxLimit} value={recurrenceWindow.limit} onChange={event => patchDetail({ recurrenceWindow: { ...recurrenceWindow, limit: Number(event.currentTarget.value) } })} /></label></>}

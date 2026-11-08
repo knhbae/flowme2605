@@ -120,6 +120,11 @@ export const PROGRAM_TRIED_NOTE = '로그인한 다른 사용자에게 공개되
 export function programTriedDraft(finish: ProgramFlowFinish): ProgramParticipationDraft {
   return { ...newProgramReviewDraft(), flowId: finish.flowId, versionId: finish.versionId, title: `해 봤어요 · ${finish.title.trim()}`.slice(0, 240) };
 }
+/** Core3 P2b (11/8): the Flow detail's short line beside 기준일 바꾸기 — "내 진행 2/6", or this week's checks of a
+ * repeat-only copy; null when there is nothing to count (the longer line stays then). */
+export function programFlowProgressShort(progress: ProgramFlowProgress): string | null {
+  return progress.tasks ? `내 진행 ${progress.done}/${progress.tasks}` : progress.repeats ? `내 진행 · 이번 주 ${progress.week}번 체크` : null;
+}
 export function programFlowProgressText(progress: ProgramFlowProgress): string | null {
   const parts = [progress.tasks ? `할 일 ${progress.tasks}개 중 ${progress.done}개 끝` : '',
     progress.repeats ? `반복 ${progress.repeats}줄, 이번 주 ${progress.week}번 체크` : ''].filter(Boolean);
