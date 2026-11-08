@@ -48,7 +48,7 @@
 
 | 갈래 | 지금 | 담당 | 다음 / ★ |
 | --- | --- | --- | --- |
-| A. 운영 Alpha | `fc9e7660`(필수 흐름 셋 P1, 11/8 11:2x). 되돌리기 N6r | 총괄 | 가벼운 반영은 QA_GO·목업 대조 뒤 총괄 판단 |
+| A. 운영 Alpha | `3f7cd824`(필수 흐름 셋 P2, 11/8 12:1x). 되돌리기 N6r | 총괄 | 가벼운 반영은 QA_GO·목업 대조 뒤 총괄 판단 |
 | B. 쓰기·입력 UX | 입력 v2 1단계·시각 A 운영 | UX·개발·기타(QA) | 입력 v2 2단계, P3 묶음, ★실폰 |
 | C. 자료 보호 (R5·R6) | R5 첫 예약 백업 PASS(11/7 18:00). R6 시험 계정 삭제·복원 연습 PASS(11/7 19:05) | 총괄 | 실제 삭제 요청용 경로 정리 |
 | D. 용량·전송량 | DB 약 229/500MB(11/7). 저장 기록 C는 500MB 전에 | 기타·Codex | ★ 11/12 뒤 사용량 확인 |
@@ -87,7 +87,7 @@
 
 | 영역 | 확인 | 지금 |
 | --- | --- | --- |
-| 운영 Alpha | supervisor `127.0.0.1:13105/status`, 공개 주소 | `JPlcDo4B6U4etA0vASd1x` 서빙, 10경로 기대값(11/8 11:2x). 운영 worktree 2곳(backup-5d, poc-merge-prep)과 manifest guard는 지우지 않음 |
+| 운영 Alpha | supervisor `127.0.0.1:13105/status`, 공개 주소 | `9Hbykv6eZY48j8Azair0o` 서빙, 10경로 기대값(11/8 12:1x). 운영 worktree 2곳(backup-5d, poc-merge-prep)과 manifest guard는 지우지 않음 |
 | 시험 | 번들 5 QA | 1,400 중 1,397 PASS·2 SKIP·1 실패(로컬 PG 수동 스크립트) |
 | 정기 백업 | `D:/flowme-claude-scratch/dumps/regular-APP8-v1` | 매일 18:00, 첫 예약 실행 11/7 18:00 |
 | Supabase | 사용량 화면 | DB 약 229/500MB(11/7). 11/12 새 청구 기간 |
