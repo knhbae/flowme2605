@@ -163,8 +163,6 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const recoveryOpener = useRef<HTMLElement | null>(null), [recoveryOpen, setRecoveryOpen] = useState(false);
   // The document the space shows ('' for none), for the line of its own 복구함 entries.
   const [shownDocumentId, setShownDocumentId] = useState('');
-  // The Flow tab opens the branch last seen (이야기 or 찾기).
-  const lastBrowse = useRef<'discover' | 'community'>('discover');
   // R8b: the bottom tabs 쓰기·오늘·분류 drive the space through its main-tab port; Flow and 나 move by navigate().
   const mainTabs = useRef<{ choose(tab: ProgramMainTab): Promise<boolean>; openArchive(): Promise<boolean> } | null>(null);
   const [mainTab, setMainTab] = useState<ProgramMainTab>('documents');
@@ -1664,10 +1662,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // UX B3 (11/7): the Flow and 나 tabs move by navigate() alone, which keeps input, locks the editors, saves them all and
   // checks the session before it moves (nothing of that is done again here). Pressed again on its own screen, Flow goes
   // to the 찾기 list and 나 to the top. A refused move (a save or held input pending) changes no tab; 나 then opens the
-  // 복구함 sheet too, where the held input is.
+  // 복구함 sheet too, where the held input is. Core3 P2 (11/8): the Flow tab's first screen is always 찾기; 이야기 is the
+  // second screen, opened by its button on the 찾기 head.
   async function chooseFlowTab() {
-    if (['discover', 'flow', 'community'].includes(destinationRef.current.view)) { await navigate({ view: 'discover' }); window.scrollTo({ top: 0 }); return; }
-    await navigate({ view: lastBrowse.current });
+    const here = ['discover', 'flow', 'community'].includes(destinationRef.current.view);
+    await navigate({ view: 'discover' });
+    if (here) window.scrollTo({ top: 0 });
   }
   async function chooseMeTab(opener: HTMLElement) {
     const here = destinationRef.current.view === 'activity';
@@ -1700,7 +1700,6 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       if (opener?.isConnected) opener.focus({ preventScroll: true });
     }
   }, [recoveryOpen]);
-  useEffect(() => { if (destination.view === 'community') lastBrowse.current = 'community'; else if (['discover', 'flow'].includes(destination.view)) lastBrowse.current = 'discover'; }, [destination]);
   // N9: the documents the 쓰기 list's 보관함 shows (not in 휴지통, not a retained revision).
   const archiveSpace = data?.spaces[session.userId], archivedCount = archiveSpace ? archiveSpace.archivedDocumentIds.filter(id => !archiveSpace.documentTrash?.[id]
     && !Object.values(archiveSpace.retentionDocuments ?? {}).includes(id) && archiveSpace.text.documents.some(doc => doc.id === id)).length : 0;
@@ -1840,7 +1839,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           {savedTotal > 0 && <span className={styles.navBadge} aria-hidden="true">{savedTotal}</span>}</button>
       </nav>}
       <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '나' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1></header>
-    {browse && <nav className={styles.browseNavigation} aria-label="둘러보기 종류"><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({view:'community'})}>이야기</button><button aria-current={['discover','flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({view:'discover'})}>Flow 찾기</button></nav>}
+    {/* Core3 P2 (X7): no 이야기 | Flow 찾기 sub-tabs. 찾기 draws its own head ("Flow", [이야기], ⋯); 이야기 gets a way back. */}
+    {destination.view === 'community' && <nav className={styles.browseNavigation} aria-label="이야기 위치"><button type="button" data-stories-back aria-label="Flow 찾기로 돌아가기" onClick={() => void navigate({ view: 'discover' })}>‹ Flow</button></nav>}
     <div className={styles.workPane} data-testid="alpha-work-pane">
     {!usesNoteChrome && publicNotice}
     <section className={styles.sync} aria-label="서버 저장 상태">
@@ -1943,7 +1943,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         </div>}</div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} storageScope="account"
         selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined}
-        selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} actorId={session.userId} pendingDocumentIds={pendingImportDocuments} copySourceReturn={flowReturn?.kind === 'copy'} onReturnToSpace={flowReturn?.actorId === session.userId ? () => { void returnFromFlows(); } : undefined} onUseVersion={useVersion} onStartText={startText} onCreateFlow={openCreatorEntry} onKeepLink={keepLink} onCreateFromLink={createFromLink} navigationState={discoveryState} onNavigationStateChange={setDiscoveryState} /></div>}
+        selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} actorId={session.userId} pendingDocumentIds={pendingImportDocuments} copySourceReturn={flowReturn?.kind === 'copy'} onReturnToSpace={flowReturn?.actorId === session.userId ? () => { void returnFromFlows(); } : undefined} onUseVersion={useVersion} onStartText={startText} onCreateFlow={openCreatorEntry} onKeepLink={keepLink} onCreateFromLink={createFromLink} onOpenStories={() => void navigate({ view: 'community' })} navigationState={discoveryState} onNavigationStateChange={setDiscoveryState} /></div>}
       {seen.community && <div hidden={!['community', 'activity'].includes(destination.view)}><ProgramCommunity key={`community:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()}
         view={communityView} selectedPostId={communitySelection} selectedReplyId={destination.view === 'community' ? destination.replyId : undefined} presentation={communityState} onPresentationChange={setCommunityState}
         storageScope="account" mediaPort={mediaPort} draftSaveRecovery={localParticipationRecovery}

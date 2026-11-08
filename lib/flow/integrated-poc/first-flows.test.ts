@@ -29,7 +29,8 @@ test('an empty account gets the newest three official Flows, as Flow 찾기 orde
   const cards = programFirstOfficialFlows(data, actor, [OFFICIAL]);
   assert.equal(PROGRAM_FIRST_FLOWS_LIMIT, 3);
   assert.deepEqual(cards.map(card => card.flowId), ['b', 'c', 'd'], 'newest first; archived and not-official left out');
-  assert.deepEqual(cards[0].lines, { title: 'b 제목', badge: null, summary: 'b 소개', firstItem: '첫 할 일 첫 할 일', meta: '할 일 1개 · 날짜 미정 · 생활 · 집', source: '출처 FlowMe 정리' });
+  assert.deepEqual(cards[0].lines, { title: 'b 제목', badge: null, summary: 'b 소개', firstItem: '첫 할 일 첫 할 일', meta: '할 일 1개 · 날짜 미정 · 생활 · 집', source: '출처 FlowMe 정리',
+    tag: null, oneLine: 'b 소개', brief: '할 일 1 · 날짜 미정 · 생활' });
 });
 
 test('no card when the official list was not read (empty); the list alone decides which Flows count', () => {

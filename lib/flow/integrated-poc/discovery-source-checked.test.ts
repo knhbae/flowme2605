@@ -12,7 +12,8 @@ const source = readFileSync(new URL('../../../components/flow/integrated-poc/Pro
 test('the detail says the source and its check date in one line, and no second check line', () => {
   assert(!source.includes('출처 확인 기록'));
   assert(!source.includes("checkedAt ?? '없음'"));
-  assert(source.includes('<p className={styles.sourceLine}>{kindLabel && <>{kindLabel} · </>}{programSourceLine(version.source)}'));
+  // Core3 P2 (11/8): an official Flow's line starts with its 공식 tag.
+  assert(source.includes('<p className={styles.sourceLine}>{kindLabel === PROGRAM_OFFICIAL_LABEL && <span className={styles.cardBadge} data-badge="공식">공식</span>}{kindLabel && <>{kindLabel} · </>}{programSourceLine(version.source)}'));
   assert.match(programSourceLine({ kind: 'repository-source', label: '보건소', checkedAt: '2026-11-06' }), /^출처 보건소 · .+ 확인$/);
   assert.equal(programSourceLine({ kind: 'user-text', label: '직접 작성한 내용', checkedAt: null }), '출처 직접 작성한 내용');
 });

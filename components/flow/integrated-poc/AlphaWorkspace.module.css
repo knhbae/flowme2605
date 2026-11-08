@@ -461,3 +461,5 @@
 .documentRecovery > button { min-height: 44px; margin: -6px 0; padding: 0 4px; border: 0; background: transparent; color: var(--flowme-b-warning-ink); font-size: 13px; font-weight: 600; cursor: pointer; }
 /* P1 fix (11/8): the line leaves with the title row while the keyboard is up (the writing focus mode). */
 .page[data-alpha-frame="b"][data-writing-keyboard="true"] .documentRecovery { display: none; }
+/* Core3 P2 (11/8): 이야기's way back to 찾기 (the sub-tabs are gone). */
+.page[data-alpha-frame="b"] .browseNavigation [data-stories-back]{min-height:44px;padding:0 8px;color:var(--flowme-text-secondary);font-size:15px;font-weight:600}

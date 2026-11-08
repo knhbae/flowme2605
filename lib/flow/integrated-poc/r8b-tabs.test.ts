@@ -46,13 +46,14 @@ test('the host tabs go to the space first when needed, then ask the port; Flow a
   await make('community')('today');
   await make('space')('all');
   assert.deepEqual(calls, ['navigate space', 'choose today', 'choose all']);
-  // Flow: the branch last seen, or back to the 찾기 list (and the top) when already there.
+  // Flow: always the 찾기 list (Core3 P2: 이야기 is its second screen), and the top when already in Flow.
   const moves: string[] = [];
-  const flow = (view: string, last: string) => evaluate<() => Promise<void>>(fn(alpha, 'chooseFlowTab'), {
-    destinationRef: { current: { view } }, lastBrowse: { current: last }, navigate: async (next: { view: string }) => { moves.push(`navigate ${next.view}`); },
+  const flow = (view: string) => evaluate<() => Promise<void>>(fn(alpha, 'chooseFlowTab'), {
+    destinationRef: { current: { view } }, navigate: async (next: { view: string }) => { moves.push(`navigate ${next.view}`); },
     window: { scrollTo: () => moves.push('top') } });
-  await flow('space', 'community')(); await flow('today', 'discover')(); await flow('flow', 'community')();
-  assert.deepEqual(moves, ['navigate community', 'navigate discover', 'navigate discover', 'top']);
+  await flow('space')(); await flow('today')(); await flow('community')(); await flow('flow')();
+  assert.deepEqual(moves, ['navigate discover', 'navigate discover', 'navigate discover', 'top', 'navigate discover', 'top']);
+  assert(!alpha.includes('lastBrowse'));
   // 나: a refused move (a save or held input, before or inside navigate()) also opens the 복구함 sheet; again on 나, the top.
   const me = (outcome: string, view: string) => { const log: string[] = []; return { log, run: evaluate<(opener: unknown) => Promise<void>>(fn(alpha, 'chooseMeTab'), {
     destinationRef: { current: { view } },

@@ -38,7 +38,8 @@ test('one badge by priority: unverified (catalog- ID) > source review > in my do
 test('card lines: first task, counts with shape and two situations, source with a check date only when recorded', () => {
   const lines = programFlowCardLines(flow(), version([item('1', { kind: 'relative', days: -30 }, '짐 줄이기'), item('2', { kind: 'undated' })]), { needsReview: false, inMyDocuments: true });
   assert.deepEqual(lines, { title: '이사 준비', badge: '내 문서에 있음', summary: '이사 전 할 일을 순서대로 정리했습니다.', firstItem: '첫 할 일 짐 줄이기',
-    meta: '할 일 2개 · 기준일부터 · 생활 · 이사 · 혼자 살기', source: '출처 직접 정리' });
+    meta: '할 일 2개 · 기준일부터 · 생활 · 이사 · 혼자 살기', source: '출처 직접 정리',
+    tag: '내 문서에 있음', oneLine: '이사 전 할 일을 순서대로 정리했습니다.', brief: '할 일 2 · 기준일 기준 · 생활' });
   assert.equal(programFlowCardLines(flow(), version([]), { needsReview: false, inMyDocuments: false }).firstItem, null);
   assert.equal(programSourceLine({ kind: 'repository-source', label: '정부24 안내', checkedAt: '2026-09-23' }), '출처 정부24 안내 · 9/23 확인');
   assert.equal(programSourceLine({ kind: 'repository-source', label: '정부24 안내', checkedAt: '2026-09-23T03:00:00.000Z' }), '출처 정부24 안내 · 9/23 확인');

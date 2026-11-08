@@ -48,12 +48,14 @@ export function createAlphaOfficialActorsReader(inputConfig: AlphaAuthConfig, in
 }
 
 /** Text, source attribution, display names and derivedFrom never grant a mark. */
+/** What an official Flow is called (the cards' and the detail's '공식' tag stand for it). */
+export const PROGRAM_OFFICIAL_LABEL = 'FlowMe가 정리한 자료';
 export function programFlowAttributionLabel(flow: { id: string; ownerId: string },
   version: { flowId: string; createdBy: string; source: { kind: string } }, officialActors: readonly string[] = [], view?: ProgramData) {
   const projection = view && projections.get(view);
   const aliasOf = (id: string) => projection && projection.ownerId === view?.activeActorId && id === projection.ownerId ? projection.publicActorId : id;
   if (version.flowId === flow.id && officialActors.includes(aliasOf(flow.ownerId)) && officialActors.includes(aliasOf(version.createdBy)))
-    return 'FlowMe가 정리한 자료';
+    return PROGRAM_OFFICIAL_LABEL;
   return version.source.kind === 'repository-source' ? '기존 출처 자료'
     : version.source.kind === 'user-text' ? '사용자가 정리한 자료' : null;
 }

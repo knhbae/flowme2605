@@ -28,9 +28,11 @@ test('UX B3: every item of the old "…" menu has its place, and the menu stays 
   const groups = ['aria-label="자료"><h3>자료</h3>', 'aria-label="계정"><h3>계정</h3>', 'aria-label="문제 해결"><summary>문제 해결</summary>', 'aria-label="실험"><summary>실험</summary>'].map(at => me.indexOf(at));
   assert(groups.every(at => at > 0), String(groups));
   assert.deepEqual([...groups].sort((a, b) => a - b), groups, '자료, 계정, then 문제 해결 and 실험 folded');
-  const flowTab = element('data-main-tab="flow"'), branches = element('aria-label="둘러보기 종류"');
+  // Core3 P2 (11/8): the 이야기 | Flow 찾기 sub-tabs are gone. 이야기 opens from the 찾기 head's button; 찾기 is the
+  // Flow tab's first screen, and 이야기 has a way back to it.
+  const flowTab = element('data-main-tab="flow"'), storiesBack = element('aria-label="이야기 위치"');
   const places: [number, string, string][] = [
-    [1, branches, ">이야기</button>"], [2, branches, '>Flow 찾기</button>'], [2, flowTab, 'chooseFlowTab()'],
+    [1, source, "onOpenStories={() => void navigate({ view: 'community' })}"], [2, storiesBack, 'aria-label="Flow 찾기로 돌아가기"'], [2, flowTab, 'chooseFlowTab()'],
     [3, me, '마지막 변경 되돌리기</button>'], [4, me, '{redoButton}'], [5, me, "'쓰기 화면에서 되돌릴 수 있어요.'"],
     [6, element('data-main-tab="me"'), 'chooseMeTab(event.currentTarget)'], [7, head, "onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세 ›</button>"],
     [8, me, '{recoveryButton}'], [9, element('ref={recoveryDialog}'), '보관함에서 보기</button>'], [10, me, '{backupButton}'],

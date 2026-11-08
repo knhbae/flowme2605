@@ -61,18 +61,42 @@ export function programSourceLine(source: Pick<ProgramSource, 'kind' | 'label' |
     source.kind === 'simulated-example' ? '합성 예시' : ''].filter(Boolean).join(' · ');
 }
 
-export type ProgramFlowCardLines = { title: string; badge: ProgramFlowBadge | null; summary: string; firstItem: string | null; meta: string; source: string };
-/** The six card lines (390px): title + badge, two summary lines, first task, counts and tags, source. */
-export function programFlowCardLines(flow: ProgramPublicFlow, version: ProgramPublicVersion, context: { needsReview: boolean; inMyDocuments: boolean }): ProgramFlowCardLines {
+export type ProgramFlowCardLines = { title: string; badge: ProgramFlowBadge | null; summary: string; firstItem: string | null; meta: string; source: string;
+  /** Core3 P2 (11/8) three-line card: the tag beside the title, one summary line, and "할 일 n · 일정 모양 · 분야". */
+  tag: ProgramFlowBadge | '공식' | null; oneLine: string; brief: string };
+/** The card lines: the three-line card's (tag, oneLine, brief), and the longer ones the empty-account cards still use. */
+export function programFlowCardLines(flow: ProgramPublicFlow, version: ProgramPublicVersion, context: { needsReview: boolean; inMyDocuments: boolean; official?: boolean; anchorLabel?: string | null }): ProgramFlowCardLines {
+  const badge = programFlowBadge({ flowId: flow.id, needsReview: context.needsReview, inMyDocuments: context.inMyDocuments });
   return {
     title: version.title,
-    badge: programFlowBadge({ flowId: flow.id, ...context }),
+    badge,
     summary: version.summary.replace(/\s+/g, ' ').trim(),
     // P3 (11/6): a repeat item reads as on the detail, its words and then its chip, never the `@…` marker.
     firstItem: version.items[0] ? `첫 할 일 ${(view => view ? `${view.title} · ${view.label}` : version.items[0].title)(programImportItemView(version.items[0]))}` : null,
     meta: [`할 일 ${version.items.length}개`, programVersionScheduleShape(version), flow.category, ...flow.situations.slice(0, 2)].filter(Boolean).join(' · '),
     source: programSourceLine(version.source),
+    tag: badge ?? (context.official ? '공식' : null),
+    oneLine: programSummaryLine(version.summary),
+    brief: [`할 일 ${version.items.length}`, programCardShape(version, context.anchorLabel ?? programSummaryAnchor(version.summary)), flow.category].filter(Boolean).join(' · '),
   };
+}
+/** Stage 2 writes a Flow's 기준일 name as its summary's first line ("기준일: 이사일"); the card's line is the rest. */
+export function programSummaryAnchor(summary: string): string | null {
+  return /^기준일: (.+)$/.exec(summary.split('\n')[0]?.trim() ?? '')?.[1]?.trim() || null;
+}
+export function programSummaryLine(summary: string): string {
+  const lines = summary.split('\n');
+  return (programSummaryAnchor(summary) ? lines.slice(1) : lines).join(' ').replace(/\s+/g, ' ').trim();
+}
+/** The card's schedule shape, as the approved mockup orders it: "↻ 반복" (every item repeats), "{기준일 이름} 기준"
+ * (a 기준일 Flow, even with a repeat line in it), "반복 포함", "날짜 고정", "날짜 미정". */
+export function programCardShape(version: Pick<ProgramPublicVersion, 'items'>, anchorLabel: string | null): string {
+  const repeats = version.items.filter(item => item.schedule.kind === 'recurring' || !!programImportItemView(item)).length;
+  if (repeats && repeats === version.items.length) return '↻ 반복';
+  if (version.items.some(item => item.schedule.kind === 'relative')) return `${anchorLabel?.trim() || '기준일'} 기준`;
+  if (repeats) return '반복 포함';
+  if (version.items.some(item => item.schedule.kind === 'fixed')) return '날짜 고정';
+  return '날짜 미정';
 }
 
 /** Newest public version first (the current version's createdAt); ties keep the stored order. */

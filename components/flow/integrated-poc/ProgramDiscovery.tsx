@@ -24,7 +24,7 @@ import { programImportPreview } from '@/lib/flow/integrated-poc/import-preview';
 import { programCanonicalLink, programFlowsByLink, programLooksLikeLink } from '@/lib/flow/integrated-poc/link-lookup';
 import { numberEul, numberIga } from '@/lib/flow/integrated-poc/number-particle';
 import { programFlowProgress, programFlowProgressText } from '@/lib/flow/integrated-poc/flow-loop';
-import { programFlowAttributionLabel } from '@/lib/flow/integrated-poc/alpha-official-actors';
+import { PROGRAM_OFFICIAL_LABEL, programFlowAttributionLabel } from '@/lib/flow/integrated-poc/alpha-official-actors';
 import { useAlphaOfficialActors } from './AlphaOfficialActors';
 import styles from './ProgramDiscovery.module.css';
 
@@ -68,6 +68,8 @@ export type ProgramDiscoveryProps = {
   /** Flow pipeline S8, with no Flow made from a pasted link: keep it under today in my writing, or start a Flow from it. */
   onKeepLink?: (link: string) => Promise<boolean>;
   onCreateFromLink?: (link: string) => Promise<boolean>;
+  /** Core3 P2: the Flow head's [이야기] (the host's sub-tabs are gone). */
+  onOpenStories?: () => void;
   navigationState?: ProgramDiscoveryNavigationState;
   onNavigationStateChange?: (state: ProgramDiscoveryNavigationState) => void;
   onRegisterNavigation?: (navigation: ProgramDiscoveryNavigation | null) => void;
@@ -156,7 +158,7 @@ export function TransientOutputEditor({ draft, stale, onChange, onDiscard }: { d
   </section>;
 }
 
-export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersionId, selectedItemId, selectedOutputReturn, today, onUseVersion, onStartText, onCreateFlow, onKeepLink, onCreateFromLink, navigationState, onNavigationStateChange, onRegisterNavigation, storageScope = 'local', actorId = data.activeActorId, pendingDocumentIds = () => [], onReturnToSpace, copySourceReturn = false }: ProgramDiscoveryProps) {
+export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersionId, selectedItemId, selectedOutputReturn, today, onUseVersion, onStartText, onCreateFlow, onKeepLink, onCreateFromLink, onOpenStories, navigationState, onNavigationStateChange, onRegisterNavigation, storageScope = 'local', actorId = data.activeActorId, pendingDocumentIds = () => [], onReturnToSpace, copySourceReturn = false }: ProgramDiscoveryProps) {
   const officialActors = useAlphaOfficialActors();
   const [local, setLocal] = useState(createProgramDiscoveryNavigationState);
   const state = navigationState ?? local; const stateRef = useRef(state); stateRef.current = state;
@@ -373,7 +375,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     const undatedStarts = selectedSeries.filter(item => item.schedule.kind === 'recurring' && item.schedule.start.kind === 'undated');
     const outputOpen = outputVersion === version.id || !!selectedOutputReturn;
     const kindLabel = programFlowAttributionLabel(flow, version, officialActors, data);
-    const importLabel = choosing ? `할 일 ${useItemIds.length}개 가져오기` : '내 계획으로 가져오기';
+    const importLabel = choosing ? `할 일 ${useItemIds.length}개 가져오기` : '가져오기';
     // Flow pipeline S1: where the sheet's choices put each item, by the import's own date functions (nothing saved).
     // A copy taken again into another document carries its own dates; the sheet lists its items there instead.
     const preview = !(importDestination === 'existing' && storedCopy) ? programImportPreview(version, useItemIds, detail.anchor || null, sheetRepeats, today, { ...(repeatChoice ?? {}), recurrenceStarts }) : null;
@@ -393,7 +395,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
       {derived && <button type="button" className={styles.linkButton} onClick={() => navigate({ view: 'flow', id: derived.flowId, versionId: derived.id })}>원본: {derived.title} · 버전 {derived.number}</button>}
       {children.length > 0 && <details><summary>이 Flow에서 파생된 자료 {children.length}개</summary>{children.map(child => <button type="button" className={styles.linkButton} key={child.id} onClick={() => navigate({ view: 'flow', id: child.id })}>{data.public.versions.find(row => row.id === child.currentVersionId)?.title ?? child.id}</button>)}</details>}</>;
     // UX 2절 큰 단추: one action per state. An archived or held Flow never starts a new copy.
-    const action = existingCopy ? <button type="button" className={styles.primary} data-testid="program-existing-copy-return" disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>내 문서에서 이어보기</button>
+    const action = existingCopy ? <button type="button" className={styles.primary} data-testid="program-existing-copy-return" disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>내 문서 열기</button>
       : flow.archived ? null
         : storedCopy ? <button type="button" className={styles.primary} disabled={pending} onClick={() => navigate({ view: 'space' })}>내 공간에서 확인</button>
           : <button type="button" className={styles.primary} data-testid="program-import-open" disabled={pending || !canUseVersion} onClick={() => openSheet()}>{importLabel}</button>;
@@ -423,7 +425,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
             {(summaryClipped || summaryOpen === version.id) && <button type="button" className={`${styles.linkButton} ${styles.summaryMore} ${styles.phoneOnly}`} data-open={summaryOpen === version.id ? 'true' : undefined} aria-expanded={summaryOpen === version.id} aria-controls={`${uid}-summary`} onClick={toggleSummary}>{summaryOpen === version.id ? '접기' : '더 보기'}</button>}</div>
         </header>
         <section className={styles.sourceBlock} aria-label="출처와 버전">
-          <p className={styles.sourceLine}>{kindLabel && <>{kindLabel} · </>}{programSourceLine(version.source)}{version.source.url && <> · <a href={version.source.url} target="_blank" rel="noreferrer noopener">원문 열기 ↗</a></>}</p>
+          <p className={styles.sourceLine}>{kindLabel === PROGRAM_OFFICIAL_LABEL && <span className={styles.cardBadge} data-badge="공식">공식</span>}{kindLabel && <>{kindLabel} · </>}{programSourceLine(version.source)}{version.source.url && <> · <a href={version.source.url} target="_blank" rel="noreferrer noopener">원문 열기 ↗</a></>}</p>
           {sourceMeta?.sourceNeedsReview && <p className={styles.notice}>이 자료는 출처 재검토가 필요합니다. 현재 조건을 원문에서 확인해 주세요.</p>}
           <div className={styles.pcOnly}>{extras}</div>
           {existingCopy && copyVersion && existingCopy.baseVersionId !== version.id && <p className={styles.versionLine}>내 사본은 버전 {copyVersion.number}입니다. 원본에 버전 {version.number}{numberIga(version.number)} 있습니다. <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>변경 확인</button></p>}
@@ -519,7 +521,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
             })}</ul></section>}
           {/* S1 '어디에': one line (new document, as before) until [바꾸기] shows the choice as it was. */}
           <section className={styles.sheetPart} aria-labelledby={`${uid}-where`} data-import-where={whereShown ? 'open' : 'line'}><h3 id={`${uid}-where`} className={styles.sheetLabel}>어디에</h3>
-            {!whereShown ? <div className={styles.whereRow}><span>{storedCopy ? `‘${copyTitle || version.title}’ 문서` : `새 문서 ‘${version.title}’`}<small>오늘·달력에 같이 보입니다</small></span>
+            {!whereShown ? <div className={styles.whereRow}><span>{storedCopy ? `‘${copyTitle || version.title}’ 문서` : `새 문서 ‘${version.title}’`}<small>오늘·달력·쓰기 위 띠에 보입니다</small></span>
               <button type="button" disabled={pending} onClick={() => setWhereOpen(true)}>바꾸기</button></div> : <>
             <fieldset className={styles.destinationChoices} disabled={pending}><legend className={styles.visuallyHidden}>넣을 곳</legend>
               <label className={styles.destinationChoice}><input type="radio" name={`${uid}-destination`} checked={importDestination === 'new'} onChange={() => setImportDestination('new')} /><span><strong>새 문서</strong><small>‘{version.title}’ 문서를 미분류에 만듭니다.</small></span></label>
@@ -560,7 +562,9 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   const urlShown = state.urlOpen || showPastedInput;
   return <section className={styles.page} data-testid="program-discovery">
     {onReturnToSpace && <button type="button" className={styles.back} onClick={onReturnToSpace}>← 내 문서</button>}
-    <header className={styles.listHeader}><h1>Flow 찾기</h1>
+    {/* Core3 P2 (X7): one head line — "Flow", the [이야기] text button, ⋯ — instead of the 이야기 | Flow 찾기 sub-tabs. */}
+    <header className={styles.listHeader} data-list-head={onOpenStories ? 'flow' : undefined}><h1>{onOpenStories ? 'Flow' : 'Flow 찾기'}</h1>
+      {onOpenStories && <button type="button" className={styles.storiesLink} data-open-stories disabled={pending} onClick={onOpenStories}>이야기</button>}
       <details className={styles.moreMenu}><summary aria-label="Flow 찾기 더보기 메뉴">⋯</summary><div>
         <button type="button" disabled={pending} onClick={event => { (event.currentTarget.closest('details') as HTMLDetailsElement | null)?.removeAttribute('open'); update({ urlOpen: true }); requestAnimationFrame(() => document.getElementById(`${uid}-url`)?.focus()); }}>주소로 찾기</button>
         {onCreateFlow && <button type="button" disabled={pending} onClick={onCreateFlow}>Flow 만들기</button>}
@@ -590,14 +594,17 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
       {status}
     </section>}
     <ul className={styles.flowCards}>{visible.map(({ flow: row, version: current }) => {
-      const lines = programFlowCardLines(row, current, { needsReview: !!programCatalogMetadata(current.id)?.sourceNeedsReview, inMyDocuments: copies.has(row.id) });
+      // Core3 P2 (X6): three lines — title and its tag (공식 in blue, 내 문서에 있음 in grey), one summary line, and
+      // "할 일 n · 일정 모양 · 분야". The source, first task and situations are on the detail.
+      const meta = programCatalogMetadata(current.id);
+      const lines = programFlowCardLines(row, current, { needsReview: !!meta?.sourceNeedsReview, inMyDocuments: copies.has(row.id),
+        official: programFlowAttributionLabel(row, current, officialActors, data) === PROGRAM_OFFICIAL_LABEL, anchorLabel: meta?.anchorLabel ?? null });
       const match = linkQuery ? linkMatches.find(entry => entry.flow.id === row.id) : undefined;
-      return <li key={row.id}><button type="button" id={`program-discovery-${row.id}`} className={styles.flowCard} onClick={() => openFlow(row.id)}>
-        <span className={styles.cardTitleRow}><span className={styles.cardTitle}>{lines.title}</span>{lines.badge && <span className={styles.cardBadge} data-badge={lines.badge}>{lines.badge}</span>}</span>
-        <span className={styles.cardSummary}>{lines.summary}</span>
-        {lines.firstItem && <span className={styles.cardFirst}>{lines.firstItem}</span>}
-        <span className={styles.cardMeta}>{lines.meta}</span>
-        <span className={styles.cardSource}>{lines.source}</span>
+      return <li key={row.id}><button type="button" id={`program-discovery-${row.id}`} className={styles.flowCard} data-card-lines="3" onClick={() => openFlow(row.id)}
+        aria-label={[lines.title, lines.tag, lines.oneLine, lines.brief].filter(Boolean).join(', ')}>
+        <span className={styles.cardTitleRow}><span className={styles.cardTitle}>{lines.title}</span>{lines.tag && <span className={styles.cardBadge} data-badge={lines.tag}>{lines.tag}</span>}</span>
+        {lines.oneLine && <span className={styles.cardSummary}>{lines.oneLine}</span>}
+        <span className={styles.cardMeta}>{lines.brief}</span>
         {match?.on === 'item' && <span className={styles.cardSource} data-link-on="item">항목 출처: {match.items.join(', ')}</span>}
       </button></li>;
     })}</ul>
