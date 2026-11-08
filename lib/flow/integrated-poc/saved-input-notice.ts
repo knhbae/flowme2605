@@ -43,3 +43,9 @@ export function newRecoveryTags(announced: readonly string[], seen: ReadonlySet<
   return [...new Set(announced)].filter(tag => !seen.has(tag));
 }
 export const programRecoveryToastText = (count: number) => `저장하지 못한 입력 ${count}개를 복구함에 두었습니다. 원문 그대로 있습니다.`;
+/** Core3 P1 fix (11/8): the document whose entries get the one line under its title is the one the writing screen
+ * shows. The space reports it; the address names it only after a move (the app opens on the last document with none),
+ * so it is the fallback until the space has said which document is open. */
+export function recoveryLineDocumentId(destination: { view: string; id?: string }, shownDocumentId: string): string | undefined {
+  return destination.view === 'space' ? shownDocumentId || destination.id || undefined : undefined;
+}

@@ -162,6 +162,8 @@ export type ProgramSpaceProps = {
   onRegisterMainTabs?: (port: { choose(tab: ProgramMainTab): Promise<boolean>; openArchive(): Promise<boolean> } | null) => void;
   /** Which main tab the space now shows, for the host's tabs. */
   onMainTabChange?: (tab: ProgramMainTab) => void;
+  /** Core3 P1 fix: which document the writing screen has open ('' for none), also when the address names none. */
+  onOpenDocumentChange?: (documentId: string) => void;
   /** The host draws the main tabs, so the space's own tab row stays hidden. */
   hostMainTabs?: boolean;
   /** Local view changes do not call mutate; the host must expose held authority. */
@@ -1158,6 +1160,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     return () => props.onRegisterMainTabs?.(null);
   }, [actorId]);
   useEffect(() => { props.onMainTabChange?.(programMainTabOf(period)); }, [period]);
+  useEffect(() => { props.onOpenDocumentChange?.(selected); }, [selected]);
   useEffect(() => {
     const origin = sourceRestore;
     if (!origin) return;

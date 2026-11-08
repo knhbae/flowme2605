@@ -450,11 +450,14 @@
 
 /* Core3 P1 (X5, 11/8): the 복구함 says a new entry once, here — above the tab bar on a phone, bottom right when wide —
    for 10 s or until 닫기; the 나 badge keeps the count. The open document's own entries get one small line. */
-.recoveryToast { position: fixed; z-index: 47; right: 24px; bottom: 24px; width: min(400px, calc(100vw - 48px)); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 8px 8px 8px 14px; border: 1px solid var(--flowme-b-line); border-left: 3px solid var(--flowme-b-warning-border); border-radius: 10px; background: #fff; color: var(--flowme-b-ink); box-shadow: 0 8px 24px var(--flowme-b-shadow); font-size: 14px; line-height: 20px; }
+.recoveryToast { position: fixed; z-index: 47; right: 24px; bottom: 24px; width: min(400px, calc(100vw - 48px)); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 8px 8px 8px 14px; border: 0; border-radius: 12px; background: var(--flowme-b-ink); color: #fff; box-shadow: 0 8px 24px var(--flowme-b-shadow); font-size: 14px; line-height: 20px; }
 .recoveryToast > p { flex: 1 1 220px; margin: 0; overflow-wrap: anywhere; word-break: keep-all; }
 .recoveryToast > div { display: flex; gap: 4px; margin-left: auto; }
-.recoveryToast button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--flowme-b-primary-strong); font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer; }
-.recoveryToast button:last-child { background: var(--flowme-b-primary); color: #fff; }
+.recoveryToast button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: #c9d3ff; font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.recoveryToast button:last-child { background: #fff; color: var(--flowme-b-primary); }
+.recoveryToast button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 @media (max-width: 700px) { .recoveryToast { right: 16px; left: 16px; width: auto; bottom: calc(60px + env(safe-area-inset-bottom) + 12px); } }
 .documentRecovery { margin: 2px 0 6px; }
-.documentRecovery > button { min-height: 32px; padding: 0 4px; border: 0; background: transparent; color: var(--flowme-b-warning-ink); font-size: 13px; font-weight: 600; cursor: pointer; }
+.documentRecovery > button { min-height: 44px; margin: -6px 0; padding: 0 4px; border: 0; background: transparent; color: var(--flowme-b-warning-ink); font-size: 13px; font-weight: 600; cursor: pointer; }
+/* P1 fix (11/8): the line leaves with the title row while the keyboard is up (the writing focus mode). */
+.page[data-alpha-frame="b"][data-writing-keyboard="true"] .documentRecovery { display: none; }

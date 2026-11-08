@@ -58,7 +58,7 @@ import { createAlphaCommunityMediaPort } from '@/lib/flow/integrated-poc/alpha-s
 import { createAlphaCreatorRecovery, type AlphaCreatorRecoveryEntry, type AlphaCreatorRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-creator-recovery';
 import { setProgramCreatorWorking } from '@/lib/flow/integrated-poc/creator-workspace';
 import { canonicalJson, detached } from '@/lib/flow/integrated-poc/alpha-persistence/json';
-import { announcedRecoveryEntries, newRecoveryTags, programRecoveryToastText, readRecoverySeen, recoveryDraftIdentity, recoveryEntryTag, writeRecoverySeen } from '@/lib/flow/integrated-poc/saved-input-notice';
+import { announcedRecoveryEntries, newRecoveryTags, programRecoveryToastText, readRecoverySeen, recoveryDraftIdentity, recoveryEntryTag, recoveryLineDocumentId, writeRecoverySeen } from '@/lib/flow/integrated-poc/saved-input-notice';
 import { confirmedAlphaPrivateTextSave } from '@/lib/flow/integrated-poc/alpha-private-save-ack';
 import { createAlphaDocumentCollections } from '@/lib/flow/integrated-poc/alpha-document-collections';
 import type { DocumentCollections } from '@/lib/flow/integrated-poc/document-collections';
@@ -161,6 +161,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // opens anywhere (recoveryDialog), and focus goes back to what opened it.
   const managementMenu = useRef<HTMLDetailsElement | null>(null), recoveryDialog = useRef<HTMLDialogElement | null>(null);
   const recoveryOpener = useRef<HTMLElement | null>(null), [recoveryOpen, setRecoveryOpen] = useState(false);
+  // The document the space shows ('' for none), for the line of its own 복구함 entries.
+  const [shownDocumentId, setShownDocumentId] = useState('');
   // The Flow tab opens the branch last seen (이야기 or 찾기).
   const lastBrowse = useRef<'discover' | 'community'>('discover');
   // R8b: the bottom tabs 쓰기·오늘·분류 drive the space through its main-tab port; Flow and 나 move by navigate().
@@ -1714,7 +1716,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     <button type="button" onClick={() => { if (markDevNoticeSeen(devNoticeStorage(), session.userId)) setDevNoticeSeen(true); }}>확인</button></div>;
   // Core3 P1 (X5): no 복구함 band over the screens. The bottom toast says a new entry once; the open document's own
   // entries get one small line under its title (W11's slot, before the development notice).
-  const openDocumentId = destination.view === 'space' ? destination.id : undefined;
+  // P1 fix (11/8): the document the space shows, also when the app opened on the last one (no id in the address).
+  const openDocumentId = recoveryLineDocumentId(destination, shownDocumentId);
   const documentRecoveries = openDocumentId ? announcedDrafts.filter(entry => entry.documentId === openDocumentId).length
     + announcedStructural.filter(entry => entry.documentId === openDocumentId).length : 0;
   const documentRecovery = documentRecoveries > 0 && <p className={styles.documentRecovery} data-document-recovery>
@@ -1912,7 +1915,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         {collectionsMessage && <p className={styles.message} role="status">{collectionsMessage}</p>}
         <ProgramServerStatusContext.Provider value={serverStatusView}>
         <ProgramSpace key={`space:${session.userId}:${presentation}:${collectionsMode ? 'collections' : 'folders'}`} data={data} today={programLocalDate()} mutate={mutate}
-        hostMainTabs onRegisterMainTabs={port => { mainTabs.current = port; }} onMainTabChange={setMainTab}
+        hostMainTabs onRegisterMainTabs={port => { mainTabs.current = port; }} onMainTabChange={setMainTab} onOpenDocumentChange={setShownDocumentId}
         nativeAuthoringEnabled={nativeAuthoringEnabled} writingCompute={writingCompute.current??undefined} writingContext={() => ({ownerId:session.userId,baseRevision:currentRevision.current??0})}
         pmTextHost={syntheticRuntime||pmWriting==='v11-pm/1' ? { ownerId: session.userId, epoch: sessionEpoch, snapshot: () => sessionEpochRef.current === sessionEpoch && !disposed.current && currentOwnerRef.current === session.userId ? controller.current?.snapshot() ?? null : null } : undefined}
         noteHeader={usesNoteChrome ? noteNotice : undefined} noteNoticeShown={noteNoticeShown} noteStatus={usesNoteChrome ? serverStatus : undefined}
