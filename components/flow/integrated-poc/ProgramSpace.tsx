@@ -2188,8 +2188,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const datesNoticeContent = datesNotice?.actorId === actorId && <div className={styles.orderNotice} data-dates-notice onPointerDown={() => setDatesNoticeHeld(true)}
     onPointerUp={releaseDatesNotice} onPointerLeave={releaseDatesNotice} onFocus={() => setDatesNoticeHeld(true)} onBlur={releaseDatesNotice}>
     <ProgramNoticeRow notice={{ tone: datesNotice.refused ? 'warn' : datesNotice.undone ? 'info' : 'choose',
-      text: datesNotice.refused ?? (datesNotice.undone ? `${datesNotice.undo.length}개를 원래 날짜로 되돌렸습니다`
-        : `${programTaskDatesMovedText(datesNotice.count, datesNotice.date, today)}${datesLeft ? ' · 지금 보기에서는 빠졌습니다' : ''}`),
+      // Core3 P3b (UX): short enough for one line at 390; that a moved row left the view the list itself shows.
+      text: datesNotice.refused ?? (datesNotice.undone ? `${datesNotice.undo.length === 1 ? '' : `${datesNotice.undo.length}개를 `}원래 날짜로 되돌렸습니다`
+        : programTaskDatesMovedText(datesNotice.count, datesNotice.date, today)),
       actions: datesNotice.refused || datesNotice.undone || datesPending ? [] : [{ label: '되돌리기', run: () => void restoreSelectDates(datesNotice) }, ...(datesLeft ? [{ label: '그날 보기', run: () => void showMovedDay(datesNotice.date) }] : [])] }}
       onClose={() => setDatesNotice(null)} />
   </div>;

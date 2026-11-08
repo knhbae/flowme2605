@@ -117,6 +117,11 @@ export function moveProgramTaskDates(data: ProgramData, input: { actorId: string
       // The row detail's checks run for every task, also one already on the new date (it then does not change).
       const patched = patchProgramTask(space, move.taskId, { date: move.date });
       if (patched.reason) return patched;
+      // Core3 P3b: a date the line already takes from its day heading needs no 날짜 line. So 되돌리기 (the same
+      // command back) leaves the writing exactly as before the move, as ↶ does, and a move onto the heading's day
+      // writes nothing extra either.
+      const inherited = M.restoreTaskDate(space.text, move.taskId);
+      if (inherited !== space.text && M.tasks(inherited).find(task => task.id === move.taskId)?.date === move.date) space.text = inherited;
       if (move.clearOverride && copy) {
         const itemId = Object.keys(copy.itemLines).find(id => copy.itemLines[id] === move.taskId)!;
         const { date: _date, ...rest } = copy.itemOverrides[itemId] ?? {};
@@ -164,13 +169,15 @@ export function programLineDateChips(today: string): { key: string; label: strin
  *  weekend 이번 주말 is today). 날짜 고르기 is the row's own date picker. */
 export function programDeferChips(today: string, current: string | null): { key: string; label: string; date: string; detail: string; off: boolean }[] {
   const [, tomorrow, weekend] = programLineDateChips(today), monday = programTaskDateChoices(today, [])[2];
+  // P3b (UX): a chip landing on the same day as one before it is off too (Sunday: 다음 주 = 내일; Friday: 이번 주말 = 내일).
   return [tomorrow, weekend, { key: 'next-week', label: '다음 주', date: monday.date!, detail: monday.detail }]
-    .map(chip => ({ ...chip, off: chip.date === current || chip.date <= today }));
+    .map((chip, index, all) => ({ ...chip, off: chip.date === current || chip.date <= today || all.slice(0, index).some(prior => prior.date === chip.date) }));
 }
 /** 로 or 으로 after a word, by its last Hangul syllable (ㄹ and no final take 로). */
 const ro = (word: string) => { const last = [...word].reverse().find(char => char >= '가' && char <= '힣'); const final = last ? (last.charCodeAt(0) - 0xac00) % 28 : 0; return final === 0 || final === 8 ? '로' : '으로'; };
 /** The notice after a move (2-6): "3개를 11월 2일 (월)로 옮겼습니다", or 날짜 미정으로 (N11b: as the 날짜 미정 view is named). */
 export function programTaskDatesMovedText(count: number, date: string | null, today: string): string {
   const name = date ? programCalendarDate(date, today) : '날짜 미정';
-  return `${count}개를 ${name}${ro(name)} 옮겼습니다`;
+  // Core3 P3b (UX): one task is said by its new day alone ("11월 9일 (월)로 옮겼습니다"); several keep their count.
+  return `${count === 1 ? '' : `${count}개를 `}${name}${ro(name)} 옮겼습니다`;
 }

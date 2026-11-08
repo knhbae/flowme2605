@@ -16,8 +16,10 @@ test('미루기 chips: 내일, 이번 주말, 다음 주 (its Monday), each with
   // Wednesday 11/11.
   assert.deepEqual(view('2026-11-11', '2026-11-11'), ['내일 2026-11-12', '이번 주말 2026-11-14', '다음 주 2026-11-16']);
   assert.deepEqual(view('2026-11-11', '2026-11-12'), ['내일 2026-11-12 off', '이번 주말 2026-11-14', '다음 주 2026-11-16']);
-  // Sunday 11/8: this weekend is today (off); next week starts tomorrow.
-  assert.deepEqual(view('2026-11-08', '2026-11-08'), ['내일 2026-11-09', '이번 주말 2026-11-08 off', '다음 주 2026-11-09']);
+  // Sunday 11/8: this weekend is today (off); next week starts tomorrow, the day 내일 already says (P3b: off).
+  assert.deepEqual(view('2026-11-08', '2026-11-08'), ['내일 2026-11-09', '이번 주말 2026-11-08 off', '다음 주 2026-11-09 off']);
+  // Friday 11/13: this weekend is tomorrow, 내일's day (off).
+  assert.deepEqual(view('2026-11-13', '2026-11-13'), ['내일 2026-11-14', '이번 주말 2026-11-14 off', '다음 주 2026-11-16']);
   // A late task (11/6) or one without a date moves as well.
   assert.deepEqual(view('2026-11-11', '2026-11-06').filter(chip => chip.endsWith('off')), []);
   assert.deepEqual(view('2026-11-11', null).filter(chip => chip.endsWith('off')), []);

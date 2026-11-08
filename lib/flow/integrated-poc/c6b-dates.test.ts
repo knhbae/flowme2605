@@ -182,6 +182,7 @@ test('the sheet\'s choices carry their real dates from today; one every picked t
   assert.equal(programTaskDateChoices('2026-10-29', [null])[3].off, true);
   assert.equal(programTaskDatesMovedText(3, '2026-11-02', '2026-10-29'), '3개를 11월 2일 (월)로 옮겼습니다');
   assert.equal(programTaskDatesMovedText(2, '2026-10-29', '2026-10-29'), '2개를 10월 29일 (목)으로 옮겼습니다');
-  assert.equal(programTaskDatesMovedText(1, '2026-10-30', '2026-10-29'), '1개를 10월 30일 (금)으로 옮겼습니다');
+  // Core3 P3b (UX): one task is said by its new day alone.
+  assert.equal(programTaskDatesMovedText(1, '2026-10-30', '2026-10-29'), '10월 30일 (금)으로 옮겼습니다');
   assert.equal(programTaskDatesMovedText(4, null, '2026-10-29'), '4개를 날짜 미정으로 옮겼습니다');
 });

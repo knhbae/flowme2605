@@ -41,7 +41,8 @@ test('after it: 고르기 ends, the notice offers 되돌리기 (one save back) a
   assert.match(undo, /moveProgramTaskDates\(current, \{ actorId, requestId, moves: notice\.undo \}\)/);
   assert.match(undo, /refused: '그 뒤 바뀐 할 일이 있어 되돌리지 않았습니다'/);
   assert.match(space, /actions: datesNotice\.refused \|\| datesNotice\.undone \|\| datesPending \? \[\] : \[\{ label: '되돌리기', run: \(\) => void restoreSelectDates\(datesNotice\) \}, \.\.\.\(datesLeft \? \[\{ label: '그날 보기', run: \(\) => void showMovedDay\(datesNotice\.date\) \}\] : \[\]\)\]/);
-  assert.match(space, /' · 지금 보기에서는 빠졌습니다'/);
+  // Core3 P3b (UX): the notice fits one line at 390; a row that left the view is shown by the list ([그날 보기] stays).
+  assert(!space.includes('지금 보기에서는 빠졌습니다') && space.includes(': programTaskDatesMovedText(datesNotice.count, datesNotice.date, today)),'));
   // It stays (a choice) until another save or a view change.
   assert.match(space, /tone: datesNotice\.refused \? 'warn' : datesNotice\.undone \? 'info' : 'choose'/);
   assert.match(space, /useEffect\(\(\) => \{ setDatesNotice\(null\); \}, \[actorId, period, date, folderId, query\]\);/);

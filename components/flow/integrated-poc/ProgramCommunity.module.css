@@ -100,7 +100,8 @@
 .activityLabel + .activityGroup { border-top: 1px solid var(--flowme-b-line); }
 .community .activityGroup > summary { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 4px; color: var(--flowme-b-ink); font-size: 16px; list-style: none; cursor: pointer; }
 .activityGroup > summary::-webkit-details-marker { display: none; }
-.activityGroup > summary small { color: var(--flowme-b-muted); font-size: 13px; }
+/* P3b (UX): the counts are quiet (muted); only something new would take the primary color. */
+.community .activityGroup > summary small { color: var(--flowme-b-muted); font-size: 13px; font-weight: 400; }
 .activityGroup > summary::after { content: "›"; margin-left: auto; color: var(--flowme-b-muted); }
 .activityGroup[open] > summary::after { transform: rotate(90deg); }
 .activityGroup > section { margin: 0 0 16px; padding: 0 4px; }
