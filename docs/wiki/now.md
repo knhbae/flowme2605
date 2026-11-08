@@ -151,4 +151,5 @@
 - 11/8 08:47 날짜별|폴더별 숨김 개발(4c59e142, P1과 함께 반영). 08:5x UX 필수 흐름 셋 목업 사용자 확인 → P1 개발 시작.
 - 11/8 11:2x 필수 흐름 셋 P1 운영 반영: fc9e7660 / JPlcDo4B6U4etA0vASd1x (light deploy run 24, QA_GO core3-p1fix-qa-20261108-1110, UX 목업 대조 MATCH, package 900320e2…, DB 0, 경로 정상). P2(Flow 탭) 4c37e01a는 UX FIX 2건(제목 위계, 도착 토스트 닫힘·출처 줄 되돌리기) 반영 중 → QA → 반영.
 - 11/8 12:1x 필수 흐름 셋 P2 운영 반영: 3f7cd824 / 9Hbykv6eZY48j8Azair0o (light deploy run 25, QA_GO core3-p2-qa-20261108-1212, UX MATCH core3-p2c-uxreview, DB 0, 경로 정상). 다음 P3(미루기 칩·Flow 이름 메타·나 화면) 개발 시작.
-- 11/9 00:1x 필수 흐름 셋 P3 운영 반영: 106f2305 / xD-uAGC27c6K-ir9x88SA (light deploy run 26, QA_GO core3-p3-qa-20261109-0008, UX MATCH core3-p3b-uxreview, DB 0, 경로 정상). 필수 흐름 셋(쓰기·오늘·Flow 가져와 하기) UX 한 벌 반영 끝. P3 기록: [그날 보기]로 보기 바뀌면 [되돌리기]도 사라짐. 11/8 23:16 PRD 2판(F4 폴더 화면·F5 공개) — ＋는 home 오늘 구획, 공개 범위 지금대로, 탭 이름 '분류'→'폴더'는 사용자 답 대기.
+- 11/9 00:1x 필수 흐름 셋 P3 운영 반영: 106f2305 / xD-uAGC27c6K-ir9x88SA (light deploy run 26, QA_GO core3-p3-qa-20261109-0008, UX MATCH core3-p3b-uxreview, DB 0, 경로 정상). 필수 흐름 셋(쓰기·오늘·Flow 가져와 하기) UX 한 벌 반영 끝. P3 기록: [그날 보기]로 보기 바뀌면 [되돌리기]도 사라짐. 11/8 23:16 PRD 2판(F4 폴더 화면·F5 공개) — ＋는 home 오늘 구획, 공개 범위 지금대로, 탭 이름 '분류'→'폴더' 확정(11/9).
+- 11/9 탭 이름 '폴더' 확정. UX에 F4 폴더 화면·F5 공개 목업 한 벌 요청(outbox/ux-f4f5-20261109). 순서: 목업 → 사용자 확인 → 개발(F4 먼저, ＋ 나중).
