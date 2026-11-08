@@ -18,15 +18,14 @@ test('one slot under the title on 쓰기: saved input first, then the developmen
   // Review P1: only the 쓰기 tab moves the saved-input notice under the title. 오늘·분류 keep it above the work
   // pane, where it shows (the writing slot is hidden there), and it still comes before the development notice.
   assert.match(host, /const writingTab = usesNoteChrome && mainTab === 'documents';/);
-  assert.match(host, /const noteNotice = writingTab \? savedNotice \|\| publicNotice : savedNotice \? <span hidden data-dev-notice="after-saved-input" \/> : publicNotice;/);
-  assert.match(host, /const noteNoticeShown = writingTab && \(!!savedNotice \|\| !devNoticeSeen\);/);
+  // Core3 P1 (X5, 11/8): the band is gone. The slot under the title takes this document's own saved input (one small
+  // line to the 복구함), then the development notice; a new entry anywhere is said once by the bottom toast.
+  assert.match(host, /const noteNotice = writingTab \? documentRecovery \|\| publicNotice : publicNotice;/);
+  assert.match(host, /const noteNoticeShown = writingTab && \(!!documentRecovery \|\| !devNoticeSeen\);/);
   assert.match(host, /noteHeader=\{usesNoteChrome \? noteNotice : undefined\} noteNoticeShown=\{noteNoticeShown\}/);
-  assert.match(host, /\{!writingTab && savedNotice\}/);
-  // FC head review P2: 둘러보기 follows the same order, saved input first, the development notice waiting.
-  assert(host.includes('{!usesNoteChrome && (browse && savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice)}'));
-  assert.equal(host.match(/className=\{styles\.savedNotice\}/g)?.length, 1);
-  // The saved-input notice itself is unchanged: count, 복구함 열기, 닫기.
-  assert.match(host, /const savedNotice = savedNoticeShown && <p className=\{styles\.savedNotice\} role="status"><span>확인이 필요한 입력 \{savedTotal\}개<\/span>\s*<button type="button" onClick=\{event => openRecoveryBox\(event\.currentTarget\)\}>복구함 열기<\/button>/);
+  assert(host.includes('{!usesNoteChrome && publicNotice}'));
+  assert(!host.includes('savedNotice'), 'no band left on any screen');
+  assert.match(host, /<button type="button" onClick=\{event => openRecoveryBox\(event\.currentTarget\)\}>이 문서에 복구할 입력 \{documentRecoveries\}개 ›<\/button>/);
   assert.match(space, /data-writing-entry-notice data-quiet=\{props\.noteNoticeShown \? 'true' : undefined\}/);
   const quiet = spaceCss.slice(spaceCss.indexOf('.writingEntryNotice[data-quiet="true"] {'));
   for (const kept of ['position: absolute;', 'width: 1px;', 'height: 1px;', 'overflow: hidden;', 'clip-path: inset(50%);']) assert(quiet.slice(0, quiet.indexOf('}')).includes(kept), kept);

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import * as ts from 'typescript';
-import { announcedRecoveries, recoveryDraftIdentity } from './saved-input-notice';
+import { announcedRecoveries, announcedRecoveryEntries, recoveryDraftIdentity } from './saved-input-notice';
 
 // Every keystroke captures the editor's input to the tab (kept as before). R8a counted that capture,
 // so ordinary typing showed "보관한 입력 1개" from the first key until the save cleared it.
@@ -27,14 +27,17 @@ function evaluate<T>(expression: string, scope: Record<string, unknown>): T {
   return new Function(...Object.keys(scope), code + '\nreturn extracted;')(...Object.values(scope)) as T;
 }
 const typed = { documentId: 'doc', title: '작성 중 문서', raw: '첫 줄\n쓰는 중' };
-// The shell's count with one stored draft, as captureInput leaves it while the editor saves.
+// The shell's count with one stored draft, as captureInput leaves it while the editor saves. Core3 P1 (11/8): the
+// four kinds are each the announced entries (kept by identity for the one-time toast); the total is their sum.
 function count(state: { parked: typeof typed[]; active: typeof typed[]; atRisk: boolean }) {
-  return evaluate<number>(declaration('savedTotal'), {
+  const scope = {
     recoveries: { drafts: [typed] }, structuralRecoveries: null, creatorRecoveries: null, socialRecoveries: null,
     parkedDrafts: { current: state.parked }, activeDrafts: { current: state.active }, parkedStructural: { current: [] }, activeStructural: { current: [] },
     parkedCreator: { current: [] }, activeCreator: { current: null }, parkedSocial: { current: [] }, activeSocial: { current: [] },
-    inputAtRisk: state.atRisk, announcedRecoveries, recoveryDraftIdentity,
-  });
+    inputAtRisk: state.atRisk, announcedRecoveryEntries, recoveryDraftIdentity,
+  };
+  const kinds = Object.fromEntries(['announcedDrafts', 'announcedStructural', 'announcedCreator', 'announcedSocial'].map(name => [name, evaluate<unknown[]>(declaration(name), scope)]));
+  return evaluate<number>(declaration('savedTotal'), kinds);
 }
 
 test('typing that is being saved normally announces no saved input', () => {
@@ -58,10 +61,11 @@ test('the count rule for each kind of saved input', () => {
 });
 
 test('the shell counts all four kinds this way and marks input at risk from protection, failure and session state', () => {
-  const total = declaration('savedTotal');
+  const total = ['announcedDrafts', 'announcedStructural', 'announcedCreator', 'announcedSocial'].map(declaration).join('\n');
   for (const kind of ['recoveries?.drafts, parkedDrafts.current, activeDrafts.current', 'structuralRecoveries?.entries, parkedStructural.current, activeStructural.current',
     'creatorRecoveries?.entries, parkedCreator.current, activeCreator.current ? [activeCreator.current] : []', 'socialRecoveries?.entries, parkedSocial.current, activeSocial.current'])
-    assert(total.includes(`announcedRecoveries(${kind}, inputAtRisk`), kind);
+    assert(total.includes(`announcedRecoveryEntries(${kind}, inputAtRisk`), kind);
+  assert.equal(declaration('savedTotal'), 'announcedDrafts.length + announcedStructural.length + announcedCreator.length + announcedSocial.length');
   const risk = declaration('inputAtRisk');
   for (const part of ['needsInputProtection', 'unavailable', 'saveFailed', "'signed-out'", "'recovery-required'", "'checking-result'"]) assert(risk.includes(part), part);
   // A failed mutation marks it until the next one succeeds; storage of the input itself is unchanged.
@@ -83,8 +87,9 @@ test('the 복구함 lists and counts every stored entry even while the notice co
   assert(source.includes('{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>보관한 입력이 없습니다.</p>'));
   // It never opens by itself (a conflict while typing must not take the focus); the notice, the menu and 나 open it.
   assert(!source.includes('open={!!storedTotal'));
-  // The notice and the 더보기 badge name use their own label, so two different numbers never share "보관한 입력".
-  assert(source.includes('<span>확인이 필요한 입력 {savedTotal}개</span>'));
+  // The badge names use their own label, so two different numbers never share "보관한 입력"; the toast counts the new ones.
+  assert(source.includes("aria-label={`나${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`}"));
+  assert(source.includes('<p>{programRecoveryToastText(recoveryToast.count)}</p>'));
   assert(!/보관한 입력 \$?\{savedTotal\}/.test(source));
 });
 

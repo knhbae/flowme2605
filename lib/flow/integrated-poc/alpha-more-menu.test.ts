@@ -69,19 +69,23 @@ test('the four kinds of saved input show only in the 복구함 sheet, each with 
   assert(source.includes("${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}"));
 });
 
-test('the notice shows for saved input on opening and for each newly saved one, until closed; nothing is deleted', () => {
-  const shownExpr = declaration('savedNoticeShown');
-  const lower = pick(node => ts.isArrowFunction(node) && node.getText(tree).startsWith('at => at !== null && savedTotal < at'));
-  let total = 0, closedAt: number | null = null;
-  const isShown = () => evaluate<boolean>(shownExpr, { savedTotal: total, savedNoticeClosedAt: closedAt });
-  const change = (next: number) => { total = next; closedAt = evaluate<(at: number | null) => number | null>(lower, { savedTotal: total })(closedAt); };
-  change(1); assert.equal(isShown(), true);            // saved input found on opening
-  closedAt = 1; assert.equal(isShown(), false);        // closed
-  change(2); assert.equal(isShown(), true);            // a newly saved one
-  closedAt = 2; change(0); assert.equal(isShown(), false);
-  change(1); assert.equal(isShown(), true);            // after discarding everything, the next one shows again
-  // Closing the line only marks it closed; discarding stays with the 복구함's own buttons.
-  assert(source.includes('aria-label="확인이 필요한 입력 안내 닫기" onClick={() => setSavedNoticeClosedAt(savedTotal)}'));
+test('core3 P1 (X5): saved input found on opening and each newly saved one is said once, by a toast; nothing is deleted', async () => {
+  const { newRecoveryTags, readRecoverySeen, recoveryEntryTag, writeRecoverySeen } = await import('./saved-input-notice');
+  const store = new Map<string, string>(), storage = { getItem: (key: string) => store.get(key) ?? null, setItem: (key: string, value: string) => { store.set(key, value); } };
+  const a = recoveryEntryTag('draft', '["doc","글","첫 줄"]'), b = recoveryEntryTag('draft', '["doc","글","둘째 줄"]');
+  assert.notEqual(a, b); assert(!a.includes('첫 줄'), 'the tag holds no input text');
+  const seen = readRecoverySeen(storage, 'u');
+  assert.deepEqual(newRecoveryTags([a], seen), [a]);                      // found on opening: said
+  seen.add(a); writeRecoverySeen(storage, 'u', seen, [a]);
+  assert.deepEqual(newRecoveryTags([a], readRecoverySeen(storage, 'u')), [], 'not again, also after a reload');
+  assert.deepEqual(newRecoveryTags([a, b], readRecoverySeen(storage, 'u')), [b], 'a newly saved one is said');
+  writeRecoverySeen(storage, 'u', new Set([a, b]), [b]);
+  assert.deepEqual([...readRecoverySeen(storage, 'u')], [b], 'kept only for entries still stored');
+  assert.deepEqual([...readRecoverySeen(storage, 'other')], [], 'per account');
+  // The toast: 10 s (held while pointed at or focused), 닫기, 복구함 열기; closing it marks nothing and deletes nothing.
+  assert(source.includes('timer = setTimeout(() => { if (!recoveryToastHeld.current) setRecoveryToast(current => current === shown ? null : current); }, 10_000);'));
+  assert(source.includes('<button type="button" onClick={() => setRecoveryToast(null)}>닫기</button>'));
+  assert(source.includes('for (const tag of fresh) recoverySeen.current.tags.add(tag);'));
 });
 
 test('복구함 opens as a sheet from anywhere: it keeps input and moves nothing; closing it returns focus to its opener', () => {
@@ -98,8 +102,10 @@ test('복구함 opens as a sheet from anywhere: it keeps input and moves nothing
   assert(source.includes('if (recoveryOpen && !sheet.open) sheet.showModal();'));
   assert(source.includes('if (opener?.isConnected) opener.focus({ preventScroll: true });'));
   assert(source.includes('onCancel={event => { event.preventDefault(); setRecoveryOpen(false); }}'));
-  // Every way in passes its button: the notice, 나 › 자료 (and the menu's), and the 나 tab when a move is refused.
-  assert(source.includes('<button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>복구함 열기</button>'));
+  // Every way in passes its button: the document's line, 나 › 자료 (and the menu's), and the 나 tab when a move is refused;
+  // the toast, gone as the sheet opens, passes the 나 tab (core3 P1).
+  assert(source.includes('<button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>이 문서에 복구할 입력 {documentRecoveries}개 ›</button>'));
+  assert(source.includes('openRecoveryBox(meTab.current); }}>복구함 열기</button>'));
   assert(source.includes('const recoveryButton = <button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>'));
   assert(source.includes("if (moved === 'refused' || moved === 'not-saved' || moved === 'late') openRecoveryBox(opener);"));
 });

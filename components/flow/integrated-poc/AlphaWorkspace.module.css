@@ -447,3 +447,14 @@
 @media (max-width: 700px) {
   .page[data-alpha-frame="b"] .globalNavigation { z-index: 40; }
 }
+
+/* Core3 P1 (X5, 11/8): the 복구함 says a new entry once, here — above the tab bar on a phone, bottom right when wide —
+   for 10 s or until 닫기; the 나 badge keeps the count. The open document's own entries get one small line. */
+.recoveryToast { position: fixed; z-index: 47; right: 24px; bottom: 24px; width: min(400px, calc(100vw - 48px)); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 8px 8px 8px 14px; border: 1px solid var(--flowme-b-line); border-left: 3px solid var(--flowme-b-warning-border); border-radius: 10px; background: #fff; color: var(--flowme-b-ink); box-shadow: 0 8px 24px var(--flowme-b-shadow); font-size: 14px; line-height: 20px; }
+.recoveryToast > p { flex: 1 1 220px; margin: 0; overflow-wrap: anywhere; word-break: keep-all; }
+.recoveryToast > div { display: flex; gap: 4px; margin-left: auto; }
+.recoveryToast button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--flowme-b-primary-strong); font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.recoveryToast button:last-child { background: var(--flowme-b-primary); color: #fff; }
+@media (max-width: 700px) { .recoveryToast { right: 16px; left: 16px; width: auto; bottom: calc(60px + env(safe-area-inset-bottom) + 12px); } }
+.documentRecovery { margin: 2px 0 6px; }
+.documentRecovery > button { min-height: 32px; padding: 0 4px; border: 0; background: transparent; color: var(--flowme-b-warning-ink); font-size: 13px; font-weight: 600; cursor: pointer; }

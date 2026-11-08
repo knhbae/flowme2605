@@ -46,9 +46,10 @@ test('the host records each change by the screen it started on and checks before
   assert.match(alpha, /'쓰기 화면에서 되돌릴 수 있어요\.'/);
 });
 
-test('둘러보기 shows saved input first; the development notice waits (W11, review P2)', () => {
+test('둘러보기 has no saved-input band over it (core3 P1, X5): the bottom toast says new input once, the 나 badge counts', () => {
   const alpha = read('AlphaWorkspace.tsx');
-  assert(alpha.includes('{!usesNoteChrome && (browse && savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice)}'));
+  assert(alpha.includes('{!usesNoteChrome && publicNotice}'));
+  assert(!alpha.includes('savedNotice') && alpha.includes('{recoveryToastContent}'));
 });
 
 test('the Flow detail head rules apply to phones only; PC keeps its detail (review P2)', () => {

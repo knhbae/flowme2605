@@ -58,7 +58,7 @@ import { createAlphaCommunityMediaPort } from '@/lib/flow/integrated-poc/alpha-s
 import { createAlphaCreatorRecovery, type AlphaCreatorRecoveryEntry, type AlphaCreatorRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-creator-recovery';
 import { setProgramCreatorWorking } from '@/lib/flow/integrated-poc/creator-workspace';
 import { canonicalJson, detached } from '@/lib/flow/integrated-poc/alpha-persistence/json';
-import { announcedRecoveries, recoveryDraftIdentity } from '@/lib/flow/integrated-poc/saved-input-notice';
+import { announcedRecoveryEntries, newRecoveryTags, programRecoveryToastText, readRecoverySeen, recoveryDraftIdentity, recoveryEntryTag, writeRecoverySeen } from '@/lib/flow/integrated-poc/saved-input-notice';
 import { confirmedAlphaPrivateTextSave } from '@/lib/flow/integrated-poc/alpha-private-save-ack';
 import { createAlphaDocumentCollections } from '@/lib/flow/integrated-poc/alpha-document-collections';
 import type { DocumentCollections } from '@/lib/flow/integrated-poc/document-collections';
@@ -166,7 +166,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // R8b: the bottom tabs 쓰기·오늘·분류 drive the space through its main-tab port; Flow and 나 move by navigate().
   const mainTabs = useRef<{ choose(tab: ProgramMainTab): Promise<boolean>; openArchive(): Promise<boolean> } | null>(null);
   const [mainTab, setMainTab] = useState<ProgramMainTab>('documents');
-  const [savedNoticeClosedAt, setSavedNoticeClosedAt] = useState<number | null>(null);
+  // Core3 P1 (X5, 11/8): a new 복구함 entry is said once by a bottom toast (10 s, or 닫기); the 나 badge keeps counting.
+  const [recoveryToast, setRecoveryToast] = useState<{ count: number; at: number } | null>(null);
+  const recoverySeen = useRef<{ owner: string; tags: Set<string> } | null>(null), recoveryToastHeld = useRef(false), meTab = useRef<HTMLButtonElement>(null);
   // The last mutation failed; captured input counts as saved input until one succeeds.
   const [saveFailed, setSaveFailed] = useState(false);
   // A document editor refused input locally (no mutation ran) or failed to save it; counts until it clears.
@@ -1559,11 +1561,36 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     || ['signed-out', 'recovery-required', 'checking-result'].includes(snapshot?.status ?? '');
   const storedTotal = (recoveries?.drafts.length ?? 0) + (structuralRecoveries?.entries.length ?? 0)
     + (creatorRecoveries?.entries.length ?? 0) + (socialRecoveries?.entries.length ?? 0);
-  const savedTotal = announcedRecoveries(recoveries?.drafts, parkedDrafts.current, activeDrafts.current, inputAtRisk, recoveryDraftIdentity)
-    + announcedRecoveries(structuralRecoveries?.entries, parkedStructural.current, activeStructural.current, inputAtRisk)
-    + announcedRecoveries(creatorRecoveries?.entries, parkedCreator.current, activeCreator.current ? [activeCreator.current] : [], inputAtRisk)
-    + announcedRecoveries(socialRecoveries?.entries, parkedSocial.current, activeSocial.current, inputAtRisk);
-  useEffect(() => { setSavedNoticeClosedAt(at => at !== null && savedTotal < at ? savedTotal : at); }, [savedTotal]);
+  const announcedDrafts = announcedRecoveryEntries(recoveries?.drafts, parkedDrafts.current, activeDrafts.current, inputAtRisk, recoveryDraftIdentity);
+  const announcedStructural = announcedRecoveryEntries(structuralRecoveries?.entries, parkedStructural.current, activeStructural.current, inputAtRisk);
+  const announcedCreator = announcedRecoveryEntries(creatorRecoveries?.entries, parkedCreator.current, activeCreator.current ? [activeCreator.current] : [], inputAtRisk);
+  const announcedSocial = announcedRecoveryEntries(socialRecoveries?.entries, parkedSocial.current, activeSocial.current, inputAtRisk);
+  const savedTotal = announcedDrafts.length + announcedStructural.length + announcedCreator.length + announcedSocial.length;
+  // Each entry by a tag of its kind and identity: the toast says the ones not said yet on this device, once.
+  const recoveryTags = (atRisk: boolean) => [
+    ...(atRisk ? recoveries?.drafts ?? [] : announcedDrafts).map(entry => recoveryEntryTag('draft', recoveryDraftIdentity(entry))),
+    ...(atRisk ? structuralRecoveries?.entries ?? [] : announcedStructural).map(entry => recoveryEntryTag('structural', canonicalJson(entry))),
+    ...(atRisk ? creatorRecoveries?.entries ?? [] : announcedCreator).map(entry => recoveryEntryTag('creator', canonicalJson(entry))),
+    ...(atRisk ? socialRecoveries?.entries ?? [] : announcedSocial).map(entry => recoveryEntryTag('social', canonicalJson(entry)))];
+  const announcedTags = savedTotal ? recoveryTags(false) : [], announcedSignature = announcedTags.join('|');
+  useEffect(() => {
+    if (!announcedTags.length) return;
+    const owner = session.userId;
+    if (recoverySeen.current?.owner !== owner) recoverySeen.current = { owner, tags: readRecoverySeen(devNoticeStorage() ?? null, owner) };
+    const fresh = newRecoveryTags(announcedTags, recoverySeen.current.tags);
+    if (!fresh.length) return;
+    for (const tag of fresh) recoverySeen.current.tags.add(tag);
+    writeRecoverySeen(devNoticeStorage() ?? null, owner, recoverySeen.current.tags, recoveryTags(true));
+    setRecoveryToast({ count: fresh.length, at: Date.now() });
+    // The tags stand for the entries; their joined text is the dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [announcedSignature, session.userId]);
+  useEffect(() => {
+    if (!recoveryToast) return;
+    const shown = recoveryToast, timer = setTimeout(() => { if (!recoveryToastHeld.current) setRecoveryToast(current => current === shown ? null : current); }, 10_000);
+    return () => clearTimeout(timer);
+  }, [recoveryToast]);
+  useEffect(() => { setRecoveryToast(null); recoveryToastHeld.current = false; }, [session.userId]);
   // `announce` is off where the note editor's one status slot already announces this state.
   const inputProtectionFor = (announce: boolean) => <>
     {storageError && <p className={styles.problem} role={announce ? 'alert' : undefined}>브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
@@ -1627,8 +1654,6 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       <button onClick={() => { if (socialRecovery.current?.clear().ok) { parkedSocial.current = []; activeSocial.current = []; setSocialRecoveries(null); } else setStorageError(true); }}>보관 공개·참여 입력 버리기</button>
     </details>}
   </>;
-  // A new saved input, or saved input on opening the app, gets one line until the user closes it.
-  const savedNoticeShown = savedTotal > 0 && (savedNoticeClosedAt === null || savedTotal > savedNoticeClosedAt);
   async function chooseMainTab(tab: ProgramMainTab) {
     // Save wait P3: while another move waits, this tab takes it over (it comes back to the space first).
     if (destination.view !== 'space' || moveFlight.current) await navigate({ view: 'space' });
@@ -1687,16 +1712,27 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     <details className={styles.notice} aria-label="저장과 공개 안내"><summary>공개한 Flow와 글만 다른 사용자에게 보입니다.</summary>
       <p>{DEV_NOTICE_TEXT}{privacyMore}</p></details>
     <button type="button" onClick={() => { if (markDevNoticeSeen(devNoticeStorage(), session.userId)) setDevNoticeSeen(true); }}>확인</button></div>;
-  const savedNotice = savedNoticeShown && <p className={styles.savedNotice} role="status"><span>확인이 필요한 입력 {savedTotal}개</span>
-    <button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>복구함 열기</button>
-    <button type="button" aria-label="확인이 필요한 입력 안내 닫기" onClick={() => setSavedNoticeClosedAt(savedTotal)}>닫기</button></p>;
-  // W11: on the 쓰기 tab the notices around the title share one line, by priority: saved input, then the
-  // development notice, then the new-document notice (ProgramSpace keeps that one for screen readers only).
-  // On 오늘 and 분류 the saved-input notice keeps its own place above the work pane (that slot under the title is
-  // the writing one), and still comes first: the development notice waits until it is closed.
+  // Core3 P1 (X5): no 복구함 band over the screens. The bottom toast says a new entry once; the open document's own
+  // entries get one small line under its title (W11's slot, before the development notice).
+  const openDocumentId = destination.view === 'space' ? destination.id : undefined;
+  const documentRecoveries = openDocumentId ? announcedDrafts.filter(entry => entry.documentId === openDocumentId).length
+    + announcedStructural.filter(entry => entry.documentId === openDocumentId).length : 0;
+  const documentRecovery = documentRecoveries > 0 && <p className={styles.documentRecovery} data-document-recovery>
+    <button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>이 문서에 복구할 입력 {documentRecoveries}개 ›</button></p>;
+  const recoveryToastContent = recoveryToast && <div className={styles.recoveryToast} role="status" data-recovery-toast
+    onPointerEnter={() => { recoveryToastHeld.current = true; }} onPointerLeave={() => { recoveryToastHeld.current = false; setRecoveryToast(current => current && { ...current, at: Date.now() }); }}
+    onFocus={() => { recoveryToastHeld.current = true; }} onBlur={event => { if (event.currentTarget.contains(event.relatedTarget as Node | null)) return; recoveryToastHeld.current = false; setRecoveryToast(current => current && { ...current, at: Date.now() }); }}>
+    <p>{programRecoveryToastText(recoveryToast.count)}</p>
+    <div><button type="button" onClick={() => setRecoveryToast(null)}>닫기</button>
+      <button type="button" onClick={() => { recoveryToastHeld.current = false; setRecoveryToast(null);
+        // The toast goes as the sheet opens: closing the sheet brings the focus to 나 (where the badge is), not to nothing.
+        openRecoveryBox(meTab.current); }}>복구함 열기</button></div>
+  </div>;
+  // W11: on the 쓰기 tab the notices around the title share one line, by priority: this document's saved input, then
+  // the development notice, then the new-document notice (ProgramSpace keeps that one for screen readers only).
   const writingTab = usesNoteChrome && mainTab === 'documents';
-  const noteNotice = writingTab ? savedNotice || publicNotice : savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice;
-  const noteNoticeShown = writingTab && (!!savedNotice || !devNoticeSeen);
+  const noteNotice = writingTab ? documentRecovery || publicNotice : publicNotice;
+  const noteNoticeShown = writingTab && (!!documentRecovery || !devNoticeSeen);
   const browseHistory = (kind: 'undo' | 'redo') => !browse || programBrowseHistoryAllowed(historyOrigin.current, kind, snapshot?.account?.revision);
   const serverUndo = <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external} aria-disabled={browseHistory('undo') ? undefined : true}>되돌리기</button>;
   // The recovery box with its actions. `announce` is off inside the note editor, whose one status
@@ -1795,7 +1831,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
             navigate(), which ends a composition through blur and keeps its result as 쓰기 → 오늘 does. */}
         <button type="button" data-main-tab="flow" aria-current={browse ? 'page' : undefined} onClick={() => void chooseFlowTab()}>
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm3.5 5.5-2 5-5 2 2-5z"/></svg><span>Flow</span></button>
-        <button type="button" data-main-tab="me" aria-current={['activity', 'legacy', 'creator'].includes(destination.view) ? 'page' : undefined}
+        <button type="button" ref={meTab} data-main-tab="me" aria-current={['activity', 'legacy', 'creator'].includes(destination.view) ? 'page' : undefined}
           aria-label={`나${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`} onClick={event => void chooseMeTab(event.currentTarget)}>
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7 8a7 7 0 0 1 14 0"/></svg><span>나</span>
           {savedTotal > 0 && <span className={styles.navBadge} aria-hidden="true">{savedTotal}</span>}</button>
@@ -1803,7 +1839,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '나' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1></header>
     {browse && <nav className={styles.browseNavigation} aria-label="둘러보기 종류"><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({view:'community'})}>이야기</button><button aria-current={['discover','flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({view:'discover'})}>Flow 찾기</button></nav>}
     <div className={styles.workPane} data-testid="alpha-work-pane">
-    {!usesNoteChrome && (browse && savedNotice ? <span hidden data-dev-notice="after-saved-input" /> : publicNotice)}
+    {!usesNoteChrome && publicNotice}
     <section className={styles.sync} aria-label="서버 저장 상태">
       {!usesNoteChrome && (!quietStatus || browseStatusShown) && serverStatus}
       {/* UX B3 (11/7): with the tabs (an account that opens) its items live on 나 and in the 복구함 sheet. Without them
@@ -1835,7 +1871,6 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         </section>
         </div></details>}
     </section>
-    {!writingTab && savedNotice}
     {preservation && snapshot?.account && snapshot.references && <AlphaPreservationPanel key={session.userId} account={snapshot.account} references={snapshot.references}
       email={email} accessToken={session.accessToken} returnFocusTarget={preservationOpener.current} onClose={closePreservation} onSaved={async () => {
         ownMutation.current++; try { await controller.current?.refresh(); if (!replaceEditors()) setMessage(keptEditorsNotice('서버 자료는 반영했습니다.')); } finally { ownMutation.current--; }
@@ -1962,5 +1997,6 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           onClose={() => setInspector(null)} onRegisterEditors={port => { inspectorEditors.current = port; }} /></dialog>}
     </>}
     </div>
+    {recoveryToastContent}
   </main>;
 }
