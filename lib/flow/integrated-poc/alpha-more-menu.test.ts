@@ -85,7 +85,11 @@ test('core3 P1 (X5): saved input found on opening and each newly saved one is sa
   assert.deepEqual([...readRecoverySeen(storage, 'u')], [b], 'kept only for entries still stored');
   assert.deepEqual([...readRecoverySeen(storage, 'other')], [], 'per account');
   // The toast: 10 s (held while pointed at or focused), 닫기, 복구함 열기; closing it marks nothing and deletes nothing.
-  assert(source.includes('timer = setTimeout(() => { if (!recoveryToastHeld.current) setRecoveryToast(current => current === shown ? null : current); }, 10_000);'));
+  // Core3 P2c: the 10 s and the hold are useToastLife's, shared with a Flow's arrival toast.
+  assert(source.includes('const recoveryToastLife = useToastLife(recoveryToast, shown => setRecoveryToast(current => current === shown ? null : current));'));
+  assert(source.includes('data-recovery-toast {...recoveryToastLife.hold}>'));
+  const life = readFileSync(new URL('../../../components/flow/integrated-poc/use-toast-life.ts', import.meta.url), 'utf8');
+  assert(life.includes('const timer = setTimeout(() => { if (!held.current) expireRef.current(shown); }, ms);') && life.includes('ms = 10_000'));
   assert(source.includes('<button type="button" onClick={() => setRecoveryToast(null)}>닫기</button>'));
   assert(source.includes('for (const tag of fresh) recoverySeen.current.tags.add(tag);'));
 });

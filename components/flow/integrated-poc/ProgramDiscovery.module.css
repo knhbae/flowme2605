@@ -161,3 +161,7 @@
 .flowDetail .itemsLabel .itemsHint{font-weight:400}
 .copyLine{display:flex;flex-wrap:wrap;align-items:center;gap:0 4px;margin:8px 0 4px;color:var(--flowme-b-muted);font-size:14px;line-height:20px}
 .copyLine .linkButton{min-height:44px;padding:0 4px;font-size:14px;font-weight:600}
+/* Core3 P2c (UX, 11/8): the titles lead — the detail's 22/700, the sheet's 19/700 — and the task rows read 16/400. */
+.flowDetail .detailHeader h1{font-weight:700}
+.importSheet .sheetTitle{margin:0;font-size:19px;line-height:26px;font-weight:700}
+.flowDetail .taskTitle{font-size:16px;font-weight:400}

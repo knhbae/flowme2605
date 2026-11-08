@@ -71,7 +71,7 @@ test('the shell counts all four kinds this way and marks input at risk from prot
   // A failed mutation marks it until the next one succeeds; storage of the input itself is unchanged.
   assert.match(source, /if \(!outcome\.ok\) \{\s+if \(outcome\.reason !== 'busy'\) setSaveFailed\(true\);/);
   assert.match(source, /else \{\s+setSaveFailed\(false\);/);
-  assert.match(source, /onInput=\{\(\) => \{ queueMicrotask\(captureInput\); \}\}/);
+  assert.match(source, /onInput=\{event => \{ queueMicrotask\(captureInput\);/);
 });
 
 // Codex review F2: the 복구함 is not the notice. It lists and counts everything stored, while only the

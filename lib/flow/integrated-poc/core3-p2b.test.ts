@@ -38,9 +38,10 @@ test('FIG 11: a copy I took says "내 진행 2/6 · 기준일 바꾸기"; the bu
 });
 
 test('FIG 13: the arrival notice (a new document) is the bottom toast; a target document\'s notice stays in place', () => {
-  assert(alpha.includes("actionLabel: '되돌리기', busyLabel: '되돌리는 중…', toast: true,"));
-  assert.equal(alpha.split('toast: true').length - 1, 1, 'only the arrival');
-  assert(space.includes("<div className={styles.importNotice} data-arrival-toast={props.importNotice.toast ? '' : undefined}>"));
+  // P2c: only a Flow's arrival (toastOpen set where it is made); the link notices stay in the document.
+  assert(alpha.includes('...(importArrival.toastOpen !== undefined ? { toast: { open: importArrival.toastOpen, onClose: closeArrivalToast, hold: arrivalToastLife.hold } } : {}),'));
+  assert.equal(alpha.split('toastOpen: true').length - 1, 1, 'only the Flow arrival');
+  assert(space.includes("data-arrival-toast={props.importNotice.toast ? '' : undefined} {...props.importNotice.toast?.hold}>"));
   const toast = spaceCss.slice(spaceCss.indexOf('.space .importNotice[data-arrival-toast] {'));
   assert(toast.includes('position: fixed;') && toast.includes('background: var(--flowme-b-ink); color: #fff;'));
   assert(spaceCss.includes('.space .importNotice[data-arrival-toast] > .importCalendar { background: #fff; color: var(--flowme-b-primary); }'));

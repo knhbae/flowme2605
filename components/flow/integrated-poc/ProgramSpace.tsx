@@ -14,6 +14,7 @@ import { programManualOrderDays, programOrderedExecutionRows, programTextExecuti
   restoreProgramExecutionDayOrder, type ProgramDayOrder, type ProgramOrderedExecutionRow } from '@/lib/flow/integrated-poc/recurrence-order';
 import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
+import type { ToastHold } from './use-toast-life';
 import { carryProgramHead, restoreProgramHead, type ProgramHeadCarry } from '@/lib/flow/integrated-poc/tablet-head-carry';
 import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeLive, programCheckNoticeView, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
 import { ProgramMonthGrid } from './ProgramMonthGrid';
@@ -147,8 +148,9 @@ export type ProgramSpaceProps = {
   importNotice?: { actorId: string; documentId: string; lineId?: string; text: string; busy: boolean; onCancel?: () => void; actionLabel?: string; busyLabel?: string;
     /** Flow pipeline S2: [달력에서 보기] — the month of `first`, that day chosen, this Flow's days marked (S3). */
     calendar?: { first: string; title: string; count: number };
-    /** Core3 P2b (FIG 13): a new document's arrival is said as the bottom toast (ink, white words). */
-    toast?: boolean };
+    /** Core3 P2b/P2c (FIG 13): a Flow's arrival is said as the bottom toast (ink, white words) while `open`; once it
+     *  closed, its [되돌리기] stays at the end of the copy's source line. */
+    toast?: { open: boolean; onClose: () => void; hold: ToastHold } };
   onRevisionHistory?: (documentId: string) => void;
   onOutputDocument?: (documentId: string) => void;
   onStartReview?: (documentId: string) => Promise<void>;
@@ -2672,11 +2674,19 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     : documentTitleText}</h1></>;
   const docActions = <>{props.hostMainTabs ? selectedDocumentTools && <div className={styles.titleActions}>{selectedDocumentTools}</div>
       : (!props.noteHeader || !selectedDoc) && <div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div>}</>;
+  // The notice's undo ([되돌리기] for an arrival, 이번 가져오기 취소 for a document it went into), while it may be used.
+  const importCancel = props.importNotice?.onCancel && <button type="button" disabled={props.importNotice.busy} onClick={props.importNotice.onCancel}>{props.importNotice.busy ? props.importNotice.busyLabel ?? '연결을 빼는 중…' : props.importNotice.actionLabel ?? '이번 가져오기 취소'}</button>;
+  const arrivalUndoAfterToast = !!importCancel && props.importNotice?.toast?.open === false && props.importNotice.actorId === actorId && props.importNotice.documentId === selected && !!selectedDoc;
   const docNotices = <>
     {props.noteHeader}
-    {props.importNotice?.actorId === actorId && props.importNotice.documentId === selected && <div className={styles.importNotice} data-arrival-toast={props.importNotice.toast ? '' : undefined}><span role="status">{props.importNotice.text}</span>{props.importNotice.onCancel && <button type="button" disabled={props.importNotice.busy} onClick={props.importNotice.onCancel}>{props.importNotice.busy ? props.importNotice.busyLabel ?? '연결을 빼는 중…' : props.importNotice.actionLabel ?? '이번 가져오기 취소'}</button>}
+    {props.importNotice?.actorId === actorId && props.importNotice.documentId === selected && props.importNotice.toast?.open !== false && <div className={styles.importNotice}
+      data-arrival-toast={props.importNotice.toast ? '' : undefined} {...props.importNotice.toast?.hold}><span role="status">{props.importNotice.text}</span>{importCancel}
       {props.importNotice.calendar && <button type="button" className={styles.importCalendar} data-import-calendar disabled={props.importNotice.busy}
-        onClick={() => { const notice = props.importNotice; if (notice?.calendar) void showFlowOnCalendar(notice.documentId, notice.calendar); }}>달력에서 보기</button>}</div>}
+        onClick={() => { const notice = props.importNotice; if (notice?.calendar) void showFlowOnCalendar(notice.documentId, notice.calendar); }}>달력에서 보기</button>}
+      {/* Core3 P2c: [되돌리기] [달력에서 보기] [×]. */}
+      {props.importNotice.toast && <button type="button" className={styles.importToastClose} data-arrival-close aria-label="알림 닫기" onClick={props.importNotice.toast.onClose}>×</button>}</div>}
+    {/* Once the arrival toast closed, its [되돌리기] stays (as long as it could before), on the copy's source line or here. */}
+    {arrivalUndoAfterToast && !copyHeader && <p className={styles.importNotice} data-arrival-undo>{importCancel}</p>}
     <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice data-quiet={props.noteNoticeShown ? 'true' : undefined}>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
     {!selectedDoc && props.noteStatus}
     {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>
@@ -2696,6 +2706,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {copyHeader && <div className={styles.copyHeader} data-state={copyHeader.kind}><span>{copyHeader.text}</span>
         {copyHeader.action === 'inspect' && props.onInspectCopy && props.capabilities?.copyInspection !== false && <button type="button" disabled={preparingDocumentAction} onClick={() => void openDocumentAction(() => props.onInspectCopy!(copyHeader.copyId), { modalReturnFocus: true })}>변경 확인</button>}
         {copyHeader.action === 'source' && props.onOpenCopySource && props.capabilities?.discovery !== false && <button type="button" disabled={preparingDocumentAction} onClick={event => { const returnFocus = event.currentTarget; void openDocumentAction(id => props.onOpenCopySource!(copyHeader.flowId, id, returnFocus)); }}>원본 보기</button>}
+        {arrivalUndoAfterToast && <span data-arrival-undo>{importCancel}</span>}
       </div>}
       {selectedQualityHold && <p role="status" className={styles.muted}>{selectedQualityHold} 해당 원본 항목과 실행 기록은 읽기 전용으로 남깁니다. 다른 자유 메모는 계속 쓸 수 있습니다.</p>}
       {retentionSource && <p className={styles.muted}>저장본으로 되돌리며 빠진 내용을 보관한 곳입니다. <button onClick={() => void openDocument(retentionSource)}>원래 문서로 돌아가기</button></p>}

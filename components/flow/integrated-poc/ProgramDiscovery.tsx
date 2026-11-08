@@ -491,7 +491,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
       </aside>}</div>
       <dialog ref={sheet} className={styles.importSheet} aria-labelledby={`${uid}-sheet`} onCancel={event => { if (pendingRef.current) event.preventDefault(); else setSheetOpen(false); }} onClose={() => setSheetOpen(false)}>
         {sheetOpen && <div className={styles.sheetBody}>
-          <div className={styles.row}><h2 id={`${uid}-sheet`}>가져오기</h2><button type="button" disabled={pending} onClick={closeSheet}>닫기</button></div>
+          <div className={styles.row}><h2 id={`${uid}-sheet`} className={styles.sheetTitle}>가져오기</h2><button type="button" disabled={pending} onClick={closeSheet}>닫기</button></div>
           <p className={styles.sheetSummary}>{version.title} · 할 일 {useItemIds.length}개{canChoose && <button type="button" className={`${styles.linkButton} ${styles.sheetChoose}`} disabled={pending} onClick={() => { closeSheet(); setChoosingVersion(version.id); }}>고르기</button>}</p>
           {/* Flow pipeline S1 '언제': the 기준일 as one chip line that opens the phone's date picker (the input stays, unseen). */}
           {anchorNeeded && <section className={styles.sheetPart} aria-labelledby={`${uid}-when`} data-import-when><h3 id={`${uid}-when`} className={styles.sheetLabel}>언제</h3>

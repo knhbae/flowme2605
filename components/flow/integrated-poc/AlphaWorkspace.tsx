@@ -44,7 +44,8 @@ import { ProgramLegacyWorkspace } from './ProgramLegacyWorkspace';
 import { ProgramPrivateOutput } from './ProgramPrivateOutput';
 import { ProgramCreatorWorkspace } from './ProgramCreatorWorkspace';
 import { ProgramDiscovery, createProgramDiscoveryNavigationState, programDiscoveryHasUnstoredInput, type ProgramImportOutcome, type ProgramImportRepeatInput } from './ProgramDiscovery';
-import { programImportArrivalNotice, programImportCancelNotice, programImportRepeatNotice, programImportTargetNotice } from '@/lib/flow/integrated-poc/program-discovery-display';
+import { PROGRAM_ARRIVAL_TOAST_SCROLL, programImportArrivalNotice, programImportCancelNotice, programImportRepeatNotice, programImportTargetNotice } from '@/lib/flow/integrated-poc/program-discovery-display';
+import { useToastLife } from './use-toast-life';
 import { programImportRepeats } from '@/lib/flow/integrated-poc/public-repeat-import';
 import { PROGRAM_BROWSE_VIEWS, programBrowseHistoryAllowed, programEmptyHistoryOrigin, programHistoryAfterChange, programHistoryAfterStep } from '@/lib/flow/integrated-poc/program-history-origin';
 import { ProgramCommunity, type ProgramCommunityDraftSaveRecovery } from './ProgramCommunity';
@@ -168,7 +169,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const [mainTab, setMainTab] = useState<ProgramMainTab>('documents');
   // Core3 P1 (X5, 11/8): a new 복구함 entry is said once by a bottom toast (10 s, or 닫기); the 나 badge keeps counting.
   const [recoveryToast, setRecoveryToast] = useState<{ count: number; at: number } | null>(null);
-  const recoverySeen = useRef<{ owner: string; tags: Set<string> } | null>(null), recoveryToastHeld = useRef(false), meTab = useRef<HTMLButtonElement>(null);
+  const recoverySeen = useRef<{ owner: string; tags: Set<string> } | null>(null), meTab = useRef<HTMLButtonElement>(null);
   // The last mutation failed; captured input counts as saved input until one succeeds.
   const [saveFailed, setSaveFailed] = useState(false);
   // A document editor refused input locally (no mutation ran) or failed to save it; counts until it clears.
@@ -203,13 +204,28 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // still the last server change (`revision`); null when this account's undo is held (the notice says the trash way).
   const [importArrival, setImportArrival] = useState<{ actorId: string; documentId: string; text: string; revision: number | null;
     /** Flow pipeline S2: [달력에서 보기] opens the month of the first dated item (none without a dated one). */
-    calendar: { first: string; title: string; count: number } | null } | null>(null);
+    calendar: { first: string; title: string; count: number } | null;
+    /** Core3 P2c: a Flow's arrival is said as the bottom toast while true; false once it closed (its [되돌리기] then
+     *  stays on the copy's source line); absent for the other arrivals (the notice stays in the document). */
+    toastOpen?: boolean } | null>(null);
   const [importArrivalBusy, setImportArrivalBusy] = useState(false);
   useEffect(() => {
     setImportUndo(previous => previous && (previous.batch.actorId !== session.userId || destination.view !== 'space' || destination.id !== previous.batch.documentId) ? null : previous);
     setImportArrival(previous => previous && (previous.actorId !== session.userId || destination.view !== 'space' || destination.id !== previous.documentId) ? null : previous);
   }, [destination, session.userId]);
   useEffect(() => { setFlowReturn(null); setImportUndo(null); setImportArrival(null); importUndoLock.current = false; setImportUndoBusy(false); }, [sessionEpoch]);
+  // Core3 P2c (UX, 11/8): the toast closes at whichever comes first — ×, the document's first input, a scroll of more
+  // than a line, or 10 s after it was last touched (held while touched, as the 복구함's). Leaving the document ends
+  // the arrival as before.
+  const closeArrivalToast = () => setImportArrival(previous => previous?.toastOpen ? { ...previous, toastOpen: false } : previous);
+  const arrivalToastShown = importArrival?.toastOpen ? importArrival : null;
+  const arrivalToastLife = useToastLife(arrivalToastShown, shown => setImportArrival(current => current === shown ? { ...current, toastOpen: false } : current));
+  useEffect(() => {
+    if (!arrivalToastShown) return;
+    const start = window.scrollY, scrolled = () => { if (Math.abs(window.scrollY - start) > PROGRAM_ARRIVAL_TOAST_SCROLL) closeArrivalToast(); };
+    window.addEventListener('scroll', scrolled, { passive: true });
+    return () => window.removeEventListener('scroll', scrolled);
+  }, [arrivalToastShown]);
   // 실행 고리 1안: the save of mine that finishes someone's Flow asks once whether to leave ‘해 봤어요’. Nothing records
   // the answer; a Flow asked about in this tab is not asked again, and leaving the space lets the question go.
   // QA F1: one question at a time; others wait their turn, and only one put on screen counts as asked.
@@ -1412,7 +1428,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         // Flow pipeline S2: the span says where the document's tasks landed (read off the saved copy, as the lists do).
         const placed = programExecutionTasks(live!.spaces[owner]).filter(task => task.docId === copy.documentId), span = programImportSpan(placed);
         setImportArrival({ actorId: owner, documentId: copy.documentId, text: programImportArrivalNotice(version.title, undoHeld, programImportRepeatNotice(written, existingRepeats), { ...span, today: programLocalDate() }),
-          revision: undoHeld ? null : confirmed?.account?.revision ?? null, calendar: span.first ? { first: span.first, title: version.title, count: placed.length } : null });
+          revision: undoHeld ? null : confirmed?.account?.revision ?? null, calendar: span.first ? { first: span.first, title: version.title, count: placed.length } : null, toastOpen: true });
       }
     }
     return { ok: true };
@@ -1585,12 +1601,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     // The tags stand for the entries; their joined text is the dependency.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [announcedSignature, session.userId]);
-  useEffect(() => {
-    if (!recoveryToast) return;
-    const shown = recoveryToast, timer = setTimeout(() => { if (!recoveryToastHeld.current) setRecoveryToast(current => current === shown ? null : current); }, 10_000);
-    return () => clearTimeout(timer);
-  }, [recoveryToast]);
-  useEffect(() => { setRecoveryToast(null); recoveryToastHeld.current = false; }, [session.userId]);
+  // 10 s after it was shown or last touched, waiting while it is held (useToastLife, shared with a Flow's arrival).
+  const recoveryToastLife = useToastLife(recoveryToast, shown => setRecoveryToast(current => current === shown ? null : current));
+  useEffect(() => { setRecoveryToast(null); }, [session.userId]);
   // `announce` is off where the note editor's one status slot already announces this state.
   const inputProtectionFor = (announce: boolean) => <>
     {storageError && <p className={styles.problem} role={announce ? 'alert' : undefined}>브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
@@ -1721,12 +1734,10 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     + announcedStructural.filter(entry => entry.documentId === openDocumentId).length : 0;
   const documentRecovery = documentRecoveries > 0 && <p className={styles.documentRecovery} data-document-recovery>
     <button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>이 문서에 복구할 입력 {documentRecoveries}개 ›</button></p>;
-  const recoveryToastContent = recoveryToast && <div className={styles.recoveryToast} role="status" data-recovery-toast
-    onPointerEnter={() => { recoveryToastHeld.current = true; }} onPointerLeave={() => { recoveryToastHeld.current = false; setRecoveryToast(current => current && { ...current, at: Date.now() }); }}
-    onFocus={() => { recoveryToastHeld.current = true; }} onBlur={event => { if (event.currentTarget.contains(event.relatedTarget as Node | null)) return; recoveryToastHeld.current = false; setRecoveryToast(current => current && { ...current, at: Date.now() }); }}>
+  const recoveryToastContent = recoveryToast && <div className={styles.recoveryToast} role="status" data-recovery-toast {...recoveryToastLife.hold}>
     <p>{programRecoveryToastText(recoveryToast.count)}</p>
     <div><button type="button" onClick={() => setRecoveryToast(null)}>닫기</button>
-      <button type="button" onClick={() => { recoveryToastHeld.current = false; setRecoveryToast(null);
+      <button type="button" onClick={() => { recoveryToastLife.held.current = false; setRecoveryToast(null);
         // The toast goes as the sheet opens: closing the sheet brings the focus to 나 (where the badge is), not to nothing.
         openRecoveryBox(meTab.current); }}>복구함 열기</button></div>
   </div>;
@@ -1823,7 +1834,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     extras: destination.view === 'space' && message && !participationMessage
       ? <div className={styles.statusRow}>{serverStatusExtras}</div> : null,
   } : null;
-  return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} data-browse-layout={browse ? destination.view === 'flow' ? 'detail' : 'list' : undefined} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
+  return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} data-browse-layout={browse ? destination.view === 'flow' ? 'detail' : 'list' : undefined} onInput={event => { queueMicrotask(captureInput);
+      // Core3 P2c: the first input into my writing closes a Flow's arrival toast.
+      if (arrivalToastShown && event.target instanceof Element && event.target.closest('section[aria-label="내 공간"]')) closeArrivalToast(); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
     <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}>FlowMe</a>
       {!unavailable && <nav className={styles.globalNavigation} aria-label="주요 메뉴">
         {([['documents', '쓰기', 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4'], ['today', '오늘', 'M4 4h16v16H4zm4 8 3 3 5-6'], ['all', '분류', 'M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z']] as const).map(([tab, label, path]) =>
@@ -1931,7 +1944,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} onInputFailureChange={setEditorInputFailed} onKeepRefusedInput={keepRefusedInput}
         onOpenCopySource={(flowId, id, focus) => { void openFlowsFromDocument(id, flowId, focus); }} onBrowseFlows={(id, focus, writing) => { void openFlowsFromDocument(id, undefined, focus, writing); }}
         importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring, ...(importUndo.batch.repeat ?? [])][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } }
-          : importArrival ? { actorId: importArrival.actorId, documentId: importArrival.documentId, text: importArrival.text, busy: importArrivalBusy, actionLabel: '되돌리기', busyLabel: '되돌리는 중…', toast: true,
+          : importArrival ? { actorId: importArrival.actorId, documentId: importArrival.documentId, text: importArrival.text, busy: importArrivalBusy, actionLabel: '되돌리기', busyLabel: '되돌리는 중…',
+            ...(importArrival.toastOpen !== undefined ? { toast: { open: importArrival.toastOpen, onClose: closeArrivalToast, hold: arrivalToastLife.hold } } : {}),
             ...(importArrival.calendar ? { calendar: importArrival.calendar } : {}),
             onCancel: importArrival.revision !== null && snapshot?.account?.revision === importArrival.revision && !!snapshot?.canUndo && !external ? () => { void undoImportArrival(); } : undefined } : undefined}
         onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></ProgramServerStatusContext.Provider>

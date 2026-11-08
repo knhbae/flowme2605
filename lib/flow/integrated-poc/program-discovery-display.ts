@@ -155,6 +155,8 @@ export function programObjectParticle(word: string): string {
   const last = word.trim().slice(-1), code = last.charCodeAt(0) - 0xAC00;
   return code >= 0 && code <= 11171 ? code % 28 ? '을' : '를' : '을(를)';
 }
+/** Core3 P2c (UX, 11/8): a scroll of more than one line of the writing body (28px) closes a Flow's arrival toast. */
+export const PROGRAM_ARRIVAL_TOAST_SCROLL = 32;
 /** The arrival notice on the copy document. UX B1 (11/6): its [되돌리기] button stands for the undo (the notice no longer
  *  sends the person to 더보기); an account whose server undo is held gets the trash route instead. */
 export function programImportArrivalNotice(title: string, undoHeld: boolean, repeats = '', span?: ProgramImportSpan & { today: string }): string {
