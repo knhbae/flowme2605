@@ -15,7 +15,8 @@ const spaceCss = read('../../../components/flow/integrated-poc/ProgramSpace.modu
 test('내 진행 in short: done/tasks, or a repeat-only copy\'s checks this week; nothing to count keeps the long line', () => {
   const base = { tasks: 0, done: 0, repeats: 0, started: 0, week: 0, finished: false };
   assert.equal(programFlowProgressShort({ ...base, tasks: 6, done: 2 }), '내 진행 2/6');
-  assert.equal(programFlowProgressShort({ ...base, tasks: 6, done: 2, repeats: 1, week: 3 }), '내 진행 2/6');
+  // P3: repeat lines are named after the count, so 6 + 1 matches the head's '할 일 7개'.
+  assert.equal(programFlowProgressShort({ ...base, tasks: 6, done: 2, repeats: 1, week: 3 }), '내 진행 2/6 · 반복 1');
   assert.equal(programFlowProgressShort({ ...base, repeats: 2, week: 3 }), '내 진행 · 이번 주 3번 체크');
   assert.equal(programFlowProgressShort(base), null);
 });
@@ -43,8 +44,10 @@ test('FIG 13: the arrival notice (a new document) is the bottom toast; a target 
   assert.equal(alpha.split('toastOpen: true').length - 1, 1, 'only the Flow arrival');
   assert(space.includes("data-arrival-toast={props.importNotice.toast ? '' : undefined} {...props.importNotice.toast?.hold}>"));
   const toast = spaceCss.slice(spaceCss.indexOf('.space .importNotice[data-arrival-toast] {'));
-  assert(toast.includes('position: fixed;') && toast.includes('background: var(--flowme-b-ink); color: #fff;'));
-  assert(spaceCss.includes('.space .importNotice[data-arrival-toast] > .importCalendar { background: #fff; color: var(--flowme-b-primary); }'));
+  // P3: through the toast tokens (QA P2-P3-1).
+  assert(toast.includes('position: fixed;') && toast.includes('background: var(--flowme-b-ink); color: var(--flowme-b-on-ink); box-shadow: 0 6px 18px var(--flowme-b-toast-shadow);'));
+  assert(spaceCss.includes('.space .importNotice[data-arrival-toast] > .importCalendar { background: var(--flowme-b-on-ink); color: var(--flowme-b-primary); }'));
+  assert(!spaceCss.split('\n').filter(line => line.includes('[data-arrival-toast]')).some(line => /#[0-9a-f]{3,6}|rgba?\(/i.test(line)));
   assert(spaceCss.includes('bottom: calc(60px + env(safe-area-inset-bottom) + 12px); } }'));
   assert(spaceCss.includes(':global([data-writing-keyboard="true"]) .space .importNotice[data-arrival-toast] { display: none; }'));
 });

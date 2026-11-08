@@ -63,7 +63,9 @@ test('B2·B3·B4·C1·C2·C3·C6·B9: the layout fixes are CSS on the screens na
 
 test('B7·C5: 내 활동 starts with its title; a today row is read as it shows', () => {
   const community = component('ProgramCommunity.tsx');
-  assert(community.includes("글 쓰기</button></header>\n    {view === 'activity' && activityTabs}"));
+  // Core3 P3 (FIG 14): 나's head is its title alone (글 쓰기 under 내가 쓴 글); the 복구함 line follows it.
+  assert(community.includes("{view !== 'activity' && writePost}</header>\n    {view === 'activity' && activityTabs}"));
+  assert(community.includes('<div className={styles.actions}>{writePost}</div>'));
   assert(community.includes('<p className={styles.meta}>이 Flow와 연결된 내 문서가 없습니다.</p>'));
   const space = component('ProgramSpace.tsx');
   assert(space.includes("${origin.label !== '직접 작성' ? ` · ${origin.label}` : ''} · ${task.docTitle} 원문 열기"));

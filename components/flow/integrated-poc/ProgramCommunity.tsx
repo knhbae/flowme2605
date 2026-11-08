@@ -427,8 +427,16 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
       <span className={styles.snippet}>{reply.deleted ? '삭제된 답글' : reply.body.slice(0, 160)}</span><span className={styles.meta}>{author(data, reply.authorId)} · {stamp(reply.updatedAt)}</span></button>
   </li>)}</ul> : <p className={styles.empty}>아직 답글이 없어요.</p>; }
 
+  const writePost = <button className={styles.primary} type="button" disabled={draftEntryDisabled} onClick={() => void openDraft(newProgramParticipationDraft())}>글 쓰기</button>;
+  // Core3 P3 (FIG 14): 내 활동 in four rows with their counts, each opening in place: 내 공개 Flow (with the drafts),
+  // 받은 후기·반응 (후기, 답글, 제안), 보낸 제안, 내가 쓴 글 (이야기: posts, replies, 도움됐어요).
+  const sentProposals = activity.proposals.filter(proposal => !activity.incomingProposals.some(incoming => incoming.id === proposal.id));
+  const activityCounts = { flows: publishingActivity.flows.length, drafts: publishingActivity.drafts.length,
+    received: flowReviews.posts.length + activity.receivedReplies.length + activity.incomingProposals.length, sent: sentProposals.length,
+    posts: activity.posts.length + activity.replies.length };
   return <section className={styles.community} aria-label={view === 'activity' ? '내 활동' : '이야기'}>
-    <header className={styles.header}><h1>{view === 'activity' ? '나' : '이야기'}</h1><button className={styles.primary} type="button" disabled={draftEntryDisabled} onClick={() => void openDraft(newProgramParticipationDraft())}>글 쓰기</button></header>
+    {/* Core3 P3 (FIG 14): 나's head is its title alone; its 글 쓰기 is under 내가 쓴 글. */}
+    <header className={styles.header}><h1>{view === 'activity' ? '나' : '이야기'}</h1>{view !== 'activity' && writePost}</header>
     {view === 'activity' && activityTabs}
     {reviewPending?.isCurrent() && <p key={`review-pending:${reviewPending.attempt}`} role="status" aria-live="polite" aria-atomic="true" className={styles.notice} data-review-submit-state="pending">후기 게시 결과를 확인하고 있습니다. 확인이 끝날 때까지 다시 제출할 수 없습니다.</p>}
     {confirmedReview?.isCurrent() && selectedPostId !== confirmedReview.postId && <div key={`review-confirmed:${confirmedReview.attempt}`} role={confirmedReview.canAnnounce() ? 'status' : undefined} aria-live={confirmedReview.canAnnounce() ? 'polite' : 'off'} aria-atomic="true" className={styles.notice}>
@@ -530,6 +538,8 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
     </article> : <div className={styles.empty}><p>연결된 글을 찾을 수 없어요.</p><button type="button" onClick={() => void go({ view: 'community' })}>현재 글 목록 보기</button></div>
       : null}
       <div hidden={view !== 'activity' || !!selectedPostId} className={styles.activity}>
+        <p className={styles.activityLabel}>내 활동</p>
+        <details className={styles.activityGroup} data-activity-group="flows"><summary>내 공개 Flow<small>{activityCounts.flows}개{activityCounts.drafts ? ` · 초안 ${activityCounts.drafts}` : ''}</small></summary>
         <section><h2>내 공개 Flow</h2>{publishingActivity.flows.length ? <ul className={styles.list}>{publishingActivity.flows.map(flow => <li key={flow.id}>
           <button className={styles.rowLink} type="button" onClick={() => void go({ view: 'flow', id: flow.id, versionId: flow.versionId })}><strong>{flow.title}</strong><span>버전 {flow.number} · {flow.archived ? '공개 철회됨' : '공개 중'}{flowReviews.byFlow[flow.id] ? ` · 후기 ${flowReviews.byFlow[flow.id]}` : ''}</span></button>
           {!flow.archived && <ProgramShareLink flowId={flow.id} versionId={flow.versionId} />}
@@ -537,17 +547,21 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
         </li>)}</ul> : <p className={styles.empty}>공개한 Flow가 없어요.</p>}</section>
         <section><h2>작성 중인 공개 초안</h2>{publishingActivity.drafts.length ? <ul className={styles.list}>{publishingActivity.drafts.map(entry => <li key={entry.id}><strong>{entry.title || entry.document?.title || '제목 없는 공개 초안'}</strong><p className={styles.meta}>{stamp(entry.updatedAt)}{entry.flowArchived ? ' · 다시 공개 준비 중' : ''}</p>
           {entry.document ? <button type="button" onClick={() => void go({ view: 'space', id: entry.document!.id, ...(!entry.document!.archived ? { action: 'publish' as const } : {}) })}>{entry.document.archived ? '보관한 원문 열기 · 복원 후 이어 쓰기' : '공개 초안 이어 쓰기'}</button> : <p>원래 문서를 찾을 수 없어 편집을 열 수 없습니다.</p>}
-        </li>)}</ul> : <p className={styles.empty}>작성 중인 공개 초안이 없어요.</p>}</section>
+        </li>)}</ul> : <p className={styles.empty}>작성 중인 공개 초안이 없어요.</p>}</section></details>
+        <details className={styles.activityGroup} data-activity-group="received"><summary>받은 후기·반응<small>{activityCounts.received}개</small></summary>
         <section><h2>내게 온 답글</h2>{replyRows(activity.receivedReplies)}</section>
         <section data-flow-reviews><h2>내 Flow에 남은 후기 · 해 봤어요 {flowReviews.posts.length}</h2>{flowReviews.posts.length ? postRows(flowReviews.posts) : <p className={styles.empty}>아직 남은 후기가 없어요.</p>}</section>
         <section><h2>내 Flow에 온 제안</h2>{activity.incomingProposals.length ? activity.incomingProposals.map(proposal => <ProgramProposalReview key={proposal.id} proposal={proposal} data={data} mutate={mutate} navigate={navigate}
-          onRegisterEditors={port => { if (port) reviewPorts.current.set(proposal.id, port); else reviewPorts.current.delete(proposal.id); }} />) : <p className={styles.empty}>아직 제안이 없어요.</p>}</section>
-        <section><h2>보낸 제안과 결과</h2>{activity.proposals.filter(proposal => !activity.incomingProposals.some(incoming => incoming.id === proposal.id)).map(proposal => <ProgramProposalReview key={proposal.id} proposal={proposal} data={data} mutate={mutate} navigate={navigate}
+          onRegisterEditors={port => { if (port) reviewPorts.current.set(proposal.id, port); else reviewPorts.current.delete(proposal.id); }} />) : <p className={styles.empty}>아직 제안이 없어요.</p>}</section></details>
+        <details className={styles.activityGroup} data-activity-group="sent"><summary>보낸 제안<small>{activityCounts.sent}개</small></summary>
+        <section><h2>보낸 제안과 결과</h2>{sentProposals.map(proposal => <ProgramProposalReview key={proposal.id} proposal={proposal} data={data} mutate={mutate} navigate={navigate}
           onRegisterEditors={port => { if (port) reviewPorts.current.set(proposal.id, port); else reviewPorts.current.delete(proposal.id); }} />)}
           {!activity.proposals.length && <p className={styles.empty}>보낸 제안이 없어요.</p>}
-          {activity.proposals.some(proposal => activity.incomingProposals.some(incoming => incoming.id === proposal.id)) && <p className={styles.meta}>내 Flow에 보낸 제안은 위에서 검토할 수 있어요.</p>}</section>
+          {activity.proposals.some(proposal => activity.incomingProposals.some(incoming => incoming.id === proposal.id)) && <p className={styles.meta}>내 Flow에 보낸 제안은 '받은 후기·반응'에서 검토할 수 있어요.</p>}</section></details>
+        <details className={styles.activityGroup} data-activity-group="posts"><summary>내가 쓴 글<small>{activityCounts.posts}개</small></summary>
+        <div className={styles.actions}>{writePost}</div>
         <section><h2>내가 쓴 글</h2>{postRows(activity.posts)}</section><section><h2>내가 쓴 답글</h2>{replyRows(activity.replies)}</section>
-        <details><summary>도움됐어요를 누른 글과 답글</summary>{activity.reactions.map(reaction => { const id = reaction.targetKind === 'post' ? reaction.targetId : data.public.replies.find(reply => reply.id === reaction.targetId)?.postId; return id ? <button key={`${reaction.targetKind}:${reaction.targetId}`} type="button" onClick={() => reaction.targetKind === 'reply' ? openReply(id, reaction.targetId) : openPost(id)}>{postTitle(data, id)}</button> : null; })}</details>
+        <details><summary>도움됐어요를 누른 글과 답글</summary>{activity.reactions.map(reaction => { const id = reaction.targetKind === 'post' ? reaction.targetId : data.public.replies.find(reply => reply.id === reaction.targetId)?.postId; return id ? <button key={`${reaction.targetKind}:${reaction.targetId}`} type="button" onClick={() => reaction.targetKind === 'reply' ? openReply(id, reaction.targetId) : openPost(id)}>{postTitle(data, id)}</button> : null; })}</details></details>
       </div>
       {!selectedPostId && view !== 'activity' && <><div className={styles.filters}><label>이야기 검색<input type="search" value={query} onChange={event => setQuery(event.target.value)} /></label><label>종류<select value={kind} onChange={event => setKind(event.target.value)}><option value="all">모든 글</option><option value="question">질문</option><option value="experience">경험</option><option value="knowledge">지식</option></select></label></div>
         {posts.length ? postRows(posts) : <p className={styles.empty}>{query || kind !== 'all' ? '조건에 맞는 글이 없어요.' : '첫 질문이나 경험을 남겨 보세요.'}</p>}</>}

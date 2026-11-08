@@ -159,6 +159,14 @@ export function programLineDateChips(today: string): { key: string; label: strin
   return [todayChoice, tomorrow, { key: 'weekend', label: '이번 주말', date: weekend, detail: programCalendarDate(weekend, today) }]
     .map(({ key, label, date, detail }) => ({ key, label, date: date!, detail }));
 }
+/** Core3 P3 (UX F2): the 미루기 chips at the top of a row's ⋯ — the writing chips' 내일 and 이번 주말, then the date
+ *  sheet's 다음 주 (its Monday) — each with its date. One that is the task's own day, or not after today, is off (on a
+ *  weekend 이번 주말 is today). 날짜 고르기 is the row's own date picker. */
+export function programDeferChips(today: string, current: string | null): { key: string; label: string; date: string; detail: string; off: boolean }[] {
+  const [, tomorrow, weekend] = programLineDateChips(today), monday = programTaskDateChoices(today, [])[2];
+  return [tomorrow, weekend, { key: 'next-week', label: '다음 주', date: monday.date!, detail: monday.detail }]
+    .map(chip => ({ ...chip, off: chip.date === current || chip.date <= today }));
+}
 /** 로 or 으로 after a word, by its last Hangul syllable (ㄹ and no final take 로). */
 const ro = (word: string) => { const last = [...word].reverse().find(char => char >= '가' && char <= '힣'); const final = last ? (last.charCodeAt(0) - 0xac00) % 28 : 0; return final === 0 || final === 8 ? '로' : '으로'; };
 /** The notice after a move (2-6): "3개를 11월 2일 (월)로 옮겼습니다", or 날짜 미정으로 (N11b: as the 날짜 미정 view is named). */

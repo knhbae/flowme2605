@@ -1802,18 +1802,22 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const signOutButton = <button type="button" disabled={leaveBusy} onClick={() => { captureInput(); if (hasInput() || pending || deviceInput().count) { setLeaveFailed(false); setLeave(true); } else void signOut(); }}>로그아웃 · 계정 바꾸기</button>;
   const refreshButton = <button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button>;
   const recordNumber = snapshot?.account && <details className={styles.menuNote}><summary>기록 정보</summary><small className={styles.account}>서버 기록 번호 {snapshot.account.revision}</small></details>;
-  // 나's head (on top of 내 활동): the account, 개인 Flow 상세 when there is one, then 활동·공개 관리 / Flow 만들기.
-  const meHead = <div className={styles.meHead}><p className={styles.meEmail}>{email}</p>
-    {data && data.spaces[session.userId].savedBindings.length > 0 && <div className={styles.managementActions}><button type="button" aria-current={destination.view === 'legacy' ? 'page' : undefined} onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세 ›</button></div>}
-    {activityTabs}</div>;
-  // 나 under 내 활동: 자료, 계정, then 문제 해결 and 실험 folded.
+  // Core3 P3 (FIG 14): 나 from the top — the 복구함 line (as many as the 나 badge; none at 0), 내 활동, 계정, then 자료
+  // and the folded 문제 해결 · 실험, as rows. 개인 Flow 상세 and Flow 만들기 keep a place under 자료; at 0 the 복구함 too.
+  const meRecoveryLine = savedTotal > 0 && <button type="button" className={styles.meRecovery} data-me-recovery aria-label={`복구함 · 확인이 필요한 입력 ${savedTotal}개`}
+    onClick={event => openRecoveryBox(event.currentTarget)}><span><strong>복구함</strong><small>저장하지 못한 입력을 원문 그대로 보관합니다</small></span>
+    <span className={styles.meCount}>{savedTotal}</span><span className={styles.meChevron} aria-hidden="true">›</span></button>;
+  const meHead = meRecoveryLine ? <div className={styles.meHead}>{meRecoveryLine}</div> : null;
   const meSections = <div className={styles.meSections}>
-    <section className={styles.menuGroup} aria-label="자료"><h3>자료</h3>
-      <div className={styles.managementActions}>{recoveryButton}{backupButton}{oldLocalLink}</div>
-    </section>
     <section className={styles.menuGroup} aria-label="계정"><h3>계정</h3>
-      <div className={styles.managementActions}>{privacyAddress && <button type="button" onClick={() => setPrivacyOpen(true)}>저장과 공개 안내</button>}{signOutButton}</div>
+      <p className={styles.meEmail}>{email}</p>
+      <div className={styles.meList}>{privacyAddress && <button type="button" onClick={() => setPrivacyOpen(true)}>저장과 공개 안내</button>}{signOutButton}</div>
       {!privacyAddress && <details className={styles.menuNote}><summary>저장과 공개 안내</summary><p>{DEV_NOTICE_TEXT}</p></details>}
+    </section>
+    <section className={styles.menuGroup} aria-label="자료"><h3>자료</h3>
+      <div className={styles.meList}>{!savedTotal && recoveryButton}
+        {data && data.spaces[session.userId].savedBindings.length > 0 && <button type="button" aria-current={destination.view === 'legacy' ? 'page' : undefined} onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>}
+        <button type="button" onClick={openCreatorEntry}>Flow 만들기</button>{backupButton}{oldLocalLink}</div>
     </section>
     <details className={`${styles.menuGroup} ${styles.meFold}`} aria-label="문제 해결"><summary>문제 해결</summary>
       <div className={styles.managementActions}>{refreshButton}<button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external} aria-disabled={browseHistory('undo') ? undefined : true}>마지막 변경 되돌리기</button>{redoButton}</div>

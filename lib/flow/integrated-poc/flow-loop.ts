@@ -123,7 +123,10 @@ export function programTriedDraft(finish: ProgramFlowFinish): ProgramParticipati
 /** Core3 P2b (11/8): the Flow detail's short line beside 기준일 바꾸기 — "내 진행 2/6", or this week's checks of a
  * repeat-only copy; null when there is nothing to count (the longer line stays then). */
 export function programFlowProgressShort(progress: ProgramFlowProgress): string | null {
-  return progress.tasks ? `내 진행 ${progress.done}/${progress.tasks}` : progress.repeats ? `내 진행 · 이번 주 ${progress.week}번 체크` : null;
+  // Core3 P3 (QA P2-P3-2, UX): the head counts every item ('할 일 7개'), the progress only the tasks, so a copy with
+  // repeat lines names them after the count ('내 진행 0/6 · 반복 1') and the two numbers add up.
+  return progress.tasks ? `내 진행 ${progress.done}/${progress.tasks}${progress.repeats ? ` · 반복 ${progress.repeats}` : ''}`
+    : progress.repeats ? `내 진행 · 이번 주 ${progress.week}번 체크` : null;
 }
 export function programFlowProgressText(progress: ProgramFlowProgress): string | null {
   const parts = [progress.tasks ? `할 일 ${progress.tasks}개 중 ${progress.done}개 끝` : '',

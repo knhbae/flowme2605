@@ -25,23 +25,27 @@ function evaluate<T>(expression: string, scope: Record<string, unknown>): T {
 
 test('UX B3: every item of the old "…" menu has its place, and the menu stays only for an account that cannot open', () => {
   const me = declaration('meSections'), head = declaration('meHead');
-  const groups = ['aria-label="자료"><h3>자료</h3>', 'aria-label="계정"><h3>계정</h3>', 'aria-label="문제 해결"><summary>문제 해결</summary>', 'aria-label="실험"><summary>실험</summary>'].map(at => me.indexOf(at));
+  // Core3 P3 (FIG 14): 계정 comes first after 내 활동, then 자료; the 복구함 line is the head (none at 0).
+  const groups = ['aria-label="계정"><h3>계정</h3>', 'aria-label="자료"><h3>자료</h3>', 'aria-label="문제 해결"><summary>문제 해결</summary>', 'aria-label="실험"><summary>실험</summary>'].map(at => me.indexOf(at));
   assert(groups.every(at => at > 0), String(groups));
-  assert.deepEqual([...groups].sort((a, b) => a - b), groups, '자료, 계정, then 문제 해결 and 실험 folded');
+  assert.deepEqual([...groups].sort((a, b) => a - b), groups, '계정, 자료, then 문제 해결 and 실험 folded');
+  const line = declaration('meRecoveryLine');
+  assert(line.startsWith('savedTotal > 0 &&') && line.includes('onClick={event => openRecoveryBox(event.currentTarget)}') && line.includes('{savedTotal}</span>'));
+  assert.equal(head, 'meRecoveryLine ? <div className={styles.meHead}>{meRecoveryLine}</div> : null');
   // Core3 P2 (11/8): the 이야기 | Flow 찾기 sub-tabs are gone. 이야기 opens from the 찾기 head's button; 찾기 is the
   // Flow tab's first screen, and 이야기 has a way back to it.
   const flowTab = element('data-main-tab="flow"'), storiesBack = element('aria-label="이야기 위치"');
   const places: [number, string, string][] = [
     [1, source, "onOpenStories={() => void navigate({ view: 'community' })}"], [2, storiesBack, 'aria-label="Flow 찾기로 돌아가기"'], [2, flowTab, 'chooseFlowTab()'],
     [3, me, '마지막 변경 되돌리기</button>'], [4, me, '{redoButton}'], [5, me, "'쓰기 화면에서 되돌릴 수 있어요.'"],
-    [6, element('data-main-tab="me"'), 'chooseMeTab(event.currentTarget)'], [7, head, "onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세 ›</button>"],
-    [8, me, '{recoveryButton}'], [9, element('ref={recoveryDialog}'), '보관함에서 보기</button>'], [10, me, '{backupButton}'],
-    [11, head, '<p className={styles.meEmail}>{email}</p>'], [12, me, '{signOutButton}'], [13, me, '저장과 공개 안내</button>}'],
+    [6, element('data-main-tab="me"'), 'chooseMeTab(event.currentTarget)'], [7, me, "onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>"],
+    [8, me, '{!savedTotal && recoveryButton}'], [9, element('ref={recoveryDialog}'), '보관함에서 보기</button>'], [10, me, '{backupButton}'],
+    [11, me, '<p className={styles.meEmail}>{email}</p>'], [12, me, '{signOutButton}'], [13, me, '저장과 공개 안내</button>}'],
     [14, me, '{refreshButton}'], [15, me, '{recordNumber}'], [16, me, "'기존 폴더로 보기' : '문서·모음 시험'"], [17, me, '<p>{DEV_NOTICE_TEXT}</p>'],
   ];
   for (const [item, place, text] of places) assert(place.includes(text), `item ${item}: ${text}`);
   assert.equal(new Set(places.map(([item]) => item)).size, 17);
-  assert(head.includes('data.spaces[session.userId].savedBindings.length > 0 &&'), '개인 Flow 상세 only with a saved binding');
+  assert(me.includes('data.spaces[session.userId].savedBindings.length > 0 &&'), '개인 Flow 상세 only with a saved binding');
   assert(source.includes("{destination.view === 'activity' && meSections}"));
   // The menu: only when unavailable, with the same pieces (no moves in it).
   const menu = element('aria-label="계정 및 자료 관리"');

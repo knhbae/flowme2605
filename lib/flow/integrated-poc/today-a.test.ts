@@ -46,9 +46,9 @@ test('T4·T5·T7·T8: finished rows are not struck through and their box is not 
   assert.doesNotMatch(done, /primary/);
   assert.match(done, /border-color: var\(--flowme-b-line\); background: var\(--flowme-b-canvas\);/);
   for (const color of ['#eef2ff', '#dfd2b8', '#785627']) assert.ok(!css.includes(color), color);
-  // #fcf8ed stays only on the copy header's unverified state (not this screen).
-  const beige = css.split('\n').filter(line => line.includes('#fcf8ed'));
-  assert.ok(beige.length === 1 && beige[0].trim().startsWith('.copyHeader[data-state="unverified"]'));
+  // Core3 P3: the copy header's unverified state, the last #fcf8ed, is the warning tokens now.
+  assert.ok(!css.includes('#fcf8ed'));
+  assert.ok(css.includes('.copyHeader[data-state="unverified"] { border:1px dashed var(--flowme-b-warning-border); background:var(--flowme-b-warning-bg); color:var(--flowme-b-warning-ink); }'));
 });
 
 test('T2·T6·T10·T11: the phone ＋ circle, the row folder, the quiet saved state, 56px rows', () => {

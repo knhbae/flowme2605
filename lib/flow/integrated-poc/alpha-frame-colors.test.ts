@@ -90,7 +90,9 @@ test('every Alpha dialog backdrop is the one scrim, still defined where ::backdr
   for (const name of ['ProgramTextEditor', 'ProgramSpace', 'AlphaWorkspace', 'AlphaPreservationPanel', 'ProgramCreatorStructureForm', 'ProgramPrivateOutput', 'ProgramPublisher', 'ProgramDiscovery', 'AlphaPrivacyNotice']) {
     assert(alpha.some(rule => rule.name === `${name}.module.css`), name);
   }
-  assert.match(globals, /:root \{[^}]*--flowme-b-scrim: rgb\(24 34 53 \/ \.4\);\n {2}--flowme-b-shadow: rgb\(24 34 53 \/ \.14\);\n\}/);
+  // Core3 P3: the toast tokens follow the shadow.
+  assert.match(globals, /:root \{[^}]*--flowme-b-scrim: rgb\(24 34 53 \/ \.4\);\n {2}--flowme-b-shadow: rgb\(24 34 53 \/ \.14\);\n/);
+  assert.match(globals, /--flowme-b-on-ink: #fff;\n {2}--flowme-b-on-ink-muted: #c9d3ff;\n {2}--flowme-b-toast-shadow: rgb\(24 34 53 \/ \.25\);\n\}/);
   assert.match(globals, /\n::backdrop \{\n {2}--flowme-b-scrim: rgb\(24 34 53 \/ \.4\);\n\}/);
   // Raised panels share the shadow token.
   for (const name of ['ProgramTextEditor', 'AlphaWorkspace', 'ProgramSpace', 'ProgramCreatorWorkspace']) assert(read(`${name}.module.css`).includes('var(--flowme-b-shadow)'), name);

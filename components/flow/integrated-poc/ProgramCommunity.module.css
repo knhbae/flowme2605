@@ -94,3 +94,14 @@
 
 /* B frame: visual values only; existing document and review behavior is unchanged. */
 .community{max-width:none;padding:0;color:var(--flowme-b-ink);line-height:1.8}.community h1{font-size:28px;font-weight:800}.community input:not([type=checkbox]),.community select,.community textarea{font-size:16px}.community .primary{background:var(--flowme-b-primary);border-color:var(--flowme-b-primary);color:var(--flowme-b-surface)}.community .primary:hover:not(:disabled){background:var(--flowme-b-primary-strong)}.community .preview{border-top:2px solid var(--flowme-b-primary)}.community .notice{background:var(--flowme-b-selected)}.community .error{color:var(--flowme-b-error-ink);background:var(--flowme-b-error-bg)}.community :is(button,input,select,textarea,summary,a):focus-visible{outline:2px solid var(--flowme-b-primary);outline-offset:3px}@media(max-width:700px){.community{padding:0}.community h1{font-size:24px}}
+/* Core3 P3 (FIG 14): 내 활동 as rows (52px) with their counts; each opens in place. */
+.activityLabel { margin: 8px 0 6px; color: var(--flowme-b-muted); font-size: 13px; font-weight: 700; }
+.activityGroup { border-bottom: 1px solid var(--flowme-b-line); }
+.activityLabel + .activityGroup { border-top: 1px solid var(--flowme-b-line); }
+.community .activityGroup > summary { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 4px; color: var(--flowme-b-ink); font-size: 16px; list-style: none; cursor: pointer; }
+.activityGroup > summary::-webkit-details-marker { display: none; }
+.activityGroup > summary small { color: var(--flowme-b-muted); font-size: 13px; }
+.activityGroup > summary::after { content: "›"; margin-left: auto; color: var(--flowme-b-muted); }
+.activityGroup[open] > summary::after { transform: rotate(90deg); }
+.activityGroup > section { margin: 0 0 16px; padding: 0 4px; }
+.activityGroup > .actions { margin: 4px 0 12px; padding: 0 4px; }

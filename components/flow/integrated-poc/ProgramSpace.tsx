@@ -20,7 +20,7 @@ import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFa
 import { ProgramMonthGrid } from './ProgramMonthGrid';
 import { ProgramFlowTodayBand, type ProgramFlowBandRow } from './ProgramFlowTodayBand';
 import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
-import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
+import { moveProgramTaskDates, programDeferChips, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
 import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate, programDaysBetween } from '@/lib/flow/integrated-poc/date-label';
@@ -964,6 +964,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const headingKeys = new Map<string, string[]>();
   if (selecting) { let heading = ''; for (const item of executionList) { if (item.kind === 'heading') heading = item.key; else if (item.kind === 'row' && heading) headingKeys.set(heading, [...(headingKeys.get(heading) ?? []), item.entry.key]); } }
   const detailTask = detail?.kind === 'task' ? allTasks.find(task => task.id === detail.id) : null;
+  // Core3 P3 (UX F2): a list row's ⋯ starts with 미루기 — the row as 고르기 would pick it (not a repeat's round, not
+  // finished, not locked), moved by C6b's one save with its notice and 되돌리기.
+  const deferRow = detailTask && period !== 'documents' ? executionRows.find(row => row.kind === 'text-task' && row.task.id === detailTask.id) : undefined;
+  const deferChips = deferRow?.kind === 'text-task' && !programSelectBlock(space, deferRow, (taskProgress(deferRow.task.id).current ?? (deferRow.task.done ? 100 : 0)) === 100)
+    ? programDeferChips(today, deferRow.task.date) : null;
+  const deferPicker = useRef<HTMLInputElement>(null);
   const detailLinkedMemos = detailTask ? space.text.bindings.flatMap(binding => {
     if (binding.kind !== 'task' || binding.taskId !== detailTask.id) return [];
     const doc = space.text.documents.find(row => row.id === binding.docId);
@@ -1928,6 +1934,23 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       }
       else if (result.reason === 'conflict') setSelectNotice('그사이 바뀐 할 일이 있어 옮기지 않았습니다. 다시 확인해 주세요.');
       else if (result.reason !== 'busy') setSelectNotice(programErrorMessage(result.reason));
+    } finally { datesBusy.current = false; setDatesPending(false); }
+  }
+  /** Core3 P3: 미루기 from a row's ⋯ — the row's task to one date in C6b's one save (as 고르기's sheet moves its picks),
+   *  from the dates it was shown with. The ⋯ closes; the notice under the list says where it went, with 되돌리기. */
+  async function deferTask(task: { id: string; date: string | null; time?: string | null }, target: string) {
+    if (datesBusy.current || target === task.date) return;
+    const move: ProgramTaskDateMove = { taskId: task.id, expected: { date: task.date, time: task.time ?? '', state: programTaskDateState(space, task.id) ?? undefined }, date: target };
+    const requestId = programId('dates');
+    let undo: ProgramTaskDateMove[] = [];
+    close();
+    datesBusy.current = true; setDatesPending(true);
+    try {
+      const result = await countedMutate('미루기', current => { const next = moveProgramTaskDates(current, { actorId, requestId, moves: [move] }); if (next.ok) undo = programTaskDateUndo(current.spaces[actorId], next.data.spaces[actorId], [move]); return next; },
+        { history: true, awaitAutomaticRead: true, ...(programTaskDateMovesSocial(space, [move]) ? { alphaSocial: { type: 'private-task-dates' as const, moves: [move] } } : {}) });
+      if (result.ok) { setTaskNotice(null); setOrderNotice(null); setDatesNotice({ actorId, count: 1, date: target, undo, taskIds: undo.map(entry => entry.taskId), shownAt: Date.now() }); }
+      else if (result.reason === 'conflict') setMessage('그사이 바뀐 할 일이라 옮기지 않았습니다. 다시 확인해 주세요.');
+      else if (result.reason !== 'busy') setMessage(programErrorMessage(result.reason));
     } finally { datesBusy.current = false; setDatesPending(false); }
   }
   /** C6b 2-6: 되돌리기, one save putting the old dates back; a task changed since moves nothing, said in the notice. */
@@ -3018,6 +3041,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {!libraryOpen && detail && viewChangeNoticeContent}
       {detail?.kind === 'task' && detailTask && <>
+        {/* Core3 P3 (UX F2 ⑦): 미루기 first — ⋯ then one chip (3~4 presses before). */}
+        {deferChips && deferRow?.kind === 'text-task' && <div className={styles.deferChips} role="group" aria-label="미루기" data-defer-chips>
+          {deferChips.map(chip => <button key={chip.key} type="button" data-defer={chip.key} aria-label={`${chip.label} · ${chip.detail}`} disabled={chip.off || datesPending || detailSchedulePending || detailProgressPending}
+            onClick={() => void deferTask(deferRow.task, chip.date)}>{chip.label}</button>)}
+          <button type="button" data-defer="pick" disabled={datesPending || detailSchedulePending || detailProgressPending}
+            onClick={() => { const input = deferPicker.current; if (!input) return; try { input.showPicker(); } catch { input.focus(); } }}>날짜 고르기</button>
+          <input ref={deferPicker} className={styles.deferPicker} type="date" tabIndex={-1} aria-label="미룰 날짜" min={programShiftDate(today, 1)} value=""
+            onChange={event => { const value = event.currentTarget.value; if (/^\d{4}-\d{2}-\d{2}$/.test(value)) void deferTask(deferRow.task, value); }} />
+        </div>}
         <div className={styles.detailOrigin}>
           <p className={styles.muted}>{readProgramTaskOrigin(data, detailTask).label} · {detailTask.docTitle}</p>
           <button disabled={detailSchedulePending || detailProgressPending} onClick={() => openDetailSource(detailTask.docId, detailTask.id)}>원문 열기</button>

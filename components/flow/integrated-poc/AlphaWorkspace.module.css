@@ -450,12 +450,12 @@
 
 /* Core3 P1 (X5, 11/8): the 복구함 says a new entry once, here — above the tab bar on a phone, bottom right when wide —
    for 10 s or until 닫기; the 나 badge keeps the count. The open document's own entries get one small line. */
-.recoveryToast { position: fixed; z-index: 47; right: 24px; bottom: 24px; width: min(400px, calc(100vw - 48px)); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 8px 8px 8px 14px; border: 0; border-radius: 12px; background: var(--flowme-b-ink); color: #fff; box-shadow: 0 8px 24px var(--flowme-b-shadow); font-size: 14px; line-height: 20px; }
+.recoveryToast { position: fixed; z-index: 47; right: 24px; bottom: 24px; width: min(400px, calc(100vw - 48px)); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 8px 8px 8px 14px; border: 0; border-radius: 12px; background: var(--flowme-b-ink); color: var(--flowme-b-on-ink); box-shadow: 0 8px 24px var(--flowme-b-toast-shadow); font-size: 14px; line-height: 20px; }
 .recoveryToast > p { flex: 1 1 220px; margin: 0; overflow-wrap: anywhere; word-break: keep-all; }
 .recoveryToast > div { display: flex; gap: 4px; margin-left: auto; }
-.recoveryToast button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: #c9d3ff; font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer; }
-.recoveryToast button:last-child { background: #fff; color: var(--flowme-b-primary); }
-.recoveryToast button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.recoveryToast button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--flowme-b-on-ink-muted); font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.recoveryToast button:last-child { background: var(--flowme-b-on-ink); color: var(--flowme-b-primary); }
+.recoveryToast button:focus-visible { outline: 2px solid var(--flowme-b-on-ink); outline-offset: 2px; }
 @media (max-width: 700px) { .recoveryToast { right: 16px; left: 16px; width: auto; bottom: calc(60px + env(safe-area-inset-bottom) + 12px); } }
 .documentRecovery { margin: 2px 0 6px; }
 .documentRecovery > button { min-height: 44px; margin: -6px 0; padding: 0 4px; border: 0; background: transparent; color: var(--flowme-b-warning-ink); font-size: 13px; font-weight: 600; cursor: pointer; }
@@ -463,3 +463,14 @@
 .page[data-alpha-frame="b"][data-writing-keyboard="true"] .documentRecovery { display: none; }
 /* Core3 P2 (11/8): 이야기's way back to 찾기 (the sub-tabs are gone). */
 .page[data-alpha-frame="b"] .browseNavigation [data-stories-back]{min-height:44px;padding:0 8px;color:var(--flowme-text-secondary);font-size:15px;font-weight:600}
+/* Core3 P3 (FIG 14): 나 — the 복구함 line on top (the badge's count, warning tokens as the badge), then rows (52px, ›). */
+.page .meRecovery { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 56px; padding: 8px 12px 8px 14px; border: 1px solid var(--flowme-b-primary-border); border-radius: 10px; background: var(--flowme-b-surface); color: var(--flowme-b-ink); text-align: left; cursor: pointer; }
+.meRecovery > span:first-child { display: grid; flex: 1 1 auto; min-width: 0; }
+.meRecovery strong { font-size: 16px; line-height: 22px; }
+.meRecovery small { color: var(--flowme-b-muted); font-size: 13px; line-height: 18px; }
+.meCount { flex: none; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; background: var(--flowme-b-warning-bg); color: var(--flowme-b-warning-ink); font-size: 12px; font-weight: 700; line-height: 22px; text-align: center; }
+.meChevron { flex: none; color: var(--flowme-b-muted); font-size: 18px; }
+.meList { display: grid; border-top: 1px solid var(--flowme-b-line); }
+.page .meList > :is(button, a) { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 52px; margin: 0; padding: 0 4px; border: 0; border-bottom: 1px solid var(--flowme-b-line); border-radius: 0; background: transparent; color: var(--flowme-b-ink); font-size: 16px; text-align: left; text-decoration: none; cursor: pointer; }
+.page .meList > :is(button, a)::after { content: "›"; color: var(--flowme-b-muted); }
+.page .meList > button:disabled { opacity: .55; }

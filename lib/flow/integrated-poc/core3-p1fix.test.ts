@@ -33,10 +33,11 @@ test('the wiring: the space reports its open document; the host counts that docu
 
 test('the toast in the 알림 tokens; the line at 44px in the same row height; hidden while the keyboard is up', () => {
   const toast = css.slice(css.indexOf('.recoveryToast {'), css.indexOf('}', css.indexOf('.recoveryToast {')));
-  assert(toast.includes('background: var(--flowme-b-ink); color: #fff;') && !toast.includes('border-left') && !toast.includes('background: #fff'));
-  assert(css.includes('.recoveryToast button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: #c9d3ff;'));
-  assert(css.includes('.recoveryToast button:last-child { background: #fff; color: var(--flowme-b-primary); }'));
-  assert(css.includes('.recoveryToast button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }'));
+  // Core3 P3: the same colors through tokens (--flowme-b-on-ink #fff, --flowme-b-on-ink-muted #c9d3ff).
+  assert(toast.includes('background: var(--flowme-b-ink); color: var(--flowme-b-on-ink);') && !toast.includes('border-left') && !/#[0-9a-f]{3,6}/i.test(toast));
+  assert(css.includes('.recoveryToast button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--flowme-b-on-ink-muted);'));
+  assert(css.includes('.recoveryToast button:last-child { background: var(--flowme-b-on-ink); color: var(--flowme-b-primary); }'));
+  assert(css.includes('.recoveryToast button:focus-visible { outline: 2px solid var(--flowme-b-on-ink); outline-offset: 2px; }'));
   // 44px to press; -6px above and below keep the row as it was at 32px.
   assert(css.includes('.documentRecovery > button { min-height: 44px; margin: -6px 0;'));
   assert(css.includes('.page[data-alpha-frame="b"][data-writing-keyboard="true"] .documentRecovery { display: none; }'));

@@ -513,7 +513,8 @@
 .copyHeader { display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:40px; padding:6px 10px; margin:4px 0 8px; background:#f2f3f5; border-radius:6px; font-size:12px; line-height:1.5; }
 .space .copyHeader button { flex:none; border:0; background:transparent; text-decoration:underline; color:inherit; padding:4px; }
 .copyHeader[data-state="changed"] { background:#edf0fa; }
-.copyHeader[data-state="unverified"] { border:1px dashed #986209; background:#fcf8ed; color:#795008; }
+/* Core3 P3: the last colors outside the tokens here, as warning (UX spec P3). */
+.copyHeader[data-state="unverified"] { border:1px dashed var(--flowme-b-warning-border); background:var(--flowme-b-warning-bg); color:var(--flowme-b-warning-ink); }
 .importNotice { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:6px 0; font-size:13px; }
 /* Flow pipeline S2/S3 (11/8): the notice's [달력에서 보기] (the primary action), and the mark chip over the month grid. */
 .space .importNotice > .importCalendar { background: var(--flowme-b-primary); border-color: var(--flowme-b-primary); color: #ffffff; font-weight: 600; }
@@ -582,14 +583,19 @@
 .space .viewChips > button[aria-pressed="true"] { background-color: var(--flowme-b-selected); color: var(--flowme-b-primary); font-weight: 600; }
 /* Core3 P2b (11/8, FIG 13): a new document's arrival notice is the bottom toast, as the 복구함's: ink, white words,
    [되돌리기] light, [달력에서 보기] white; over the tab bar on a phone, bottom right when wide; gone while typing. */
-.space .importNotice[data-arrival-toast] { position: fixed; z-index: 46; right: 24px; bottom: 24px; width: min(400px, calc(100vw - 48px)); margin: 0; padding: 12px 8px 8px 14px; gap: 4px; border: 0; border-radius: 12px; background: var(--flowme-b-ink); color: #fff; box-shadow: 0 6px 18px rgba(24, 34, 53, 0.25); font-size: 14px; line-height: 20px; }
+.space .importNotice[data-arrival-toast] { position: fixed; z-index: 46; right: 24px; bottom: 24px; width: min(400px, calc(100vw - 48px)); margin: 0; padding: 12px 8px 8px 14px; gap: 4px; border: 0; border-radius: 12px; background: var(--flowme-b-ink); color: var(--flowme-b-on-ink); box-shadow: 0 6px 18px var(--flowme-b-toast-shadow); font-size: 14px; line-height: 20px; }
 .space .importNotice[data-arrival-toast] > span { flex: 1 1 100%; overflow-wrap: anywhere; word-break: keep-all; }
-.space .importNotice[data-arrival-toast] > button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: #c9d3ff; font: inherit; font-weight: 700; }
+.space .importNotice[data-arrival-toast] > button { min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--flowme-b-on-ink-muted); font: inherit; font-weight: 700; }
 .space .importNotice[data-arrival-toast] > button:first-of-type { margin-left: auto; }
-.space .importNotice[data-arrival-toast] > .importCalendar { background: #fff; color: var(--flowme-b-primary); }
-.space .importNotice[data-arrival-toast] > button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.space .importNotice[data-arrival-toast] > .importCalendar { background: var(--flowme-b-on-ink); color: var(--flowme-b-primary); }
+.space .importNotice[data-arrival-toast] > button:focus-visible { outline: 2px solid var(--flowme-b-on-ink); outline-offset: 2px; }
 @media (max-width: 700px) { .space .importNotice[data-arrival-toast] { left: 12px; right: 12px; width: auto; bottom: calc(60px + env(safe-area-inset-bottom) + 12px); } }
 :global([data-writing-keyboard="true"]) .space .importNotice[data-arrival-toast] { display: none; }
 /* Core3 P2c: [되돌리기] [달력에서 보기] [×]; once closed, [되돌리기] sits at the end of the copy's source line. */
 .space .importNotice[data-arrival-toast] > .importToastClose { width: 44px; padding: 0; font-size: 22px; line-height: 1; font-weight: 400; }
 .space .copyHeader [data-arrival-undo] { display: contents; }
+/* Core3 P3 (UX F2 ⑦): a row's ⋯ starts with 미루기 — 내일 · 이번 주말 · 다음 주 · 날짜 고르기, pills 44px to press. */
+.deferChips { position: relative; display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.space .deferChips > button { min-height: 44px; padding: 0 16px; border: 1px solid var(--flowme-b-line); border-radius: 22px; background: var(--flowme-b-surface); color: var(--flowme-b-ink); font-size: 14px; font-weight: 600; }
+.space .deferChips > button:disabled { background: var(--flowme-b-surface-subtle); color: var(--flowme-b-control); }
+.deferPicker { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px; padding: 0; border: 0; opacity: 0; pointer-events: none; }
