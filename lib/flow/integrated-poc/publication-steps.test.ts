@@ -4,7 +4,7 @@ import { programClone, type ProgramPublicationDraft } from './contract';
 import { createProgramData } from './program-data';
 import { textWorkspaceModel as M } from './text-workspace';
 import { createProgramPublicationDraft, programPublicationInput, publishProgramDocument, saveProgramPublicationDraft } from './publication-editor';
-import { applyProgramPublicationStepDates, captureProgramPublicationStepInput, composeProgramPublicationSummary, programPublicationExposure, programPublicationPickGroups, programPublicationStepNativeValue, programPublicationSummaryParts } from './publication-steps';
+import { applyProgramPublicationStepDates, captureProgramPublicationStepInput, composeProgramPublicationSummary, programPublicationDateExample, programPublicationExposure, programPublicationPickGroups, programPublicationSavedSchedules, programPublicationStepNativeValue, programPublicationSummaryParts } from './publication-steps';
 import { programPublicationRowDates, programPublicationTakerPreview } from './publication-anchor';
 import { programRecurringDraftFromSchedule } from './public-recurrence-contract';
 
@@ -71,6 +71,58 @@ test('reopened saved relative schedules retain meaning when provenance is unavai
     assert.deepEqual(changed.draft.rows, reopened.rows);
     assert(changed.plan.handSet >= 3);
   }
+});
+
+test('reopening and new-version selection convert a newly selected task against existing source dates', () => {
+  const f = fixture(), initial = selectTasks(f.draft);
+  initial.rows.find(row => row.title === '옮긴 짐 확인')!.selected = false;
+  const first = applyProgramPublicationStepDates(initial, f.dates, 'first', null);
+  const stored = saveProgramPublicationDraft(f.data, f.actorId, first.draft, null); assert(stored.ok);
+  const published = publishProgramDocument(stored.data, f.actorId, first.draft, NOW); assert(published.ok);
+  for (const data of [stored.data, published.data]) {
+    const reopened = createProgramPublicationDraft(data, f.documentId, NOW)!;
+    const saved = programPublicationSavedSchedules(reopened.rows);
+    const added = reopened.rows.find(row => row.title === '옮긴 짐 확인')!;
+    assert(!saved.has(added.itemId)); added.selected = true;
+    const result = applyProgramPublicationStepDates(reopened, f.dates, 'first', null, saved, saved);
+    assert.equal(result.draft.rows.find(row => row.itemId === added.itemId)!.scheduleKind, 'relative');
+    assert.equal(result.draft.rows.find(row => row.itemId === added.itemId)!.scheduleValue, '13');
+    assert.deepEqual(result.draft.rows.filter(row => saved.has(row.itemId)), reopened.rows.filter(row => saved.has(row.itemId)));
+    const last = applyProgramPublicationStepDates(result.draft, f.dates, 'last', result.undo, saved, saved);
+    assert.equal(last.draft.rows.find(row => row.itemId === added.itemId)!.scheduleValue, '0');
+    assert.deepEqual(last.draft.rows.filter(row => saved.has(row.itemId)), reopened.rows.filter(row => saved.has(row.itemId)));
+  }
+});
+
+test('saved selected undated stays undated, while unselected and repeated rows do not pin new dates', () => {
+  const f = fixture(), draft = selectTasks(f.draft);
+  const firstTask = draft.rows.find(row => row.title === '상자 고르기')!;
+  firstTask.selected = false;
+  const repeated = draft.rows.find(row => row.title === '목록 적기')!;
+  repeated.title = '운동 @매일'; repeated.scheduleKind = 'relative'; repeated.scheduleValue = '0';
+  const saved = programPublicationSavedSchedules(draft.rows);
+  const newTask = draft.rows.find(row => row.title === '옮긴 짐 확인')!;
+  saved.delete(newTask.itemId);
+  const result = applyProgramPublicationStepDates(draft, f.dates, 'first', null, saved, saved);
+  assert.equal(result.draft.rows.find(row => row.itemId === newTask.itemId)!.scheduleValue, '0');
+  assert.deepEqual(result.draft.rows.filter(row => saved.has(row.itemId)), draft.rows.filter(row => saved.has(row.itemId)));
+  const none = applyProgramPublicationStepDates(result.draft, f.dates, 'none', result.undo, saved, saved);
+  assert.deepEqual(none.draft.rows, draft.rows);
+  const savedNone = programPublicationSavedSchedules(none.draft.rows);
+  assert.deepEqual(applyProgramPublicationStepDates(none.draft, f.dates, 'first', null, savedNone, savedNone).draft.rows, none.draft.rows);
+});
+
+test('date example is the first selected nonzero relative chip, including renamed and empty anchors', () => {
+  const f = fixture(), first = applyProgramPublicationStepDates(selectTasks(f.draft), f.dates, 'first', null);
+  assert.equal(programPublicationDateExample(first.draft), '기준일 +13일');
+  first.draft.summary = '기준일: 이사일\n소개';
+  assert.equal(programPublicationDateExample(first.draft), '이사일 +13일');
+  const last = applyProgramPublicationStepDates(first.draft, f.dates, 'last', first.undo);
+  assert.equal(programPublicationDateExample(last.draft), '이사일 −13일');
+  last.draft.rows.forEach(row => { if (row.scheduleKind === 'relative') row.scheduleValue = '0'; });
+  assert.equal(programPublicationDateExample(last.draft), '이사일 당일');
+  last.draft.rows.forEach(row => { row.selected = false; });
+  assert.equal(programPublicationDateExample(last.draft), null);
 });
 
 test('split summary native capture retains Korean metadata and a metadata-like body byte for byte', () => {

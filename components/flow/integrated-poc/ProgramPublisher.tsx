@@ -22,7 +22,7 @@ import { planProgramPublicationAnchor, programAnchorChip, programPublicationRowD
   type ProgramAnchorUndo } from '@/lib/flow/integrated-poc/publication-anchor';
 import { readProgramRepeatMarker, programRepeatLabel } from '@/lib/flow/integrated-poc/repeat-line';
 import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
-import { applyProgramPublicationStepDates, captureProgramPublicationStepInput, composeProgramPublicationSummary, programPublicationExposure, programPublicationStepNativeValue, programPublicationSummaryParts, type ProgramPublicationDateMode, type ProgramPublicationStep } from '@/lib/flow/integrated-poc/publication-steps';
+import { applyProgramPublicationStepDates, captureProgramPublicationStepInput, composeProgramPublicationSummary, programPublicationDateExample, programPublicationExposure, programPublicationSavedSchedules, programPublicationStepNativeValue, programPublicationSummaryParts, type ProgramPublicationDateMode, type ProgramPublicationStep } from '@/lib/flow/integrated-poc/publication-steps';
 import { ProgramPublicationPick, ProgramPublicationPreviewCard } from './ProgramPublicationSteps';
 import styles from './ProgramPublisher.module.css';
 import { fullRowText, canRepublishProgramDocument, createProgramRepublishDraft, programPublicationRepublishSource } from '@/lib/flow/integrated-poc/publication-editor';
@@ -63,9 +63,10 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   const itemOpener = useRef<HTMLButtonElement | null>(null);
   const itemWasOpen = useRef(false);
   const [dateOptions, setDateOptions] = useState(false);
-  // A saved undated schedule may be an explicit choice. With no persisted
-  // conversion provenance, preserve every reopened schedule rather than guess.
-  const manuallySetSchedules = useRef(new Set((publicationDraftAt(data, data.activeActorId, documentId)?.rows ?? (draft?.flowId ? draft.rows : [])).map(row => row.itemId)));
+  // A saved selected undated schedule may be an explicit choice. Preserve it,
+  // but let previously unselected tasks receive the automatic date conversion.
+  const savedSchedules = useRef(programPublicationSavedSchedules(publicationDraftAt(data, data.activeActorId, documentId)?.rows ?? (draft?.flowId ? draft.rows : [])));
+  const manuallySetSchedules = useRef(new Set<string>());
   const stepHeading = useRef<HTMLHeadingElement>(null);
   const [comparison, setComparison] = useState<PublicationComparison | null>(null), [choices, setChoices] = useState<PublicationConflictChoices>({});
   const [archiveTarget, setArchiveTarget] = useState<{ flowId: string; versionId: string; title: string } | null>(null);
@@ -84,7 +85,6 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     if (view) navigate({ view: 'flow', id: done.flowId, versionId: done.versionId }); else restoreProgramDialogFocus(opener.current);
   };
   const recovery = useRef<HTMLDetailsElement>(null);
-  useEffect(() => { if (message && recovery.current) recovery.current.open = true; }, [message]);
   const composing = useRef(new Set<EventTarget>()), locks = useRef(0); const [locked, setLocked] = useState(false);
   const [privateComparison, setPrivateComparison] = useState<{ stored: ProgramPublicationDraft | null } | null>(null);
   const setCurrent = (next: ProgramPublicationDraft) => { draftRef.current = next; setDraft(next); setMessage(''); };
@@ -104,7 +104,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     return () => { if (released) return; released = true; locks.current--; setLocked(locks.current > 0); syncReadonly(); };
   };
   const save = (): Promise<boolean> => {
-    if (composing.current.size) { setMessage('한글 조합을 마친 뒤 다시 저장해 주세요. 현재 입력은 유지합니다.'); return Promise.resolve(false); }
+    if (composing.current.size) return Promise.resolve(false);
     if (flight.current) return flight.current;
     const work = async () => {
       setSaving(true);
@@ -125,17 +125,19 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   };
   const edit = (patch: Partial<ProgramPublicationDraft>) => {
     if (!draftRef.current || publishingRef.current || locks.current && !composing.current.size) return;
-    setCurrent({ ...draftRef.current, ...patch, updatedAt: new Date().toISOString() }); setPreview(false); setComparison(null); setChoices({}); void save();
+    setCurrent({ ...draftRef.current, ...patch, updatedAt: new Date().toISOString() }); setPreview(false); setComparison(null); setChoices({});
+    if (!composing.current.size) void save();
   };
   const editRow = (itemId: string, patch: Partial<ProgramPublicationDraftRow>) => {
     if (!draftRef.current || publishingRef.current || locks.current && !composing.current.size) return;
-    if ('scheduleKind' in patch || 'scheduleValue' in patch || 'recurrence' in patch) manuallySetSchedules.current.add(itemId);
+    if ('scheduleKind' in patch || 'scheduleValue' in patch || 'recurrence' in patch) { manuallySetSchedules.current.add(itemId); savedSchedules.current.delete(itemId); }
     edit({ rows: draftRef.current.rows.map(row => row.itemId === itemId ? { ...row, ...patch } : row) });
   };
   // Flow pipeline S7 (11/8): '날짜를 기준일 기준으로'. Which day is the 기준일, its name (kept in the summary's first line),
   // what [원래대로] puts back, and the day a taker picks in the preview. Screen state; the draft keeps only its rows/summary.
   const [anchorMode, setAnchorMode] = useState<ProgramPublicationDateMode>('first');
   const anchorName = programPublicationSummaryParts(draft?.summary ?? '').name;
+  const dateExample = draft ? programPublicationDateExample(draft) : null;
   const [anchorUndo, setAnchorUndo] = useState<ProgramAnchorUndo | null>(null);
   const [anchorNote, setAnchorNote] = useState('');
   const [takerDate, setTakerDate] = useState(today);
@@ -150,7 +152,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   };
   const chooseDates = (mode: ProgramPublicationDateMode, enterRefine = false) => {
     if (unavailable() || !space) return; const current = read(); if (!current) return;
-    const applied = applyProgramPublicationStepDates(current, programPublicationRowDates(space.text, documentId), mode, anchorUndo, manuallySetSchedules.current);
+    const applied = applyProgramPublicationStepDates(current, programPublicationRowDates(space.text, documentId), mode, anchorUndo, new Set([...savedSchedules.current, ...manuallySetSchedules.current]), savedSchedules.current);
     commitDraft(applied.draft); setAnchorUndo(applied.undo); setAnchorMode(mode);
     if (applied.plan.anchor) setTakerDate(applied.plan.anchor);
     setAnchorNote(mode === 'none' ? '문서에서 가져온 날짜는 미정으로 둡니다.' : applied.plan.rows.length ? '문서 날짜를 기준일과의 간격으로 바꿨습니다.' : '바꿀 문서 날짜가 없습니다.');
@@ -296,6 +298,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       const value = programPublicationStepNativeValue(next, field, itemId);
         if (value !== undefined) element.value = value;
       }
+      savedSchedules.current = programPublicationSavedSchedules(next.rows); manuallySetSchedules.current.clear();
       setCurrent(next); setAnchorUndo(null); setPrivateComparison(null); setComparison(null); setChoices({}); setPreview(false);
       setMessage(choice === 'mine' ? '내 입력으로 비공개 초안을 저장했습니다. 공개 버전은 바꾸지 않았습니다.' : '확인한 저장 초안을 열었습니다. 공개 버전은 바꾸지 않았습니다.');
     } catch { setMessage('비교 선택을 저장하지 못했습니다. 내 입력과 비교 내용을 유지했습니다.'); }
@@ -328,6 +331,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       if (result.ok && result.presentationPending) { setMessage(programErrorMessage('presentation-pending')); return; }
       if (result.ok && storageScope === 'account') updated = readCurrentData?.()?.spaces[actorId]?.publicationDrafts.find(row => row.id === submitted.id);
       if (!result.ok || !updated) { setMessage(programErrorMessage(result.ok ? 'missing' : result.reason)); return; }
+      savedSchedules.current = programPublicationSavedSchedules(updated.rows); manuallySetSchedules.current.clear(); setAnchorUndo(null);
       savedRef.current = updated; setCurrent(updated); setComparison(null); setChoices({}); setPreview(false); setMessage('선택한 내용을 초안에 저장했습니다. 공개 미리보기에서 결과를 확인해 주세요.');
     } catch { setMessage('비교 결과를 저장하지 못했습니다. 초안과 선택을 유지했습니다.'); }
     finally { endAction(); }
@@ -448,8 +452,8 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     </section>
   </dialog>;
   return <dialog ref={dialog} className={styles.dialog} aria-labelledby={editingItem ? "program-publication-item-title" : "program-publisher-title"} onCancel={event => { event.preventDefault(); if (editingItem) closeItem(); else void close(); }}
-    onCompositionStartCapture={event => { composing.current.add(event.target); }}
-    onCompositionEndCapture={event => { composing.current.delete(event.target); const next = read(); if (next) setCurrent({ ...next, updatedAt: new Date().toISOString() }); syncReadonly(); void save(); }}>
+    onCompositionStartCapture={event => { composing.current.add(event.target); if (recovery.current) recovery.current.open = false; }}
+    onCompositionEndCapture={event => { composing.current.delete(event.target); const next = read(); if (next) setCurrent({ ...next, updatedAt: new Date().toISOString() }); syncReadonly(); if (!composing.current.size) void save(); }}>
     {externalRecovery}
     <div className={styles.mainContent} hidden={!!editingItem}>
     <header className={styles.header}><button type="button" className={styles.iconButton} aria-label="닫기 · 초안 보관" disabled={blocked} onClick={() => void close()}>✕</button><div><h2 id="program-publisher-title" ref={stepHeading} tabIndex={-1}>{republishing ? '새 링크로 다시 공개' : currentFlow?.archived ? '공개 철회·보관 상태' : draft?.flowId ? '새 버전 공개' : '내 경험 공개'}</h2></div><small role="status">{saving ? '저장 중' : same(savedRef.current, draft) ? '저장됨' : '입력 중'}</small><details ref={recovery} className={styles.recovery}><summary aria-label="초안 메뉴">⋯</summary><div className={styles.recoveryActions}><button type="button" onClick={keepInput}>초안 TXT 보관</button><button type="button" disabled={blocked} onClick={() => void save()}>다시 저장</button><button type="button" className={styles.discard} disabled={blocked} onClick={() => setDiscarding(!discarding)}>초안 버리기</button></div></details></header>
@@ -492,7 +496,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
         <label className={styles.field}>한 줄 소개 · 선택<textarea data-publication-field="summary" value={programPublicationSummaryParts(draft.summary).body} rows={2} maxLength={29940} onChange={event => edit({ summary: composeProgramPublicationSummary(anchorName, event.target.value) })} placeholder="누구에게 어떤 도움이 되는지" /></label>
         <section className={styles.anchorConvert} aria-labelledby="program-anchor-title" data-anchor-convert>
           <h3 id="program-anchor-title">날짜</h3>
-          <div className={styles.dateLine}><span>{anchorMode === 'none' ? '문서 날짜는 빼고 보여 줍니다' : "날짜는 '이사일 −13일'처럼 바꿔서 보여 줍니다"}</span><span aria-hidden="true"> · </span><button type="button" className={styles.linkButton} aria-expanded={dateOptions} disabled={blocked} onClick={() => { if (!unavailable()) setDateOptions(!dateOptions); }}>바꾸기</button></div>
+          <div className={styles.dateLine}><span>{anchorMode === 'none' ? '문서 날짜는 빼고 보여 줍니다' : dateExample ? `날짜는 '${dateExample}'처럼 바꿔서 보여 줍니다` : '기준일로 바꿀 문서 날짜가 없습니다'}</span><span aria-hidden="true"> · </span><button type="button" className={styles.linkButton} aria-expanded={dateOptions} disabled={blocked} onClick={() => { if (!unavailable()) setDateOptions(!dateOptions); }}>바꾸기</button></div>
           {dateOptions && <section className={styles.dateOptions} aria-label="날짜 표시 바꾸기">
             <h4>어느 날을 기준으로 할까요?</h4>
             {([['first', '처음 날 기준', '그날부터 +n일'], ['last', '마지막 날 기준', '그날까지 −n일'], ['none', '날짜 빼기', '문서 날짜를 미정으로']] as const).map(([mode, label, hint]) => <button type="button" key={mode} aria-pressed={anchorMode === mode} disabled={blocked} onClick={() => { if (unavailable()) return; chooseDates(mode); setDateOptions(false); }}><span>{label}<small>{hint}</small></span>{anchorMode === mode && <span aria-hidden="true">✓</span>}</button>)}
@@ -504,9 +508,9 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
           {anchorNote && <p className={styles.visuallyHidden} role="status">{anchorNote}</p>}
         </section>
         <section className={styles.choices} aria-label="고른 항목 다듬기"><h3>고른 항목 {draft.rows.filter(row => row.selected).length}개</h3>{draft.rows.filter(row => row.selected).map(row => {
-          const chip = scheduleChip(row), automatic = !!anchorUndo?.rows[row.itemId] && row.scheduleKind === 'relative' && row.scheduleValue === anchorUndo.rows[row.itemId].to;
+          const chip = scheduleChip(row), scheduleLabel = manuallySetSchedules.current.has(row.itemId) || row.scheduleKind === 'fixed' ? '직접 정함' : savedSchedules.current.has(row.itemId) && row.scheduleKind !== 'undated' ? '저장한 일정' : null;
           return <article className={styles.choice} data-publication-item={row.itemId} key={row.itemId}>
-            <button type="button" className={styles.refineItem} disabled={blocked} aria-expanded={editingRow === row.itemId} onClick={() => { if (!unavailable()) setEditingRow(row.itemId); }}><span>{row.title || (row.origin === 'note' ? '메모 제목을 적어 주세요' : '제목 없는 항목')}<span className={styles.scheduleChip} data-schedule-chip={chip.kind}>{chip.text}</span>{!automatic && row.scheduleKind !== 'undated' && <small>직접 정함 · 저장한 일정</small>}</span><span aria-hidden="true">›</span></button>
+            <button type="button" className={styles.refineItem} disabled={blocked} aria-expanded={editingRow === row.itemId} onClick={() => { if (!unavailable()) setEditingRow(row.itemId); }}><span>{row.title || (row.origin === 'note' ? '메모 제목을 적어 주세요' : '제목 없는 항목')}<span className={styles.scheduleChip} data-schedule-chip={chip.kind}>{chip.text}</span>{scheduleLabel && <small>{scheduleLabel}</small>}</span><span aria-hidden="true">›</span></button>
 
           </article>;
         })}</section>
