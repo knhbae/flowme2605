@@ -1462,13 +1462,13 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       setImportArrival({ actorId: owner, documentId, text: home ? '오늘 아래에 링크를 한 줄 두었습니다.' : '쓰던 글을 찾지 못해 새 글에 링크를 두었습니다.', revision: null, calendar: null });
     return true;
   }
-  /** S8 [이 링크로 Flow 만들기]: a new document with the link as its source line; 선택해서 공개 then brings it as the source link. */
+  /** S8 [이 링크로 Flow 만들기]: a new document with the link as its source line; 공개하기 then brings it as the source link. */
   async function createFromLink(link: string) {
     const owner = session.userId, canonical = programCanonicalLink(link);
     if (!canonical || !await startText(`- 출처: ${canonical}`, '링크로 만드는 Flow')) return false;
     const arrived = destinationRef.current;
     if (arrived.view === 'space' && arrived.id && owner === currentOwnerRef.current)
-      setImportArrival({ actorId: owner, documentId: arrived.id, text: '출처 링크를 넣은 새 글입니다. 해 본 일을 할 일로 적은 뒤 글 메뉴의 ‘선택해서 공개’를 누르면 출처 칸이 채워져 있습니다.', revision: null, calendar: null });
+      setImportArrival({ actorId: owner, documentId: arrived.id, text: '출처 링크를 넣은 새 글입니다. 해 본 일을 할 일로 적은 뒤 글 메뉴의 ‘공개하기’를 누르면 출처 칸이 채워져 있습니다.', revision: null, calendar: null });
     return true;
   }
   async function restoreSocial(index: number) {

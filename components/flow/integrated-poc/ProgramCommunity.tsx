@@ -16,6 +16,7 @@ import type { ProgramCommunityMediaPort } from '../../../lib/flow/integrated-poc
 import { ProgramPublicationManagement } from './ProgramPublicationManagement';
 import { ProgramPublisher } from './ProgramPublisher';
 import styles from './ProgramCommunity.module.css';
+import { programStampLabel } from '../../../lib/flow/integrated-poc/date-label';
 import { emptyProgramCommunityPresentation, type ProgramCommunityPresentation } from '../../../lib/flow/integrated-poc/navigation';
 import { programReviewPublicRelationValid, type ProgramReviewEntry } from '../../../lib/flow/integrated-poc/review-return';
 import { PROGRAM_TRIED_NOTE, programFlowReviews } from '../../../lib/flow/integrated-poc/flow-loop';
@@ -64,7 +65,7 @@ async function guardedMutation(mutate: ProgramMutate, ...args: Parameters<Progra
 import { newProgramParticipationDraft, saveProgramParticipationDraft, discardProgramParticipationDraft, submitProgramParticipation } from '../../../lib/flow/integrated-poc/participation-editor';
 export { newProgramParticipationDraft, saveProgramParticipationDraft, discardProgramParticipationDraft, submitProgramParticipation } from '../../../lib/flow/integrated-poc/participation-editor';
 
-function stamp(value: string) { return value.slice(0, 10); }
+function stamp(value: string) { return programStampLabel(value); }
 function author(data: ProgramData, id: string) { return data.actors.find(actor => actor.id === id)?.name ?? '알 수 없는 작성자'; }
 function postTitle(data: ProgramData, id: string) { return data.public.posts.find(post => post.id === id)?.title ?? '연결된 글을 찾을 수 없어요'; }
 

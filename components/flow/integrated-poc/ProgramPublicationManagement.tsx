@@ -8,6 +8,7 @@ import { readProgramPublicationManagement, type ProgramPublicationEditMode } fro
 import { ProgramShareLink } from './ProgramShareLink';
 import styles from './ProgramPublicationManagement.module.css';
 import { ProgramIcon } from './icons';
+import { programStampLabel } from '../../../lib/flow/integrated-poc/date-label';
 
 export type ProgramPublicationManagementProps = {
   data: ProgramData; flowId: string; mutate: ProgramMutate; navigate: ProgramNavigate;
@@ -68,7 +69,7 @@ function PublicationManagementBody({ data, flowId, mutate, navigate, onBack, onE
   const canEdit = !!document && document.canEditPublication && !document.archived;
   return <section className={styles.management} aria-label="공개 관리" data-publication-management={flow.id}>
     <header className={styles.header}><button type="button" aria-label="내 공개 Flow로 돌아가기" disabled={blocked} onClick={() => leave(onBack)}><ProgramIcon name="back" size={24} /></button><span>내 공개 Flow</span><h1 ref={heading} tabIndex={-1}>관리</h1></header>
-    <div className={styles.card}><div className={styles.title}><h2>{version.title}</h2><span>버전 {version.number}</span></div>{version.summary && <p>{version.summary}</p>}<small>{flow.archived ? '공개 철회됨' : '공개 중'} · {version.createdAt.slice(0, 10)}</small></div>
+    <div className={styles.card}><div className={styles.title}><h2>{version.title}</h2><span>버전 {version.number}</span></div>{version.summary && <p>{version.summary}</p>}<small>{flow.archived ? '공개 철회됨' : '공개 중'} · {programStampLabel(version.createdAt)}</small></div>
     {document?.sourceChanged === true && <div className={styles.changed} role="status"><span>원래 글이 바뀌었습니다</span>{!flow.archived && <button type="button" disabled={blocked || !canEdit} onClick={() => void edit('new-version')}>새 버전 ›</button>}</div>}
     {message && <p role="status" className={styles.message}>{message}</p>}
     {management.documents.length > 1 && <label className={styles.documentPicker}>원래 글<select value={document?.id ?? ''} disabled={blocked} onChange={event => setDocumentId(event.target.value)}>{management.documents.map(row => <option value={row.id} key={row.id}>{row.title}{row.archived ? ' · 보관됨' : ''}</option>)}</select></label>}
@@ -77,7 +78,7 @@ function PublicationManagementBody({ data, flowId, mutate, navigate, onBack, onE
         : <button type="button" disabled={blocked || !canEdit} onClick={() => void edit('new-version')}>새 버전 공개<small>① 고르기부터</small><span><ProgramIcon name="right" size={16} /></span></button>}
       {!flow.archived && <ProgramShareLink flowId={flow.id} versionId={version.id} />}
       <details className={styles.feedback} data-publication-feedback><summary>받은 후기·반응<small>후기 {reviews.length} · 반응 {reactions.length}</small></summary>
-        <h3>받은 후기 {reviews.length}</h3>{reviews.length ? <ul>{reviews.map(post => <li key={post.id}><button type="button" disabled={blocked} onClick={() => leave(() => navigate({ view: 'community', id: post.id }))}><strong>{post.title}</strong><small>{data.actors.find(row => row.id === post.authorId)?.name ?? '작성자'} · {post.createdAt.slice(0, 10)}</small></button></li>)}</ul> : <p>아직 받은 후기가 없습니다.</p>}
+        <h3>받은 후기 {reviews.length}</h3>{reviews.length ? <ul>{reviews.map(post => <li key={post.id}><button type="button" disabled={blocked} onClick={() => leave(() => navigate({ view: 'community', id: post.id }))}><strong>{post.title}</strong><small>{data.actors.find(row => row.id === post.authorId)?.name ?? '작성자'} · {programStampLabel(post.createdAt)}</small></button></li>)}</ul> : <p>아직 받은 후기가 없습니다.</p>}
         <h3>받은 반응 {reactions.length}</h3>{reactions.length ? <ul>{reactions.map(({ reaction, post, replyId }) => <li key={`${reaction.targetKind}:${reaction.targetId}:${reaction.actorId}`}><button type="button" disabled={blocked} onClick={() => leave(() => navigate({ view: 'community', id: post.id, ...(replyId ? { replyId } : {}) }))}><strong>{post.title}</strong><small>{data.actors.find(row => row.id === reaction.actorId)?.name ?? '참여자'} · 도움됐어요{replyId ? ' · 내 답글' : ''}</small></button></li>)}</ul> : <p>아직 받은 반응이 없습니다.</p>}
       </details>
       <button type="button" disabled={blocked || !document} onClick={() => document && leave(() => navigate({ view: 'space', id: document.id }))}>원래 글 열기<small>{document?.title ?? '연결된 문서 없음'}</small><span><ProgramIcon name="right" size={16} /></span></button>

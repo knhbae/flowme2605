@@ -16,6 +16,19 @@ export function programCalendarDate(date: string, today: string, weekday = true)
   return weekday ? `${month}월 ${dayOfMonth}일 (${WEEKDAYS[new Date(day(date)).getUTCDay()]})` : `${month}월 ${dayOfMonth}일`;
 }
 
+/** A stored time (ISO, UTC) as its Seoul calendar day, YYYY-MM-DD (Seoul keeps +9 all year); null when it is not a time. */
+export function programSeoulDate(instant: string): string | null {
+  const time = Date.parse(instant);
+  return Number.isFinite(time) ? new Date(time + 9 * 3_600_000).toISOString().slice(0, 10) : null;
+}
+
+/** int4 QA P3-INT4-1: when something was saved or published, as its Seoul day ("11월 9일 (월)"), not the start of the UTC
+ *  ISO string, which reads a day early from 0 to 9 a.m. in Seoul. Another year shows its year. */
+export function programStampLabel(instant: string, today = programSeoulDate(new Date().toISOString()) ?? ''): string {
+  const date = programSeoulDate(instant);
+  return date ? programCalendarDate(date, today) : instant.slice(0, 10);
+}
+
 /** 오늘 / 내일 / 어제, otherwise the calendar date. A missing date reads "날짜 없음". */
 export function programDateLabel(date: string | null | undefined, today: string, weekday = true): string {
   if (!date) return '날짜 없음';

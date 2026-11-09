@@ -488,6 +488,8 @@
   .page[data-alpha-frame="b"] .brand .brandName { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .page[data-alpha-frame="b"] .globalNavigation button { min-height: 64px; gap: 4px; border-radius: 12px; font-size: 13px; line-height: 18px; }
   .page[data-alpha-frame="b"] .globalNavigation button[aria-current] { background: var(--flowme-b-nav-active); color: #fff; box-shadow: none; }
+  /* int4 QA P3-INT4-3: the pointer over the current tab keeps it 18% (the hover's 10% is for the others). */
+  .page[data-alpha-frame="b"] .globalNavigation button[aria-current]:hover:not(:disabled) { background: var(--flowme-b-nav-active); color: #fff; }
   .page[data-alpha-frame="b"] .header .development { font-size: 13px; }
 }
 @media (max-width: 700px) {
