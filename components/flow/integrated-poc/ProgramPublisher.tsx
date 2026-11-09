@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { restoreProgramDialogFocus } from '@/lib/flow/integrated-poc/dialog-return-focus';
-import { programClone, programFailure, programResult, type ProgramData, type ProgramPublicationDraft, type ProgramPublicationDraftRow } from '@/lib/flow/integrated-poc/contract';
+import { programClone, programFailure, programResult, type ProgramData, type ProgramPublicationDraft, type ProgramPublicationDraftRow, type ProgramPublicItem } from '@/lib/flow/integrated-poc/contract';
 import { numberGwa } from '@/lib/flow/integrated-poc/number-particle';
 import { canPublishProgramSchedule } from '@/lib/flow/integrated-poc/program-data';
 import { programSame } from '@/lib/flow/integrated-poc/controller';
@@ -21,6 +21,7 @@ import { ProgramShareLink } from './ProgramShareLink';
 import { programAnchorChip, programPublicationRowDates, programPublicationTakerPreview,
   type ProgramAnchorUndo } from '@/lib/flow/integrated-poc/publication-anchor';
 import { readProgramRepeatMarker, programRepeatLabel } from '@/lib/flow/integrated-poc/repeat-line';
+import { PROGRAM_PICK_MONTHS, programImportItemView } from '@/lib/flow/integrated-poc/public-repeat-import';
 import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
 import { programShortDate } from '@/lib/flow/integrated-poc/program-discovery-display';
 import { applyProgramPublicationStepDates, captureProgramPublicationStepInput, composeProgramPublicationSummary, programPublicationDateExample, programPublicationExposure, programPublicationSavedSchedules, programPublicationSavedSourceDates, programPublicationStepNativeValue, programPublicationSummaryParts, type ProgramPublicationDateMode, type ProgramPublicationStep } from '@/lib/flow/integrated-poc/publication-steps';
@@ -275,9 +276,18 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     const marker = readProgramRepeatMarker(row.title.trim());
     if (row.scheduleKind === 'recurring' && row.recurrence) { const rule = programRecurringScheduleFromDraft(row.recurrence); return { text: `↻ ${rule ? programRecurringScheduleLabel(rule).split(' · ')[0] : '반복'}`, kind: 'repeat' }; }
     if (marker && row.scheduleKind === 'undated') return { text: `↻ ${programRepeatLabel(marker.rule)}`, kind: 'repeat' };
+    if (row.scheduleKind === 'undated' && PROGRAM_PICK_MONTHS.test(row.title.trim())) return { text: '가져올 때 주기 고름', kind: 'repeat' };
     if (row.scheduleKind === 'relative' && /^[+-]?\d+$/.test(row.scheduleValue)) return { text: programAnchorChip(anchorName, Number(row.scheduleValue)), kind: 'relative' };
     if (row.scheduleKind === 'fixed' && row.scheduleValue) return { text: programCalendarDate(row.scheduleValue, today), kind: 'fixed' };
     return { text: '날짜 미정', kind: 'undated' };
+  };
+  /** P3e (11/10): ③ reads a repeat item as ② does. A public repeat is undated with its marker in the title (11/5 결정 1·2;
+   *  taking it writes a repeat line), so its chip is the rule, not '날짜 미정'; a series keeps its label, with the icon. */
+  const previewChip = (item: ProgramPublicItem) => {
+    if (item.schedule.kind === 'recurring') return { text: `↻ ${programRecurringScheduleLabel(item.schedule)}`, kind: 'recurring' };
+    const repeat = item.schedule.kind === 'undated' ? programImportItemView(item) : null;
+    if (repeat) return { text: repeat.label, kind: 'repeat' };
+    return { text: [item.schedule.kind === 'undated' ? '날짜 미정' : item.schedule.kind === 'fixed' ? `직접 정함 · ${programShortDate(item.schedule.date)}` : programAnchorChip(anchorName, item.schedule.days), programOrdinaryTimingLabel(item.schedule.timing)].filter(Boolean).join(' · '), kind: item.schedule.kind };
   };
   const currentFlow = draft?.flowId ? data.public.flows.find(row => row.id === draft.flowId) : undefined;
   const republishSource = draft ? programPublicationRepublishSource(data, actorId, draft) : null;
@@ -511,7 +521,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
         <section className={styles.choices} aria-label="고른 항목 다듬기"><h3>고른 항목 {draft.rows.filter(row => row.selected).length}개</h3>{draft.rows.filter(row => row.selected).map(row => {
           const chip = scheduleChip(row), scheduleLabel = manuallySetSchedules.current.has(row.itemId) || row.scheduleKind === 'fixed' ? '직접 정함' : savedSchedules.current.has(row.itemId) && row.scheduleKind !== 'undated' ? '저장한 일정' : null;
           return <article className={styles.choice} data-publication-item={row.itemId} key={row.itemId}>
-            <button type="button" className={styles.refineItem} disabled={blocked} aria-expanded={editingRow === row.itemId} onClick={() => { if (!unavailable()) setEditingRow(row.itemId); }}><span>{row.title || (row.origin === 'note' ? '메모 제목을 적어 주세요' : '제목 없는 항목')}<span className={styles.scheduleChip} data-schedule-chip={chip.kind}>{programRepeatText(chip.text, 13)}</span>{scheduleLabel && <small>{scheduleLabel}</small>}</span><span aria-hidden="true">›</span></button>
+            <button type="button" className={styles.refineItem} disabled={blocked} aria-expanded={editingRow === row.itemId} onClick={() => { if (!unavailable()) setEditingRow(row.itemId); }}><span>{row.title || (row.origin === 'note' ? '메모 제목을 적어 주세요' : '제목 없는 항목')}<span className={styles.scheduleChip} data-schedule-chip={chip.kind}>{programRepeatText(chip.text, 13)}</span>{scheduleLabel && <small>{scheduleLabel}</small>}</span><ProgramIcon name="right" size={16} /></button>
 
           </article>;
         })}</section>
@@ -525,7 +535,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
         <div className={styles.previewDetail}><h3>{input.title}</h3><p className={styles.pre}>{input.summary}</p><p>출처: {input.source.label}{input.source.kind === 'simulated-example' ? ' · 합성 예시' : ' · 개인 작성'}</p>{input.source.url && <a href={input.source.url} target="_blank" rel="noreferrer noopener">입력한 원문 URL</a>}
           <p>분야: {input.category}{input.situations.length > 0 && ` · 적용 상황: ${input.situations.join(', ')}`}</p>
           {input.derivedFrom && <p>원본: {data.public.versions.find(row => row.id === input.derivedFrom?.versionId)?.title} · 버전 {data.public.versions.find(row => row.id === input.derivedFrom?.versionId)?.number}</p>}
-          <ol>{input.items.map(item => <li key={item.id}><h4>{item.title}</h4><p className={styles.pre}>{item.description}</p>{item.completionCriteria && <p>완료 기준: {item.completionCriteria}</p>}{item.sourceUrl && <p><a href={item.sourceUrl} target="_blank" rel="noreferrer noopener">항목 출처: {item.sourceUrl}</a></p>}<span className={styles.scheduleChip} data-schedule-chip={item.schedule.kind}>{item.schedule.kind === 'recurring' ? programRecurringScheduleLabel(item.schedule) : [item.schedule.kind === 'undated' ? '날짜 미정' : item.schedule.kind === 'fixed' ? `직접 정함 · ${programShortDate(item.schedule.date)}` : programAnchorChip(anchorName, item.schedule.days), programOrdinaryTimingLabel(item.schedule.timing)].filter(Boolean).join(' · ')}</span>{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</li>)}</ol>
+          <ol>{input.items.map(item => <li key={item.id}><h4>{item.title}</h4><p className={styles.pre}>{item.description}</p>{item.completionCriteria && <p>완료 기준: {item.completionCriteria}</p>}{item.sourceUrl && <p><a href={item.sourceUrl} target="_blank" rel="noreferrer noopener">항목 출처: {item.sourceUrl}</a></p>}{(chip => <span className={styles.scheduleChip} data-schedule-chip={chip.kind}>{programRepeatText(chip.text, 13)}</span>)(previewChip(item))}{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</li>)}</ol>
         </div>
         {programPublicationExposure(draft).fixed.length ? <div className={styles.fixedWarning} role="alert"><p>직접 정한 실제 날짜가 {programPublicationExposure(draft).fixed.length}개 항목에 그대로 공개됩니다.</p>{programPublicationExposure(draft).fixed.map(row => <button type="button" key={row.itemId} disabled={blocked} onClick={() => { if (!unavailable()) { setStep('refine'); setEditingRow(row.itemId); } }}>{row.title} · 일정 바꾸기</button>)}</div> : <p className={styles.exposure}>✓ 내 실제 날짜 0개 · 고른 메모 {programPublicationExposure(draft).notes}개 · 진행 기록 0개</p>}
         <p className={styles.scope}>{storageScope === 'account' ? '로그인한 FlowMe 사용자 누구나 Flow 찾기에서 봅니다. 후기는 공개됩니다. 계정을 지워도 공개한 Flow는 남습니다.' : '이 기기의 로컬 PoC 목록에서 봅니다. 실제 사용자에게 공개하지 않습니다.'}</p>
