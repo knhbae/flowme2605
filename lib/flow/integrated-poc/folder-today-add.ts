@@ -80,9 +80,24 @@ export function programFolderTodayInsert(raw: string, rows: readonly TextRow[], 
 }
 
 /** What the line will be written into, for the place line under the field ('늘 쓰는 글 · 오늘 › / 보고 아래에 적습니다'). */
+/** P3-F4B-3: a document's first words — its first line that is not a day head, a folder line or blank, without the task box
+ *  and folder tags — or, with none, its latest day; '빈 글' for an empty one. */
+export function programFolderTodayGist(space: ProgramPrivateSpace, documentId: string): string {
+  const doc = space.text.documents.find(row => row.id === documentId);
+  if (!doc) return '';
+  const lines = programFolderTagsOut(M.raw(doc)).split('\n');
+  const words = lines.map(line => line.trim()).find(line => line && !/^\[\d{4}-\d{2}-\d{2}\]/.test(line) && !/^- \//.test(line));
+  if (words) { const plain = words.replace(/^- \[[ xX]\]\s*/, '').replace(/^- /, '').trim(); return plain.length > 10 ? `${plain.slice(0, 10)}…` : plain; }
+  const day = lines.map(line => /^\[(\d{4}-\d{2}-\d{2})\]/.exec(line.trim())?.[1] ?? '').reduce((latest, date) => date > latest ? date : latest, '');
+  return day ? `${Number(day.slice(5, 7))}월 ${Number(day.slice(8, 10))}일` : '빈 글';
+}
+
 export function programFolderTodayPlace(space: ProgramPrivateSpace, folderId: string, today: string, pending: readonly string[] = []): { documentId: string | null; title: string; label: string } {
   const home = programFolderTodayHome(space, today, pending);
-  const title = home ? space.text.documents.find(doc => doc.id === home)?.title || '제목 없는 글' : '새 글';
+  const name = (title: string | undefined) => title || '제목 없는 글';
+  let title = home ? name(space.text.documents.find(doc => doc.id === home)?.title) : '새 글';
+  // P3-F4B-3: new documents are all '작성한 글'; when another of mine has the same name, say which by its first words.
+  if (home && space.text.documents.some(doc => doc.id !== home && name(doc.title) === title)) title = `${title}(${programFolderTodayGist(space, home)})`;
   const folder = folderId === PROGRAM_UNFILED_FOLDER ? null : programFolderAncestry(space, folderId).at(-1);
   return { documentId: home, title, label: `${title} · 오늘${folder ? ` › / ${folder.title}` : ''} 아래에 적습니다` };
 }

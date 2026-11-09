@@ -5,7 +5,7 @@ import { programClone, type ProgramData, type ProgramTransition } from './contra
 import { createProgramData, validateProgramData } from './program-data';
 import { createProgramDocument, importProgramPublicVersion } from './private-space';
 import { programLineDays } from './input-bar';
-import { addProgramFolderTodayTask, programFolderTodayHome, programFolderTodayInsert, programFolderTodayPlace, programFolderTodayUndo,
+import { addProgramFolderTodayTask, programFolderTodayGist, programFolderTodayHome, programFolderTodayInsert, programFolderTodayPlace, programFolderTodayUndo,
   programFolderTagsOut, undoProgramFolderTodayTask } from './folder-today-add';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 
@@ -173,6 +173,35 @@ test('The place line names the home and the folder (목업 A5)', () => {
   const { data, folder } = account('[2026-11-09]\n- /회사 일\n  - /보고\n    - [ ] 보고서 검토');
   assert.equal(programFolderTodayPlace(space(data), folder('보고', '회사 일'), TODAY).label, '늘 쓰는 글 · 오늘 › / 보고 아래에 적습니다');
   assert.equal(programFolderTodayPlace(space(data), 'folder-unfiled', TODAY).label, '늘 쓰는 글 · 오늘 아래에 적습니다');
+});
+
+test('P3-F4B-3: when another of my documents has the same name (new ones are all 작성한 글), the place says which by its first words', () => {
+  const { data, home, other, folder } = account('[2026-11-09]\n- /보고\n  - [ ] 주간 보고 초안 쓰고 보내기', '[2026-11-08]\n- [ ] 어제');
+  const same = programClone(data);
+  for (const doc of same.spaces[actor(same)].text.documents) doc.title = '작성한 글';
+  assert.equal(programFolderTodayPlace(space(same), folder('보고'), TODAY).label, '작성한 글(주간 보고 초안 쓰…) · 오늘 › / 보고 아래에 적습니다');
+  assert.equal(programFolderTodayPlace(space(same), folder('보고'), TODAY).title, '작성한 글(주간 보고 초안 쓰…)');
+  // Only head and folder lines: the latest day; nothing: 빈 글. A short first line stays whole.
+  assert.equal(programFolderTodayGist(space(same), other), '어제');
+  const heads = programClone(same); heads.spaces[actor(heads)].text = M.editTextResult(space(heads).text, home, '[2026-11-07]\n- /보고\n\n[2026-11-09]', { folderText: true }).state;
+  assert.equal(programFolderTodayGist(space(heads), home), '11월 9일');
+  const empty = programClone(same); empty.spaces[actor(empty)].text = M.editTextResult(space(empty).text, home, '', { folderText: true }).state;
+  assert.equal(programFolderTodayGist(space(empty), home), '빈 글');
+  // A name of its own: no words added.
+  assert.equal(programFolderTodayPlace(space(data), folder('보고'), TODAY).title, '늘 쓰는 글');
+});
+
+test('P3-F4B-2 and the keyboard: one sentence after another tab saved first, a retry included; the line fields are writing for the tabs', () => {
+  const source = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
+  const chrome = readFileSync(new URL('../../../components/flow/integrated-poc/useProgramMobileWritingChrome.ts', import.meta.url), 'utf8');
+  assert(source.includes("const FOLDER_TODAY_CONFLICT = '다른 곳에서 먼저 바뀌어 적지 않았습니다. 칸의 글을 복사해 두고 새로고침한 뒤 다시 적어 주세요.';"));
+  assert(source.includes("if (result.reason === 'conflict') folderTodayConflict.current = true;"));
+  assert(source.includes("folderTodayConflict.current && (result.reason === 'conflict' || result.reason === 'unresolved') ? FOLDER_TODAY_CONFLICT"));
+  assert(chrome.includes("const lineEntry = inside && active.matches('input[data-line-entry]:not(:disabled)');") && chrome.includes('const writing = body || editorTool || lineEntry;'));
+  for (const name of ['ProgramFolderTodayAdd.tsx', 'ProgramGroupAddRow.tsx']) {
+    const row = readFileSync(new URL(`../../../components/flow/integrated-poc/${name}`, import.meta.url), 'utf8');
+    assert(row.includes('data-line-entry onInput=') && row.includes('createLineQueue') && !row.includes('disabled={saving}'), name);
+  }
 });
 
 test('되돌리기: one save puts the writing back exactly (a made head and folder line go too); after another change it refuses', () => {

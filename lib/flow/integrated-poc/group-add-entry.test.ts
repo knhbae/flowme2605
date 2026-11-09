@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import * as ts from 'typescript';
-import { createGroupAddEntry, type GroupAddAction } from './group-add-entry';
+import { createGroupAddEntry, createLineQueue, type GroupAddAction } from './group-add-entry';
 
 // Run the real handlers of the "＋" line's title input and form against recorded key sequences.
 // The sequences are what browsers are known to send; real phones are still S4's to check.
@@ -65,14 +65,15 @@ test('Safari: composition ends before the Enter key event, which then adds once'
   assert.deepEqual(h.adds, ['자료 보내기']);
 });
 
-test('a second Enter while the first add is still saving adds nothing; after it settles the line takes the next one', () => {
-  const h = line();
-  h.field.value = '견적 비교';
-  h.key('Enter', false); h.key('Enter', false); h.submit();
-  assert.deepEqual(h.adds, ['견적 비교']);
-  h.entry.settled(); h.field.value = '견적 회신';
-  h.key('Enter', false);
-  assert.deepEqual(h.adds, ['견적 비교', '견적 회신']);
+test('P2-F4B-1: an Enter while an earlier line still saves takes its own line; an empty Enter then neither closes nor adds', () => {
+  let waiting = 0;
+  const entry = createGroupAddEntry(() => waiting);
+  assert.equal(entry.submit('견적 비교'), 'add'); waiting = 1;
+  assert.equal(entry.submit('견적 회신'), 'add'); waiting = 2;
+  assert.equal(entry.submit(''), 'ignore', 'not closed while lines wait');
+  assert.equal(entry.escape(), 'ignore'); assert.equal(entry.leave(''), 'ignore');
+  waiting = 0;
+  assert.equal(entry.submit(''), 'close'); assert.equal(entry.escape(), 'close'); assert.equal(entry.leave(''), 'close');
 });
 
 test('empty Enter, Esc, or leaving an empty line closes it; composing Esc and leaving a written line do not', () => {
@@ -85,14 +86,59 @@ test('empty Enter, Esc, or leaving an empty line closes it; composing Esc and le
   assert.deepEqual(h.adds, []);
 });
 
-test('an add may clear the line only if the title and time did not change while it was saving', () => {
-  const entry = createGroupAddEntry();
-  const quiet = entry.mark();
-  assert.equal(entry.unchangedSince(quiet), true);
-  const typed = entry.mark(); entry.edited();
-  assert.equal(entry.unchangedSince(typed), false);
-  const composed = entry.mark(); entry.compositionStart(); entry.compositionEnd();
-  assert.equal(entry.unchangedSince(composed), false);
+/** A save that resolves when told: the order of saves and what each wrote. */
+function saves() {
+  const written: string[] = [], calls: { title: string; time: string; done: (ok: boolean) => void }[] = [];
+  const save = (title: string, time: string) => new Promise<boolean>(resolve => calls.push({ title, time, done: ok => { if (ok) written.push(time ? `${title}@${time}` : title); resolve(ok); } }));
+  const settle = async (ok = true) => { await Promise.resolve(); const call = calls.shift(); assert(call, 'a save is running'); call.done(ok); await new Promise(r => setTimeout(r, 0)); };
+  return { written, calls, save, settle };
+}
+
+test('P2-F4B-1: lines taken while one saves wait in order, one save each, never joined; the field is free at once', async () => {
+  const queue = createLineQueue(), s = saves();
+  let field = '';
+  const first = queue.run(queue.take('연타 1', '', s.save), () => ({ title: field, time: '' }));
+  assert.equal(queue.pending, 1);
+  // Typed right after the Enter, before the first save ends: each Enter takes its own line.
+  const second = queue.run(queue.take('연타 2', '', s.save), () => ({ title: field, time: '' }));
+  const third = queue.run(queue.take('연타 3', '09:30', s.save), () => ({ title: field, time: '' }));
+  assert.equal(await second, null); assert.equal(await third, null);   // the first run takes them
+  assert.equal(queue.pending, 3); assert.equal(s.calls.length, 1, 'one save at a time');
+  await s.settle(); assert.equal(s.calls[0].title, '연타 2');
+  await s.settle(); await s.settle();
+  assert.deepEqual(await first, { text: '', time: '' });
+  assert.deepEqual(s.written, ['연타 1', '연타 2', '연타 3@09:30']); assert.equal(queue.pending, 0);
+  field = 'unused';
+});
+
+test('P2-F4B-1: a refused line comes back with the ones after it and what was typed since; Enter on it unchanged takes them apart again', async () => {
+  const queue = createLineQueue(), s = saves();
+  let field = '';
+  const run = queue.run(queue.take('하나', '', s.save), () => ({ title: field, time: '' }));
+  void queue.run(queue.take('둘', '', s.save), () => ({ title: field, time: '' }));
+  field = '셋 쓰는 중';
+  await s.settle(false);
+  const back = await run;
+  assert.deepEqual(back, { text: '하나 · 둘 · 셋 쓰는 중', time: '' }); assert.equal(queue.pending, 0); assert.deepEqual(s.written, []);
+  // Unchanged: three lines again, in order.
+  const lines = queue.take('하나 · 둘 · 셋 쓰는 중', '', s.save);
+  assert.deepEqual(lines.map(line => line.title), ['하나', '둘', '셋 쓰는 중']);
+  const again = queue.run(lines, () => ({ title: '', time: '' }));
+  await s.settle(); await s.settle(); await s.settle();
+  assert.deepEqual(await again, { text: '', time: '' }); assert.deepEqual(s.written, ['하나', '둘', '셋 쓰는 중']);
+  // Edited after coming back: it is the one line it now is.
+  const solo = createLineQueue(), t = saves();
+  const r1 = solo.run(solo.take('가', '', t.save), () => ({ title: '', time: '' })); void solo.run(solo.take('나', '', t.save), () => ({ title: '', time: '' }));
+  await t.settle(false); assert.equal((await r1)?.text, '가 · 나');
+  assert.deepEqual(solo.take('가 · 나 고침', '', t.save).map(line => line.title), ['가 · 나 고침']);
+});
+
+test('P2-F4B-1: one refused line comes back with its time; a save that throws counts as refused', async () => {
+  const queue = createLineQueue();
+  const back = await queue.run(queue.take('회의', '14:00', async () => false), () => ({ title: '', time: '' }));
+  assert.deepEqual(back, { text: '회의', time: '14:00' });
+  const thrown = await queue.run(queue.take('보고', '', async () => { throw new Error('x'); }), () => ({ title: '', time: '' }));
+  assert.deepEqual(thrown, { text: '보고', time: '' });
 });
 
 test('a composition whose end event never comes: blur or the next key or input that is not composing lets it go', () => {
@@ -102,7 +148,7 @@ test('a composition whose end event never comes: blur or the next key or input t
   // A key that is still composing keeps it.
   entry.keySeen(true); assert.equal(entry.submit('회의'), 'ignore');
   // The next key or input that is not composing: it is over.
-  entry.keySeen(false); assert.equal(entry.escape(), 'close'); assert.equal(entry.submit('회의'), 'add'); entry.settled();
+  entry.keySeen(false); assert.equal(entry.escape(), 'close'); assert.equal(entry.submit('회의'), 'add');
   // Blur ends it too (compositionEnd from the input's blur).
   entry.compositionStart(); assert.equal(entry.leave(''), 'ignore');
   entry.compositionEnd(); assert.equal(entry.leave(''), 'close');

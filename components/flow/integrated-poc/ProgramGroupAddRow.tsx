@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { createGroupAddEntry, type GroupAddAction } from '@/lib/flow/integrated-poc/group-add-entry';
+import { createGroupAddEntry, createLineQueue, type GroupAddAction } from '@/lib/flow/integrated-poc/group-add-entry';
 import { createPressAwareClose } from '@/lib/flow/integrated-poc/press-aware-close';
 import styles from './ProgramSpace.module.css';
 
@@ -9,8 +9,9 @@ import styles from './ProgramSpace.module.css';
  * host's existing quick add; this line only collects a title and an optional time. */
 export function ProgramGroupAddRow(props: { date: string; dayLabel: string; inputRef: React.MutableRefObject<HTMLInputElement | null>;
   onAdd: (title: string, time: string) => Promise<boolean>; onClose: () => void }) {
-  const [entry] = useState(createGroupAddEntry);
+  const [queue] = useState(createLineQueue), [entry] = useState(() => createGroupAddEntry(() => queue.pending));
   const [time, setTime] = useState<string | null>(null), [saving, setSaving] = useState(false);
+  const timeNow = useRef<string | null>(null); timeNow.current = time;
   const mounted = useRef(true), formRef = useRef<HTMLFormElement>(null), focusCount = useRef(0);
   // A press elsewhere blurs the empty line before the press ends. Closing it then removes this row while the
   // pointer is down, the rows below can move under it, and the press's click lands elsewhere (a new row's 원문
@@ -21,7 +22,7 @@ export function ProgramGroupAddRow(props: { date: string; dayLabel: string; inpu
   function closeAfterPress() {
     const at = focusCount.current;
     blurClose.current?.request(() => mounted.current && focusCount.current === at && !formRef.current?.contains(document.activeElement)
-      && !props.inputRef.current?.value.trim(), props.onClose);
+      && !props.inputRef.current?.value.trim() && !queue.pending, props.onClose);
   }
   useEffect(() => {
     mounted.current = true;
@@ -31,24 +32,26 @@ export function ProgramGroupAddRow(props: { date: string; dayLabel: string; inpu
   }, []);
   async function act(action: GroupAddAction, fromBlur = false) {
     if (action === 'close') { if (fromBlur) closeAfterPress(); else props.onClose(); return; }
-    if (action !== 'add') return;
-    const field = props.inputRef.current, form = field?.form, mark = entry.mark();
-    setSaving(true);
-    try {
-      // Clear only what was submitted: a title or time written while the add was saving stays.
-      if (field && await props.onAdd(field.value.trim(), time ?? '') && mounted.current && entry.unchangedSince(mark)) {
-        field.value = ''; setTime(null);
-        const active = document.activeElement;
-        if (!active || active === document.body || form?.contains(active)) field.focus({ preventScroll: true });
-      }
-    } finally { entry.settled(); if (mounted.current) setSaving(false); }
+    if (action !== 'add' || !props.inputRef.current) return;
+    // P2-F4B-1: the line and its time are taken now and the line empties for the next one; the lines save in order.
+    const lines = queue.take(props.inputRef.current.value, time ?? '', (title, at) => props.onAdd(title, at));
+    props.inputRef.current.value = ''; setTime(null); setSaving(true);
+    const back = await queue.run(lines, () => ({ title: props.inputRef.current?.value ?? '', time: timeNow.current ?? '' }));
+    if (back === null || !mounted.current) return;
+    setSaving(false);
+    const field = props.inputRef.current;
+    if (!field) return;
+    // A refused line (and any after it, and what was typed since) comes back with its time, so nothing typed is lost.
+    if (back.text) { field.value = back.text; setTime(back.time || null); }
+    const active = document.activeElement;
+    if (!active || active === document.body || field.form?.contains(active)) field.focus({ preventScroll: true });
   }
   const [month, day] = props.date.slice(5).split('-').map(Number);
   return <li className={styles.groupAdd}>
     <form ref={formRef} onFocus={() => { focusCount.current++; }} onSubmit={event => { event.preventDefault(); void act(entry.submit(props.inputRef.current?.value ?? '')); }}
       onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) void act(entry.leave(props.inputRef.current?.value ?? ''), true); }}>
       <input ref={props.inputRef} name="title" aria-label={`${props.dayLabel}에 추가할 할 일`} placeholder="할 일" maxLength={500} autoComplete="off" enterKeyHint="done"
-        onInput={event => { entry.edited(); entry.keySeen((event.nativeEvent as InputEvent).isComposing); }} onCompositionStart={() => entry.compositionStart()} onCompositionEnd={() => entry.compositionEnd()}
+        data-line-entry onInput={event => { entry.keySeen((event.nativeEvent as InputEvent).isComposing); }} onCompositionStart={() => entry.compositionStart()} onCompositionEnd={() => entry.compositionEnd()}
         onBlur={() => entry.compositionEnd()}
         onKeyDown={event => {
           // Leave a composing key to the IME; the Enter after it is the one that adds. A key that is not composing
@@ -60,10 +63,10 @@ export function ProgramGroupAddRow(props: { date: string; dayLabel: string; inpu
         }} />
       <span className={styles.dayChip} aria-hidden="true">{month}/{day}</span>
       {time === null
-        ? <button type="button" className={styles.timeChip} onClick={() => { entry.edited(); setTime(''); }}>시간</button>
-        : <input autoFocus type="time" step={60} className={styles.timeChip} aria-label="시간" value={time} onChange={event => { entry.edited(); setTime(event.target.value); }}
-          onKeyDown={event => { if (event.key === 'Escape') { event.preventDefault(); entry.edited(); setTime(null); props.inputRef.current?.focus(); } }} />}
-      <button type="submit" disabled={saving}>추가</button>
+        ? <button type="button" className={styles.timeChip} onClick={() => setTime('')}>시간</button>
+        : <input autoFocus type="time" step={60} className={styles.timeChip} aria-label="시간" value={time} onChange={event => setTime(event.target.value)}
+          onKeyDown={event => { if (event.key === 'Escape') { event.preventDefault(); setTime(null); props.inputRef.current?.focus(); } }} />}
+      <button type="submit" aria-busy={saving || undefined}>추가</button>
     </form>
   </li>;
 }

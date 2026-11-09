@@ -45,6 +45,7 @@ test('a blur without a press (Tab) closes on the next turn unless focused again'
 
 test('the add row asks the close with its focus count and the field still empty', () => {
   const row = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramGroupAddRow.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
-  assert.match(row, /blurClose\.current\?\.request\(\(\) => mounted\.current && focusCount\.current === at && !formRef\.current\?\.contains\(document\.activeElement\)\s*&& !props\.inputRef\.current\?\.value\.trim\(\), props\.onClose\);/);
+  // F4-b fix (P2-F4B-1): nor while taken lines still wait to be written.
+  assert.match(row, /blurClose\.current\?\.request\(\(\) => mounted\.current && focusCount\.current === at && !formRef\.current\?\.contains\(document\.activeElement\)\s*&& !props\.inputRef\.current\?\.value\.trim\(\) && !queue\.pending, props\.onClose\);/);
   assert.match(row, /<form ref=\{formRef\} onFocus=\{\(\) => \{ focusCount\.current\+\+; \}\}/);
 });
