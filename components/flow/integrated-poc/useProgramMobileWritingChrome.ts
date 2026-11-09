@@ -29,11 +29,13 @@ export function useProgramMobileWritingChrome(rootRef: React.RefObject<HTMLEleme
         && !!active.closest('[data-rea-app-editor]');
       const body = nativeBody || pmBody;
       if (body) writingEditor = active.closest('[aria-label="개인 문서 편집"]');
+      // F4-b fix (A4/A5): a line field (the folder's '＋ 오늘 할 일', a day's ＋) is writing too: the tabs step aside for it.
+      const lineEntry = inside && active.matches('input[data-line-entry]:not(:disabled)');
       const editorTool = inside && !!writingEditor?.contains(active)
         && !!active.closest('[data-editor-tools]')
         && (!writingEditor?.matches('[data-rea-app-editor]')
           || !!writingEditor.querySelector('.ProseMirror[contenteditable="true"]'));
-      const writing = body || editorTool;
+      const writing = body || editorTool || lineEntry;
       const visibleHeight = visual ? visual.height : view.innerHeight;
       if (!writing) writingEditor = null;
       // A title/search field may keep the keyboard open before returning to body.

@@ -95,7 +95,8 @@ test('re-review 2 P2: a composition whose end never comes is let go on blur, or 
   assert.match(dialog, /if \(!event\.nativeEvent\.isComposing && event\.keyCode !== 229\) endSheetComposing\(\);/);
   const row = read('ProgramGroupAddRow.tsx');
   assert.match(row, /onBlur=\{\(\) => entry\.compositionEnd\(\)\}/);
-  assert.match(row, /onInput=\{event => \{ entry\.edited\(\); entry\.keySeen\(\(event\.nativeEvent as InputEvent\)\.isComposing\); \}\}/);
+  // F4-b fix: the line no longer tracks edits (each Enter takes its line at once); the composition rule stays.
+  assert.match(row, /onInput=\{event => \{ entry\.keySeen\(\(event\.nativeEvent as InputEvent\)\.isComposing\); \}\}/);
   assert.match(row, /if \(event\.nativeEvent\.isComposing\) return;\s*if \(event\.keyCode !== 229\) entry\.keySeen\(false\);/);
 });
 

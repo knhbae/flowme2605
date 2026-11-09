@@ -221,6 +221,8 @@ export const PROGRAM_MOVE_GESTURE_V1 = Object.freeze({ version: 1, holdMs: 350, 
 // title and ⋯ share the editor's tool line there; phones, portrait screens and taller ones keep the title line.
 // A tap on 글 찾기 or the title while a composition or a document action is on: the find waits, and says so until then.
 const FIND_BLOCKED = '입력과 저장을 마친 뒤 글 찾기를 열어 주세요. 현재 입력은 그대로 있습니다.';
+/** P3-F4B-2: '＋ 오늘 할 일' after another tab or device saved first (the field's words are not kept by a reload). */
+const FOLDER_TODAY_CONFLICT = '다른 곳에서 먼저 바뀌어 적지 않았습니다. 칸의 글을 복사해 두고 새로고침한 뒤 다시 적어 주세요.';
 export const PROGRAM_TABLET_HEAD_QUERY = '(min-width: 1000px) and (max-height: 900px) and (orientation: landscape) and (pointer: coarse)';
 // Visual A (11/7): a phone takes the same one head line ([title] … [↶][＋][⋯]); its ⋯ also holds the document's own
 // actions (글 작업), so the line has one menu.
@@ -341,6 +343,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   /** F4-b (FR-7): [할 일]'s '＋ 오늘 할 일' field (open or not), what is said under it when a line could not be written,
    *  and the notice after a line with its 되돌리기. A view change closes them. */
   const [folderTodayOpen, setFolderTodayOpen] = useState(false), [folderTodayWarn, setFolderTodayWarn] = useState<string | null>(null);
+  const folderTodayConflict = useRef(false);
   type FolderTodayNotice = { actorId: string; text: string; undo: ProgramFolderTodayUndo | null; refused?: boolean; undone?: boolean };
   const [folderTodayNotice, setFolderTodayNotice] = useState<FolderTodayNotice | null>(null), [folderTodayPending, setFolderTodayPending] = useState(false);
   useEffect(() => { setFolderTodayOpen(false); setFolderTodayWarn(null); setFolderTodayNotice(null); }, [actorId, folderId, !!folderScreen, folderScreen?.tab]);
@@ -2009,8 +2012,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         if (next.ok && next.changed !== false) { undo = programFolderTodayUndo(shown, next.data.spaces[actorId]); home = place.title; }
         return next;
       }, { history: true, awaitAutomaticRead: true });
-      if (result.ok) { setFolderTodayNotice({ actorId, text: `${home || '쓰던 글'} 오늘에 적었습니다`, undo }); return true; }
-      setFolderTodayWarn(result.reason === 'unresolved' ? '이 자리에는 적을 수 없습니다. 쓰기에서 적어 주세요. 적은 내용은 그대로 있습니다.'
+      if (result.ok) { folderTodayConflict.current = false; setFolderTodayNotice({ actorId, text: `${home || '쓰던 글'} 오늘에 적었습니다`, undo }); return true; }
+      // P3-F4B-2: another tab or device saved first. Saves here stay refused until the page reads it again, and a retry
+      // meanwhile fails on the stale writing ('unresolved'): both get the one sentence that says what to do.
+      if (result.reason === 'conflict') folderTodayConflict.current = true;
+      setFolderTodayWarn(folderTodayConflict.current && (result.reason === 'conflict' || result.reason === 'unresolved') ? FOLDER_TODAY_CONFLICT
+        : result.reason === 'unresolved' ? '이 자리에는 적을 수 없습니다. 쓰기에서 적어 주세요. 적은 내용은 그대로 있습니다.'
         : `${programErrorMessage(result.reason)} 적은 내용은 그대로 있습니다.`);
       return false;
     } finally { release(); }
