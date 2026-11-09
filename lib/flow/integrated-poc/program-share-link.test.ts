@@ -103,10 +103,10 @@ test('three places, the same button: Flow detail ⋯, the publish panel, 내 활
   const discovery = read('ProgramDiscovery.tsx'), community = read('ProgramCommunity.tsx'), publisher = read('ProgramPublisher.tsx'), button = read('ProgramShareLink.tsx');
   assert(discovery.includes("{!flow.archived && <ProgramShareLink flowId={flow.id} versionId={version.id} unverified={flow.id.startsWith('catalog-')} />}"));
   assert(community.includes('{!flow.archived && <ProgramShareLink flowId={flow.id} versionId={flow.versionId} />}'));
-  // The account publish keeps the dialog on "공개했습니다" with the link, 공개한 Flow 보기 and 닫기 (UX 13 order).
-  assert.match(publisher, /if \(storageScope === 'account' && flowId\) \{ setPublished\(\{ flowId, versionId: result\.result,/);
-  const panel = publisher.slice(publisher.indexOf('if (published) return <dialog'), publisher.indexOf('return <dialog ref={dialog} className={styles.dialog} aria-labelledby="program-publisher-title"'));
-  assert(panel.indexOf('<ProgramShareLink') < panel.indexOf('공개한 Flow 보기') && panel.indexOf('공개한 Flow 보기') < panel.indexOf('>닫기<'));
+  // Account and local publishes keep the same completion panel and exact-version link.
+  assert.match(publisher, /if \(flowId\) \{ setPublished\(\{ flowId, versionId: result\.result,/);
+  const panel = publisher.slice(publisher.indexOf('if (published) return <dialog'), publisher.indexOf('  return <dialog ref={dialog} className={styles.dialog}'));
+  assert(panel.indexOf('<ProgramShareLink') < panel.indexOf('Flow 찾기에서 보기') && panel.indexOf('Flow 찾기에서 보기') < panel.indexOf('>닫기<'));
   // The honest line, the unverified block, the 3-second result and the hand-copy fallback.
   for (const text of ['FlowMe에 로그인한 사람만 열 수 있습니다.', '미확인 콘텐츠는 링크를 만들지 않습니다.', '링크를 복사했습니다', '길게 눌러 복사해 주세요']) assert(button.includes(text), text);
   assert.match(button, /window\.setTimeout\(\(\) => setResult\(null\), 3000\)/);

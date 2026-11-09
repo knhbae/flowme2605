@@ -95,13 +95,14 @@ test('published and taken with the writer\'s own 기준일: the writer\'s dates 
   }
 });
 
-test('the wiring: the editor shows the taker\'s preview with stage 1\'s function; the source link sits under the summary', () => {
+test('the wiring: the F5-a refine step keeps one source field and stage 1 taker preview', () => {
   const read = (path: string) => readFileSync(join(process.cwd(), path), 'utf8').replace(/\r\n/g, '\n');
   const editor = read('components/flow/integrated-poc/ProgramPublisher.tsx');
   assert(editor.includes('programPublicationTakerPreview(input.items, input.title, takerDate, today)'), 'the taker\'s preview');
   const lib = read('lib/flow/integrated-poc/publication-anchor.ts');
   assert(lib.includes('return programImportPreview(version, ids, anchor, repeats, today, choice);'), 'stage 1\'s preview function');
-  assert(editor.indexOf('data-publication-field="sourceUrl" value={draft.sourceUrl}') < editor.indexOf('data-anchor-convert'), 'the link above the conversion');
-  assert(editor.indexOf('data-anchor-convert') < editor.indexOf('<h3>공개할 항목</h3>'));
+  // F5-a explicitly moves the source link below the selected-item editor.
+  assert(editor.indexOf('data-anchor-convert') < editor.indexOf('aria-label="고른 항목 다듬기"'));
+  assert(editor.indexOf('aria-label="고른 항목 다듬기"') < editor.indexOf('data-publication-field="sourceUrl" value={draft.sourceUrl}'));
   assert.equal(editor.split('data-publication-field="sourceUrl" value={draft.sourceUrl}').length, 2, 'one field for the Flow\'s link');
 });
