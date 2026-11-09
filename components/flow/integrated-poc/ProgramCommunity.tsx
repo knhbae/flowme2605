@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { ProgramIcon } from './icons';
+import { ProgramFlowThread } from './ProgramFlowThread';
+import { programDoingFlows } from '../../../lib/flow/integrated-poc/flow-thread';
 import { programClone, programId, type ProgramData, type ProgramParticipationDraft, type ProgramPost, type ProgramReply } from '../../../lib/flow/integrated-poc/contract';
 import { deleteProgramPost, deleteProgramReply, listProgramActivity, programPostEditToken, programReplyEditToken, toggleProgramReaction } from '../../../lib/flow/integrated-poc/community';
 import { programPostFlowDestination, programReplyDestination, readProgramPublishingActivity } from '../../../lib/flow/integrated-poc/publishing-activity';
@@ -559,26 +562,31 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId: requested
     </article> : <div className={styles.empty}><p>연결된 글을 찾을 수 없어요.</p><button type="button" onClick={() => void go({ view: 'community' })}>현재 글 목록 보기</button></div>
       : null}
       <div hidden={view !== 'activity' || !!selectedPostId} className={styles.activity}>
+        {/* F6-B2 (나, A+ 구조): the Flows I took that still have something open — name, 실, n/m; a row opens its document. */}
+        {(doing => doing.length > 0 && <section className={styles.doing} aria-label="하고 있는 Flow"><p className={styles.activityLabel}>하고 있는 Flow</p>
+          <ul className={styles.doingList}>{doing.map(flow => <li key={flow.documentId}><button type="button" className={styles.doingRow} data-doing-flow={flow.documentId}
+            aria-label={`${flow.title} · ${flow.total}개 중 ${flow.doneTasks}개 끝냄 · 열기`} onClick={() => navigate({ view: 'space', id: flow.documentId })}>
+            <span className={styles.doingName}>{flow.title}</span><ProgramFlowThread points={flow.points} done={flow.done} width={72} /><small>{flow.doneTasks}/{flow.total}</small></button></li>)}</ul></section>)(data.spaces[actorId] ? programDoingFlows(data.spaces[actorId]) : [])}
         <p className={styles.activityLabel}>내 활동</p>
-        <details className={styles.activityGroup} data-activity-group="flows"><summary>내 공개 Flow<small>{activityCounts.flows}개{activityCounts.drafts ? ` · 초안 ${activityCounts.drafts}` : ''}</small></summary>
+        <details className={styles.activityGroup} data-activity-group="flows"><summary><ProgramIcon name="flow" size={20} />내 공개 Flow<small>{activityCounts.flows}개{activityCounts.drafts ? ` · 초안 ${activityCounts.drafts}` : ''}</small></summary>
         <section><h2 className={styles.srOnly}>내 공개 Flow</h2>{publishingActivity.flows.length ? <ul className={styles.list}>{publishingActivity.flows.map(flow => <li key={flow.id}>
-          <button className={styles.publicationRow} type="button" disabled={draftEntryDisabled} data-publication-row={flow.id} onClick={() => void openManagement(flow.id)}><span><strong>{flow.title}</strong><small>{flow.archived ? '공개 철회됨' : '공개 중'} · 버전 {flow.number} · 후기 {flowReviews.byFlow[flow.id] ?? 0}</small></span><span aria-hidden="true">›</span></button>
+          <button className={styles.publicationRow} type="button" disabled={draftEntryDisabled} data-publication-row={flow.id} onClick={() => void openManagement(flow.id)}><span><strong>{flow.title}</strong><small>{flow.archived ? '공개 철회됨' : '공개 중'} · 버전 {flow.number} · 후기 {flowReviews.byFlow[flow.id] ?? 0}</small></span><span aria-hidden="true"><ProgramIcon name="right" size={16} /></span></button>
         </li>)}</ul> : <p className={styles.empty}>공개한 Flow가 없어요.</p>}</section>
         <section><h2 className={styles.srOnly}>작성 중인 공개 초안</h2>{publishingActivity.drafts.length ? <ul className={styles.list}>{publishingActivity.drafts.map(entry => <li key={entry.id}>
           <button type="button" className={styles.publicationRow} disabled={draftEntryDisabled || !entry.document} data-publication-draft={entry.id} onClick={() => { if (entry.document?.archived) { const id = entry.document.id; void preparePublicationEntry().then(ready => { if (ready) navigate({ view: 'space', id }); }); } else if (entry.document) void openPublication(entry.document.id, 'resume'); }}><span><strong>{entry.title || entry.document?.title || '제목 없는 공개 초안'}</strong><small>작성 중 초안 · {stamp(entry.updatedAt)} 저장{entry.flowArchived ? ' · 다시 공개 준비 중' : ''}</small></span><span>{entry.document?.archived ? '원문 복원 ›' : '이어서 ›'}</span></button>
           {!entry.document && <p className={styles.meta}>원래 문서를 찾을 수 없어 편집을 열 수 없습니다.</p>}
         </li>)}</ul> : <p className={styles.empty}>작성 중인 공개 초안이 없어요.</p>}</section></details>
-        <details className={styles.activityGroup} data-activity-group="received"><summary>받은 후기·반응<small>{activityCounts.received}개</small></summary>
+        <details className={styles.activityGroup} data-activity-group="received"><summary><ProgramIcon name="link" size={20} />받은 후기·반응<small>{activityCounts.received}개</small></summary>
         <section><h2>내게 온 답글</h2>{replyRows(activity.receivedReplies)}</section>
         <section data-flow-reviews><h2>내 Flow에 남은 후기 · 해 봤어요 {flowReviews.posts.length}</h2>{flowReviews.posts.length ? postRows(flowReviews.posts) : <p className={styles.empty}>아직 남은 후기가 없어요.</p>}</section>
         <section><h2>내 Flow에 온 제안</h2>{activity.incomingProposals.length ? activity.incomingProposals.map(proposal => <ProgramProposalReview key={proposal.id} proposal={proposal} data={data} mutate={mutate} navigate={navigate}
           onRegisterEditors={port => { if (port) reviewPorts.current.set(proposal.id, port); else reviewPorts.current.delete(proposal.id); }} />) : <p className={styles.empty}>아직 제안이 없어요.</p>}</section></details>
-        <details className={styles.activityGroup} data-activity-group="sent"><summary>보낸 제안<small>{activityCounts.sent}개</small></summary>
+        <details className={styles.activityGroup} data-activity-group="sent"><summary><ProgramIcon name="mail" size={20} />보낸 제안<small>{activityCounts.sent}개</small></summary>
         <section><h2>보낸 제안과 결과</h2>{sentProposals.map(proposal => <ProgramProposalReview key={proposal.id} proposal={proposal} data={data} mutate={mutate} navigate={navigate}
           onRegisterEditors={port => { if (port) reviewPorts.current.set(proposal.id, port); else reviewPorts.current.delete(proposal.id); }} />)}
           {!activity.proposals.length && <p className={styles.empty}>보낸 제안이 없어요.</p>}
           {activity.proposals.some(proposal => activity.incomingProposals.some(incoming => incoming.id === proposal.id)) && <p className={styles.meta}>내 Flow에 보낸 제안은 '받은 후기·반응'에서 검토할 수 있어요.</p>}</section></details>
-        <details className={styles.activityGroup} data-activity-group="posts"><summary>내가 쓴 글<small>{activityCounts.posts}개</small></summary>
+        <details className={styles.activityGroup} data-activity-group="posts"><summary><ProgramIcon name="write" size={20} />내가 쓴 글<small>{activityCounts.posts}개</small></summary>
         <div className={styles.actions}>{writePost}</div>
         <section><h2>내가 쓴 글</h2>{postRows(activity.posts)}</section><section><h2>내가 쓴 답글</h2>{replyRows(activity.replies)}</section>
         <details><summary>도움됐어요를 누른 글과 답글</summary>{activity.reactions.map(reaction => { const id = reaction.targetKind === 'post' ? reaction.targetId : data.public.replies.find(reply => reply.id === reaction.targetId)?.postId; return id ? <button key={`${reaction.targetKind}:${reaction.targetId}`} type="button" onClick={() => reaction.targetKind === 'reply' ? openReply(id, reaction.targetId) : openPost(id)}>{postTitle(data, id)}</button> : null; })}</details></details>

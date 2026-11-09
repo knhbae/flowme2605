@@ -5,8 +5,11 @@
 
 /* A1 · the list */
 .list { min-width: 0; }
-.list ul { margin: 0; padding: 0; list-style: none; }
-.list .folderRow { position: relative; display: flex; align-items: stretch; border-bottom: 1px solid var(--flowme-b-surface-subtle); }
+/* F6-B2 (목업 B): the folders on a white card (hair border, corners 18) on the paper page. */
+.list ul { margin: 0; padding: 0; list-style: none; overflow: hidden; border: 1px solid var(--flowme-b-hair); border-radius: 18px; background: var(--flowme-b-surface); }
+.list .folderRow { position: relative; display: flex; align-items: stretch; border-bottom: 1px solid var(--flowme-b-hair); }
+.list .addLine { margin-top: 4px; border-bottom: 0; }
+.list .allIcon { flex: none; color: var(--flowme-b-primary); }
 .list .folderRow:last-child { border-bottom: 0; }
 .list .folderRow .folderOpen, .list .folderRow .moreRow, .list .folderRow .addRow {
   flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 10px; min-height: 52px; margin: 0;
@@ -145,3 +148,6 @@
 /* UX FIX 2 (11/9): with the keyboard up the page scrolls to the line being written (the regions grow with their text,
    unlike 쓰기's editor, which scrolls inside); the head (‹ · name · status · 완료) stays at the top. */
 :global([data-writing-keyboard="true"]) .head { position: sticky; top: 0; z-index: 20; margin-left: 0; background: var(--flowme-b-paper); }
+
+/* F6-B2 (목업 B): the folder's name as a screen title, 26/800. */
+.head h1 { font-size: 26px; line-height: 34px; font-weight: 800; letter-spacing: -0.3px; }

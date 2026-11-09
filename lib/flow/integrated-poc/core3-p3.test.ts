@@ -44,7 +44,8 @@ test('나: the 복구함 line on top (the badge\'s count, none at 0), then 내 �
   assert(alpha.includes('const meHead = meRecoveryLine ? <div className={styles.meHead}>{meRecoveryLine}</div> : null;'));
   const me = alpha.slice(alpha.indexOf('const meSections ='), alpha.indexOf('const serverStatusView'));
   assert(me.indexOf('aria-label="계정"') < me.indexOf('aria-label="자료"') && me.includes('{!savedTotal && recoveryButton}') && me.includes('onClick={openCreatorEntry}>Flow 만들기</button>'));
-  const groups = ['data-activity-group="flows"><summary>내 공개 Flow', 'data-activity-group="received"><summary>받은 후기·반응', 'data-activity-group="sent"><summary>보낸 제안', 'data-activity-group="posts"><summary>내가 쓴 글'].map(at => community.indexOf(at));
+  // F6-B2: each row starts with its icon (내 공개 Flow · 받은 후기·반응 · 보낸 제안 · 내가 쓴 글).
+  const groups = ['data-activity-group="flows"><summary><ProgramIcon name="flow" size={20} />내 공개 Flow', 'data-activity-group="received"><summary><ProgramIcon name="link" size={20} />받은 후기·반응', 'data-activity-group="sent"><summary><ProgramIcon name="mail" size={20} />보낸 제안', 'data-activity-group="posts"><summary><ProgramIcon name="write" size={20} />내가 쓴 글'].map(at => community.indexOf(at));
   assert(groups.every(at => at > 0) && groups.every((at, index) => !index || at > groups[index - 1]), String(groups));
   assert(community.includes('received: flowReviews.posts.length + activity.receivedReplies.length + activity.incomingProposals.length'));
   assert(alphaCss.includes('.page .meList > :is(button, a) { display: flex;') && alphaCss.includes('min-height: 52px;'));

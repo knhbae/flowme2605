@@ -4,7 +4,8 @@ import React, { useEffect, useRef } from 'react';
 import type { ProgramData, ProgramPublicationDraft, ProgramPublicationDraftRow, ProgramPublicFlow, ProgramPublicVersion } from '@/lib/flow/integrated-poc/contract';
 import { programPublicationPickGroups } from '@/lib/flow/integrated-poc/publication-steps';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
-import { programFlowCardLines } from '@/lib/flow/integrated-poc/program-discovery-display';
+import { programFlowCardLines, programFlowCardThread } from '@/lib/flow/integrated-poc/program-discovery-display';
+import { ProgramFlowThread } from './ProgramFlowThread';
 import type { TextRow } from '@/lib/flow/integrated-poc/text-workspace';
 import { PROGRAM_OFFICIAL_LABEL, programFlowAttributionLabel } from '@/lib/flow/integrated-poc/alpha-official-actors';
 import { useAlphaOfficialActors } from './AlphaOfficialActors';
@@ -41,6 +42,6 @@ export function ProgramPublicationPreviewCard({ data, flow, version }: { data: P
   return <div className={styles.cardPreview} aria-label="Flow 찾기에 보일 카드"><div className={discoveryStyles.flowCard} data-card-lines="3" aria-label={[lines.title, lines.tag, lines.oneLine, lines.brief].filter(Boolean).join(', ')}>
     <span className={discoveryStyles.cardTitleRow}><span className={discoveryStyles.cardTitle}>{lines.title}</span>{lines.tag && <span className={discoveryStyles.cardBadge} data-badge={lines.tag}>{lines.tag}</span>}</span>
     {lines.oneLine && <span className={discoveryStyles.cardSummary}>{lines.oneLine}</span>}
-    <span className={discoveryStyles.cardMeta}>{lines.brief}</span>
+    <span className={discoveryStyles.cardMeta}><ProgramFlowThread {...programFlowCardThread(version)} width={64} />{lines.brief}</span>
   </div></div>;
 }

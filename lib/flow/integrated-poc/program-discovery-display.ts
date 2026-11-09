@@ -5,6 +5,7 @@ import { programOrdinaryTimingLabel } from './public-ordinary-time';
 import { programImportItemView } from './public-repeat-import';
 import { programDateLabel } from './date-label';
 import type { ProgramImportSpan } from './import-preview';
+import { programDayNumber, programThreadPoints, type ProgramFlowThreadShape } from './flow-thread';
 
 // Flow 찾기 FC1·FC2 (planning/flow-content-20261030/FC-SPEC.md). Pure display values shared by the card, the
 // detail and the import sheet; nothing here is stored and no version or flow field is added.
@@ -80,6 +81,16 @@ export function programFlowCardLines(flow: ProgramPublicFlow, version: ProgramPu
     brief: [`할 일 ${version.items.length}`, programCardShape(version, context.anchorLabel ?? programSummaryAnchor(version.summary)), flow.category].filter(Boolean).join(' · '),
   };
 }
+/** F6-B2: the card's Flow 실 (its third line, the publish preview card too) — the plan's shape, every dot filled: its 기준일
+ *  days, else its fixed dates; a Flow of repeats alone, three even dots; nothing dated, none. */
+export function programFlowCardThread(version: Pick<ProgramPublicVersion, 'items'>): ProgramFlowThreadShape {
+  const relative = version.items.flatMap(item => item.schedule.kind === 'relative' ? [item.schedule.days] : []);
+  const fixed = version.items.flatMap(item => item.schedule.kind === 'fixed' ? [programDayNumber(item.schedule.date)] : []);
+  let points = programThreadPoints(relative.length ? relative : fixed);
+  if (!points.length && version.items.some(item => item.schedule.kind === 'recurring' || !!programImportItemView(item))) points = [0, 0.5, 1];
+  return { points, done: points.length };
+}
+
 /** Stage 2 writes a Flow's 기준일 name as its summary's first line ("기준일: 이사일"); the card's line is the rest. */
 export function programSummaryAnchor(summary: string): string | null {
   return /^기준일: (.+)$/.exec(summary.split('\n')[0]?.trim() ?? '')?.[1]?.trim() || null;

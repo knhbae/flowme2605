@@ -7,7 +7,7 @@ import { classifyProgramUrl, makeProgramOutput, PROGRAM_ICS_ONCE, type ProgramOu
 import { programCatalogMetadata } from '@/lib/flow/integrated-poc/catalog';
 import { isPublicCatalogFlowOnHold } from '@/lib/flow/public-source-review-policy';
 import { PROGRAM_PUBLIC_RECURRENCE_WINDOW } from '@/lib/flow/integrated-poc/public-recurrence-contract';
-import { PROGRAM_IMPORT_GENERIC_FAILURE, programFlowCardLines, programImportCheckPasses, programImportFailure, programItemDateLabel, programLiveCopies, programLiveCopy, programShortDate,
+import { PROGRAM_IMPORT_GENERIC_FAILURE, programFlowCardLines, programFlowCardThread, programImportCheckPasses, programImportFailure, programItemDateLabel, programLiveCopies, programLiveCopy, programShortDate,
   programSortFlowsByRecent, programSourceLine, programSummaryAnchor, programVersionScheduleShape, programVersionUsesAnchor } from '@/lib/flow/integrated-poc/program-discovery-display';
 import { defaultProgramOutputRecurrenceWindow } from '@/lib/flow/integrated-poc/public-output-recurrence';
 import { programPublicOutputBase, resolveProgramPublicOutputReturn } from '@/lib/flow/integrated-poc/public-output-return';
@@ -28,6 +28,7 @@ import { PROGRAM_OFFICIAL_LABEL, programFlowAttributionLabel } from '@/lib/flow/
 import { useAlphaOfficialActors } from './AlphaOfficialActors';
 import styles from './ProgramDiscovery.module.css';
 import { ProgramIcon } from './icons';
+import { ProgramFlowThread } from './ProgramFlowThread';
 
 export type ProgramDiscoveryDraftState = {
   url: string; urlOpen: boolean; checkedUrl: string | null; pastedText: string; pastedTitle: string;
@@ -615,7 +616,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
         aria-label={[lines.title, lines.tag, lines.oneLine, lines.brief].filter(Boolean).join(', ')}>
         <span className={styles.cardTitleRow}><span className={styles.cardTitle}>{lines.title}</span>{lines.tag && <span className={styles.cardBadge} data-badge={lines.tag}>{lines.tag}</span>}</span>
         {lines.oneLine && <span className={styles.cardSummary}>{lines.oneLine}</span>}
-        <span className={styles.cardMeta}>{lines.brief}</span>
+        <span className={styles.cardMeta}><ProgramFlowThread {...programFlowCardThread(current)} width={64} />{lines.brief}</span>
         {match?.on === 'item' && <span className={styles.cardSource} data-link-on="item">항목 출처: {match.items.join(', ')}</span>}
       </button></li>;
     })}</ul>

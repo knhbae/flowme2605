@@ -555,3 +555,6 @@
    written keeps the tools). It stays, buttons hidden, while it holds a warning or its recovery box. */
 .editor[data-folder-screen="true"] > .toolbar > :is(button, details:not(.saveFeedback), .toolbarSep, [data-editor-head]) { display: none; }
 .editor[data-folder-screen="true"] > .toolbar:not(:has(.saveFeedback, [data-warn])) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* F6-B2 (목업 B): ＋ (추가) is a filled primary circle with a white plus (on a wide screen, a filled pill). */
+.editor .toolbar > .addButton, .editor .toolbar > .addButton:is(:hover, :active):not(:disabled) { background: var(--flowme-b-primary); background-clip: padding-box; color: #fff; box-shadow: none; }

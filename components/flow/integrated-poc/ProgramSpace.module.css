@@ -615,3 +615,43 @@
 }
 /* F4-a: a folder row's meta is 13px (no text under 13px on the folder screen). */
 .space .tasks[data-folder-tasks] .taskTitle small { font-size: 13px; line-height: 18px; }
+
+/* F6-B2 (11/9, 방향 B). The 하루 view's head on navy: '11월 · 월요일' (on-navy 15/700), the day's number 56/800 (tabular)
+   with 오늘/어제/내일, and 남은 일 · 끝낸 일 · Flow n under it; ＋ and ⋯ white at its top right. On a phone it runs to the
+   screen's edges with round bottom corners (목업 B); wider, a navy card. Week and month keep their title rows. */
+.space[data-note-layout="true"] .notePeriodTitle[data-day-hero] { position: relative; flex-wrap: wrap; align-items: flex-start; gap: 0 8px; margin: 8px 0 4px; padding: 18px 8px 18px 22px; border-radius: 22px; background: var(--flowme-b-navy); color: #fff; }
+@media (max-width: 700px) { .space[data-note-layout="true"] .notePeriodTitle[data-day-hero] { margin: -28px -12px 4px; padding-top: 26px; border-radius: 0 0 26px 26px; } }
+.space[data-note-layout="true"] .notePeriodTitle[data-day-hero] h1.heroTitle { display: grid; flex: 1 1 auto; gap: 4px; min-width: 0; margin: 0; font-size: 15px; line-height: 22px; white-space: normal; overflow: visible; }
+.heroSr { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.heroMonth { color: var(--flowme-b-on-navy); font-size: 15px; line-height: 22px; font-weight: 700; }
+.heroDay { color: #fff; font-size: 56px; line-height: 1; font-weight: 800; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.space .heroDay small { display: inline; margin-left: 8px; color: #fff; font-size: 22px; font-weight: 800; letter-spacing: 0; vertical-align: baseline; }
+.space[data-note-layout="true"] .notePeriodTitle[data-day-hero] .heroStats { display: flex; flex: 1 0 100%; align-items: center; gap: 8px; margin: 16px 14px 0 0; color: var(--flowme-b-on-navy); font-size: 14px; line-height: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.heroStats > span:first-child { color: #fff; }
+.heroStats .heroFlow { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; color: var(--flowme-b-teal-on-navy); }
+.space[data-note-layout="true"] .notePeriodTitle[data-day-hero] .notePeriodActions > .noteAdd { color: #fff; }
+.space[data-note-layout="true"] .notePeriodTitle[data-day-hero] .notePeriodActions > .noteAdd::before { background: rgb(255 255 255 / .16); }
+/* Wider, ＋ says 할 일 추가 in words: a white-on-navy pill there. */
+@media (min-width: 701px) { .space[data-note-layout="true"] .notePeriodTitle[data-day-hero] .notePeriodActions > button.noteAdd { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 22px; background: rgb(255 255 255 / .14); color: #fff; } }
+.space[data-note-layout="true"] .notePeriodTitle[data-day-hero] .notePeriodTools > summary { color: #fff; }
+.space[data-note-layout="true"] .notePeriodTitle[data-day-hero] .notePeriodTools[open] > summary,
+.space[data-note-layout="true"] .notePeriodTitle[data-day-hero] .notePeriodActions > :is(button, details > summary):hover { background: rgb(255 255 255 / .12); }
+.space[data-note-layout="true"] .notePeriodTitle[data-day-hero] :is(button, summary):focus-visible { outline-color: var(--flowme-b-on-navy); }
+
+/* F6-B2: round checks (22, 2px) in 오늘 and the folder's [할 일], as the band; a Flow's open task rings teal. Pressed:
+   120 ms to a primary disc with a white check, then 320 ms to the done look (reduced motion: the global rule, instant). */
+.space .check > .checkMark:not([data-check="partial"]) { width: 22px; height: 22px; border-width: 2px; border-style: solid; border-radius: 50%; background: var(--flowme-b-paper); transition: background-color 320ms ease, border-color 320ms ease; }
+.space .task[data-flow-row] .check > .checkMark[data-check="open"] { border-color: var(--flowme-b-flow); }
+.space .check > .checkMark[data-check="done"] { border-color: var(--flowme-b-canvas); background: var(--flowme-b-canvas); }
+/* Pressed: primary at once; done holds it 120 ms (the delay) and fades to the done look in 320 ms, its check white to muted. */
+.space .check > .checkMark[data-check="done"] { transition: background-color 320ms ease 120ms, border-color 320ms ease 120ms; }
+.space .check > .checkMark[data-check="done"]::after { left: 6px; top: 2.5px; transition: border-color 320ms ease 120ms; }
+.space .check > .checkMark[data-check="busy"] { border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); transition-duration: 0ms; }
+.space .check > .checkMark[data-check="busy"]::after { content: ""; position: absolute; left: 6px; top: 2.5px; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+/* F6-B2: a Flow's row: its name in teal (600), then its 실 and n/m. */
+.space .taskTitle small .rowFlow { color: var(--flowme-b-flow); font-weight: 600; }
+.space .taskTitle small .rowThread { color: var(--flowme-b-muted); font-variant-numeric: tabular-nums; }
+.space .taskTitle small .rowThread [data-flow-thread] { margin-inline: 9px 7px; }
+/* F6-B2 (목업 B): screen titles 26/800 (letter-spacing −0.3) — the writing document's name and the 폴더 list. */
+.space .docHeading:has(.titleButton) > h1, .space[data-note-layout="true"] .executionView > .periodHeading > h1:not(:has(.titleMain)) { font-size: 26px; line-height: 34px; font-weight: 800; letter-spacing: -0.3px; }
+.space .docHeading:has(.titleButton) > h1 .titleButton { font-weight: 800; }

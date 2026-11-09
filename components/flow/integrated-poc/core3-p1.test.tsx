@@ -31,7 +31,7 @@ test('opened in place: three rows with checks and "Flow 이름 ›", then 오늘
   assert(source.includes("useEffect(() => { try { setOpened(localStorage.getItem(OPEN_KEY) === '1'); } catch { /* folded, then */ } }, []);"));
   assert(source.includes('{opened && <><ul id={`${uid}-rows`}'));
   assert(source.includes("{more > 0 ? `${more}개 더 · 오늘에서 모두 보기` : '오늘에서 모두 보기'}"));
-  assert(source.includes('>{row.flowTitle} ›</button>'));
+  assert(source.includes('>{row.flowTitle}<ProgramIcon name="right" size={16} /></button>')) // F6-B2: the icon set's ›;
   // The keyboard still sends it away, as before.
   const css = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/ProgramFlowTodayBand.module.css'), 'utf8');
   assert(css.includes(':global([data-writing-keyboard="true"]) .band { display: none; }'));

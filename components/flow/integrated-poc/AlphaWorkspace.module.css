@@ -470,10 +470,12 @@
 .meRecovery strong { font-size: 16px; line-height: 22px; }
 .meRecovery small { color: var(--flowme-b-muted); font-size: 13px; line-height: 18px; }
 .meCount { flex: none; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; background: var(--flowme-b-warning-bg); color: var(--flowme-b-warning-ink); font-size: 12px; font-weight: 700; line-height: 22px; text-align: center; }
-.meChevron { flex: none; color: var(--flowme-b-muted); font-size: 18px; }
+.meChevron { flex: none; display: inline-flex; color: var(--flowme-b-muted); }
 .meList { display: grid; border-top: 1px solid var(--flowme-b-line); }
 .page .meList > :is(button, a) { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 52px; margin: 0; padding: 0 4px; border: 0; border-bottom: 1px solid var(--flowme-b-line); border-radius: 0; background: transparent; color: var(--flowme-b-ink); font-size: 16px; text-align: left; text-decoration: none; cursor: pointer; }
-.page .meList > :is(button, a)::after { content: "›"; color: var(--flowme-b-muted); }
+/* F6-B2: the icon set's › (a mask in the muted color). */
+.page .meList > :is(button, a)::after { content: ""; flex: none; width: 16px; height: 16px; background: var(--flowme-b-muted); -webkit-mask: var(--flowme-icon-right) center / 16px no-repeat; mask: var(--flowme-icon-right) center / 16px no-repeat; }
+.meIcon { flex: none; color: var(--flowme-b-control); }
 .page .meList > button:disabled { opacity: .55; }
 
 /* F6-B1 (11/9, 방향 B 흐름 노트): the menu in the B frame. The wordmark has the 흐름 마크 beside it (the mark alone, in teal,

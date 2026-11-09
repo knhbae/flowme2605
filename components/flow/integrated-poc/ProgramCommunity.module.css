@@ -102,7 +102,16 @@
 .activityGroup > summary::-webkit-details-marker { display: none; }
 /* P3b (UX): the counts are quiet (muted); only something new would take the primary color. */
 .community .activityGroup > summary small { color: var(--flowme-b-muted); font-size: 13px; font-weight: 400; }
-.activityGroup > summary::after { content: "›"; margin-left: auto; color: var(--flowme-b-muted); }
+/* F6-B2: the icon set's › (a mask in the muted color) and an icon before each 내 활동 row (control). */
+.activityGroup > summary::after { content: ""; flex: none; width: 16px; height: 16px; margin-left: auto; background: var(--flowme-b-muted); -webkit-mask: var(--flowme-icon-right) center / 16px no-repeat; mask: var(--flowme-icon-right) center / 16px no-repeat; }
+.community .activityGroup > summary > svg[data-icon] { color: var(--flowme-b-control); }
+/* F6-B2 (나, A+): 하고 있는 Flow — a row each (52px): its name, its 실, n/m (tabular). */
+.doing { margin-bottom: 16px; }
+.doingList { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--flowme-b-line); }
+.doingList > li { border-bottom: 1px solid var(--flowme-b-hair); }
+.community .doingRow { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 0 4px; border: 0; border-radius: 0; background: transparent; color: var(--flowme-b-ink); font-size: 16px; text-align: left; cursor: pointer; }
+.doingName { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doingRow small { flex: none; color: var(--flowme-b-muted); font-size: 13px; font-variant-numeric: tabular-nums; }
 .activityGroup[open] > summary::after { transform: rotate(90deg); }
 .activityGroup > section { margin: 0 0 16px; padding: 0 4px; }
 .activityGroup > .actions { margin: 4px 0 12px; padding: 0 4px; }
@@ -110,5 +119,8 @@
 .publicationRow > span:first-child { display: grid; gap: 4px; min-width: 0; }
 .publicationRow strong { font-size: 16px; font-weight: 600; }
 .publicationRow small { font-size: 13px; color: var(--flowme-b-muted); }
-.publicationRow > span:last-child { flex-shrink: 0; color: var(--flowme-b-muted); font-size: 14px; }
+.publicationRow > span:last-child { flex-shrink: 0; display: inline-flex; align-items: center; color: var(--flowme-b-muted); font-size: 14px; }
 .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+/* F6-B2 (목업 B): 나 and 이야기 as screen titles, 26/800. */
+.community .header h1 { font-size: 26px; line-height: 34px; font-weight: 800; letter-spacing: -0.3px; }

@@ -43,7 +43,9 @@ import { programFolderAncestry, programFolderTaskGroups, programFolderTree, prog
 import { addProgramFolderTodayTask, programFolderTodayPlace, programFolderTodayUndo, undoProgramFolderTodayTask, type ProgramFolderTodayUndo } from '@/lib/flow/integrated-poc/folder-today-add';
 import { programPublicationDocumentEntry } from '@/lib/flow/integrated-poc/publication-management';
 import { ProgramFolderTodayAdd } from './ProgramFolderTodayAdd';
-import { ProgramIcon } from './icons';
+import { ProgramFlowMark, ProgramIcon } from './icons';
+import { ProgramFlowThread } from './ProgramFlowThread';
+import { programDocumentThread } from '@/lib/flow/integrated-poc/flow-thread';
 import { mergeProgramTextWorkspace } from '@/lib/flow/integrated-poc/text-merge';
 import { flushProgramEditorCollection, prepareProgramDocumentAction, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
 import type { AlphaStructuralDraft, AlphaStructuralEditorPort } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
@@ -1148,6 +1150,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     && space.text.documents.some(doc => doc.id === selectedDoc.id) ? selectedDoc.id : null;
   const flowDocuments = useMemo(() => new Map(space.copies.filter(copy => !space.documentTrash?.[copy.documentId] && !space.archivedDocumentIds.includes(copy.documentId))
     .flatMap(copy => (doc => doc ? [[copy.documentId, doc.title] as const] : [])(space.text.flows.find(row => row.id === copy.documentId)))), [space]);
+  // F6-B2: each Flow document's 실 (its days as dots, the done ones filled) and done/total, for 오늘's rows and the band.
+  const flowThreads = useMemo(() => new Map([...flowDocuments.keys()].map(id => [id, programDocumentThread(space.text, id)] as const)), [flowDocuments, space.text]);
   const flowTodayTasks = useMemo(() => !bandDocumentId || !flowDocuments.size ? []
     : programOrderedExecutionRows(data, { period: 'today', date: today, today, folderId: '', query: '', includeHeld: false, includeExcluded: false, page: 0 }).rows
       .flatMap(row => row.kind === 'text-task' && flowDocuments.has(row.task.docId) ? [row.task] : []), [!!bandDocumentId, flowDocuments, data, today]);
@@ -2855,6 +2859,19 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (!input) return;
     try { input.showPicker(); } catch { input.focus(); }
   };
+  // F6-B2 (목업 B, 하루 보기만): the day head on navy — month and weekday, the day's number big, 오늘/어제/내일, and that day's
+  // 남은 일 · 끝낸 일 · Flow n (open rows from a Flow). Week and month keep their title rows.
+  const [heroMonth, heroDate] = [Number(date.slice(5, 7)), Number(date.slice(8, 10))];
+  const heroWeekday = '일월화수목금토'[new Date(`${date}T00:00:00Z`).getUTCDay()];
+  const heroRelative = date === today ? '오늘' : date === programShiftDate(today, -1) ? '어제' : date === programShiftDate(today, 1) ? '내일' : '';
+  const onDateRows = executionList.filter(item => item.kind === 'row' && item.group === 'on-date');
+  const doneOnDate = onDateRows.length - openOnDate;
+  const flowOnDate = onDateRows.filter(item => item.kind === 'row' && item.entry.kind === 'text-task' && !item.entry.task.done && flowDocuments.has(item.entry.task.docId)).length;
+  const dayHero = <h1 className={styles.heroTitle}><span className={styles.heroSr}>{titleParts ? `${titleParts.main} ${titleParts.sub}` : date}</span>
+    <span className={styles.heroMonth} aria-hidden="true">{heroMonth}월 · {heroWeekday}요일</span>
+    <span className={styles.heroDay} aria-hidden="true">{heroDate}{heroRelative && <small>{heroRelative}</small>}</span></h1>;
+  const heroStats = <p className={styles.heroStats} data-day-stats><span>남은 일 {openOnDate}</span><span aria-hidden="true">·</span><span>끝낸 일 {doneOnDate}</span>
+    {flowOnDate > 0 && <span className={styles.heroFlow}><ProgramFlowMark size={18} />Flow {flowOnDate}</span>}</p>;
   // C5: in the month, the title row ends with [목록|달력] (each 52×44), remembered on this device.
   const monthTitleRow = <div className={styles.monthTitleRow}>{periodTitle}<div className={styles.monthViews} role="group" aria-label="월간 보기 방식">
     <button type="button" aria-pressed={monthView === 'list'} onClick={() => { if (!keepWrittenDay()) { setAddingDate(null); setMonthView('list'); } }}>목록</button>
@@ -2928,17 +2945,18 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
           const meta = programExecutionRowMeta({ date: task.date, done: value === 100, progress: progress?.date ? { date: progress.date, percent: progress.percent } : null, today, dated: item.dated,
             since: task.explicitDate ? task.groupDate : null });
-          return <li key={entry.key} className={styles.task} data-task-id={task.id} data-done={value === 100 || undefined} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
+          return <li key={entry.key} className={styles.task} data-task-id={task.id} data-done={value === 100 || undefined} data-flow-row={rowFlowTitle(task) ? '' : undefined} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
             <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskIds.has(task.id) ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskIds.has(task.id) || undefined} onClick={() => { void checkTaskFromList(task); }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
-              {completingTaskIds.has(task.id) ? '…' : value > 0 && value < 100 ? `${value}%` : ''}</span></button>
+              {completingTaskIds.has(task.id) ? '' : value > 0 && value < 100 ? `${value}%` : ''}</span></button>
             <button className={styles.taskTitle} aria-label={`${repeatShown ? `${programRepeatTitle(task.title)} · ${repeatShown.block ? '반복 멈춤' : `반복 ${repeatShown.marker.label}`}` : task.title}${origin.label !== '직접 작성' ? ` · ${origin.label}` : ''} · ${task.docTitle} 원문 열기`} aria-busy={sourceWaitingTask === task.id || undefined} onClick={event => moving ? void moveBefore(moving, entry.key) : openFromList(task, event.currentTarget)}>{(line => line ? <span className={styles.taskTitleText}>{programRepeatTitle(task.title)}<span className={styles.repeatChip}>{line.block ? '반복 멈춤' : `↻ ${line.marker.label}`}</span></span>
               : <span className={styles.taskTitleText}>{task.title}</span>)(repeatShown)}
               {/* R4's waits, now visible on the row. The title's aria-busy and the host notice still do the announcing. */}
               <small>{sourceWaitingTask === task.id ? <span className={styles.rowBusy}>원문 여는 중…</span> : folderMeta ? folderRowMeta(task, folderMeta) : <>
                 {/* T6: the row's folder first, small, as "/ 회사 일" (none for 미분류 or no folder); rows stay in their order. */}
-                {(flow => flow ? <><span className={styles.rowFolder} data-row-flow>{flow}</span> · </>
+                {/* F6-B2: a Flow's row says its name in teal, its 실 and n/m (done of all its tasks). */}
+                {(flow => flow ? <><span className={styles.rowFlow} data-row-flow>{flow}</span>{(thread => thread && <span className={styles.rowThread}><ProgramFlowThread points={thread.points} done={thread.done} width={48} />{thread.doneTasks}/{thread.total}</span>)(flowThreads.get(task.docId))} · </>
                   : (scope => scope && <><span className={styles.rowFolder}>/ {scope}</span> · </>)(rowFolderTitle(task)))(rowFlowTitle(task))}
                 {completingTaskIds.has(task.id) &&<><span className={styles.rowBusy}>{value === 100 ? '다시 열기 대기 중' : '완료 대기 중'}</span> · </>}
                 {meta.late && <><em className={styles.rowLate}>{meta.late}</em> · </>}
@@ -2971,7 +2989,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (outcome === 'saved') setBandChecked(current => { const next = new Map(current); if (kept) next.delete(id); else next.set(id, { task: live, index }); return next; });
     });
   }
-  const flowBand = bandRows.length > 0 && <ProgramFlowTodayBand rows={bandRows} open={bandRows.filter(row => !row.done).length} failed={bandFailed}
+  // F6-B2: the band draws one Flow's 실 when all its rows come from that Flow.
+  const bandThread = (ids => ids.size === 1 ? flowThreads.get([...ids][0]) ?? null : null)(new Set(bandRows.map(row => row.flowDocumentId)));
+  const flowBand = bandRows.length > 0 && <ProgramFlowTodayBand rows={bandRows} open={bandRows.filter(row => !row.done).length} failed={bandFailed} thread={bandThread}
     onCheck={checkFromBand} onOpenFlow={documentId => { void openDocument(documentId); }} onShowToday={() => { void chooseMainTab('today'); }} />;
   const copyHeader = useMemo(() => selectedDoc ? programCopyHeader(data, actorId, selectedDoc.id) : null, [data, actorId, selectedDoc?.id]);
   // U44: on a tablet held sideways the title and ⋯ go into the open document's tool line, and the notices that sat
@@ -3236,7 +3256,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {period !== 'all' && !selecting && <label className={styles.periodPicker}>기간<select aria-label="기간 보기" value={period} onChange={event => { void changePeriod(event.target.value as ProgramPeriod); }}>{periods.filter(([key]) => !['documents', 'all'].includes(key)).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>}
         <ProgramRecurrencePlanRecovery data={data} today={today} folderId={folderId || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         {/* F4-a: the 폴더 tab's list says '폴더'; an open folder has its own head and [할 일]·[글]. */}
-        {folderScreen ? <>{folderHead}{folderTabs}</> : folderList ? <div className={styles.periodHeading}><h1>폴더</h1></div> : <div className={styles.periodHeading}>{selecting ? selectTitle : compactNoteToday ? <div className={styles.notePeriodTitle}>{periodTitle}<div className={styles.notePeriodActions}>
+        {folderScreen ? <>{folderHead}{folderTabs}</> : folderList ? <div className={styles.periodHeading}><h1>폴더</h1></div> : <div className={styles.periodHeading}>{selecting ? selectTitle : compactNoteToday ? <div className={styles.notePeriodTitle} data-day-hero>{dayHero}<div className={styles.notePeriodActions}>
           <button type="button" className={styles.noteAdd} aria-expanded={noteQuickOpen} aria-controls="program-note-quick-task" onClick={() => setNoteQuickOpen(value => !value)}><ProgramIcon name="plus" size={20} />할 일 추가</button>
           <details ref={noteFindMenu} className={styles.notePeriodTools} onKeyDown={event => {
             if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
@@ -3245,7 +3265,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {/* I7: the day heading is hidden here, so its button sits in this menu. */}
             {hideDayHeadings && manualOrderDays.has(date) && !moving && <button type="button" disabled={orderPending}
               onClick={() => { if (noteFindMenu.current) noteFindMenu.current.open = false; void resetDayOrder(date); }}>오늘 순서를 시간순으로</button>}</div></details>
-        </div></div> : period === 'month' ? monthTitleRow : periodTitle}{!selecting && !['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date); }}><ProgramIcon name="back" size={20} /></button>
+        </div>{heroStats}</div> : period === 'month' ? monthTitleRow : periodTitle}{!selecting && !['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date); }}><ProgramIcon name="back" size={20} /></button>
           {/* T3: the date as a chip that opens the date input's own picker; the input stays (unseen) with its label. */}
           <button type="button" className={styles.dateChip} onClick={openDatePicker}>{programDateChipLabel(period, date, today, openOnDate)}</button><label className={styles.dateField}>날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value) && !keepWrittenDay()) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date); }}><ProgramIcon name="right" size={20} /></button></div>}</div>}
         {props.noteHeader && <div className={styles.periodNotice}>{props.noteHeader}</div>}

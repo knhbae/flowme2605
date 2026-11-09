@@ -91,6 +91,8 @@
   --flowme-b-nav-active: rgb(201 208 245 / .18);
   --flowme-b-nav-hover: rgb(201 208 245 / .1);
   --flowme-b-nav-muted: rgb(201 208 245 / .4);
+  /* F6-B2: the icon set's › as a mask, for the rows that draw it with CSS (나, 내 활동, 공개 관리). */
+  --flowme-icon-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.5 6.5l5.5 5.5-5.5 5.5'/%3E%3C/svg%3E");
   /* Meaning colors (W9a), the values already in use: progress (the amber % chip), late, warning, error. */
   --flowme-b-progress-ink: #785627;
   --flowme-b-progress-bg: #fcf8ed;

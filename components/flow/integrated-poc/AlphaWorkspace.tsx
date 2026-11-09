@@ -1813,8 +1813,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // Core3 P3 (FIG 14): 나 from the top — the 복구함 line (as many as the 나 badge; none at 0), 내 활동, 계정, then 자료
   // and the folded 문제 해결 · 실험, as rows. 개인 Flow 상세 and Flow 만들기 keep a place under 자료; at 0 the 복구함 too.
   const meRecoveryLine = savedTotal > 0 && <button type="button" className={styles.meRecovery} data-me-recovery aria-label={`복구함 · 확인이 필요한 입력 ${savedTotal}개`}
-    onClick={event => openRecoveryBox(event.currentTarget)}><span><strong>복구함</strong><small>저장하지 못한 입력을 원문 그대로 보관합니다</small></span>
-    <span className={styles.meCount}>{savedTotal}</span><span className={styles.meChevron} aria-hidden="true">›</span></button>;
+    onClick={event => openRecoveryBox(event.currentTarget)}><ProgramIcon name="inbox" size={20} className={styles.meIcon} /><span><strong>복구함</strong><small>저장하지 못한 입력을 원문 그대로 보관합니다</small></span>
+    <span className={styles.meCount}>{savedTotal}</span><span className={styles.meChevron} aria-hidden="true"><ProgramIcon name="right" size={16} /></span></button>;
   const meHead = meRecoveryLine ? <div className={styles.meHead}>{meRecoveryLine}</div> : null;
   const meSections = <div className={styles.meSections}>
     <section className={styles.menuGroup} aria-label="계정"><h3>계정</h3>

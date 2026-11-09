@@ -1,0 +1,15 @@
+/* F6-B2 Flow 실 (목업 B .thr): a 2px line in control (faded), the done part in flow, 8px dots (surface, control ring), done
+   dots filled flow, the next one a 10px flow ring. The ends' dots stay inside the box (5px margin each side). */
+.thread { position: relative; display: inline-block; flex: none; box-sizing: content-box; height: 12px; margin: 0 5px; vertical-align: middle; }
+.line, .fill { position: absolute; left: 0; top: 5px; height: 2px; border-radius: 1px; }
+.line { right: 0; background: var(--flowme-b-control); opacity: .55; }
+.fill { background: var(--flowme-b-flow); }
+.thread b { position: absolute; top: 2px; box-sizing: border-box; width: 8px; height: 8px; margin-left: -4px; border: 1.5px solid var(--flowme-b-control); border-radius: 4px; background: var(--flowme-b-surface); }
+.thread b[data-dot="done"] { border-color: var(--flowme-b-flow); background: var(--flowme-b-flow); }
+.thread b[data-dot="next"] { top: 1px; width: 10px; height: 10px; margin-left: -5px; border: 2.5px solid var(--flowme-b-flow); border-radius: 5px; }
+/* On navy (the 오늘 head): the light teal and on-navy, the navy inside the rings. */
+.thread[data-tone="on-navy"] .line { background: var(--flowme-b-on-navy); }
+.thread[data-tone="on-navy"] .fill { background: var(--flowme-b-teal-on-navy); }
+.thread[data-tone="on-navy"] b { border-color: var(--flowme-b-on-navy); background: var(--flowme-b-navy); }
+.thread[data-tone="on-navy"] b:is([data-dot="done"], [data-dot="next"]) { border-color: var(--flowme-b-teal-on-navy); }
+.thread[data-tone="on-navy"] b[data-dot="done"] { background: var(--flowme-b-teal-on-navy); }
