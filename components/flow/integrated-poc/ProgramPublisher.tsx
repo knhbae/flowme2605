@@ -18,11 +18,12 @@ import { ProgramPublicationSourceReviewPanel } from './ProgramPublicationSourceR
 import { ProgramPublicationTiming } from './ProgramPublicationTiming';
 import { programOrdinaryTimingLabel } from '@/lib/flow/integrated-poc/public-ordinary-time';
 import { ProgramShareLink } from './ProgramShareLink';
-import { planProgramPublicationAnchor, programAnchorChip, programPublicationRowDates, programPublicationTakerPreview, restoreProgramPublicationAnchor,
+import { programAnchorChip, programPublicationRowDates, programPublicationTakerPreview,
   type ProgramAnchorUndo } from '@/lib/flow/integrated-poc/publication-anchor';
 import { readProgramRepeatMarker, programRepeatLabel } from '@/lib/flow/integrated-poc/repeat-line';
 import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
-import { applyProgramPublicationStepDates, captureProgramPublicationStepInput, composeProgramPublicationSummary, programPublicationDateExample, programPublicationExposure, programPublicationSavedSchedules, programPublicationStepNativeValue, programPublicationSummaryParts, type ProgramPublicationDateMode, type ProgramPublicationStep } from '@/lib/flow/integrated-poc/publication-steps';
+import { programShortDate } from '@/lib/flow/integrated-poc/program-discovery-display';
+import { applyProgramPublicationStepDates, captureProgramPublicationStepInput, composeProgramPublicationSummary, programPublicationDateExample, programPublicationExposure, programPublicationSavedSchedules, programPublicationSavedSourceDates, programPublicationStepNativeValue, programPublicationSummaryParts, type ProgramPublicationDateMode, type ProgramPublicationStep } from '@/lib/flow/integrated-poc/publication-steps';
 import { ProgramPublicationPick, ProgramPublicationPreviewCard } from './ProgramPublicationSteps';
 import styles from './ProgramPublisher.module.css';
 import { fullRowText, canRepublishProgramDocument, createProgramRepublishDraft, programPublicationRepublishSource } from '@/lib/flow/integrated-poc/publication-editor';
@@ -67,6 +68,8 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   // but let previously unselected tasks receive the automatic date conversion.
   const savedSchedules = useRef(programPublicationSavedSchedules(publicationDraftAt(data, data.activeActorId, documentId)?.rows ?? (draft?.flowId ? draft.rows : [])));
   const manuallySetSchedules = useRef(new Set<string>());
+  const savedSourceDates = useRef(draft && data.spaces[actorId] ? programPublicationSavedSourceDates(draft, data.spaces[actorId].text) : new Map<string, string>());
+  const [explicitDateMode, setExplicitDateMode] = useState(false);
   const stepHeading = useRef<HTMLHeadingElement>(null);
   const [comparison, setComparison] = useState<PublicationComparison | null>(null), [choices, setChoices] = useState<PublicationConflictChoices>({});
   const [archiveTarget, setArchiveTarget] = useState<{ flowId: string; versionId: string; title: string } | null>(null);
@@ -152,10 +155,12 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   };
   const chooseDates = (mode: ProgramPublicationDateMode, enterRefine = false) => {
     if (unavailable() || !space) return; const current = read(); if (!current) return;
-    const applied = applyProgramPublicationStepDates(current, programPublicationRowDates(space.text, documentId), mode, anchorUndo, new Set([...savedSchedules.current, ...manuallySetSchedules.current]), savedSchedules.current);
+    const applied = applyProgramPublicationStepDates(current, programPublicationRowDates(space.text, documentId), mode, anchorUndo, new Set([...savedSchedules.current, ...manuallySetSchedules.current]), savedSchedules.current, explicitDateMode || !enterRefine, savedSourceDates.current);
+    for (const id of applied.releasedSchedules) savedSchedules.current.delete(id);
+    if (!enterRefine) setExplicitDateMode(true);
     commitDraft(applied.draft); setAnchorUndo(applied.undo); setAnchorMode(mode);
     if (applied.plan.anchor) setTakerDate(applied.plan.anchor);
-    setAnchorNote(mode === 'none' ? '문서에서 가져온 날짜는 미정으로 둡니다.' : applied.plan.rows.length ? '문서 날짜를 기준일과의 간격으로 바꿨습니다.' : '바꿀 문서 날짜가 없습니다.');
+    setAnchorNote(applied.issue ?? (mode === 'none' ? '문서에서 가져온 날짜는 미정으로 둡니다.' : applied.plan.rows.length ? '문서 날짜를 기준일과의 간격으로 바꿨습니다.' : '바꿀 문서 날짜가 없습니다.'));
     if (enterRefine) setStep('refine');
   };
   const unavailable = () => publishingRef.current || locks.current > 0 || composing.current.size > 0;
@@ -252,7 +257,9 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   const rowDates = useMemo(() => space ? programPublicationRowDates(space.text, documentId) : new Map<string, string>(), [space?.text, documentId]);
   const seriesRead = useMemo(() => space ? readProgramPublicationSeries(space, documentId) : null, [space, documentId]);
   const hasSeries = !!seriesRead?.ok && seriesRead.candidates.length > 0;
-  const anchorPlan = draft ? planProgramPublicationAnchor(anchorUndo ? restoreProgramPublicationAnchor(draft, anchorUndo).draft : draft, rowDates, anchorMode === 'last' ? 'last' : 'first') : null;
+  const anchorPreview = draft ? applyProgramPublicationStepDates(draft, rowDates, anchorMode, anchorUndo, new Set([...savedSchedules.current, ...manuallySetSchedules.current]), savedSchedules.current, explicitDateMode, savedSourceDates.current) : null;
+  const anchorPlan = anchorPreview?.plan;
+  const showDateControls = !!dateExample || !!anchorPlan?.rows.length;
   const scheduleChip = (row: ProgramPublicationDraftRow) => {
     const marker = readProgramRepeatMarker(row.title.trim());
     if (row.scheduleKind === 'recurring' && row.recurrence) { const rule = programRecurringScheduleFromDraft(row.recurrence); return { text: `↻ ${rule ? programRecurringScheduleLabel(rule).split(' · ')[0] : '반복'}`, kind: 'repeat' }; }
@@ -298,7 +305,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       const value = programPublicationStepNativeValue(next, field, itemId);
         if (value !== undefined) element.value = value;
       }
-      savedSchedules.current = programPublicationSavedSchedules(next.rows); manuallySetSchedules.current.clear();
+      savedSchedules.current = programPublicationSavedSchedules(next.rows); manuallySetSchedules.current.clear(); savedSourceDates.current = programPublicationSavedSourceDates(next, dataRef.current.spaces[actorId].text); setExplicitDateMode(false);
       setCurrent(next); setAnchorUndo(null); setPrivateComparison(null); setComparison(null); setChoices({}); setPreview(false);
       setMessage(choice === 'mine' ? '내 입력으로 비공개 초안을 저장했습니다. 공개 버전은 바꾸지 않았습니다.' : '확인한 저장 초안을 열었습니다. 공개 버전은 바꾸지 않았습니다.');
     } catch { setMessage('비교 선택을 저장하지 못했습니다. 내 입력과 비교 내용을 유지했습니다.'); }
@@ -331,7 +338,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       if (result.ok && result.presentationPending) { setMessage(programErrorMessage('presentation-pending')); return; }
       if (result.ok && storageScope === 'account') updated = readCurrentData?.()?.spaces[actorId]?.publicationDrafts.find(row => row.id === submitted.id);
       if (!result.ok || !updated) { setMessage(programErrorMessage(result.ok ? 'missing' : result.reason)); return; }
-      savedSchedules.current = programPublicationSavedSchedules(updated.rows); manuallySetSchedules.current.clear(); setAnchorUndo(null);
+      savedSchedules.current = programPublicationSavedSchedules(updated.rows); manuallySetSchedules.current.clear(); savedSourceDates.current = programPublicationSavedSourceDates(updated, dataRef.current.spaces[actorId].text); setExplicitDateMode(false); setAnchorUndo(null);
       savedRef.current = updated; setCurrent(updated); setComparison(null); setChoices({}); setPreview(false); setMessage('선택한 내용을 초안에 저장했습니다. 공개 미리보기에서 결과를 확인해 주세요.');
     } catch { setMessage('비교 결과를 저장하지 못했습니다. 초안과 선택을 유지했습니다.'); }
     finally { endAction(); }
@@ -496,16 +503,17 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
         <label className={styles.field}>한 줄 소개 · 선택<textarea data-publication-field="summary" value={programPublicationSummaryParts(draft.summary).body} rows={2} maxLength={29940} onChange={event => edit({ summary: composeProgramPublicationSummary(anchorName, event.target.value) })} placeholder="누구에게 어떤 도움이 되는지" /></label>
         <section className={styles.anchorConvert} aria-labelledby="program-anchor-title" data-anchor-convert>
           <h3 id="program-anchor-title">날짜</h3>
-          <div className={styles.dateLine}><span>{anchorMode === 'none' ? '문서 날짜는 빼고 보여 줍니다' : dateExample ? `날짜는 '${dateExample}'처럼 바꿔서 보여 줍니다` : '기준일로 바꿀 문서 날짜가 없습니다'}</span><span aria-hidden="true"> · </span><button type="button" className={styles.linkButton} aria-expanded={dateOptions} disabled={blocked} onClick={() => { if (!unavailable()) setDateOptions(!dateOptions); }}>바꾸기</button></div>
-          {dateOptions && <section className={styles.dateOptions} aria-label="날짜 표시 바꾸기">
+          {showDateControls && <div className={styles.dateLine}><span>{anchorMode === 'none' ? '문서 날짜는 빼고 보여 줍니다' : dateExample?.allZero ? `고른 할 일은 모두 ‘${dateExample.text}’로 보여 줍니다` : dateExample ? `날짜는 '${dateExample.text}'처럼 바꿔서 보여 줍니다` : '기준일로 바꿀 문서 날짜가 있습니다'}</span><button type="button" className={styles.linkButton} aria-expanded={dateOptions} disabled={blocked} onClick={() => { if (!unavailable()) setDateOptions(!dateOptions); }}>바꾸기</button></div>}
+          {showDateControls && dateOptions && <section className={styles.dateOptions} aria-label="날짜 표시 바꾸기">
             <h4>어느 날을 기준으로 할까요?</h4>
+            <p className={styles.anchorHint}>저장한 ‘기준일 ±n일’ 일정도 함께 바뀝니다. 날짜 미정·고정 날짜·반복은 유지합니다.</p>
             {([['first', '처음 날 기준', '그날부터 +n일'], ['last', '마지막 날 기준', '그날까지 −n일'], ['none', '날짜 빼기', '문서 날짜를 미정으로']] as const).map(([mode, label, hint]) => <button type="button" key={mode} aria-pressed={anchorMode === mode} disabled={blocked} onClick={() => { if (unavailable()) return; chooseDates(mode); setDateOptions(false); }}><span>{label}<small>{hint}</small></span>{anchorMode === mode && <span aria-hidden="true">✓</span>}</button>)}
             <button type="button" disabled={blocked} onClick={() => { if (!unavailable()) setDateOptions(false); }}>닫기</button>
           </section>}
           <label className={styles.field}>기준일 이름 · 선택<input data-publication-field="anchorName" value={anchorName} maxLength={40} placeholder="예: 이사일" onChange={event => edit({ summary: composeProgramPublicationSummary(event.target.value, programPublicationSummaryParts(draftRef.current!.summary).body) })} /></label>
-          {anchorPlan && !anchorPlan.rows.length && !anchorUndo && anchorPlan.handSet === 0 && <p className={styles.anchorHint} data-anchor-none>고른 할 일에 바꿀 문서 날짜가 없습니다. 날짜 미정과 반복은 그대로 둡니다.</p>}
+          {anchorPlan && !showDateControls && anchorPlan.handSet === 0 && <p className={styles.anchorHint} data-anchor-none>고른 할 일에 바꿀 문서 날짜가 없습니다. 날짜 미정과 반복은 그대로 둡니다.</p>}
           {!!anchorPlan?.handSet && <p className={styles.anchorHint}>직접 정했거나 저장해 둔 일정 {anchorPlan.handSet}개는 그대로 둡니다. 항목을 눌러 바꿀 수 있습니다.</p>}
-          {anchorNote && <p className={styles.visuallyHidden} role="status">{anchorNote}</p>}
+          {anchorPreview?.issue && <p className={styles.anchorHint} role="status" data-anchor-issue>{anchorPreview.issue}</p>}{anchorNote && <p className={styles.visuallyHidden} role="status">{anchorNote}</p>}
         </section>
         <section className={styles.choices} aria-label="고른 항목 다듬기"><h3>고른 항목 {draft.rows.filter(row => row.selected).length}개</h3>{draft.rows.filter(row => row.selected).map(row => {
           const chip = scheduleChip(row), scheduleLabel = manuallySetSchedules.current.has(row.itemId) || row.scheduleKind === 'fixed' ? '직접 정함' : savedSchedules.current.has(row.itemId) && row.scheduleKind !== 'undated' ? '저장한 일정' : null;
@@ -524,10 +532,10 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
         <div className={styles.previewDetail}><h3>{input.title}</h3><p className={styles.pre}>{input.summary}</p><p>출처: {input.source.label}{input.source.kind === 'simulated-example' ? ' · 합성 예시' : ' · 개인 작성'}</p>{input.source.url && <a href={input.source.url} target="_blank" rel="noreferrer noopener">입력한 원문 URL</a>}
           <p>분야: {input.category}{input.situations.length > 0 && ` · 적용 상황: ${input.situations.join(', ')}`}</p>
           {input.derivedFrom && <p>원본: {data.public.versions.find(row => row.id === input.derivedFrom?.versionId)?.title} · 버전 {data.public.versions.find(row => row.id === input.derivedFrom?.versionId)?.number}</p>}
-          <ol>{input.items.map(item => <li key={item.id}><h4>{item.title}</h4><p className={styles.pre}>{item.description}</p>{item.completionCriteria && <p>완료 기준: {item.completionCriteria}</p>}{item.sourceUrl && <p><a href={item.sourceUrl} target="_blank" rel="noreferrer noopener">항목 출처: {item.sourceUrl}</a></p>}<span className={styles.scheduleChip} data-schedule-chip={item.schedule.kind}>{item.schedule.kind === 'recurring' ? programRecurringScheduleLabel(item.schedule) : [item.schedule.kind === 'undated' ? '날짜 미정' : item.schedule.kind === 'fixed' ? `직접 정함 · ${item.schedule.date}` : programAnchorChip(anchorName, item.schedule.days), programOrdinaryTimingLabel(item.schedule.timing)].filter(Boolean).join(' · ')}</span>{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</li>)}</ol>
+          <ol>{input.items.map(item => <li key={item.id}><h4>{item.title}</h4><p className={styles.pre}>{item.description}</p>{item.completionCriteria && <p>완료 기준: {item.completionCriteria}</p>}{item.sourceUrl && <p><a href={item.sourceUrl} target="_blank" rel="noreferrer noopener">항목 출처: {item.sourceUrl}</a></p>}<span className={styles.scheduleChip} data-schedule-chip={item.schedule.kind}>{item.schedule.kind === 'recurring' ? programRecurringScheduleLabel(item.schedule) : [item.schedule.kind === 'undated' ? '날짜 미정' : item.schedule.kind === 'fixed' ? `직접 정함 · ${programShortDate(item.schedule.date)}` : programAnchorChip(anchorName, item.schedule.days), programOrdinaryTimingLabel(item.schedule.timing)].filter(Boolean).join(' · ')}</span>{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</li>)}</ol>
         </div>
         {programPublicationExposure(draft).fixed.length ? <div className={styles.fixedWarning} role="alert"><p>직접 정한 실제 날짜가 {programPublicationExposure(draft).fixed.length}개 항목에 그대로 공개됩니다.</p>{programPublicationExposure(draft).fixed.map(row => <button type="button" key={row.itemId} disabled={blocked} onClick={() => { if (!unavailable()) { setStep('refine'); setEditingRow(row.itemId); } }}>{row.title} · 일정 바꾸기</button>)}</div> : <p className={styles.exposure}>✓ 내 실제 날짜 0개 · 고른 메모 {programPublicationExposure(draft).notes}개 · 진행 기록 0개</p>}
-        <p className={styles.scope}>{storageScope === 'account' ? '로그인한 FlowMe 사용자 누구나 Flow 찾기에서 봅니다. 후기는 공개됩니다.' : '이 기기의 로컬 PoC 목록에서 봅니다. 실제 사용자에게 공개하지 않습니다.'}{storageScope === 'account' && <><br />{'로그인한 다른 사용자에게 선택한 내용을 공개합니다. 계정을 지워도 공개한 Flow는 남습니다.'}</>}</p>
+        <p className={styles.scope}>{storageScope === 'account' ? '로그인한 FlowMe 사용자 누구나 Flow 찾기에서 봅니다. 후기는 공개됩니다. 계정을 지워도 공개한 Flow는 남습니다.' : '이 기기의 로컬 PoC 목록에서 봅니다. 실제 사용자에게 공개하지 않습니다.'}</p>
         {input.items.some(item => item.schedule.kind === 'relative' || item.schedule.kind === 'recurring' && item.schedule.start.kind === 'relative') && (taker => <details className={styles.takerPreview} data-taker-preview><summary>받는 사람이 가져가면</summary>
           <label className={styles.field}>받는 사람이 고른 {anchorName.trim() || '기준일'}<input type="date" value={takerDate} onChange={event => { if (event.target.value) setTakerDate(event.target.value); }} /></label>
           <ul className={styles.placeList}>{taker.dated.map(day => <li key={day.date} data-place-date={day.date}><b>{day.date === today ? `오늘 ${programCalendarDate(day.date, today, false)}` : programCalendarDate(day.date, today)}</b><span>{day.titles.join(' · ')}</span><em>{day.count}개</em></li>)}{taker.repeats.map(row => <li key={row.itemId} data-place-repeat><b>{row.label}</b><span>↻ {row.title}{row.first ? ` · ${programDateLabel(row.first, today, false)}부터` : ''}</span><em>반복</em></li>)}{taker.undated.count > 0 && <li data-place-undated><b>날짜 미정</b><span>{taker.undated.titles.join(' · ')}</span><em>{taker.undated.count}개</em></li>}</ul>
@@ -535,7 +543,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       </section>}
       {message && <p className={styles.error} role="alert">{message}</p>}
       <footer className={styles.footer}>
-        <span className={styles.footerCount}>{step === 'pick' ? `${draft.rows.filter(row => row.selected).length}개 고름` : step === 'refine' ? '제목과 날짜를 확인해 주세요' : `${input?.items.length ?? 0}개 항목`}</span>
+        <span className={styles.footerCount} data-step={step}>{step === 'pick' ? `${draft.rows.filter(row => row.selected).length}개 고름` : step === 'refine' ? `고른 항목 ${draft.rows.filter(row => row.selected).length}개` : `${input?.items.length ?? 0}개 항목`}</span>
         <div className={styles.actions}>{step !== 'pick' && <button type="button" disabled={blocked} onClick={back}>이전</button>}{step === 'pick' ? <button type="button" className={styles.primary} disabled={blocked || !draft.rows.some(row => row.selected) || republishBlocked} onClick={() => chooseDates(anchorMode, true)}>다음</button> : step === 'refine' ? <button type="button" className={styles.primary} disabled={!input || blocked || privateChanged || sourceChanged || versionChanged || republishBlocked} onClick={openPreview}>미리보기</button> : <button type="button" className={styles.primary} disabled={blocked || privateChanged || sourceChanged || versionChanged || republishBlocked || !input || !publicationReady} onClick={() => void publish()}>{publishing ? '공개 중…' : republishing ? '새 링크로 공개' : storageScope === 'account' ? '이 내용으로 공개' : '이 내용으로 PoC에 공개'}</button>}</div>
       </footer>
       {discarding && <section className={styles.warning}><p>공개 초안만 버립니다. 개인 문서와 이미 공개한 버전은 유지됩니다.</p><button type="button" disabled={blocked} onClick={() => void discard()}>공개 초안 버리기</button><button type="button" onClick={() => setDiscarding(false)}>계속 작성</button></section>}

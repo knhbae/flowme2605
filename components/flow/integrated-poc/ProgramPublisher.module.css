@@ -92,6 +92,7 @@
 .placeList em{font-style:normal;color:var(--flowme-b-muted);font-size:13px;white-space:nowrap}
 .footer{position:sticky;bottom:0;z-index:4;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 24px;min-height:72px;border-top:1px solid var(--flowme-b-line);background:var(--flowme-b-surface)}
 .footerCount{font-size:13px;color:var(--flowme-b-muted)}
+.footerCount[data-step="refine"]{white-space:nowrap;flex-shrink:0}
 .actions{display:flex;gap:8px;align-items:center;margin-left:auto}
 .actions button{min-height:48px;word-break:keep-all}
 .dialog .primary{border-color:var(--flowme-b-primary);background:var(--flowme-b-primary);color:var(--flowme-b-on-ink)}
