@@ -499,3 +499,11 @@
   .page[data-alpha-frame="b"] .header .development { font-size: 13px; }
 }
 .page[data-alpha-frame="b"] .globalNavigation button[aria-current] svg[data-icon="flow"] circle { fill: currentColor; }
+/* F6-B2 FIX 5 (나, A+): on phones 나 is a screen like the tabs before it — no FlowMe bar and no frame; '나' 26/800 first. */
+@media (max-width: 700px) {
+  .page[data-alpha-frame="b"][data-me-layout] { padding-top: 8px; }
+  .page[data-alpha-frame="b"][data-me-layout] > .header { height: 0; min-height: 0; padding: 0; border: 0; background: transparent; }
+  .page[data-alpha-frame="b"][data-me-layout] > .header > :not(.globalNavigation) { display: none; }
+  .page[data-alpha-frame="b"][data-me-layout] .workPane { width: 100%; margin: 0; padding: 0 12px; border: 0; border-radius: 0; }
+  .page[data-alpha-frame="b"][data-me-layout] .meSections { padding-inline: 6px; }
+}

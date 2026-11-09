@@ -124,3 +124,5 @@
 
 /* F6-B2 (목업 B): 나 and 이야기 as screen titles, 26/800. */
 .community .header h1 { font-size: 26px; line-height: 34px; font-weight: 800; letter-spacing: -0.3px; }
+/* F6-B2 FIX 5: 나 on a phone starts at the screen's 18px edge (the frame is gone). */
+@media (max-width: 700px) { .community[aria-label="내 활동"] { padding: 8px 6px 16px; } }

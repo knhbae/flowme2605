@@ -43,7 +43,7 @@ import { programFolderAncestry, programFolderTaskGroups, programFolderTree, prog
 import { addProgramFolderTodayTask, programFolderTodayPlace, programFolderTodayUndo, undoProgramFolderTodayTask, type ProgramFolderTodayUndo } from '@/lib/flow/integrated-poc/folder-today-add';
 import { programPublicationDocumentEntry } from '@/lib/flow/integrated-poc/publication-management';
 import { ProgramFolderTodayAdd } from './ProgramFolderTodayAdd';
-import { ProgramFlowMark, ProgramIcon } from './icons';
+import { ProgramFlowMark, ProgramIcon, programRepeatText } from './icons';
 import { ProgramFlowThread } from './ProgramFlowThread';
 import { programDocumentThread } from '@/lib/flow/integrated-poc/flow-thread';
 import { mergeProgramTextWorkspace } from '@/lib/flow/integrated-poc/text-merge';
@@ -2950,13 +2950,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
             <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskIds.has(task.id) ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskIds.has(task.id) || undefined} onClick={() => { void checkTaskFromList(task); }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
               {completingTaskIds.has(task.id) ? '' : value > 0 && value < 100 ? `${value}%` : ''}</span></button>
-            <button className={styles.taskTitle} aria-label={`${repeatShown ? `${programRepeatTitle(task.title)} · ${repeatShown.block ? '반복 멈춤' : `반복 ${repeatShown.marker.label}`}` : task.title}${origin.label !== '직접 작성' ? ` · ${origin.label}` : ''} · ${task.docTitle} 원문 열기`} aria-busy={sourceWaitingTask === task.id || undefined} onClick={event => moving ? void moveBefore(moving, entry.key) : openFromList(task, event.currentTarget)}>{(line => line ? <span className={styles.taskTitleText}>{programRepeatTitle(task.title)}<span className={styles.repeatChip}>{line.block ? '반복 멈춤' : `↻ ${line.marker.label}`}</span></span>
+            <button className={styles.taskTitle} aria-label={`${repeatShown ? `${programRepeatTitle(task.title)} · ${repeatShown.block ? '반복 멈춤' : `반복 ${repeatShown.marker.label}`}` : task.title}${origin.label !== '직접 작성' ? ` · ${origin.label}` : ''} · ${task.docTitle} 원문 열기`} aria-busy={sourceWaitingTask === task.id || undefined} onClick={event => moving ? void moveBefore(moving, entry.key) : openFromList(task, event.currentTarget)}>{(line => line ? <span className={styles.taskTitleText}>{programRepeatTitle(task.title)}<span className={styles.repeatChip}>{line.block ? '반복 멈춤' : programRepeatText(`↻ ${line.marker.label}`, 13)}</span></span>
               : <span className={styles.taskTitleText}>{task.title}</span>)(repeatShown)}
               {/* R4's waits, now visible on the row. The title's aria-busy and the host notice still do the announcing. */}
               <small>{sourceWaitingTask === task.id ? <span className={styles.rowBusy}>원문 여는 중…</span> : folderMeta ? folderRowMeta(task, folderMeta) : <>
                 {/* T6: the row's folder first, small, as "/ 회사 일" (none for 미분류 or no folder); rows stay in their order. */}
                 {/* F6-B2: a Flow's row says its name in teal, its 실 and n/m (done of all its tasks). */}
-                {(flow => flow ? <><span className={styles.rowFlow} data-row-flow>{flow}</span>{(thread => thread && <span className={styles.rowThread}><ProgramFlowThread points={thread.points} done={thread.done} width={48} />{thread.doneTasks}/{thread.total}</span>)(flowThreads.get(task.docId))} · </>
+                {(flow => flow ? <><span className={styles.rowFlow} data-row-flow>{flow}</span>{(thread => thread && <span className={styles.rowThread}><ProgramFlowThread points={thread.points} done={thread.done} width={48} maxWidth={72} />{thread.doneTasks}/{thread.total}</span>)(flowThreads.get(task.docId))} · </>
                   : (scope => scope && <><span className={styles.rowFolder}>/ {scope}</span> · </>)(rowFolderTitle(task)))(rowFlowTitle(task))}
                 {completingTaskIds.has(task.id) &&<><span className={styles.rowBusy}>{value === 100 ? '다시 열기 대기 중' : '완료 대기 중'}</span> · </>}
                 {meta.late && <><em className={styles.rowLate}>{meta.late}</em> · </>}

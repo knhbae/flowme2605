@@ -1846,7 +1846,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     extras: destination.view === 'space' && message && !participationMessage
       ? <div className={styles.statusRow}>{serverStatusExtras}</div> : null,
   } : null;
-  return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} data-browse-layout={browse ? destination.view === 'flow' ? 'detail' : 'list' : undefined} onInput={event => { queueMicrotask(captureInput);
+  return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} data-browse-layout={browse ? destination.view === 'flow' ? 'detail' : 'list' : undefined} data-me-layout={destination.view === 'activity' ? '' : undefined} onInput={event => { queueMicrotask(captureInput);
       // Core3 P2c: the first input into my writing closes a Flow's arrival toast.
       if (arrivalToastShown && event.target instanceof Element && event.target.closest('section[aria-label="내 공간"]')) closeArrivalToast(); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
     {/* F6-B1 (11/9): the 흐름 마크 beside the wordmark (alone on the 1280 rail), and the one icon set in the menu; Flow is the mark's wave. */}

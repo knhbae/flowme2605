@@ -2,7 +2,7 @@
 
 import React, { useEffect, useId, useState } from 'react';
 import styles from './ProgramFlowTodayBand.module.css';
-import { ProgramFlowMark, ProgramIcon } from './icons';
+import { ProgramFlowMark, ProgramIcon, programRepeatText } from './icons';
 import { ProgramFlowThread } from './ProgramFlowThread';
 import type { ProgramFlowThreadShape } from '@/lib/flow/integrated-poc/flow-thread';
 
@@ -38,7 +38,7 @@ export function ProgramFlowTodayBand(props: { rows: readonly ProgramFlowBandRow[
       <button type="button" className={styles.check} aria-pressed={row.done} aria-busy={row.busy || undefined} disabled={row.busy || row.done && !!row.repeat}
         aria-label={`${row.title} ${row.busy ? '저장 중' : row.done ? row.repeat ? '이번 회차 끝냄' : '다시 열기' : '완료'}`} onClick={() => props.onCheck(row.id)}>
         <span aria-hidden="true" data-check={row.busy ? 'busy' : row.done ? 'done' : 'open'} /></button>
-      <span className={styles.title}>{row.title}{row.repeat && <span className={styles.chip}>{row.repeat}</span>}</span>
+      <span className={styles.title}>{row.title}{row.repeat && <span className={styles.chip}>{programRepeatText(row.repeat, 13)}</span>}</span>
       <button type="button" className={styles.flow} onClick={() => props.onOpenFlow(row.flowDocumentId)} aria-label={`${row.flowTitle} 문서 열기`}>{row.flowTitle}<ProgramIcon name="right" size={16} /></button>
       {props.failed === row.id && <p className={styles.failed} role="alert">체크하지 못했습니다. 다시 눌러 주세요</p>}
     </li>)}</ul>

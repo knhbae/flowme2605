@@ -27,7 +27,8 @@
 .list .subCount { flex: none; color: var(--flowme-b-muted); font-size: 13px; line-height: 18px; font-weight: 500; }
 .list .chevron { flex: none; width: 16px; text-align: center; color: var(--flowme-b-control); }
 .folderIcon { flex: none; width: 20px; height: 20px; fill: none; stroke: var(--flowme-b-control); stroke-width: 1.7; stroke-linejoin: round; }
-.folderIcon[data-muted] { stroke: var(--flowme-b-line); }
+/* F6-B2 FIX 1: an empty folder's icon in control too (3:1 on the white card); its count '—' already tells it apart. */
+.folderIcon[data-muted] { stroke: var(--flowme-b-control); }
 /* A6 v2: the row's left 44px folds, the rest opens the folder. */
 .list .folderRow .foldToggle { flex: none; width: 44px; min-width: 44px; min-height: 52px; margin: 0 -10px 0 calc(var(--folder-depth, 0) * 28px - 4px); padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--flowme-b-control); font-size: 14px; }
 .list .folderRow .foldToggle + .folderOpen { padding-left: 4px; }

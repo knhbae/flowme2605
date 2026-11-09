@@ -42,6 +42,14 @@ export function ProgramIcon({ name, size = 24, className }: { name: ProgramIconN
     strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">{SHAPES[name]}</svg>;
 }
 
+/** F6-B2 FIX 4: words that mark a repeat with the letter ↻ ("↻ 반복", "↻ 매주 토") drawn with the set's repeat icon instead
+ *  (the words stay; the icon is decoration). */
+export function programRepeatText(text: string, size = 16): React.ReactNode {
+  if (!text.includes('↻')) return text;
+  return text.split('↻').flatMap((part, index) => index === 0 ? (part ? [part] : [])
+    : [<ProgramIcon key={index} name="repeat" size={size} className="flowme-repeat-icon" />, part.replace(/^ /, '')]);
+}
+
 /** The 흐름 마크 with its dots filled: the wordmark beside "FlowMe" and the 1280 rail's top. */
 export function ProgramFlowMark({ size = 24, className }: { size?: number; className?: string }) {
   return <svg className={className} data-flow-mark viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2"

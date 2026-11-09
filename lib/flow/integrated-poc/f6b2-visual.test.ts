@@ -5,7 +5,7 @@ import { programClone, type ProgramData } from './contract';
 import { createProgramData } from './program-data';
 import { createProgramDocument } from './private-space';
 import { textWorkspaceModel as M } from './text-workspace';
-import { programDayNumber, programDocumentThread, programThreadPoints } from './flow-thread';
+import { programDayNumber, programDocumentThread, programThreadLayout, programThreadPoints } from './flow-thread';
 import { programFlowCardThread } from './program-discovery-display';
 
 // F6-B2 (11/9, 방향 B): the Flow 실, the 하루 view's navy head, round checks, 나's 하고 있는 Flow, the folder card.
@@ -38,6 +38,25 @@ test('실 of a Flow document of mine: its tasks\' days, the leading all-done day
   assert.deepEqual([thread.doneTasks, thread.total], [2, 5]);
 });
 
+test('UX FIX (11/10): dots at least 10px apart (the line up to 72, then closer); repeats, ‹ ›, 할 일 추가 and 나 as the mockup', async () => {
+  // 이사 준비 2주 as taken: 11/2, 11/9, 11/14, 11/15, 11/30 → 0, .25, .43, .46, 1 of 48px: pushed apart, 48 still fits.
+  const days = programThreadPoints(['2026-11-02', '2026-11-09', '2026-11-14', '2026-11-15', '2026-11-30'].map(programDayNumber));
+  const laid = programThreadLayout(days, 48, 72);
+  assert(laid.xs.every((x, i) => !i || x - laid.xs[i - 1] >= 10 - 1e-9), JSON.stringify(laid));
+  assert(laid.width >= 48 && laid.width <= 72);
+  const crowded = programThreadLayout([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1], 48, 72);
+  assert.equal(crowded.width, 72); assert(crowded.xs.at(-1)! <= 72);
+  const space = component('ProgramSpace.tsx'), css = component('ProgramSpace.module.css');
+  assert(space.includes('<ProgramFlowThread points={thread.points} done={thread.done} width={48} maxWidth={72} />'));
+  assert(space.includes("programRepeatText(`↻ ${line.marker.label}`, 13)") && component('ProgramDiscovery.tsx').includes('{programRepeatText(lines.brief)}'));
+  assert(css.includes('.space .executionView .dateNav > button:not(.dateChip) { display: inline-flex;') && css.includes('border: 0; border-radius: 22px; background: transparent;'));
+  assert(css.includes('.space .executionView[data-note-today="true"] .tasks { border-top: 0; }'));
+  assert(css.includes('.space .quickDisclosure > summary::before { content: ""; flex: none; width: 16px; height: 16px; background: currentColor;'));
+  assert(component('ProgramFolderScreen.module.css').includes('.folderIcon[data-muted] { stroke: var(--flowme-b-control); }'));
+  assert(component('AlphaWorkspace.tsx').includes("data-me-layout={destination.view === 'activity' ? '' : undefined}"));
+  assert(component('AlphaWorkspace.module.css').includes('.page[data-alpha-frame="b"][data-me-layout] .workPane { width: 100%; margin: 0; padding: 0 12px; border: 0; border-radius: 0; }'));
+});
+
 test('the 하루 view head (navy, the day big, its counts) replaces the title only there; week and month keep theirs', () => {
   const space = component('ProgramSpace.tsx'), css = component('ProgramSpace.module.css');
   assert(space.includes('compactNoteToday ? <div className={styles.notePeriodTitle} data-day-hero>{dayHero}<div className={styles.notePeriodActions}>'));
@@ -57,10 +76,10 @@ test('round checks 22 with the press motion (120 ms primary, 320 ms done), a Flo
 });
 
 test('the 실 sits where a Flow shows: 오늘 rows (name · 실 · n/m), the band, Flow 찾기 and the publish preview card, 나', () => {
-  assert(component('ProgramSpace.tsx').includes('<span className={styles.rowFlow} data-row-flow>{flow}</span>{(thread => thread && <span className={styles.rowThread}><ProgramFlowThread points={thread.points} done={thread.done} width={48} />{thread.doneTasks}/{thread.total}</span>)(flowThreads.get(task.docId))}'));
+  assert(component('ProgramSpace.tsx').includes('<span className={styles.rowFlow} data-row-flow>{flow}</span>{(thread => thread && <span className={styles.rowThread}><ProgramFlowThread points={thread.points} done={thread.done} width={48} maxWidth={72} />{thread.doneTasks}/{thread.total}</span>)(flowThreads.get(task.docId))}'));
   assert(component('ProgramFlowTodayBand.tsx').includes('{props.thread && <ProgramFlowThread points={props.thread.points} done={props.thread.done} width={56} />}'));
-  assert(component('ProgramDiscovery.tsx').includes('<span className={styles.cardMeta}><ProgramFlowThread {...programFlowCardThread(current)} width={64} />{lines.brief}</span>'));
-  assert(component('ProgramPublicationSteps.tsx').includes('<span className={discoveryStyles.cardMeta}><ProgramFlowThread {...programFlowCardThread(version)} width={64} />{lines.brief}</span>'));
+  assert(component('ProgramDiscovery.tsx').includes('<span className={styles.cardMeta}><ProgramFlowThread {...programFlowCardThread(current)} width={64} />{programRepeatText(lines.brief)}</span>'));
+  assert(component('ProgramPublicationSteps.tsx').includes('<span className={discoveryStyles.cardMeta}><ProgramFlowThread {...programFlowCardThread(version)} width={64} />{programRepeatText(lines.brief)}</span>'));
   const community = component('ProgramCommunity.tsx');
   assert(community.includes('<span className={styles.doingName}>{flow.title}</span><ProgramFlowThread points={flow.points} done={flow.done} width={72} /><small>{flow.doneTasks}/{flow.total}</small>'));
   assert(component('ProgramDiscovery.module.css').includes('.cardBadge[data-badge="공식"]{background:var(--flowme-b-flow-soft);color:var(--flowme-b-flow);font-weight:700}'));

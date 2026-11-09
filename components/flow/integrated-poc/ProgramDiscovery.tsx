@@ -27,7 +27,7 @@ import { programFlowProgress, programFlowProgressShort, programFlowProgressText 
 import { PROGRAM_OFFICIAL_LABEL, programFlowAttributionLabel } from '@/lib/flow/integrated-poc/alpha-official-actors';
 import { useAlphaOfficialActors } from './AlphaOfficialActors';
 import styles from './ProgramDiscovery.module.css';
-import { ProgramIcon } from './icons';
+import { ProgramIcon, programRepeatText } from './icons';
 import { ProgramFlowThread } from './ProgramFlowThread';
 
 export type ProgramDiscoveryDraftState = {
@@ -542,7 +542,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
               <button type="button" disabled={pending} onClick={() => setPickingDocument(true)}>{targetDocumentId ? (programImportTargets(data, actorId, storedCopy?.documentId, []).find(doc => doc.id === targetDocumentId)?.title ?? '문서') + ' · 바꾸기' : '넣을 문서 고르기'}</button>
               <p>{storedCopy ? '이미 가져온 사본의 할 일을 연결합니다. 새 사본은 만들지 않습니다.' : '넣은 할 일은 미분류의 사본 문서와 연결됩니다. 어느 쪽에서 체크해도 같이 바뀝니다.'}{sheetRepeats.some(repeat => !repeat.existing) ? ' 반복 할 일은 연결 없이 내 줄로 들어갑니다.' : ''}</p>
               {storedCopy && privateSpace.archivedDocumentIds.includes(storedCopy.documentId) && <p>보관한 사본 문서는 다시 꺼내집니다.</p>}
-              {targetDocumentId && (targetItems.length ? <><p>고른 문서 끝에 할 일 {targetItems.length}개가 들어갑니다.</p><ul>{targetItems.slice(0, 3).map(item => <li key={item.id}>{item.schedule.kind === 'recurring' ? '반복 참조: ' : programImportItemView(item) ? '↻ ' : ''}{programImportItemView(item)?.title ?? item.title}</li>)}</ul>{targetItems.length > 3 && <p>… {targetItems.length - 3}개 더</p>}</>
+              {targetDocumentId && (targetItems.length ? <><p>고른 문서 끝에 할 일 {targetItems.length}개가 들어갑니다.</p><ul>{targetItems.slice(0, 3).map(item => <li key={item.id}>{item.schedule.kind === 'recurring' ? '반복 참조: ' : programImportItemView(item) ? <ProgramIcon name="repeat" size={16} className="flowme-repeat-icon" /> : ''}{programImportItemView(item)?.title ?? item.title}</li>)}</ul>{targetItems.length > 3 && <p>… {targetItems.length - 3}개 더</p>}</>
                 : <p className={styles.repeatNone} data-import-nothing>{nothingReason}</p>)}
             </div>}</>}
           </section>
@@ -616,7 +616,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
         aria-label={[lines.title, lines.tag, lines.oneLine, lines.brief].filter(Boolean).join(', ')}>
         <span className={styles.cardTitleRow}><span className={styles.cardTitle}>{lines.title}</span>{lines.tag && <span className={styles.cardBadge} data-badge={lines.tag}>{lines.tag}</span>}</span>
         {lines.oneLine && <span className={styles.cardSummary}>{lines.oneLine}</span>}
-        <span className={styles.cardMeta}><ProgramFlowThread {...programFlowCardThread(current)} width={64} />{lines.brief}</span>
+        <span className={styles.cardMeta}><ProgramFlowThread {...programFlowCardThread(current)} width={64} />{programRepeatText(lines.brief)}</span>
         {match?.on === 'item' && <span className={styles.cardSource} data-link-on="item">항목 출처: {match.items.join(', ')}</span>}
       </button></li>;
     })}</ul>

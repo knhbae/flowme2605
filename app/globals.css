@@ -153,6 +153,13 @@ svg[data-icon], svg[data-flow-mark] {
   vertical-align: middle;
 }
 
+/* F6-B2 FIX 4: the repeat icon in place of the letter ↻ sits before its words. */
+svg.flowme-repeat-icon {
+  display: inline-block;
+  margin-inline-end: 2px;
+  vertical-align: -3px;
+}
+
 [data-flow-anatomy] {
   min-width: 0;
 }

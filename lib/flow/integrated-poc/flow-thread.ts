@@ -39,3 +39,19 @@ export function programDoingFlows(space: ProgramPrivateSpace) {
       return thread.total > thread.doneTasks ? [{ documentId: copy.documentId, title: doc.title, ...thread }] : [];
     });
 }
+
+/** F6-B2 FIX 3: where the dots go, in px: by their day positions, each at least `gap` from the one before (pushed on); the
+ *  line grows up to `maxWidth` when that runs past it, and only past that are the dots drawn closer. Drawing only: the
+ *  days themselves are not changed. */
+export function programThreadLayout(points: readonly number[], width: number, maxWidth = Math.max(width, 72), gap = 10) {
+  let w = width;
+  for (let round = 0; round < 4; round++) {
+    const xs: number[] = [];
+    for (const at of points) xs.push(xs.length ? Math.max(at * w, xs[xs.length - 1] + gap) : at * w);
+    const end = xs.length ? xs[xs.length - 1] : 0;
+    if (end <= w + 0.01) return { width: w, xs };
+    if (w >= maxWidth) return { width: w, xs: xs.map(x => Math.round(x * w / end * 10) / 10) };
+    w = Math.min(maxWidth, Math.ceil(end));
+  }
+  return { width: w, xs: points.map(at => at * w) };
+}
