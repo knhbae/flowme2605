@@ -4,7 +4,7 @@
 
 ## 한눈에
 
-- 운영 Alpha: **F4-b 폴더 ＋ · F6-B1 시각 B 1단계 · F5-b 공개 관리** `89b3336b` / `zeFJxAbhqKHg6wt2ClYpt` (11/10 00:4x 가벼운 반영 29회차, DB 변경 0). 그 아래 F4-a·F5-a(`4d4ca748`)·필수 흐름 셋. 되돌리기 = 직전 운영 `4d4ca748` / `I2Ymhg_jo4msgZURwv2-f`(D:/flowme-work/etc/f4f5-int3-qa-20261109/product — 디스크 정리 보존 필수). N6r 빌드는 11/9 정리 실수로 없음.
+- 운영 Alpha: **F6-B2 시각 B 2단계** `1ba2ac26` / `udT8t_CBNHw_jBpkoyWZy` (11/10 01:4x 가벼운 반영 30회차, DB 변경 0): 오늘 하루 남색 큰 날짜·둥근 체크·Flow 실/청록·나 A+ 구조·폴더 흰 카드·날짜 서울 기준. 그 아래 F4-b·F6-B1·F5-b(`89b3336b`). 되돌리기 = 직전 운영 `89b3336b` / `zeFJxAbhqKHg6wt2ClYpt`(D:/flowme-work/etc/int4-qa-20261109/product — 디스크 정리 보존 필수).
 - 오늘 반영 순서: 첫 화면 공식 카드 `3f129de7`(03:35) → 번들 4 `edc588c2`(13:1x) → 입력 v2 1단계 `964d1070`(14:4x) → 번들 5 시각 A `f5cd4eb4`(15:2x) → P1+P3 `dbc3e0f0`(20:0x). 모두 독립 QA_GO 뒤 반영.
 - **R6 시험 계정 삭제·복원 연습 완료(11/7 18:47~19:05, 실행서 v6.8).** 지우기(DeleteCommit)→지운 뒤 확인·전체 8표 비교 PASS→되살리기(RestoreCommit)→원래와 같은지 확인 PASS→사전 사본 폐기·새 연결 10회 확인 PASS→정지 원값 복원. 총괄 확인: 정지 해제, 세션 1 유지, 대상 행 1·5·1·1 그대로, 시험 계정 다시 열면 저장본 그대로.
 - R5 정기 백업: 11/7 18:00 첫 예약 실행 PASS(40초, 사본 26MB). 같은 날(KST) 수동 첫 사본은 하루 1개 규칙으로 교체됨.
@@ -164,3 +164,4 @@
 - 11/10 00:0x int4 89b3336b QA_GO(inbox/int4-qa-20261110-0001.md), 패키지 검증 PIN_MISMATCH: N6r .next 351파일 없음(총괄 11/9 정리 스크립트가 보존 목록에서 빠뜨림). 결정: 되돌리기 대상을 직전 운영 int3 4d4ca748로 바꿔 재패키징, N6r 재빌드 안 함. 교훈은 메모리에.
 - 11/10 00:2x 28회차 HOLD→자동 복구(int3, health 200, DB 0): 실행기 StopKnown이 끝나는 중인 wrapper를 TerminateProcess → ACCESS_DENIED 경쟁(지난 24회는 wrapper가 먼저 끝남). 근거 inbox/int4-hold-20261110-0028.md. 실행기 수정은 Codex.
 - 11/10 00:4x 29회차 DEPLOYED(release-r2 8a47b032): 89b3336b / zeFJxAbhqKHg6wt2ClYpt, QA_GO inbox/int4-qa-20261110-0001.md, 10경로 기대값, DB 0. 남은 P3: 관리·초안 날짜 UTC 'YYYY-MM-DD', 안내의 옛 메뉴 이름 '선택해서 공개', 1280 현재 탭 hover. 다음 배포 후보: F6-B2(+FIX5)·B3(Codex)·F7(목업 답 대기).
+- 11/10 01:4x 30회차 DEPLOYED: 1ba2ac26 / udT8t_CBNHw_jBpkoyWZy, QA_GO inbox/b2-qa-20261110-0135.md, 10경로 기대값, DB 0. 남은 P3: 가져오기 시트·공개 창 반복 칩의 글자 ↻(ProgramDiscovery 512·525, Publisher 275-276·533). 다음: B3 쓰기 레일(Codex), F7(★목업 질문 2), 실행기 경쟁 수정(Codex).
