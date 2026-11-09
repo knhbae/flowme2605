@@ -114,15 +114,52 @@ test('saved selected undated stays undated, while unselected and repeated rows d
 
 test('date example is the first selected nonzero relative chip, including renamed and empty anchors', () => {
   const f = fixture(), first = applyProgramPublicationStepDates(selectTasks(f.draft), f.dates, 'first', null);
-  assert.equal(programPublicationDateExample(first.draft), '기준일 +13일');
+  assert.deepEqual(programPublicationDateExample(first.draft), { text: '기준일 +13일', allZero: false });
   first.draft.summary = '기준일: 이사일\n소개';
-  assert.equal(programPublicationDateExample(first.draft), '이사일 +13일');
+  assert.deepEqual(programPublicationDateExample(first.draft), { text: '이사일 +13일', allZero: false });
   const last = applyProgramPublicationStepDates(first.draft, f.dates, 'last', first.undo);
-  assert.equal(programPublicationDateExample(last.draft), '이사일 −13일');
+  assert.deepEqual(programPublicationDateExample(last.draft), { text: '이사일 −13일', allZero: false });
   last.draft.rows.forEach(row => { if (row.scheduleKind === 'relative') row.scheduleValue = '0'; });
-  assert.equal(programPublicationDateExample(last.draft), '이사일 당일');
+  assert.deepEqual(programPublicationDateExample(last.draft), { text: '이사일 당일', allZero: false });
   last.draft.rows.forEach(row => { row.selected = false; });
   assert.equal(programPublicationDateExample(last.draft), null);
+});
+
+test('all-zero copy is true only when every selected schedule is the anchor day', () => {
+  const f = fixture(), draft = selectTasks(f.draft);
+  draft.rows.forEach(row => { row.scheduleKind = 'relative'; row.scheduleValue = '0'; });
+  const before = programClone(draft);
+  assert.deepEqual(programPublicationDateExample(draft), { text: '기준일 당일', allZero: true });
+  assert.deepEqual(draft, before);
+  draft.summary = '기준일: 이사일';
+  assert.deepEqual(programPublicationDateExample(draft), { text: '이사일 당일', allZero: true });
+  const last = draft.rows.filter(row => row.selected).at(-1)!;
+  for (const kind of ['undated', 'fixed', 'recurring'] as const) {
+    last.scheduleKind = kind;
+    assert.equal(programPublicationDateExample(draft)?.allZero, false);
+  }
+  last.scheduleKind = 'relative'; last.scheduleValue = '6';
+  assert.deepEqual(programPublicationDateExample(draft), { text: '이사일 +6일', allZero: false });
+  last.scheduleValue = 'not-a-number';
+  assert.equal(programPublicationDateExample(draft)?.allZero, false);
+  last.selected = false;
+  assert.equal(programPublicationDateExample(draft)?.allZero, true);
+  draft.rows.forEach(row => { row.scheduleKind = 'undated'; });
+  assert.equal(programPublicationDateExample(draft), null);
+});
+
+test('no-date guidance distinguishes unavailable source dates from reversible date removal', () => {
+  const f = fixture(), draft = selectTasks(f.draft), before = programClone(draft);
+  const unavailable = applyProgramPublicationStepDates(draft, new Map(), 'first', null);
+  assert.equal(unavailable.plan.rows.length, 0);
+  assert.equal(programPublicationDateExample(unavailable.draft), null);
+  assert.deepEqual(draft, before);
+  const first = applyProgramPublicationStepDates(draft, f.dates, 'first', null);
+  const none = applyProgramPublicationStepDates(first.draft, f.dates, 'none', first.undo);
+  assert.equal(programPublicationDateExample(none.draft), null);
+  assert(none.plan.rows.length > 0);
+  const again = applyProgramPublicationStepDates(none.draft, f.dates, 'first', none.undo);
+  assert.deepEqual(again.draft.rows, first.draft.rows);
 });
 
 test('split summary native capture retains Korean metadata and a metadata-like body byte for byte', () => {

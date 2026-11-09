@@ -61,9 +61,13 @@ export function programPublicationSavedSchedules(rows: readonly ProgramPublicati
 }
 
 export function programPublicationDateExample(draft: ProgramPublicationDraft) {
-  const relative = draft.rows.filter(row => row.selected && row.scheduleKind === 'relative' && /^[+-]?\d+$/.test(row.scheduleValue));
+  const selected = draft.rows.filter(row => row.selected);
+  const relative = selected.filter(row => row.scheduleKind === 'relative' && /^[+-]?\d+$/.test(row.scheduleValue));
   const row = relative.find(row => Number(row.scheduleValue) !== 0) ?? relative[0];
-  return row ? programAnchorChip(programPublicationSummaryParts(draft.summary).name, Number(row.scheduleValue)) : null;
+  return row ? {
+    text: programAnchorChip(programPublicationSummaryParts(draft.summary).name, Number(row.scheduleValue)),
+    allZero: relative.length === selected.length && relative.every(item => Number(item.scheduleValue) === 0),
+  } : null;
 }
 
 export function programPublicationPickGroups(rows: ProgramPublicationDraftRow[], original: TextRow[]) {
