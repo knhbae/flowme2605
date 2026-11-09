@@ -5,7 +5,8 @@ import type { SupabaseClient, Session } from '@supabase/supabase-js';
 import { ALPHA_AUTH_STORAGE_KEY, readAlphaCallback, type AlphaAuthConfig } from '@/lib/flow/integrated-poc/alpha-auth/config';
 import { getAlphaBrowserClient } from '@/lib/flow/integrated-poc/alpha-auth/browser-client';
 import { isConfirmedAlphaLogout } from '@/lib/flow/integrated-poc/alpha-auth/logout';
-import { clearAlphaLogoutViewStorage, type AlphaLogoutViewOwner } from '@/lib/flow/integrated-poc/alpha-auth/logout-view-storage';
+import { clearAlphaLogoutViewStorage, dropAlphaLogoutViewOwner, keepAlphaLogoutViewOwner, mergeAlphaLogoutViewOwner, readAlphaLogoutViewOwner,
+  type AlphaLogoutViewOwner } from '@/lib/flow/integrated-poc/alpha-auth/logout-view-storage';
 import { updateAlphaRecoveryPassword } from '@/lib/flow/integrated-poc/alpha-auth/recovery-password';
 import { createAlphaAccountAccess, createAlphaSessionBoundary, type AlphaSessionView, type VerifiedAlphaSession } from '@/lib/flow/integrated-poc/alpha-auth/account-access';
 import styles from './AlphaAuthPanel.module.css';
@@ -212,7 +213,9 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
     } catch { if (mounted.current && epoch.current === current) setMessage(authError()); }
     finally { if (mounted.current && epoch.current === current) setBusy(false); }
   }
-  async function signOut() {
+  /** `hostView`: the writing host's documents of this owner as shown now (F4·P3c, 11/9), a document made since the
+   *  account snapshot included. */
+  async function signOut(hostView?: AlphaLogoutViewOwner) {
     if (!client.current || busy) return;
     // Capture before bind(null) hides the account. Keep this owner across a failed revocation/cleanup retry.
     const ownerId = acceptedOwner.current ?? acceptedSession.current?.userId ?? workspaceSession?.userId;
@@ -221,6 +224,9 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
       logoutViewOwner.current = { ownerId, documentIds: account?.ownerId === ownerId
         ? [...account.space.text.documents, ...account.space.text.flows].map(document => document.id) : [] };
     }
+    if (ownerId && hostView?.ownerId === ownerId) logoutViewOwner.current = mergeAlphaLogoutViewOwner(logoutViewOwner.current, hostView);
+    // Kept until the view cleanup is confirmed: a retry after a reload clears the same folder-map entries.
+    keepAlphaLogoutViewOwner(localStorage, logoutViewOwner.current);
     epoch.current++; suppressSession.current = true; setBusy(true); setLogoutPending(true); setMessage('');
     setPassword(''); setConfirm(''); setAccountEmail(''); setWorkspaceSession(null); setWorkspaceOwner(null); boundary.current?.bind(null, null);
     let durableMarker = false;
@@ -228,8 +234,10 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
     try {
       const stored = await client.current.auth.getSession();
       // After a reload with logout-pending, only the retained SDK session can identify the retrying owner.
+      // The IDs kept at the first attempt come back with it (that owner's only); without a session, the kept owner.
       if (!logoutViewOwner.current && stored.data.session && !stored.data.session.user.is_anonymous)
-        logoutViewOwner.current = { ownerId: stored.data.session.user.id, documentIds: [] };
+        logoutViewOwner.current = readAlphaLogoutViewOwner(localStorage, stored.data.session.user.id) ?? { ownerId: stored.data.session.user.id, documentIds: [] };
+      if (!logoutViewOwner.current) logoutViewOwner.current = readAlphaLogoutViewOwner(localStorage);
       const tokenToRevoke = stored.data.session?.access_token ?? logoutToken.current;
       if (tokenToRevoke && config) {
         // Revoke before SDK cleanup: this SDK also drops its local session on
@@ -252,7 +260,7 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
       const result = await client.current.auth.signOut({ scope: 'local' });
       if (!mounted.current) return;
       if (result.error) { setMessage('로그아웃을 서버에서 확인하지 못했습니다. 개인 자료는 숨겼습니다. 다시 시도해 주세요.'); return; }
-      localStorage.removeItem(recoveryKey); localStorage.removeItem(logoutKey);
+      localStorage.removeItem(recoveryKey); localStorage.removeItem(logoutKey); dropAlphaLogoutViewOwner(localStorage);
       logoutViewOwner.current = null;
       acceptedOwner.current = null; recoveringOwner.current = null;
       logoutToken.current = null;

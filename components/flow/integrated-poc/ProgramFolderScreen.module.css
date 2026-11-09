@@ -117,3 +117,8 @@
 .taskFolder.taskFolder { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 48px; margin: 8px 0 0; padding: 6px 12px; text-align: left; }
 .taskFolder span { color: var(--flowme-b-muted); font-size: 14px; }
 .taskFolder b { color: var(--flowme-b-primary); font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* F4·int (11/9): on a wide screen the list stays beside the folder, so its ‹ (back to the list) goes. */
+@media (min-width: 1000px) {
+  :global([data-folder-layout]) .head .back { display: none; }
+  :global([data-folder-layout]) .head { margin-left: 0; }
+}

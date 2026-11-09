@@ -45,7 +45,8 @@ test('after it: 고르기 ends, the notice offers 되돌리기 (one save back) a
   assert(!space.includes('지금 보기에서는 빠졌습니다') && space.includes(': programTaskDatesMovedText(datesNotice.count, datesNotice.date, today)),'));
   // It stays (a choice) until another save or a view change.
   assert.match(space, /tone: datesNotice\.refused \? 'warn' : datesNotice\.undone \? 'info' : 'choose'/);
-  assert.match(space, /useEffect\(\(\) => \{ setDatesNotice\(null\); \}, \[actorId, period, date, folderId, query\]\);/);
+  // P3c (11/9): except the change [그날 보기] itself makes (the notice and its 되돌리기 stay through it; f4f5-int.test.ts).
+  assert.match(space, /useEffect\(\(\) => \{ setDatesNotice\(current => current && current\.undo === datesNoticeKept\.current \? current : null\); \}, \[actorId, period, date, folderId, query\]\);/);
   assert.match(space, /if \(result\.ok && result\.changed !== false\) setDatesNotice\(null\);/);
 });
 

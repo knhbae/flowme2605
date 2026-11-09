@@ -9,6 +9,7 @@ import { restoreProgramDialogFocus, restoreProgramWritingReturn, watchProgramRet
 import { programFailure } from '@/lib/flow/integrated-poc/contract';
 import type { AlphaAuthConfig } from '@/lib/flow/integrated-poc/alpha-auth/config';
 import type { VerifiedAlphaSession } from '@/lib/flow/integrated-poc/alpha-auth/account-access';
+import type { AlphaLogoutViewOwner } from '@/lib/flow/integrated-poc/alpha-auth/logout-view-storage';
 import { createAlphaSyncController, type AlphaSyncSnapshot } from '@/lib/flow/integrated-poc/alpha-sync/controller';
 import type { AlphaCommand } from '@/lib/flow/integrated-poc/alpha-persistence/contract';
 import { createAlphaHttpRepository } from '@/lib/flow/integrated-poc/alpha-sync/http-repository';
@@ -105,7 +106,7 @@ function mergeStructuralRecoveryEntries(parked: readonly AlphaStructuralRecovery
 }
 
 type AlphaWorkspaceProps = {
-  config: AlphaAuthConfig; session: VerifiedAlphaSession; email: string; onSignOut: () => Promise<void>; pmWriting?:'v11-pm/1';nativeAuthoringEnabled?:boolean;
+  config: AlphaAuthConfig; session: VerifiedAlphaSession; email: string; onSignOut: (view?: AlphaLogoutViewOwner) => Promise<void>; pmWriting?:'v11-pm/1';nativeAuthoringEnabled?:boolean;
   /** Egress probe for the automatic reads (server v2 read functions). Off unless the deployment opts in. */
   readProbe?: boolean;
   /** R7: the contact address in 저장과 공개 안내, from the server's FLOWME_ALPHA_PRIVACY_CONTACT. */
@@ -1039,7 +1040,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       if (destinationRef.current !== next && reviewRestore.current === restoring) reviewRestore.current = null;
     } finally { reviewBusy.current = false; }
   }
-  async function signOut() { clearReviewContext(); await onSignOut(); }
+  // F4·P3c (11/9): the logout clears this device's folder-view choices of this account's documents, every one shown now
+  // (a document made since the account snapshot included), so it is handed the IDs here.
+  const signOutView = (): AlphaLogoutViewOwner => { const text = currentData.current?.activeActorId === session.userId ? currentData.current.spaces[session.userId]?.text : undefined;
+    return { ownerId: session.userId, documentIds: text ? [...text.documents, ...text.flows].map(doc => doc.id) : [] }; };
+  async function signOut() { clearReviewContext(); await onSignOut(signOutView()); }
   /** P3c (11/6): this account's 복구함 input left on this device at logout: this tab's four kinds and the copies kept
    * outside the tab (this page's and those of tabs that left), each counted once; with the outside rows behind it. */
   function deviceInput() {

@@ -938,7 +938,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // leaves the way 취소 does (the calendar comes back), but not to the old scroll: the view is another one now.
   useEffect(() => { stopSelecting(false); }, [actorId, period, date, folderId, query]);
   // C6b: the move's notice goes with a view change (and with another save, in the gate above).
-  useEffect(() => { setDatesNotice(null); }, [actorId, period, date, folderId, query]);
+  // P3c (11/9): [그날 보기] changes the view itself; the notice it came from (its 되돌리기) stays through that change only.
+  // Any other view change (a tab, another day, a folder, a search) still drops it.
+  // Matched by its undo list (a press on the notice refreshes its time, which makes a new notice object).
+  const datesNoticeKept = useRef<ProgramTaskDateMove[] | null>(null);
+  useEffect(() => { setDatesNotice(current => current && current.undo === datesNoticeKept.current ? current : null); }, [actorId, period, date, folderId, query]);
   useEffect(() => { setCarryNotice(null); }, [actorId, period, date, folderId, query]);
   useEffect(() => { setCheckNotice(null); }, [actorId, period, date, folderId, query]);
   useEffect(() => {
@@ -2092,8 +2096,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   /** [그날 보기]: the period holding the moved-to day (날짜 없음 has its own). */
   async function showMovedDay(target: string | null) {
-    if (target === null) { await changePeriod('undated'); return; }
+    // Kept through this view change (a period, then a day: two renders), then released.
+    const kept = datesNotice?.undo ?? null; datesNoticeKept.current = kept;
+    const release = () => requestAnimationFrame(() => requestAnimationFrame(() => { if (datesNoticeKept.current === kept) datesNoticeKept.current = null; }));
+    if (target === null) { await changePeriod('undated'); release(); return; }
     if (period === 'week' || period === 'month' || await changePeriod('week')) setDate(target);
+    release();
   }
   /** A day heading's [모두]/[풀기] in 고르기, over that day's pickable rows (지난 미완료 too). */
   function selectDayButton(item: Extract<ProgramExecutionListItem, { kind: 'heading' }>) {
