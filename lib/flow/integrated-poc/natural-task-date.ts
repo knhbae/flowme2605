@@ -1,13 +1,16 @@
-export type NaturalTaskDateRule =
+type NaturalTaskDateRule =
   | 'relative-day' | 'week-day' | 'nearest-weekday' | 'weekend'
   | 'next-month-day' | 'month-day' | 'day-of-month' | 'days-later' | 'month-end';
 
 export type NaturalTaskDateContext = {
-  /** The caller supplies the line-finish date in KST, not the task's date section. */
+  /** The caller supplies today's KST date. Explicit month/day uses this year. */
   today: string;
+  /** Optional KST civil date for relative expressions; defaults to today.
+   * This does not choose a date-section UI policy. Explicit month/day still uses today. */
+  baseDate?: string;
   /** Only KST is supported. No clock, locale, or host time zone is consulted. */
   timeZone?: 'Asia/Seoul';
-  /** Optional cross-check: ISO weekday, Monday = 1 ... Sunday = 7. */
+  /** Optional cross-check of today, not baseDate: ISO Monday = 1 ... Sunday = 7. */
   weekday?: number;
   /** An existing date property, including an invalid/empty one, blocks a suggestion. */
   hasDateProperty?: boolean;
@@ -17,9 +20,8 @@ export type NaturalTaskDateContext = {
 
 export type NaturalTaskDateCandidate = {
   date: string;
-  rule: NaturalTaskDateRule;
   /** Exact half-open UTF-16 offsets into the original full task line. */
-  evidence: { start: number; end: number; text: string };
+  words: { start: number; end: number };
 };
 
 const DAY_MS = 86_400_000;
@@ -62,26 +64,26 @@ function monthDate(today: Date, offset: number, day: number): string | null {
   return date && dateText(date);
 }
 
-function resolve(expression: string, today: Date, todayText: string): { date: string | null; rule: NaturalTaskDateRule } {
+function resolve(expression: string, base: Date, today: Date, todayText: string): { date: string | null; rule: NaturalTaskDateRule } {
   const compact = expression.replace(/[ \t]/gu, '');
-  const weekday = today.getUTCDay() || 7;
+  const weekday = base.getUTCDay() || 7;
   const relative = ['오늘', '내일', '모레', '글피'].indexOf(compact);
-  if (relative !== -1) return { date: shift(today, relative), rule: 'relative-day' };
+  if (relative !== -1) return { date: shift(base, relative), rule: 'relative-day' };
   if (compact === '이번주말') {
     // Matches programLineDateChips: weekdays -> Saturday; Saturday/Sunday -> today.
-    return { date: shift(today, weekday >= 6 ? 0 : 6 - weekday), rule: 'weekend' };
+    return { date: shift(base, weekday >= 6 ? 0 : 6 - weekday), rule: 'weekend' };
   }
   let match = /^(이번|다음)주([월화수목금토일])(?:요일)?$/u.exec(compact);
   if (match) {
     const offset = WEEKDAYS.indexOf(match[2]) + 1 - weekday + (match[1] === '다음' ? 7 : 0);
-    return { date: offset < 0 ? null : shift(today, offset), rule: 'week-day' };
+    return { date: offset < 0 ? null : shift(base, offset), rule: 'week-day' };
   }
   match = /^([월화수목금토일])요일$/u.exec(compact);
-  if (match) return { date: shift(today, (WEEKDAYS.indexOf(match[1]) + 1 - weekday + 7) % 7), rule: 'nearest-weekday' };
+  if (match) return { date: shift(base, (WEEKDAYS.indexOf(match[1]) + 1 - weekday + 7) % 7), rule: 'nearest-weekday' };
   match = /^다음달(\d{1,2})일$/u.exec(compact);
-  if (match) return { date: monthDate(today, 1, Number(match[1])), rule: 'next-month-day' };
+  if (match) return { date: monthDate(base, 1, Number(match[1])), rule: 'next-month-day' };
   match = /^(\d{1,7})일뒤$/u.exec(compact);
-  if (match) return { date: shift(today, Number(match[1])), rule: 'days-later' };
+  if (match) return { date: shift(base, Number(match[1])), rule: 'days-later' };
   match = /^(\d{1,2})(?:월|\/)(\d{1,2})일?$/u.exec(compact);
   if (match) {
     const month = Number(match[1]), day = Number(match[2]);
@@ -93,14 +95,14 @@ function resolve(expression: string, today: Date, todayText: string): { date: st
     return { date: target && dateText(target), rule: 'month-day' };
   }
   if (compact === '월말') {
-    const nextMonth = new Date(today.getTime());
+    const nextMonth = new Date(base.getTime());
     nextMonth.setUTCMonth(nextMonth.getUTCMonth() + 1, 0);
     return { date: dateText(nextMonth), rule: 'month-end' };
   }
   match = /^(\d{1,2})일$/u.exec(compact);
   if (match) {
     const day = Number(match[1]);
-    return { date: monthDate(today, day < today.getUTCDate() ? 1 : 0, day), rule: 'day-of-month' };
+    return { date: monthDate(base, day < base.getUTCDate() ? 1 : 0, day), rule: 'day-of-month' };
   }
   return { date: null, rule: 'relative-day' };
 }
@@ -108,7 +110,12 @@ function resolve(expression: string, today: Date, todayText: string): { date: st
 /**
  * A conservative, pure proposal for ONE raw unchecked writing-task line.
  * This does not apply a date, change text, inspect a document, or read a clock.
- * Weeks are Monday–Sunday; a bare weekday includes today. A past explicit
+ * Relative expressions use baseDate (default: today). Explicit M/D or M월D일
+ * uses today's year and rolls past dates into next year, independent of baseDate.
+ * Weeks are Monday–Sunday; a bare weekday includes the base date itself, so a
+ * Monday written on Monday is today by default. "월요일 회의" still abstains
+ * as a possible name; "월요일" and "월요일에 회의" include that Monday.
+ * A past explicit
  * this-week weekday, an invalid immediate month/year, or multiple expressions
  * produces null. A bare weekday followed only by a noun also abstains: it may be
  * a meeting/work name. Add a date particle or an execution verb to disambiguate.
@@ -117,6 +124,8 @@ export function suggestTaskLineDate(line: string, context: NaturalTaskDateContex
   if (context.eligible === false || context.hasDateProperty || (context.timeZone !== undefined && context.timeZone !== 'Asia/Seoul')) return null;
   const today = readDate(context.today);
   if (!today || (context.weekday !== undefined && context.weekday !== (today.getUTCDay() || 7))) return null;
+  const base = context.baseDate === undefined ? today : readDate(context.baseDate);
+  if (!base) return null;
   if (/[\r\n\u2028\u2029]/u.test(line)) return null;
   const task = /^[ \t]*- \[ \][ \t]+/u.exec(line);
   if (!task) return null;
@@ -133,9 +142,9 @@ export function suggestTaskLineDate(line: string, context: NaturalTaskDateContex
   // An interior date needs an explicit date particle; otherwise a number/name in
   // the object of the task is too easy to mistake for a schedule.
   if (before.trim() && !particle) return null;
-  const resolved = resolve(match[0], today, context.today);
+  const resolved = resolve(match[0], base, today, context.today);
   if (!resolved.date) return null;
   if (resolved.rule === 'nearest-weekday' && after.trim() && !particle && !WEEKDAY_ACTION.test(after)) return null;
   const absoluteStart = task[0].length + start;
-  return { date: resolved.date, rule: resolved.rule, evidence: { start: absoluteStart, end: absoluteStart + match[0].length, text: match[0] } };
+  return { date: resolved.date, words: { start: absoluteStart, end: absoluteStart + match[0].length } };
 }
