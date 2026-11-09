@@ -160,3 +160,4 @@
 - 11/9 F4·F5 목업 사용자 확인('고쳐서 진행'). UX = 목업 v2 수정 3건(outbox/ux-f4f5-fix-20261109), 개발 = F4-a 폴더 화면 구현 시작(outbox/f4a-dev-20261109, ＋ 숨김). 화면 전체 시각 다듬기(서체·색·여백 인상)는 기능 자리 잡은 뒤 별도 트랙으로 백로그.
 - 11/9 Codex 병렬: F5-a 공개 세 걸음(agent/alpha-f5a-20261109)·P3 묶음 4건(agent/alpha-p3c-20261109), F4 소유 파일은 읽기만 (outbox/codex-f5a-p3c-20261109).
 - 11/9 17:0x F4-a·F5-a·P3c·P3d 운영 반영: 4d4ca748 / I2Ymhg_jo4msgZURwv2-f (light deploy run 27, QA_GO f4f5-int3-qa-20261109-1655, UX F4 FIX3 반영·F5 FIX5(P3) 반영, DB 0, 경로 정상). 중간 NO_GO 2번(F5 한글 조합 메뉴 P1, 재열기 기준일 P1) 고쳐서 통과. 남은 P2: 문서 둘 이상이면 재열기 새 할 일 기준일 자동 복원 안 됨(안전 쪽 '날짜 미정', 안내 두 번) → 다음 손볼 때. 다음: F4-b(＋ 오늘 할 일), F5-b(나 › 내 공개 Flow 관리).
+- 11/9 23:1x 병렬: 기타 = int4(89b3336b: F4-b+수정·F6-B1·F5-b) QA, 개발 = F6 B2, Codex = F6 B3 쓰기 레일(agent/alpha-f6b3-20261109)·F7 해석 lib(agent/alpha-f7lib-20261109), UX = F7 목업.
