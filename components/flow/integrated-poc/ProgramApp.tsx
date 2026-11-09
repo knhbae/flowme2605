@@ -114,7 +114,7 @@ export function ProgramApp({ savedCount, baseModel, legacyState, sourceCandidate
   }, []);
   useEffect(() => {
     if (['discover', 'flow'].includes(destination.view)) setDiscoverySelection(destination.view === 'flow' ? destination.id : undefined);
-    if (['community', 'activity'].includes(destination.view)) { setCommunitySelection(destination.view === 'community' ? destination.id : undefined); setCommunityView(destination.view === 'activity' ? 'activity' : 'community'); }
+    if (['community', 'activity'].includes(destination.view)) { setCommunitySelection(destination.id); setCommunityView(destination.view === 'activity' ? 'activity' : 'community'); }
   }, [destination]);
   useEffect(() => { if (inspector) inspectorDialog.current?.showModal(); }, [inspector]);
   const editorPorts = () => [editors.current, legacyEditors.current, communityEditors.current, creatorEditors.current, publisherEditors.current, inspectorEditors.current];

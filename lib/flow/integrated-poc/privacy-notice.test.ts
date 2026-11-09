@@ -20,7 +20,7 @@ test('the settled wording, in its three parts and closing line', () => {
   // P3c (11/6): a review left with '해 봤어요' is said to be public, in the words the review composer uses.
   assert.equal(PRIVACY_NOTICE_READERS[2], "'해 봤어요'로 남긴 후기도 공개한 글이라 로그인한 다른 사용자가 봅니다.");
   assert(PRIVACY_NOTICE_READERS[1].includes('로그인한 다른 사용자가 봅니다') && PROGRAM_TRIED_NOTE.startsWith('로그인한 다른 사용자에게 공개되는 글입니다.'));
-  assert(PRIVACY_NOTICE_DELETION.some(line => line.includes("'선택해서 공개' › '공개 상태 관리' › '공개 목록에서 내리기'")));
+  assert(PRIVACY_NOTICE_DELETION.some(line => line.includes("'나' › '내 공개 Flow' › 공개한 Flow의 '공개 내리기'")));
   assert.equal(`someone@example.com${PRIVACY_NOTICE_REQUEST}`, 'someone@example.com 으로 "계정 자료를 지워 주세요"라고 보내 주세요. 로그인한 메일 주소를 함께 적어 주세요.');
   assert.equal(PRIVACY_NOTICE_CLOSING, '중요한 자료의 유일본은 넣지 마세요. 시험판이라 오류가 날 수 있습니다.');
   for (const heading of ['저장하는 것', '누가 보나', '지워 달라고 할 때']) assert(sheet.includes(`>${heading}</h3>`), heading);

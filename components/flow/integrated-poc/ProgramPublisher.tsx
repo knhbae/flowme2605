@@ -26,10 +26,10 @@ import { programShortDate } from '@/lib/flow/integrated-poc/program-discovery-di
 import { applyProgramPublicationStepDates, captureProgramPublicationStepInput, composeProgramPublicationSummary, programPublicationDateExample, programPublicationExposure, programPublicationSavedSchedules, programPublicationSavedSourceDates, programPublicationStepNativeValue, programPublicationSummaryParts, type ProgramPublicationDateMode, type ProgramPublicationStep } from '@/lib/flow/integrated-poc/publication-steps';
 import { ProgramPublicationPick, ProgramPublicationPreviewCard } from './ProgramPublicationSteps';
 import styles from './ProgramPublisher.module.css';
-import { fullRowText, canRepublishProgramDocument, createProgramRepublishDraft, programPublicationRepublishSource } from '@/lib/flow/integrated-poc/publication-editor';
+import { fullRowText, canRepublishProgramDocument, programPublicationRepublishSource } from '@/lib/flow/integrated-poc/publication-editor';
 
-export type ProgramPublisherProps = { data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate; documentId: string; onClose: () => void; today: string; storageScope?: 'local' | 'account'; readCurrentData?: () => ProgramData | null; externalRecovery?: React.ReactNode; onRegisterEditors?: (port: ProgramEditorFlush | null) => void };
-import { publicationDraftAt, programPublicationRecoveryText, createProgramPublicationEditorPort, resolveProgramPrivatePublicationDraft, sameFingerprint, publicId, documentFingerprint, createProgramPublicationDraft, saveProgramPublicationDraft, programPublicationInput, publishProgramDocument, compareProgramPublication, resolveProgramPublicationComparison, archiveProgramPublication, type PublicationComparison, type PublicationConflictChoices } from '@/lib/flow/integrated-poc/publication-editor';
+export type ProgramPublisherProps = { data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate; documentId: string; onClose: () => void; today: string; storageScope?: 'local' | 'account'; readCurrentData?: () => ProgramData | null; externalRecovery?: React.ReactNode; onRegisterEditors?: (port: ProgramEditorFlush | null) => void; initialStep?: 'pick' | 'refine'; onManage?: (flowId: string) => void; embedded?: boolean };
+import { publicationDraftAt, programPublicationRecoveryText, createProgramPublicationEditorPort, resolveProgramPrivatePublicationDraft, sameFingerprint, publicId, documentFingerprint, createProgramPublicationDraft, saveProgramPublicationDraft, programPublicationInput, publishProgramDocument, compareProgramPublication, resolveProgramPublicationComparison, type PublicationComparison, type PublicationConflictChoices } from '@/lib/flow/integrated-poc/publication-editor';
 export * from '@/lib/flow/integrated-poc/publication-editor';
 const same = programSame;
 
@@ -45,10 +45,10 @@ export function PublicationConflictReview({ comparison, choices, disabled, onCho
   </section>;
 }
 
-export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, onRegisterEditors, externalRecovery, storageScope = 'local', readCurrentData, today }: ProgramPublisherProps) {
+export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, onRegisterEditors, externalRecovery, storageScope = 'local', readCurrentData, today, initialStep = 'pick', onManage, embedded = false }: ProgramPublisherProps) {
   const actorId = useRef(data.activeActorId).current; const dataRef = useRef(data); dataRef.current = data;
   const [draft, setDraft] = useState(() => createProgramPublicationDraft(data, documentId, new Date().toISOString()));
-  const [republishing, setRepublishing] = useState(() => {
+  const [republishing] = useState(() => {
     const saved = publicationDraftAt(data, data.activeActorId, documentId);
     return !!saved?.flowId && data.public.flows.some(flow => flow.id === saved.flowId && flow.archived);
   });
@@ -56,7 +56,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   const draftRef = useRef(draft); draftRef.current = draft;
   const savedRef = useRef(data.spaces[actorId]?.publicationDrafts.find(row => row.documentId === documentId) ?? null);
   const flight = useRef<Promise<boolean> | null>(null); const [saving, setSaving] = useState(false); const [publishing, setPublishing] = useState(false);
-  const publishingRef = useRef(false); const [message, setMessage] = useState(''); const [step, setStep] = useState<ProgramPublicationStep>('pick'); const [discarding, setDiscarding] = useState(false);
+  const publishingRef = useRef(false); const [message, setMessage] = useState(''); const [step, setStep] = useState<ProgramPublicationStep>(() => initialStep === 'refine' && publicationDraftAt(data, actorId, documentId) ? 'refine' : 'pick'); const [discarding, setDiscarding] = useState(false);
   const preview = step === 'preview';
   const setPreview = (value: boolean) => setStep(previous => value ? 'preview' : previous === 'preview' ? 'refine' : previous);
   const [editingRow, setEditingRow] = useState<string | null>(null);
@@ -72,7 +72,6 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   const [explicitDateMode, setExplicitDateMode] = useState(false);
   const stepHeading = useRef<HTMLHeadingElement>(null);
   const [comparison, setComparison] = useState<PublicationComparison | null>(null), [choices, setChoices] = useState<PublicationConflictChoices>({});
-  const [archiveTarget, setArchiveTarget] = useState<{ flowId: string; versionId: string; title: string } | null>(null);
   const [seriesReview, setSeriesReview] = useState<ProgramPublicationSeriesReview | null>(null);
   const [seriesKeys, setSeriesKeys] = useState<string[]>([]);
   const seriesOpener = useRef<HTMLButtonElement>(null);
@@ -171,6 +170,15 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     beginAction();
     try { if (await save()) { dialog.current?.close(); onClose(); restoreProgramDialogFocus(opener.current); } } finally { endAction(); }
   };
+  const openManagement = async (flowId: string) => {
+    if (unavailable()) return;
+    beginAction();
+    try {
+      if (!published && !republished && !await save()) return;
+      dialog.current?.close(); onClose();
+      if (onManage) onManage(flowId); else navigate({ view: 'activity', id: flowId });
+    } finally { endAction(); }
+  };
   const port = createProgramPublicationEditorPort({ actorId, documentId, read, saved: () => savedRef.current,
     composing: () => composing.current.size > 0, busy: () => publishingRef.current, save, lock: lockInput, handlesPrivateConflict: true });
   const portRef = useRef(port); portRef.current = port;
@@ -201,7 +209,9 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   };
   useEffect(() => {
     opener.current = document.activeElement as HTMLElement;
-    if (dialog.current && !dialog.current.open) dialog.current.showModal();
+    // Activity embeds the editor under the host recovery controls. Keep those
+    // controls reachable when the host is reconciling an uncertain save.
+    if (dialog.current && !dialog.current.open) { if (embedded) dialog.current.show(); else dialog.current.showModal(); }
     void save();
     return () => { restoreProgramDialogFocus(opener.current); };
     // This component is keyed by actor/document in the owning shell.
@@ -273,12 +283,6 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   const canRepublish = !!republishSource && canRepublishProgramDocument(data, actorId, documentId);
   const republishBlocked = !!currentFlow?.archived && (!republishing || !canRepublish);
   const input = draft ? programPublicationInput(draft, actorId, { newFlow: republishing && !!currentFlow?.archived }) : null;
-  const startRepublishing = () => {
-    if (unavailable()) return; const current = read(); if (!current?.flowId) return;
-    const next = createProgramRepublishDraft(dataRef.current, documentId, current.flowId, new Date().toISOString(), current);
-    if (!next) { setMessage('이 문서의 공개 연결이 바뀌었습니다. 입력은 유지했습니다. 현재 공개 상태를 다시 확인해 주세요.'); return; }
-    setCurrent(next); setRepublishing(true); setPreview(false);
-  };
   const sourceChanged = !!draft && !sameFingerprint(documentFingerprint(data, actorId, documentId), draft.sourceDocumentFingerprint);
   const seriesChanged = !!draft && !programPublicationSeriesSourcesCurrent(data, actorId, draft);
   const versionChanged = !!draft?.flowId && currentFlow?.currentVersionId !== draft.expectedVersionId;
@@ -341,17 +345,6 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       savedSchedules.current = programPublicationSavedSchedules(updated.rows); manuallySetSchedules.current.clear(); savedSourceDates.current = programPublicationSavedSourceDates(updated, dataRef.current.spaces[actorId].text); setExplicitDateMode(false); setAnchorUndo(null);
       savedRef.current = updated; setCurrent(updated); setComparison(null); setChoices({}); setPreview(false); setMessage('선택한 내용을 초안에 저장했습니다. 공개 미리보기에서 결과를 확인해 주세요.');
     } catch { setMessage('비교 결과를 저장하지 못했습니다. 초안과 선택을 유지했습니다.'); }
-    finally { endAction(); }
-  };
-  const archive = async () => {
-    if (!archiveTarget || unavailable()) return;
-    beginAction();
-    try {
-      if (!await save()) return;
-      const result = await mutate('공개 목록에서 내리기', current => archiveProgramPublication(current, actorId, documentId, archiveTarget.flowId, archiveTarget.versionId), { history: false, alphaSocial: { type: 'publication-archive', documentId, flowId: archiveTarget.flowId, expectedVersionId: archiveTarget.versionId } });
-      if (!result.ok) { setMessage(programErrorMessage(result.reason)); return; }
-      setArchiveTarget(null); setComparison(null); setPreview(false); setMessage('공개 목록에서 내렸습니다. 기존 버전·개인 사본·작성 중인 초안은 그대로 보관했습니다.');
-    } catch { setMessage('공개 철회 결과를 확인하지 못했습니다. 초안은 유지했습니다. 현재 상태를 확인한 뒤 다시 시도해 주세요.'); }
     finally { endAction(); }
   };
   const openPreview = () => { if (unavailable()) return; const next = read(); if (next && programPublicationInput(next, actorId, { newFlow: republishing && !!currentFlow?.archived })) { setCurrent(next); setEditingRow(null); setPreview(true); void save(); } };
@@ -451,14 +444,14 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
               {(row.scheduleKind === 'fixed' || row.scheduleKind === 'recurring' && row.recurrence && (row.recurrence.startKind === 'fixed' || !!row.recurrence.end.match(/\d{4}-\d\d-\d\d/))) && <p className={styles.fixedWarning} role="status">직접 정한 실제 날짜가 그대로 공개됩니다. 날짜를 숨기려면 공개 일정을 바꿔 주세요.</p>}
             </section>;
   })();
-  if (published) return <dialog ref={dialog} className={styles.dialog} aria-labelledby="program-published-title" onCancel={event => { event.preventDefault(); leavePublished(false); }}>
+  if (published) return <dialog ref={dialog} className={styles.dialog} data-embedded={embedded || undefined} aria-labelledby="program-published-title" onCancel={event => { event.preventDefault(); leavePublished(false); }}>
     <section className={styles.publishedPanel}><h2 id="program-published-title">공개했습니다</h2><p>{published.title}</p>
       <ProgramShareLink flowId={published.flowId} versionId={published.versionId} />
-      <div className={styles.publishedActions}><button type="button" onClick={() => leavePublished(true)}>Flow 찾기에서 보기</button><button type="button" onClick={() => leavePublished(false)}>닫기</button></div>
-      <p>나 › 내 활동에서 공개한 Flow를 다시 볼 수 있습니다.</p>
+      <div className={styles.publishedActions}><button type="button" onClick={() => leavePublished(true)}>Flow 찾기에서 보기</button><button type="button" onClick={() => void openManagement(published.flowId)}>내 공개 Flow 관리</button><button type="button" onClick={() => leavePublished(false)}>닫기</button></div>
+      <p>나 › 내 활동 › 내 공개 Flow에서 관리할 수 있습니다.</p>
     </section>
   </dialog>;
-  return <dialog ref={dialog} className={styles.dialog} aria-labelledby={editingItem ? "program-publication-item-title" : "program-publisher-title"} onCancel={event => { event.preventDefault(); if (editingItem) closeItem(); else void close(); }}
+  return <dialog ref={dialog} className={styles.dialog} data-embedded={embedded || undefined} aria-labelledby={editingItem ? "program-publication-item-title" : "program-publisher-title"} onCancel={event => { event.preventDefault(); if (editingItem) closeItem(); else void close(); }}
     onCompositionStartCapture={event => { composing.current.add(event.target); if (recovery.current) recovery.current.open = false; }}
     onCompositionEndCapture={event => { composing.current.delete(event.target); const next = read(); if (next) setCurrent({ ...next, updatedAt: new Date().toISOString() }); syncReadonly(); if (!composing.current.size) void save(); }}>
     {externalRecovery}
@@ -476,8 +469,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
         <details open><summary>비교할 때 저장된 초안</summary><pre className={styles.pre}>{privateComparison.stored ? programPublicationRecoveryText(privateComparison.stored) : '저장 초안 없음 · 다른 탭에서 공개했거나 지웠을 수 있습니다.'}</pre></details>
         <button type="button" disabled={blocked} onClick={() => void resolvePrivate('mine')}>내 입력으로 초안 보관</button><button type="button" disabled={blocked} onClick={() => void resolvePrivate('stored')}>내 입력 대신 확인한 저장 초안 열기</button><button type="button" disabled={blocked} onClick={() => setPrivateComparison(null)}>취소 · 내 입력 유지</button>
       </section>}
-      {currentFlow?.ownerId === actorId && <details className={styles.management}><summary>공개 상태 관리</summary>{currentFlow.archived ? <><p>이 Flow는 철회된 채로 둡니다. 같은 내용을 새 링크로 다시 공개할 수 있습니다.</p>{!republishing && canRepublish && <button type="button" disabled={blocked} onClick={startRepublishing}>새 링크로 다시 공개…</button>}{!canRepublish && <p>이 문서는 새 링크로 공개 중이거나 공개 연결이 바뀌었습니다.</p>}</> : <><p>공개를 철회하면 탐색 목록에서 숨깁니다. 이미 만들어진 개인 사본과 이전 버전은 남습니다.</p><button type="button" disabled={blocked} onClick={() => setArchiveTarget({ flowId: currentFlow.id, versionId: currentFlow.currentVersionId, title: data.public.versions.find(row => row.id === currentFlow.currentVersionId)?.title ?? draft.title })}>공개 목록에서 내리기</button></>}</details>}
-      {archiveTarget && <section className={styles.warning} aria-label="공개 철회 확인"><h3>‘{archiveTarget.title}’ 공개를 철회할까요?</h3><p>공개 목록에서만 숨깁니다. 원문·이전 버전·개인 사본·현재 초안은 지우지 않습니다. 나중에 같은 문서를 새 링크로 다시 공개할 수 있습니다. 이 Flow의 링크로는 더 이상 가져오거나 출력할 수 없습니다.</p>{currentFlow?.currentVersionId !== archiveTarget.versionId && <p role="alert">확인 중 버전이 바뀌었습니다. 취소한 뒤 최신 제목과 버전으로 다시 확인해 주세요.</p>}<button type="button" disabled={blocked || currentFlow?.currentVersionId !== archiveTarget.versionId} onClick={() => void archive()}>확인 · 공개 철회하고 보관</button><button type="button" disabled={blocked} onClick={() => setArchiveTarget(null)}>취소 · 공개 유지</button></section>}
+      {currentFlow?.ownerId === actorId && <button type="button" disabled={blocked} onClick={() => void openManagement(currentFlow.id)}>내 공개 Flow 관리</button>}
       {sourceChanged && <section className={styles.warning}><strong>개인 문서가 바뀌었습니다.</strong><p>원문 변경을 확인해 주세요. 개인 내용은 공개 초안에 자동으로 추가하지 않습니다.</p><details><summary>현재 개인 원문 읽기 · 공개되지 않음</summary><pre className={styles.pre}>{M.raw(M.getDocument(space.text, documentId))}</pre></details><button type="button" disabled={blocked} onClick={acknowledgeSource}>원문 변경 확인 · 공개 초안 유지</button></section>}
       {versionChanged && !currentFlow?.archived && <section className={styles.warning}><strong>공개 버전이 바뀌었습니다.</strong><p>공개할 필드별로 초안을 유지할지 최신 내용을 가져올지 선택해 주세요.</p><button type="button" disabled={blocked} onClick={startComparison}>{comparison ? '최신 상태로 비교 다시 시작' : '최신 공개 버전과 비교'}</button></section>}
       {comparison && <PublicationConflictReview comparison={comparison} choices={choices} disabled={blocked} onChoice={(key, choice) => setChoices(previous => ({ ...previous, [key]: choice }))} onApply={() => void applyComparison()} onCancel={() => { setComparison(null); setChoices({}); }} />}
@@ -513,7 +505,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
           <label className={styles.field}>기준일 이름 · 선택<input data-publication-field="anchorName" value={anchorName} maxLength={40} placeholder="예: 이사일" onChange={event => edit({ summary: composeProgramPublicationSummary(event.target.value, programPublicationSummaryParts(draftRef.current!.summary).body) })} /></label>
           {anchorPlan && !showDateControls && anchorPlan.handSet === 0 && <p className={styles.anchorHint} data-anchor-none>고른 할 일에 바꿀 문서 날짜가 없습니다. 날짜 미정과 반복은 그대로 둡니다.</p>}
           {!!anchorPlan?.handSet && <p className={styles.anchorHint}>직접 정했거나 저장해 둔 일정 {anchorPlan.handSet}개는 그대로 둡니다. 항목을 눌러 바꿀 수 있습니다.</p>}
-          {anchorPreview?.issue && <p className={styles.anchorHint} role="status" data-anchor-issue>{anchorPreview.issue}</p>}{anchorNote && <p className={styles.visuallyHidden} role="status">{anchorNote}</p>}
+          {anchorPreview?.issue && <p className={styles.anchorHint} role="status" data-anchor-issue>{anchorPreview.issue}</p>}{anchorNote && !anchorPreview?.issue && <p className={styles.visuallyHidden} role="status">{anchorNote}</p>}
         </section>
         <section className={styles.choices} aria-label="고른 항목 다듬기"><h3>고른 항목 {draft.rows.filter(row => row.selected).length}개</h3>{draft.rows.filter(row => row.selected).map(row => {
           const chip = scheduleChip(row), scheduleLabel = manuallySetSchedules.current.has(row.itemId) || row.scheduleKind === 'fixed' ? '직접 정함' : savedSchedules.current.has(row.itemId) && row.scheduleKind !== 'undated' ? '저장한 일정' : null;

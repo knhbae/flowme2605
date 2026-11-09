@@ -1,5 +1,6 @@
 .dialog{width:min(720px,calc(100vw - 48px));height:min(860px,calc(100dvh - 48px));max-height:calc(100dvh - 48px);margin:auto;padding:0;border:1px solid var(--flowme-b-line);border-radius:16px;background:var(--flowme-b-surface);color:var(--flowme-b-ink);font-size:16px;line-height:1.5;font-family:inherit;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
 .dialog::backdrop{background:var(--flowme-b-scrim)}
+.dialog[data-embedded]{position:relative;inset:auto;width:100%;max-width:720px;margin:0 auto}
 .mainContent{min-height:100%;display:flex;flex-direction:column}
 .mainContent[hidden]{display:none}
 .mainContent>.body,.mainContent>.preview{flex:1}
