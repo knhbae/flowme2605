@@ -40,6 +40,8 @@ import { programDatesNoticeAfterView, programMovedDayTarget, type ProgramDatesNo
 import folderStyles from './ProgramFolderScreen.module.css';
 import { programFolderAncestry, programFolderTaskGroups, programFolderTree, programFolderWritingDocuments, programTaskFolderId, PROGRAM_FOLDER_TASK_GROUPS,
   type ProgramFolderTaskGroupKey } from '@/lib/flow/integrated-poc/folder-screen';
+import { addProgramFolderTodayTask, programFolderTodayPlace, programFolderTodayUndo, undoProgramFolderTodayTask, type ProgramFolderTodayUndo } from '@/lib/flow/integrated-poc/folder-today-add';
+import { ProgramFolderTodayAdd } from './ProgramFolderTodayAdd';
 import { mergeProgramTextWorkspace } from '@/lib/flow/integrated-poc/text-merge';
 import { flushProgramEditorCollection, prepareProgramDocumentAction, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
 import type { AlphaStructuralDraft, AlphaStructuralEditorPort } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
@@ -267,8 +269,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const countedMutate: ProgramMutate = async (label, build, options) => { setSavesPending(count => count + 1); try { return await props.mutate(label, build, options); } finally { setSavesPending(count => count - 1); } };
   const mutate: ProgramMutate = (label, build, options) => selectingNow.current ? Promise.resolve({ ok: false, reason: 'busy' })
     : countedMutate(label, build, options).then(result => { if (result.ok && result.changed !== false) setDatesNotice(null); return result; })
-      // N11a: another save ends the 밀린 일 notice too (its 되돌리기 would be refused by then anyway).
-      .then(result => { if (result.ok && result.changed !== false) setCarryNotice(null); return result; });
+      // N11a: another save ends the 밀린 일 notice too (its 되돌리기 would be refused by then anyway); F4-b's as well.
+      .then(result => { if (result.ok && result.changed !== false) { setCarryNotice(null); setFolderTodayNotice(null); } return result; });
   const countedHistory = async (run: () => Promise<void>) => { setSavesPending(count => count + 1); try { await run(); } finally { setSavesPending(count => count - 1); } };
   const onUndo = () => selectingNow.current ? Promise.resolve() : countedHistory(props.onUndo), onRedo = () => selectingNow.current ? Promise.resolve() : countedHistory(props.onRedo);
   const writingAccess=useMemo(()=>createProgramReferenceExecutionAccess(space,actorId),[space,actorId]);
@@ -336,6 +338,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   /** [할 일]'s '끝낸 일 n개' (folded; a folder opens folded). */
   const [folderDoneOpen, setFolderDoneOpen] = useState(false);
   useEffect(() => { setFolderDoneOpen(false); }, [folderId, !!folderScreen]);
+  /** F4-b (FR-7): [할 일]'s '＋ 오늘 할 일' field (open or not), what is said under it when a line could not be written,
+   *  and the notice after a line with its 되돌리기. A view change closes them. */
+  const [folderTodayOpen, setFolderTodayOpen] = useState(false), [folderTodayWarn, setFolderTodayWarn] = useState<string | null>(null);
+  type FolderTodayNotice = { actorId: string; text: string; undo: ProgramFolderTodayUndo | null; refused?: boolean; undone?: boolean };
+  const [folderTodayNotice, setFolderTodayNotice] = useState<FolderTodayNotice | null>(null), [folderTodayPending, setFolderTodayPending] = useState(false);
+  useEffect(() => { setFolderTodayOpen(false); setFolderTodayWarn(null); setFolderTodayNotice(null); }, [actorId, folderId, !!folderScreen, folderScreen?.tab]);
   /** FR-1: an open folder (or its other tab) starts at the top — once the new screen is drawn (a frame before it, the old
    *  screen's height could leave the page part way down). */
   const [folderTop, setFolderTop] = useState(0);
@@ -1982,6 +1990,45 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     // (C5 review P2: like a completion tap it waits out the host's automatic read instead of being refused as busy.)
     return result.ok;
   }
+  /** F4-b (FR-7) [적기]: one line into the document 쓰기 kept last (its place taken from the space the save is made on),
+   *  under today, under this folder, in one save; never the old '빠른 할 일'. Every editor is saved first. A line that
+   *  could not be written stays in the field, with why under it. */
+  async function addFolderToday(title: string) {
+    const target = folderId;
+    if (!target || !folderScreenRef.current) return false;
+    if (preparing.current || inputLockCount.current > 0) { setFolderTodayWarn('다른 저장을 마친 뒤 다시 적어 주세요. 적은 내용은 그대로 있습니다.'); return false; }
+    setFolderTodayWarn(null);
+    const release = lockInput();
+    try {
+      if (!await flushAllEditors()) { setFolderTodayWarn('쓰던 글을 저장한 뒤 다시 적어 주세요. 적은 내용은 그대로 있습니다.'); return false; }
+      const requestId = programId('folder-today');
+      let undo: ProgramFolderTodayUndo | null = null, home = '';
+      const result = await mutate('오늘 할 일 적기', current => {
+        const shown = current.spaces[actorId], place = programFolderTodayPlace(shown, target, today);
+        const next = addProgramFolderTodayTask(current, { actorId, requestId, expectedSpace: shown, documentId: place.documentId, folderId: target, title, today });
+        if (next.ok && next.changed !== false) { undo = programFolderTodayUndo(shown, next.data.spaces[actorId]); home = place.title; }
+        return next;
+      }, { history: true, awaitAutomaticRead: true });
+      if (result.ok) { setFolderTodayNotice({ actorId, text: `${home || '쓰던 글'} 오늘에 적었습니다`, undo }); return true; }
+      setFolderTodayWarn(result.reason === 'unresolved' ? '이 자리에는 적을 수 없습니다. 쓰기에서 적어 주세요. 적은 내용은 그대로 있습니다.'
+        : `${programErrorMessage(result.reason)} 적은 내용은 그대로 있습니다.`);
+      return false;
+    } finally { release(); }
+  }
+  /** Its 되돌리기: the writing exactly as before that line (a head or folder line it made goes too), one save, only while
+   *  nothing changed it since. */
+  async function undoFolderToday(notice: FolderTodayNotice) {
+    if (!notice.undo || folderTodayPending) return;
+    const undo = notice.undo, requestId = programId('folder-today-undo');
+    setFolderTodayPending(true);
+    try {
+      const result = await mutate('오늘 할 일 되돌리기', current => undoProgramFolderTodayTask(current, { actorId, requestId, expectedSpace: current.spaces[actorId], ...undo }),
+        { history: true, awaitAutomaticRead: true });
+      if (result.ok) setFolderTodayNotice({ ...notice, text: '적기 전으로 되돌렸습니다', undo: null, undone: true });
+      else if (result.reason === 'conflict') setFolderTodayNotice({ ...notice, text: '그 뒤 바뀐 내용이 있어 되돌리지 않았습니다', undo: null, refused: true });
+      else if (result.reason !== 'busy') setMessage(programErrorMessage(result.reason));
+    } finally { setFolderTodayPending(false); }
+  }
   function openGroupAdd(day: string) {
     // A written but unsent line stays where it is; only an empty one moves to another day.
     if (addingDate && addingDate !== day && groupAddField.current?.value.trim()) { groupAddField.current.focus(); return; }
@@ -2644,7 +2691,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   </div>;
   // 11/5 phone P3: the notices under the list hold one place at the bottom (sticky), and the old-repeat card covered them
   // and the list there; it waits while one shows (they close by themselves) and comes back after.
-  const bottomNoticeShown = !!(!sheetOpen && (orderNoticeContent || checkNoticeContent || repeatNoticeContent) || datesNoticeContent || carryNoticeContent || selecting && selectNotice);
+  // F4-b: after a '＋ 오늘 할 일' line, where it went and its 되돌리기 (until another save or a view change).
+  const folderTodayNoticeContent = folderTodayNotice?.actorId === actorId && !!folderScreen && <div className={styles.orderNotice} data-folder-today-notice>
+    <ProgramNoticeRow notice={{ tone: folderTodayNotice.refused ? 'warn' : folderTodayNotice.undo ? 'choose' : 'info', text: folderTodayNotice.text,
+      actions: folderTodayNotice.undo && !folderTodayPending ? [{ label: '되돌리기', run: () => void undoFolderToday(folderTodayNotice) }] : [] }}
+      onClose={() => setFolderTodayNotice(null)} />
+  </div>;
+  const bottomNoticeShown = !!(!sheetOpen && (orderNoticeContent || checkNoticeContent || repeatNoticeContent) || datesNoticeContent || carryNoticeContent || folderTodayNoticeContent || selecting && selectNotice);
   /** N11b [하나씩 정리]: the card's tasks one by one (PROPOSAL 4-3), each with the card's choice to start from. */
   function openCarrySheet(keep?: ReadonlyMap<string, ProgramCarryoverChoice>, from?: ProgramPrivateSpace | null) {
     const shown = from ?? dataRef.current.spaces[actorId] ?? space, items = programCarryoverItems(shown, today);
@@ -2765,6 +2818,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     for (const entry of executionRows) if (entry.kind === 'text-task') counts.set(entry.task.docId, (counts.get(entry.task.docId) ?? 0) + 1);
     return [...counts].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
   })();
+  // F4-b (A5): '＋ 오늘 할 일' ends 오늘 (a folder with open tasks but none today still gets 오늘, for it); '모든 할 일' has none.
+  const folderTodayAdd = folderScreen && folderId && <ProgramFolderTodayAdd open={folderTodayOpen} warn={folderTodayWarn} disabled={preparingDocumentAction}
+    place={folderTodayOpen ? programFolderTodayPlace(space, folderId, today).label : ''}
+    onOpen={() => { setFolderTodayWarn(null); setFolderTodayOpen(true); }} onAdd={addFolderToday} onClose={() => { setFolderTodayOpen(false); setFolderTodayWarn(null); }} />;
+  const folderShownGroups = !folderGroups ? [] : folderTodayAdd && folderGroups.open && !folderGroups.groups.some(group => group.key === 'today')
+    ? [...folderGroups.groups.filter(group => group.key === 'late'), { key: 'today' as const, rows: [] }, ...folderGroups.groups.filter(group => group.key !== 'late')]
+    : folderGroups.groups;
   // Today visual A (T1): "오늘" and its date in two parts (one line on a 390 phone); a week likewise.
   const titleParts = programPeriodTitleParts(period, date, today);
   const periodTitle = <h1>{titleParts ? <><span className={styles.titleMain}>{titleParts.main}</span><span className={styles.titleSub}>{titleParts.sub}{period === 'week' && folder ? ` · ${folder.title}` : ''}</span></>
@@ -3183,7 +3243,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           {!selecting && <button type="button" className={styles.scopeAll} onClick={() => void changePeriod('today', true)}>전체로 보기</button>}</div>
           : (folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { void changeFolder(''); setQuery(''); }}>필터 해제</button></div>}
         {!monthGrid && range.from && range.to && range.to !== range.from && <p className={styles.muted}>{programCalendarDate(range.from, today)} ~ {programCalendarDate(range.to, today)}</p>}
-        {/* F4-a: no 할 일 추가 on the 폴더 tab (its ＋ 오늘 할 일 comes with F4-b). */}
+        {/* F4-a: no 할 일 추가 (빠른 할 일) on the 폴더 tab; F4-b's ＋ 오늘 할 일 ends [할 일]'s 오늘 instead. */}
         {!monthGrid && !selecting && !folderTab && <details className={styles.quickDisclosure} ref={quickDisclosure} data-collapsible id={compactNoteToday ? 'program-note-quick-task' : undefined}
           {...(compactNoteToday ? { open: noteQuickOpen, hidden: !noteQuickOpen, onToggle: (event: React.SyntheticEvent<HTMLDetailsElement>) => setNoteQuickOpen(event.currentTarget.open) } : {})}>
           <summary>할 일 추가</summary>
@@ -3207,8 +3267,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             below), [글] with no document of the folder. */}
         {folderGroups && !folderGroups.open && <div className={folderStyles.empty} data-folder-empty="tasks">
           <p>{folderId ? '이 폴더에 열린 할 일이 없습니다.' : '열린 할 일이 없습니다.'}</p>
-          {folderId && <p>쓰기에서 ‘- /{folderName}’ 줄 아래에 적으면 여기 모입니다.</p>}
-          <button type="button" onClick={() => void chooseMainTab('documents')}>{(title => title ? `${title}에서 쓰기` : '쓰기에서 쓰기')(docs.find(doc => doc.id === folderScreen?.writing)?.title)}</button></div>}
+          {/* F4-b (F4 상태 최종안): a folder's empty [할 일] writes its first line here; 모든 할 일 still goes to 쓰기. */}
+          {folderTodayAdd || <button type="button" onClick={() => void chooseMainTab('documents')}>{(title => title ? `${title}에서 쓰기` : '쓰기에서 쓰기')(docs.find(doc => doc.id === folderScreen?.writing)?.title)}</button>}</div>}
         {folderScreen && folderScreen.tab === 'writing' && period === 'all' && <div className={folderStyles.empty} data-folder-empty="writing">
           <p>이 폴더가 나오는 글이 없습니다.</p><p>할 일을 다른 폴더로 옮겼거나 폴더 줄을 지웠을 수 있습니다.</p></div>}
         {/* N9 (U50): with no task anywhere there is nothing to find; the button adds the first one instead. */}
@@ -3262,10 +3322,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           </dialog>
         </div> : folderGroups ? <ul className={styles.tasks} data-folder-tasks>
           {/* F4-a (A2): four heads in one rule (ink 14/700, the date muted beside it); rows as 오늘's, their meta one line. */}
-          {folderGroups.groups.map(group => <React.Fragment key={group.key}>
+          {folderShownGroups.map(group => <React.Fragment key={group.key}>
             <li className={folderStyles.group} data-folder-group={group.key}><h2>{PROGRAM_FOLDER_TASK_GROUPS[group.key]}
               {group.key === 'late' && <small>못 한 일 {group.rows.length}</small>}{group.key === 'today' && <small>{programCalendarDate(today, '')}</small>}</h2></li>
-            {group.rows.map(entry => renderListItem({ kind: 'row', entry, group: null, dated: false }, group.key))}</React.Fragment>)}
+            {group.rows.map(entry => renderListItem({ kind: 'row', entry, group: null, dated: false }, group.key))}
+            {/* F4-b (A5): the end of 오늘 (not a floating button). */}
+            {group.key === 'today' && folderTodayAdd && folderGroups.open > 0 && <li className={folderStyles.todayAddRow} data-folder-today-row>{folderTodayAdd}</li>}</React.Fragment>)}
           {folderGroups.done.length > 0 && <li className={folderStyles.doneToggle}><button type="button" data-folder-done aria-expanded={folderDoneOpen}
             onClick={() => setFolderDoneOpen(open => !open)}>{folderDoneOpen ? `끝낸 일 ${folderGroups.done.length}개 접기 ⌃` : `끝낸 일 ${folderGroups.done.length}개 ›`}</button></li>}
           {folderDoneOpen && folderGroups.done.map(entry => renderListItem({ kind: 'row', entry, group: null, dated: false }, 'done'))}
@@ -3274,7 +3336,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {/* I7: under the list, held at the bottom of the screen (above the bottom tabs on a phone) while it scrolls. */}
         {!detail && !sheetOpen && orderNoticeContent}
         {!detail && !sheetOpen && checkNoticeContent}{!detail && !sheetOpen && repeatNoticeContent}{!detail && !bottomNoticeShown && legacyRepeatContent}
-        {!detail && datesNoticeContent}{!detail && carryNoticeContent}
+        {!detail && datesNoticeContent}{!detail && carryNoticeContent}{!detail && folderTodayNoticeContent}
       </div>
       </div></div>
     </div>

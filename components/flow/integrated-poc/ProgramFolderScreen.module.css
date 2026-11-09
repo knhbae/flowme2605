@@ -78,6 +78,26 @@
 .empty p { margin: 0; }
 .empty button { margin-top: 10px; min-height: 44px; }
 
+/* F4-b (목업 A5): '＋ 오늘 할 일' at the end of 오늘, the shape of 쓰기's '오늘 쓰기' line (44px, primary 15/700); pressed,
+   a one line field (52px, a 1.5px primary edge, 16px words) and the place it writes into under it (muted 13). */
+.todayAddRow { list-style: none; margin: 2px 0 6px; }
+.todayAdd.todayAdd { display: flex; align-items: center; gap: 6px; box-sizing: border-box; width: 100%; min-height: 44px; margin: 0; padding: 0 4px; border: 0; border-radius: 8px; background: transparent; color: var(--flowme-b-primary); font-size: 15px; line-height: 20px; font-weight: 700; text-align: left; cursor: pointer; }
+.todayAdd.todayAdd > span { font-size: 20px; line-height: 1; }
+.todayAdd.todayAdd:hover:not(:disabled) { background: transparent; }
+.todayAdd.todayAdd:active:not(:disabled) { background: var(--flowme-b-selected); }
+@media (hover: hover) { .todayAdd.todayAdd:hover:not(:disabled) { background: var(--flowme-b-selected); } }
+.empty .todayAdd.todayAdd { justify-content: center; margin-top: 6px; }
+.todayField { display: flex; align-items: center; gap: 10px; box-sizing: border-box; min-height: 52px; margin: 0; padding: 0 4px 0 12px; border: 1.5px solid var(--flowme-b-primary); border-radius: 10px; background: var(--flowme-b-surface); }
+.todayBox { flex: none; box-sizing: border-box; width: 20px; height: 20px; border: 1.5px solid var(--flowme-b-control); border-radius: 6px; background: var(--flowme-b-surface); }
+.todayField.todayField input { flex: 1 1 auto; min-width: 0; height: 44px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--flowme-b-ink); font-size: 16px; line-height: 22px; }
+/* The field's own edge shows the focus (no second ring inside it, as the find field). */
+.todayField.todayField input:focus-visible { outline: 0 !important; }
+.todayField.todayField button { flex: none; min-width: 56px; min-height: 44px; margin: 0; padding: 0 8px; border: 0; border-radius: 8px; background: transparent; color: var(--flowme-b-primary); font-size: 15px; font-weight: 700; }
+.todayField.todayField button:disabled { color: var(--flowme-b-muted); }
+.todayPlace { margin: 8px 0 2px; font-size: 13px; line-height: 18px; color: var(--flowme-b-muted); text-align: left; }
+.todayPlace[data-warn] { color: var(--flowme-b-error-ink); font-weight: 600; }
+.empty .todayField { margin-top: 10px; text-align: left; }
+
 /* [글]: the other documents, one folded line each (52px, the whole line presses). */
 .docFolds { margin: 0; padding: 0; list-style: none; }
 .docFolds .docFold { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 52px; margin: 0; padding: 0 4px; border: 0; border-top: 1px solid var(--flowme-b-line); border-radius: 0; background: transparent; color: var(--flowme-b-ink); font-size: 15px; font-weight: 700; text-align: left; }

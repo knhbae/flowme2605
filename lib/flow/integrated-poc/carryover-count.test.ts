@@ -61,7 +61,8 @@ test('P3: the old-repeat card waits while a notice holds the bottom, and is defi
   const source = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
   assert(source.includes('{!detail && !bottomNoticeShown && legacyRepeatContent}'));
   const shown = source.indexOf('  const bottomNoticeShown = ');
-  assert(source.slice(shown, source.indexOf('\n', shown)).includes('!sheetOpen && (orderNoticeContent || checkNoticeContent || repeatNoticeContent) || datesNoticeContent || carryNoticeContent || selecting && selectNotice'));
-  for (const name of ['orderNoticeContent', 'checkNoticeContent', 'repeatNoticeContent', 'datesNoticeContent', 'carryNoticeContent'])
+  // F4-b (11/9): the folder screen's '＋ 오늘 할 일' notice holds the bottom too.
+  assert(source.slice(shown, source.indexOf('\n', shown)).includes('!sheetOpen && (orderNoticeContent || checkNoticeContent || repeatNoticeContent) || datesNoticeContent || carryNoticeContent || folderTodayNoticeContent || selecting && selectNotice'));
+  for (const name of ['orderNoticeContent', 'checkNoticeContent', 'repeatNoticeContent', 'datesNoticeContent', 'carryNoticeContent', 'folderTodayNoticeContent'])
     assert(source.indexOf(`  const ${name} = `) > 0 && source.indexOf(`  const ${name} = `) < shown, name);
 });
