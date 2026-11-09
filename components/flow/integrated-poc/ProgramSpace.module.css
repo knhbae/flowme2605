@@ -655,3 +655,6 @@
 /* F6-B2 (목업 B): screen titles 26/800 (letter-spacing −0.3) — the writing document's name and the 폴더 list. */
 .space .docHeading:has(.titleButton) > h1, .space[data-note-layout="true"] .executionView > .periodHeading > h1:not(:has(.titleMain)) { font-size: 26px; line-height: 34px; font-weight: 800; letter-spacing: -0.3px; }
 .space .docHeading:has(.titleButton) > h1 .titleButton { font-weight: 800; }
+/* F6-B2: the scope line's × and 전체로 보기 press areas reach 44 (negative margins keep the line's look). */
+.space .scopeChip > button { min-width: 44px; min-height: 44px; margin: -6px -6px -6px 0; }
+.space .scopeAll { min-height: 44px; margin-block: -4px; }

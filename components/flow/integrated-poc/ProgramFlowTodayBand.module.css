@@ -32,5 +32,5 @@
 .chip { display: inline-block; vertical-align: 1px; height: 18px; margin-inline-start: 6px; padding: 0 6px; border-radius: 9px; background: var(--flowme-b-canvas); color: var(--flowme-b-muted); font-size: 13px; font-weight: 600; line-height: 18px; white-space: nowrap; }
 .band .flow { display: inline-flex; align-items: center; gap: 2px; max-width: 9em; min-height: 44px; height: 44px; margin: 0; padding: 0 4px 0 8px; border: 0; background: transparent; color: var(--flowme-b-flow); font-size: 13px; font-weight: 600; line-height: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
 .failed { grid-column: 2 / -1; margin: 0 0 6px; font-size: 13px; line-height: 18px; color: var(--flowme-b-error-ink); }
-.band .more { display: block; min-height: 40px; margin: 0; padding: 0 0 0 40px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
+.band .more { display: block; min-height: 44px; margin: 0; padding: 0 0 0 40px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
 .band :focus-visible { outline: 2px solid var(--flowme-b-primary); outline-offset: -2px; }
