@@ -1,4 +1,4 @@
-.editor { display: flex; flex-direction: column; min-width: 0; min-height: 480px; height: 100%; color: var(--flowme-b-ink); background: #fff; }
+.editor { display: flex; flex-direction: column; min-width: 0; min-height: 480px; height: 100%; color: var(--flowme-b-ink); background: var(--flowme-b-paper); }
 .toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 4px; border-bottom: 1px solid var(--flowme-b-line); }
 .editor :where(button) { min-width: 44px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--flowme-b-line); border-radius: 8px; background: #fff; color: var(--flowme-b-primary-strong); font: inherit; cursor: pointer; }
 .editor button:hover:not(:disabled) { background: var(--flowme-b-selected); }
@@ -91,10 +91,10 @@
 }
 
 /* Native textarea and mirror must share metrics; keep the 44px row hit lane. */
-.editor { color: var(--flowme-b-ink); background: var(--flowme-b-surface); border: 1px solid var(--flowme-b-line); border-radius: 12px; }
+.editor { color: var(--flowme-b-ink); background: var(--flowme-b-paper); border: 1px solid var(--flowme-b-line); border-radius: 12px; }
 .toolbar { padding: 8px; gap: 8px; border-color: var(--flowme-b-line); }
 .status { font-size: 13px; line-height: 20px; color: var(--flowme-b-muted); }
-.host :global(.tle-root) { --tle-font: 16px; background: var(--flowme-b-surface); color: var(--flowme-b-ink); }
+.host :global(.tle-root) { --tle-font: 16px; background: var(--flowme-b-paper); color: var(--flowme-b-ink); }
 .host :global(.tle-root[data-mode="live"] .tle-textarea),
 .host :global(.tle-root[data-mode="live"] .tle-presentation),
 .host :global(.tle-root[data-mode="live"] .tle-native-ruler) { font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif; }
@@ -185,7 +185,7 @@
 }
 
 /* A work note: subtract the frame, retain the native buffer and 44px controls. */
-.editor { border: 0; border-radius: 0; background: #fff; }
+.editor { border: 0; border-radius: 0; background: var(--flowme-b-paper); }
 .toolbar { gap: 0; padding: 0; border: 0; flex-wrap: wrap; }
 .toolbar > button { border-color: transparent; background: transparent; padding-inline: 8px; }
 .toolbar > .status, .toolbar > .saveFeedback { order: 3; margin-left: 0; padding-inline: 4px; font-size: 13px; line-height: 20px; }
@@ -199,7 +199,7 @@
 .editorToolActions { width: min(280px, calc(100vw - 40px)); }
 .editorToolActions > div { display: grid; }
 .editorToolActions :where(button, summary) { white-space: normal; }
-.host :global(.tle-root) { background: #fff; }
+.host :global(.tle-root) { background: var(--flowme-b-paper); }
 .host :global(.tle-viewport) { border-radius: 0; }
 .host :global(.tle-controls), .host :global(.tle-root:is(.tle-reading-view,.tle-folded-view) .tle-viewport) { background: transparent; }
 .editor .toolbar > button { border-color: transparent; background: transparent; }
@@ -425,7 +425,7 @@
    press area (a clear 2px border); ↶ ↷ are drawn arrows, 반복 and 도구 an icon and a word, all muted; the status is
    12px muted (5.7:1). A warning, a recovery box and the save failure keep their rows. */
 .toolbar > .statusSlot, .toolbar > .status { order: 9; margin-left: auto; }
-.toolbar > .statusSlot > .status, .toolbar > .status { font-size: 12px; line-height: 16px; }
+.toolbar > .statusSlot > .status, .toolbar > .status { font-size: 13px; line-height: 16px; }
 .editor .toolbar > .addButton { display: inline-flex; align-items: center; gap: 4px; height: 44px; min-height: 44px; margin-right: 4px; padding: 0 14px 0 10px; border: 2px solid transparent; border-radius: 22px; background: var(--flowme-b-selected); background-clip: padding-box; color: var(--flowme-b-primary); font-size: 15px; font-weight: 600; line-height: 20px; white-space: nowrap; }
 .editor .toolbar > .addButton:is(:hover, :active):not(:disabled) { background: var(--flowme-b-selected); background-clip: padding-box; box-shadow: inset 0 0 0 1px var(--flowme-b-primary-border); }
 .editor .toolbar > button[aria-label="입력 되돌리기"], .editor .toolbar > button[aria-label="입력 다시 하기"] { display: inline-flex; align-items: center; justify-content: center; color: var(--flowme-b-muted); }
@@ -462,7 +462,7 @@
   /* Seven buttons: each 44px (the page's 48px button floor made them 48), so with the words on 날짜·폴더 a 390px bar
      leaves the status about 40px, where '저장됨' fits at 12px. The date picker's input takes no room. */
   .editor .writingBar > button { min-width: 44px; }
-  .writingBar > .barStatus:not([data-warn]) { font-size: 12px; }
+  .writingBar > .barStatus:not([data-warn]) { font-size: 13px; }
   .editor .writingBar > input[type="date"] { position: absolute; left: 0; bottom: 0; width: 1px; height: 1px; min-height: 0; padding: 0; border: 0; opacity: 0; pointer-events: none; }
   .writingBar > button.barWide > svg { flex: none; width: 18px; height: 18px; }
   .barHeading { flex: none; max-width: 76px; padding: 0 2px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--flowme-b-muted); font-size: 13px; }

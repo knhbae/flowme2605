@@ -5,6 +5,7 @@ import { createGroupAddEntry, type GroupAddAction } from '@/lib/flow/integrated-
 import { createPressAwareClose } from '@/lib/flow/integrated-poc/press-aware-close';
 import { PROGRAM_FOLDER_TODAY_TITLE_MAX } from '@/lib/flow/integrated-poc/folder-today-add';
 import styles from './ProgramFolderScreen.module.css';
+import { ProgramIcon } from './icons';
 
 /** F4-b (11/9, 목업 A5): the folder screen's '＋ 오늘 할 일', at the end of [할 일]'s 오늘 (or in its empty state), the shape
  *  of 쓰기's '오늘 쓰기' line. Pressed, it becomes one line field with the place it writes into under it; Enter or [적기]
@@ -14,7 +15,7 @@ import styles from './ProgramFolderScreen.module.css';
 export function ProgramFolderTodayAdd(props: { open: boolean; place: string; warn?: string | null; disabled?: boolean;
   onOpen: () => void; onAdd: (title: string) => Promise<boolean>; onClose: () => void }) {
   if (!props.open) return <button type="button" className={styles.todayAdd} data-folder-today-add disabled={props.disabled}
-    onClick={props.onOpen}><span aria-hidden="true">＋</span>오늘 할 일</button>;
+    onClick={props.onOpen}><span aria-hidden="true"><ProgramIcon name="plus" size={20} /></span>오늘 할 일</button>;
   return <TodayField {...props} />;
 }
 

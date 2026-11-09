@@ -9,6 +9,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'FlowMe', description: '할 일과 메모를 한곳에 쓰고, 다른 사람의 Flow를 내 계획으로 가져옵니다.',
   robots: { index: false, follow: false }, manifest: '/alpha/manifest.webmanifest',
   icons: { icon: '/icon.svg', apple: { url: '/alpha/apple-touch-icon.png', sizes: '180x180' } }, appleWebApp: { title: 'FlowMe' } };
-// Write polish G (11/7): white, so the status bar runs into the white title row (Android draws its icons dark on it).
-export const viewport: Viewport = { themeColor: '#ffffff' };
+// Write polish G (11/7): the page color, so the status bar runs into the title row (Android draws its icons dark on it).
+// F6-B1 (11/9): paper, as the screens are now.
+export const viewport: Viewport = { themeColor: '#fbfaf7' };
 export default function AlphaPage() { return <AlphaAuthPanel config={readAlphaAuthConfig(process.env)} appWriting nativeAuthoringEnabled={process.env.FLOWME_ALPHA_NATIVE_AUTHORING_UI==='enabled'} readProbe={process.env.FLOWME_ALPHA_READ_PROBE==='v2'} privacyContact={process.env.FLOWME_ALPHA_PRIVACY_CONTACT} />; }

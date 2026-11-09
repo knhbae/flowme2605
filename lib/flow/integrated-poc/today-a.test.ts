@@ -55,7 +55,9 @@ test('T2·T6·T10·T11: the phone ＋ circle, the row folder, the quiet saved st
   assert.match(space, /className=\{styles\.noteAdd\} aria-expanded=\{noteQuickOpen\}.*>할 일 추가<\/button>/);
   assert.match(css, /@media \(max-width: 700px\) \{\n  \.space\[data-note-layout="true"\] \.notePeriodActions > \.noteAdd \{/);
   // TA-P3-1: the drawn ＋ has empty alt text, so the button is read as its words only ("할 일 추가").
-  assert.match(css, /\.noteAdd::before \{ content: "＋" \/ "";/);
+  // F6-B1: the circle stays in ::before; the ＋ is the icon set's plus in the button (its words stay its name).
+  assert.match(css, /\.noteAdd::before \{ content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var\(--flowme-b-selected\); \}/);
+  assert.match(space, /className=\{styles\.noteAdd\}[^\n]*><ProgramIcon name="plus" size=\{20\} \/>할 일 추가<\/button>/);
   assert.match(space, /<span className=\{styles\.rowFolder\}>\/ \{scope\}<\/span>/);
   assert.match(space, /if \(!actualFolderId \|\| actualFolderId === 'folder-unfiled'\) return null;/);
   assert.match(alpha, /data-quiet=\{!pendingUnknown && !pending && !snapshot\?\.retryableRejectedDraft/);

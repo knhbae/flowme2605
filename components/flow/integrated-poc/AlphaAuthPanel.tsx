@@ -17,6 +17,7 @@ import { AlphaAuthenticatedWritingWorkspace } from './AlphaAuthenticatedWritingW
 import type { AlphaAuthenticatedWritingPorts } from '@/lib/flow/integrated-poc/alpha-sync/authenticated-writing-shell';
 import {AlphaAppWritingWorkspace} from './AlphaAppWritingWorkspace';
 import { AlphaPrivacyNotice } from './AlphaPrivacyNotice';
+import { ProgramFlowMark, ProgramIcon } from './icons';
 import { readPrivacyContact } from '@/lib/flow/integrated-poc/privacy-notice';
 import { forgetProgramReturn, rememberProgramReturn, takeProgramReturn } from '@/lib/flow/integrated-poc/program-share-link';
 /** This tab's storage, which survives the sign-in redirect; null where the browser refuses it. */
@@ -30,6 +31,10 @@ const logoutKey = `${ALPHA_AUTH_STORAGE_KEY}-logout-pending`;
 const recoveryKey = `${ALPHA_AUTH_STORAGE_KEY}-recovery-owner`;
 const initial: AlphaSessionView = { ownerId: null, account: null, status: 'signed-out' };
 const headings: Record<Mode, string> = { login: '로그인', signup: '이메일로 가입', reset: '비밀번호 찾기', 'new-password': '새 비밀번호 설정' };
+/** F6-B1: the sign-in's Flow 실 — a plan's shape as dots on one line (a move's two weeks), the first two done. Decorative. */
+const LOGIN_THREAD = <div className={styles.thread} aria-hidden="true"><svg viewBox="0 0 354 60" preserveAspectRatio="none" focusable="false"><path d="M20 44C80 44 90 14 150 14S230 44 334 30" vectorEffect="non-scaling-stroke" /></svg>
+  {([[20, 44, '2주 전'], [150, 14, '1주 전'], [250, 38, '이사 날'], [334, 30, '정리']] as const).map(([x, y, label], index) =>
+    <span key={label} style={{ left: `${(x / 354 * 100).toFixed(1)}%`, top: y }} data-done={index < 2 || undefined}><i />{label}</span>)}</div>;
 const statuses: Partial<Record<AlphaSessionView['status'], string>> = {
   checking: '계정 확인 중…', 'session-expired': '로그인을 다시 확인해 주세요. 개인 자료는 숨겼습니다.',
   unavailable: '서버에 연결하지 못했습니다. 다시 확인해 주세요.', invalid: '계정 자료를 확인하지 못해 열지 않았습니다.',
@@ -295,7 +300,9 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
         :<p role="alert">기존 작성 연결을 확인하지 못했습니다. 입력을 다른 계정에 옮기지 않았습니다.</p>
       :<AlphaWorkspace key={workspaceSession.userId} config={config} session={workspaceSession} email={accountEmail} onSignOut={signOut} pmWriting={appWriting?'v11-pm/1':undefined} nativeAuthoringEnabled={nativeAuthoringEnabled} readProbe={readProbe} privacyContact={privacyContact} />;
   } else legacy = <main className={styles.page}>
-    <header className={styles.header}><a href="/alpha" className={styles.brand}>FlowMe</a></header>
+    {/* F6-B1 (11/9, 방향 B): navy on top (the 흐름 마크 and wordmark, one sentence, a Flow 실), the sign-in on a paper sheet. */}
+    <header className={styles.header}><a href="/alpha" className={styles.brand}><ProgramFlowMark className={styles.brandMark} />FlowMe</a>
+      <p className={styles.tagline}>해 본 사람의 계획을<br /><span>내 일정으로.</span></p>{LOGIN_THREAD}</header>
     <section className={styles.panel} aria-labelledby="alpha-heading">
       {!config ? <><h1 id="alpha-heading">지금은 로그인할 수 없습니다</h1><p>잠시 뒤 다시 시도해 주세요.</p></>
         : logoutPending ? <><h1 id="alpha-heading">로그아웃 확인이 필요합니다</h1><button disabled={busy} onClick={() => void signOut()}>로그아웃 다시 시도</button></>
@@ -317,7 +324,6 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
           <button className={styles.secondary} disabled={busy} onClick={() => void signOut()}>로그아웃 · 계정 바꾸기</button>
         </> : <>
           <h1 id="alpha-heading">{headings[mode]}</h1>
-          <p>할 일과 메모를 한곳에 쓰고, 다른 사람의 Flow를 내 계획으로 가져옵니다.</p>
           {google && mode === 'login' && <button className={styles.secondary} disabled={!ready || busy} onClick={() => void signInGoogle()}>Google로 계속</button>}
           <form onSubmit={event => void submit(event)}>
             {mode !== 'new-password' && <label>이메일<input name="email" type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} disabled={busy || !hydrated} /></label>}
@@ -333,7 +339,7 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
         </>}
       {(!recoveryBlocked && callbackPhase === 'ready' || logoutPending || !config) && <div className={styles.status} role="status" aria-live="polite">{message || statuses[view.status] || ''}</div>}
       {/* R7: what is stored and who sees it, under the sign-in, once the server names the contact address. */}
-      {privacyAddress && <p className={styles.privacy}><span>저장과 공개 안내</span><button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></p>}
+      {privacyAddress && <p className={styles.privacy}><ProgramIcon name="info" size={16} /><span>저장과 공개 안내</span><button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></p>}
     </section>
     {privacyOpen && privacyAddress && <AlphaPrivacyNotice contact={privacyAddress} onClose={() => setPrivacyOpen(false)} />}
   </main>;

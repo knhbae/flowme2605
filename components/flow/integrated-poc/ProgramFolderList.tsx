@@ -3,6 +3,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { programFolderListRows, programFolderParents, PROGRAM_FOLDER_SEARCH_OVER, PROGRAM_UNFILED_FOLDER, type ProgramFolderTreeRow } from '@/lib/flow/integrated-poc/folder-screen';
 import styles from './ProgramFolderScreen.module.css';
+import { ProgramIcon } from './icons';
 
 export const ProgramFolderIcon = ({ dashed = false, muted = false }: { dashed?: boolean; muted?: boolean }) =>
   <svg className={styles.folderIcon} data-muted={muted || undefined} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -45,7 +46,7 @@ export function ProgramFolderList(props: {
     <ul>
       <li className={styles.folderRow}><button type="button" className={styles.folderOpen} data-folder-row="" aria-current={props.current === '' ? 'true' : undefined}
         aria-label={`모든 할 일 · 열린 할 일 ${all}개`} disabled={props.disabled} onClick={() => props.onOpen('')}>
-        <ProgramFolderIcon dashed /><span className={styles.folderName} data-all>모든 할 일</span><span className={styles.count}>열린 {all}</span><span className={styles.chevron} aria-hidden="true">›</span></button></li>
+        <ProgramFolderIcon dashed /><span className={styles.folderName} data-all>모든 할 일</span><span className={styles.count}>열린 {all}</span><span className={styles.chevron} aria-hidden="true"><ProgramIcon name="right" size={16} /></span></button></li>
       {shown.map(entry => entry.kind === 'more'
         ? <li key={`more:${entry.parentId}`} className={styles.folderRow} style={{ '--folder-depth': entry.depth } as React.CSSProperties}>
           <button type="button" className={styles.moreRow} onClick={() => setExpanded(current => new Set([...current, entry.parentId]))}>하위 {entry.count}개 더 ›</button></li>
@@ -56,12 +57,12 @@ export function ProgramFolderList(props: {
             aria-label={`${row.title} · 열린 할 일 ${row.open}개${folded ? ` · 하위 ${row.children}개` : ''}`} onClick={() => props.onOpen(row.id)}>
             <ProgramFolderIcon muted={!row.open || row.id === PROGRAM_UNFILED_FOLDER} /><span className={styles.folderName} data-unfiled={row.id === PROGRAM_UNFILED_FOLDER || undefined}>{row.title}</span>
             {folded && <small className={styles.subCount}>하위 {row.children}</small>}
-            <span className={styles.count}>{row.open || '—'}</span><span className={styles.chevron} aria-hidden="true">›</span></button></li>)(entry))}
+            <span className={styles.count}>{row.open || '—'}</span><span className={styles.chevron} aria-hidden="true"><ProgramIcon name="right" size={16} /></span></button></li>)(entry))}
       {many && query && !shown.length && <li className={styles.findEmpty}>‘{query}’ 폴더가 없습니다.</li>}
       <li className={styles.folderRow}>{creating
         ? <form className={styles.createForm} onSubmit={create}><label><span className={styles.srOnly}>새 폴더 이름</span><input ref={title} name="title" required maxLength={100} autoFocus placeholder="새 폴더 이름" disabled={busy} /></label>
           <button type="submit" disabled={busy || props.disabled}>{busy ? '만드는 중…' : '만들기'}</button><button type="button" disabled={busy} onClick={() => setCreating(false)}>취소</button></form>
-        : <button type="button" className={styles.addRow} data-folder-create disabled={props.disabled} onClick={() => setCreating(true)}>＋ 새 폴더</button>}</li>
+        : <button type="button" className={styles.addRow} data-folder-create disabled={props.disabled} onClick={() => setCreating(true)}><ProgramIcon name="plus" size={20} />새 폴더</button>}</li>
     </ul>
   </nav>;
 }

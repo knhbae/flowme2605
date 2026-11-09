@@ -55,7 +55,7 @@ test('entry points: 더보기 › 계정, the development notice in its three pl
   assert(workspace.includes('const privacyMore = privacyAddress && <> <button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></>;'));
   assert(workspace.includes('{privacyOpen && privacyAddress && <AlphaPrivacyNotice contact={privacyAddress}'));
   assert(signIn.includes('privacyAddress = readPrivacyContact(privacyContact);'));
-  assert(signIn.includes('{privacyAddress && <p className={styles.privacy}><span>저장과 공개 안내</span><button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></p>}'));
+  assert(signIn.includes('{privacyAddress && <p className={styles.privacy}><ProgramIcon name="info" size={16} /><span>저장과 공개 안내</span><button type="button" className={styles.privacyMore} aria-label="저장과 공개 안내 자세히" onClick={() => setPrivacyOpen(true)}>자세히</button></p>}'));
   assert(signIn.includes('{privacyOpen && privacyAddress && <AlphaPrivacyNotice contact={privacyAddress}'));
 });
 

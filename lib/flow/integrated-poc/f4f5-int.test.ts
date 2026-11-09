@@ -87,7 +87,7 @@ test('UX FIX (11/9): no ring box around a [글] line (its RAW line as 쓰기); o
   assert(screenCss.includes('.list .find.find input:focus-visible { outline: 0 !important; }'));
   assert(screenCss.includes('.list .find:focus-within { border-color: var(--flowme-b-primary); box-shadow: 0 0 0 1px var(--flowme-b-primary); }'));
   // The page scrolls to the line written (regions grow, unlike 쓰기's editor): the head sticks to the top.
-  assert(screenCss.includes(':global([data-writing-keyboard="true"]) .head { position: sticky; top: 0; z-index: 20; margin-left: 0; background: var(--flowme-b-surface); }'));
+  assert(screenCss.includes(':global([data-writing-keyboard="true"]) .head { position: sticky; top: 0; z-index: 20; margin-left: 0; background: var(--flowme-b-paper); }')); // F6-B1: the screen's paper
 });
 
 test('폴더 관리 waits out the host\'s automatic read (a pick right after another save was dropped), and says a refusal', () => {

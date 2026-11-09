@@ -40,10 +40,13 @@ test('the four low-contrast pairs now meet WCAG on white, through the navy token
   assert.match(css, /\.tle-line-complete \{ color: var\(--flowme-b-muted\); \}/);
   assert.match(css, /\.tle-line-property \{ color: var\(--flowme-b-muted\); \}/);
   assert.match(css, /\.tle-scope-subtitle \{ flex-shrink: 0; color: var\(--flowme-b-muted\); font-size: 12px; \}/);
-  assert(contrast(token('control'), white) >= 3);             // check box border: 3.52
-  assert(contrast(token('muted'), white) >= 4.5);              // done text, property line, folder subtitle: 5.73
-  assert.equal(contrast(token('control'), white).toFixed(2), '3.52');
-  assert.equal(contrast(token('muted'), white).toFixed(2), '5.73');
+  // F6-B1 (11/9): the B tokens, and the writing body is on paper now; the pairs hold there and on white.
+  const paper = token('paper');
+  assert(contrast(token('control'), paper) >= 3);             // check box border: 3.81 (white 3.98)
+  assert(contrast(token('muted'), paper) >= 4.5);              // done text, property line, folder subtitle: 5.87 (white 6.12)
+  assert.equal(contrast(token('control'), paper).toFixed(2), '3.81');
+  assert.equal(contrast(token('muted'), paper).toFixed(2), '5.87');
+  assert.equal(contrast(token('control'), white).toFixed(2), '3.98');
   assert(contrast('#ffffff', token('primary')) > contrast('#ffffff', '#2b8568'));   // white ✓ on the fill: 4.51 → 7.07
 });
 

@@ -6,10 +6,11 @@
 @source "./";
 @source "../components";
 :root {
-  --flowme-bg: #f5f3ec;
+  /* F6-B1 (11/9): the old page and action colors follow the B tokens below, so the sign-in and the app match. */
+  --flowme-bg: var(--flowme-b-paper);
   --flowme-surface: #ffffff;
   --flowme-surface-subtle: #f8f9fc;
-  --flowme-surface-selected: #edf1ff;
+  --flowme-surface-selected: var(--flowme-b-selected);
   --flowme-text: #171813;
   --flowme-text-secondary: #64685f;
   --flowme-text-tertiary: #686d64;
@@ -18,12 +19,12 @@
   --flowme-border-strong: #b9beb3;
   --flowme-control-border: #888e84;
   --flowme-soft: #eef0eb;
-  --flowme-action: #315ee7;
-  --flowme-action-hover: #2145ba;
-  --flowme-action-strong: #2145ba;
-  --flowme-action-soft: #edf1ff;
-  --flowme-action-border: #c8d2fa;
-  --flowme-focus: #2145ba;
+  --flowme-action: var(--flowme-b-primary);
+  --flowme-action-hover: var(--flowme-b-primary-strong);
+  --flowme-action-strong: var(--flowme-b-primary-strong);
+  --flowme-action-soft: var(--flowme-b-selected);
+  --flowme-action-border: var(--flowme-b-primary-border);
+  --flowme-focus: var(--flowme-b-primary-strong);
   --flowme-trust: #237a4b;
   --flowme-positive: #237a4b;
   --flowme-positive-strong: #165f39;
@@ -61,28 +62,40 @@
   --flowme-mobile-export-clearance: calc(16rem + env(safe-area-inset-bottom));
   /* Navy palette of the Alpha frame and the PoC spaces. Raw values live only here and are never
      redefined, so the Alpha frame tokens, ProgramSpace, and ProgramApp compute the same color anywhere. */
-  --flowme-b-canvas: #eef1f7;
+  /* F6-B1 (11/9, 방향 B 흐름 노트): paper screens, white cards and sheets, sand chips and done boxes, a navy frame
+     (the sign-in's top, the 1280 rail), and teal for what came from a Flow. Text pairs keep 4.5:1 (ink on paper 14.88,
+     muted on paper 5.87 · sand 5.33 · selected 5.16, primary on selected 6.85, late on selected 4.58, flow on paper 5.72);
+     control is for icons and borders only (paper 3.81). */
+  --flowme-b-paper: #fbfaf7;
+  --flowme-b-sand: #f2efe8;
+  --flowme-b-canvas: #f2efe8;
   --flowme-b-surface: #fff;
-  --flowme-b-surface-subtle: #f4f6fb;
-  --flowme-b-selected: #e9edff;
-  --flowme-b-ink: #202a3c;
-  --flowme-b-muted: #59677e;
-  --flowme-b-line: #d6ddea;
-  --flowme-b-control: #7d89a2;
-  --flowme-b-primary: #3548ce;
-  --flowme-b-primary-strong: #293bab;
-  --flowme-b-primary-border: #b5c0ee;
-  --flowme-b-chrome: #182235;
-  --flowme-b-nav-text: #c8d1e1;
-  --flowme-b-nav-accent: #bec8ff;
-  --flowme-b-nav-active: #303e58;
-  --flowme-b-nav-hover: #25334a;
-  --flowme-b-nav-muted: #53627a;
+  --flowme-b-surface-subtle: #f7f5f0;
+  --flowme-b-selected: #e8ebfb;
+  --flowme-b-ink: #1d2433;
+  --flowme-b-muted: #5a6273;
+  --flowme-b-line: #e2dccf;
+  --flowme-b-hair: #ece7dc;
+  --flowme-b-control: #857f72;
+  --flowme-b-primary: #2f3fbf;
+  --flowme-b-primary-strong: #27349f;
+  --flowme-b-primary-border: #b5bdec;
+  --flowme-b-navy: #1c2550;
+  --flowme-b-on-navy: #c9d0f5;
+  --flowme-b-teal-on-navy: #8fdccf;
+  --flowme-b-flow: #0a7064;
+  --flowme-b-flow-soft: #e3f2ef;
+  --flowme-b-chrome: #1c2550;
+  --flowme-b-nav-text: #c9d0f5;
+  --flowme-b-nav-accent: #c9d0f5;
+  --flowme-b-nav-active: rgb(201 208 245 / .18);
+  --flowme-b-nav-hover: rgb(201 208 245 / .1);
+  --flowme-b-nav-muted: rgb(201 208 245 / .4);
   /* Meaning colors (W9a), the values already in use: progress (the amber % chip), late, warning, error. */
   --flowme-b-progress-ink: #785627;
   --flowme-b-progress-bg: #fcf8ed;
   --flowme-b-progress-border: #dfd2b8;
-  --flowme-b-late-ink: #9c272b;
+  --flowme-b-late-ink: #9a5b00;
   --flowme-b-warning-ink: #785c30;
   --flowme-b-warning-bg: #fff7e7;
   --flowme-b-warning-border: #d9c7a8;
@@ -123,13 +136,19 @@ textarea {
 
 :where(a[href], button, input, select, textarea, summary, [role='button']) {
   touch-action: manipulation;
-  -webkit-tap-highlight-color: rgba(49, 94, 231, 0.14);
+  -webkit-tap-highlight-color: rgb(47 63 191 / .14);
 }
 
 :where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible {
   outline: var(--flowme-focus-outline) !important;
   outline-offset: 3px !important;
   scroll-margin-block: 5rem;
+}
+
+/* F6-B1: the icon set (components/flow/integrated-poc/icons.tsx) sits on the text's middle and never shrinks in a row. */
+svg[data-icon], svg[data-flow-mark] {
+  flex: none;
+  vertical-align: middle;
 }
 
 [data-flow-anatomy] {

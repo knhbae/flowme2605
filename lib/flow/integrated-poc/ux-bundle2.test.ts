@@ -17,7 +17,7 @@ test('③: the Flow screens use the app tokens only, one primary color and no be
   }
   const discovery = read(C + 'ProgramDiscovery.module.css');
   assert(discovery.includes('.page .primary{background:var(--flowme-b-primary);border-color:var(--flowme-b-primary)}'), 'the primary button is the writing screens\' blue');
-  assert(discovery.includes('.page{max-width:1120px;background:var(--flowme-b-surface);'), 'no beige panel');
+  assert(discovery.includes('.page{max-width:1120px;background:var(--flowme-b-paper);'), 'no beige panel: the app screen token (F6-B1 paper)');
   assert(!discovery.includes('system-ui'), 'the frame font is inherited');
   assert(discovery.includes('box-shadow:0 12px 40px var(--flowme-b-shadow)'));
 });

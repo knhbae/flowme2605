@@ -52,12 +52,13 @@ function slot(state: { server?: Partial<NonNullable<Server>> | null; storageErro
     props: { noteStatus: 'host line' }, editorStatus };
   const nodes = all(run(slotExpression, scope));
   const barStatus = quietStatus ? '●' : statusWarn ? `⚠ ${statusLabel}` : statusLabel;
-  const bar = run<() => El>(barSlot, { statusWarn, hasRecovery, barStatus, statusLabel, styles, openStatusRecovery: () => {} })();
+  const bar = run<() => El>(barSlot, { statusWarn, hasRecovery, barStatus, statusLabel, styles, openStatusRecovery: () => {}, ProgramIcon: 'icon' })();
   return {
     live: nodes.filter(node => ['alert', 'status'].includes(String(node.props.role))).map(node => `${node.props.role}:${text(node)}:${node.props.className}`),
     recoveries: nodes.filter(node => node.props['data-test']).map(node => String(node.props['data-test'])),
     editorAnnounces: nodes.some(node => node.props['data-test'] === 'editor-recovery' && node.props.announce),
     bar: `${bar.type}:${text(bar)}`,
+    barIcon: bar.children.flat().map(child => child && typeof child === 'object' && (child as El).type === 'icon' ? String((child as El).props.name) : null).find(Boolean) ?? null,
   };
 }
 
@@ -106,6 +107,9 @@ test('F3: one live node at a time, and the bar\'s copy is never announced', () =
 test('quiet while typing: a fast save shows the dot, not "저장됨", until a second after the last input; warnings never wait', () => {
   assert.deepEqual(slot({ typing: true }).live, ['status:●:status']);
   assert.deepEqual(slot({}).live, ['status:저장됨:status']);
+  // F6-B1 (목업 B): the bar's copy of 저장됨 is the icon set's check; the dot, the warnings and other words stay words.
+  assert.equal(slot({}).bar, 'span:'); assert.equal(slot({}).barIcon, 'check');
+  assert.equal(slot({ typing: true }).bar, 'span:●'); assert.equal(slot({ typing: true }).barIcon, null);
   assert.deepEqual(slot({ typing: true, server: { status: 'saving' } }).live, ['status:●:status']);
   assert.deepEqual(slot({ typing: true, error: true }).live, ['alert:저장 확인 필요:srOnly']);
   assert.match(source, /const quietStatus = !!serverView && typing && !statusWarn && !inputLocked;/);

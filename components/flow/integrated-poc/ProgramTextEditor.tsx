@@ -18,6 +18,7 @@ import { createWritingBarHold, folderBarLine, heldTargetVerdict, taskMarkerLock,
 import { programFlowBelow, programKeyboardBarCramped, programKeyboardBarPlace, programKeyboardBarSettle, programKeyboardRoom, programVisibleBottom } from '@/lib/flow/integrated-poc/keyboard-bar-place';
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
+import { ProgramIcon, type ProgramIconName } from './icons';
 import { createFolderPickerDismissal, createFolderPickerHold, createFolderPickerIndex, folderPickerKey, folderPickerNavigation, folderPickerSignature, folderPickerTarget,
   planFolderPickerLink, readFolderPickerChoices, readFolderPickerCommand, readFolderPickerCompositionLine, readFolderPickerLine, type FolderPickerCandidate, type FolderPickerChoice, type FolderPickerCompositionOwner,
   type FolderPickerDefault } from '@/lib/flow/integrated-poc/folder-picker';
@@ -214,8 +215,11 @@ const REGION_OUTSIDE = '이 자리는 지금 보는 분류 영역 밖이라 여�
 /** W6: an empty document's hint; the first character (a composing one too) takes it away. */
 // N9 (U52): short enough that its second line stays one line beside the ⋮ on a 390px phone.
 const EMPTY_DOCUMENT_HINT = '여기에 적으세요.\n할 일은 ☐ 또는 - [ ], 메뉴는 /';
-/** W6: bar icons drawn to read as what they do: indenting is not moving, and ↳ is not ↶. */
+/** W6: bar icons drawn to read as what they do: indenting is not moving, and ↳ is not ↶. F6-B1: from the one icon set
+ *  where it has the shape (↳ and ↷ keep their own drawing). */
+const BAR_SET: Partial<Record<WritingBarAction, ProgramIconName>> = { task: 'todo', outdent: 'outdent', indent: 'indent', menu: 'plus', date: 'cal', folder: 'folder', undo: 'undo', repeat: 'repeat' };
 function BarIcon({ name }: { name: WritingBarAction }) {
+  const set = BAR_SET[name]; if (set) return <ProgramIcon name={set} size={20} />;
   const path = { task: 'M5 5h14v14H5z', outdent: 'M4 5v14M20 12H9m4-4-4 4 4 4', indent: 'M20 5v14M4 12h11m-4-4 4 4-4 4',
     enter: 'M7 5v7a3 3 0 0 0 3 3h9m-4-4 4 4-4 4', menu: 'M12 5v14M5 12h14',
     // Input v2 stage 1: 날짜 and 폴더 in the bar, ↶ ↷ 반복 in its ⋯ row.
@@ -226,10 +230,12 @@ function BarIcon({ name }: { name: WritingBarAction }) {
 /** Input v2 stage 1: a bar date chip's short day ("7일 토"); its full date is in the chip's name. */
 const barDay = (date: string) => `${Number(date.slice(8, 10))}일 ${'일월화수목금토'[new Date(`${date}T00:00:00Z`).getUTCDay()]}`;
 /** Input v2 stage 1: the bar's ⋯ (its row holds ↶ ↷ 반복 and the ＋ menu). */
-const BAR_MORE_ICON = <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M5 12h.01M12 12h.01M19 12h.01" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>;
+const BAR_MORE_ICON = <ProgramIcon name="more" size={20} />;
 /** Write polish C (11/7): the toolbar's drawn icons, one family and size, in place of ＋ ↶ ↷ and bare words. The
  *  buttons keep their names (aria-label or their word); the icons are hidden from screen readers. */
 function ToolIcon({ name, size = 20 }: { name: 'add' | 'undo' | 'redo' | 'repeat' | 'tools'; size?: number }) {
+  const set = ({ add: 'plus', undo: 'undo', repeat: 'repeat' } as const)[name as 'add' | 'undo' | 'repeat'];
+  if (set) return <ProgramIcon name={set} size={size} />;
   const path = { add: 'M12 5v14M5 12h14', undo: 'M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11', redo: 'M15 14l5-5-5-5M20 9H9.5a5.5 5.5 0 0 0 0 11H13',
     repeat: 'M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3',
     tools: 'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6' }[name];
@@ -3055,7 +3061,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   /** The bar's copy of the status: never announced. A warning there is a button only when there is
    *  a recovery box to open (keyboard closes, the box and its actions show); otherwise just the words. */
   function barStatusSlot() {
-    if (!statusWarn || !hasRecovery) return <span className={styles.barStatus} aria-hidden="true" data-warn={statusWarn || undefined}>{barStatus}</span>;
+    // F6-B1 (목업 B): saved is the icon set's check here (13px words no longer fit beside the bar's seven buttons at 390).
+    if (!statusWarn || !hasRecovery) return <span className={styles.barStatus} aria-hidden="true" data-warn={statusWarn || undefined} data-saved={barStatus === '저장됨' || undefined}>{barStatus === '저장됨' ? <ProgramIcon name="check" size={18} /> : barStatus}</span>;
     return <button type="button" className={styles.barStatus} data-warn="true" aria-label={`${statusLabel} · 복구 열기`}
       onPointerDown={event => { event.preventDefault(); }} onClick={openStatusRecovery}>{barStatus}</button>;
   }
@@ -3097,7 +3104,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function barButtons(place: 'toolbar' | 'bar') {
     const className = place === 'toolbar' ? styles.toolbarBarButton : undefined, locked = barLine.markerLock, moved = barLine.structureLock;
     const keep = (event: React.PointerEvent) => { event.preventDefault(); }, body = place === 'bar' && !props.folderId;
-    const close = (label: string) => <button type="button" className={styles.barClose} aria-label={label} onPointerDown={keep} onClick={() => setBarMode('tools')}>×</button>;
+    const close = (label: string) => <button type="button" className={styles.barClose} aria-label={label} onPointerDown={keep} onClick={() => setBarMode('tools')}><ProgramIcon name="close" size={20} /></button>;
     const tools = <>
       {barButton('task', <BarIcon name="task" />, barLine.isTask ? '일반 줄로 바꾸기' : '할 일로 바꾸기', '- [ ]', !!locked, className, locked ? barLockId + place : undefined)}
       {locked && <span id={barLockId + place} hidden>{barLine.markerLock}</span>}
@@ -3139,7 +3146,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       <div className={styles.barChips} role="group" aria-label="폴더 고르기">
         {barFolderChoices.map(folder => <button type="button" key={folder.id} data-bar-folder={folder.id} disabled={barOff} title={folder.path}
           onPointerDown={keep} onClick={() => runBarFolder(folder.id)}>{folder.title}</button>)}
-        <button type="button" data-bar-folder="new" disabled={barOff} onPointerDown={keep} onClick={barNewFolder}>＋ 새 폴더</button>
+        <button type="button" data-bar-folder="new" disabled={barOff} onPointerDown={keep} onClick={barNewFolder}><ProgramIcon name="plus" size={16} />새 폴더</button>
       </div>
       {barTriggerRef.current?.kind === 'slash' && <button type="button" className={styles.barMenu} data-bar-slash-menu disabled={barOff} onPointerDown={keep} onClick={barMenu}>메뉴</button>}
       {close('폴더 닫기')}
@@ -3196,14 +3203,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         onPointerDown={event => event.preventDefault()} onClick={() => { if (picker.enter) pressPicker(picker.enter); }}>↵ {pickerEnterLabel}</button>}
       <div id={pickerId} role="listbox" aria-label="연결할 폴더" className={styles.pickerChips}>{picker.candidates.map(pickerChoiceButton)}</div>
       {!picker.enter && !picker.candidates.length && <span className={styles.pickerEmpty}>폴더 이름을 치고 Enter</span>}
-      <button type="button" tabIndex={-1} className={styles.pickerClose} aria-label="폴더 추천 닫기" onPointerDown={event => event.preventDefault()} onClick={closeBarPicker}>×</button>
+      <button type="button" tabIndex={-1} className={styles.pickerClose} aria-label="폴더 추천 닫기" onPointerDown={event => event.preventDefault()} onClick={closeBarPicker}><ProgramIcon name="close" size={20} /></button>
     </> : <>{barButtons('bar')}{barStatusSlot()}</>}
     <input ref={datePickRef} type="date" className={styles.srOnly} tabIndex={-1} aria-hidden="true" onChange={event => datePicked(event.currentTarget.value)} />
   </div>;
   const folderPicker = picker && !picker.phone ? <div data-folder-picker className={styles.folderPicker}
     style={{ left: picker.left, top: picker.top, width: picker.width, transform: picker.above ? 'translateY(-100%)' : undefined }}>
     <div className={styles.pickerHeader}><span>{picker.parentId ? `${picker.parentLabel} ›` : '최상위'}</span>
-      <button type="button" tabIndex={-1} aria-label="폴더 추천 닫기" onPointerDown={event => event.preventDefault()} onClick={dismissPicker}>×</button></div>
+      <button type="button" tabIndex={-1} aria-label="폴더 추천 닫기" onPointerDown={event => event.preventDefault()} onClick={dismissPicker}><ProgramIcon name="close" size={20} /></button></div>
     <div id={pickerId} role="listbox" aria-label="연결할 폴더" className={styles.pickerList} style={{ maxHeight: picker.listHeight }}>{picker.candidates.map(pickerChoiceButton)}
       {!picker.candidates.length && <p>{picker.enter ? '일치하는 폴더가 없습니다.' : '폴더 이름을 치고 Enter'}</p>}</div>
     {picker.enter && picker.enter.kind !== 'folder' && <button type="button" tabIndex={-1} className={styles.pickerDefault}
@@ -3288,7 +3295,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     </div>}
     {/* Input v2 stage 2: 오늘 시작 줄 — today's head line in one press (focus first, so a phone's keyboard comes up). */}
     {todayStart && <button type="button" className={styles.todayStart} data-today-start disabled={inputLocked || draft.saving} onClick={startToday}>
-      <span aria-hidden="true">＋</span>오늘 {programCalendarDate(today(), today())} 쓰기</button>}
+      <span aria-hidden="true"><ProgramIcon name="plus" size={20} /></span>오늘 {programCalendarDate(today(), today())} 쓰기</button>}
     <div ref={hostRef} className={`${styles.host}${props.directWriting ? ` ${styles.directWriting}` : ''}`} hidden={!!props.folderId} data-native-editor="v11-core" />
     {notices}
     {folderView && <ProgramFolderRegionEditor key={`${props.docId}:${props.folderId}`} styles={regionStyles} view={folderView} readOnly={!!props.readOnly} locked={inputLocked} saving={draft.saving} mode={mode} listEnterV2={!!props.authoringMode}
@@ -3302,7 +3309,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     {props.authoringMode && !folderView && writingBar}
     {props.authoringMode && !folderView && <div ref={roomRef} className={styles.keyboardRoom} aria-hidden="true" />}
     {panel && <dialog ref={dialogRef} className={styles.dialog} aria-label={title} onCompositionStartCapture={()=>{panelComposingRef.current=true;}} onCompositionEndCapture={()=>{panelComposingRef.current=false;}} onKeyDown={event => { trapProgramDialogTab(event.currentTarget, event); }} onCancel={event => { event.preventDefault(); closePanel(); cancelMove(); }}>
-      <header><h3 title={title}>{title}</h3><button type="button" aria-label="닫기" onClick={closePanel}>×</button></header>
+      <header><h3 title={title}>{title}</h3><button type="button" aria-label="닫기" onClick={closePanel}><ProgramIcon name="close" size={20} /></button></header>
       <div className={styles.dialogBody}>
       {childTarget&&<ProgramWritingInline key={childTarget.parentId+(childTarget.kind??'')} initialKind={childTarget.kind} parentTitle={childTarget.title} date={childTarget.date} scope={childTarget.scope} memo={childTarget.memo} readDraft={kind=>childDrafts.current[childTarget.parentId+':'+kind]} remember={(kind,text)=>{childDrafts.current[childTarget.parentId+':'+kind]=text;}} onSubmit={submitAuthoringChild}/>}
 

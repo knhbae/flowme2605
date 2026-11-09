@@ -1,26 +1,43 @@
-.page { min-height: 100dvh; padding: 20px max(16px, env(safe-area-inset-left)) 32px; }
-.header { max-width: 960px; margin: 0 auto 32px; display: flex; align-items: center; flex-wrap: wrap; gap: 12px; color: var(--flowme-text-secondary); font-size: 14px; }
-.brand { font-size: 22px; font-weight: 800; color: var(--flowme-action); min-height: 48px; display: inline-flex; align-items: center; }
-.panel { width: 100%; max-width: 480px; margin: 0 auto; padding: 28px; background: var(--flowme-surface); border: 1px solid var(--flowme-border); border-radius: 16px; }
-.panel h1 { font-size: 25px; line-height: 1.35; font-weight: 750; margin-bottom: 12px; }
+/* F6-B1 (11/9, 방향 B 흐름 노트): the sign-in on the app's own tokens. Navy on top — the 흐름 마크 and wordmark (32/800),
+   one sentence, a Flow 실 — and the form on a paper sheet that runs to the bottom. Inputs stay 48px; R7 stays under it. */
+.page { display: flex; flex-direction: column; min-height: 100dvh; padding: 0; background: var(--flowme-b-navy); color: var(--flowme-b-ink); }
+.header { box-sizing: border-box; width: 100%; max-width: 480px; margin: 0 auto; padding: max(40px, env(safe-area-inset-top)) 22px 30px; color: var(--flowme-b-on-navy); font-size: 14px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; color: #fff; font-size: 32px; font-weight: 800; letter-spacing: -.5px; text-decoration: none; }
+.brandMark { flex: none; width: 40px; height: 40px; color: var(--flowme-b-teal-on-navy); }
+.tagline { margin: 12px 0 0; color: #fff; font-size: 19px; font-weight: 700; line-height: 1.45; word-break: keep-all; }
+.tagline span { color: var(--flowme-b-teal-on-navy); }
+.thread { position: relative; height: 76px; margin: 22px 10px 0; }
+.thread svg { position: absolute; inset: 0 0 auto; width: 100%; height: 60px; overflow: visible; fill: none; stroke: var(--flowme-b-teal-on-navy); stroke-width: 2.5; stroke-linecap: round; }
+.thread span { position: absolute; width: 64px; margin: -7px 0 0 -32px; padding-top: 16px; color: var(--flowme-b-on-navy); font-size: 13px; font-weight: 600; line-height: 18px; text-align: center; white-space: nowrap; }
+.thread span i { position: absolute; top: 0; left: 50%; box-sizing: border-box; width: 14px; height: 14px; margin-left: -7px; border: 2.5px solid var(--flowme-b-teal-on-navy); border-radius: 7px; background: var(--flowme-b-navy); }
+.thread span[data-done] i { background: var(--flowme-b-teal-on-navy); }
+.panel { box-sizing: border-box; flex: 1 0 auto; width: 100%; margin: 0; padding: 22px max(18px, calc(50% - 222px)) calc(28px + env(safe-area-inset-bottom)); background: var(--flowme-b-paper); border: 0; border-radius: 26px 26px 0 0; color: var(--flowme-b-ink); }
+.panel h1 { font-size: 22px; line-height: 1.35; font-weight: 800; margin-bottom: 14px; }
 .panel h2 { font-size: 19px; font-weight: 700; margin: 24px 0 10px; }
-.panel p { color: var(--flowme-text-secondary); line-height: 1.65; margin-bottom: 20px; word-break: keep-all; overflow-wrap: anywhere; }
-.panel form { display: grid; gap: 18px; }
-.panel label { display: grid; gap: 7px; font-size: 15px; font-weight: 600; }
-.panel input { width: 100%; min-width: 0; min-height: 48px; padding: 10px 12px; border: 1px solid var(--flowme-control-border); border-radius: 8px; font-size: 16px; font-weight: 400; }
-.panel button { min-height: 48px; width: 100%; border-radius: 8px; padding: 11px 14px; background: var(--flowme-action); color: white; font-weight: 650; }
+.panel p { color: var(--flowme-b-muted); line-height: 1.65; margin-bottom: 20px; word-break: keep-all; overflow-wrap: anywhere; }
+.panel form { display: grid; gap: 16px; }
+.panel label { display: grid; gap: 6px; font-size: 14px; font-weight: 700; }
+.panel input { width: 100%; min-width: 0; min-height: 48px; padding: 10px 14px; border: 1px solid var(--flowme-b-control); border-radius: 12px; background: var(--flowme-b-surface); color: var(--flowme-b-ink); font-size: 16px; font-weight: 400; }
+/* The mail and lock icons of the set, at the start of the two fields (control color, decoration only). */
+.panel input:is([type="email"], [type="password"]) { padding-left: 44px; background-repeat: no-repeat; background-position: 14px center; background-size: 20px 20px; }
+.panel input[type="email"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23857f72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5.5' width='17' height='13' rx='2.5'/%3E%3Cpath d='M4.5 7.5l7.5 5.5 7.5-5.5'/%3E%3C/svg%3E"); }
+.panel input[type="password"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23857f72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='10.5' width='14' height='9.5' rx='2.5'/%3E%3Cpath d='M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5'/%3E%3C/svg%3E"); }
+.panel button { min-height: 48px; width: 100%; border-radius: 24px; padding: 11px 14px; background: var(--flowme-b-primary); color: #fff; font-size: 16px; font-weight: 700; }
 .panel button:disabled { opacity: .55; cursor: not-allowed; }
-.panel button:focus-visible, .panel a:focus-visible, .panel input:focus-visible { outline: var(--flowme-focus-outline); outline-offset: 3px; }
-.panel .secondary { background: white; color: var(--flowme-action-strong); border: 1px solid var(--flowme-control-border); margin: 8px 0; }
-.returnLink { display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 11px 14px; border-radius: 8px; background: var(--flowme-action); color: white; font-weight: 650; }
-.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-.panel .link { flex: 1; width: auto; background: transparent; color: var(--flowme-action-strong); font-size: 14px; }
-.status { min-height: 24px; color: var(--flowme-text); line-height: 1.6; margin-top: 16px; overflow-wrap: anywhere; }
-.back { display: flex; min-height: 48px; flex-direction: column; justify-content: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--flowme-border); color: var(--flowme-action-strong); font-size: 14px; }
-.back span { color: var(--flowme-text-secondary); font-size: 13px; }
+.panel button:focus-visible, .panel a:focus-visible, .panel input:focus-visible, .header a:focus-visible { outline: var(--flowme-focus-outline); outline-offset: 3px; }
+.header a:focus-visible { outline-color: var(--flowme-b-on-navy); }
+.panel .secondary { background: var(--flowme-b-surface); color: var(--flowme-b-primary-strong); border: 1px solid var(--flowme-b-control); margin: 8px 0; }
+.returnLink { display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 11px 14px; border-radius: 24px; background: var(--flowme-b-primary); color: #fff; font-weight: 700; }
+.actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-top: 6px; }
+.panel .link { flex: 0 1 auto; width: auto; min-height: 44px; padding: 0 8px; border-radius: 8px; background: transparent; color: var(--flowme-b-primary); font-size: 15px; font-weight: 600; }
+.status { min-height: 24px; color: var(--flowme-b-ink); line-height: 1.6; margin-top: 12px; overflow-wrap: anywhere; }
+.back { display: flex; min-height: 48px; flex-direction: column; justify-content: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--flowme-b-line); color: var(--flowme-b-primary-strong); font-size: 14px; }
+.back span { color: var(--flowme-b-muted); font-size: 13px; }
 .panel .identity { overflow-wrap: anywhere; word-break: break-all; }
-@media (max-width: 420px) { .panel { padding: 22px 18px; } .header { margin-bottom: 20px; } }
-@media (max-height: 500px) { .header { margin-bottom: 8px; } .page { padding-top: 8px; } }
+/* A short screen keeps the form near the top: no picture, less room above. */
+@media (max-height: 639px) { .thread { display: none; } .header { padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: 22px; } }
+@media (max-height: 500px) { .header { padding-top: 8px; padding-bottom: 14px; } .brand { font-size: 26px; } .brandMark { width: 32px; height: 32px; } .tagline { margin-top: 4px; font-size: 16px; } }
 /* R7: what is stored and who sees it, under the sign-in. */
-.panel .privacy { display: flex; align-items: center; flex-wrap: wrap; gap: 0 4px; margin: 16px 0 0; color: var(--flowme-text-secondary); font-size: 14px; line-height: 1.5; }
-.panel .privacyMore { width: auto; min-height: 44px; padding: 0 8px; background: transparent; color: var(--flowme-action-strong); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.panel .privacy { display: flex; align-items: center; flex-wrap: wrap; gap: 0 6px; margin: 12px 0 0; color: var(--flowme-b-muted); font-size: 14px; line-height: 1.5; }
+.panel .privacy > svg { flex: none; }
+.panel .privacyMore { width: auto; min-height: 44px; padding: 0 8px; background: transparent; color: var(--flowme-b-primary-strong); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }

@@ -134,7 +134,7 @@ const alpha = read(C + 'AlphaWorkspace.tsx'), regionCss = read(C + 'ProgramFolde
 const screenCss = read(C + 'ProgramFolderScreen.module.css'), list = read(C + 'ProgramFolderList.tsx');
 
 test('the tab is 폴더 with a folder icon; its first screen is the list (no 분류 picker, no 새 분류, no 할 일 추가)', () => {
-  assert(alpha.includes("['all', '폴더', 'M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z']"));
+  assert(alpha.includes("['all', '폴더', 'folder']")); // F6-B1: the icon set's folder
   assert(space.includes("const mainPeriods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['all', '폴더']];"));
   assert(!space.includes('할 일 분류 보기') && !space.includes('>새 분류<') && !space.includes('classificationActions'));
   assert(space.includes('{folderList && folderListView(null)}'));

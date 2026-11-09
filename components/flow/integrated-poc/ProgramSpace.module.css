@@ -117,7 +117,7 @@
 @media (max-width: 760px) {
   .space { padding-bottom: calc(88px + env(safe-area-inset-bottom)); gap: 8px; }
   .contextActions { justify-content: flex-end; }
-  .contextActions .periods { position: fixed; z-index: 30; inset: auto 0 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); background: #ffffff; border-top: 1px solid var(--flowme-b-line); box-shadow: 0 -4px 20px #202a3c08; }
+  .contextActions .periods { position: fixed; z-index: 30; inset: auto 0 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); background: var(--flowme-b-paper); border-top: 1px solid var(--flowme-b-line); box-shadow: 0 -4px 20px #202a3c08; }
   .periods button { min-height: 48px; font-size: 14px; }
   .contextActions .libraryToggle { width: auto; }
   .space h1 { font-size: 28px; line-height: 36px; }
@@ -129,16 +129,16 @@
   .task { grid-template-columns: 48px minmax(0,1fr) 48px; gap: 4px; }
 }
 /* One task row, not three separate cards. Full titles stay in the detail view. */
-.task { background: #ffffff; padding: 12px 4px; align-items: start; }
+.task { background: var(--flowme-b-paper); padding: 12px 4px; align-items: start; }
 .task > button { background: transparent; border-radius: 6px; }
 .task > .check { margin-top: 0; }
 .taskTitle { min-width: 0; padding: 8px; }
 /* N10: a repeat line shows its title and the chip, not the marker it was written with. */
 /* Today visual A (T7): the repeat chip in the writing view's quiet chip colors (no off-token blue). */
-.repeatChip { display: inline-block; vertical-align: 1px; height: 18px; margin-inline-start: 6px; padding: 0 6px; border-radius: 9px; background: var(--flowme-b-canvas); color: var(--flowme-b-muted); font-size: 12px; font-weight: 600; line-height: 18px; white-space: nowrap; }
+.repeatChip { display: inline-block; vertical-align: 1px; height: 18px; margin-inline-start: 6px; padding: 0 6px; border-radius: 9px; background: var(--flowme-b-canvas); color: var(--flowme-b-muted); font-size: 13px; font-weight: 600; line-height: 18px; white-space: nowrap; }
 .taskTitleText { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; word-break: keep-all; overflow-wrap: anywhere; }
 .taskTitle small { margin-top: 4px; }
-.taskTitle small { color: var(--flowme-b-muted); font-size: 12px; line-height: 20px; font-weight: 400; }
+.taskTitle small { color: var(--flowme-b-muted); font-size: 13px; line-height: 20px; font-weight: 400; }
 .contextActions .libraryToggle { border-color: transparent; background: transparent; color: var(--flowme-b-muted); font-size: 13px; }
 .taskOrigin { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .space { position: relative; }
@@ -189,7 +189,7 @@
 .periodPicker { max-width: 240px; margin-bottom: 16px; }
 @media (max-width: 1199px) {
   .space { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
-  .contextActions .periods { position: fixed; z-index: 30; inset: auto 0 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); background: #ffffff; border-top: 1px solid var(--flowme-b-line); }
+  .contextActions .periods { position: fixed; z-index: 30; inset: auto 0 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); background: var(--flowme-b-paper); border-top: 1px solid var(--flowme-b-line); }
   .periods button { min-height: 48px; width: 100%; }
 }
 @media (max-width: 760px) {
@@ -274,7 +274,7 @@
 .space[data-note-layout="true"] .partialProgress > span { display: inline-block; border: 1px solid var(--flowme-b-line); border-radius: 4px; padding: 2px; background: var(--flowme-b-canvas); }
 .space[data-note-layout="true"] .periods button[aria-current="page"] { box-shadow: none; background: var(--flowme-b-canvas); }
 .space[data-note-layout="true"] .contextActions { display: contents; }
-.space[data-note-layout="true"] .contextActions .periods { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; max-width: 1040px; margin: 0 auto; padding: 8px max(20px,env(safe-area-inset-left)) max(8px,env(safe-area-inset-bottom)); box-sizing: border-box; background: #fff; border-top: 1px solid var(--flowme-b-line); }
+.space[data-note-layout="true"] .contextActions .periods { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; max-width: 1040px; margin: 0 auto; padding: 8px max(20px,env(safe-area-inset-left)) max(8px,env(safe-area-inset-bottom)); box-sizing: border-box; background: var(--flowme-b-paper); border-top: 1px solid var(--flowme-b-line); }
 .space[data-note-layout="true"] .periodStatus { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 /* 글 찾기 and 고르기 keep their words on one line: on phones the status beside them (full width there) gives way, not
    them (they had shrunk to one letter a line). */
@@ -333,11 +333,11 @@
 .space .task, .space[data-note-layout="true"] .task { box-sizing: border-box; min-height: 60px; padding: 6px 4px; align-items: center; }
 .space .taskTitle { padding: 4px 8px; line-height: 22px; }
 .space .taskTitleText, .space[data-note-layout="true"] .taskTitleText { line-height: 22px; }
-.space .taskTitle small, .space[data-note-layout="true"] .taskTitle small { display: block; margin-top: 0; font-size: 12px; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.space .taskTitle small, .space[data-note-layout="true"] .taskTitle small { display: block; margin-top: 0; font-size: 13px; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .space .taskTitle small > span, .space[data-note-layout="true"] .taskTitle small > span, .space .taskTitle .taskOrigin { display: inline; }
 /* T5: a finished row reads muted, without a strike line (as in writing). */
 .space .task[data-done] .taskTitleText { color: var(--flowme-b-muted); text-decoration: none; }
-.rowLate { font-style: normal; font-weight: 700; color: #986209; }
+.rowLate { font-style: normal; font-weight: 700; color: var(--flowme-b-late-ink); }
 .rowBusy { color: var(--flowme-b-primary-strong); font-weight: 600; }
 @media (max-width: 760px) { .taskFolder { display: none; } }
 
@@ -556,7 +556,10 @@
 /* T2: on phones the add is a 36px ＋ circle in a 44px press area, as writing's; its name stays "할 일 추가". PC keeps words. */
 @media (max-width: 700px) {
   .space[data-note-layout="true"] .notePeriodActions > .noteAdd { position: relative; width: 44px; min-width: 44px; height: 44px; min-height: 44px; padding: 0; border: 0; background: transparent; font-size: 0; }
-  .space[data-note-layout="true"] .notePeriodActions > .noteAdd::before { content: "＋" / ""; position: absolute; inset: 4px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--flowme-b-selected); color: var(--flowme-b-primary); font-size: 20px; font-weight: 600; line-height: 1; }
+  .space[data-note-layout="true"] .notePeriodActions > .noteAdd::before { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--flowme-b-selected); }
+  /* F6-B1: the ＋ is the icon set's plus over that circle (the button's own words stay its name). */
+  .space[data-note-layout="true"] .notePeriodActions > .noteAdd { display: inline-flex; align-items: center; justify-content: center; color: var(--flowme-b-primary); }
+  .space[data-note-layout="true"] .notePeriodActions > .noteAdd > svg { position: relative; flex: none; }
 }
 /* T3: ‹ [date chip] › … [period chip ⌄]. Each chip draws 36px inside a 44px press area; the date input stays in the
    page, unseen, with its label (the chip opens its picker). */
@@ -589,7 +592,7 @@
 .space .importNotice[data-arrival-toast] > button:first-of-type { margin-left: auto; }
 .space .importNotice[data-arrival-toast] > .importCalendar { background: var(--flowme-b-on-ink); color: var(--flowme-b-primary); }
 .space .importNotice[data-arrival-toast] > button:focus-visible { outline: 2px solid var(--flowme-b-on-ink); outline-offset: 2px; }
-@media (max-width: 700px) { .space .importNotice[data-arrival-toast] { left: 12px; right: 12px; width: auto; bottom: calc(60px + env(safe-area-inset-bottom) + 12px); } }
+@media (max-width: 700px) { .space .importNotice[data-arrival-toast] { left: 12px; right: 12px; width: auto; bottom: calc(68px + env(safe-area-inset-bottom) + 12px); } }
 :global([data-writing-keyboard="true"]) .space .importNotice[data-arrival-toast] { display: none; }
 /* Core3 P2c: [되돌리기] [달력에서 보기] [×]; once closed, [되돌리기] sits at the end of the copy's source line. */
 .space .importNotice[data-arrival-toast] > .importToastClose { width: 44px; padding: 0; font-size: 22px; line-height: 1; font-weight: 400; }

@@ -42,6 +42,7 @@ import { programFolderAncestry, programFolderTaskGroups, programFolderTree, prog
   type ProgramFolderTaskGroupKey } from '@/lib/flow/integrated-poc/folder-screen';
 import { addProgramFolderTodayTask, programFolderTodayPlace, programFolderTodayUndo, undoProgramFolderTodayTask, type ProgramFolderTodayUndo } from '@/lib/flow/integrated-poc/folder-today-add';
 import { ProgramFolderTodayAdd } from './ProgramFolderTodayAdd';
+import { ProgramIcon } from './icons';
 import { mergeProgramTextWorkspace } from '@/lib/flow/integrated-poc/text-merge';
 import { flushProgramEditorCollection, prepareProgramDocumentAction, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
 import type { AlphaStructuralDraft, AlphaStructuralEditorPort } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
@@ -2786,13 +2787,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const folderTitleOf = (id: string) => space.text.folders.find(row => row.id === id)?.title ?? '미분류';
   useEffect(() => { if (!folderWriting) setFolderStatus(null); }, [folderWriting]);
   const folderHead = folderScreen && <div className={folderStyles.head} data-folder-head>
-    <button type="button" className={folderStyles.back} aria-label="폴더 목록으로" disabled={preparingDocumentAction} onClick={() => void closeFolderScreen()}>‹</button>
+    <button type="button" className={folderStyles.back} aria-label="폴더 목록으로" disabled={preparingDocumentAction} onClick={() => void closeFolderScreen()}><ProgramIcon name="back" size={24} /></button>
     {folderPath.length > 1 && <span className={folderStyles.path}>{folderPath.slice(0, -1).map(item => <button key={item.id} type="button" className={folderStyles.pathLink}
       data-folder-parent={item.id} aria-label={`상위 폴더 ${item.title} 열기`} onClick={() => void openFolderScreen(item.id)}>{item.title} ›</button>)}</span>}
     <h1>{folderName}</h1>
     {folderWriting && folderStatus && <span className={folderStyles.status} aria-hidden="true" data-folder-status data-warn={folderStatus.warn || undefined}>{folderStatus.label}</span>}
     {folderId && folderId !== 'folder-unfiled' && <button type="button" className={folderStyles.more} aria-label={`${folderName} 폴더 관리`} aria-haspopup="dialog" data-folder-manage
-      onClick={() => openDetail({ kind: 'folder', id: folderId })}>⋯</button>}
+      onClick={() => openDetail({ kind: 'folder', id: folderId })}><ProgramIcon name="more" size={24} /></button>}
     {folderWriting && <button type="button" className={folderStyles.finish} data-folder-finish onClick={() => { const active = document.activeElement; if (active instanceof HTMLElement) active.blur(); }}>완료</button>}
   </div>;
   // '모든 할 일' has no [글] (A1 ①): no tab line.
@@ -2860,7 +2861,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     return <>{item.orderDate && !moving && <><span className={styles.manualOrder}>직접 정렬</span><button type="button" className={styles.timeOrder}
         aria-label={`${orderDayName(item.orderDate)} 순서를 시간순으로 되돌리기`} disabled={orderPending} onClick={() => void resetDayOrder(item.orderDate!)}>시간순으로</button></>}
       {item.addDate && !collectionMode && <button type="button" className={styles.dayAdd} data-add-date={item.addDate} aria-label={`${programCalendarDate(item.addDate, today)}에 할 일 추가`}
-        aria-expanded={addingDate === item.addDate} disabled={preparingDocumentAction} onClick={() => openGroupAdd(item.addDate!)}>＋</button>}</>;
+        aria-expanded={addingDate === item.addDate} disabled={preparingDocumentAction} onClick={() => openGroupAdd(item.addDate!)}><ProgramIcon name="plus" size={20} /></button>}</>;
   }
   /** The day's ＋ line (C2), under its heading. */
   function dayAddRow(item: Extract<ProgramExecutionListItem, { kind: 'heading' }>) {
@@ -2931,7 +2932,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               </>}</small></button>
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
-              onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>
+              onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}><ProgramIcon name="more" size={20} /></button>
           </li>;
   }
   // Flow pipeline S11: the band's rows — open ones in 오늘's order, and those checked here kept (faded) where they were.
@@ -2978,7 +2979,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {props.importNotice.calendar && <button type="button" className={styles.importCalendar} data-import-calendar disabled={props.importNotice.busy}
         onClick={() => { const notice = props.importNotice; if (notice?.calendar) void showFlowOnCalendar(notice.documentId, notice.calendar); }}>달력에서 보기</button>}
       {/* Core3 P2c: [되돌리기] [달력에서 보기] [×]. */}
-      {props.importNotice.toast && <button type="button" className={styles.importToastClose} data-arrival-close aria-label="알림 닫기" onClick={props.importNotice.toast.onClose}>×</button>}</div>}
+      {props.importNotice.toast && <button type="button" className={styles.importToastClose} data-arrival-close aria-label="알림 닫기" onClick={props.importNotice.toast.onClose}><ProgramIcon name="close" size={20} /></button>}</div>}
     {/* Once the arrival toast closed, its [되돌리기] stays (as long as it could before), on the copy's source line or here. */}
     {arrivalUndoAfterToast && !copyHeader && <p className={styles.importNotice} data-arrival-undo>{importCancel}</p>}
     <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice data-quiet={props.noteNoticeShown ? 'true' : undefined}>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
@@ -3209,7 +3210,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           {folderWritingDocuments.filter(doc => doc.id !== selected).map(doc => <li key={doc.id}><button type="button" className={folderStyles.docFold} data-folder-document={doc.id}
             data-done-only={!doc.open && doc.done ? '' : undefined} disabled={preparingDocumentAction} onClick={() => void showFolderDocument(doc.id)}
             aria-label={`${doc.title} 펼치기 · ${doc.open ? `할 일 ${doc.open}개` : doc.done ? `끝낸 일만 ${doc.done}개` : '할 일 없음'}`}>
-            <span>{doc.title}</span><small>{doc.open ? `할 일 ${doc.open}` : doc.done ? `끝낸 일만 ${doc.done}` : '할 일 없음'}{doc.lastDate ? ` · ${programCalendarDate(doc.lastDate, today, false)}` : ''}</small><i aria-hidden="true">⌄</i></button></li>)}</ul>}
+            <span>{doc.title}</span><small>{doc.open ? `할 일 ${doc.open}` : doc.done ? `끝낸 일만 ${doc.done}` : '할 일 없음'}{doc.lastDate ? ` · ${programCalendarDate(doc.lastDate, today, false)}` : ''}</small><i aria-hidden="true"><ProgramIcon name="down" size={20} /></i></button></li>)}</ul>}
         {selectedDoc && !selectedArchived && !folderWriting && <ProgramRecurrence key={`${actorId}:${selectedDoc.id}`} data={data} mutate={mutate} today={today} period="documents" date={date} documentId={selectedDoc.id} onPlanApplied={focusAppliedPlan}
           presentation={recurrencePresentation.documents[selectedDoc.id] ?? { page: 0, includeHeld: false, includeExcluded: false }} onPresentationChange={value => setRecurrencePresentation(previous => ({ ...previous, documents: { ...previous.documents, [selectedDoc.id]: value } }))}
           onRegisterEditors={port => { recurrencePorts.current[selectedDoc.id] = port; }}
@@ -3220,17 +3221,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         <ProgramRecurrencePlanRecovery data={data} today={today} folderId={folderId || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         {/* F4-a: the 폴더 tab's list says '폴더'; an open folder has its own head and [할 일]·[글]. */}
         {folderScreen ? <>{folderHead}{folderTabs}</> : folderList ? <div className={styles.periodHeading}><h1>폴더</h1></div> : <div className={styles.periodHeading}>{selecting ? selectTitle : compactNoteToday ? <div className={styles.notePeriodTitle}>{periodTitle}<div className={styles.notePeriodActions}>
-          <button type="button" className={styles.noteAdd} aria-expanded={noteQuickOpen} aria-controls="program-note-quick-task" onClick={() => setNoteQuickOpen(value => !value)}>할 일 추가</button>
+          <button type="button" className={styles.noteAdd} aria-expanded={noteQuickOpen} aria-controls="program-note-quick-task" onClick={() => setNoteQuickOpen(value => !value)}><ProgramIcon name="plus" size={20} />할 일 추가</button>
           <details ref={noteFindMenu} className={styles.notePeriodTools} onKeyDown={event => {
             if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
             event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; noteFindMenuSummary.current?.focus({ preventScroll: true });
-          }}><summary ref={noteFindMenuSummary} aria-label="편집 도구" title="편집 도구"><span aria-hidden="true">…</span></summary><div className={styles.notePeriodToolsBody}>{findActions}
+          }}><summary ref={noteFindMenuSummary} aria-label="편집 도구" title="편집 도구"><span aria-hidden="true"><ProgramIcon name="more" size={20} /></span></summary><div className={styles.notePeriodToolsBody}>{findActions}
             {/* I7: the day heading is hidden here, so its button sits in this menu. */}
             {hideDayHeadings && manualOrderDays.has(date) && !moving && <button type="button" disabled={orderPending}
               onClick={() => { if (noteFindMenu.current) noteFindMenu.current.open = false; void resetDayOrder(date); }}>오늘 순서를 시간순으로</button>}</div></details>
-        </div></div> : period === 'month' ? monthTitleRow : periodTitle}{!selecting && !['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date); }}>‹</button>
+        </div></div> : period === 'month' ? monthTitleRow : periodTitle}{!selecting && !['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date); }}><ProgramIcon name="back" size={20} /></button>
           {/* T3: the date as a chip that opens the date input's own picker; the input stays (unseen) with its label. */}
-          <button type="button" className={styles.dateChip} onClick={openDatePicker}>{programDateChipLabel(period, date, today, openOnDate)}</button><label className={styles.dateField}>날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value) && !keepWrittenDay()) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date); }}>›</button></div>}</div>}
+          <button type="button" className={styles.dateChip} onClick={openDatePicker}>{programDateChipLabel(period, date, today, openOnDate)}</button><label className={styles.dateField}>날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value) && !keepWrittenDay()) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date); }}><ProgramIcon name="right" size={20} /></button></div>}</div>}
         {props.noteHeader && <div className={styles.periodNotice}>{props.noteHeader}</div>}
         {selecting && selectBlocks && [...selectBlocks.values()].some(Boolean) && <p className={styles.selectNote}>반복 회차·끝낸 할 일은 고를 수 없습니다</p>}
         {props.noteStatus && <div className={styles.periodStatus}>{props.noteStatus}{!compactNoteToday && period !== 'documents' && !selecting && !folderTab && findActions}</div>}
@@ -3239,7 +3240,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {collectionMode && <p className={styles.muted}>모음과 관계없이 모든 문서의 같은 할 일을 날짜별로 봅니다.</p>}
         {folderTab ? null : props.hostMainTabs ? viewScope.length > 0 && <div className={styles.scopeLine} role="group" aria-label="지금 보는 범위">
           {viewScope.map(item => <span key={item.kind} className={styles.scopeChip}>{item.label}
-            {!selecting && <button type="button" aria-label={`${item.label} 조건 풀기`} onClick={() => void clearScope(item.kind)}>×</button>}</span>)}
+            {!selecting && <button type="button" aria-label={`${item.label} 조건 풀기`} onClick={() => void clearScope(item.kind)}><ProgramIcon name="close" size={16} /></button>}</span>)}
           {!selecting && <button type="button" className={styles.scopeAll} onClick={() => void changePeriod('today', true)}>전체로 보기</button>}</div>
           : (folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { void changeFolder(''); setQuery(''); }}>필터 해제</button></div>}
         {!monthGrid && range.from && range.to && range.to !== range.from && <p className={styles.muted}>{programCalendarDate(range.from, today)} ~ {programCalendarDate(range.to, today)}</p>}
@@ -3302,7 +3303,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {/* Flow pipeline S3: the Flow taken just now, its days marked; × lets it go (nothing saved). */}
         {monthGrid && shownHighlight && <div className={styles.flowHighlight} data-flow-highlight={shownHighlight.documentId}>
           <span><i aria-hidden="true" />{shownHighlight.title} · {shownHighlight.count}개</span>
-          <button type="button" aria-label={`${shownHighlight.title} 표시 끄기`} onClick={() => setFlowHighlight(null)}>×</button></div>}
+          <button type="button" aria-label={`${shownHighlight.title} 표시 끄기`} onClick={() => setFlowHighlight(null)}><ProgramIcon name="close" size={20} /></button></div>}
         {monthGrid ? <div className={styles.monthLayout} data-wide={wideMonth || undefined}>
           <ProgramMonthGrid rows={executionRows} date={date} today={today} titles={monthWidth >= 761} onPick={pickMonthDay} flow={highlightRow} />
           {/* The chosen day: a sheet on a narrow screen (its row notices inside while open), a panel beside the grid
@@ -3400,7 +3401,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         <label><span className={folderStyles.label}>상위 폴더</span><select value={space.text.folders.find(item => item.id === detail.id)?.parentId ?? ''} onChange={event => { const parentId = event.target.value || null; void manageRun('폴더 이동', current => moveProgramFolder(current, { ...base(current), folderId: detail.id, parentId })); }}><option value="">최상위</option>{folderOptions.filter(item => item.id !== detail.id).map(item => <option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
         <span className={folderStyles.label}>이 폴더가 나오는 곳</span>
         {(documents => <button type="button" className={folderStyles.place} data-folder-place onClick={() => { const id = detail.id; close(); void (folderScreenRef.current && folderId === id ? chooseFolderTab('writing') : openFolderScreen(id)); }}>
-          <span>문서 {documents}개 · 열린 할 일 {programExecutionTasks(space, { folderId: detail.id }).filter(isOpenTask).length}개</span><span aria-hidden="true">›</span></button>)(
+          <span>문서 {documents}개 · 열린 할 일 {programExecutionTasks(space, { folderId: detail.id }).filter(isOpenTask).length}개</span><span aria-hidden="true"><ProgramIcon name="right" size={16} /></span></button>)(
           folderScreen && folderId === detail.id ? folderWritingDocuments.length : programFolderWritingDocuments(space, detail.id, isOpenTask).length)}
         {folderDeleteAsk === detail.id ? <div className={folderStyles.confirm} role="group" aria-label="폴더 삭제 확인"><p>‘{space.text.folders.find(item => item.id === detail.id)?.title}’ 폴더를 삭제할까요?</p>
           <button type="button" className={folderStyles.danger} data-folder-delete-confirm onClick={async () => { const id = detail.id, result = await manageRun('폴더 삭제', current => deleteProgramFolder(current, { ...base(current), folderId: id })); setFolderDeleteAsk(null);

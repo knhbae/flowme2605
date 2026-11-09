@@ -220,7 +220,7 @@ test('ProgramSpace: the ＋ 오늘 할 일 row at the end of 오늘 (a field wit
   assert.match(source, /\{folderTodayAdd \|\| <button type="button" onClick=\{\(\) => void chooseMainTab\('documents'\)\}>/);
   assert.match(source, /const folderTodayAdd = folderScreen && folderId && <ProgramFolderTodayAdd/);
   // The row and its field: '＋ 오늘 할 일', one line, [적기], the place line under it; Enter, Esc and composition as the day ＋.
-  assert.match(row, /data-folder-today-add[\s\S]*<span aria-hidden="true">＋<\/span>오늘 할 일/);
+  assert.match(row, /data-folder-today-add[\s\S]*<span aria-hidden="true"><ProgramIcon name="plus" size=\{20\} \/><\/span>오늘 할 일/); // F6-B1: the icon set's ＋
   assert.match(row, /data-folder-today-place/);
   assert.match(row, />적기<\/button>/);
   assert.match(row, /if \(event\.nativeEvent\.isComposing\) return;/);

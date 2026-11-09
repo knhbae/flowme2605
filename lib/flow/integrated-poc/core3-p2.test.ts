@@ -71,6 +71,7 @@ test('the wiring: one head line, three-line cards, no sub-tabs, the Flow tab ope
   assert(css.includes('.flowCard[data-card-lines="3"] .cardSummary{-webkit-line-clamp:1;'));
   // Detail: one action (가져오기, or 내 문서 열기 for a Flow already taken), fixed right above the 60px tab bar.
   assert(discovery.includes(": '가져오기';") && discovery.includes('>내 문서 열기</button>'));
-  assert(css.includes('bottom:calc(60px + env(safe-area-inset-bottom));z-index:30;'));
+  // F6-B1: the tab bar is 68px now.
+  assert(css.includes('bottom:calc(68px + env(safe-area-inset-bottom));z-index:30;'));
   assert(!css.includes('bottom:calc(76px + env(safe-area-inset-bottom))'));
 });

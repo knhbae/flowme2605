@@ -66,7 +66,7 @@ test('the paint: finished tasks pale, folder lines a quiet "/ 이름", today nam
   ]) assert(editorCss.includes(rule), rule);
   // The folder name keeps the RAW size (U45): no font-size on it.
   assert(!/tle-active-scope-name[^{]*\{[^}]*font-size/.test(editorCss));
-  assert(alphaCss.includes('.page[data-alpha-frame="b"] .globalNavigation { background: var(--flowme-b-surface); border-top: 1px solid var(--flowme-b-line); }'));
+  assert(alphaCss.includes('.page[data-alpha-frame="b"] .globalNavigation { background: var(--flowme-b-paper); border-top: 1px solid var(--flowme-b-hair); }')); // F6-B1: paper tabs
   assert(space.includes('const phoneLayout = useSyncExternalStore(watchPhoneHead, () => phoneHead().matches, () => false);'));
   // The pair under the body says what it folds (only [미정]'s finished tasks), short enough for 360px.
   assert(space.includes('>날짜 미정 끝낸 일 {view.done.count}개</button>') && space.includes(">지난 {sum('days')}일 펼치기</button>"));

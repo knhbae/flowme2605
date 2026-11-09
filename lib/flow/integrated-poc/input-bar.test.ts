@@ -104,7 +104,7 @@ test('the editor wires the bar: one write per chip through its existing paths, h
   // 폴더 writes `- /` through insertNative and opens the existing suggestions; × takes back only that untouched line.
   const write = editor.slice(editor.indexOf('function runBarWrite('), editor.indexOf('function runDateChoice('));
   assert(write.includes('programFolderSeedPlan(area.value, area.selectionStart)') && write.includes('requestAnimationFrame(syncPicker);'));
-  assert(editor.includes("onClick={closeBarPicker}>×</button>") && editor.includes("doc.lines[index].text !== '- /'"));
+  assert(editor.includes('onClick={closeBarPicker}><ProgramIcon name="close" size={20} /></button>') && editor.includes("doc.lines[index].text !== '- /'")); // F6-B1: the icon set's ×
   // ↶ ↷ 반복 run the toolbar's own code from the ⋯ row.
   assert(editor.includes('onClick={undoInput}') && editor.includes('onClick={redoInput}') && editor.includes("if (action === 'undo') { undoInput(); return; }"));
   // The '/' menu leads with folders; a folder is one apply with the slash context check.

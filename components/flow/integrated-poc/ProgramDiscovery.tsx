@@ -27,6 +27,7 @@ import { programFlowProgress, programFlowProgressShort, programFlowProgressText 
 import { PROGRAM_OFFICIAL_LABEL, programFlowAttributionLabel } from '@/lib/flow/integrated-poc/alpha-official-actors';
 import { useAlphaOfficialActors } from './AlphaOfficialActors';
 import styles from './ProgramDiscovery.module.css';
+import { ProgramIcon } from './icons';
 
 export type ProgramDiscoveryDraftState = {
   url: string; urlOpen: boolean; checkedUrl: string | null; pastedText: string; pastedTitle: string;
@@ -414,7 +415,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     return <section className={`${styles.page} ${styles.flowDetail}`} data-testid="program-flow-detail" data-has-action={action ? 'true' : undefined}>
       {selectedOutputReturn && returnedDetail && <p role="status">내보낸 버전의 같은 항목으로 돌아왔습니다. 출력 선택·기준일·반복 범위를 복원했으며 원래 일정과 개인 기록은 변경하지 않았습니다.</p>}
       <div className={styles.detailBar}><button className={styles.back} type="button" disabled={pending} onClick={() => copySourceReturn && onReturnToSpace ? onReturnToSpace() : navigate({ view: 'discover' })}>{copySourceReturn && onReturnToSpace ? '← 내 문서' : '← Flow 찾기'}</button>
-        <details className={styles.moreMenu}><summary aria-label="Flow 더보기 메뉴">⋯</summary><div>
+        <details className={styles.moreMenu}><summary aria-label="Flow 더보기 메뉴"><ProgramIcon name="more" size={20} /></summary><div>
           {versions.length > 1 && <label className={styles.field}>이전 버전 보기<select value={version.id} disabled={pending} onChange={event => { update({ versionByFlow: { ...state.versionByFlow, [flow.id]: event.target.value } }); navigate({ view: 'flow', id: flow.id, versionId: event.target.value }); }}>{versions.map(row => <option key={row.id} value={row.id}>버전 {row.number}{row.id === flow.currentVersionId ? ' · 최신' : ''}</option>)}</select></label>}
           {!flow.archived && <button type="button" disabled={pending} onClick={() => setOutputVersion(outputOpen ? null : version.id)}>{outputOpen ? '내 도구로 받기 닫기' : '내 도구로 받기'}</button>}
           {/* FC5: a link to this version; an archived Flow's link stays closed (UX 13, C9). */}
@@ -575,7 +576,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     {/* Core3 P2 (X7): one head line — "Flow", the [이야기] text button, ⋯ — instead of the 이야기 | Flow 찾기 sub-tabs. */}
     <header className={styles.listHeader} data-list-head={onOpenStories ? 'flow' : undefined}><h1>{onOpenStories ? 'Flow' : 'Flow 찾기'}</h1>
       {onOpenStories && <button type="button" className={styles.storiesLink} data-open-stories disabled={pending} onClick={onOpenStories}>이야기</button>}
-      <details className={styles.moreMenu}><summary aria-label="Flow 찾기 더보기 메뉴">⋯</summary><div>
+      <details className={styles.moreMenu}><summary aria-label="Flow 찾기 더보기 메뉴"><ProgramIcon name="more" size={20} /></summary><div>
         <button type="button" disabled={pending} onClick={event => { (event.currentTarget.closest('details') as HTMLDetailsElement | null)?.removeAttribute('open'); update({ urlOpen: true }); requestAnimationFrame(() => document.getElementById(`${uid}-url`)?.focus()); }}>주소로 찾기</button>
         {onCreateFlow && <button type="button" disabled={pending} onClick={onCreateFlow}>Flow 만들기</button>}
       </div></details></header>

@@ -36,7 +36,7 @@ test('the arrival toast closes at whichever comes first: ×, the first input, mo
 test('the toast reads [되돌리기] [달력에서 보기] [×]; once closed, 되돌리기 stays at the end of the copy\'s source line', () => {
   const toast = space.slice(space.indexOf('data-arrival-toast='), space.indexOf('</div>}', space.indexOf('data-arrival-toast=')));
   assert(toast.indexOf('{importCancel}') < toast.indexOf('data-import-calendar') && toast.indexOf('data-import-calendar') < toast.indexOf('data-arrival-close'));
-  assert(toast.includes('aria-label="알림 닫기" onClick={props.importNotice.toast.onClose}>×</button>'));
+  assert(toast.includes('aria-label="알림 닫기" onClick={props.importNotice.toast.onClose}><ProgramIcon name="close" size={20} /></button>')); // F6-B1: the icon set's ×
   assert(space.includes('props.importNotice.toast?.open !== false && <div className={styles.importNotice}'), 'closed: no notice in the document');
   assert(space.includes('const arrivalUndoAfterToast = !!importCancel && props.importNotice?.toast?.open === false'));
   const header = space.slice(space.indexOf('{copyHeader && <div className={styles.copyHeader}'), space.indexOf('</div>}', space.indexOf('{copyHeader && <div className={styles.copyHeader}')));

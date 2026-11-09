@@ -144,4 +144,4 @@
 }
 /* UX FIX 2 (11/9): with the keyboard up the page scrolls to the line being written (the regions grow with their text,
    unlike 쓰기's editor, which scrolls inside); the head (‹ · name · status · 완료) stays at the top. */
-:global([data-writing-keyboard="true"]) .head { position: sticky; top: 0; z-index: 20; margin-left: 0; background: var(--flowme-b-surface); }
+:global([data-writing-keyboard="true"]) .head { position: sticky; top: 0; z-index: 20; margin-left: 0; background: var(--flowme-b-paper); }

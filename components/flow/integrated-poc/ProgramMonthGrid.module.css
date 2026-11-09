@@ -9,7 +9,7 @@
 .day[data-today] .number { background: var(--flowme-b-primary); color: #ffffff; font-weight: 700; }
 .dots { display: flex; align-items: center; justify-content: center; gap: 3px; min-height: 12px; font-size: 12px; line-height: 12px; color: var(--flowme-b-muted); }
 .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--flowme-b-primary); }
-.dots i[data-state="late"] { background: #986209; }
+.dots i[data-state="late"] { background: var(--flowme-b-late-ink); }
 .dots i[data-state="done"] { box-sizing: border-box; border: 1px solid var(--flowme-b-control); background: transparent; }
 .blank { min-height: 48px; }
 .month[data-titles] .day { align-items: stretch; min-height: 88px; }
@@ -18,7 +18,7 @@
 .titles { display: grid; gap: 1px; min-width: 0; font-size: 12px; line-height: 16px; text-align: left; }
 .titles > span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .titles [data-state="done"] { color: var(--flowme-b-muted); text-decoration: line-through; }
-.titles [data-state="late"] { color: #986209; }
+.titles [data-state="late"] { color: var(--flowme-b-late-ink); }
 .more { color: var(--flowme-b-muted); }
 /* Flow pipeline S3: a Flow marked from [달력에서 보기] — its days get one large blue dot (primary, selected ring), the other
    open dots go grey for the while; on wide cells its titles are blue. No new colour. */

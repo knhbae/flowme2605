@@ -68,6 +68,7 @@ import { AlphaConflictReview } from './AlphaConflictReview';
 import { AlphaCatalogPanels } from './AlphaCatalogPanels';
 import { AlphaPrivacyNotice } from './AlphaPrivacyNotice';
 import { readPrivacyContact } from '@/lib/flow/integrated-poc/privacy-notice';
+import { ProgramFlowMark, ProgramIcon } from './icons';
 import styles from './AlphaWorkspace.module.css';
 
 const SLOT_KEY = 'flow:poc:personal-workspace:v1:alpha-m3:tab';
@@ -1846,18 +1847,19 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} data-browse-layout={browse ? destination.view === 'flow' ? 'detail' : 'list' : undefined} onInput={event => { queueMicrotask(captureInput);
       // Core3 P2c: the first input into my writing closes a Flow's arrival toast.
       if (arrivalToastShown && event.target instanceof Element && event.target.closest('section[aria-label="내 공간"]')) closeArrivalToast(); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
-    <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}>FlowMe</a>
+    {/* F6-B1 (11/9): the 흐름 마크 beside the wordmark (alone on the 1280 rail), and the one icon set in the menu; Flow is the mark's wave. */}
+    <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}><ProgramFlowMark className={styles.brandMark} /><span className={styles.brandName}>FlowMe</span></a>
       {!unavailable && <nav className={styles.globalNavigation} aria-label="주요 메뉴">
-        {([['documents', '쓰기', 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4'], ['today', '오늘', 'M4 4h16v16H4zm4 8 3 3 5-6'], ['all', '폴더', 'M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z']] as const).map(([tab, label, path]) =>
+        {([['documents', '쓰기', 'write'], ['today', '오늘', 'today'], ['all', '폴더', 'folder']] as const).map(([tab, label, icon]) =>
           <button type="button" key={tab} data-main-tab={tab} aria-current={destination.view === 'space' && mainTab === tab ? 'page' : undefined} onClick={() => void chooseMainTab(tab)}>
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" d={path}/></svg><span>{label}</span></button>)}
+            <ProgramIcon name={icon} /><span>{label}</span></button>)}
         {/* UX B3 (11/7): Flow and 나 are screens like the three before them (no pointerdown hold): a press moves by
             navigate(), which ends a composition through blur and keeps its result as 쓰기 → 오늘 does. */}
         <button type="button" data-main-tab="flow" aria-current={browse ? 'page' : undefined} onClick={() => void chooseFlowTab()}>
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm3.5 5.5-2 5-5 2 2-5z"/></svg><span>Flow</span></button>
+          <ProgramIcon name="flow" /><span>Flow</span></button>
         <button type="button" ref={meTab} data-main-tab="me" aria-current={['activity', 'legacy', 'creator'].includes(destination.view) ? 'page' : undefined}
           aria-label={`나${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`} onClick={event => void chooseMeTab(event.currentTarget)}>
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7 8a7 7 0 0 1 14 0"/></svg><span>나</span>
+          <ProgramIcon name="me" /><span>나</span>
           {savedTotal > 0 && <span className={styles.navBadge} aria-hidden="true">{savedTotal}</span>}</button>
       </nav>}
       <h1 className={styles.destinationTitle}>{destination.view === 'creator' ? '제작 공간' : destination.view === 'activity' ? '나' : destination.view === 'legacy' ? '개인 Flow 상세' : destination.view === 'community' ? '이야기' : browse ? 'Flow' : '내 작업'}</h1></header>

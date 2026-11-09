@@ -48,7 +48,7 @@ test('FIG 13: the arrival notice (a new document) is the bottom toast; a target 
   assert(toast.includes('position: fixed;') && toast.includes('background: var(--flowme-b-ink); color: var(--flowme-b-on-ink); box-shadow: 0 6px 18px var(--flowme-b-toast-shadow);'));
   assert(spaceCss.includes('.space .importNotice[data-arrival-toast] > .importCalendar { background: var(--flowme-b-on-ink); color: var(--flowme-b-primary); }'));
   assert(!spaceCss.split('\n').filter(line => line.includes('[data-arrival-toast]')).some(line => /#[0-9a-f]{3,6}|rgba?\(/i.test(line)));
-  assert(spaceCss.includes('bottom: calc(60px + env(safe-area-inset-bottom) + 12px); } }'));
+  assert(spaceCss.includes('bottom: calc(68px + env(safe-area-inset-bottom) + 12px); } }')); // F6-B1: above the 68px tabs
   assert(spaceCss.includes(':global([data-writing-keyboard="true"]) .space .importNotice[data-arrival-toast] { display: none; }'));
 });
 

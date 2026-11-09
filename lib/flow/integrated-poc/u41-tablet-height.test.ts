@@ -19,7 +19,7 @@ test('U41: the writing screen of a tablet held sideways keeps thin paddings, so 
 });
 
 test('U41 review: the root\'s canvas has the same reach as the paddings (that width, the writing screen only)', () => {
-  assert(tablet.includes(':global(html):has(.page[data-alpha-frame="b"][data-note-layout="true"] [data-program-period="documents"][aria-current="page"]) { background: var(--flowme-b-canvas); }'));
+  assert(tablet.includes(':global(html):has(.page[data-alpha-frame="b"][data-note-layout="true"] [data-program-period="documents"][aria-current="page"]) { background: var(--flowme-b-paper); }')); // F6-B1: the page's paper
   // Nothing else in that block, and no root background anywhere else in the file: 오늘·분류·더보기, phones and wide
   // screens keep theirs.
   assert.equal(tablet.split('\n').filter(line => line.startsWith('  ')).length, 3);

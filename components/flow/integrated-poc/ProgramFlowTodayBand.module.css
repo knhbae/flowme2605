@@ -7,7 +7,7 @@
 .heading { margin: 0; font: inherit; }
 .band .head { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; min-height: 44px; margin: 0; padding: 0 4px 0 8px; border: 0; border-radius: 10px; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
 .label { flex: none; font-size: 14px; line-height: 20px; font-weight: 700; color: var(--flowme-b-muted); }
-.count { flex: none; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--flowme-b-selected); color: var(--flowme-b-primary); font-size: 12px; font-weight: 700; line-height: 20px; text-align: center; }
+.count { flex: none; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--flowme-b-selected); color: var(--flowme-b-primary); font-size: 13px; font-weight: 700; line-height: 20px; text-align: center; }
 .summary { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; line-height: 20px; color: var(--flowme-b-ink); }
 .chevron { flex: none; display: inline-flex; align-items: center; justify-content: center; margin-left: auto; width: 28px; height: 28px; color: var(--flowme-b-muted); }
 .chevron svg { width: 18px; height: 18px; }
@@ -23,7 +23,7 @@
 .check > span[data-check="done"]::after { content: ""; position: absolute; left: 5.5px; top: 2px; width: 5px; height: 10px; border: solid var(--flowme-b-muted); border-width: 0 2px 2px 0; transform: rotate(45deg); }
 .check > span[data-check="busy"] { border-style: dashed; border-color: var(--flowme-b-primary); }
 .title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; line-height: 20px; }
-.chip { display: inline-block; vertical-align: 1px; height: 18px; margin-inline-start: 6px; padding: 0 6px; border-radius: 9px; background: var(--flowme-b-canvas); color: var(--flowme-b-muted); font-size: 12px; font-weight: 600; line-height: 18px; white-space: nowrap; }
+.chip { display: inline-block; vertical-align: 1px; height: 18px; margin-inline-start: 6px; padding: 0 6px; border-radius: 9px; background: var(--flowme-b-canvas); color: var(--flowme-b-muted); font-size: 13px; font-weight: 600; line-height: 18px; white-space: nowrap; }
 .band .flow { max-width: 9em; min-height: 44px; height: 44px; margin: 0; padding: 0 4px 0 8px; border: 0; background: transparent; color: var(--flowme-b-muted); font-size: 13px; line-height: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
 .failed { grid-column: 2 / -1; margin: 0 0 6px; font-size: 13px; line-height: 18px; color: var(--flowme-b-error-ink); }
 .band .more { display: block; min-height: 40px; margin: 0; padding: 0 0 0 40px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }

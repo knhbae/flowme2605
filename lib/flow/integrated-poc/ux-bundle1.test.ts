@@ -16,7 +16,8 @@ test('A1·A2: no development wording on the sign-in screen, the workspace or the
   assert.equal(DEV_NOTICE_TEXT, '공개한 Flow와 글은 로그인한 다른 사용자도 봅니다. 내 문서와 할 일은 나만 봅니다.');
   assert.equal(DEV_NOTICE_VERSION, '2026-10-31', 'the acknowledgement key stays, so the notice does not show again');
   const signIn = component('AlphaAuthPanel.tsx');
-  assert(signIn.includes('<p>할 일과 메모를 한곳에 쓰고, 다른 사람의 Flow를 내 계획으로 가져옵니다.</p>'));
+  // F6-B1 (방향 B): the sign-in says it in one sentence on navy, above the form (the page's description stays below).
+  assert(signIn.includes('<p className={styles.tagline}>해 본 사람의 계획을<br /><span>내 일정으로.</span></p>'));
   assert(signIn.includes('<h1 id="alpha-heading">지금은 로그인할 수 없습니다</h1><p>잠시 뒤 다시 시도해 주세요.</p>'));
   assert(signIn.includes("return '지금 이메일을 보낼 수 없습니다. 잠시 뒤 다시 시도해 주세요.';"));
   assert(signIn.includes('<h2>처음 오셨네요</h2><p>빈 공간을 만들고 시작합니다.</p>'));
@@ -52,7 +53,7 @@ test('B2·B3·B4·C1·C2·C3·C6·B9: the layout fixes are CSS on the screens na
   assert(!detail.includes('{longSummary && <button'), 'PC also shows 더 보기 only when the summary is cut');
   assert(!detail.includes('출처 확인 기록'));
   const workspaceCss = read('components/flow/integrated-poc/AlphaWorkspace.module.css');
-  assert(workspaceCss.includes('@media (max-width: 700px) { .triedPrompt { top: auto; bottom: calc(60px + env(safe-area-inset-bottom) + 12px);'));
+  assert(workspaceCss.includes('@media (max-width: 700px) { .triedPrompt { top: auto; bottom: calc(68px + env(safe-area-inset-bottom) + 12px);')); // F6-B1: 68px tabs
   assert(workspaceCss.includes('.recoveryBox > summary::-webkit-details-marker { display: none; }'));
   assert(read('components/flow/integrated-poc/ProgramSpace.module.css').includes('@media (max-width: 700px) { .space[data-note-layout="true"] .notePeriodTitle h1 { font-size: 20px; line-height: 28px; } }'));
   const editorCss = read('components/flow/integrated-poc/ProgramTextEditor.module.css');
