@@ -55,12 +55,13 @@ test('no green or warm literal is left in the publisher, conflict review and rec
   for (const name of W9A) {
     const css = read(name), literals = [...css.matchAll(/#([0-9a-fA-F]{3,8})\b/g)].map(match => `#${match[1].toLowerCase()}`);
     assert.deepEqual(literals.filter(value => greenish(rgb(value))), [], name);
-    assert.deepEqual([...new Set(literals)], ['#fff'], `${name}: only white is left as a literal`);
+    assert.deepEqual([...new Set(literals)], name === 'ProgramPublisher.module.css' ? [] : ['#fff'], `${name}: colors use tokens, except existing white`);
     assert.deepEqual([...css.matchAll(/rgba?\(/g)], [], name);
   }
   for (const name of MEANING) assert(token(name), name);
-  assert(read('ProgramPublisher.module.css').includes('.error{background:var(--flowme-b-error-bg);border-left:3px solid var(--flowme-b-error-border);color:var(--flowme-b-error-ink);'));
-  assert(read('ProgramPublisher.module.css').includes('.warning{margin:16px 26px;padding:14px;border-radius:8px;background:var(--flowme-b-warning-bg);color:var(--flowme-b-warning-ink)}'));
+  const publisher = read('ProgramPublisher.module.css');
+  assert.match(publisher, /\.error\{[^}]*border-left:3px solid var\(--flowme-b-error-border\);[^}]*background:var\(--flowme-b-error-bg\);[^}]*color:var\(--flowme-b-error-ink\)/);
+  assert.match(publisher, /\.warning\{[^}]*background:var\(--flowme-b-warning-bg\);[^}]*color:var\(--flowme-b-warning-ink\)/);
   const recurrence = read('ProgramRecurrence.module.css');
   assert(recurrence.includes('.error { color: var(--flowme-b-error-ink); }'));
   assert(recurrence.includes('border: 1px solid var(--flowme-b-control); border-radius: 7px;'), 'the recurrence fields keep a 3:1 boundary');
