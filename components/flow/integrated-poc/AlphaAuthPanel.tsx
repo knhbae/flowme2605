@@ -5,6 +5,7 @@ import type { SupabaseClient, Session } from '@supabase/supabase-js';
 import { ALPHA_AUTH_STORAGE_KEY, readAlphaCallback, type AlphaAuthConfig } from '@/lib/flow/integrated-poc/alpha-auth/config';
 import { getAlphaBrowserClient } from '@/lib/flow/integrated-poc/alpha-auth/browser-client';
 import { isConfirmedAlphaLogout } from '@/lib/flow/integrated-poc/alpha-auth/logout';
+import { clearAlphaLogoutViewStorage, type AlphaLogoutViewOwner } from '@/lib/flow/integrated-poc/alpha-auth/logout-view-storage';
 import { updateAlphaRecoveryPassword } from '@/lib/flow/integrated-poc/alpha-auth/recovery-password';
 import { createAlphaAccountAccess, createAlphaSessionBoundary, type AlphaSessionView, type VerifiedAlphaSession } from '@/lib/flow/integrated-poc/alpha-auth/account-access';
 import styles from './AlphaAuthPanel.module.css';
@@ -62,6 +63,7 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
   const callbackAttempt = useRef<Promise<CallbackOutcome> | null>(null);
   const callbackRecoveryToken = useRef<string | null>(null);
   const logoutToken = useRef<string | null>(null);
+  const logoutViewOwner = useRef<AlphaLogoutViewOwner | null>(null);
   const legacyTransport=useMemo(()=>config&&workspaceSession&&writing
     ?createAlphaLegacyWritingTransport(config,workspaceSession,writing.request):null,[config,workspaceSession?.userId,workspaceSession?.accessToken,writing?.request]);
 
@@ -212,12 +214,22 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
   }
   async function signOut() {
     if (!client.current || busy) return;
+    // Capture before bind(null) hides the account. Keep this owner across a failed revocation/cleanup retry.
+    const ownerId = acceptedOwner.current ?? acceptedSession.current?.userId ?? workspaceSession?.userId;
+    if (!logoutViewOwner.current && ownerId) {
+      const account = boundary.current?.snapshot().account;
+      logoutViewOwner.current = { ownerId, documentIds: account?.ownerId === ownerId
+        ? [...account.space.text.documents, ...account.space.text.flows].map(document => document.id) : [] };
+    }
     epoch.current++; suppressSession.current = true; setBusy(true); setLogoutPending(true); setMessage('');
     setPassword(''); setConfirm(''); setAccountEmail(''); setWorkspaceSession(null); setWorkspaceOwner(null); boundary.current?.bind(null, null);
     let durableMarker = false;
     try { localStorage.setItem(logoutKey, '1'); durableMarker = true; } catch { /* Still attempt server revocation. */ }
     try {
       const stored = await client.current.auth.getSession();
+      // After a reload with logout-pending, only the retained SDK session can identify the retrying owner.
+      if (!logoutViewOwner.current && stored.data.session && !stored.data.session.user.is_anonymous)
+        logoutViewOwner.current = { ownerId: stored.data.session.user.id, documentIds: [] };
       const tokenToRevoke = stored.data.session?.access_token ?? logoutToken.current;
       if (tokenToRevoke && config) {
         // Revoke before SDK cleanup: this SDK also drops its local session on
@@ -228,7 +240,11 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
           cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(15_000) });
         if (!await isConfirmedAlphaLogout(revoked)) { setMessage('로그아웃을 서버에서 확인하지 못했습니다. 개인 자료는 숨겼습니다. 다시 시도해 주세요.'); return; }
       }
-      // Server revocation is confirmed above. Remove only the active persisted
+      // Keep the closed marker and retry owner/session until view cleanup is confirmed, including after reload.
+      if (!clearAlphaLogoutViewStorage(localStorage, logoutViewOwner.current)) {
+        setMessage('이 기기의 보기 설정을 지우지 못했습니다. 개인 자료는 숨겼습니다. 로그아웃을 다시 시도해 주세요.'); return;
+      }
+      // Server revocation and view cleanup are confirmed above. Remove only the active persisted
       // session before SDK cleanup, so it broadcasts SIGNED_OUT without sending
       // the already-revoked token a second time (the real server returns 403).
       // A storage failure keeps the closed marker and follows the retry path.
@@ -237,6 +253,7 @@ export function AlphaAuthPanel({ config, callback = false, writing, appWriting=f
       if (!mounted.current) return;
       if (result.error) { setMessage('로그아웃을 서버에서 확인하지 못했습니다. 개인 자료는 숨겼습니다. 다시 시도해 주세요.'); return; }
       localStorage.removeItem(recoveryKey); localStorage.removeItem(logoutKey);
+      logoutViewOwner.current = null;
       acceptedOwner.current = null; recoveringOwner.current = null;
       logoutToken.current = null;
       suppressSession.current = false; setLogoutPending(false); setMode('login'); setMessage('로그아웃했습니다.');

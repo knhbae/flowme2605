@@ -53,6 +53,21 @@ test('the Flows made from a link: the Flow\'s own source first, then an item\'s;
   assert.deepEqual(programFlowsByLink(data, 'http://localhost/moving-checklist'), []);
 });
 
+test('a scheme-less video link is searched, kept, and compared as the same safe https address', () => {
+  for (const link of ['youtube.com/watch?v=AbC123', 'm.youtube.com/shorts/AbC123', 'youtu.be/AbC123']) {
+    assert.equal(programLooksLikeLink(link), true);
+    assert.equal(programLinkKey(link), programLinkKey('https://www.youtube.com/watch?v=AbC123'));
+    assert.deepEqual(programFlowsByLink(catalog(), link).map(row => row.flow.id), ['video']);
+    assert.equal(programLinkMemoRaw('', TODAY, link), `[${TODAY}]\n- ${programCanonicalLink(link)}`);
+  }
+  assert.equal(programCanonicalLink('  YOUTUBE.COM/watch?v=AbC123  '), 'https://youtube.com/watch?v=AbC123');
+  for (const text of ['youtube.com.example.com/watch?v=AbC123', 'youtube.com@localhost/watch', 'youtube.com 영상', 'javascript:youtube.com']) {
+    assert.equal(programLooksLikeLink(text), false);
+    assert.equal(programCanonicalLink(text), null);
+  }
+  assert.equal(programCanonicalLink('youtube.com/watch?token=private'), null, 'adding a scheme does not bypass the safe-link gate');
+});
+
 test('[내 글에 링크로 두기]: under today\'s head (at its end), or a new head for today where no line moves', () => {
   assert.equal(programLinkMemoRaw('[2026-11-08]\n- [ ] 장보기\n\n[2026-11-07]\n- 어제', TODAY, 'https://www.example.com/a/'),
     '[2026-11-08]\n- [ ] 장보기\n- https://www.example.com/a\n\n[2026-11-07]\n- 어제');
