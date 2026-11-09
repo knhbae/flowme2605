@@ -81,6 +81,13 @@ test('the sign-in uses the app tokens only: navy top with the mark, one sentence
   assert(tsx.includes('const LOGIN_THREAD = <div className={styles.thread} aria-hidden="true">'));
 });
 
+test('UX FIX 1: Flow 찾기\'s search field has the 찾기 icon at its start and muted hint words', () => {
+  const css = component('ProgramDiscovery.module.css');
+  assert(css.includes('.page input::placeholder{color:var(--flowme-b-muted);opacity:1}'));
+  const rule = css.slice(css.lastIndexOf('.searchField input{padding-left:44px;'));
+  assert(rule.includes("stroke='%23857f72'") && rule.includes("%3Ccircle cx='11' cy='11' r='6'/%3E%3Cpath d='M19.5 19.5l-4-4'/%3E") && rule.includes('no-repeat 14px center/20px 20px}'));
+});
+
 test('app icon: the teal 흐름 마크 on navy (the favicon and the four PNGs), the manifest and status bar colors', () => {
   const svg = read('app/icon.svg');
   assert(svg.includes('fill="#1c2550"') && svg.includes('stroke="#8fdccf"') && svg.includes('M5.5 16.5c3.2 0 3.3-9 6.5-9s3.3 9 6.5 9'));
