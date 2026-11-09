@@ -42,7 +42,13 @@ export function programPublicationSavedSourceDates(draft: ProgramPublicationDraf
   try {
     const document = JSON.parse(draft.sourceDocumentFingerprint);
     if (document?.id !== draft.documentId || !Array.isArray(document.lines)) return new Map<string, string>();
-    return programPublicationRowDates({ ...text, documents: [document] }, draft.documentId);
+    if (![...text.documents, ...text.flows].some(current => current.id === document.id)) return new Map<string, string>();
+    // rowMeta validates workspace-wide bindings and scope sidecars first. Keep
+    // every other owner, replacing only this document's saved source snapshot.
+    return programPublicationRowDates({ ...text,
+      documents: text.documents.map(current => current.id === document.id ? document : current),
+      flows: text.flows.map(current => current.id === document.id ? document : current),
+    }, draft.documentId);
   } catch { return new Map<string, string>(); }
 }
 

@@ -98,11 +98,11 @@ test('FC5 review 3: the link, the waiting state and a late answer belong to the 
   assert(button.includes('if (shown.current !== started) return;'));
 });
 
-test('three places, the same button: Flow detail ⋯, the publish panel, 내 활동 › 내 공개 Flow; never for an archived Flow', () => {
+test('three places, the same button: Flow detail ⋯, the publish panel, 내 공개 Flow › 관리; never for an archived Flow', () => {
   const read = (file: string) => readFileSync(new URL(`../../../components/flow/integrated-poc/${file}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
-  const discovery = read('ProgramDiscovery.tsx'), community = read('ProgramCommunity.tsx'), publisher = read('ProgramPublisher.tsx'), button = read('ProgramShareLink.tsx');
+  const discovery = read('ProgramDiscovery.tsx'), management = read('ProgramPublicationManagement.tsx'), publisher = read('ProgramPublisher.tsx'), button = read('ProgramShareLink.tsx');
   assert(discovery.includes("{!flow.archived && <ProgramShareLink flowId={flow.id} versionId={version.id} unverified={flow.id.startsWith('catalog-')} />}"));
-  assert(community.includes('{!flow.archived && <ProgramShareLink flowId={flow.id} versionId={flow.versionId} />}'));
+  assert(management.includes('{!flow.archived && <ProgramShareLink flowId={flow.id} versionId={version.id} />}'));
   // Account and local publishes keep the same completion panel and exact-version link.
   assert.match(publisher, /if \(flowId\) \{ setPublished\(\{ flowId, versionId: result\.result,/);
   const panel = publisher.slice(publisher.indexOf('if (published) return <dialog'), publisher.indexOf('  return <dialog ref={dialog} className={styles.dialog}'));
@@ -114,7 +114,7 @@ test('three places, the same button: Flow detail ⋯, the publish panel, 내 활
 
 test('C9 × FC5: a republish shows C9 panel with the new Flow link; other account publishes show FC5 panel; 내 공개 Flow keeps both', () => {
   const read = (file: string) => readFileSync(new URL(`../../../components/flow/integrated-poc/${file}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
-  const publisher = read('ProgramPublisher.tsx'), community = read('ProgramCommunity.tsx');
+  const publisher = read('ProgramPublisher.tsx'), community = read('ProgramCommunity.tsx'), management = read('ProgramPublicationManagement.tsx');
   // The republish branch comes first and returns before FC5's panel.
   const done = publisher.slice(publisher.indexOf('if (republishing) {\n        const flowId'), publisher.indexOf("} catch { setMessage('공개 결과를 확인하지 못했습니다."));
   assert(done.indexOf('setRepublished({ flowId, versionId: result.result }); setMessage(\'\'); return;') >= 0);
@@ -123,8 +123,9 @@ test('C9 × FC5: a republish shows C9 panel with the new Flow link; other accoun
   const panel = publisher.slice(publisher.indexOf('{republished ? <section'), publisher.indexOf('새 공개 Flow 열기</button></section>'));
   assert(panel.includes('새 링크로 버전 1을 공개했습니다. 예전 Flow는 철회된 그대로입니다.'));
   assert(panel.includes('<ProgramShareLink flowId={republished.flowId} versionId={republished.versionId} />'));
-  // 내 공개 Flow: C9's row (철회됨, 새 링크로 다시 공개…) with FC5's link only while the Flow is live.
-  const row = community.slice(community.indexOf('<section><h2>내 공개 Flow</h2>'), community.indexOf('<section><h2>작성 중인 공개 초안</h2>'));
-  assert(row.includes("{flow.archived ? '공개 철회됨' : '공개 중'}") && row.includes("'새 링크로 다시 공개…'"));
-  assert(row.indexOf('{!flow.archived && <ProgramShareLink flowId={flow.id} versionId={flow.versionId} />}') > row.indexOf('</button>'));
+  // Rows keep both old and new Flows. C9's action and FC5's exact-version link now live in their shared management view.
+  assert(community.includes("flow.archived ? '공개 철회됨' : '공개 중'"));
+  assert(community.includes('onClick={() => void openManagement(flow.id)}'));
+  assert(management.includes('새 링크로 다시 공개'));
+  assert(management.includes('{!flow.archived && <ProgramShareLink flowId={flow.id} versionId={version.id} />}'));
 });

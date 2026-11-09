@@ -67,7 +67,7 @@ test('B7·C5: 내 활동 starts with its title; a today row is read as it shows'
   // Core3 P3 (FIG 14): 나's head is its title alone (글 쓰기 under 내가 쓴 글); the 복구함 line follows it.
   assert(community.includes("{view !== 'activity' && writePost}</header>\n    {view === 'activity' && activityTabs}"));
   assert(community.includes('<div className={styles.actions}>{writePost}</div>'));
-  assert(community.includes('<p className={styles.meta}>이 Flow와 연결된 내 문서가 없습니다.</p>'));
+  assert(component('ProgramPublicationManagement.tsx').includes("!document ? '이 Flow와 연결된 내 문서가 없습니다.'"), 'missing source feedback follows the Flow into its shared management view');
   const space = component('ProgramSpace.tsx');
   assert(space.includes("${origin.label !== '직접 작성' ? ` · ${origin.label}` : ''} · ${task.docTitle} 원문 열기"));
   assert(space.includes('`반복 ${repeatShown.marker.label}`'));

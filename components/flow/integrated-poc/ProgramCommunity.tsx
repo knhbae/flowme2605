@@ -10,12 +10,14 @@ import { programSame } from '../../../lib/flow/integrated-poc/controller';
 import { ProgramProposalReview } from './ProgramProposalReview';
 import { ProgramCommunityImage } from './ProgramCommunityImage';
 import type { ProgramCommunityMediaPort } from '../../../lib/flow/integrated-poc/community-media';
-import { ProgramShareLink } from './ProgramShareLink';
+import { ProgramPublicationManagement } from './ProgramPublicationManagement';
+import { ProgramPublisher } from './ProgramPublisher';
 import styles from './ProgramCommunity.module.css';
 import { emptyProgramCommunityPresentation, type ProgramCommunityPresentation } from '../../../lib/flow/integrated-poc/navigation';
 import { programReviewPublicRelationValid, type ProgramReviewEntry } from '../../../lib/flow/integrated-poc/review-return';
 import { PROGRAM_TRIED_NOTE, programFlowReviews } from '../../../lib/flow/integrated-poc/flow-loop';
-import { createProgramRepublishDraft, publicationDraftAt, saveProgramPublicationDraft } from '../../../lib/flow/integrated-poc/publication-editor';
+import { publicationDraftAt } from '../../../lib/flow/integrated-poc/publication-editor';
+import { programPublicationDocumentEntry, type ProgramPublicationEditMode } from '../../../lib/flow/integrated-poc/publication-management';
 
 export type ProgramCommunityProps = {
   data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate;
@@ -66,8 +68,14 @@ function postTitle(data: ProgramData, id: string) { return data.public.posts.fin
 export function ProgramCommunity(props: ProgramCommunityProps) {
   return <CommunityBody key={props.data.activeActorId} {...props} />;
 }
-function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedReplyId, onRegisterEditors, presentation, onPresentationChange, storageScope = 'local', mediaPort, resolveDraftSaveError, resolveDraftSaveRecovery, draftSaveRecovery, reviewEntry, captureReviewVisit, activityTabs, reviewAnnouncement, onReviewPublished, onRegisterReviewResult, reviewReturnPostId, onReturnReview }: ProgramCommunityProps) {
+function CommunityBody({ data, mutate, navigate, view, selectedPostId: requestedPostId, selectedReplyId, today, onRegisterEditors, presentation, onPresentationChange, storageScope = 'local', mediaPort, resolveDraftSaveError, resolveDraftSaveRecovery, draftSaveRecovery, reviewEntry, captureReviewVisit, activityTabs, reviewAnnouncement, onReviewPublished, onRegisterReviewResult, reviewReturnPostId, onReturnReview }: ProgramCommunityProps) {
   const actorId = data.activeActorId;
+  const dataRef = useRef(data); dataRef.current = data;
+  const activityFlowId = view === 'activity' && data.public.flows.some(flow => flow.id === requestedPostId && flow.ownerId === actorId) ? requestedPostId : undefined;
+  const selectedPostId = activityFlowId ? undefined : requestedPostId;
+  const [managedFlowId, setManagedFlowId] = useState<string | null>(activityFlowId ?? null);
+  const [publicationEditing, setPublicationEditing] = useState<{ documentId: string; mode: ProgramPublicationEditMode } | null>(null);
+  useEffect(() => { if (activityFlowId) setManagedFlowId(activityFlowId); }, [activityFlowId]);
   const [localPresentation, setLocalPresentation] = useState(emptyProgramCommunityPresentation);
   const currentPresentation = presentation ?? localPresentation, { query, kind } = currentPresentation;
   const changePresentation = (patch: Partial<ProgramCommunityPresentation>) => { const next = { ...currentPresentation, ...patch }; setLocalPresentation(next); onPresentationChange?.(next); };
@@ -263,20 +271,29 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
   async function go(destination: Parameters<ProgramNavigate>[0]) {
     if (await queue.current) navigate(destination);
   }
-  const hasActivePublication = (documentId: string) => data.spaces[actorId]?.publications.some(link => link.documentId === documentId
-    && data.public.flows.some(flow => flow.id === link.flowId && flow.ownerId === actorId && !flow.archived));
-  async function startRepublish(documentId: string, flowId: string) {
-    if (draftEntryDisabled || !await queue.current) return;
-    const expected = publicationDraftAt(data, actorId, documentId);
-    const next = createProgramRepublishDraft(data, documentId, flowId, utcNow());
-    if (!next) { setError('이 문서의 공개 연결이나 초안이 바뀌었습니다. 현재 상태를 다시 확인해 주세요.'); return; }
-    setBusy(true);
+  async function preparePublicationEntry() {
+    if (busy || readingMedia || lockCount.current || composing.current || mediaPending.current) return false;
+    lockCount.current++; setLocked(true);
     try {
-      const result = await guardedMutation(mutate, '새 링크 공개 초안 준비', current => saveProgramPublicationDraft(current, actorId, next, expected),
-        { history: false, alphaSocial: { type: 'publication-save', draft: next, expected } });
-      if (!result.ok) { setError(programErrorMessage(result.reason)); return; }
-      await go({ view: 'space', id: documentId, action: 'publish' });
-    } finally { setBusy(false); }
+      if (!await flushCurrentDraft()) return false;
+      for (const port of reviewPorts.current.values()) if (!await port.flushAll()) return false;
+      if (!mounted.current || dataRef.current.activeActorId !== actorId || hasPendingInput()) return false;
+      // Park only after confirmed saves. The persisted participation draft is never discarded here.
+      draftRef.current = null; savedDraftRef.current = null; setDraft(null); setPreview(false); return true;
+    } catch { setError('작성 중인 내용을 저장하지 못했습니다. 입력을 확인한 뒤 다시 열어 주세요.'); return false; }
+    finally { lockCount.current--; setLocked(lockCount.current > 0); }
+  }
+  async function openManagement(flowId: string) {
+    if (!await preparePublicationEntry()) return;
+    if (!dataRef.current.public.flows.some(flow => flow.id === flowId && flow.ownerId === actorId)) return;
+    setManagedFlowId(flowId); setError('');
+  }
+  async function openPublication(documentId: string, mode: ProgramPublicationEditMode, prepared = false): Promise<boolean> {
+    if (!prepared && !await preparePublicationEntry()) return false;
+    if (!mounted.current || dataRef.current.activeActorId !== actorId) return false;
+    const entry = programPublicationDocumentEntry(dataRef.current, documentId);
+    if (!entry || mode === 'resume' && !publicationDraftAt(dataRef.current, actorId, documentId)) return false;
+    setPublicationEditing({ documentId, mode }); setError(''); return true;
   }
   const openPost = (id: string) => void go({ view: 'community', id });
   const openReply = (postId: string, replyId: string) => {
@@ -435,6 +452,10 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
     received: flowReviews.posts.length + activity.receivedReplies.length + activity.incomingProposals.length, sent: sentProposals.length,
     posts: activity.posts.length + activity.replies.length };
   return <section className={styles.community} aria-label={view === 'activity' ? '내 활동' : '이야기'}>
+    <div hidden={!!publicationEditing}>
+    {view === 'activity' && managedFlowId ? <ProgramPublicationManagement data={data} flowId={managedFlowId} mutate={mutate} navigate={navigate}
+      disabled={draftEntryDisabled} onBeforeAction={preparePublicationEntry} onEdit={(documentId, mode) => openPublication(documentId, mode, true)}
+      onBack={() => { setManagedFlowId(null); if (activityFlowId) navigate({ view: 'activity' }); }} /> : <>
     {/* Core3 P3 (FIG 14): 나's head is its title alone; its 글 쓰기 is under 내가 쓴 글. */}
     <header className={styles.header}><h1>{view === 'activity' ? '나' : '이야기'}</h1>{view !== 'activity' && writePost}</header>
     {view === 'activity' && activityTabs}
@@ -540,13 +561,12 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
       <div hidden={view !== 'activity' || !!selectedPostId} className={styles.activity}>
         <p className={styles.activityLabel}>내 활동</p>
         <details className={styles.activityGroup} data-activity-group="flows"><summary>내 공개 Flow<small>{activityCounts.flows}개{activityCounts.drafts ? ` · 초안 ${activityCounts.drafts}` : ''}</small></summary>
-        <section><h2>내 공개 Flow</h2>{publishingActivity.flows.length ? <ul className={styles.list}>{publishingActivity.flows.map(flow => <li key={flow.id}>
-          <button className={styles.rowLink} type="button" onClick={() => void go({ view: 'flow', id: flow.id, versionId: flow.versionId })}><strong>{flow.title}</strong><span>버전 {flow.number} · {flow.archived ? '공개 철회됨' : '공개 중'}{flowReviews.byFlow[flow.id] ? ` · 후기 ${flowReviews.byFlow[flow.id]}` : ''}</span></button>
-          {!flow.archived && <ProgramShareLink flowId={flow.id} versionId={flow.versionId} />}
-          {flow.documents.length ? flow.documents.map(doc => <div className={styles.actions} key={doc.id}><button type="button" onClick={() => void go({ view: 'space', id: doc.id })}>{doc.archived ? '보관한 원문 열기 · 복원 후 이어 쓰기' : `개인 원문 · ${doc.title}`}</button>{!doc.archived && (flow.archived && hasActivePublication(doc.id) ? <small>이 문서는 새 링크로 공개 중입니다</small> : doc.canEditPublication ? <button type="button" disabled={draftEntryDisabled} onClick={() => flow.archived ? void startRepublish(doc.id, flow.id) : void go({ view: 'space', id: doc.id, action: 'publish' })}>{flow.archived ? '새 링크로 다시 공개…' : '공개 내용 편집'}</button> : <small>이 문서의 공개 편집은 다른 초안에 연결되어 있습니다.</small>)}</div>) : <p className={styles.meta}>이 Flow와 연결된 내 문서가 없습니다.</p>}
+        <section><h2 className={styles.srOnly}>내 공개 Flow</h2>{publishingActivity.flows.length ? <ul className={styles.list}>{publishingActivity.flows.map(flow => <li key={flow.id}>
+          <button className={styles.publicationRow} type="button" disabled={draftEntryDisabled} data-publication-row={flow.id} onClick={() => void openManagement(flow.id)}><span><strong>{flow.title}</strong><small>{flow.archived ? '공개 철회됨' : '공개 중'} · 버전 {flow.number} · 후기 {flowReviews.byFlow[flow.id] ?? 0}</small></span><span aria-hidden="true">›</span></button>
         </li>)}</ul> : <p className={styles.empty}>공개한 Flow가 없어요.</p>}</section>
-        <section><h2>작성 중인 공개 초안</h2>{publishingActivity.drafts.length ? <ul className={styles.list}>{publishingActivity.drafts.map(entry => <li key={entry.id}><strong>{entry.title || entry.document?.title || '제목 없는 공개 초안'}</strong><p className={styles.meta}>{stamp(entry.updatedAt)}{entry.flowArchived ? ' · 다시 공개 준비 중' : ''}</p>
-          {entry.document ? <button type="button" onClick={() => void go({ view: 'space', id: entry.document!.id, ...(!entry.document!.archived ? { action: 'publish' as const } : {}) })}>{entry.document.archived ? '보관한 원문 열기 · 복원 후 이어 쓰기' : '공개 초안 이어 쓰기'}</button> : <p>원래 문서를 찾을 수 없어 편집을 열 수 없습니다.</p>}
+        <section><h2 className={styles.srOnly}>작성 중인 공개 초안</h2>{publishingActivity.drafts.length ? <ul className={styles.list}>{publishingActivity.drafts.map(entry => <li key={entry.id}>
+          <button type="button" className={styles.publicationRow} disabled={draftEntryDisabled || !entry.document} data-publication-draft={entry.id} onClick={() => { if (entry.document?.archived) { const id = entry.document.id; void preparePublicationEntry().then(ready => { if (ready) navigate({ view: 'space', id }); }); } else if (entry.document) void openPublication(entry.document.id, 'resume'); }}><span><strong>{entry.title || entry.document?.title || '제목 없는 공개 초안'}</strong><small>작성 중 초안 · {stamp(entry.updatedAt)} 저장{entry.flowArchived ? ' · 다시 공개 준비 중' : ''}</small></span><span>{entry.document?.archived ? '원문 복원 ›' : '이어서 ›'}</span></button>
+          {!entry.document && <p className={styles.meta}>원래 문서를 찾을 수 없어 편집을 열 수 없습니다.</p>}
         </li>)}</ul> : <p className={styles.empty}>작성 중인 공개 초안이 없어요.</p>}</section></details>
         <details className={styles.activityGroup} data-activity-group="received"><summary>받은 후기·반응<small>{activityCounts.received}개</small></summary>
         <section><h2>내게 온 답글</h2>{replyRows(activity.receivedReplies)}</section>
@@ -565,5 +585,12 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
       </div>
       {!selectedPostId && view !== 'activity' && <><div className={styles.filters}><label>이야기 검색<input type="search" value={query} onChange={event => setQuery(event.target.value)} /></label><label>종류<select value={kind} onChange={event => setKind(event.target.value)}><option value="all">모든 글</option><option value="question">질문</option><option value="experience">경험</option><option value="knowledge">지식</option></select></label></div>
         {posts.length ? postRows(posts) : <p className={styles.empty}>{query || kind !== 'all' ? '조건에 맞는 글이 없어요.' : '첫 질문이나 경험을 남겨 보세요.'}</p>}</>}
+    </>}
+    </div>
+    {publicationEditing && <ProgramPublisher key={`${actorId}:${publicationEditing.documentId}`} data={data} mutate={mutate} navigate={navigate} today={today}
+      documentId={publicationEditing.documentId} storageScope={storageScope} readCurrentData={() => dataRef.current} embedded
+      initialStep={publicationEditing.mode === 'resume' ? 'refine' : 'pick'} onClose={() => setPublicationEditing(null)}
+      onManage={flowId => { setPublicationEditing(null); setManagedFlowId(flowId); }}
+      onRegisterEditors={port => { const key = `publication:${publicationEditing.documentId}`; if (port) reviewPorts.current.set(key, port); else reviewPorts.current.delete(key); }} />}
   </section>;
 }
