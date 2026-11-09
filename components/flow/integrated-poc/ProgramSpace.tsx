@@ -41,6 +41,7 @@ import folderStyles from './ProgramFolderScreen.module.css';
 import { programFolderAncestry, programFolderTaskGroups, programFolderTree, programFolderWritingDocuments, programTaskFolderId, PROGRAM_FOLDER_TASK_GROUPS,
   type ProgramFolderTaskGroupKey } from '@/lib/flow/integrated-poc/folder-screen';
 import { addProgramFolderTodayTask, programFolderTodayPlace, programFolderTodayUndo, undoProgramFolderTodayTask, type ProgramFolderTodayUndo } from '@/lib/flow/integrated-poc/folder-today-add';
+import { programPublicationDocumentEntry } from '@/lib/flow/integrated-poc/publication-management';
 import { ProgramFolderTodayAdd } from './ProgramFolderTodayAdd';
 import { ProgramIcon } from './icons';
 import { mergeProgramTextWorkspace } from '@/lib/flow/integrated-poc/text-merge';
@@ -148,7 +149,8 @@ export type ProgramSpaceProps = {
   /** C6a: the host's own operation runs (its undo/redo, a recheck, a read): 고르기 waits for it. */
   hostBusy?: () => boolean;
   outputReturn?: ProgramDestination;
-  onPublishDocument?: (documentId: string) => void;
+  /** int4 (F5-b): `step` is where the publish steps open ('refine' resumes a draft). */
+  onPublishDocument?: (documentId: string, step?: 'pick' | 'refine') => void;
   onInspectCopy?: (copyId: string) => void;
   onOpenCopySource?: (flowId: string, documentId: string, returnFocus?: HTMLElement) => void;
   onBrowseFlows?: (documentId?: string, returnFocus?: HTMLElement, writing?: ProgramWritingReturn) => void;
@@ -2581,6 +2583,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
 
   // W6: the writing example is offered in the empty document's ＋ menu, not in the editor's 도구.
   const writingExampleReady = !!selectedDoc && programDocumentContentLock(space, selectedDoc.id) === 'active' && !M.raw(selectedDoc).trim();
+  const publicationEntry = selectedDoc && props.capabilities?.publication !== false && props.onPublishDocument ? programPublicationDocumentEntry(data, selectedDoc.id) : null;
   const selectedDocumentTools = selectedDoc && !retentionSource && !selectedTrashed && <details key={selectedDoc.id} ref={documentMenu} onToggle={event => {
             const title = event.currentTarget.querySelector<HTMLInputElement>('input[name="title"]');
             if (!event.currentTarget.open && (!title || title.value === title.defaultValue)) formExpected.current = null;
@@ -2591,7 +2594,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               disabled={preparingDocumentAction} onClick={() => { if (documentMenu.current) documentMenu.current.open = false;
                 void (recentWhole[selectedDoc.id] ? showRecentOnly(selectedDoc.id) : showRecentWhole(selectedDoc.id)); }}>{recentWhole[selectedDoc.id] ? '최근만 보기' : '전체 보기'}</button>}
             {!collectionMode && <label>보관 위치<select value={selectedDoc.folderId} onChange={event => { const value = event.target.value; void run('폴더 이동', current => setProgramDocumentFolder(current, { ...base(current), documentId: selectedDoc.id, folderId: value })); }}>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>}
-            {props.capabilities?.publication !== false && props.onPublishDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onPublishDocument!, { modalReturnFocus: true })}>선택해서 공개</button>}
+            {/* int4 (F5-b 목업 F5 상태): one entry by where this document is — 공개하기 (① 고르기), 공개 이어서 (its draft at ② 다듬기),
+                or 공개 관리 · 버전 n (나's management screen, through the host's navigate, which saves the editors first). */}
+            {publicationEntry && <button disabled={preparingDocumentAction} data-publication-entry={publicationEntry.kind} onClick={() => {
+              if (publicationEntry.kind !== 'manage') { void openDocumentAction(id => props.onPublishDocument!(id, publicationEntry.initialStep), { modalReturnFocus: true }); return; }
+              if (documentMenu.current) documentMenu.current.open = false;
+              props.navigate({ view: 'activity', id: publicationEntry.flowId });
+            }}>{publicationEntry.label}</button>}
             {props.capabilities?.revisionHistory !== false && props.onRevisionHistory && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onRevisionHistory!)}>저장본·복구</button>}
             {props.onOutputDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onOutputDocument!)}>내 도구로 가져가기</button>}
             {props.onStartReview && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onStartReview!)}>후기 쓰기</button>}

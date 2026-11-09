@@ -1,4 +1,4 @@
-.community { max-width: 820px; margin: 0 auto; padding: 24px; color: var(--flowme-b-ink); background: var(--flowme-b-surface); font-size: 16px; line-height: 1.65; overflow-wrap: anywhere; min-width: 0; }
+.community { max-width: 820px; margin: 0 auto; padding: 24px; color: var(--flowme-b-ink); background: var(--flowme-b-paper); font-size: 16px; line-height: 1.65; overflow-wrap: anywhere; min-width: 0; }
 .community * { box-sizing: border-box; }
 .community h1 { font-size: 25px; margin: 0; }
 .community h2 { font-size: 20px; line-height: 1.4; margin: 20px 0 12px; }

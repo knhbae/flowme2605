@@ -156,6 +156,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const [communityView, setCommunityView] = useState<'community' | 'activity'>('community');
   const [discoverySelection, setDiscoverySelection] = useState<string | undefined>(), [communitySelection, setCommunitySelection] = useState<string | undefined>();
   const [publisher, setPublisher] = useState<string | null>(null), [inspector, setInspector] = useState<string | null>(null);
+  // int4 (F5-b): where the publish steps open for the document menu's entry ('refine': 공개 이어서). Not stored; a page reload opens ①.
+  const [publisherStep, setPublisherStep] = useState<'pick' | 'refine'>('pick');
   const [preservation, setPreservation] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const preservationRef = useRef(false);
@@ -1952,7 +1954,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
           return !disposed.current && !externalRef.current && !!authority && !authority.pending && !authority.busy && authority.status !== 'conflict';
         }}
         selectedDocumentId={destination.view === 'space' ? destination.id : undefined} onUndo={() => history('undo')} onRedo={() => history('redo')}
-        onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} onInputFailureChange={setEditorInputFailed} onKeepRefusedInput={keepRefusedInput}
+        onOutputDocument={setOutput} onPublishDocument={(id, step) => { setPublisherStep(step ?? 'pick'); setPublisher(id); }} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} onInputFailureChange={setEditorInputFailed} onKeepRefusedInput={keepRefusedInput}
         onOpenCopySource={(flowId, id, focus) => { void openFlowsFromDocument(id, flowId, focus); }} onBrowseFlows={(id, focus, writing) => { void openFlowsFromDocument(id, undefined, focus, writing); }}
         importNotice={importUndo ? { actorId: importUndo.batch.actorId, documentId: importUndo.batch.documentId, lineId: [...importUndo.batch.ordinary, ...importUndo.batch.recurring, ...(importUndo.batch.repeat ?? [])][0]?.lineId, text: importUndo.text, busy: importUndoBusy, onCancel: importUndo.done ? undefined : () => { void cancelImportLinks(); } }
           : importArrival ? { actorId: importArrival.actorId, documentId: importArrival.documentId, text: importArrival.text, busy: importArrivalBusy, actionLabel: '되돌리기', busyLabel: '되돌리는 중…',
@@ -2019,7 +2021,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         onEntryChoiceCancelled={() => void navigate(creatorEntryReturn.current ?? { view: 'space' })}
         captureRoute={captureCreatorRoute} onRegisterEditors={port => { creatorEditors.current = port; }} /></div></div>}
       {publisher && <ProgramPublisher key={`publish:${session.userId}:${publisher}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} documentId={publisher}
-        storageScope="account" readCurrentData={() => currentData.current} externalRecovery={modalRecovery} onClose={() => setPublisher(null)} onRegisterEditors={port => { publisherEditors.current = port; }} />}
+        storageScope="account" readCurrentData={() => currentData.current} externalRecovery={modalRecovery} initialStep={publisherStep} onClose={() => { setPublisher(null); setPublisherStep('pick'); }} onRegisterEditors={port => { publisherEditors.current = port; }} />}
       {inspector && <dialog className={styles.inspector} ref={inspectorDialog} onCancel={event => { event.preventDefault(); if (!inspectorEditors.current?.hasPendingInput?.()) setInspector(null); }}>
         {modalRecovery}<ProgramCopyInspector key={`copy:${session.userId}:${inspector}`} data={data} mutate={mutate} navigate={next => { setInspector(null); void navigate(next); }} today={programLocalDate()} copyId={inspector}
           onClose={() => setInspector(null)} onRegisterEditors={port => { inspectorEditors.current = port; }} /></dialog>}
