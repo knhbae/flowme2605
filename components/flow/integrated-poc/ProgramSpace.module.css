@@ -517,7 +517,7 @@
 .copyHeader[data-state="unverified"] { border:1px dashed var(--flowme-b-warning-border); background:var(--flowme-b-warning-bg); color:var(--flowme-b-warning-ink); }
 .importNotice { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:6px 0; font-size:13px; }
 /* Flow pipeline S2/S3 (11/8): the notice's [달력에서 보기] (the primary action), and the mark chip over the month grid. */
-.space .importNotice > .importCalendar { background: var(--flowme-b-primary); border-color: var(--flowme-b-primary); color: #ffffff; font-weight: 600; }
+.space .importNotice > .importCalendar { background: var(--flowme-b-primary); border-color: var(--flowme-b-primary); color: var(--flowme-b-on-ink); font-weight: 600; }
 .space .flowHighlight { display: flex; align-items: center; gap: 2px; width: fit-content; max-width: 100%; min-height: 36px; margin: 0 0 8px; padding: 0 2px 0 12px; border-radius: 18px; background: var(--flowme-b-selected); color: var(--flowme-b-primary-strong); font-size: 14px; font-weight: 600; }
 .space .flowHighlight > span { display: inline-flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .space .flowHighlight i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--flowme-b-primary); }

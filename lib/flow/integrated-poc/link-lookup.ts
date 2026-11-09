@@ -9,15 +9,17 @@ import { programDateHeaderPlan } from './input-bar';
  *  whole with every account read (flowme_alpha_read_full_v2 / social_read_v1), so nothing is fetched and nothing new is
  *  sent. Links are compared by one key: the existing safe, canonical form (https, host, path without the trailing slash,
  *  tracking parameters gone, the rest sorted), and `www.`/`m.` and youtu.be folded. */
+const BARE_VIDEO_LINK = /^(?:(?:m\.)?youtube\.com|youtu\.be)(?:[/?#]\S*)?$/i;
 const LINK_TEXT = /^(?:https?:\/\/|www\.)\S+$/i;
 /** Whether the search text is a link (a pasted address), not words to search for. */
 export function programLooksLikeLink(text: string): boolean {
-  return LINK_TEXT.test(text.trim());
+  const value = text.trim();
+  return LINK_TEXT.test(value) || BARE_VIDEO_LINK.test(value);
 }
 /** The address a link is kept and shown as (its canonical form), or null when it is not a public http(s) link we take
  *  (credentials, a local or unsafe host, a sensitive parameter, another scheme). */
 export function programCanonicalLink(text: string): string | null {
-  const value = text.trim(), withScheme = /^www\./i.test(value) ? `https://${value}` : value;
+  const value = text.trim(), withScheme = /^www\./i.test(value) || BARE_VIDEO_LINK.test(value) ? `https://${value}` : value;
   const classified = classifyProgramUrl(withScheme, []);
   return classified.kind === 'invalid' ? null : classified.url;
 }
