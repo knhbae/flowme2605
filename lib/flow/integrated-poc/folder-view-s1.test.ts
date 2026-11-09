@@ -10,17 +10,17 @@ const read = (path: string) => readFileSync(join(process.cwd(), path), 'utf8').r
 const editor = read('components/flow/integrated-poc/ProgramTextEditor.tsx');
 const space = read('components/flow/integrated-poc/ProgramSpace.tsx');
 
-test("the folder line's ⋮ offers 이 폴더만 모아 보기 first (after a save), then 분류에서 이 폴더 보기", () => {
-  const gather = editor.indexOf('data-gather-folder'), open = editor.indexOf('data-open-scope');
-  assert.ok(gather > 0 && open > gather);
-  const item = editor.slice(gather, open);
-  assert.match(item, /saveNow\(\)\.then\(saved => \{ if \(saved\) propsRef\.current\.onGatherFolder\?\.\(scopeId\); \}\)/);
-  assert.match(item, />이 폴더만 모아 보기</);
-  assert.match(editor.slice(open, open + 400), />분류에서 이 폴더 보기</);
-  // The line start control's own action (a key press on it) gathers a folder too.
+test("F4-a (A8 ②): the folder line's ⋮ has one item, 이 폴더 보기 (after a save), the folder screen", () => {
+  assert(!editor.includes('data-gather-folder') && !editor.includes('>분류에서 이 폴더 보기<'));
+  const open = editor.indexOf('data-open-scope');
+  assert.ok(open > 0);
+  const item = editor.slice(open, open + 300);
+  assert.match(item, /saveNow\(\)\.then\(saved => \{ if \(saved\) propsRef\.current\.onOpenScope\?\.\(scopeId\); \}\)/);
+  assert.match(item, />이 폴더 보기 ›</);
+  // The line start control's own action (a key press on it) opens the same screen.
   const action = editor.slice(editor.indexOf("if (action.type === 'scope-open') {"), editor.indexOf("if (['reference-open', 'task-origin'].includes(action.type))"));
-  assert.match(action, /row\?\.scopeKind === 'folder' && propsRef\.current\.onGatherFolder/);
-  assert.match(action, /\(gather \|\| propsRef\.current\.onOpenScope\)\?\.\(scopeId\)/);
+  assert.match(action, /if \(scopeId\) void saveNow\(\)\.then\(saved => \{ if \(saved\) propsRef\.current\.onOpenScope\?\.\(scopeId\); \}\);/);
+  assert(!action.includes('onGatherFolder'));
 });
 
 test('the space gathers through changeFolder (it saves first), and not in a collection', () => {
@@ -28,9 +28,9 @@ test('the space gathers through changeFolder (it saves first), and not in a coll
   assert.match(space, /onGatherFolder=\{collectionMode \? undefined : scopeId => \{ if \(space\.text\.folders\.some\(item => item\.id === scopeId\)\) \{ keepViewFolder\(id, scopeId\); void changeFolder\(scopeId\); \} \}\}/);
 });
 
-test('the 쓰기 tab keeps the gathered folder; 오늘 shows everything; a folder picked in 분류 does not carry into 쓰기', () => {
-  assert.match(space, /useEffect\(\(\) => \{ if \(period === 'documents'\) writingFolder\.current = folderId; \}, \[period, folderId\]\);/);
-  assert.match(space, /if \(main\) \{ setQuery\(''\); if \(nextPeriod === 'documents'\) setFolderId\(writingFolder\.current\); else if \(nextPeriod === 'today'\) setFolderId\(''\); \}/);
+test('the 쓰기 tab keeps the gathered folder; 오늘 and the 폴더 list show everything; a folder screen does not carry into 쓰기', () => {
+  assert.match(space, /useEffect\(\(\) => \{ if \(period === 'documents' && !folderScreen\) writingFolder\.current = folderId; \}, \[period, folderId, !!folderScreen\]\);/);
+  assert.match(space, /if \(main\) \{ setQuery\(''\); if \(nextPeriod === 'documents'\) setFolderId\(writingFolder\.current\); else setFolderId\(''\); \}/);
 });
 
 test("the gathered view says '/이름만 보는 중' and ends by 전체 보기; the bar's 날짜 and 폴더 are not there", () => {

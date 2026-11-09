@@ -14,7 +14,7 @@ test('P1: a row press with a written ＋ line goes back to it; the sheet closes 
   assert.match(body('openFromList'), /^function openFromList\(task: TextTask, button: HTMLElement\) \{\n(\s*\/\/[^\n]*\n)*\s*if \(keepWrittenDay\(\)\) return;/);
   assert(!body('openFromList').includes('daySheet.current?.close()'), 'not at the press');
   // The moment openDocument switches to the document, right before the view changes.
-  const open = space.slice(space.indexOf('async function openDocument(id: string'), space.indexOf("setPeriod('documents');\n    props.navigate("));
+  const open = space.slice(space.indexOf('async function openDocument(id: string'), space.indexOf("setPeriod('documents'); setFolderScreen(null);\n    props.navigate("));
   assert.match(open, /if \(daySheet\.current\?\.matches\(':modal'\)\) daySheet\.current\.close\(\);\s*setDayOpen\(false\);\s*setSelected\(id\);[^\n]*$/);
 });
 
@@ -56,7 +56,7 @@ test('re-review P2: the sheet and the panel show one day, the chosen date, so a 
   assert.match(space, /const \[dayOpen, setDayOpen\] = useState\(false\)/);
   assert.match(body('pickMonthDay'), /setDate\(day\);\s*if \(open && !wideMonth\) setDayOpen\(true\);/);
   assert.match(body('closeDaySheet'), /setDayOpen\(false\); setAddingDate\(null\);\s*requestAnimationFrame\(\(\) => root\.current\?\.querySelector<HTMLButtonElement>\(`\[data-month-day="\$\{date\}"\]`\)/);
-  assert.match(space, /monthView\?: 'grid'; dayOpen\?: boolean \}/);
+  assert.match(space, /monthView\?: 'grid'; dayOpen\?: boolean;/);
 });
 
 test('re-review: a sheet/panel switch while Korean is composed in the day waits for the composition to end, both ways', () => {

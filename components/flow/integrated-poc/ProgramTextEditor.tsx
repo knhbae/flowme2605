@@ -6,7 +6,7 @@ import React, { useContext, useEffect, useId, useMemo, useRef, useState } from '
 import { programEditorStatus, serverStatusWins } from '@/lib/flow/integrated-poc/program-status';
 import { ProgramServerStatusContext } from './program-status-context';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
-import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
+import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextRow, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
 import { programBracketDate, programBracketDatePlan, programDateHeaderPlan, programFolderSeedPlan, programTodayStartPlan } from '@/lib/flow/integrated-poc/input-bar';
 import type { ProgramPrivateSpace } from '@/lib/flow/integrated-poc/contract';
@@ -180,6 +180,12 @@ export interface ProgramTextEditorProps {
   /** Parent checks other mounted drafts before running a synchronous local handoff. */
   onContinueWholeDocument?: (stage: () => boolean) => boolean;
   onShowFolderTasks?: () => void;
+  /** F4-a (A3·A4): this document shown in the folder screen's [글]. Its head is one line (name · 할 일 n · 전체 문서 ›)
+   *  instead of the gathered view's bar, the tool line keeps only the save status (the bar under the line being
+   *  written keeps its tools), and the status words go to the folder screen's head. */
+  folderScreen?: { open: number; onStatus?: (status: { label: string; warn: boolean }) => void };
+  /** F4-a (위험 3): a line of another folder's task, shown locked in the folder screen, opens in its own writing. */
+  onOpenFolderLine?: (row: TextRow) => void;
 }
 
 /** Wrap only modal endpoints; intermediate controls retain their native Tab behavior. */
@@ -2083,9 +2089,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (action.type === 'progress-open') { if (!showCheckChips(lineId)) openProgress(lineId); return; }
     if (action.type === 'task-date') { openProgress(lineId, 'date'); return; }
     if (action.type === 'scope-open') {
-      // 7k stage 1: a folder line's entrance gathers this document's parts of it (the 분류 tab stays in the line's ⋮).
-      const row = currentRow(lineId), scopeId = row?.scopeId, gather = row?.scopeKind === 'folder' && propsRef.current.onGatherFolder;
-      if (scopeId) void saveNow().then(saved => { if (saved) (gather || propsRef.current.onOpenScope)?.(scopeId); });
+      // F4-a (FR-1): a folder line's entrance opens that folder's screen, as its ⋮ '이 폴더 보기' does (saved first).
+      const row = currentRow(lineId), scopeId = row?.scopeId;
+      if (scopeId) void saveNow().then(saved => { if (saved) propsRef.current.onOpenScope?.(scopeId); });
       return;
     }
     if (['reference-open', 'task-origin'].includes(action.type)) { setPanel({ kind: 'reference', lineId }); return; }
@@ -3034,6 +3040,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const statusWarn = (serverWins ? serverView!.level : editorStatus.level) <= 4;
   // The words show the winner; the recovery boxes stay whichever wins, so no action is lost.
   const statusLabel = serverWins ? serverView!.label : editorStatus.label;
+  // F4-a (A4 ①): the folder screen's head says the save status in one word (the tool line holds its recovery box).
+  const folderStatus = props.folderId ? props.folderScreen?.onStatus : undefined;
+  useEffect(() => { folderStatus?.({ label: statusLabel, warn: statusWarn }); }, [folderStatus, statusLabel, statusWarn]);
   const hasRecovery = !!serverView?.recovery || !!draft.error;
   // A refused edit that names its line: shown with the reason's first sentence (다시 저장 judges it again).
   const refused = draft.invalid && draft.problemLine !== undefined && !props.readOnly;
@@ -3201,7 +3210,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       onPointerDown={event => event.preventDefault()} onClick={() => { if (picker.enter) pressPicker(picker.enter); }}>↵ {pickerEnterLabel}</button>}
     <small>↓ 폴더 선택 · Esc 닫기{picker.indent && !picker.linked ? ' · Shift+Tab 상위로' : ''}</small>
   </div> : null;
-  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} onInput={serverView ? event => { if (!inEditorHead(event.target)) markTyping(); } : undefined}
+  return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={inputPending ? 'true' : 'false'} data-folder-screen={props.folderId && props.folderScreen ? 'true' : undefined} onInput={serverView ? event => { if (!inEditorHead(event.target)) markTyping(); } : undefined}
     onKeyDown={event => { if (event.key === 'Tab' && folderIndentSkipped.current) event.preventDefault(); folderIndentSkipped.current = false; }} onKeyDownCapture={event => {
     const imeConsumed = pickerIme.current?.keydown(event.nativeEvent) ?? false;
     const view = pickerRef.current;
@@ -3268,7 +3277,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       {props.headEnd && <div className={styles.headEnd} data-editor-head="end">{props.headEnd}</div>}
     </div>
     {props.headBelow && <div className={styles.headBelow} data-editor-head="below">{props.headBelow}</div>}
-    {props.folderId && <div className={regionStyles.actions} aria-label="문서 조회 범위" data-folder-gather>
+    {props.folderId && props.folderScreen && <div className={regionStyles.docHead} data-folder-doc-head><strong>{currentDoc()?.title || '현재 글'}</strong><small>할 일 {props.folderScreen.open}</small>
+      {/* A3 ①: the whole document, at the line being written (the gathered view's 전체 보기). */}
+      <button type="button" data-whole-document disabled={inputLocked || !!props.readOnly || draft.saving || composingRef.current} onClick={props.onContinueWholeDocument ? continueWholeDocument : props.onShowWholeDocument}>전체 문서 ›</button>
+      {!folderView?.regions.length && <p>이 문서에는 이 폴더 부분이 없습니다.</p>}</div>}
+    {props.folderId && !props.folderScreen && <div className={regionStyles.actions} aria-label="문서 조회 범위" data-folder-gather>
       {/* 7k stage 1: the gathered folder says what is shown; only 전체 보기 ends it (the 쓰기 tab keeps it). */}<p><strong>/{folderView?.folderPath ?? '선택한 폴더'}</strong>만 보는 중 <small>{currentDoc()?.title || '현재 글'} · 하위 폴더 포함</small></p>
       <button type="button" data-gather-end disabled={inputLocked || !!props.readOnly || draft.saving || composingRef.current} onClick={props.onContinueWholeDocument ? continueWholeDocument : props.onShowWholeDocument}>전체 보기</button><button type="button" onClick={props.onShowFolderTasks}>폴더 전체 할 일</button>
       {!folderView?.regions.length && <p>이 분류에 맞는 내용이 없습니다. 전체 문서에서 확인할 수 있습니다.</p>}
@@ -3279,6 +3292,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     <div ref={hostRef} className={`${styles.host}${props.directWriting ? ` ${styles.directWriting}` : ''}`} hidden={!!props.folderId} data-native-editor="v11-core" />
     {notices}
     {folderView && <ProgramFolderRegionEditor key={`${props.docId}:${props.folderId}`} styles={regionStyles} view={folderView} readOnly={!!props.readOnly} locked={inputLocked} saving={draft.saving} mode={mode} listEnterV2={!!props.authoringMode}
+      hostClassName={styles.host} today={today()} onOpenLine={props.onOpenFolderLine}
       workspace={currentState} onAccept={acceptRegion} onPersist={saveFullDraft} onDownload={downloadDraft}
       onContinueWholeDocument={continueWholeDocument} onInsertMenu={props.authoringMode ? () => { void openRegionInsertMenu(); } : undefined}
       afterActive={props.authoringMode ? writingBar : undefined}
@@ -3329,16 +3343,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {props.onOpenPersonalAuthoring && <><h4>묶음 반복</h4><button type="button" onClick={() => { closePanel(); props.onOpenPersonalAuthoring?.(); }}>반복·Flow 만들기…<small>여러 할 일과 단계</small></button></>}
       </div>)(repeatTarget(panel.lineId))}
       {panel.kind === 'insert' && <div className={styles.choices}>
-        {/* VA-P3-1 (11/7): the folder line's own entrance, by name. 7k stage 1: first this document's parts of the folder
-            (gathered, written in place); the 분류 tab's view of it stays next to it. */}
-        {row?.kind === 'scope' && row.scopeKind === 'folder' && row.scopeId && props.onGatherFolder && <button type="button" data-gather-folder onClick={() => {
-          const scopeId = currentRow(panel.lineId)?.scopeId; dismissPanel(false, false);
-          if (scopeId) void saveNow().then(saved => { if (saved) propsRef.current.onGatherFolder?.(scopeId); });
-        }}>이 폴더만 모아 보기</button>}
+        {/* VA-P3-1 (11/7): the folder line's own entrance, by name. F4-a (A8 ②): one item, the folder's screen (its
+            [할 일] first); 이 폴더만 모아 보기 and 분류에서 이 폴더 보기 became that screen. Saved before it opens. */}
         {row?.kind === 'scope' && row.scopeKind === 'folder' && row.scopeId && props.onOpenScope && <button type="button" data-open-scope onClick={() => {
           const scopeId = currentRow(panel.lineId)?.scopeId; dismissPanel(false, false);
           if (scopeId) void saveNow().then(saved => { if (saved) propsRef.current.onOpenScope?.(scopeId); });
-        }}>분류에서 이 폴더 보기</button>}
+        }}>이 폴더 보기 ›</button>}
         {slashFolders && <section className={styles.menuSection} aria-label="폴더 줄 넣기"><h4>폴더</h4><div className={styles.dateChips} role="group" aria-label="폴더 고르기">
           {slashFolders.map(folder => <button type="button" key={folder.id} data-slash-folder={folder.id} disabled={insertionDisabled} title={folder.path}
             onClick={() => void applySlashFolder(folder.id)}>{folder.title}</button>)}

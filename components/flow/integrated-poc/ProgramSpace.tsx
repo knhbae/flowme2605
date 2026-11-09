@@ -35,11 +35,15 @@ import { completeProgramRepeat, convertProgramLegacyRepeat, programLegacyRepeatS
 import { programRepeatTitle } from '@/lib/flow/integrated-poc/repeat-line';
 import { programViewScope } from '@/lib/flow/integrated-poc/view-scope';
 import { ProgramGroupAddRow } from './ProgramGroupAddRow';
+import { ProgramFolderList } from './ProgramFolderList';
+import folderStyles from './ProgramFolderScreen.module.css';
+import { programFolderAncestry, programFolderTaskGroups, programFolderTree, programFolderWritingDocuments, programTaskFolderId, PROGRAM_FOLDER_TASK_GROUPS,
+  type ProgramFolderTaskGroupKey } from '@/lib/flow/integrated-poc/folder-screen';
 import { mergeProgramTextWorkspace } from '@/lib/flow/integrated-poc/text-merge';
 import { flushProgramEditorCollection, prepareProgramDocumentAction, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
 import type { AlphaStructuralDraft, AlphaStructuralEditorPort } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
 import { childDraftRecoveryEntries, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
-import { textWorkspaceModel as M, type TextTask, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
+import { textWorkspaceModel as M, type TextRow, type TextTask, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { programErrorMessage, type ProgramMutate, type ProgramNavigate, type ProgramMutationResult, type ProgramDestination } from '@/lib/flow/integrated-poc/ui-contract';
 import { emptyProgramRecurrencePresentation, programNavigationMatchesDocument, type ProgramSpaceNavigation } from '@/lib/flow/integrated-poc/navigation';
 import { ProgramDocumentProvenance } from './ProgramDocumentProvenance';
@@ -161,7 +165,7 @@ export type ProgramSpaceProps = {
   /** N7: input an editor refused and put back, for the tab's 복구함. */
   onKeepRefusedInput?: (draft: { title: string; raw: string; documentId?: string }) => boolean;
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
-  /** R8b: the host draws the main tabs (쓰기·오늘·분류) and chooses one through this port. The space's own
+  /** R8b: the host draws the main tabs (쓰기·오늘·폴더) and chooses one through this port. The space's own
    *  period state stays here; this is not onRegisterNavigation, so source opens keep their focus path. */
   onRegisterMainTabs?: (port: { choose(tab: ProgramMainTab): Promise<boolean>; openArchive(): Promise<boolean> } | null) => void;
   /** Which main tab the space now shows, for the host's tabs. */
@@ -196,15 +200,17 @@ type SourceOrigin = { actorId: string; documentId: string; taskId: string; top: 
   /** An occurrence's row, by its list key (it has no task ID). */
   rowKey?: string;
   /** C5: opened from the calendar, with the day open in its sheet or panel. */
-  view: { period: ProgramPeriod; date: string; folderId: string; query: string; monthView?: 'grid'; dayOpen?: boolean } };
+  view: { period: ProgramPeriod; date: string; folderId: string; query: string; monthView?: 'grid'; dayOpen?: boolean;
+    /** F4-a: opened from a folder's [할 일] (else the 폴더 tab's list). */
+    folderOpen?: boolean } };
 const MONTH_VIEW_KEY = 'flow:poc:personal-workspace:v1:month-view';
 /** PRD X1~X4 (11/8, user's choice): the writing head's 날짜별 | 폴더별 and its folder chips are held back until the folder
  *  screen is redesigned. A folder line's ⋮ (이 폴더만 모아 보기 · 분류에서 이 폴더 보기) and the 분류 tab stay; the
  *  device's last gathered folder (VIEW_FOLDER_KEY) is left as it is and no longer read. */
 export const PROGRAM_WRITING_VIEW_SWITCH = false;
 const CARRY_OPEN_KEY = 'flow:alpha:carryover-open:v1';
-const periods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['week', '주간'], ['month', '월간'], ['all', '분류'], ['undated', '날짜 미정']];
-const mainPeriods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['all', '분류']];
+const periods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['week', '주간'], ['month', '월간'], ['all', '폴더'], ['undated', '날짜 미정']];
+const mainPeriods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['all', '폴더']];
 export const PROGRAM_EMPTY_EXAMPLE = '이번 주 준비\n- [ ] 확인할 일\n  - [ ] 먼저 확인할 내용\n자유롭게 적는 메모';
 // A06 / V41-004–005: restore the approved v4.1 touch thresholds, not a new policy.
 export const PROGRAM_MOVE_GESTURE_V1 = Object.freeze({ version: 1, holdMs: 350, cancelDistancePx: 8 });
@@ -314,9 +320,28 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       || M.tasks(space.text).some(task => task.docId !== id && taskIds.includes(task.id));
   }
   const [date, setDate] = useState(today), [folderId, setFolderId] = useState(''), [query, setQuery] = useState('');
+  /** F4-a (11/9): the 폴더 tab's open folder — its [할 일] (period 'all', the folder as folderId; '' is 모든 할 일) or its
+   *  [글] (period 'documents' with the folder's parts gathered in the document shown, as 이 폴더만 모아 보기 did). Null on
+   *  the folder list. `writing`: the document 쓰기 showed before [글] took the editor (it comes back with 쓰기);
+   *  `shown`: the document [글] keeps open. */
+  type FolderScreen = { tab: 'tasks' | 'writing'; writing: string; shown: string | null };
+  const [folderScreen, setFolderScreenState] = useState<FolderScreen | null>(null), folderScreenRef = useRef<FolderScreen | null>(null);
+  const setFolderScreen = (next: FolderScreen | null) => { folderScreenRef.current = next; setFolderScreenState(next); };
+  /** The folder opened last (the list's selected row on a wide screen; its parents stay unfolded in a long list). */
+  const [lastFolder, setLastFolder] = useState('');
+  const [folderStatus, setFolderStatus] = useState<{ label: string; warn: boolean } | null>(null);
+  /** 폴더 관리's 삭제 asks once (the folder it asks about). */
+  const [folderDeleteAsk, setFolderDeleteAsk] = useState<string | null>(null);
+  /** [할 일]'s '끝낸 일 n개' (folded; a folder opens folded). */
+  const [folderDoneOpen, setFolderDoneOpen] = useState(false);
+  useEffect(() => { setFolderDoneOpen(false); }, [folderId, !!folderScreen]);
+  /** FR-1: an open folder (or its other tab) starts at the top — once the new screen is drawn (a frame before it, the old
+   *  screen's height could leave the page part way down). */
+  const [folderTop, setFolderTop] = useState(0);
+  useEffect(() => { if (folderTop) window.scrollTo(0, 0); }, [folderTop]);
   /** 7k stage 1: the folder the writing view last gathered (its folderId while 쓰기 was shown), for the 쓰기 tab. */
   const writingFolder = useRef('');
-  useEffect(() => { if (period === 'documents') writingFolder.current = folderId; }, [period, folderId]);
+  useEffect(() => { if (period === 'documents' && !folderScreen) writingFolder.current = folderId; }, [period, folderId, !!folderScreen]);
   const [queryDraft, setQueryDraft] = useState(''), queryComposing = useRef(false);
   useEffect(() => { if (!queryComposing.current) setQueryDraft(query); }, [query]);
   const [collectionId, setCollectionId] = useState(''), [quickDocumentId, setQuickDocumentId] = useState('');
@@ -658,10 +683,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     recentDoneCounts.current.get(space.text)!.set(id, count);
     return count;
   }
+  /** The folder `id`'s editor gathers ('' for the whole document). F4-a: in the folder screen only the document [글]
+   *  shows gets it (one editor of regions, FR-5); the others, 쓰기's included, stay whole and keep their state. */
+  function editorFolderOf(id: string): string {
+    if (collectionMode) return '';
+    if (!folderScreen) return folderId;
+    return folderScreen.tab === 'writing' && period === 'documents' && selected === id ? folderId : '';
+  }
   /** The recent view handed to `id`'s editor, or null: the whole document (shown whole on this device, a folder or
    *  collection view, a document that cannot be written, or one with nothing to fold). */
   function recentViewOf(id: string): ProgramRecentView | null {
-    if (collectionMode || folderId || recentWhole[id] || !space.text.documents.some(doc => doc.id === id) || programDocumentContentLock(space, id) !== 'active') return null;
+    if (collectionMode || editorFolderOf(id) || recentWhole[id] || !space.text.documents.some(doc => doc.id === id) || programDocumentContentLock(space, id) !== 'active') return null;
     const hold = recentHoldOf(id);
     if (!hold) return null;
     const cached = recentCache.current[id];
@@ -847,7 +879,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (view?.done.count) return <div className={styles.recentFold} data-recent-done>
       <p><span>{view.done.whole ? `날짜 미정 · 끝낸 일 ${view.done.count}개` : `✓ 날짜 미정에서 끝낸 일 ${view.done.count}개`}</span></p>
       <button type="button" data-recent-action="done-show" onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>보기</button></div>;
-    const count = recentDoneShown[id] && !recentWhole[id] && !collectionMode && !folderId ? recentDoneCountOf(id) : 0;
+    const count = recentDoneShown[id] && !recentWhole[id] && !collectionMode && !editorFolderOf(id) ? recentDoneCountOf(id) : 0;
     return count ? <div className={styles.recentFold} data-recent-done="shown"><p><span>✓ 날짜 미정에서 끝낸 일 {count}개</span></p>
       <button type="button" data-recent-action="done-fold" onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, false)}>접기</button></div> : null;
   }
@@ -861,7 +893,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         <p><span>지난 기록 · {through ? `${recentDay(through)}까지 ` : ''}{sum('days')}일</span><small>할 일 {sum('tasks')}개 · 남은 일 {sum('open')}개</small></p>
         <button type="button" data-recent-action="past-show" onMouseDown={holdRecentFocus} onClick={() => void showRecentWhole(id)}>펼치기</button></div>;
     }
-    const hold = atEnd || !recentWhole[id] || collectionMode || folderId ? null : recentHoldOf(id);
+    const hold = atEnd || !recentWhole[id] || collectionMode || editorFolderOf(id) ? null : recentHoldOf(id);
     if (!hold) return null;
     return <div className={styles.recentFold} data-recent-whole>
       <p><span>{recentFound === id ? '찾은 줄이 지난 기록에 있어 펼쳤습니다' : hold.lineIds.size ? '지난 기록을 펼쳤습니다 · 길면 입력이 느려질 수 있습니다' : '전체 문서를 보고 있습니다'}</span></p>
@@ -1120,9 +1152,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }, [actorId, period, selected]);
   const sourceOriginTab = (origin: SourceOrigin) => origin.view.period === 'all' ? 'all' : 'today';
   const sourceOriginOpen = !!sourceOrigin && period === 'documents' && selected === sourceOrigin.documentId;
-  const sourceOriginLabel = sourceOrigin && sourceOriginTab(sourceOrigin) === 'all' ? collectionMode ? '전체 할 일' : '분류' : '오늘';
-  /** The view a source opens from: C5 adds the calendar and the day open in its sheet or panel. */
-  const sourceView = (): SourceOrigin['view'] => ({ period, date, folderId, query, ...(monthGrid ? { monthView: 'grid' as const, dayOpen: !!dayShown } : {}) });
+  // F4-a: from a folder's [할 일] the way back names that folder ('← 보고', '← 모든 할 일').
+  const sourceOriginLabel = sourceOrigin && sourceOriginTab(sourceOrigin) === 'all' ? collectionMode ? '전체 할 일'
+    : sourceOrigin.view.folderOpen ? sourceOrigin.view.folderId ? space.text.folders.find(row => row.id === sourceOrigin.view.folderId)?.title ?? '폴더' : '모든 할 일' : '폴더' : '오늘';
+  /** The view a source opens from: C5 adds the calendar and the day open in its sheet or panel; F4-a, the folder screen. */
+  const sourceView = (): SourceOrigin['view'] => ({ period, date, folderId, query, ...(monthGrid ? { monthView: 'grid' as const, dayOpen: !!dayShown } : {}),
+    ...(period === 'all' && folderScreenRef.current ? { folderOpen: true } : {}) });
   function openFromList(task: TextTask, button: HTMLElement) {
     // C5 review P1: a line written on a day's ＋ stays; the press goes back to it. The sheet itself stays open
     // (the row shows its wait) until the source opens; openDocument closes it then, and 닫기 cancels the wait.
@@ -1149,6 +1184,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (!await flushAllEditors()) { showViewChangeBlocked(); return; }
       if (dataRef.current.activeActorId !== origin.actorId) return;
       setSourceOrigin(null); setPeriod(origin.view.period); setDate(origin.view.date); setFolderId(origin.view.folderId); setQuery(origin.view.query);
+      setFolderScreen(origin.view.folderOpen ? { tab: 'tasks', writing: selectedRef.current, shown: null } : null);
       if (origin.view.monthView === 'grid') { setMonthView('grid'); setDayOpen(!!origin.view.dayOpen); }
       setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setOrderNotice(null); setSourceRestore({ ...origin, opener });
     } finally { release(); }
@@ -1169,7 +1205,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     props.onRegisterMainTabs?.({ choose: tab => chooseMainTabRef.current(tab), openArchive: () => openArchiveRef.current() });
     return () => props.onRegisterMainTabs?.(null);
   }, [actorId]);
-  useEffect(() => { props.onMainTabChange?.(programMainTabOf(period)); }, [period]);
+  // F4-a: the folder screen is the 폴더 tab, its [글] included.
+  const mainTab: ProgramMainTab = folderScreen ? 'all' : programMainTabOf(period);
+  useEffect(() => { props.onMainTabChange?.(mainTab); }, [mainTab]);
   useEffect(() => { props.onOpenDocumentChange?.(selected); }, [selected]);
   useEffect(() => {
     const origin = sourceRestore;
@@ -1371,7 +1409,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (!await flushAllEditors()) { showViewChangeBlocked(); return false; }
       // 7k stage 1: the 쓰기 tab keeps the writing view's gathered folder (only 전체 보기 ends it); a folder picked in 분류
       // does not carry into 쓰기, and 오늘 shows everything.
-      if (main) { setQuery(''); if (nextPeriod === 'documents') setFolderId(writingFolder.current); else if (nextPeriod === 'today') setFolderId(''); }
+      if (main) { setQuery(''); if (nextPeriod === 'documents') setFolderId(writingFolder.current); else setFolderId(''); }
+      // F4-a: a main tab leaves the folder screen (폴더 itself goes back to its list); 쓰기 gets back the document it showed
+      // before [글] took the editor.
+      const screen = folderScreenRef.current;
+      if (main && screen) {
+        setFolderScreen(null);
+        if (presentation.current.period === 'documents' && screen.writing !== selectedRef.current && (!screen.writing || documentsRef.current.some(doc => doc.id === screen.writing))) setSelected(screen.writing);
+        if (nextPeriod === 'all') setFolderTop(count => count + 1);
+      }
       setPeriod(nextPeriod); if (collectionMode) setLibraryOpen(false); if (nextPeriod === 'today') setDate(today); setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setOrderNotice(null); return true;
     } finally { release(); }
   }
@@ -1397,6 +1443,84 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     requestAnimationFrame(() => {
       if (presentation.current.period === 'all') focusViewControl();
     });
+  }
+  /** F4-a (FR-1): the three ways in — the 폴더 list, a folder line's '이 폴더 보기' (or its open control) and a task's
+   *  folder in its ⋯ — open one screen: that folder's [할 일], from the top. '' is 모든 할 일 (it has no [글]). Every
+   *  editor is saved first, as any view change. */
+  async function openFolderScreen(nextFolderId: string) {
+    if (inputLockCount.current > 0) return false;
+    const release = lockInput();
+    try {
+      if (!await flushAllEditors()) { showViewChangeBlocked(); return false; }
+      const screen = folderScreenRef.current, writing = screen ? screen.writing : selectedRef.current;
+      // From another folder's [글]: 쓰기's document is the one under the editor again.
+      if (screen && presentation.current.period === 'documents' && writing !== selectedRef.current && (!writing || documentsRef.current.some(doc => doc.id === writing))) setSelected(writing);
+      setFolderScreen({ tab: 'tasks', writing, shown: null });
+      setQuery(''); setFolderId(nextFolderId); setPeriod('all'); if (nextFolderId) setLastFolder(nextFolderId);
+      setLibraryOpen(false); setSourceOrigin(null); setMessage(''); setViewChangeNotice(null); setTaskNotice(null); setOrderNotice(null);
+      setFolderTop(count => count + 1);
+      return true;
+    } finally { release(); }
+  }
+  /** ‹ : back to the folder list (the folder stays chosen beside it on a wide screen). */
+  async function closeFolderScreen() {
+    if (!folderScreenRef.current || inputLockCount.current > 0) return;
+    const release = lockInput();
+    try {
+      if (!await flushAllEditors()) { showViewChangeBlocked(); return; }
+      const screen = folderScreenRef.current;
+      if (!screen) return;
+      if (presentation.current.period === 'documents' && screen.writing !== selectedRef.current && (!screen.writing || documentsRef.current.some(doc => doc.id === screen.writing))) setSelected(screen.writing);
+      setFolderScreen(null); setFolderId(''); setPeriod('all'); setMessage(''); setViewChangeNotice(null);
+      setFolderTop(count => count + 1);
+    } finally { release(); }
+  }
+  /** [할 일] | [글]. [글] shows the document last written there (else the first) in the editor of regions; with no
+   *  document it says so. Either starts at the top. */
+  async function chooseFolderTab(tab: 'tasks' | 'writing') {
+    const screen = folderScreenRef.current;
+    if (!screen || inputLockCount.current > 0) return;
+    const release = lockInput();
+    try {
+      if (!await flushAllEditors()) { showViewChangeBlocked(); return; }
+      const current = folderScreenRef.current;
+      if (!current) return;
+      if (tab === 'tasks') { setPeriod('all'); setFolderScreen({ ...current, tab }); }
+      else {
+        const list = folderWritingDocumentsRef.current, id = current.shown && list.some(doc => doc.id === current.shown) ? current.shown : list[0]?.id ?? null;
+        setFolderScreen({ ...current, tab, shown: id });
+        if (id) { setSelected(id); setOpened(previous => previous.includes(id) ? previous : [...previous, id]); setPeriod('documents'); }
+        else setPeriod('all');
+      }
+      setMessage(''); setViewChangeNotice(null); setTaskNotice(null);
+      setFolderTop(count => count + 1);
+    } finally { release(); }
+  }
+  /** [글]: a folded document's line opens it (one at a time; the one open before is saved first and folds). */
+  async function showFolderDocument(id: string) {
+    const screen = folderScreenRef.current;
+    if (!screen || screen.tab !== 'writing' || selectedRef.current === id || inputLockCount.current > 0) return;
+    const release = lockInput();
+    try {
+      if (!await flushAllEditors()) { showViewChangeBlocked(); return; }
+      const current = folderScreenRef.current;
+      if (!current || current.tab !== 'writing') return;
+      setFolderScreen({ ...current, shown: id });
+      setSelected(id); setOpened(previous => previous.includes(id) ? previous : [...previous, id]);
+    } finally { release(); }
+  }
+  /** 위험 3: a locked line of [글] opens in its own writing, at that line's task (a check under it: its task). */
+  function openFolderLine(documentId: string, row: TextRow) {
+    const taskId = row.kind === 'task' ? row.id : row.parentTaskId ?? row.taskId ?? null;
+    if (taskId) { void openDocument(documentId, taskId); return; }
+    void (async () => {
+      if (inputLockCount.current > 0) return;
+      const release = lockInput();
+      try {
+        if (!await flushAllEditors()) { showViewChangeBlocked(); return; }
+        setFolderScreen(null); setFolderId(''); setSelected(documentId); setPeriod('documents'); props.navigate({ view: 'space', id: documentId });
+      } finally { release(); }
+    })();
   }
   /** N9 (U50): the empty view's 할 일 추가 opens the view's own quick add, its title field focused. */
   function openQuickAddFromEmpty() {
@@ -1608,7 +1732,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       focusViewControl();
   }
   function openDetail(next: Detail) {
-    setTaskNotice(null);
+    setTaskNotice(null); setFolderDeleteAsk(null);
     previousFocus.current = document.activeElement as HTMLElement; detailExpected.current = space;
     const task = next?.kind === 'task' ? allTasks.find(task => task.id === next.id) : null;
     executionDraftOwner.current = { dialog: executionDraftOwner.current.dialog + 1, input: 0, taskId: task?.id ?? null };
@@ -1635,7 +1759,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (!await prepareDocumentScopeChange(id, () => current)) return;
       if (!current || dataRef.current.activeActorId !== actorId) return;
       setFolderId(programFolderAfterDocumentOpen(dataRef.current.spaces[actorId].text, selectedRef.current, id, presentation.current.folderId));
-      setSelected(id); setOpened(previous => previous.includes(id) ? previous : [...previous, id]); setPeriod('documents');
+      setSelected(id); setOpened(previous => previous.includes(id) ? previous : [...previous, id]); setPeriod('documents'); setFolderScreen(null);
     });
     documentRouteOpening.current = opening;
     void opening.catch(() => { if (current) setMessage('작성 중인 입력을 유지했습니다. 저장 상태를 확인한 뒤 글을 다시 열어 주세요.'); });
@@ -1717,7 +1841,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     // C5: the calendar's day sheet closes the moment its source opens; a modal left over the writing screen would block it.
     if (daySheet.current?.matches(':modal')) daySheet.current.close();
     setDayOpen(false);
-    setSelected(id); setLibraryOpen(false); setOpened(previous => previous.includes(id) ? previous : [...previous, id]); setPeriod('documents');
+    setSelected(id); setLibraryOpen(false); setOpened(previous => previous.includes(id) ? previous : [...previous, id]); setPeriod('documents'); setFolderScreen(null);
     props.navigate({ view: 'space', id }, taskId ? { writingLineId: taskId } : undefined);
     // The full App owns history/checkpoint focus. Alpha has no navigation port
     // and needs its retained editor restored directly after revealing it.
@@ -2012,7 +2136,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       <div className={close ? `${styles.findHeading} ${styles.dayGroupHeading}` : styles.dayGroupHeading}>
         <h2 id={close ? 'program-day-sheet-title' : undefined} className={styles.executionGroup}>{heading.label}</h2>
         <div className={styles.dayGroupActions}>{dayHeadingControls(heading)}{close && <button type="button" onClick={close}>닫기</button>}</div></div>
-      <ul className={styles.tasks}>{dayAddRow(heading)}{rows.map(renderListItem)}</ul>
+      <ul className={styles.tasks}>{dayAddRow(heading)}{rows.map(item => renderListItem(item))}</ul>
       {!rows.length && addingDate !== day && <div className={styles.dayEmpty}><p>이 날에는 할 일이 없습니다.</p>
         <button type="button" disabled={preparingDocumentAction} onClick={() => openGroupAdd(day)}>＋ 이 날에 할 일</button></div>}
     </>;
@@ -2568,10 +2692,57 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // N9 (U47): with no document at all the title is the tab's name, not a list button; '새 글 쓰기' starts the first one.
   const noDocuments = !docs.length && !selectedDoc && !selected;
   const documentTitleText = selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : noDocuments ? '쓰기' : '필요한 내용을 먼저 적으세요';
+  // F4-a (11/9): the 폴더 tab. Its list (A1·A6), or an open folder: the head (‹ · parents › · name · ⋯), [할 일]·[글].
+  const isOpenTask = (task: TextTask) => (taskProgress(task.id).current ?? (task.done ? 100 : 0)) !== 100;
+  const folderTab = mainTab === 'all' && !collectionMode;
+  const folderList = folderTab && !folderScreen && period === 'all';
+  const folderWriting = !!folderScreen && folderScreen.tab === 'writing' && period === 'documents';
+  const folderTree = useMemo(() => folderTab ? programFolderTree(space, isOpenTask) : null, [folderTab, space, taskProgress]);
+  const folderWritingDocuments = useMemo(() => folderScreen && folderId ? programFolderWritingDocuments(space, folderId, isOpenTask, space.position.documentId) : [],
+    [!!folderScreen, folderId, space, taskProgress]);
+  const folderWritingDocumentsRef = useRef(folderWritingDocuments); folderWritingDocumentsRef.current = folderWritingDocuments;
+  const folderOpenCount = useMemo(() => folderScreen ? programExecutionTasks(space, { folderId }).filter(isOpenTask).length : 0, [!!folderScreen, folderId, space, taskProgress]);
+  const folderPath = folderScreen && folderId ? programFolderAncestry(space, folderId) : [];
+  const folderName = folderId ? folderPath.at(-1)?.title ?? '폴더' : '모든 할 일';
+  const folderTitleOf = (id: string) => space.text.folders.find(row => row.id === id)?.title ?? '미분류';
+  useEffect(() => { if (!folderWriting) setFolderStatus(null); }, [folderWriting]);
+  const folderHead = folderScreen && <div className={folderStyles.head} data-folder-head>
+    <button type="button" className={folderStyles.back} aria-label="폴더 목록으로" disabled={preparingDocumentAction} onClick={() => void closeFolderScreen()}>‹</button>
+    {folderPath.length > 1 && <span className={folderStyles.path}>{folderPath.slice(0, -1).map(item => <button key={item.id} type="button" className={folderStyles.pathLink}
+      data-folder-parent={item.id} aria-label={`상위 폴더 ${item.title} 열기`} onClick={() => void openFolderScreen(item.id)}>{item.title} ›</button>)}</span>}
+    <h1>{folderName}</h1>
+    {folderWriting && folderStatus && <span className={folderStyles.status} aria-hidden="true" data-folder-status data-warn={folderStatus.warn || undefined}>{folderStatus.label}</span>}
+    {folderId && folderId !== 'folder-unfiled' && <button type="button" className={folderStyles.more} aria-label={`${folderName} 폴더 관리`} aria-haspopup="dialog" data-folder-manage
+      onClick={() => openDetail({ kind: 'folder', id: folderId })}>⋯</button>}
+    {folderWriting && <button type="button" className={folderStyles.finish} data-folder-finish onClick={() => { const active = document.activeElement; if (active instanceof HTMLElement) active.blur(); }}>완료</button>}
+  </div>;
+  // '모든 할 일' has no [글] (A1 ①): no tab line.
+  const folderTabs = folderScreen && folderId && <div className={folderStyles.seg} role="tablist" aria-label={`${folderName} 보기`}>
+    <button type="button" role="tab" className={folderStyles.tab} aria-selected={folderScreen.tab === 'tasks'} data-folder-tab="tasks" onClick={() => void chooseFolderTab('tasks')}>할 일 <small>{folderOpenCount}</small></button>
+    <button type="button" role="tab" className={folderStyles.tab} aria-selected={folderScreen.tab === 'writing'} data-folder-tab="writing" onClick={() => void chooseFolderTab('writing')}>글 <small>{folderWritingDocuments.length}</small></button>
+  </div>;
+  const folderCreate = async (title: string) => {
+    if (classificationRequest.current) return false;
+    classificationRequest.current = true; setClassificationCreating(true);
+    try { return (await run('폴더 만들기', current => createProgramFolder(current, { ...base(current), title, parentId: null }))).ok; }
+    finally { classificationRequest.current = false; setClassificationCreating(false); }
+  };
+  const folderListView = (current: string | null) => folderTree && <ProgramFolderList tree={folderTree} current={current} lastOpened={lastFolder}
+    disabled={preparingDocumentAction || classificationCreating} onOpen={id => void openFolderScreen(id)} onCreate={folderCreate} />;
+  // [할 일] (A2): 지난 · 오늘 · 앞으로 · 날짜 미정, the finished ones folded; a row as 오늘's (check, ⋯ with 미루기).
+  const folderGroups = folderScreen && folderScreen.tab === 'tasks' && period === 'all' ? programFolderTaskGroups(executionRows, today,
+    entry => entry.kind === 'text-task' ? !isOpenTask(entry.task) : entry.row.completion === 'completed') : null;
+  // The document most of the folder's tasks are written in goes unnamed on its rows (A2 ③: '늘 쓰는 글').
+  const folderMainDocument = (() => {
+    if (!folderGroups) return null;
+    const counts = new Map<string, number>();
+    for (const entry of executionRows) if (entry.kind === 'text-task') counts.set(entry.task.docId, (counts.get(entry.task.docId) ?? 0) + 1);
+    return [...counts].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+  })();
   // Today visual A (T1): "오늘" and its date in two parts (one line on a 390 phone); a week likewise.
   const titleParts = programPeriodTitleParts(period, date, today);
   const periodTitle = <h1>{titleParts ? <><span className={styles.titleMain}>{titleParts.main}</span><span className={styles.titleSub}>{titleParts.sub}{period === 'week' && folder ? ` · ${folder.title}` : ''}</span></>
-    : period === 'all' ? (collectionMode ? '전체 할 일' : folder ? folder.title : '분류')
+    : period === 'all' ? (collectionMode ? '전체 할 일' : folder ? folder.title : '폴더')
     : `${period === 'month' ? programMonthTitle(date, today) : periods.find(([key]) => key === period)?.[1]}${folder ? ` · ${folder.title}` : ''}`}</h1>;
   // T3: the date chip's count, today's rows still open (what the list shows; presentation only).
   const openOnDate = executionList.filter(item => item.kind === 'row' && item.group === 'on-date'
@@ -2610,7 +2781,20 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     return addingDate === item.addDate && item.addDate && <ProgramGroupAddRow key={`${actorId}:${item.addDate}`} date={item.addDate} dayLabel={programCalendarDate(item.addDate, today)} inputRef={groupAddField}
       onAdd={(title, time) => addOnDay(item.addDate!, title, time)} onClose={() => closeGroupAdd(item.addDate!)} />;
   }
-  function renderListItem(item: ProgramExecutionListItem): React.ReactNode {
+  /** F4-a (A2 ③④): a folder row's one line — its day (지난 in the late colour; 앞으로; 끝낸 일), time, '/ 하위' (on 모든
+   *  할 일, its folder), and its document unless it is the folder's main one. */
+  function folderRowMeta(task: TextTask, group: ProgramFolderTaskGroupKey | 'done') {
+    const parts: React.ReactNode[] = [];
+    if (completingTaskIds.has(task.id)) parts.push(<span className={styles.rowBusy}>{isOpenTask(task) ? '완료 대기 중' : '다시 열기 대기 중'}</span>);
+    if (task.date && group === 'late') parts.push(<em className={styles.rowLate}>{programCalendarDate(task.date, today)}</em>);
+    else if (task.date && (group === 'later' || group === 'done')) parts.push(programCalendarDate(task.date, today));
+    if (task.time) parts.push(task.time);
+    const own = programTaskFolderId(space, task);
+    if (!folderId || own !== folderId) parts.push(<span className={styles.rowFolder}>/ {folderTitleOf(own)}</span>);
+    if (task.docId !== folderMainDocument) parts.push(task.docTitle);
+    return parts.map((part, index) => <React.Fragment key={index}>{index ? ' · ' : ''}{part}</React.Fragment>);
+  }
+  function renderListItem(item: ProgramExecutionListItem, folderMeta?: ProgramFolderTaskGroupKey | 'done'): React.ReactNode {
           if (selecting && item.kind === 'row') return renderSelectRow(item);
           if (item.kind === 'heading') return <React.Fragment key={item.key}>
             {/* T9: 오늘·어제·내일 and the date beside it, as in writing; the heading's spoken name stays the label. */}
@@ -2649,7 +2833,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <button className={styles.taskTitle} aria-label={`${repeatShown ? `${programRepeatTitle(task.title)} · ${repeatShown.block ? '반복 멈춤' : `반복 ${repeatShown.marker.label}`}` : task.title}${origin.label !== '직접 작성' ? ` · ${origin.label}` : ''} · ${task.docTitle} 원문 열기`} aria-busy={sourceWaitingTask === task.id || undefined} onClick={event => moving ? void moveBefore(moving, entry.key) : openFromList(task, event.currentTarget)}>{(line => line ? <span className={styles.taskTitleText}>{programRepeatTitle(task.title)}<span className={styles.repeatChip}>{line.block ? '반복 멈춤' : `↻ ${line.marker.label}`}</span></span>
               : <span className={styles.taskTitleText}>{task.title}</span>)(repeatShown)}
               {/* R4's waits, now visible on the row. The title's aria-busy and the host notice still do the announcing. */}
-              <small>{sourceWaitingTask === task.id ? <span className={styles.rowBusy}>원문 여는 중…</span> : <>
+              <small>{sourceWaitingTask === task.id ? <span className={styles.rowBusy}>원문 여는 중…</span> : folderMeta ? folderRowMeta(task, folderMeta) : <>
                 {/* T6: the row's folder first, small, as "/ 회사 일" (none for 미분류 or no folder); rows stay in their order. */}
                 {(flow => flow ? <><span className={styles.rowFolder} data-row-flow>{flow}</span> · </>
                   : (scope => scope && <><span className={styles.rowFolder}>/ {scope}</span> · </>)(rowFolderTitle(task)))(rowFlowTitle(task))}
@@ -2690,7 +2874,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // U44: on a tablet held sideways the title and ⋯ go into the open document's tool line, and the notices that sat
   // between them and the tools go under that line, above the body. Only their place changes: the editor keeps its key
   // and mount, so a composition, the caret and ↶ survive crossing the boundary (the tablet turned, the window sized).
-  const headInToolbar = tabletLandscape && !!props.hostMainTabs && !!props.noteHeader && !!selectedDoc && opened.includes(selectedDoc.id);
+  const headInToolbar = tabletLandscape && !!props.hostMainTabs && !!props.noteHeader && !!selectedDoc && opened.includes(selectedDoc.id) && !folderScreen;
   const docTitle = <>{sourceOriginOpen && <button type="button" className={styles.sourceReturn}
     aria-label={sourceOrigin?.view.monthView === 'grid' ? `오늘 · ${programMonthTitle(sourceOrigin.view.date, today)} 달력으로 돌아가기` : `${sourceOriginLabel} 목록으로 돌아가기`} onClick={() => void returnToSourceOrigin()}>← {sourceOriginLabel}</button>}<h1>{props.hostMainTabs && !noDocuments
     ? <button ref={titleToggle} type="button" className={styles.titleButton} aria-haspopup="dialog" aria-expanded={libraryOpen} aria-controls="program-library"
@@ -2748,7 +2932,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     onCompositionStartCapture={() => { libraryComposing.current = true; }} onCompositionEndCapture={() => { libraryComposing.current = false; if (findBlocked.current) setTimeout(clearFindBlocked, 0); }}
     onClickCapture={guardOccurrenceDraft} onKeyDownCapture={event => { if (!['Tab', 'Shift', 'Escape'].includes(event.key)) guardOccurrenceDraft(event); }}>
     <div className={styles.contextActions}>
-      <nav ref={viewMenu} className={styles.periods} aria-label="기본 이동" hidden={!!props.hostMainTabs}>{mainPeriods.map(([key, label]) => <button key={key} data-program-period={key} aria-current={period === key || key === 'today' && ['week', 'month', 'undated'].includes(period) ? 'page' : undefined}
+      <nav ref={viewMenu} className={styles.periods} aria-label="기본 이동" hidden={!!props.hostMainTabs}>{mainPeriods.map(([key, label]) => <button key={key} data-program-period={key} aria-current={mainTab === key ? 'page' : undefined}
         onClick={() => void chooseMainTab(key as ProgramMainTab)}>{key === 'all' && collectionMode ? '전체 할 일' : label}</button>)}</nav>
       {period !== 'documents' && !props.noteHeader && findActions}
     </div>
@@ -2805,15 +2989,22 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         : <p role="alert" className={styles.error}>{message}</p>)}
       {!libraryOpen && !detail && viewChangeNoticeContent}
       {!detail && !sheetOpen && taskNoticeContent}
+      {/* F4-a (F4 1280): on a wide screen the folder list stays beside an open folder. The frame is always here (it is
+          display: contents elsewhere), so the editors below never remount when the tab changes. */}
+      <div className={styles.folderLayout} data-folder-layout={folderTab && folderScreen ? '' : undefined}>
+      {folderTab && folderScreen && <aside className={styles.folderSide} aria-label="폴더"><h2>폴더</h2>{folderListView(folderId)}</aside>}
+      <div className={styles.folderMain}>
       <div hidden={period !== 'documents'}>
+        {/* F4-a (A3): [글] — the folder's head and tabs over the document shown, its parts of the folder only. */}
+        {folderWriting && <>{folderHead}{folderTabs}{props.noteHeader && <div className={styles.periodNotice}>{props.noteHeader}</div>}</>}
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
-        {!headInToolbar && <><div className={styles.docHeading}>{docTitle}{docActions}</div>{docNotices}</>}
+        {!headInToolbar && !folderWriting && <><div className={styles.docHeading}>{docTitle}{docActions}</div>{docNotices}</>}
         {props.nativeAuthoringEnabled&&selectedDoc&&!selectedTrashed&&!retentionSource&&(props.hostMainTabs
           ? <dialog ref={authoringSheet} className={`${styles.findDialog} ${styles.authoringSheet}`} aria-labelledby="program-authoring-title" onCancel={event => { event.preventDefault(); authoringSheet.current?.close(); }}>
             <div className={styles.findHeading}><h2 id="program-authoring-title">반복 · Flow</h2><button type="button" onClick={() => authoringSheet.current?.close()}>닫기</button></div>
             <ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{authoringSheet.current?.close();void openDocument(documentId,taskId);}}/>
           </dialog>
-          : showsPersonalAuthoring(selectedDoc.id)&&<div ref={authoringBox}><ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openDocument(documentId,taskId);}}/></div>)}
+          : !folderWriting&&showsPersonalAuthoring(selectedDoc.id)&&<div ref={authoringBox}><ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openDocument(documentId,taskId);}}/></div>)}
         {opened.filter(id => docs.some(doc => doc.id === id)).map(id => { const recent = recentViewOf(id), recentTop = recentLine(id, recent, false), views = viewSwitch(id);
           const initial = positions.current[id] ?? (space.position.documentId === id ? space.position : undefined);
           return <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor key={recent ? `recent:${recentDoneShown[id] ? 'done' : 'folded'}` : 'whole'}
@@ -2828,7 +3019,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           headStart={headInToolbar && selected === id ? docTitle : undefined} headEnd={headInToolbar && selected === id && !phoneLayout ? docActions : undefined}
           headBelow={headInToolbar && selected === id || recentTop || views || flowBand && selected === id ? <>{headInToolbar && selected === id ? docNotices : null}{selected === id ? flowBand : null}{views}{recentTop}</> : undefined}
           onWritingExample={selected === id && writingExampleReady ? () => { void applyWritingExample(); } : undefined}
-          folderId={collectionMode ? '' : folderId} directWriting={!!collectionMode} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
+          folderId={editorFolderOf(id)} directWriting={!!collectionMode} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
+          folderScreen={folderWriting && selected === id ? { open: folderWritingDocuments.find(doc => doc.id === id)?.open ?? 0, onStatus: setFolderStatus } : undefined}
+          onOpenFolderLine={folderWriting && selected === id ? row => openFolderLine(id, row) : undefined}
           onContinueWholeDocument={stage => {
             // folderId controls every retained editor. Never unmount another pending region.
             if (props.canContinueWholeDocument?.() === false || inputLockCount.current > 0 || selected !== id || period !== 'documents'
@@ -2837,7 +3030,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               setMessage('다른 변경이나 저장 중인 입력을 확인한 뒤 전체 문서로 이어서 편집해 주세요.'); return false;
             }
             if (!stage()) return false;
-            setFolderId(''); setMessage(''); return true;
+            setFolderId(''); setMessage('');
+            // F4-a (A3 ①): '전체 문서 ›' from [글] goes to 쓰기 with this document, at the line being written.
+            if (folderScreenRef.current) { setFolderScreen(null); props.navigate({ view: 'space', id }); }
+            return true;
           }}
           writingCompute={props.writingCompute} writingContext={props.writingContext}
           onCommit={(next, label, options) => {
@@ -2918,11 +3114,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           }); }}
           onRegisterInputLock={lock => { inputLocks.current[id] = lock; lock?.(inputLockCount.current > 0); }}
           onGatherFolder={collectionMode ? undefined : scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { keepViewFolder(id, scopeId); void changeFolder(scopeId); } }}
-          onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { if (collectionMode) { setMessage('기존 항목 분류는 모음이 아닙니다. 전체 문서에서 계속 작성합니다.'); return; } setFolderId(scopeId); setPeriod('all'); } else void openDocument(scopeId); }}
+          onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { if (collectionMode) { setMessage('기존 항목 분류는 모음이 아닙니다. 전체 문서에서 계속 작성합니다.'); return; } void openFolderScreen(scopeId); } else void openDocument(scopeId); }}
           onConnectFlow={(docId, lineId, insertAfter) => openDetail({ kind: 'connect', docId, lineId, insertAfter })}
           readOnly={programDocumentContentLock(space, id) !== 'active'} disabledReason={space.documentTrash?.[id] ? '휴지통의 문서입니다. 복원하면 삭제 전 상태로 돌아갑니다.' : retainedIds.has(id) ? '저장본으로 되돌리며 보관된 내용 · 읽기 전용' : '보관한 문서입니다. 보관에서 꺼내면 이어서 쓸 수 있습니다.'}
         />{recentLine(id, recent, true)}</div>; })}
-        {selectedDoc && !selectedArchived && <ProgramRecurrence key={`${actorId}:${selectedDoc.id}`} data={data} mutate={mutate} today={today} period="documents" date={date} documentId={selectedDoc.id} onPlanApplied={focusAppliedPlan}
+        {/* F4-a (A3 ⑤): the folder's other documents, one folded line each; a press opens that one instead (one editor). */}
+        {folderWriting && folderWritingDocuments.length > 1 && <ul className={folderStyles.docFolds} aria-label="이 폴더가 나오는 다른 글">
+          {folderWritingDocuments.filter(doc => doc.id !== selected).map(doc => <li key={doc.id}><button type="button" className={folderStyles.docFold} data-folder-document={doc.id}
+            data-done-only={!doc.open && doc.done ? '' : undefined} disabled={preparingDocumentAction} onClick={() => void showFolderDocument(doc.id)}
+            aria-label={`${doc.title} 펼치기 · ${doc.open ? `할 일 ${doc.open}개` : doc.done ? `끝낸 일만 ${doc.done}개` : '할 일 없음'}`}>
+            <span>{doc.title}</span><small>{doc.open ? `할 일 ${doc.open}` : doc.done ? `끝낸 일만 ${doc.done}` : '할 일 없음'}{doc.lastDate ? ` · ${programCalendarDate(doc.lastDate, today, false)}` : ''}</small><i aria-hidden="true">⌄</i></button></li>)}</ul>}
+        {selectedDoc && !selectedArchived && !folderWriting && <ProgramRecurrence key={`${actorId}:${selectedDoc.id}`} data={data} mutate={mutate} today={today} period="documents" date={date} documentId={selectedDoc.id} onPlanApplied={focusAppliedPlan}
           presentation={recurrencePresentation.documents[selectedDoc.id] ?? { page: 0, includeHeld: false, includeExcluded: false }} onPresentationChange={value => setRecurrencePresentation(previous => ({ ...previous, documents: { ...previous.documents, [selectedDoc.id]: value } }))}
           onRegisterEditors={port => { recurrencePorts.current[selectedDoc.id] = port; }}
           onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={onUndo} onRedo={onRedo} />}
@@ -2930,7 +3132,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       <div ref={monthBox} hidden={period === 'documents'} className={styles.executionView} data-note-today={compactNoteToday || undefined} data-period={period}>
         {period !== 'all' && !selecting && <label className={styles.periodPicker}>기간<select aria-label="기간 보기" value={period} onChange={event => { void changePeriod(event.target.value as ProgramPeriod); }}>{periods.filter(([key]) => !['documents', 'all'].includes(key)).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>}
         <ProgramRecurrencePlanRecovery data={data} today={today} folderId={folderId || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
-        <div className={styles.periodHeading}>{selecting ? selectTitle : compactNoteToday ? <div className={styles.notePeriodTitle}>{periodTitle}<div className={styles.notePeriodActions}>
+        {/* F4-a: the 폴더 tab's list says '폴더'; an open folder has its own head and [할 일]·[글]. */}
+        {folderScreen ? <>{folderHead}{folderTabs}</> : folderList ? <div className={styles.periodHeading}><h1>폴더</h1></div> : <div className={styles.periodHeading}>{selecting ? selectTitle : compactNoteToday ? <div className={styles.notePeriodTitle}>{periodTitle}<div className={styles.notePeriodActions}>
           <button type="button" className={styles.noteAdd} aria-expanded={noteQuickOpen} aria-controls="program-note-quick-task" onClick={() => setNoteQuickOpen(value => !value)}>할 일 추가</button>
           <details ref={noteFindMenu} className={styles.notePeriodTools} onKeyDown={event => {
             if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
@@ -2941,28 +3144,21 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               onClick={() => { if (noteFindMenu.current) noteFindMenu.current.open = false; void resetDayOrder(date); }}>오늘 순서를 시간순으로</button>}</div></details>
         </div></div> : period === 'month' ? monthTitleRow : periodTitle}{!selecting && !['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date); }}>‹</button>
           {/* T3: the date as a chip that opens the date input's own picker; the input stays (unseen) with its label. */}
-          <button type="button" className={styles.dateChip} onClick={openDatePicker}>{programDateChipLabel(period, date, today, openOnDate)}</button><label className={styles.dateField}>날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value) && !keepWrittenDay()) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date); }}>›</button></div>}</div>
+          <button type="button" className={styles.dateChip} onClick={openDatePicker}>{programDateChipLabel(period, date, today, openOnDate)}</button><label className={styles.dateField}>날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value) && !keepWrittenDay()) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => { if (!keepWrittenDay()) setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date); }}>›</button></div>}</div>}
         {props.noteHeader && <div className={styles.periodNotice}>{props.noteHeader}</div>}
         {selecting && selectBlocks && [...selectBlocks.values()].some(Boolean) && <p className={styles.selectNote}>반복 회차·끝낸 할 일은 고를 수 없습니다</p>}
-        {props.noteStatus && <div className={styles.periodStatus}>{props.noteStatus}{!compactNoteToday && period !== 'documents' && !selecting && findActions}</div>}
-        {period === 'all' && !collectionMode && <div className={styles.classificationActions}><label className={styles.classificationPicker}>분류<select aria-label="할 일 분류 보기" value={folderId} onChange={event => { void changeFolder(event.target.value); }}><option value="">모든 분류</option>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
-          {!selecting && <details className={styles.classificationCreate}><summary>새 분류</summary><form onSubmit={async event => {
-            event.preventDefault(); const form = event.currentTarget, title = String(new FormData(form).get('title') ?? '');
-            if (classificationRequest.current) return;
-            classificationRequest.current = true; setClassificationCreating(true);
-            try {
-              const result = await run('분류 만들기', current => createProgramFolder(current, { ...base(current), title, parentId: null }));
-              if (result.ok) { form.reset(); form.closest('details')?.removeAttribute('open'); }
-            } finally { classificationRequest.current = false; setClassificationCreating(false); }
-          }}><label>분류 이름<input name="title" required maxLength={100} disabled={classificationCreating} /></label><button type="submit" disabled={preparingDocumentAction || classificationCreating}>{classificationCreating ? '만드는 중…' : '만들기'}</button></form></details>}</div>}
+        {props.noteStatus && <div className={styles.periodStatus}>{props.noteStatus}{!compactNoteToday && period !== 'documents' && !selecting && !folderTab && findActions}</div>}
+        {/* F4-a (A1): the 분류 picker and '새 분류' became the folder list (its ＋ 새 폴더). */}
+        {folderList && folderListView(null)}
         {collectionMode && <p className={styles.muted}>모음과 관계없이 모든 문서의 같은 할 일을 날짜별로 봅니다.</p>}
-        {props.hostMainTabs ? viewScope.length > 0 && <div className={styles.scopeLine} role="group" aria-label="지금 보는 범위">
+        {folderTab ? null : props.hostMainTabs ? viewScope.length > 0 && <div className={styles.scopeLine} role="group" aria-label="지금 보는 범위">
           {viewScope.map(item => <span key={item.kind} className={styles.scopeChip}>{item.label}
             {!selecting && <button type="button" aria-label={`${item.label} 조건 풀기`} onClick={() => void clearScope(item.kind)}>×</button>}</span>)}
           {!selecting && <button type="button" className={styles.scopeAll} onClick={() => void changePeriod('today', true)}>전체로 보기</button>}</div>
           : (folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { void changeFolder(''); setQuery(''); }}>필터 해제</button></div>}
         {!monthGrid && range.from && range.to && range.to !== range.from && <p className={styles.muted}>{programCalendarDate(range.from, today)} ~ {programCalendarDate(range.to, today)}</p>}
-        {!monthGrid && !selecting && <details className={styles.quickDisclosure} ref={quickDisclosure} data-collapsible id={compactNoteToday ? 'program-note-quick-task' : undefined}
+        {/* F4-a: no 할 일 추가 on the 폴더 tab (its ＋ 오늘 할 일 comes with F4-b). */}
+        {!monthGrid && !selecting && !folderTab && <details className={styles.quickDisclosure} ref={quickDisclosure} data-collapsible id={compactNoteToday ? 'program-note-quick-task' : undefined}
           {...(compactNoteToday ? { open: noteQuickOpen, hidden: !noteQuickOpen, onToggle: (event: React.SyntheticEvent<HTMLDetailsElement>) => setNoteQuickOpen(event.currentTarget.open) } : {})}>
           <summary>할 일 추가</summary>
           <form className={styles.quick} onSubmit={quickTask}>
@@ -2970,7 +3166,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           <label>빠른 할 일<input name="title" required placeholder="할 일을 적으세요" maxLength={500} /></label><label>실행 날짜<input key={period + date} type="date" name="date" defaultValue={period === 'undated' ? '' : date} /></label><button disabled={!!collectionMode && !quickTarget}>추가</button></form>
         </details>}
         {moving && <p role="status">옮길 행의 앞을 선택하세요. <button onClick={() => setMoving(null)}>취소</button></p>}
-        {programSeriesMetadata(space).length > 0 && <div className={styles.actions}><label><input type="checkbox" checked={includeHeldOccurrences} onChange={event => setIncludeHeldOccurrences(event.target.checked)} /> 보류 회차</label><label><input type="checkbox" checked={includeExcludedOccurrences} onChange={event => setIncludeExcludedOccurrences(event.target.checked)} /> 제외 회차</label>
+        {programSeriesMetadata(space).length > 0 && !folderList && !(folderScreen && folderScreen.tab === 'writing') && <div className={styles.actions}><label><input type="checkbox" checked={includeHeldOccurrences} onChange={event => setIncludeHeldOccurrences(event.target.checked)} /> 보류 회차</label><label><input type="checkbox" checked={includeExcludedOccurrences} onChange={event => setIncludeExcludedOccurrences(event.target.checked)} /> 제외 회차</label>
           {!selecting && <><button onClick={() => void onUndo()}>변경 되돌리기</button><button onClick={() => void onRedo()}>다시 실행</button></>}
           {period === 'all' && <><button disabled={!occurrencePage} onClick={() => setOccurrencePage(value => value - 1)}>이전 회차 구간</button><span>회차 조회 {occurrencePage + 1}</span><button disabled={!occurrenceResult.hasMore || occurrencePage >= 128} onClick={() => setOccurrencePage(value => value + 1)}>다음 회차 구간</button>
             {occurrencePage >= 128 && occurrenceResult.hasMore && <p role="status">조회 상한에 도달했습니다. 뒤에 회차가 더 있으며, 반복이 끝난 것은 아닙니다. 위에서 날짜를 고른 뒤 주간 목록으로 확인해 주세요.</p>}
@@ -2981,8 +3177,16 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {occurrenceResult.issues.includes('query-window-limit') && <p role="alert">조회 가능한 회차 범위를 넘었습니다. 표시된 목록이 전체는 아니며, 원문과 기존 기록은 보존했습니다.</p>}
         {occurrenceResult.pendingStarts.map(entry => <p role="status" key={entry.itemRef}>{entry.title} · {entry.reason === 'anchor-required' ? '내 기준일' : '내 시작일'} 미정
           <button type="button" onClick={() => void openDocument(entry.documentId, entry.lineId)}>사본에서 날짜 정하기</button></p>)}
+        {/* F4-a (F4 상태): an open folder's empty states — [할 일] with no open task (its finished ones still fold
+            below), [글] with no document of the folder. */}
+        {folderGroups && !folderGroups.open && <div className={folderStyles.empty} data-folder-empty="tasks">
+          <p>{folderId ? '이 폴더에 열린 할 일이 없습니다.' : '열린 할 일이 없습니다.'}</p>
+          {folderId && <p>쓰기에서 ‘- /{folderName}’ 줄 아래에 적으면 여기 모입니다.</p>}
+          <button type="button" onClick={() => void chooseMainTab('documents')}>{(title => title ? `${title}에서 쓰기` : '쓰기에서 쓰기')(docs.find(doc => doc.id === folderScreen?.writing)?.title)}</button></div>}
+        {folderScreen && folderScreen.tab === 'writing' && period === 'all' && <div className={folderStyles.empty} data-folder-empty="writing">
+          <p>이 폴더가 나오는 글이 없습니다.</p><p>할 일을 다른 폴더로 옮겼거나 폴더 줄을 지웠을 수 있습니다.</p></div>}
         {/* N9 (U50): with no task anywhere there is nothing to find; the button adds the first one instead. */}
-        {!executionRows.length && !monthGrid && (noTasks => <div className={styles.empty}><p>{folderId || query ? '현재 조회 조건에 맞는 할 일이 없습니다.' : noTasks ? '아직 할 일이 없습니다.' : '이 보기에 할 일이 없습니다.'}</p>
+        {!executionRows.length && !monthGrid && !folderTab && (noTasks => <div className={styles.empty}><p>{folderId || query ? '현재 조회 조건에 맞는 할 일이 없습니다.' : noTasks ? '아직 할 일이 없습니다.' : '이 보기에 할 일이 없습니다.'}</p>
           {period !== 'all' && period !== 'documents' && (noTasks && !folderId && !query && !selecting
             ? <button type="button" onClick={openQuickAddFromEmpty}>할 일 추가</button>
             : <button type="button" onClick={() => void showAllTasksFromEmpty()}>전체 할 일에서 찾기</button>)}</div>)(!M.tasks(space.text).length && !programSeriesMetadata(space).length)}
@@ -3030,15 +3234,25 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               if (daySheetLook && event.target === event.currentTarget && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) closeDaySheet(); }}>
             {dayShown && <>{dayGroup(dayShown, daySheetLook ? closeDaySheet : undefined)}{sheetOpen && !detail && taskNoticeContent}{sheetOpen && !detail && orderNoticeContent}{sheetOpen && !detail && checkNoticeContent}</>}
           </dialog>
-        </div> : <ul className={styles.tasks} onKeyDown={selecting ? moveSelectFocus : undefined}>{listItems.map(renderListItem)}</ul>}
+        </div> : folderGroups ? <ul className={styles.tasks} data-folder-tasks>
+          {/* F4-a (A2): four heads in one rule (ink 14/700, the date muted beside it); rows as 오늘's, their meta one line. */}
+          {folderGroups.groups.map(group => <React.Fragment key={group.key}>
+            <li className={folderStyles.group} data-folder-group={group.key}><h2>{PROGRAM_FOLDER_TASK_GROUPS[group.key]}
+              {group.key === 'late' && <small>못 한 일 {group.rows.length}</small>}{group.key === 'today' && <small>{programCalendarDate(today, '')}</small>}</h2></li>
+            {group.rows.map(entry => renderListItem({ kind: 'row', entry, group: null, dated: false }, group.key))}</React.Fragment>)}
+          {folderGroups.done.length > 0 && <li className={folderStyles.doneToggle}><button type="button" data-folder-done aria-expanded={folderDoneOpen}
+            onClick={() => setFolderDoneOpen(open => !open)}>{folderDoneOpen ? `끝낸 일 ${folderGroups.done.length}개 접기 ⌃` : `끝낸 일 ${folderGroups.done.length}개 ›`}</button></li>}
+          {folderDoneOpen && folderGroups.done.map(entry => renderListItem({ kind: 'row', entry, group: null, dated: false }, 'done'))}
+        </ul> : folderTab ? null : <ul className={styles.tasks} onKeyDown={selecting ? moveSelectFocus : undefined}>{listItems.map(item => renderListItem(item))}</ul>}
         {selecting && selectNotice && <div className={styles.orderNotice}><ProgramNoticeRow notice={{ tone: 'info', text: selectNotice }} onClose={() => setSelectNotice(null)} /></div>}
         {/* I7: under the list, held at the bottom of the screen (above the bottom tabs on a phone) while it scrolls. */}
         {!detail && !sheetOpen && orderNoticeContent}
         {!detail && !sheetOpen && checkNoticeContent}{!detail && !sheetOpen && repeatNoticeContent}{!detail && !bottomNoticeShown && legacyRepeatContent}
         {!detail && datesNoticeContent}{!detail && carryNoticeContent}
       </div>
+      </div></div>
     </div>
-    <dialog ref={dialog} className={styles.dialog} data-task-detail={detail?.kind === 'task' ? true : undefined} aria-labelledby="program-detail-title" onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2 id="program-detail-title">{detail?.kind === 'task' ? detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 정리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>
+    <dialog ref={dialog} className={styles.dialog} data-task-detail={detail?.kind === 'task' ? true : undefined} aria-labelledby="program-detail-title" onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2 id="program-detail-title">{detail?.kind === 'task' ? detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 관리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {!libraryOpen && detail && viewChangeNoticeContent}
       {detail?.kind === 'task' && detailTask && <>
@@ -3058,6 +3272,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           {readProgramTaskOrigin(data, detailTask).sourceUrl && <a href={readProgramTaskOrigin(data, detailTask).sourceUrl!} target="_blank" rel="noopener noreferrer">자료 원문 열기</a>}
           {(detailSchedulePending || detailProgressPending) && <p className={styles.muted}>날짜·시간 또는 진행 입력을 적용하거나, 닫아 취소한 뒤 원문을 열어 주세요.</p>}
         </div>
+        {/* F4-a (A8 ③, FR-1): the task's folder, a link to that folder's screen (its [할 일], from the top). */}
+        {!collectionMode && (own => <button type="button" className={folderStyles.taskFolder} data-task-folder={own} disabled={detailSchedulePending || detailProgressPending}
+          aria-label={`폴더 ${programFolderAncestry(space, own).map(item => item.title).join(' › ') || folderTitleOf(own)} 보기`}
+          onClick={() => { close(); void openFolderScreen(own); }}><span>폴더</span><b>{programFolderAncestry(space, own).map(item => item.title).join(' › ') || folderTitleOf(own)} ›</b></button>)(programTaskFolderId(space, detailTask))}
         {props.capabilities?.taskClassification !== false && canClassifyProgramTask(data, detailTask.id) && <label className={styles.field}>할 일 분류<select aria-label="할 일 분류" value={detailTask.scopeId ?? 'folder-unfiled'} disabled={detailSchedulePending || detailProgressPending} onChange={async event => {
           const folderId = event.target.value;
           await run('할 일 분류', current => setProgramTaskClassification(current, { ...base(current), taskId: detailTask.id, folderId }));
@@ -3085,13 +3303,24 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         }} />
         </details>
       </>}
-      {detail?.kind === 'folder' && <>
-        <form onSubmit={async event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title') ?? ''); await run('폴더 이름 변경', current => renameProgramFolder(current, { ...base(current), folderId: detail.id, title })); }}><label>폴더 이름<input key={detail.id} name="title" defaultValue={space.text.folders.find(item => item.id === detail.id)?.title} required /></label><button>이름 변경</button>
+      {/* F4-a (A7, FR-8): 폴더 관리 — 이름 · 상위 폴더 · 이 폴더가 나오는 곳 · 삭제, what a deletion leaves said before it is pressed. */}
+      {detail?.kind === 'folder' && <div className={folderStyles.manage} data-folder-manage-sheet>
+        <form onSubmit={async event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title') ?? ''); await run('폴더 이름 변경', current => renameProgramFolder(current, { ...base(current), folderId: detail.id, title })); }}>
+          <label><span className={folderStyles.label}>이름</span><span className={folderStyles.rename}><input key={detail.id} name="title" defaultValue={space.text.folders.find(item => item.id === detail.id)?.title} required maxLength={100} /><button>이름 변경</button></span></label>
           {/* W15 (F21): a rename here reaches every document's folder line for this folder. */}
-          {(count => count > 0 && <p data-folder-line-documents>문서 {count}곳의 폴더 줄도 바뀝니다</p>)(new Set(space.text.bindings.filter(row => row.kind === 'scope' && row.scopeId === detail.id).map(row => row.docId)).size)}</form>
-        <label className={styles.field}>상위 폴더<select value={space.text.folders.find(item => item.id === detail.id)?.parentId ?? ''} onChange={event => { const parentId = event.target.value || null; void run('폴더 이동', current => moveProgramFolder(current, { ...base(current), folderId: detail.id, parentId })); }}><option value="">최상위</option>{folderOptions.filter(item => item.id !== detail.id).map(item => <option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
-        <p>폴더를 삭제해도 문서와 할 일은 미분류에 남습니다. 하위 폴더는 최상위로 옮겨집니다.</p><button onClick={async () => { const result = await run('폴더 삭제', current => deleteProgramFolder(current, { ...base(current), folderId: detail.id })); if (result.ok) { setFolderId('folder-unfiled'); close(); } }}>폴더만 삭제</button>
-      </>}
+          {(count => count > 0 && <p className={folderStyles.note} data-folder-line-documents>문서 {count}곳의 폴더 줄도 바뀝니다</p>)(new Set(space.text.bindings.filter(row => row.kind === 'scope' && row.scopeId === detail.id).map(row => row.docId)).size)}</form>
+        <label><span className={folderStyles.label}>상위 폴더</span><select value={space.text.folders.find(item => item.id === detail.id)?.parentId ?? ''} onChange={event => { const parentId = event.target.value || null; void run('폴더 이동', current => moveProgramFolder(current, { ...base(current), folderId: detail.id, parentId })); }}><option value="">최상위</option>{folderOptions.filter(item => item.id !== detail.id).map(item => <option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
+        <span className={folderStyles.label}>이 폴더가 나오는 곳</span>
+        {(documents => <button type="button" className={folderStyles.place} data-folder-place onClick={() => { const id = detail.id; close(); void (folderScreenRef.current && folderId === id ? chooseFolderTab('writing') : openFolderScreen(id)); }}>
+          <span>문서 {documents}개 · 열린 할 일 {programExecutionTasks(space, { folderId: detail.id }).filter(isOpenTask).length}개</span><span aria-hidden="true">›</span></button>)(
+          folderScreen && folderId === detail.id ? folderWritingDocuments.length : programFolderWritingDocuments(space, detail.id, isOpenTask).length)}
+        {folderDeleteAsk === detail.id ? <div className={folderStyles.confirm} role="group" aria-label="폴더 삭제 확인"><p>‘{space.text.folders.find(item => item.id === detail.id)?.title}’ 폴더를 삭제할까요?</p>
+          <button type="button" className={folderStyles.danger} data-folder-delete-confirm onClick={async () => { const id = detail.id, result = await run('폴더 삭제', current => deleteProgramFolder(current, { ...base(current), folderId: id })); setFolderDeleteAsk(null);
+            if (result.ok) { close(); if (folderScreenRef.current && folderId === id) void closeFolderScreen(); else setFolderId('folder-unfiled'); } }}>삭제</button>
+          <button type="button" onClick={() => setFolderDeleteAsk(null)}>취소</button></div>
+          : <button type="button" className={folderStyles.delete} data-folder-delete onClick={() => setFolderDeleteAsk(detail.id)}>폴더 삭제</button>}
+        <p className={folderStyles.note}>삭제해도 문서와 할 일은 미분류에 남습니다. 하위 폴더는 최상위로 옮겨집니다.</p>
+      </div>}
       {detail?.kind === 'connect' && <ul className={styles.connect}>{allTasks.filter(task => task.docId !== detail.docId).map(task => <li key={task.id}><button onClick={async () => { const result = await run('같은 할 일 연결', current => linkProgramTask(current, { ...base(current), documentId: detail.docId, ...(detail.insertAfter ? { insertAfterLineId: detail.lineId } : { lineId: detail.lineId }), taskId: task.id })); if (result.ok) close(); }}>{task.title}<small>{task.docTitle}</small></button></li>)}</ul>}
     </dialog>
   </section>;

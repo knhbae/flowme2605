@@ -5,6 +5,7 @@ import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { planProgramRegionEdit, isProgramFolderViewCurrent, readProgramFolderRegions, type ProgramFolderDocumentView } from '@/lib/flow/integrated-poc/folder-document-regions';
 import { textEditorRows, textWorkspaceModel as M, type TextRow, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
+import { programFolderOldDay, programFolderOldSince, programFolderRowDay } from '@/lib/flow/integrated-poc/folder-screen';
 import { revealProgramEditorLine } from './editor-reveal';
 
 export interface ProgramFolderRegionSnapshot {
@@ -138,6 +139,14 @@ function documentRows(state: TextWorkspaceState, documentId: string) {
   if (!byDocument.has(documentId)) byDocument.set(documentId, textEditorRows(state, documentId));
   return byDocument.get(documentId)!;
 }
+/** F4-a: the document's rows with their day (a region's day folds it), read once per state like the editor rows above. */
+const metaKept = new WeakMap<TextWorkspaceState, Map<string, TextRow[]>>();
+function documentMeta(state: TextWorkspaceState, documentId: string) {
+  let byDocument = metaKept.get(state);
+  if (!byDocument) metaKept.set(state, byDocument = new Map());
+  if (!byDocument.has(documentId)) byDocument.set(documentId, M.rowMeta(state, documentId));
+  return byDocument.get(documentId)!;
+}
 /** Preview a fragment inside its original document, never as a standalone model. */
 export function previewProgramRegionText(view: ProgramFolderDocumentView, key: string, raw: string) {
   let byView = previewKept.get(view);
@@ -195,6 +204,21 @@ function NativeProgramRegion(props: {
 }) {
   const host = useRef<HTMLDivElement>(null), latest = useRef(props); latest.current = props;
   const editor = useRef<ReturnType<typeof nativeEditor.create> | null>(null);
+  // F4-a (A3): no box. The region is as tall as its lines (32px each, wrapped lines included), so the page scrolls, not
+  // the region; a key that adds or wraps a line grows it.
+  const [height, setHeight] = useState(() => Math.max(1, props.raw.split('\n').length) * 32);
+  const fit = () => {
+    const box = host.current, area = box?.querySelector<HTMLTextAreaElement>('textarea');
+    if (!box || !area) return;
+    const style = getComputedStyle(area), line = parseFloat(style.lineHeight) || 32;
+    const lines = Math.max(1, area.value.split('\n').length), pad = (parseFloat(style.paddingTop) || 0) + (parseFloat(style.paddingBottom) || 0);
+    const estimate = Math.ceil(lines * line + pad);
+    box.style.height = `${estimate}px`;
+    const next = area.scrollHeight > area.clientHeight + 1 ? Math.ceil(area.scrollHeight) : estimate;
+    box.style.height = `${next}px`;
+    setHeight(next);
+  };
+  const fitRef = useRef(fit); fitRef.current = fit;
   useEffect(() => {
     if (!host.current) return;
     const instance = nativeEditor.create(host.current, {
@@ -227,11 +251,20 @@ function NativeProgramRegion(props: {
     for (const event of ['select', 'keyup', 'click', 'focus', 'blur']) area.addEventListener(event, position);
     area.addEventListener('compositionstart', start, true); area.addEventListener('compositionend', end, true);
     area.addEventListener('input', slash);
+    // A key refits only when the line count changed or the text now wraps past the bottom (one layout read otherwise).
+    let lines = area.value.split('\n').length;
+    const grow = () => { const now = area.value.split('\n').length; if (now !== lines || area.scrollHeight > area.clientHeight + 1) { lines = now; fitRef.current(); } };
+    area.addEventListener('input', grow);
+    // A narrower or wider screen wraps lines again.
+    let width = host.current.clientWidth;
+    const resize = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => { const now = host.current?.clientWidth ?? width; if (now !== width) { width = now; fitRef.current(); } });
+    resize?.observe(host.current);
     latest.current.onRegister({ instance, area });
+    fitRef.current();
     return () => {
       for (const event of ['select', 'keyup', 'click', 'focus', 'blur']) area.removeEventListener(event, position);
       area.removeEventListener('compositionstart', start, true); area.removeEventListener('compositionend', end, true);
-      area.removeEventListener('input', slash);
+      area.removeEventListener('input', slash); area.removeEventListener('input', grow); resize?.disconnect();
       latest.current.onRegister(null); instance.destroy(); editor.current = null;
     };
   }, []);
@@ -241,12 +274,12 @@ function NativeProgramRegion(props: {
     // A confirmed save normally has the same bytes. Avoid resetting browser history.
     if (instance.getValue() !== props.raw) instance.setValue(props.raw, { preserveSelection: true });
     area.readOnly = props.readOnly; instance.refresh();
+    fitRef.current();
     // Region fix (11/7): keyed on the view, not on `rows` (a new function each draw): every region's editor used to
     // repaint on every key typed in any region (42 regions: 42 repaints a key).
   }, [props.raw, props.readOnly, props.version, props.composing]);
   useEffect(() => { editor.current?.setMode(props.mode ?? 'live'); }, [props.mode]);
-  return <div ref={host} className={props.className} data-readonly={props.readOnly ? 'true' : 'false'}
-    style={{ height: Math.max(3, Math.min(14, props.raw.split('\n').length + 1)) * 44 + 24 }} />;
+  return <div ref={host} className={props.className} data-readonly={props.readOnly ? 'true' : 'false'} style={{ height, minHeight: 0 }} />;
 }
 
 export function ProgramFolderRegionEditor(props: {
@@ -271,8 +304,15 @@ export function ProgramFolderRegionEditor(props: {
   /** Drawn right after the region being edited (the writing bar), so it stays next to that text. */
   afterActive?: React.ReactNode;
   styles: Record<string, string>;
+  /** F4-a: the writing body's own class, so a region's lines read as 쓰기 does (check box, 32px ruler). */
+  hostClassName?: string;
+  /** F4-a: today, for the '오늘 · …' date tag and the 7-day fold ('지난 기록 n일 펼치기'). */
+  today?: string;
+  /** F4-a (위험 3): a line here that only its own writing can change (another folder's task) offers this. */
+  onOpenLine?(row: TextRow): void;
 }) {
   const styles = props.styles;
+  const [oldOpen, setOldOpen] = useState(false);
   const latest = useRef(props); latest.current = props;
   const [, rerender] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -343,22 +383,37 @@ export function ProgramFolderRegionEditor(props: {
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => { if (!controller.isComposing()) void controller.flush(); }, 450);
   }
-  // The bar follows the region last edited, or the first editable one before any is.
-  const barRegion = view.regions.some(region => region.key === activeRegion && !region.readOnly) ? activeRegion : view.regions.find(region => !region.readOnly)?.key;
   const context = new Map(view.regions.flatMap(region => region.contextRows).filter(row => !view.regions.some(region => !region.readOnly && row.index >= region.startIndex && row.index < region.endIndex)).map(row => [row.id, row]));
-  const entries = [...Array.from(context.values()).map(row => ({ index: row.index, row, region: null })),
-    ...view.regions.map((region, ordinal) => ({ index: region.startIndex, row: null, region, ordinal }))].sort((a, b) => a.index - b.index);
+  // F4-a (A3): the folder's own line is not drawn (this is that folder); a day older than the last 7 folds, as 쓰기's
+  // 최근만 does, unless a region there holds input.
+  const docRows = documentMeta(view.workspace, view.documentId), since = props.today ? programFolderOldSince(props.today) : '';
+  const entries = [...Array.from(context.values()).filter(row => !(row.kind === 'scope' && row.scopeId === view.folderId)).map(row => ({ index: row.index, row, region: null, day: programFolderRowDay(row) })),
+    ...view.regions.map((region, ordinal) => ({ index: region.startIndex, row: null, region, ordinal, day: programFolderRowDay(docRows[region.startIndex] ?? docRows[region.startIndex - 1]) }))]
+    .sort((a, b) => a.index - b.index);
+  const oldDays = new Set(entries.filter(entry => programFolderOldDay(entry.day, since)).map(entry => entry.day!));
+  const heldOld = !!state.pending && entries.some(entry => entry.region?.key === state.pending!.key && programFolderOldDay(entry.day, since));
+  const folded = (entry: { day: string | null }) => !oldOpen && !heldOld && programFolderOldDay(entry.day, since);
+  // The bar follows the region last edited, or the first editable one before any is (of those in view).
+  const barRegion = view.regions.some(region => region.key === activeRegion && !region.readOnly) ? activeRegion
+    : entries.find(entry => entry.region && !entry.region.readOnly && !folded(entry))?.region?.key;
+  const dayTag = (row: TextRow) => { const date = row.date ?? row.groupDate;
+    return date && props.today ? `${date === props.today ? '오늘 · ' : ''}${programCalendarDate(date, '')}` : regionContextText(row); };
+  const lockedLine = (row: TextRow) => (row.kind === 'task' || row.kind === 'subcheck') && !!props.onOpenLine;
   return <div ref={root} className={styles.regions} aria-label="현재 문서의 폴더 영역">
-    {entries.map(entry => entry.row ? <div key={`context:${entry.row.id}`} className={styles.context} data-context-line={entry.row.id}
-      data-kind={entry.row.kind} style={{ '--context-depth': entry.row.depth } as React.CSSProperties}>
-      <span>{regionContextText(entry.row) || ' '}</span>
-      {entry.row.scopeMismatch && <small>실제 소속이 이 위치의 폴더와 다릅니다.</small>}
+    {entries.map(entry => folded(entry) ? null : entry.row ? entry.row.kind === 'date' ? <div key={`context:${entry.row.id}`} className={styles.dayTag} data-context-line={entry.row.id}
+      data-kind="date" data-today={entry.row.date === props.today || undefined}><span>{dayTag(entry.row)}</span></div>
+      : <div key={`context:${entry.row.id}`} className={styles.context} data-context-line={entry.row.id}
+      data-kind={entry.row.kind} data-locked={lockedLine(entry.row) || undefined} style={{ '--context-depth': entry.row.depth } as React.CSSProperties}>
+      <span>{entry.row.kind === 'scope' ? `/ ${regionContextText(entry.row)}` : regionContextText(entry.row) || ' '}</span>
+      {entry.row.scopeMismatch && !lockedLine(entry.row) && <small>실제 소속이 이 위치의 폴더와 다릅니다.</small>}
+      {lockedLine(entry.row) && <button type="button" className={styles.openLine} data-open-line={entry.row.id}
+        aria-label={`${entry.row.scopeMismatch ? '실제 소속이 이 위치의 폴더와 다릅니다 · ' : ''}원래 글에서 고치기`} onClick={() => props.onOpenLine?.(entry.row!)}>원래 글에서 고치기 ›</button>}
     </div> : entry.region && !entry.region.readOnly ? <div key={entry.region.key} className={styles.region} data-folder-region={entry.region.key}>
       <NativeProgramRegion label={`폴더 영역 ${'ordinal' in entry ? entry.ordinal! + 1 : 1} 원문`}
         mode={props.mode} listEnterV2={props.listEnterV2}
         raw={state.pending?.key === entry.region.key ? state.pending.raw : entry.region.raw}
         readOnly={props.readOnly || props.locked || !!state.pending && state.pending.key !== entry.region.key}
-        composing={controller.isComposing} className={styles.regionHost} version={view}
+        composing={controller.isComposing} className={props.hostClassName ? `${styles.regionHost} ${props.hostClassName}` : styles.regionHost} version={view}
         rows={() => {
           const pending = controller.getState().pending;
           return previewProgramRegionText(pending?.view ?? view, entry.region!.key,
@@ -382,8 +437,9 @@ export function ProgramFolderRegionEditor(props: {
         }} />
       {entry.region.key === barRegion && props.afterActive}
     </div> : null)}
-    {state.pending && <div className={styles.actions}><button type="button" disabled={props.readOnly || props.locked || state.composing} onClick={() => { void controller.flush(); }}>영역 저장</button>
-      <button type="button" disabled={props.locked || state.composing} onClick={() => controller.discard()}>영역 입력 취소</button></div>}
+    {/* F4-a: no 영역 저장 · 영역 입력 취소; a region saves itself (450ms) as 쓰기 does, and says so in the head. */}
+    {oldDays.size > 0 && !heldOld && <button type="button" className={styles.oldToggle} data-old-days={oldDays.size} aria-expanded={oldOpen}
+      disabled={state.composing} onClick={() => setOldOpen(open => !open)}>{oldOpen ? '지난 기록 접기 ⌃' : `지난 기록 ${oldDays.size}일 펼치기 ⌄`}</button>}
     {notice && !state.error && <div className={styles.notice} role="status"><p>{notice}</p>{props.onContinueWholeDocument && <button type="button" disabled={state.composing || props.locked} onClick={props.onContinueWholeDocument}>전체 문서에서 계속 편집</button>}</div>}
     {state.error && <div className={styles.error} role="alert"><p>{state.error}</p>{props.onContinueWholeDocument && <button type="button" disabled={state.composing || props.locked} onClick={props.onContinueWholeDocument}>전체 문서에서 계속 편집</button>}<button type="button" onClick={props.onDownload}>입력한 원문 받기</button></div>}
   </div>;

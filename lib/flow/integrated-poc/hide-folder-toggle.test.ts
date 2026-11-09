@@ -15,9 +15,9 @@ test('the switch and its chips are off; their only reader of the kept folder goe
   assert.equal(space.split('lastViewFolder(').length - 1, 2, 'read only inside the switch (and declared)');
 });
 
-test('the ⋮ entrances stay: 이 폴더만 모아 보기 gathers through changeFolder; 분류에서 이 폴더 보기 opens 분류', () => {
-  assert(space.includes('onGatherFolder={collectionMode ? undefined : scopeId => {'));
+test('F4-a: the ⋮ entrance is one, 이 폴더 보기 (the folder screen); a gathered view from 글 찾기 keeps 전체 보기', () => {
   assert(space.includes("onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { if (collectionMode)"));
-  assert(editor.includes('data-gather-folder'), 'the ⋮ menu item');
+  assert(space.includes('void openFolderScreen(scopeId); } else void openDocument(scopeId); }}'));
+  assert(!editor.includes('data-gather-folder') && editor.includes('data-open-scope'), 'the ⋮ menu item');
   assert(editor.includes('data-gather-end'), '전체 보기 in the gathered view');
 });

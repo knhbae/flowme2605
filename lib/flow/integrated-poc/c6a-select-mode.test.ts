@@ -65,7 +65,7 @@ test('the space wires it: entry beside 글 찾기, the title, what hides, the ro
   // Title "n개 선택 · 취소" (role=status), and what hides while picking.
   assert.match(source, /<span role="status">\{selecting\.keys\.size \? `\$\{selecting\.keys\.size\}개 선택` : '옮길 할 일을 누르세요'\}<\/span>/);
   assert.match(source, /\{!selecting && !\['all', 'undated', 'documents'\]\.includes\(period\) && <div className=\{styles\.dateNav\}>/);
-  assert.match(source, /\{!monthGrid && !selecting && <details className=\{styles\.quickDisclosure\}/);
+  assert.match(source, /\{!monthGrid && !selecting && !folderTab && <details className=\{styles\.quickDisclosure\}/);
   // Rows: one button with aria-pressed; no check, source, drag, long press or …; blocked rows say why.
   assert.match(source, /if \(selecting && item\.kind === 'row'\) return renderSelectRow\(item\);/);
   assert.match(source, /aria-pressed=\{block \? undefined : picked\} aria-disabled=\{block \? true : undefined\}/);

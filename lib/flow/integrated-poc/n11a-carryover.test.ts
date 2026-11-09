@@ -316,7 +316,7 @@ test('N11a: the card folds only 오늘\'s past rows, is off while Korean is comp
   const host = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   assert(host.includes("const [period, setPeriod] = useState<ProgramPeriod>(() => opening.first ? 'today' : 'documents');"));
   assert(host.includes('const carryShown = period === \'today\' && date === today && !selecting;'));
-  assert(host.includes('<ul className={styles.tasks} onKeyDown={selecting ? moveSelectFocus : undefined}>{listItems.map(renderListItem)}</ul>'));
+  assert(host.includes('<ul className={styles.tasks} onKeyDown={selecting ? moveSelectFocus : undefined}>{listItems.map(item => renderListItem(item))}</ul>'));
   assert(host.includes('const start = () => { pageComposing.current = true; setComposingShown(true); };'));
   assert(host.includes('const carryWriting = composingShown || Object.values(dirty.current).some(Boolean);'));
   assert(host.includes('disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}'));

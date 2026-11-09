@@ -73,7 +73,9 @@ test('the host tabs go to the space first when needed, then ask the port; Flow a
 test('tab marks: the space reports its main tab (week, month, date-less under 오늘); the host marks the matching tab', () => {
   const mainTabOf = evaluate<(period: string) => string>(/programMainTabOf = (\(period: ProgramPeriod\): ProgramMainTab => [^;]+);/.exec(space)![1], {});
   assert.deepEqual(['documents', 'today', 'week', 'month', 'undated', 'all'].map(mainTabOf), ['documents', 'today', 'today', 'today', 'today', 'all']);
-  assert(space.includes('useEffect(() => { props.onMainTabChange?.(programMainTabOf(period)); }, [period]);'));
+  // F4-a: an open folder is the 폴더 tab, its [글] (the writing editor) included.
+  assert(space.includes("const mainTab: ProgramMainTab = folderScreen ? 'all' : programMainTabOf(period);"));
+  assert(space.includes('useEffect(() => { props.onMainTabChange?.(mainTab); }, [mainTab]);'));
   assert(alpha.includes("data-main-tab={tab} aria-current={destination.view === 'space' && mainTab === tab ? 'page' : undefined}"));
   // UX B3: Flow marks the 둘러보기 screens, 나 the 내 활동 ones (개인 Flow 상세 and 제작 공간 too).
   assert(alpha.includes("data-main-tab=\"flow\" aria-current={browse ? 'page' : undefined}"));
@@ -94,7 +96,7 @@ test('title rows: the writing title opens the document sheet, ⋯ keeps document
   assert(space.includes('{props.hostMainTabs && <button type="button" className={styles.sheetNewWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>＋ 새 글</button>}'));
   // Today visual A (T1, 11/7): the title in two parts (today-title.ts): 오늘 + its date; another day by date.
   assert(space.includes('const titleParts = programPeriodTitleParts(period, date, today);'));
-  assert(space.includes("period === 'all' ? (collectionMode ? '전체 할 일' : folder ? folder.title : '분류')"));
+  assert(space.includes("period === 'all' ? (collectionMode ? '전체 할 일' : folder ? folder.title : '폴더')"));
   // On phones the fixed header bar gives way to the title rows; the tabs stay at the bottom.
   assert(alphaCss.includes('.page[data-alpha-frame="b"][data-note-layout="true"] > .header > :not(.globalNavigation) { display: none; }'));
 });

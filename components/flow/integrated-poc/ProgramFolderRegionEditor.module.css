@@ -1,22 +1,46 @@
-.regions { display: grid; gap: 10px; min-width: 0; }
-.region { min-width: 0; border-top: 1px solid var(--flowme-b-line); padding-top: 10px; }
-.regionHost { min-width: 0; border: 1px solid var(--flowme-b-control); border-radius: 6px; overflow: hidden; }
-.regionHost :global(.tle-root), .regionHost :global(.tle-root[data-mode]) { min-height: 0; height: 100%; --tle-font: 16px; --tle-pad-top: 12px; --tle-pad-left: 12px; --tle-pad-right: 12px; }
-.regionHost :global(.tle-textarea), .regionHost :global(.tle-presentation) { padding-bottom: 12px; }
+/* F4-a (A3, FR-3): a folder's part of a document, drawn as 쓰기 draws it — no box, no rule between parts, 32px lines,
+   the day as a small tag, the folder's own line not drawn. The region host also takes the writing body's class (check
+   box, ruler); these rules come after it and are more specific where they differ. */
+.regions { display: grid; gap: 0; min-width: 0; }
+.region { min-width: 0; }
+.regionHost { min-width: 0; border: 0; border-radius: 0; overflow: hidden; }
+.regionHost.regionHost :global(.tle-root), .regionHost.regionHost :global(.tle-root[data-mode]) {
+  min-height: 0; height: 100%; border-radius: 0; background: transparent;
+  --tle-line: 32px; --tle-font: 16px; --tle-pad-top: 0px; --tle-pad-left: 0px;
+}
+.regionHost.regionHost :global(:is(.tle-textarea, .tle-presentation, .tle-native-ruler)) { padding-bottom: 0; }
 /* The body's font (ProgramTextEditor .host), on the textarea, mirror and ruler together: one alone moves the caret. */
 .regionHost :global(.tle-root[data-mode="live"] .tle-textarea),
 .regionHost :global(.tle-root[data-mode="live"] .tle-presentation),
 .regionHost :global(.tle-root[data-mode="live"] .tle-native-ruler) { font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif; }
-.regionHost[data-readonly="true"] :global(.tle-root) { background: var(--flowme-b-surface-subtle); }
-.context { min-width: 0; color: var(--flowme-b-muted); padding: 4px 8px; border-left: 2px solid var(--flowme-b-line); }
-.context > span { display: block; white-space: pre-wrap; overflow-wrap: anywhere; margin: 3px 0; padding-left: calc(var(--context-depth, 0) * 16px); }
-.context[data-kind="scope"] > span { font-weight: 600; color: var(--flowme-b-ink); }
-.context[data-kind="scope"] > span::before { content: ""; display: inline-block; width: 13px; height: 10px; margin-right: 6px; border: 1.5px solid currentColor; border-radius: 2px; vertical-align: -1px; }
-.context small { font-size: 12px; }
-.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.regionHost[data-readonly="true"] :global(.tle-root) { background: transparent; }
+.regionHost[data-readonly="true"] :global(.tle-presentation) { color: var(--flowme-b-muted); }
+/* A day: '오늘 · 11월 9일 (월)' or '11월 6일 (금)', muted 13/600 with a hairline after it (one rule; no colour for today). */
+.dayTag { display: flex; align-items: center; gap: 8px; min-height: 28px; margin-top: 6px; color: var(--flowme-b-muted); font-size: 13px; line-height: 18px; font-weight: 600; white-space: nowrap; }
+.dayTag::after { content: ""; flex: 1 1 auto; height: 1px; background: var(--flowme-b-canvas); }
+.regions > .dayTag:first-child { margin-top: 0; }
+/* Any other line drawn but not written here: muted, one 32px line (a subfolder '/ 정산', a 날짜 property, a parent). */
+.context { min-width: 0; display: flex; align-items: center; gap: 8px; min-height: 32px; color: var(--flowme-b-muted); font-size: 16px; line-height: 22px; }
+.context > span { flex: 1 1 auto; min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; padding-left: calc(var(--context-depth, 0) * 16px); }
+.context[data-kind="scope"] > span { font-weight: 600; }
+.context small { font-size: 13px; line-height: 18px; }
+/* 위험 3: a line of another folder's task, locked here; its own writing changes it. */
+.context[data-locked] { min-height: 44px; }
+.context .openLine.openLine { flex: none; margin-left: auto; min-height: 44px; padding: 0 0 0 8px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 13px; line-height: 18px; font-weight: 600; white-space: nowrap; }
+/* FR-6: '지난 기록 n일 펼치기', the whole line presses (44px). */
+.regions .oldToggle { display: flex; align-items: center; width: 100%; min-height: 44px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--flowme-b-primary); font-size: 13px; line-height: 18px; font-weight: 600; text-align: left; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .actions button, .error button, .notice button { min-height: 48px; padding: 8px 12px; border: 1px solid var(--flowme-b-line); border-radius: 6px; background: white; color: var(--flowme-b-ink); }
 .notice { padding: 8px 0; color: var(--flowme-b-muted); }
 .notice p { margin: 0 0 6px; }
 .error { padding: 10px; background: #fff3e6; color: #743c13; border-radius: 6px; }
 .error button + button { margin-left: 8px; }
 .error p { margin: 0 0 6px; }
+/* F4-a (A3 ①): a document's head in the folder screen — its name · 할 일 n · 전체 문서 ›. */
+.docHead { display: flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 4px; font-size: 14px; line-height: 20px; font-weight: 700; white-space: nowrap; }
+.docHead strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 700; color: var(--flowme-b-ink); }
+.docHead small { flex: none; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--flowme-b-muted); }
+.docHead.docHead button { flex: none; display: inline-flex; align-items: center; min-height: 44px; margin: 0 -8px 0 auto; padding: 0 8px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 13px; line-height: 18px; font-weight: 600; }
+.docHead p { flex: 1 1 100%; margin: 0; font-weight: 400; color: var(--flowme-b-muted); }
+/* .space button (ProgramSpace) sets a border and padding on every button; these stay flat. */
+.regions .oldToggle:hover, .context .openLine.openLine:hover, .docHead.docHead button:hover { background: var(--flowme-b-canvas); }

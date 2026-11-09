@@ -19,11 +19,11 @@ test('U44: one line only on a landscape touch screen at least 1000px wide and at
   assert(space.includes('const tabletLandscape = useSyncExternalStore(watchHead, () => tabletHead().matches, () => false);'));
   assert(space.includes("query.addEventListener('change', change); return () => query.removeEventListener('change', change);"));
   // The host's writing tab only (its main tabs and note layout), and only while the document's editor is there.
-  assert(space.includes('const headInToolbar = tabletLandscape && !!props.hostMainTabs && !!props.noteHeader && !!selectedDoc && opened.includes(selectedDoc.id);'));
+  assert(space.includes('const headInToolbar = tabletLandscape && !!props.hostMainTabs && !!props.noteHeader && !!selectedDoc && opened.includes(selectedDoc.id) && !folderScreen;'));
 });
 
 test('U44: the title row and its notices are drawn in one place: their own row, or the open editor\'s line', () => {
-  assert(space.includes('{!headInToolbar && <><div className={styles.docHeading}>{docTitle}{docActions}</div>{docNotices}</>}'));
+  assert(space.includes('{!headInToolbar && !folderWriting && <><div className={styles.docHeading}>{docTitle}{docActions}</div>{docNotices}</>}'));
   // Visual A (11/7): a phone (≤700px) takes the same line; its ⋯ (글 작업) goes into the editor's menu there.
   assert(space.includes('headStart={headInToolbar && selected === id ? docTitle : undefined} headEnd={headInToolbar && selected === id && !phoneLayout ? docActions : undefined}'));
   assert(space.includes("export const PROGRAM_PHONE_HEAD_QUERY = '(max-width: 700px)';"));

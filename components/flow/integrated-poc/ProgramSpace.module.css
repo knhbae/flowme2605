@@ -146,7 +146,7 @@
   .space[data-library-open=false] .contextActions { position: absolute; top: 0; right: 0; z-index: 2; }
   /* A notice can precede the heading. Keep its actions in flow instead of
      painting the document control over the warning or source-return message. */
-  .space[data-library-open=false]:has(.content > [role], .content > section, .content > div:not([hidden]) > section[aria-label="보존한 반복 계획 기록"], .taskNotice) .contextActions { position: static; }
+  .space[data-library-open=false]:has(.content > [role], .content > section, .content > div:not([hidden]) > section[aria-label="보존한 반복 계획 기록"], .content > .folderLayout > .folderMain > div:not([hidden]) > section[aria-label="보존한 반복 계획 기록"], .taskNotice) .contextActions { position: static; }
   .space[data-library-open=false] .docHeading h1, .space[data-library-open=false] .periodHeading h1 { padding-right: 88px; }
   .task { grid-template-columns: 48px minmax(0,1fr) 48px; gap: 0; }
   .task > .check { width: 48px; }
@@ -599,3 +599,16 @@
 .space .deferChips > button { min-height: 44px; padding: 0 16px; border: 1px solid var(--flowme-b-line); border-radius: 22px; background: var(--flowme-b-surface); color: var(--flowme-b-ink); font-size: 14px; font-weight: 600; }
 .space .deferChips > button:disabled { background: var(--flowme-b-surface-subtle); color: var(--flowme-b-control); }
 .deferPicker { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px; padding: 0; border: 0; opacity: 0; pointer-events: none; }
+/* F4-a (F4 1280): the folder list beside an open folder on a wide screen. The frame is always there (display: contents
+   elsewhere) so the editors inside never remount. */
+.folderLayout { display: contents; }
+.folderMain { min-width: 0; }
+.folderSide { display: none; }
+@media (min-width: 1000px) {
+  .space .folderLayout[data-folder-layout] { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 0 32px; align-items: start; }
+  .space .folderLayout[data-folder-layout] > .folderSide { display: block; position: sticky; top: 12px; max-height: calc(100dvh - 24px); overflow: auto; padding-right: 16px; border-right: 1px solid var(--flowme-b-line); }
+  .space .folderLayout[data-folder-layout] > .folderSide h2 { margin: 0; min-height: 40px; font-size: 20px; line-height: 40px; font-weight: 700; }
+  .space .folderLayout[data-folder-layout] > .folderMain { max-width: 760px; }
+}
+/* F4-a: a folder row's meta is 13px (no text under 13px on the folder screen). */
+.space .tasks[data-folder-tasks] .taskTitle small { font-size: 13px; line-height: 18px; }

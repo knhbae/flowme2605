@@ -62,6 +62,6 @@ test('context lines read like the body: dates, folder names, tasks and propertie
 });
 
 test('the component draws context lines with that text and no "원문 n줄" labels', () => {
-  assert.match(regionSource, /<span>\{regionContextText\(entry\.row\) \|\| ' '\}<\/span>/);
+  assert.match(regionSource, /<span>\{entry\.row\.kind === 'scope' \? `\/ \$\{regionContextText\(entry\.row\)\}` : regionContextText\(entry\.row\) \|\| ' '\}<\/span>/);
   assert.doesNotMatch(regionSource, /원문 \{entry|· 문맥|regionLabel|<pre>\{entry\.row\.text/);
 });

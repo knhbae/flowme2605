@@ -115,5 +115,5 @@ test('the editor: Enter moves, the notice carries 모든 문서에 적용 and �
 
 test('F21: the 분류 rename says how many documents\' folder lines change too', () => {
   const space = read('../../../components/flow/integrated-poc/ProgramSpace.tsx');
-  assert.match(space, /count > 0 && <p data-folder-line-documents>문서 \{count\}곳의 폴더 줄도 바뀝니다<\/p>/);
+  assert.match(space, /count > 0 && <p className=\{folderStyles\.note\} data-folder-line-documents>문서 \{count\}곳의 폴더 줄도 바뀝니다<\/p>/);
 });

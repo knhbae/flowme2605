@@ -5,14 +5,15 @@ import test from 'node:test';
 // 11/5 쓰기 '최근만 쓰기' (W-a): how the writing view hands its editor the recent part and takes the whole back.
 // The model is proven in recent-writing.test.ts; the browser check (3-month document, 390 and 1280) is in the report.
 const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
-const mount = space.slice(space.indexOf('{opened.filter(id => docs.some(doc => doc.id === id)).map(id => {'), space.indexOf('{selectedDoc && !selectedArchived && <ProgramRecurrence'));
+const mount = space.slice(space.indexOf('{opened.filter(id => docs.some(doc => doc.id === id)).map(id => {'), space.indexOf('{selectedDoc && !selectedArchived && !folderWriting && <ProgramRecurrence'));
 
 test('W-a: the editor gets the recent part, keyed by it, and its first position in the recent part\'s terms', () => {
   assert(mount.includes("<TextEditor key={recent ? `recent:${recentDoneShown[id] ? 'done' : 'folded'}` : 'whole'}"));
   assert(mount.includes('workspace={recent ? recent.workspace : space.text}'));
   assert(mount.includes('initialPosition={recent && initial ? recentPosition(id, recent, initial, false) : initial}'));
   // No recent part: a folder or collection view, a document shown whole, or one that cannot be written.
-  assert(space.includes("if (collectionMode || folderId || recentWhole[id] || !space.text.documents.some(doc => doc.id === id) || programDocumentContentLock(space, id) !== 'active') return null;"));
+  // F4-a: the folder is the editor's own (only [글]'s document gathers one), so 쓰기's editor keeps its recent part.
+  assert(space.includes("if (collectionMode || editorFolderOf(id) || recentWhole[id] || !space.text.documents.some(doc => doc.id === id) || programDocumentContentLock(space, id) !== 'active') return null;"));
 });
 
 test('W-a: a save, its checks and its confirmation go through the whole document', () => {

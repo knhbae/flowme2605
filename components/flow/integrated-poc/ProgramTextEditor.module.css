@@ -551,3 +551,7 @@
 .editor .todayStart.todayStart:active:not(:disabled) { background: var(--flowme-b-selected); }
 @media (hover: hover) { .editor .todayStart.todayStart:hover:not(:disabled) { background: var(--flowme-b-selected); } }
 .editor:has(.host textarea:focus) .todayStart, :global([data-writing-keyboard="true"]) .editor .todayStart { display: none; }
+/* F4-a (A3/A4): in the folder screen's [글] the tool line goes (the head says the save status; the bar under the line
+   written keeps the tools). It stays, buttons hidden, while it holds a warning or its recovery box. */
+.editor[data-folder-screen="true"] > .toolbar > :is(button, details:not(.saveFeedback), .toolbarSep, [data-editor-head]) { display: none; }
+.editor[data-folder-screen="true"] > .toolbar:not(:has(.saveFeedback, [data-warn])) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

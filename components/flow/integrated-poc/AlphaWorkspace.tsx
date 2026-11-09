@@ -164,7 +164,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const recoveryOpener = useRef<HTMLElement | null>(null), [recoveryOpen, setRecoveryOpen] = useState(false);
   // The document the space shows ('' for none), for the line of its own 복구함 entries.
   const [shownDocumentId, setShownDocumentId] = useState('');
-  // R8b: the bottom tabs 쓰기·오늘·분류 drive the space through its main-tab port; Flow and 나 move by navigate().
+  // R8b: the bottom tabs 쓰기·오늘·폴더 (F4-a: 분류 renamed) drive the space through its main-tab port; Flow and 나 move by navigate().
   const mainTabs = useRef<{ choose(tab: ProgramMainTab): Promise<boolean>; openArchive(): Promise<boolean> } | null>(null);
   const [mainTab, setMainTab] = useState<ProgramMainTab>('documents');
   // Core3 P1 (X5, 11/8): a new 복구함 entry is said once by a bottom toast (10 s, or 닫기); the 나 badge keeps counting.
@@ -1843,7 +1843,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       if (arrivalToastShown && event.target instanceof Element && event.target.closest('section[aria-label="내 공간"]')) closeArrivalToast(); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
     <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}>FlowMe</a>
       {!unavailable && <nav className={styles.globalNavigation} aria-label="주요 메뉴">
-        {([['documents', '쓰기', 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4'], ['today', '오늘', 'M4 4h16v16H4zm4 8 3 3 5-6'], ['all', '분류', 'M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z']] as const).map(([tab, label, path]) =>
+        {([['documents', '쓰기', 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4'], ['today', '오늘', 'M4 4h16v16H4zm4 8 3 3 5-6'], ['all', '폴더', 'M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z']] as const).map(([tab, label, path]) =>
           <button type="button" key={tab} data-main-tab={tab} aria-current={destination.view === 'space' && mainTab === tab ? 'page' : undefined} onClick={() => void chooseMainTab(tab)}>
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" d={path}/></svg><span>{label}</span></button>)}
         {/* UX B3 (11/7): Flow and 나 are screens like the three before them (no pointerdown hold): a press moves by
