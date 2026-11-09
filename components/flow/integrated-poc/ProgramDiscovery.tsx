@@ -509,7 +509,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
             <ul className={styles.placeList} data-import-preview>
               {preview.dated.slice(0, PLACE_ROWS).map(day => <li key={day.date} data-place-date={day.date} data-today={day.date === today || undefined}><b>{day.date === today ? `오늘 ${programCalendarDate(day.date, today, false)}` : programCalendarDate(day.date, today)}</b><span>{day.titles.join(' · ')}</span><em>{day.count}개</em></li>)}
               {preview.dated.length > PLACE_ROWS && <li className={styles.placeMore} data-place-more>날짜 {preview.dated.length - PLACE_ROWS}개 더</li>}
-              {preview.repeats.map(row => <li key={row.itemId} data-place-repeat={row.first ?? ''}><b>{row.label}</b><span>↻ {row.title} · {row.first ? `${programDateLabel(row.first, today, false)}부터` : '시작일 미정'}</span><em>반복</em></li>)}
+              {preview.repeats.map(row => <li key={row.itemId} data-place-repeat={row.first ?? ''}><b>{row.label}</b><span><ProgramIcon name="repeat" size={16} className="flowme-repeat-icon" />{row.title} · {row.first ? `${programDateLabel(row.first, today, false)}부터` : '시작일 미정'}</span><em>반복</em></li>)}
               {preview.undated.count > 0 && <li data-place-undated><b>날짜 미정</b><span>{preview.undated.titles.join(' · ')}</span><em>{preview.undated.count}개</em></li>}
             </ul>
             {!preview.dated.length && !preview.repeats.length && !anchorNeeded && <p className={styles.sheetHint}>달력에는 놓이지 않습니다. 오늘 › 날짜 미정에서 보입니다.</p>}
@@ -522,7 +522,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
               const rule = programImportRepeatRule(repeat, months), first = rule ? programImportFirstDate(rule, today) : null, item = version.items.find(row => row.id === repeat.itemId);
               const setTyped = (key: 'starts' | 'months', value: string) => { setRepeatTyped(prior => ({ ...prior, [key]: { ...prior[key], [repeat.itemId]: value } })); setImportFailure(null); };
               return <li key={repeat.itemId} data-existing={repeat.existing ? 'true' : undefined}>
-                <p className={styles.repeatTitle}>↻ {repeat.title}{repeat.marker && !repeat.existing ? ` ${repeat.marker}` : ''}</p>
+                <p className={styles.repeatTitle}><ProgramIcon name="repeat" size={16} className="flowme-repeat-icon" />{repeat.title}{repeat.marker && !repeat.existing ? ` ${repeat.marker}` : ''}</p>
                 {repeat.existing ? <small>{repeat.existing.same ? `이미 있음 (‘${repeat.existing.documentTitle}’ 문서) · 넣지 않음` : `이미 있음 · 내 줄은 ${repeat.existing.marker} · 넣지 않음`}</small> : <>
                   {repeat.pick && <><label className={styles.repeatMonths}><input inputMode="numeric" pattern="[0-9]*" maxLength={2} autoComplete="off" value={repeatTyped.months[repeat.itemId] ?? ''} disabled={pending} aria-label={`${repeat.title} 반복 개월 수`} aria-invalid={!!typed && !rule} onChange={event => setTyped('months', event.target.value)} /><span>개월마다</span></label>
                     <small>{[item ? programImportSentence(item.description) : '', '비우면 반복 없이 할 일로 들어갑니다.'].filter(Boolean).join(' ')}</small>
