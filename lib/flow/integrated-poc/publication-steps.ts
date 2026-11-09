@@ -1,5 +1,6 @@
 import type { ProgramPublicationDraft, ProgramPublicationDraftRow } from './contract';
-import { applyProgramPublicationAnchor, planProgramPublicationAnchor, restoreProgramPublicationAnchor, type ProgramAnchorUndo } from './publication-anchor';
+import { applyProgramPublicationAnchor, planProgramPublicationAnchor, programAnchorChip, restoreProgramPublicationAnchor, type ProgramAnchorUndo } from './publication-anchor';
+import { programDaysBetween } from './date-label';
 import { captureProgramPublicationInput, programPublicationNativeValue, type ProgramPublicationNativeValue } from './publication-editor';
 import type { TextRow } from './text-workspace';
 import { programRecurringScheduleFromDraft } from './public-recurrence-contract';
@@ -33,15 +34,36 @@ export function programPublicationStepNativeValue(draft: ProgramPublicationDraft
 
 /** Only changes this session's automatic conversions or still-undated source
  * tasks. Explicit schedules and reopened draft schedules retain their meaning. */
-export function applyProgramPublicationStepDates(draft: ProgramPublicationDraft, dates: ReadonlyMap<string, string>, mode: ProgramPublicationDateMode, undo: ProgramAnchorUndo | null, manuallySet: ReadonlySet<string> = new Set()) {
+export function applyProgramPublicationStepDates(draft: ProgramPublicationDraft, dates: ReadonlyMap<string, string>, mode: ProgramPublicationDateMode, undo: ProgramAnchorUndo | null, manuallySet: ReadonlySet<string> = new Set(), savedSchedules: ReadonlySet<string> = new Set()) {
   const managedUndo = undo ? { ...undo, rows: Object.fromEntries(Object.entries(undo.rows).filter(([id]) => !manuallySet.has(id))) } : null;
   const base = managedUndo ? restoreProgramPublicationAnchor(draft, managedUndo).draft : draft;
   const eligibleDates = new Map(dates);
-  for (const row of draft.rows) if (row.rowId && manuallySet.has(row.itemId)) eligibleDates.delete(row.rowId);
+  for (const row of draft.rows) if (row.rowId && manuallySet.has(row.itemId) && !savedSchedules.has(row.itemId)) eligibleDates.delete(row.rowId);
+  // A saved undated choice stays undated. Saved relative rows keep their values,
+  // but their source dates still take part in the first/last-day reference for
+  // newly selected tasks. Do not infer or rewrite their conversion provenance.
+  for (const row of base.rows) if (row.rowId && savedSchedules.has(row.itemId) && row.scheduleKind === 'undated') eligibleDates.delete(row.rowId);
   const plan = planProgramPublicationAnchor(base, eligibleDates, mode === 'last' ? 'last' : 'first');
+  const reference = planProgramPublicationAnchor({ ...base, rows: base.rows.map(row => savedSchedules.has(row.itemId) && row.scheduleKind === 'relative' ? { ...row, scheduleKind: 'undated' as const } : row) }, eligibleDates, mode === 'last' ? 'last' : 'first');
+  if (reference.anchor && plan.rows.length) {
+    plan.anchor = reference.anchor;
+    plan.rows = plan.rows.map(row => ({ ...row, days: programDaysBetween(reference.anchor!, row.date) }));
+  }
   if (mode === 'none') return { draft: base, undo: null, plan };
   const applied = applyProgramPublicationAnchor(base, plan, programPublicationSummaryParts(draft.summary).name);
   return { ...applied, plan };
+}
+
+/** No persisted provenance is added: previously selected schedules are kept,
+ * while an unselected saved row is a new choice when the author selects it. */
+export function programPublicationSavedSchedules(rows: readonly ProgramPublicationDraftRow[]) {
+  return new Set(rows.filter(row => row.selected).map(row => row.itemId));
+}
+
+export function programPublicationDateExample(draft: ProgramPublicationDraft) {
+  const relative = draft.rows.filter(row => row.selected && row.scheduleKind === 'relative' && /^[+-]?\d+$/.test(row.scheduleValue));
+  const row = relative.find(row => Number(row.scheduleValue) !== 0) ?? relative[0];
+  return row ? programAnchorChip(programPublicationSummaryParts(draft.summary).name, Number(row.scheduleValue)) : null;
 }
 
 export function programPublicationPickGroups(rows: ProgramPublicationDraftRow[], original: TextRow[]) {

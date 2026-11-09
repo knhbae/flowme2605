@@ -1,4 +1,4 @@
-.dialog{width:min(720px,calc(100vw - 48px));height:min(860px,calc(100dvh - 48px));max-height:calc(100dvh - 48px);margin:auto;padding:0;border:1px solid var(--flowme-b-line);border-radius:16px;background:var(--flowme-b-surface);color:var(--flowme-b-ink);font:16px/1.5 system-ui,sans-serif;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+.dialog{width:min(720px,calc(100vw - 48px));height:min(860px,calc(100dvh - 48px));max-height:calc(100dvh - 48px);margin:auto;padding:0;border:1px solid var(--flowme-b-line);border-radius:16px;background:var(--flowme-b-surface);color:var(--flowme-b-ink);font-size:16px;line-height:1.5;font-family:inherit;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
 .dialog::backdrop{background:var(--flowme-b-scrim)}
 .mainContent{min-height:100%;display:flex;flex-direction:column}
 .mainContent[hidden]{display:none}
@@ -21,7 +21,7 @@
 .dialog :focus-visible{outline:3px solid var(--flowme-b-primary);outline-offset:2px}
 .dialog a{display:inline-flex;min-height:44px;align-items:center;color:var(--flowme-b-primary);overflow-wrap:anywhere}
 .dialog summary{cursor:pointer;padding:11px 0;color:var(--flowme-b-muted)}
-.header{display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:5;padding:10px 16px;border-bottom:1px solid var(--flowme-b-line);background:var(--flowme-b-surface)}
+.header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;position:sticky;top:0;z-index:5;padding:10px 16px;border-bottom:1px solid var(--flowme-b-line);background:var(--flowme-b-surface)}
 .header>div{min-width:0;flex:1}
 .header small{flex-shrink:0;color:var(--flowme-b-muted)}
 .dialog .iconButton{padding:0;border:0;font-size:18px;flex:none}
@@ -68,7 +68,8 @@
 .source>summary{font-size:14px;font-weight:600}
 .pre{white-space:pre-wrap;overflow-wrap:anywhere}
 .preview{padding:20px 24px 24px;min-height:calc(100% - 184px)}
-.cardPreview{min-width:0;margin-bottom:20px}
+.cardPreview{min-width:0;margin-bottom:20px;align-self:start}
+.cardPreview [data-card-lines="3"]{border-radius:9px}
 .cardPreview [data-badge],.cardPreview [class*=cardMeta]{font-size:13px}
 .previewDetail{min-width:0}
 .previewDetail>h3{margin-top:0;font-size:20px}
@@ -96,9 +97,11 @@
 .dialog .primary{border-color:var(--flowme-b-primary);background:var(--flowme-b-primary);color:var(--flowme-b-on-ink)}
 .dialog .primary:not(:disabled):hover{background:var(--flowme-b-primary-strong)}
 .recovery{position:relative;flex:none}
+.recovery[open]{flex-basis:100%}
+.recovery[open]>summary{width:44px;margin-left:auto}
 .recovery>summary{display:flex;justify-content:center;align-items:center;min-width:44px;padding:0;list-style:none;font-size:22px;line-height:44px;color:var(--flowme-b-ink)}
 .recovery>summary::-webkit-details-marker{display:none}
-.recoveryActions{position:absolute;right:0;top:48px;z-index:10;display:grid;gap:4px;width:220px;padding:8px;border:1px solid var(--flowme-b-line);border-radius:12px;background:var(--flowme-b-surface);box-shadow:0 8px 24px var(--flowme-b-shadow)}
+.recoveryActions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:8px;border:1px solid var(--flowme-b-line);border-radius:12px;background:var(--flowme-b-surface)}
 .recoveryActions button{text-align:left}
 .dialog .discard{color:var(--flowme-b-error-ink)}
 .error,.warning,.comparison,.management{margin:16px 24px;font-size:13px;line-height:20px}
@@ -133,7 +136,7 @@
 .footer{padding:10px 16px;gap:8px;min-height:70px}.footerCount{max-width:110px}.actions{flex:1;justify-content:flex-end}
 .actions>.primary{min-width:120px}.actions button{padding:10px 14px}
 .groupRows{padding-left:30px}.sourceComparison{padding:10px}.itemEditor{padding:0 16px 24px}
-.publishedPanel{padding:24px 16px}.recoveryActions{width:216px}
+.publishedPanel{padding:24px 16px}
 }
 @media(max-height:500px){.header,.footer{position:static}.body,.preview{min-height:0}}
 @media(min-width:1000px){.preview{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-content:start}.cardPreview{position:sticky;top:84px}.preview>.exposure,.preview>.scope,.preview>.fixedWarning,.preview>.takerPreview{grid-column:1/-1;margin:0}}

@@ -22,10 +22,10 @@ export function ProgramPublicationPick({ draft, originalRows, today, disabled, o
   const rowChoice = (row: ProgramPublicationDraftRow) => <label className={styles.check} key={row.itemId}><input type="checkbox" checked={row.selected} disabled={disabled} onChange={event => onSelect([row.itemId], event.target.checked)} /><span>{row.origin === 'note' ? original.get(row.rowId ?? '')?.text.trim() || row.description || '이전에 선택한 메모' : row.title || '제목 없는 항목'}{row.origin === 'previous-public' && <small>이전 공개 항목 · 현재 문서에 없음</small>}</span></label>;
   return <section className={styles.pick} aria-label="공개할 줄 고르기">
     <p className={styles.stepHint}>다른 사람에게 보여 줄 할 일만 골라 주세요.</p>
-    {!draft.rows.length && <p>이 문서에는 고를 할 일이 없습니다. 문서에 할 일이나 메모를 먼저 적어 주세요.</p>}
+    {!draft.rows.some(row => row.origin !== 'note') && <p>이 문서에는 고를 할 일이 없습니다.{draft.rows.length ? ' 공개할 메모가 있다면 펼쳐서 골라 주세요.' : ' 문서에 할 일이나 메모를 먼저 적어 주세요.'}</p>}
     {programPublicationPickGroups(draft.rows, originalRows).map(group => {
       const notes = group.rows.filter(row => row.origin === 'note'), tasks = group.rows.filter(row => row.origin !== 'note');
-      return <section key={group.key} className={styles.pickGroup} data-pick-group={group.key}><GroupCheck label={group.key === 'previous-public' ? '이전 공개 항목' : group.date ? programCalendarDate(group.date, today) : '날짜 미정'} rows={tasks} disabled={disabled} onChange={selected => onSelect(tasks.map(row => row.itemId), selected)} />
+      return <section key={group.key} className={styles.pickGroup} data-pick-group={group.key}>{tasks.length > 0 && <GroupCheck label={group.key === 'previous-public' ? '이전 공개 항목' : group.date ? programCalendarDate(group.date, today) : '날짜 미정'} rows={tasks} disabled={disabled} onChange={selected => onSelect(tasks.map(row => row.itemId), selected)} />}
         <div className={styles.groupRows}>{tasks.map(rowChoice)}{notes.length > 0 && <details className={styles.noteChoices}><summary>메모 {notes.length}개{notes.some(row => row.selected) ? ` · ${notes.filter(row => row.selected).length}개 고름` : ''}</summary>{notes.map(rowChoice)}</details>}</div>
       </section>;
     })}
