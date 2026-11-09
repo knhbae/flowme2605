@@ -572,14 +572,14 @@
 /* The glyph changes shape only; the existing 20px paint and line-aligned press target stay in place. */
 .host :global(.tle-check-glyph) { border-radius: 50%; }
 
-/* B1 UX FIX 2: icon buttons stay flat; only date/folder get a 36px sand pill in their existing 44px target. */
+/* B1 UX FIX 2: icon buttons stay flat; only date/folder get a 36px sand pill in their existing >=44px target. */
 @media (max-width: 700px) {
   .editor .writingBar > button { border: 0; background: transparent; }
   .editor .writingBar .barChips > button > small { font-size: 13px; }
   .editor .writingBar > button[data-held="true"] { background: var(--flowme-b-selected); }
   .editor .writingBar > button:is([data-bar-mode="date"], [data-bar-action="folder"]) { position: relative; isolation: isolate; }
   .editor .writingBar > button:is([data-bar-mode="date"], [data-bar-action="folder"])::before {
-    content: ''; position: absolute; z-index: -1; inset: 4px 0; border-radius: 18px; background: var(--flowme-b-sand); pointer-events: none;
+    content: ''; position: absolute; z-index: -1; inset: calc((100% - 36px) / 2) 0; border-radius: 18px; background: var(--flowme-b-sand); pointer-events: none;
   }
   .editor .writingBar > button:is([data-bar-mode="date"], [data-bar-action="folder"])[data-held="true"] { background: transparent; }
   .editor .writingBar > button:is([data-bar-mode="date"], [data-bar-action="folder"])[data-held="true"]::before { box-shadow: inset 0 0 0 2px var(--flowme-b-primary); }
