@@ -231,3 +231,33 @@ test('S3 re-review: a held ↵ meeting a range selected later would replace that
   assert.equal(heldTargetVerdict(held, { surface: area, value: raw, caret: raw.length, selectionEnd: raw.length, editable: true, connected: true, focusHere: true }), 'run');
   assert.equal(barEnter(raw, 0).value, '메모 ABC\n');
 });
+
+// memo-enter (11/10, a real-use report: "'-메모' 쓰다가 엔터치면 '-메모'가 줄이 바뀜"): Enter at a memo's end still continues
+// the memo (above), but on the empty memo line that gives it leaves the memo for the owner's next task.
+test('memo-enter: Enter on an empty memo line leaves the memo for the next task, after the owner\'s block; Shift+Enter continues', () => {
+  const exit = load('./text-input-plan.cjs').planMemoExit as (raw: string, selection: Selection, meta: unknown) => { nextRaw: string; selectionAfter: Selection } | null;
+  const memo = '- [ ] 장보기\n  - 메모: 우유\n  - 메모: ';
+  for (const v2 of [false, true]) {
+    const left = press(memo, 2, { v2 });
+    assert.deepEqual([left.value, left.caret, left.prevented], ['- [ ] 장보기\n  - 메모: 우유\n- [ ] ', '- [ ] 장보기\n  - 메모: 우유\n- [ ] '.length, true], `v2 ${v2}`);
+    // Typing on: the memo keeps its words, the new line is the next task.
+    assert.deepEqual(saved(left.value + '계란').tasks, [['장보기', '우유'], ['계란', '']]);
+  }
+  // The owner's other children stay under it; the new task opens after them.
+  const children = '- [ ] 장보기\n  - 메모: \n  - [ ] 우유\n- [ ] 다음';
+  const after = press(children, 1, { v2: true });
+  assert.deepEqual([after.value, after.caret], ['- [ ] 장보기\n  - [ ] 우유\n- [ ] \n- [ ] 다음', '- [ ] 장보기\n  - [ ] 우유\n- [ ] '.length]);
+  // A subcheck's memo opens the next subcheck.
+  assert.equal(press('- [ ] 부모\n  - [ ] 하위\n    - 메모: ', 2, { v2: true }).value, '- [ ] 부모\n  - [ ] 하위\n  - [ ] ');
+  // Shift+Enter (the bar's ↵ too) and an Enter during composition leave the empty memo line as before.
+  assert.equal(press(memo, 2, { v2: true, shift: true }).value, memo + '\n  - 메모: ');
+  assert.equal(barEnter(memo, 2, { v2: true }).value, memo + '\n  - 메모: ');
+  assert.deepEqual([press(memo, 2, { v2: true, composing: true }).value, press(memo, 2, { v2: true, composing: true }).prevented], [memo, false]);
+  // Only that exact shape: words after '메모:', the caret before the end, a selection, or no task above are not it.
+  const at = (raw: string, caret: number, start = caret) => exit(raw, { start, end: caret, direction: 'none' }, { kind: 'property' });
+  assert.equal(at('- [ ] 장보기\n  - 메모: 우유', end('- [ ] 장보기\n  - 메모: 우유', 1)), null);
+  assert.equal(at(memo, end(memo, 2) - 1), null);
+  assert.equal(at(memo, end(memo, 2), end(memo, 1) + 1), null);
+  assert.equal(at('- 집안일\n  - 메모: ', end('- 집안일\n  - 메모: ', 1)), null);
+  assert.equal(exit(memo, { start: end(memo, 2), end: end(memo, 2), direction: 'none' }, { kind: 'task' }), null);
+});
