@@ -79,3 +79,21 @@ test('[그날 보기] keeps its notice (its 되돌리기) through the view chang
 test('1280: beside the list the folder head has no ‹', () => {
   assert(screenCss.includes('@media (min-width: 1000px) {\n  :global([data-folder-layout]) .head .back { display: none; }'));
 });
+
+const regionCss = read(C + 'ProgramFolderRegionEditor.module.css');
+test('UX FIX (11/9): no ring box around a [글] line (its RAW line as 쓰기); one ring on the find field; the head stays with the keyboard', () => {
+  // 쓰기 draws the caret's line RAW too (compared in the browser); in a one-line region the textarea's ring was a box.
+  assert(regionCss.includes('.regionHost.regionHost :global(.tle-textarea:focus-visible) { box-shadow: none; outline: 0 !important; }'));
+  // The global focus outline is !important; the field's own goes, the box around it keeps a 2px ring.
+  assert(screenCss.includes('.list .find.find input:focus-visible { outline: 0 !important; }'));
+  assert(screenCss.includes('.list .find:focus-within { border-color: var(--flowme-b-primary); box-shadow: 0 0 0 1px var(--flowme-b-primary); }'));
+  // The page scrolls to the line written (regions grow, unlike 쓰기's editor): the head sticks to the top.
+  assert(screenCss.includes(':global([data-writing-keyboard="true"]) .head { position: sticky; top: 0; z-index: 20; margin-left: 0; background: var(--flowme-b-surface); }'));
+});
+
+test('폴더 관리 waits out the host\'s automatic read (a pick right after another save was dropped), and says a refusal', () => {
+  const manage = space.slice(space.indexOf('  async function manageRun('), space.indexOf('  function cancelHold()'));
+  assert(manage.includes('const result = await run(label, build, true, undefined, undefined, true);'));
+  assert(manage.includes("if (!result.ok && result.reason === 'busy') setMessage(programErrorMessage('busy'));"));
+  for (const label of ['폴더 이름 변경', '폴더 이동', '폴더 삭제']) assert(space.includes(`manageRun('${label}'`), label);
+});

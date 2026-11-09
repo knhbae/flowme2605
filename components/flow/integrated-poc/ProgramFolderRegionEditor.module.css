@@ -44,3 +44,6 @@
 .docHead p { flex: 1 1 100%; margin: 0; font-weight: 400; color: var(--flowme-b-muted); }
 /* .space button (ProgramSpace) sets a border and padding on every button; these stay flat. */
 .regions .oldToggle:hover, .context .openLine.openLine:hover, .docHead.docHead button:hover { background: var(--flowme-b-canvas); }
+/* UX FIX 1 (11/9): the line being written draws RAW as in 쓰기, but no ring: in a region one line high the textarea's focus
+   ring is a box around that line (FR-3, no box). The caret shows the focus. */
+.regionHost.regionHost :global(.tle-textarea:focus-visible) { box-shadow: none; outline: 0 !important; }

@@ -1726,6 +1726,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     // Keep this form's prior failure/input state instead of persisting a duplicate.
     if (result.ok || result.reason !== 'busy') setMessage(result.ok ? '' : programErrorMessage(result.reason)); return result;
   };
+  /** F4-a 폴더 관리 (A7): each press fixes its whole intent, so it waits out the host's automatic read instead of being refused
+   *  as busy (a 상위 폴더 picked right after another save was dropped without a word, the select back as it was); a refusal
+   *  still says so in the sheet (run leaves 'busy' to the host's notice, which the open sheet covers). */
+  async function manageRun(label: string, build: (current: ProgramData) => ProgramTransition<string>) {
+    const result = await run(label, build, true, undefined, undefined, true);
+    if (!result.ok && result.reason === 'busy') setMessage(programErrorMessage('busy'));
+    return result;
+  }
   function cancelHold() { if (hold.current) clearTimeout(hold.current); hold.current = null; holdPoint.current = null; }
   function close() {
     executionDraftOwner.current = { dialog: executionDraftOwner.current.dialog + 1, input: 0, taskId: null };
@@ -3313,17 +3321,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       </>}
       {/* F4-a (A7, FR-8): 폴더 관리 — 이름 · 상위 폴더 · 이 폴더가 나오는 곳 · 삭제, what a deletion leaves said before it is pressed. */}
       {detail?.kind === 'folder' && <div className={folderStyles.manage} data-folder-manage-sheet>
-        <form onSubmit={async event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title') ?? ''); await run('폴더 이름 변경', current => renameProgramFolder(current, { ...base(current), folderId: detail.id, title })); }}>
+        <form onSubmit={async event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title') ?? ''); await manageRun('폴더 이름 변경', current => renameProgramFolder(current, { ...base(current), folderId: detail.id, title })); }}>
           <label><span className={folderStyles.label}>이름</span><span className={folderStyles.rename}><input key={detail.id} name="title" defaultValue={space.text.folders.find(item => item.id === detail.id)?.title} required maxLength={100} /><button>이름 변경</button></span></label>
           {/* W15 (F21): a rename here reaches every document's folder line for this folder. */}
           {(count => count > 0 && <p className={folderStyles.note} data-folder-line-documents>문서 {count}곳의 폴더 줄도 바뀝니다</p>)(new Set(space.text.bindings.filter(row => row.kind === 'scope' && row.scopeId === detail.id).map(row => row.docId)).size)}</form>
-        <label><span className={folderStyles.label}>상위 폴더</span><select value={space.text.folders.find(item => item.id === detail.id)?.parentId ?? ''} onChange={event => { const parentId = event.target.value || null; void run('폴더 이동', current => moveProgramFolder(current, { ...base(current), folderId: detail.id, parentId })); }}><option value="">최상위</option>{folderOptions.filter(item => item.id !== detail.id).map(item => <option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
+        <label><span className={folderStyles.label}>상위 폴더</span><select value={space.text.folders.find(item => item.id === detail.id)?.parentId ?? ''} onChange={event => { const parentId = event.target.value || null; void manageRun('폴더 이동', current => moveProgramFolder(current, { ...base(current), folderId: detail.id, parentId })); }}><option value="">최상위</option>{folderOptions.filter(item => item.id !== detail.id).map(item => <option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
         <span className={folderStyles.label}>이 폴더가 나오는 곳</span>
         {(documents => <button type="button" className={folderStyles.place} data-folder-place onClick={() => { const id = detail.id; close(); void (folderScreenRef.current && folderId === id ? chooseFolderTab('writing') : openFolderScreen(id)); }}>
           <span>문서 {documents}개 · 열린 할 일 {programExecutionTasks(space, { folderId: detail.id }).filter(isOpenTask).length}개</span><span aria-hidden="true">›</span></button>)(
           folderScreen && folderId === detail.id ? folderWritingDocuments.length : programFolderWritingDocuments(space, detail.id, isOpenTask).length)}
         {folderDeleteAsk === detail.id ? <div className={folderStyles.confirm} role="group" aria-label="폴더 삭제 확인"><p>‘{space.text.folders.find(item => item.id === detail.id)?.title}’ 폴더를 삭제할까요?</p>
-          <button type="button" className={folderStyles.danger} data-folder-delete-confirm onClick={async () => { const id = detail.id, result = await run('폴더 삭제', current => deleteProgramFolder(current, { ...base(current), folderId: id })); setFolderDeleteAsk(null);
+          <button type="button" className={folderStyles.danger} data-folder-delete-confirm onClick={async () => { const id = detail.id, result = await manageRun('폴더 삭제', current => deleteProgramFolder(current, { ...base(current), folderId: id })); setFolderDeleteAsk(null);
             if (result.ok) { close(); if (folderScreenRef.current && folderId === id) void closeFolderScreen(); else setFolderId('folder-unfiled'); } }}>삭제</button>
           <button type="button" onClick={() => setFolderDeleteAsk(null)}>취소</button></div>
           : <button type="button" className={folderStyles.delete} data-folder-delete onClick={() => setFolderDeleteAsk(detail.id)}>폴더 삭제</button>}

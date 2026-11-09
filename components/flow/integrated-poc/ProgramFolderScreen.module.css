@@ -34,8 +34,8 @@
 .list .find svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .list .find input { flex: 1 1 auto; min-width: 0; min-height: 42px; border: 0; padding: 0 4px; background: transparent; font-size: 16px; color: var(--flowme-b-ink); }
 .list .find input::placeholder { color: var(--flowme-b-muted); }
-.list .find.find input:focus-visible { outline: 0; }
-.list .find:focus-within { border-color: var(--flowme-b-primary); }
+.list .find.find input:focus-visible { outline: 0 !important; }
+.list .find:focus-within { border-color: var(--flowme-b-primary); box-shadow: 0 0 0 1px var(--flowme-b-primary); }
 .list .findEmpty { padding: 14px 4px; color: var(--flowme-b-muted); font-size: 14px; }
 .list .createForm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; width: 100%; padding: 6px 0; }
 .list .createForm label { flex: 1 1 200px; min-width: 0; }
@@ -122,3 +122,6 @@
   :global([data-folder-layout]) .head .back { display: none; }
   :global([data-folder-layout]) .head { margin-left: 0; }
 }
+/* UX FIX 2 (11/9): with the keyboard up the page scrolls to the line being written (the regions grow with their text,
+   unlike 쓰기's editor, which scrolls inside); the head (‹ · name · status · 완료) stays at the top. */
+:global([data-writing-keyboard="true"]) .head { position: sticky; top: 0; z-index: 20; margin-left: 0; background: var(--flowme-b-surface); }
