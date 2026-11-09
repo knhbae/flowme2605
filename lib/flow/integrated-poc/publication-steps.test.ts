@@ -88,9 +88,10 @@ test('reopening and new-version selection convert a newly selected task against 
     assert.equal(result.draft.rows.find(row => row.itemId === added.itemId)!.scheduleKind, 'relative');
     assert.equal(result.draft.rows.find(row => row.itemId === added.itemId)!.scheduleValue, '13');
     assert.deepEqual(result.draft.rows.filter(row => saved.has(row.itemId)), reopened.rows.filter(row => saved.has(row.itemId)));
-    const last = applyProgramPublicationStepDates(result.draft, f.dates, 'last', result.undo, saved, saved);
+    const last = applyProgramPublicationStepDates(result.draft, f.dates, 'last', result.undo, saved, saved, true);
     assert.equal(last.draft.rows.find(row => row.itemId === added.itemId)!.scheduleValue, '0');
-    assert.deepEqual(last.draft.rows.filter(row => saved.has(row.itemId)), reopened.rows.filter(row => saved.has(row.itemId)));
+    assert.equal(last.draft.rows.find(row => row.title === '상자 고르기')!.scheduleValue, '-13');
+    assert.equal(last.draft.rows.find(row => row.title === '날짜 없는 일')!.scheduleKind, 'undated');
   }
 });
 

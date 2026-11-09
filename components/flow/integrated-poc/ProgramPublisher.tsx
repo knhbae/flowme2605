@@ -23,7 +23,7 @@ import { programAnchorChip, programPublicationRowDates, programPublicationTakerP
 import { readProgramRepeatMarker, programRepeatLabel } from '@/lib/flow/integrated-poc/repeat-line';
 import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
 import { programShortDate } from '@/lib/flow/integrated-poc/program-discovery-display';
-import { applyProgramPublicationStepDates, captureProgramPublicationStepInput, composeProgramPublicationSummary, programPublicationDateExample, programPublicationExposure, programPublicationSavedSchedules, programPublicationStepNativeValue, programPublicationSummaryParts, type ProgramPublicationDateMode, type ProgramPublicationStep } from '@/lib/flow/integrated-poc/publication-steps';
+import { applyProgramPublicationStepDates, captureProgramPublicationStepInput, composeProgramPublicationSummary, programPublicationDateExample, programPublicationExposure, programPublicationSavedSchedules, programPublicationSavedSourceDates, programPublicationStepNativeValue, programPublicationSummaryParts, type ProgramPublicationDateMode, type ProgramPublicationStep } from '@/lib/flow/integrated-poc/publication-steps';
 import { ProgramPublicationPick, ProgramPublicationPreviewCard } from './ProgramPublicationSteps';
 import styles from './ProgramPublisher.module.css';
 import { fullRowText, canRepublishProgramDocument, createProgramRepublishDraft, programPublicationRepublishSource } from '@/lib/flow/integrated-poc/publication-editor';
@@ -68,6 +68,8 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   // but let previously unselected tasks receive the automatic date conversion.
   const savedSchedules = useRef(programPublicationSavedSchedules(publicationDraftAt(data, data.activeActorId, documentId)?.rows ?? (draft?.flowId ? draft.rows : [])));
   const manuallySetSchedules = useRef(new Set<string>());
+  const savedSourceDates = useRef(draft && data.spaces[actorId] ? programPublicationSavedSourceDates(draft, data.spaces[actorId].text) : new Map<string, string>());
+  const [explicitDateMode, setExplicitDateMode] = useState(false);
   const stepHeading = useRef<HTMLHeadingElement>(null);
   const [comparison, setComparison] = useState<PublicationComparison | null>(null), [choices, setChoices] = useState<PublicationConflictChoices>({});
   const [archiveTarget, setArchiveTarget] = useState<{ flowId: string; versionId: string; title: string } | null>(null);
@@ -153,10 +155,12 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   };
   const chooseDates = (mode: ProgramPublicationDateMode, enterRefine = false) => {
     if (unavailable() || !space) return; const current = read(); if (!current) return;
-    const applied = applyProgramPublicationStepDates(current, programPublicationRowDates(space.text, documentId), mode, anchorUndo, new Set([...savedSchedules.current, ...manuallySetSchedules.current]), savedSchedules.current);
+    const applied = applyProgramPublicationStepDates(current, programPublicationRowDates(space.text, documentId), mode, anchorUndo, new Set([...savedSchedules.current, ...manuallySetSchedules.current]), savedSchedules.current, explicitDateMode || !enterRefine, savedSourceDates.current);
+    for (const id of applied.releasedSchedules) savedSchedules.current.delete(id);
+    if (!enterRefine) setExplicitDateMode(true);
     commitDraft(applied.draft); setAnchorUndo(applied.undo); setAnchorMode(mode);
     if (applied.plan.anchor) setTakerDate(applied.plan.anchor);
-    setAnchorNote(mode === 'none' ? '문서에서 가져온 날짜는 미정으로 둡니다.' : applied.plan.rows.length ? '문서 날짜를 기준일과의 간격으로 바꿨습니다.' : '바꿀 문서 날짜가 없습니다.');
+    setAnchorNote(applied.issue ?? (mode === 'none' ? '문서에서 가져온 날짜는 미정으로 둡니다.' : applied.plan.rows.length ? '문서 날짜를 기준일과의 간격으로 바꿨습니다.' : '바꿀 문서 날짜가 없습니다.'));
     if (enterRefine) setStep('refine');
   };
   const unavailable = () => publishingRef.current || locks.current > 0 || composing.current.size > 0;
@@ -253,7 +257,8 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   const rowDates = useMemo(() => space ? programPublicationRowDates(space.text, documentId) : new Map<string, string>(), [space?.text, documentId]);
   const seriesRead = useMemo(() => space ? readProgramPublicationSeries(space, documentId) : null, [space, documentId]);
   const hasSeries = !!seriesRead?.ok && seriesRead.candidates.length > 0;
-  const anchorPlan = draft ? applyProgramPublicationStepDates(draft, rowDates, anchorMode, anchorUndo, new Set([...savedSchedules.current, ...manuallySetSchedules.current]), savedSchedules.current).plan : null;
+  const anchorPreview = draft ? applyProgramPublicationStepDates(draft, rowDates, anchorMode, anchorUndo, new Set([...savedSchedules.current, ...manuallySetSchedules.current]), savedSchedules.current, explicitDateMode, savedSourceDates.current) : null;
+  const anchorPlan = anchorPreview?.plan;
   const showDateControls = !!dateExample || !!anchorPlan?.rows.length;
   const scheduleChip = (row: ProgramPublicationDraftRow) => {
     const marker = readProgramRepeatMarker(row.title.trim());
@@ -300,7 +305,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       const value = programPublicationStepNativeValue(next, field, itemId);
         if (value !== undefined) element.value = value;
       }
-      savedSchedules.current = programPublicationSavedSchedules(next.rows); manuallySetSchedules.current.clear();
+      savedSchedules.current = programPublicationSavedSchedules(next.rows); manuallySetSchedules.current.clear(); savedSourceDates.current = programPublicationSavedSourceDates(next, dataRef.current.spaces[actorId].text); setExplicitDateMode(false);
       setCurrent(next); setAnchorUndo(null); setPrivateComparison(null); setComparison(null); setChoices({}); setPreview(false);
       setMessage(choice === 'mine' ? '내 입력으로 비공개 초안을 저장했습니다. 공개 버전은 바꾸지 않았습니다.' : '확인한 저장 초안을 열었습니다. 공개 버전은 바꾸지 않았습니다.');
     } catch { setMessage('비교 선택을 저장하지 못했습니다. 내 입력과 비교 내용을 유지했습니다.'); }
@@ -333,7 +338,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       if (result.ok && result.presentationPending) { setMessage(programErrorMessage('presentation-pending')); return; }
       if (result.ok && storageScope === 'account') updated = readCurrentData?.()?.spaces[actorId]?.publicationDrafts.find(row => row.id === submitted.id);
       if (!result.ok || !updated) { setMessage(programErrorMessage(result.ok ? 'missing' : result.reason)); return; }
-      savedSchedules.current = programPublicationSavedSchedules(updated.rows); manuallySetSchedules.current.clear(); setAnchorUndo(null);
+      savedSchedules.current = programPublicationSavedSchedules(updated.rows); manuallySetSchedules.current.clear(); savedSourceDates.current = programPublicationSavedSourceDates(updated, dataRef.current.spaces[actorId].text); setExplicitDateMode(false); setAnchorUndo(null);
       savedRef.current = updated; setCurrent(updated); setComparison(null); setChoices({}); setPreview(false); setMessage('선택한 내용을 초안에 저장했습니다. 공개 미리보기에서 결과를 확인해 주세요.');
     } catch { setMessage('비교 결과를 저장하지 못했습니다. 초안과 선택을 유지했습니다.'); }
     finally { endAction(); }
@@ -501,13 +506,14 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
           {showDateControls && <div className={styles.dateLine}><span>{anchorMode === 'none' ? '문서 날짜는 빼고 보여 줍니다' : dateExample?.allZero ? `고른 할 일은 모두 ‘${dateExample.text}’로 보여 줍니다` : dateExample ? `날짜는 '${dateExample.text}'처럼 바꿔서 보여 줍니다` : '기준일로 바꿀 문서 날짜가 있습니다'}</span><button type="button" className={styles.linkButton} aria-expanded={dateOptions} disabled={blocked} onClick={() => { if (!unavailable()) setDateOptions(!dateOptions); }}>바꾸기</button></div>}
           {showDateControls && dateOptions && <section className={styles.dateOptions} aria-label="날짜 표시 바꾸기">
             <h4>어느 날을 기준으로 할까요?</h4>
+            <p className={styles.anchorHint}>저장한 ‘기준일 ±n일’ 일정도 함께 바뀝니다. 날짜 미정·고정 날짜·반복은 유지합니다.</p>
             {([['first', '처음 날 기준', '그날부터 +n일'], ['last', '마지막 날 기준', '그날까지 −n일'], ['none', '날짜 빼기', '문서 날짜를 미정으로']] as const).map(([mode, label, hint]) => <button type="button" key={mode} aria-pressed={anchorMode === mode} disabled={blocked} onClick={() => { if (unavailable()) return; chooseDates(mode); setDateOptions(false); }}><span>{label}<small>{hint}</small></span>{anchorMode === mode && <span aria-hidden="true">✓</span>}</button>)}
             <button type="button" disabled={blocked} onClick={() => { if (!unavailable()) setDateOptions(false); }}>닫기</button>
           </section>}
           <label className={styles.field}>기준일 이름 · 선택<input data-publication-field="anchorName" value={anchorName} maxLength={40} placeholder="예: 이사일" onChange={event => edit({ summary: composeProgramPublicationSummary(event.target.value, programPublicationSummaryParts(draftRef.current!.summary).body) })} /></label>
           {anchorPlan && !showDateControls && anchorPlan.handSet === 0 && <p className={styles.anchorHint} data-anchor-none>고른 할 일에 바꿀 문서 날짜가 없습니다. 날짜 미정과 반복은 그대로 둡니다.</p>}
           {!!anchorPlan?.handSet && <p className={styles.anchorHint}>직접 정했거나 저장해 둔 일정 {anchorPlan.handSet}개는 그대로 둡니다. 항목을 눌러 바꿀 수 있습니다.</p>}
-          {anchorNote && <p className={styles.visuallyHidden} role="status">{anchorNote}</p>}
+          {anchorPreview?.issue && <p className={styles.anchorHint} role="status" data-anchor-issue>{anchorPreview.issue}</p>}{anchorNote && <p className={styles.visuallyHidden} role="status">{anchorNote}</p>}
         </section>
         <section className={styles.choices} aria-label="고른 항목 다듬기"><h3>고른 항목 {draft.rows.filter(row => row.selected).length}개</h3>{draft.rows.filter(row => row.selected).map(row => {
           const chip = scheduleChip(row), scheduleLabel = manuallySetSchedules.current.has(row.itemId) || row.scheduleKind === 'fixed' ? '직접 정함' : savedSchedules.current.has(row.itemId) && row.scheduleKind !== 'undated' ? '저장한 일정' : null;

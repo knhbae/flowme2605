@@ -1,9 +1,13 @@
 import type { ProgramPublicationDraft, ProgramPublicationDraftRow } from './contract';
-import { applyProgramPublicationAnchor, planProgramPublicationAnchor, programAnchorChip, restoreProgramPublicationAnchor, type ProgramAnchorUndo } from './publication-anchor';
+import { applyProgramPublicationAnchor, planProgramPublicationAnchor, programAnchorChip, programPublicationRowDates, restoreProgramPublicationAnchor, type ProgramAnchorUndo } from './publication-anchor';
 import { programDaysBetween } from './date-label';
+import { programDate } from './program-data';
+import { programShiftDate } from './execution';
 import { captureProgramPublicationInput, programPublicationNativeValue, type ProgramPublicationNativeValue } from './publication-editor';
-import type { TextRow } from './text-workspace';
+import type { TextRow, TextWorkspaceState } from './text-workspace';
 import { programRecurringScheduleFromDraft } from './public-recurrence-contract';
+import { readProgramRepeatMarker } from './repeat-line';
+import { PROGRAM_PICK_MONTHS } from './public-repeat-import';
 
 export type ProgramPublicationStep = 'pick' | 'refine' | 'preview';
 export type ProgramPublicationDateMode = 'first' | 'last' | 'none';
@@ -32,26 +36,50 @@ export function programPublicationStepNativeValue(draft: ProgramPublicationDraft
   return programPublicationNativeValue(draft, field, itemId);
 }
 
-/** Only changes this session's automatic conversions or still-undated source
- * tasks. Explicit schedules and reopened draft schedules retain their meaning. */
-export function applyProgramPublicationStepDates(draft: ProgramPublicationDraft, dates: ReadonlyMap<string, string>, mode: ProgramPublicationDateMode, undo: ProgramAnchorUndo | null, manuallySet: ReadonlySet<string> = new Set(), savedSchedules: ReadonlySet<string> = new Set()) {
+/** Keep the saved source dates in memory even after acknowledging a source edit.
+ * No provenance field is added to the stored draft or public version. */
+export function programPublicationSavedSourceDates(draft: ProgramPublicationDraft, text: TextWorkspaceState) {
+  try {
+    const document = JSON.parse(draft.sourceDocumentFingerprint);
+    if (document?.id !== draft.documentId || !Array.isArray(document.lines)) return new Map<string, string>();
+    return programPublicationRowDates({ ...text, documents: [document] }, draft.documentId);
+  } catch { return new Map<string, string>(); }
+}
+
+/** Next preserves the anchor implied by saved relative schedules. Only an
+ * explicit date-mode choice rebases them; stored undated and manual choices stay. */
+export function applyProgramPublicationStepDates(draft: ProgramPublicationDraft, dates: ReadonlyMap<string, string>, mode: ProgramPublicationDateMode, undo: ProgramAnchorUndo | null, manuallySet: ReadonlySet<string> = new Set(), savedSchedules: ReadonlySet<string> = new Set(), explicitMode = false, savedSourceDates: ReadonlyMap<string, string> = dates) {
   const managedUndo = undo ? { ...undo, rows: Object.fromEntries(Object.entries(undo.rows).filter(([id]) => !manuallySet.has(id))) } : null;
   const base = managedUndo ? restoreProgramPublicationAnchor(draft, managedUndo).draft : draft;
   const eligibleDates = new Map(dates);
   for (const row of draft.rows) if (row.rowId && manuallySet.has(row.itemId) && !savedSchedules.has(row.itemId)) eligibleDates.delete(row.rowId);
-  // A saved undated choice stays undated. Saved relative rows keep their values,
-  // but their source dates still take part in the first/last-day reference for
-  // newly selected tasks. Do not infer or rewrite their conversion provenance.
   for (const row of base.rows) if (row.rowId && savedSchedules.has(row.itemId) && row.scheduleKind === 'undated') eligibleDates.delete(row.rowId);
-  const plan = planProgramPublicationAnchor(base, eligibleDates, mode === 'last' ? 'last' : 'first');
-  const reference = planProgramPublicationAnchor({ ...base, rows: base.rows.map(row => savedSchedules.has(row.itemId) && row.scheduleKind === 'relative' ? { ...row, scheduleKind: 'undated' as const } : row) }, eligibleDates, mode === 'last' ? 'last' : 'first');
-  if (reference.anchor && plan.rows.length) {
-    plan.anchor = reference.anchor;
-    plan.rows = plan.rows.map(row => ({ ...row, days: programDaysBetween(reference.anchor!, row.date) }));
+  const savedRelative = base.rows.filter(row => row.selected && savedSchedules.has(row.itemId) && row.scheduleKind === 'relative'
+    && !readProgramRepeatMarker(row.title.trim()) && !PROGRAM_PICK_MONTHS.test(row.title.trim()));
+  const sourceMissing = savedRelative.some(row => row.origin !== 'task' || !row.rowId || !programDate(eligibleDates.get(row.rowId)));
+  const inferred = savedRelative.map(row => {
+    const date = row.rowId ? savedSourceDates.get(row.rowId) : undefined, days = Number(row.scheduleValue);
+    return programDate(date) && /^[+-]?\d+$/.test(row.scheduleValue) && Number.isSafeInteger(days) && Math.abs(days) <= 36600
+      && date === dates.get(row.rowId!) ? programShiftDate(date, -days) : '';
+  });
+  const anchorUncertain = sourceMissing || inferred.some(anchor => !anchor) || new Set(inferred).size > 1;
+  // With a missing source date even an explicit first/last choice cannot safely
+  // rebase only part of a saved relative group. Removing dates needs no inference.
+  const canRebase = explicitMode && (mode === 'none' || !sourceMissing);
+  const rebaseIds = new Set(canRebase ? savedRelative.map(row => row.itemId) : []);
+  const candidate = rebaseIds.size ? { ...base, rows: base.rows.map(row => rebaseIds.has(row.itemId) ? { ...row, scheduleKind: 'undated' as const, scheduleValue: '' } : row) } : base;
+  const plan = planProgramPublicationAnchor(candidate, eligibleDates, mode === 'last' ? 'last' : 'first');
+  if (mode === 'none') return { draft: candidate, undo: null, plan, issue: null, releasedSchedules: [...rebaseIds] };
+  if ((plan.rows.length || explicitMode) && savedRelative.length && (explicitMode ? sourceMissing : anchorUncertain)) {
+    plan.anchor = null; plan.rows = [];
+    return { draft: base, undo: null, plan, issue: '저장한 일정의 기준일을 확인할 수 없어 새로 고른 할 일은 날짜 미정으로 둡니다.', releasedSchedules: [] };
   }
-  if (mode === 'none') return { draft: base, undo: null, plan };
-  const applied = applyProgramPublicationAnchor(base, plan, programPublicationSummaryParts(draft.summary).name);
-  return { ...applied, plan };
+  if (!explicitMode && inferred.length && plan.rows.length) {
+    plan.anchor = inferred[0];
+    plan.rows = plan.rows.map(row => ({ ...row, days: programDaysBetween(inferred[0], row.date) }));
+  }
+  const applied = applyProgramPublicationAnchor(candidate, plan, programPublicationSummaryParts(draft.summary).name);
+  return { ...applied, plan, issue: null, releasedSchedules: [...rebaseIds] };
 }
 
 /** No persisted provenance is added: previously selected schedules are kept,
