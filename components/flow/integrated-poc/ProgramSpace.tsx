@@ -36,6 +36,7 @@ import { programRepeatTitle } from '@/lib/flow/integrated-poc/repeat-line';
 import { programViewScope } from '@/lib/flow/integrated-poc/view-scope';
 import { ProgramGroupAddRow } from './ProgramGroupAddRow';
 import { ProgramFolderList } from './ProgramFolderList';
+import { programDatesNoticeAfterView, programMovedDayTarget, type ProgramDatesNoticeKeep } from '@/lib/flow/integrated-poc/dates-notice-keep';
 import folderStyles from './ProgramFolderScreen.module.css';
 import { programFolderAncestry, programFolderTaskGroups, programFolderTree, programFolderWritingDocuments, programTaskFolderId, PROGRAM_FOLDER_TASK_GROUPS,
   type ProgramFolderTaskGroupKey } from '@/lib/flow/integrated-poc/folder-screen';
@@ -941,8 +942,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // P3c (11/9): [그날 보기] changes the view itself; the notice it came from (its 되돌리기) stays through that change only.
   // Any other view change (a tab, another day, a folder, a search) still drops it.
   // Matched by its undo list (a press on the notice refreshes its time, which makes a new notice object).
-  const datesNoticeKept = useRef<ProgramTaskDateMove[] | null>(null);
-  useEffect(() => { setDatesNotice(current => current && current.undo === datesNoticeKept.current ? current : null); }, [actorId, period, date, folderId, query]);
+  // P3d (QA P2, 11/9): kept until this effect has seen the view [그날 보기] goes to (its period, and its day), not for a
+  // time: on a slow phone the effect of the changed view ran after two frames and dropped the notice (3/3 at 4x CPU).
+  const datesNoticeKept = useRef<ProgramDatesNoticeKeep<ProgramTaskDateMove[]> | null>(null);
+  useEffect(() => {
+    const kept = datesNoticeKept.current;
+    setDatesNotice(current => current && programDatesNoticeAfterView(kept, current.undo, { period, date }).keep ? current : null);
+    if (programDatesNoticeAfterView(kept, kept?.undo, { period, date }).release) datesNoticeKept.current = null;
+  }, [actorId, period, date, folderId, query]);
   useEffect(() => { setCarryNotice(null); }, [actorId, period, date, folderId, query]);
   useEffect(() => { setCheckNotice(null); }, [actorId, period, date, folderId, query]);
   useEffect(() => {
@@ -2104,12 +2111,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   /** [그날 보기]: the period holding the moved-to day (날짜 없음 has its own). */
   async function showMovedDay(target: string | null) {
-    // Kept through this view change (a period, then a day: two renders), then released.
-    const kept = datesNotice?.undo ?? null; datesNoticeKept.current = kept;
-    const release = () => requestAnimationFrame(() => requestAnimationFrame(() => { if (datesNoticeKept.current === kept) datesNoticeKept.current = null; }));
-    if (target === null) { await changePeriod('undated'); release(); return; }
-    if (period === 'week' || period === 'month' || await changePeriod('week')) setDate(target);
-    release();
+    // Kept through this view change (a period, then a day: one or two renders) until the effect above sees the target
+    // view. Already there, nothing changes: nothing is kept. A refused change (input still saving) releases it at once.
+    const undo = datesNotice?.undo, view = programMovedDayTarget({ period, date }, target);
+    if (!undo || !view) return;
+    const kept: ProgramDatesNoticeKeep<ProgramTaskDateMove[]> = { undo, ...view };
+    datesNoticeKept.current = kept;
+    const release = () => { if (datesNoticeKept.current === kept) datesNoticeKept.current = null; };
+    if (period !== view.period && !await changePeriod(view.period)) { release(); return; }
+    if (target !== null) setDate(target);
   }
   /** A day heading's [모두]/[풀기] in 고르기, over that day's pickable rows (지난 미완료 too). */
   function selectDayButton(item: Extract<ProgramExecutionListItem, { kind: 'heading' }>) {

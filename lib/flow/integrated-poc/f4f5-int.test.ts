@@ -69,11 +69,10 @@ test('the writing host hands the logout every document and Flow of this account 
 });
 
 test('[그날 보기] keeps its notice (its 되돌리기) through the view change it makes; any other view change drops it', () => {
-  assert(space.includes('useEffect(() => { setDatesNotice(current => current && current.undo === datesNoticeKept.current ? current : null); }, [actorId, period, date, folderId, query]);'));
+  // P3d (11/9): kept until the view-change effect has seen the target view (p3d-dates-notice.test.ts).
+  assert(space.includes('setDatesNotice(current => current && programDatesNoticeAfterView(kept, current.undo, { period, date }).keep ? current : null);'));
   const show = space.slice(space.indexOf('  async function showMovedDay('), space.indexOf('  /** A day heading\'s [모두]/[풀기]'));
-  assert(show.includes('const kept = datesNotice?.undo ?? null; datesNoticeKept.current = kept;'));
-  assert(show.includes('if (datesNoticeKept.current === kept) datesNoticeKept.current = null;'));
-  assert(show.indexOf('setDate(target)') < show.lastIndexOf('release();'));
+  assert(show.includes('datesNoticeKept.current = kept;') && show.includes('if (datesNoticeKept.current === kept) datesNoticeKept.current = null;'));
 });
 
 test('1280: beside the list the folder head has no ‹', () => {

@@ -46,7 +46,7 @@ test('after it: 고르기 ends, the notice offers 되돌리기 (one save back) a
   // It stays (a choice) until another save or a view change.
   assert.match(space, /tone: datesNotice\.refused \? 'warn' : datesNotice\.undone \? 'info' : 'choose'/);
   // P3c (11/9): except the change [그날 보기] itself makes (the notice and its 되돌리기 stay through it; f4f5-int.test.ts).
-  assert.match(space, /useEffect\(\(\) => \{ setDatesNotice\(current => current && current\.undo === datesNoticeKept\.current \? current : null\); \}, \[actorId, period, date, folderId, query\]\);/);
+  assert.match(space, /setDatesNotice\(current => current && programDatesNoticeAfterView\(kept, current\.undo, \{ period, date \}\)\.keep \? current : null\);\n[^\n]*\n  \}, \[actorId, period, date, folderId, query\]\);/);
   assert.match(space, /if \(result\.ok && result\.changed !== false\) setDatesNotice\(null\);/);
 });
 
