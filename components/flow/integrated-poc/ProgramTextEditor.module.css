@@ -555,3 +555,32 @@
    written keeps the tools). It stays, buttons hidden, while it holds a warning or its recovery box. */
 .editor[data-folder-screen="true"] > .toolbar > :is(button, details:not(.saveFeedback), .toolbarSep, [data-editor-head]) { display: none; }
 .editor[data-folder-screen="true"] > .toolbar:not(:has(.saveFeedback, [data-warn])) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* F6-B3: paint the date rail inside the existing left padding. Only the whole-document host has this hook;
+   folder regions keep their zero-padding ruler. A move has its own lanes; native input masks its active row. */
+.editor:not([data-folder-screen="true"]) > .host[data-native-editor="v11-core"] :global(.tle-root[data-mode="live"]:not([data-move-phase]):not(.tle-has-move-selection) .tle-presentation) {
+  background: linear-gradient(var(--flowme-b-line), var(--flowme-b-line)) 6px var(--tle-pad-top) / 2px calc(100% - var(--tle-pad-top) - 64px) no-repeat;
+}
+.editor:not([data-folder-screen="true"]) > .host[data-native-editor="v11-core"] :global(.tle-root[data-mode="live"]:not([data-move-phase]):not(.tle-has-move-selection) .tle-line-date::before) {
+  content: ''; position: absolute; left: calc(3px - var(--tle-pad-left)); top: calc((var(--tle-line) - 8px) / 2);
+  width: 8px; height: 8px; border: 1.5px solid var(--flowme-b-control); border-radius: 50%; background: var(--flowme-b-paper); pointer-events: none;
+}
+.editor:not([data-folder-screen="true"]) > .host[data-native-editor="v11-core"] :global(.tle-root[data-mode="live"]:not([data-move-phase]):not(.tle-has-move-selection) .tle-line-date:has(> .tle-date-label[data-relative="today"])::before) {
+  top: calc((var(--tle-line) - 10px) / 2); width: 10px; height: 10px; transform: translateX(-1px);
+  border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); box-shadow: 0 0 0 2px var(--flowme-b-selected);
+}
+/* The glyph changes shape only; the existing 20px paint and line-aligned press target stay in place. */
+.host :global(.tle-check-glyph) { border-radius: 50%; }
+
+/* B1 UX FIX 2: icon buttons stay flat; only date/folder get a 36px sand pill in their existing 44px target. */
+@media (max-width: 700px) {
+  .editor .writingBar > button { border: 0; background: transparent; }
+  .editor .writingBar .barChips > button > small { font-size: 13px; }
+  .editor .writingBar > button[data-held="true"] { background: var(--flowme-b-selected); }
+  .editor .writingBar > button:is([data-bar-mode="date"], [data-bar-action="folder"]) { position: relative; isolation: isolate; }
+  .editor .writingBar > button:is([data-bar-mode="date"], [data-bar-action="folder"])::before {
+    content: ''; position: absolute; z-index: -1; inset: 4px 0; border-radius: 18px; background: var(--flowme-b-sand); pointer-events: none;
+  }
+  .editor .writingBar > button:is([data-bar-mode="date"], [data-bar-action="folder"])[data-held="true"] { background: transparent; }
+  .editor .writingBar > button:is([data-bar-mode="date"], [data-bar-action="folder"])[data-held="true"]::before { box-shadow: inset 0 0 0 2px var(--flowme-b-primary); }
+}
