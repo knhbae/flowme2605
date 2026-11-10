@@ -55,6 +55,16 @@ export function programWritingLines(raw: string, rows: readonly { kind: string }
   return lines;
 }
 
+/** int7b QA 0-5 (W-GUARD-07): where a composition starting at `caret` goes. Inside a line's mark or its leading spaces
+ *  (○ '- [ ] ', '[40%]', '- 메모: ', a folder's '- /') it is the title's (name's) start, where a typed letter goes
+ *  (planInsertion); anywhere else null: where the caret is. A date head keeps its own rule (not moved). The browser
+ *  composes where the caret is when the composition starts, so the editor moves the caret there first. */
+export function programCompositionCaret(raw: string, rows: readonly { kind: string }[], caret: number): number | null {
+  const line = programWritingLines(raw, rows).find(entry => caret >= entry.start && caret <= entry.end);
+  if (!line?.mark || line.head === 'date' || caret < line.start || caret >= line.mark[1]) return null;
+  return line.mark[1];
+}
+
 const lineAt = (lines: Line[], offset: number) => lines.find(line => offset >= line.start && offset <= line.end) ?? lines[lines.length - 1];
 const lineEndAt = (raw: string, offset: number) => raw.indexOf('\n', offset) < 0 ? raw.length : raw.indexOf('\n', offset);
 

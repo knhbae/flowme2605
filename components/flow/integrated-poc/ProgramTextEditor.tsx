@@ -52,7 +52,7 @@ import { programWritingDialogPlace } from '@/lib/flow/integrated-poc/writing-dia
 import { revealProgramEditorLine } from './editor-reveal';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
 import { programScaffoldRemoval } from '@/lib/flow/integrated-poc/writing-scaffold';
-import { planProgramWritingInput, type WritingPlan, type WritingSplice } from '@/lib/flow/integrated-poc/writing-guard';
+import { planProgramWritingInput, programCompositionCaret, type WritingPlan, type WritingSplice } from '@/lib/flow/integrated-poc/writing-guard';
 import { programAlignRows } from '@/lib/flow/integrated-poc/writing-hold';
 import { programAbout, programHeldFix, programHeldPlain, programHeldReasonText, programPasteFit, programPasteOverLimit, programTextLimitShare, programTextRoom } from '@/lib/flow/integrated-poc/writing-guard-notice';
 import { PROGRAM_MEMO_TIP_MS, PROGRAM_MEMO_TIP_TEXT, programMemoTipLeft, programMemoTipStorage, programMemoTipTake } from '@/lib/flow/integrated-poc/memo-enter-tip';
@@ -1636,7 +1636,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   /** P1: lines pasted are kept as typed; two or more plain lines get [할 일 n개로] and ↶ beside the notice. */
   function notePaste(start: number, text: string) {
-    queueMicrotask(() => {
+    // int7b QA 3-4 (W-SAVE-04): a paste the rules leave as it is goes in by the browser after this beforeinput (and
+    // after its microtasks): the lines are read in the next task, once they are there.
+    setTimeout(() => {
       const area = textArea(); if (!area || area.value.slice(start, start + text.length) !== text) return;
       const raw = area.value, first = raw.slice(0, start).split('\n').length - 1, count = text.split('\n').length;
       const lines = raw.split('\n'), at = (index: number) => lines.slice(0, index).reduce((sum, line) => sum + line.length + 1, 0);
@@ -1656,7 +1658,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       showWritingNotice('info', `${to - from + 1}줄을 붙여넣었습니다 · 원문 그대로`, [
         ...(plain.length >= 2 && to - from < 60 ? [{ label: `할 일 ${plain.length}개로`, run: whenComposed(toTasks) }] : []),
         { label: '되돌리기', run: whenComposed(() => { setWritingNotice(null); undoInput(); }) }]);
-    });
+    }, 0);
   }
   /** P3: a paste that would take the text past the limit is asked before anything goes in. */
   function askLongPaste(start: number, end: number, text: string) {
@@ -1671,16 +1673,22 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         const accepted = controller.updateRaw(next, '', { inputType: 'insertFromPaste', inputSplice: { start, end, text: fit } });
         editorRef.current?.setValue(controller.getState().raw, { selection: { start: caret, end: caret } });
         if (accepted || controller.getState().held) scheduleSave();
-        showWritingNotice('info', `앞부분 ${programAbout(fit.length)}를 붙여넣었습니다`, [], '이 붙여넣기는 ↶로 되돌리지 않습니다');
-        checkTextLimit(next);
+        // int7b QA (W-GUARD-13): the limit this paste reaches is said in the same notice, so '↶로 되돌리지 않습니다' stays.
+        const reached = textLimitReached(next);
+        showWritingNotice(reached ? 'warn' : 'info', `앞부분 ${programAbout(fit.length)}를 붙여넣었습니다`, [],
+          ['이 붙여넣기는 ↶로 되돌리지 않습니다', ...(reached ? [`${reached.text} · ${reached.room}`] : [])].join(' · '));
       }) }] : [], `이 글에 남은 자리 ${programTextRoom(raw.slice(0, start) + raw.slice(end))} · 아직 넣지 않았습니다`);
   }
-  /** P2: once at 80% of the limit and once more at 90%, per document. */
-  function checkTextLimit(raw: string) {
+  /** P2: once at 80% of the limit and once more at 90%, per document: the step newly reached (counted as said), or null. */
+  function textLimitReached(raw: string) {
     const docId = propsRef.current.docId, step = limitStepRef.current.docId === docId ? limitStepRef.current.step : 0, share = programTextLimitShare(raw);
     const next = share >= 0.9 ? 2 : share >= 0.8 ? 1 : 0;
     limitStepRef.current = { docId, step: Math.max(next, step) };
-    if (next > step) showWritingNotice('warn', `이 글이 한도의 ${next === 2 ? 90 : 80}%에 닿았습니다`, [], `남은 ${programTextRoom(raw)}`);
+    return next > step ? { text: `이 글이 한도의 ${next === 2 ? 90 : 80}%에 닿았습니다`, room: `남은 ${programTextRoom(raw)}` } : null;
+  }
+  function checkTextLimit(raw: string) {
+    const reached = textLimitReached(raw);
+    if (reached) showWritingNotice('warn', reached.text, [], reached.room);
   }
   /** L2·L4: the caret goes to a held line (its end), shown. */
   function goToHeldLine(index: number) {
@@ -2635,7 +2643,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         openCurrentInsertMenu(index);
       });
     }
-    const compositionStart = () => { compositionGeneration.current++;controller.cancelPreparedRaw();composingRef.current = true; setComposing(true); orderEpochRef.current++; setOrderPreview(null); propsRef.current.onDirtyChange?.(true); };
+    /** int7b QA 0-5 (W-GUARD-07): a composition never starts inside a mark. The browser composes where the caret is when
+     *  the composition starts (each syllable its own ↶ step, as anywhere), so the caret goes to the title's start first,
+     *  where a typed letter goes; only on a draft whose model text is the text shown (the rules' own condition). */
+    const compositionToTitle = () => {
+      if (!textarea || applyingPlanRef.current || propsRef.current.folderId || textarea.selectionStart !== textarea.selectionEnd) return;
+      const shown = controller.getState();
+      if (shown.invalid || textarea.value !== shown.raw || M.raw(M.getDocument(shown.working, props.docId)) !== textarea.value) return;
+      const to = programCompositionCaret(textarea.value, M.rowMeta(shown.working, props.docId), textarea.selectionStart);
+      if (to !== null) textarea.setSelectionRange(to, to);
+    };
+    const compositionStart = () => { compositionToTitle(); compositionGeneration.current++;controller.cancelPreparedRaw();composingRef.current = true; setComposing(true); orderEpochRef.current++; setOrderPreview(null); propsRef.current.onDirtyChange?.(true); };
     const compositionEnd = () => {
       compositionGeneration.current++;controller.cancelPreparedRaw();composingRef.current = false; setComposing(false);
       // The native target listener publishes the final raw after this capture listener.
