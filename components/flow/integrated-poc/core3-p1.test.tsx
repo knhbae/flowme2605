@@ -23,7 +23,9 @@ test('folded by default: one line with the count, the Flows among them and the f
   assert(html.includes('짐 목록 만들기 · 전입 신고 예약') && !html.includes('인터넷 이전'));
   assert(!html.includes('data-band-task'), 'no rows until opened');
   assert.equal(band([]), '', 'nothing continuing and nothing late: no band');
-  assert(band([], 3).includes('밀린 일 3개'), 'only late ones: the band says how many');
+  const lateOnly = band([], 3);
+  assert(lateOnly.includes('밀린 일 3가지') && lateOnly.includes('오늘 탭에서 정리'), 'only late ones: one today-navigation line');
+  assert(!lateOnly.includes('이어지는 일') && !lateOnly.includes('aria-expanded'), 'no zero continuing count or expansion when only late');
   assert(band([row('x', '끝낸 일', true), row('y', '남은 일')]).includes('>남은 일<'), 'the summary names open ones');
 });
 
@@ -34,7 +36,7 @@ test('opened in place: five rows (check, the words and where they were written a
   assert(source.includes('<button type="button" className={styles.text} onClick={() => props.onShowSource(row.id)}'));
   assert(source.includes("{!row.done && <button type=\"button\" className={styles.defer} onClick={() => props.onDefer(row.id)} aria-label={`${row.title} 미루기`}>미루기</button>}"));
   assert(source.includes('{more}개 더 · 오늘 탭에서 보기<ProgramIcon name="right" size={16} />'));
-  assert(source.includes('<span className={styles.late}>밀린 일 {props.late}개</span> · 오늘 탭에서 정리<ProgramIcon name="right" size={16} />'));
+  assert(source.includes("<span><span className={styles.late}>밀린 일 {props.late}가지</span>{' · 오늘 탭에서 정리'}</span><ProgramIcon name=\"right\" size={16} />"));
   // The keyboard still sends it away, as before.
   const css = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/ProgramFlowTodayBand.module.css'), 'utf8');
   assert(css.includes(':global([data-writing-keyboard="true"]) .band { display: none; }'));
