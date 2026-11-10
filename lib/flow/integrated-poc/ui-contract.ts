@@ -58,7 +58,7 @@ export function programErrorMessage(reason: string): string {
     busy: '다른 요청과 겹쳐 이번 요청은 실행하지 않았습니다. 필요한 변경이 남아 있으면 다시 시도해 주세요.',
     'storage-unavailable': '저장하지 못했습니다. 입력을 유지한 채 다시 시도하거나 원문을 파일로 보관해 주세요.',
     'readback-failed': '저장 결과를 확인하지 못했습니다. 다시 열기 전에 원문을 보관해 주세요.',
-    'checking-result': '응답이 끊겨 저장 여부를 확인하지 못했습니다. 입력은 남아 있습니다. ‘다시 확인’을 누르면 같은 요청으로 확인합니다.',
+    'checking-result': '저장 결과를 확인하지 못했습니다. 입력은 남아 있습니다. ‘다시 확인’을 누르면 같은 요청으로 확인합니다.',
     'recovery-required': '저장 상태 확인이 필요합니다. 입력을 보관한 뒤 새로고침해 주세요.',
     'presentation-pending': '앞선 저장은 완료됐지만 화면 갱신이 필요합니다. 저장된 화면을 다시 확인한 뒤 변경해 주세요.',
   };
