@@ -126,6 +126,9 @@ export interface ProgramTextEditorProps {
   onRegisterInputCheckpoint?: (read: (() => import('@/lib/flow/integrated-poc/document-action').ProgramEditorInputCheckpoint) | null) => void;
   onRegisterCaptureComplete?: (read: (() => boolean) | null) => void;
   onRegisterExternalGuard?: (read: ((before: import('@/lib/flow/integrated-poc/contract').ProgramData, next: import('@/lib/flow/integrated-poc/contract').ProgramData) => boolean) | null) => void;
+  /** Recovery (11/10 21:04): whether the document body has input not yet saved. An open child panel alone keeps
+   *  onDirtyChange true (its protection) but is not body input; the host keeps only body input as the document's draft. */
+  onRegisterBodyPending?: (read: (() => boolean) | null) => void;
   docId: string;
   workspace: TextWorkspaceState;
   onCommit: ProgramTextCommit;
@@ -1892,6 +1895,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     }
     return saved;
   }
+  /** The body's own unsaved input: a change not yet saved (or refused, or saving), a composition, a region edit or a
+   *  check in progress. A child panel open over an unchanged body is not body input (its text is a recovery draft). */
+  function bodyInputPending() {
+    const state = draftRef.current?.getState();
+    if (!state) return true;
+    return state.saving || !!checkPendingRef.current || !!regionPortRef.current?.hasPending()
+      || programTextInputPending(state, textArea()?.value, composingRef.current, regionPendingRef.current, !!checkPendingRef.current);
+  }
   function captureDraftRaw() {
     // Recovery may retain unfinished native composition without admitting it
     // as validated working state or submitting it to the server.
@@ -1963,6 +1974,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     propsRef.current.onRegisterChildDrafts?.(captureChildDrafts);
     propsRef.current.onRegisterCaptureComplete?.(()=>!currentChild());
     propsRef.current.onRegisterExternalGuard?.(()=>!!currentChild());
+    propsRef.current.onRegisterBodyPending?.(bodyInputPending);
     propsRef.current.onRegisterInputLock?.(locked => {
       // Do not terminate a native IME composition by changing readOnly. Its
       // dirty signal makes the parent flush reject the context change instead.
@@ -1972,7 +1984,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (locked) { orderEpochRef.current++; cancelMove(); dialogRef.current?.close(); setPanel(null); setOrderPreview(null); }
       editorRef.current?.refresh();
     });
-    return () => { propsRef.current.onRegisterCaptureComplete?.(null);propsRef.current.onRegisterExternalGuard?.(null);propsRef.current.onRegisterSave?.(null, null); propsRef.current.onRegisterSourceFocus?.(null); propsRef.current.onRegisterInputLock?.(null); propsRef.current.onRegisterDraft?.(null); propsRef.current.onRegisterStructuralDraft?.(null); propsRef.current.onRegisterChildDrafts?.(null); };
+    return () => { propsRef.current.onRegisterBodyPending?.(null);propsRef.current.onRegisterCaptureComplete?.(null);propsRef.current.onRegisterExternalGuard?.(null);propsRef.current.onRegisterSave?.(null, null); propsRef.current.onRegisterSourceFocus?.(null); propsRef.current.onRegisterInputLock?.(null); propsRef.current.onRegisterDraft?.(null); propsRef.current.onRegisterStructuralDraft?.(null); propsRef.current.onRegisterChildDrafts?.(null); };
   }, [props.docId]);
   function scheduleSave() {
     if (timerRef.current) clearTimeout(timerRef.current);
