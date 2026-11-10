@@ -165,22 +165,20 @@ test('QA F2: a last check whose reply was lost is asked about when that same req
   // The public Flows come with the account, as the social read gives them; the reply of the next save is lost.
   const lossy: AlphaRepository = { ...port, references: () => seed.references,
     execute: async command => { const result = await port.execute(command); if (lose) { lose = false; throw Error('reply lost'); } return result; } };
+  let pendingId: string | null = null, sawWaiting = false;
   const controller = createAlphaSyncController({ recovery: { load: () => ({ ok: true, value: saved }), save: (value: unknown) => { saved = structuredClone(value); return true; } } as never,
-    requestId: () => `loop-wire-${++wire}` });
+    requestId: () => `loop-wire-${++wire}`,onChange: snapshot=>{if(snapshot.pending){pendingId=snapshot.pending.requestId;sawWaiting=programPendingFinish(pendingId,snapshot)==='wait';}} });
   controller.bindSession(B, lossy);
   await controller.refresh();
   const shown = controller.snapshot().envelope!.data;
   lose = true;
   const last = await controller.mutate('완료', current => completeProgramTask(current, { ...base(current), taskId: task(current, '첫 주 돌아보기').id, date: TODAY, done: true }));
-  assert(!last.ok, 'the reply was lost');
-  const pending = controller.snapshot().pending;
-  assert(pending, 'unresolved');
-  assert.equal(programPendingFinish(pending.requestId, controller.snapshot()), 'wait');
-  assert(await controller.resolvePending(true), '다시 확인');
+  assert(last.ok, 'the lost private answer is confirmed automatically by the same request');
+  assert(pendingId && sawWaiting, 'no question before confirmation');
   const live = controller.snapshot();
-  assert.equal(programPendingFinish(pending.requestId, live), 'ask');
+  assert.equal(programPendingFinish(pendingId, live), 'ask');
   assert.deepEqual(programFlowsJustFinished(shown, live.envelope!.data, B, TODAY).map(row => row.flowId), ['mixed']);
   assert.equal(programPendingFinish('loop-wire-other', live), 'drop', 'another request is not this one');
-  assert.equal(programPendingFinish(pending.requestId, { pending: null, lastReceipt: null }), 'drop', 'no receipt: not asked');
-  assert.equal(programPendingFinish(pending.requestId, { pending: { requestId: 'loop-wire-other' }, lastReceipt: null }), 'drop');
+  assert.equal(programPendingFinish(pendingId, { pending: null, lastReceipt: null }), 'drop', 'no receipt: not asked');
+  assert.equal(programPendingFinish(pendingId, { pending: { requestId: 'loop-wire-other' }, lastReceipt: null }), 'drop');
 });

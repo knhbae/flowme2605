@@ -50,6 +50,9 @@ export interface AlphaRepository<Space extends AlphaSpace = ProgramPrivateSpace>
   references?(): AlphaReferenceContext | null;
   read(): Promise<AlphaResult<AlphaAccount<Space>>>;
   execute(command: AlphaCommand): Promise<AlphaResult<AlphaReceipt>>;
+  /** Ephemeral transport proof for the exact last execute: no write dispatch occurred.
+   * Never returned by the server, persisted, or used to settle an earlier replay. */
+  wasNotSubmitted?(command: AlphaCommand): boolean;
   lookup(requestId: string): Promise<AlphaResult<AlphaReceipt | null>>;
   /** Tokens that came with the last successful read(), from the same server snapshot; null without. */
   readTokens?(): AlphaReadTokens | null;

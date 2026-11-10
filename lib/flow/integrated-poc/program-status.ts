@@ -25,6 +25,7 @@ export function programServerStatus(input: {
   if (input.participationRecovery) return { level: 8, label: '저장됨' };
   const pending = !!snapshot.pending, rejected = !!(snapshot.retryableRejectedDraft || snapshot.retryableNativeHandoff || snapshot.retryableRejectedSocialDraft);
   if (external || snapshot.status === 'conflict') return { level: 2, label: '다른 변경이 먼저 저장됨' };
+  if (snapshot.status === 'not-sent' && !pending) return { level: 3, label: '보내지 못함 · 다시 저장' };
   if (snapshot.draft && !pending && !rejected) return { level: 2, label: '입력 보호 · 확인' };
   if (rejected && !pending) return { level: 3, label: '저장 안 됨 · 입력 보존' };
   if (pendingResultUnknown(snapshot)) return { level: 4, label: '저장 여부 확인 못 함' };

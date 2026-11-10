@@ -8,6 +8,7 @@ import { validateAlphaCommand } from './fake-server';
 import { isAlphaWireCommand, isAlphaWireReceipt } from '../alpha-sync/wire';
 import { createAlphaMemoryRecovery, validateAlphaRecovery } from './local-recovery';
 import { programShape } from '../program-data';
+import {privateReceiptMatches} from './private-receipt';
 import { isAlphaSocialIntent, type AlphaSocialIntent } from '../alpha-social/contract';
 
 const nativeHandoff = (command: AlphaCommand | null | undefined) => command?.kind === 'creator' && command.intent.type === 'native-handoff';
@@ -35,11 +36,12 @@ function knownWriteResponse(value: unknown): boolean {
   } catch { return false; }
 }
 
-export type AlphaClientStatus = 'signed-out' | 'ready' | 'saving' | 'saved' | 'same-location' | 'cancelled' | 'conflict' | 'session-expired' | 'checking-result' | 'recovery-required';
+export type AlphaClientStatus = 'signed-out' | 'ready' | 'saving' | 'saved' | 'same-location' | 'cancelled' | 'conflict' | 'session-expired' | 'checking-result' | 'recovery-required' | 'not-sent';
 export const ALPHA_STATUS_COPY: Record<AlphaClientStatus, string> = {
   'signed-out': '로그인이 필요합니다', ready: '저장 준비', saving: '서버 저장 대기', saved: '저장 확인',
   'same-location': '같은 위치입니다', cancelled: '취소했습니다', conflict: '다른 기기 변경',
   'session-expired': '로그인 만료', 'checking-result': '결과 확인 중', 'recovery-required': '복구 필요',
+  'not-sent': '보내지 못함 · 다시 저장',
 };
 export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace>(validate: (value: unknown, ownerId: string, references?: AlphaReferenceContext) => value is AlphaAccount<Space>,
   recovery: AlphaRecoveryPort<Space> = createAlphaMemoryRecovery<Space>(),writingCompute?:WritingCompute) {
@@ -61,7 +63,7 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
     try{if(viewFrame!==confirmedFrame){viewConfirmed=freezeWritingView(privateCopy(state?.confirmed??null));viewReferences=state?.references?freezeWritingView(privateCopy(state.references)):undefined;viewFrame=confirmedFrame;}
       return {ownerId,status:accountHidden?'session-expired' as const:status,confirmedFrame,
         state:state?{...state,confirmed:viewConfirmed,references:viewReferences,pending:viewCopy('pending',state.pending),draft:viewCopy('draft',state.draft)}:null,
-        lastReceipt:viewCopy('receipt',lastReceipt),lastError,retryableRejectedDraft:retryableRejectedDraft(),retryableNativeHandoff:retryableNativeHandoff(),retryableRejectedSocialDraft:retryableRejectedSocialDraft()};
+        lastReceipt:viewCopy('receipt',lastReceipt),lastError,lastErrorPhase,retryableRejectedDraft:retryableRejectedDraft(),retryableNativeHandoff:retryableNativeHandoff(),retryableRejectedSocialDraft:retryableRejectedSocialDraft()};
     }finally{noteWritingPhase('ack-confirmed-snapshot',started,writingIdentity);}
   }
   const verifiedBytes=new WeakMap<object,string>();
@@ -80,6 +82,7 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
   let accountHidden = false;
   // Transient diagnostic only: never stored in recovery or used to settle a pending request.
   let lastError: AlphaError | null = null;
+  let lastErrorPhase: 'execute'|'read'|'lookup'|null = null;
   // Only this session's definitive execute rejection permits replacing its draft.
   // A read error or a reloaded draft is not evidence that an earlier write failed.
   let rejectedDraftRequestId: string | null = null;
@@ -93,7 +96,7 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
     && state?.draft?.kind === 'change-private' && !!state.confirmed
     && state.draft.expectedRevision === state.confirmed.revision
     && state.draft.requestId === rejectedDraftRequestId
-    && (lastError === 'invalid' || lastError === 'limit');
+    && (lastError === 'invalid' || lastError === 'limit' || status === 'not-sent');
   const matchesNativeRejection = (proof: NativeHandoffRejection) => {
     try {
       return !!repository && !blocked && !state?.pending && nativeHandoff(state?.draft) && !!state?.confirmed
@@ -162,9 +165,10 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
     catch{/* Keep the prior durable copy and the live obligation. */}
     if(current(epoch)&&state===previous){status='recovery-required';blocked=true;}return false;
   }
-  const fail = (reason: AlphaError) => {
+  const fail = (reason: AlphaError, phase: 'execute'|'read'|'lookup'='read') => {
     if (reason === 'unauthenticated') accountHidden = true;
     lastError = reason;
+    lastErrorPhase = phase;
     status = reason === 'unauthenticated' ? 'session-expired' : reason === 'revision-conflict' || reason === 'undo-conflict' ? 'conflict'
       : reason === 'no-change' ? 'same-location' : 'recovery-required';
   };
@@ -253,24 +257,14 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
       if(!current(epoch)||state!==previous||repository!==port)return false;
       if(!reply.ok||previous.pending!==pendingIdentity||previous.draft!==draftIdentity||previous.confirmed!==confirmedIdentity||previous.references!==referencesIdentity){status='checking-result';return false;}
     }else if (original.kind === 'change-private') {
-      // The submitted preimage is authoritative. A later valid shape or a newer
-      // revision cannot prove this request's full private result.
-      const expected = detached(before!);
-      for (const change of original.changes) {
-        if (change.present) Reflect.set(expected.space, change.field, detached(change.value));
-        else Reflect.deleteProperty(expected.space, change.field);
-      }
-      const changed = canonicalJson(expected.space) !== canonicalJson(before!.space);
-      expected.revision = before!.revision + (changed ? 1 : 0);
-      if (receipt.changed !== changed || receipt.revision !== expected.revision
-        || canonicalJson(candidate.account) !== canonicalJson(expected)) { status = 'checking-result'; return false; }
+      if (!privateReceiptMatches(before!, original, candidate.account, receipt)) { status = 'checking-result'; return false; }
     }
     const unchangedReferences=!!ownAck&&referencesBytes===canonicalJson(candidate.references??null);
     if (!await commitCandidate(candidate, epoch, port, previous, true)) return false;
     lastReceipt = detached(receipt);
     lastError = null;
     status = receipt.changed ? 'saved' : 'same-location';
-    if(ownAck&&activeAck===ownAck&&unchangedReferences&&receipt.changed){
+    if(ownAck&&activeAck===ownAck&&unchangedReferences&&receipt.changed&&candidate.account.revision===receipt.revision){
       const settled=state;ackIssuer.issue(ownAck.identity,ownAck.input,ownAck.before,confirmedFrame,()=>current(epoch)&&repository===port&&state===settled&&!blocked&&!accountHidden&&status==='saved'&&!state?.pending&&!state?.draft);
     }
     return true;
@@ -289,11 +283,13 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
       if ((nativeHandoff(command) || command.kind === 'social' || command.kind === 'undo-social') && !knownWriteResponse(result)) { status = 'checking-result'; return false; }
       if (!result.ok) {
         if (result.reason === 'unauthenticated') accountHidden = true;
+        const notSent=!replay&&command.kind==='change-private'&&port.wasNotSubmitted?.(command)===true;
         // A retry rejection cannot settle a previous ambiguous attempt. Auth or
         // availability failure also cannot establish the original commit outcome.
-        if (!replay && result.reason !== 'unauthenticated' && result.reason !== 'unavailable') state!.pending = null;
+        if (notSent || !replay && result.reason !== 'unauthenticated' && result.reason !== 'unavailable') state!.pending = null;
         if (!persist()) return false;
-        fail(result.reason);
+        fail(result.reason,'execute');
+        if(notSent){rejectedDraftRequestId=command.requestId;if(result.reason!=='unauthenticated')status='not-sent';}
         if (!replay && command.kind === 'change-private' && (result.reason === 'invalid' || result.reason === 'limit')) rejectedDraftRequestId = command.requestId;
         if (nativeBaseline && result.reason === 'limit' && matchesNativeRejection(nativeBaseline)) rejectedNativeHandoff = nativeBaseline;
         if (socialBaseline && (result.reason === 'invalid' || result.reason === 'limit' || result.reason === 'rate-limited')) {
@@ -323,7 +319,7 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
         status = state.pending ? 'checking-result' : state.draft ? 'recovery-required' : 'ready';
       } catch { status = 'recovery-required'; blocked = true; }
     },
-    snapshot: () => ({ ownerId, status: accountHidden ? 'session-expired' as const : status, state: privateCopy(state), lastReceipt: privateCopy(lastReceipt), lastError,
+    snapshot: () => ({ ownerId, status: accountHidden ? 'session-expired' as const : status, state: privateCopy(state), lastReceipt: privateCopy(lastReceipt), lastError, lastErrorPhase,
       retryableRejectedDraft: retryableRejectedDraft(), retryableNativeHandoff: retryableNativeHandoff(), retryableRejectedSocialDraft: retryableRejectedSocialDraft() }),
     presentation,
     ownWritingAck:()=>ackIssuer.read(),
@@ -436,7 +432,7 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
         status = 'checking-result';
         const result = await port.lookup(command.requestId);
         if (!current(epoch)) return false;
-        if (!result.ok) { fail(result.reason); return false; }
+        if (!result.ok) { fail(result.reason,'lookup'); return false; }
         if (result.value !== null) return await acceptReceipt(result.value, command, epoch, port);
         // Absence may mean an earlier request is still in flight. Only retry the identical ID/body.
         return retrySameRequest ? await send(command, epoch, port, true) : false;

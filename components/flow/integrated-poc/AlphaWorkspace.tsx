@@ -18,6 +18,7 @@ import { isSyntheticAlphaWorkspaceInput, type SyntheticAlphaWorkspaceRuntime } f
 import { newProgramReviewDraft, programReviewOriginReason, type ProgramReviewEntry, type ProgramReviewOrigin, type ProgramReviewSpacePort } from '@/lib/flow/integrated-poc/review-return';
 import { createAlphaTabRecovery } from '@/lib/flow/integrated-poc/alpha-sync/recovery';
 import { createAlphaUiRecovery, type AlphaUiDraft, type AlphaUiRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-ui-recovery';
+import { alphaUiRecoveryDocumentDrafts, captureAlphaUiRecoveryDocuments, clearConfirmedAlphaUiRecoveryDocuments, createAlphaUiRecoveryDocuments, groupAlphaUiRecoveryDocuments, keepAlphaUiRecoveryDocument, loadAlphaUiRecoveryDocuments, parkAlphaUiRecoveryDocuments, parkedAlphaUiRecoveryDocuments } from '@/lib/flow/integrated-poc/alpha-ui-recovery-document';
 import { createAlphaUiRecoveryKeep, keepAlphaUiRecovery, type AlphaUiRecoveryKeep } from '@/lib/flow/integrated-poc/alpha-ui-recovery-keep';
 import { createAlphaStructuralRecovery, resolveAlphaStructuralRecovery, type AlphaStructuralEditorPort, type AlphaStructuralRecoveryEntry, type AlphaStructuralRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
 import { type ProgramData, type ProgramParticipationDraft, type ProgramPublicationDraft, programId } from '@/lib/flow/integrated-poc/contract';
@@ -84,12 +85,13 @@ type ProgramMoveFlight = { target: { next: ProgramDestination; chooseCreatorEntr
 // Presentation identity only. Never copy private draft text into announcement state.
 function reviewAnnouncementState(snapshot: AlphaSyncSnapshot | null | undefined) {
   return JSON.stringify([snapshot?.ownerId, snapshot?.status, snapshot?.busy, snapshot?.pending?.requestId,
-    snapshot?.draft?.requestId, snapshot?.lastReceipt?.requestId, snapshot?.account?.revision, snapshot?.publicRevision]);
+    snapshot?.draft?.requestId, snapshot?.lastReceipt?.requestId, snapshot?.account?.revision, snapshot?.publicRevision, snapshot?.lastError, snapshot?.lastErrorPhase]);
 }
 const labels: Record<AlphaSyncSnapshot['status'], string> = {
   'signed-out': '로그인이 필요합니다', ready: '저장됨', saving: '저장 중…', saved: '저장됨',
   'same-location': '변경 없음', cancelled: '취소했습니다', conflict: '다른 곳에서 먼저 저장했습니다',
   'session-expired': '로그인이 만료되었습니다', 'checking-result': '저장 여부 확인 못 함', 'recovery-required': '저장 상태를 확인해 주세요',
+  'not-sent': '보내지 못함 · 다시 저장',
 };
 function mergeRecoveryDrafts(parked: readonly AlphaUiDraft[], active: readonly AlphaUiDraft[]): AlphaUiDraft[] {
   const all = [...parked, ...active], identity = (draft: AlphaUiDraft) => JSON.stringify([draft.documentId ?? null, draft.title, draft.raw]);
@@ -294,7 +296,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const collectionsPort = useRef<ReturnType<typeof createAlphaDocumentCollections> | null>(null);
   const storageErrorRef = useRef(storageError); storageErrorRef.current = storageError;
   // Park only explicit context handoffs/reloads, not every intermediate keystroke.
-  const parkedDrafts = useRef<AlphaUiDraft[]>([]), activeDrafts = useRef<AlphaUiDraft[]>([]);
+  const recoveryDocuments = useRef(createAlphaUiRecoveryDocuments());
   const allEditors = () => [editors.current, legacyEditors.current, creatorEditors.current, publisherEditors.current, communityEditors.current, inspectorEditors.current];
   const hasInput = () => allEditors().some(port => port?.hasPendingInput?.()) || programDiscoveryHasUnstoredInput(discoveryStateRef.current);
   function captureCreator() {
@@ -346,6 +348,18 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       });
     } catch { setStorageError(true); }
   }
+  function clearConfirmedDocumentInput(text: TextWorkspaceState) {
+    const port = uiRecovery.current;
+    if (!port) return;
+    try {
+      const cleared = clearConfirmedAlphaUiRecoveryDocuments(port, recoveryDocuments.current, id => {
+        const document = M.getDocument(text, id);
+        return document ? M.raw(document) : undefined;
+      });
+      if (!cleared.ok) { setStorageError(true); return; }
+      recoveryDocuments.current = cleared.state; setRecoveries(cleared.record);
+    } catch { setStorageError(true); }
+  }
   function canReleaseInput() {
     const ready = programInputCanRelease([editors.current, legacyEditors.current]);
     if (!ready) setMessage('작성 중인 입력을 먼저 저장해 주세요. RAW 보관만으로 현재 편집 상태의 인계를 확인할 수 없습니다.');
@@ -368,10 +382,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const drafts = [editors.current, legacyEditors.current].flatMap(port => [...(port?.captureDrafts?.() ?? []), ...(port?.captureRecoveryDrafts?.() ?? [])]);
     const discovery = discoveryStateRef.current;
     if (programDiscoveryHasUnstoredInput(discovery)) drafts.push({ title: discovery.pastedTitle || '탐색 중 보관 원문', raw: discovery.pastedText || JSON.stringify(discovery.transient ?? { url: discovery.url }, null, 2) });
-    activeDrafts.current = drafts.map(draft => ({ ...draft }));
     if (!drafts.length || !uiRecovery.current) return structuralSaved;
-    const saved = uiRecovery.current.save(mergeRecoveryDrafts(parkedDrafts.current, activeDrafts.current));
+    const next = captureAlphaUiRecoveryDocuments(recoveryDocuments.current, drafts);
+    const saved = uiRecovery.current.save(alphaUiRecoveryDocumentDrafts(next));
     if (!saved.ok) { setStorageError(true); return false; }
+    recoveryDocuments.current = next;
     setRecoveries(saved.value); return structuralSaved;
   }
   /** Input captured from editors that are about to go away is left behind: it stays in the tab's
@@ -381,13 +396,13 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
    * False when it could not be stored (storage says so); the editor then leaves the input as typed. */
   function keepRefusedInput(draft: AlphaUiDraft) {
     if (!uiRecovery.current) return false;
-    const parked = mergeRecoveryDrafts(parkedDrafts.current, [draft]);
-    const saved = uiRecovery.current.save(mergeRecoveryDrafts(parked, activeDrafts.current));
+    const next = keepAlphaUiRecoveryDocument(recoveryDocuments.current, draft);
+    const saved = uiRecovery.current.save(alphaUiRecoveryDocumentDrafts(next));
     if (!saved.ok) { setStorageError(true); return false; }
-    parkedDrafts.current = parked; setRecoveries(saved.value); return true;
+    recoveryDocuments.current = next; setRecoveries(saved.value); return true;
   }
   function parkEditorInput() {
-    parkedDrafts.current = mergeRecoveryDrafts(parkedDrafts.current, activeDrafts.current);
+    recoveryDocuments.current = parkAlphaUiRecoveryDocuments(recoveryDocuments.current);
     parkedStructural.current = mergeStructuralRecoveryEntries(parkedStructural.current, activeStructural.current);
     if (activeCreator.current && !parkedCreator.current.some(e => canonicalJson(e) === canonicalJson(activeCreator.current))) parkedCreator.current.push(activeCreator.current);
     activeCreator.current = null;
@@ -481,15 +496,10 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const isolatedBefore = isolatedPrivateInput();
     const acceptedPrivateSave = !!privateSave && !!privateTextPort?.acceptConfirmedPrivateText?.(privateSave.before, privateSave.next, claimedOwnAck);
     const acceptedPrivateInput = isolatedBefore && acceptedPrivateSave && isolatedPrivateInput();
-    if (acceptedPrivateSave && privateSave && !hasInput()) {
+    if (acceptedPrivateSave && privateSave) {
       const confirmedText = privateSave.next;
-      clearConfirmedStructuralInput(confirmedText);
-      const saved = uiRecovery.current?.read();
-      if (saved?.ok && saved.value && saved.value.drafts.every(draft => draft.documentId
-        && !!M.getDocument(confirmedText, draft.documentId)
-        && M.raw(M.getDocument(confirmedText, draft.documentId)) === draft.raw)) {
-        if (uiRecovery.current?.clear(saved.value).ok) { parkedDrafts.current = []; activeDrafts.current = []; setRecoveries(null); }
-      }
+      if (!hasInput()) clearConfirmedStructuralInput(confirmedText);
+      clearConfirmedDocumentInput(confirmedText);
     }
     // An open modal normally freezes external revisions. Exempt only our exact
     // lost private-draft save: one owned revision, unchanged public state, and
@@ -569,9 +579,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       const creatorLoaded = creatorPort.read();
       if (creatorLoaded.ok) { parkedCreator.current = creatorLoaded.value?.entries ?? []; setCreatorRecoveries(creatorLoaded.value); }
       else setStorageError(true);
-      parkedDrafts.current = []; activeDrafts.current = [];
+      recoveryDocuments.current = createAlphaUiRecoveryDocuments();
       const loaded = (kept ?? ui).read();
-      if (loaded.ok) { parkedDrafts.current = (loaded.value?.drafts ?? []).map(draft => ({ ...draft })); setRecoveries(loaded.value); }
+      if (loaded.ok) { recoveryDocuments.current = createAlphaUiRecoveryDocuments(loaded.value?.drafts); setRecoveries(loaded.value); }
       else setStorageError(true);
       const store = createAlphaSyncController({ recovery, onChange: present,writingCompute:compute });
       controller.current = store;
@@ -792,7 +802,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         // Do not reintroduce its temporary wait notice after the final snapshot.
         if (outcome.reason !== 'busy' && !reviewOwnsMessage) {
           const failed = controller.current?.snapshot();
-          setMessage(failed?.pending ? programErrorMessage('checking-result') : failed?.retryableNativeHandoff
+          setMessage(failed?.status==='session-expired'||failed?.status==='not-sent'?programErrorMessage(failed.status)
+            : failed?.pending ? programErrorMessage(failed.lastError==='invalid'&&failed.lastErrorPhase==='read'?'readback-invalid':'checking-result') : failed?.retryableNativeHandoff
             ? '저장되지 않았습니다. 비교와 선택은 유지했습니다. 같은 선택으로 다시 적용해 주세요.'
             : failed?.retryableRejectedSocialDraft ? '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'
             : failed?.retryableRejectedDraft ? '저장되지 않았습니다. 입력을 수정한 뒤 다시 저장해 주세요.' : programErrorMessage(outcome.reason));
@@ -805,19 +816,14 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         if (outcome.changed !== false) historyOrigin.current = programHistoryAfterChange(historyOrigin.current, store.snapshot().account?.revision, startedInBrowse);
         if (!reviewOwnsMessage) setMessage('');
         // Drop only input that exactly matches confirmed server text. A newer keystroke stays protected.
-        const saved = uiRecovery.current?.read(), confirmed = store.snapshot().account;
+        const confirmed = store.snapshot().account;
         if (confirmed) clearConfirmedStructuralInput(confirmed.space.text);
         const creatorSaved = creatorRecovery.current?.read();
         if (creatorSaved?.ok && creatorSaved.value && confirmed && creatorSaved.value.entries.every(entry => !entry.auxiliaries.length
           && canonicalJson(entry.working) === canonicalJson(confirmed.space.creatorWorkspace?.working ?? null))) {
           if (creatorRecovery.current?.clear(creatorSaved.value).ok) { parkedCreator.current = []; activeCreator.current = null; setCreatorRecoveries(null); }
         }
-        if (saved?.ok && saved.value && confirmed && saved.value.drafts.every(draft => draft.documentId
-          && !!M.getDocument(confirmed.space.text, draft.documentId)
-          && M.raw(M.getDocument(confirmed.space.text, draft.documentId)) === draft.raw)) {
-          const cleared = uiRecovery.current?.clear(saved.value);
-          if (cleared?.ok) { parkedDrafts.current = []; activeDrafts.current = []; setRecoveries(null); }
-        }
+        if (confirmed) clearConfirmedDocumentInput(confirmed.space.text);
         const socialSaved = socialRecovery.current?.read();
         // P3c (11/6): a confirmed publish or post settles the copy kept of exactly the draft it took; the rest stays.
         const settled = !outcome.presentationPending && confirmed ? alphaSocialSettledEntry(intent, confirmed.space) : null;
@@ -1075,7 +1081,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     } catch { erased = false; }
     if (disposed.current) return;
     if (!erased) { erasing.current = false; setLeaveBusy(false); setLeaveFailed(true); captureInput(); return; }
-    parkedDrafts.current = []; activeDrafts.current = []; parkedStructural.current = []; activeStructural.current = [];
+    recoveryDocuments.current = createAlphaUiRecoveryDocuments(); parkedStructural.current = []; activeStructural.current = [];
     parkedCreator.current = []; activeCreator.current = null; parkedSocial.current = []; activeSocial.current = [];
     setRecoveries(null); setStructuralRecoveries(null); setCreatorRecoveries(null); setSocialRecoveries(null);
     await signOut();
@@ -1203,10 +1209,10 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const found = kept.keep.left(draft => !!draft.documentId && !!M.getDocument(text, draft.documentId)
       && M.raw(M.getDocument(text, draft.documentId)) === draft.raw);
     if (found.drafts.length) {
-      const parked = mergeRecoveryDrafts(found.drafts, parkedDrafts.current);
-      const saved = ui.save(mergeRecoveryDrafts(parked, activeDrafts.current));
+      const next = loadAlphaUiRecoveryDocuments(recoveryDocuments.current, found.drafts);
+      const saved = ui.save(alphaUiRecoveryDocumentDrafts(next));
       if (!saved.ok) { keepTaken.current = false; setStorageError(true); return; }
-      parkedDrafts.current = parked; setRecoveries(saved.value);
+      recoveryDocuments.current = next; setRecoveries(saved.value);
     }
     // take rereads this session and the durable receiver inside the account lock.
     // Missing locks or failed shared storage retain the source for the next page.
@@ -1218,7 +1224,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   }
   function clearDrafts() {
     const cleared = uiRecovery.current?.clear();
-    if (cleared?.ok) { parkedDrafts.current = []; activeDrafts.current = []; setRecoveries(null); setMessage('보관 입력을 지웠습니다. 서버 자료는 그대로입니다.'); }
+    if (cleared?.ok) { recoveryDocuments.current = createAlphaUiRecoveryDocuments(); setRecoveries(null); setMessage('보관 입력을 지웠습니다. 서버 자료는 그대로입니다.'); }
     else setStorageError(true);
   }
   async function restoreCreator(index: number) {
@@ -1567,7 +1573,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const unavailable = snapshot?.status === 'session-expired' || !data || data.activeActorId !== session.userId || snapshot?.ownerId !== session.userId;
   const browse = ['discover', 'flow', 'community'].includes(destination.view);
   const modalRecovery = pendingUnknown
-    ? <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 입력은 유지하고 같은 요청으로 확인합니다.</p><button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>{snapshot?.busy ? '확인 중…' : '다시 확인'}</button></section>
+    ? <section className={styles.problem} aria-label="저장 결과 복구"><p>서버에 저장됐는지 아직 확인하지 못했습니다. 입력은 유지하고 같은 요청으로 확인합니다.</p><button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>{snapshot?.busy ? '확인 중…' : '다시 확인'}</button></section>
     : external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft ? <section className={styles.problem} aria-label="편집 중 변경 확인"><p>다른 곳에서 먼저 저장했습니다. 지금 쓴 내용은 이 기기에 남겨 두었습니다. 최신 내용을 확인해 주세요.</p><button disabled={snapshot?.busy} onClick={() => void openLatest()}>최신 내용 열기</button></section> : null;
   // Presentation only: storage, pending authority and recovery actions stay
   // unchanged. In personal space their disclosure does not resize the document.
@@ -1585,7 +1591,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     || ['signed-out', 'recovery-required', 'checking-result'].includes(snapshot?.status ?? '');
   const storedTotal = (recoveries?.drafts.length ?? 0) + (structuralRecoveries?.entries.length ?? 0)
     + (creatorRecoveries?.entries.length ?? 0) + (socialRecoveries?.entries.length ?? 0);
-  const announcedDrafts = announcedRecoveryEntries(recoveries?.drafts, parkedDrafts.current, activeDrafts.current, inputAtRisk, recoveryDraftIdentity);
+  const announcedDrafts = announcedRecoveryEntries(recoveries?.drafts, parkedAlphaUiRecoveryDocuments(recoveryDocuments.current), recoveryDocuments.current.active, inputAtRisk, recoveryDraftIdentity);
   const announcedStructural = announcedRecoveryEntries(structuralRecoveries?.entries, parkedStructural.current, activeStructural.current, inputAtRisk);
   const announcedCreator = announcedRecoveryEntries(creatorRecoveries?.entries, parkedCreator.current, activeCreator.current ? [activeCreator.current] : [], inputAtRisk);
   const announcedSocial = announcedRecoveryEntries(socialRecoveries?.entries, parkedSocial.current, activeSocial.current, inputAtRisk);
@@ -1615,9 +1621,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // `announce` is off where the note editor's one status slot already announces this state.
   const inputProtectionFor = (announce: boolean) => <>
     {storageError && <p className={styles.problem} role={announce ? 'alert' : undefined}>브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
-    {pendingUnknown && !localParticipationRecovery && <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 같은 요청으로 확인합니다.</p>
+    {pendingUnknown && !localParticipationRecovery && <section className={styles.problem} aria-label="저장 결과 복구"><p>서버에 저장됐는지 아직 확인하지 못했습니다. 같은 요청으로 확인합니다.</p>
       <button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>{snapshot?.busy ? '확인 중…' : '다시 확인'}</button></section>}
-    {(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending && !localParticipationRecovery && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>{snapshot?.retryableNativeHandoff
+    {(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending && !localParticipationRecovery && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>{snapshot?.status==='not-sent'?programErrorMessage('not-sent'):snapshot?.retryableNativeHandoff
       ? '저장되지 않았습니다. 비교와 선택은 유지했습니다. 같은 선택으로 다시 적용해 주세요.'
       : snapshot?.retryableRejectedSocialDraft ? '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'
       : '저장되지 않았습니다. 입력은 남아 있습니다. 문서에서 내용을 수정한 뒤 ‘다시 저장’을 눌러 주세요.'}</p></section>}
@@ -1645,9 +1651,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   }}>
     <summary>보관한 입력 {recoveries.drafts.length}개</summary>
     <div>
-      {recoveries.drafts.map((draft, index) => <section key={index}><h2>{draft.title}</h2><textarea aria-label={`보관한 입력 ${index + 1}`} value={draft.raw} readOnly rows={5} />
-        <button type="button" onClick={() => void navigator.clipboard.writeText(draft.raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))}>원문 복사</button>
-        <button type="button" disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreDraft(index)}>새 문서로 복구</button></section>)}
+      {groupAlphaUiRecoveryDocuments(recoveries.drafts).map(group => <details key={group.key} open={group.entries.length === 1}>
+        <summary>{group.title} · {group.entries.length}개</summary>
+        {[...group.entries].reverse().map(({ draft, index }) => <section key={index}><h2>{draft.title}</h2><textarea aria-label={`보관한 입력 ${index + 1}`} value={draft.raw} readOnly rows={5} />
+          <button type="button" onClick={() => void navigator.clipboard.writeText(draft.raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))}>원문 복사</button>
+          <button type="button" disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreDraft(index)}>새 문서로 복구</button></section>)}
+      </details>)}
       <button type="button" onClick={clearDrafts}>보관 입력 버리기</button>
     </div>
   </details>;

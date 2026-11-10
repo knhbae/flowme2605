@@ -87,7 +87,9 @@ test('QA Q1: [펼치기] after a refused save puts the input in the 복구함 wh
   // AlphaWorkspace's keepRefusedInput: stored in the tab's recovery and announced, or false (storage).
   const workspace = readFileSync(new URL('../../../components/flow/integrated-poc/AlphaWorkspace.tsx', import.meta.url), 'utf8');
   assert(workspace.includes('onKeepRefusedInput={keepRefusedInput}'));
-  assert(workspace.includes('const parked = mergeRecoveryDrafts(parkedDrafts.current, [draft]);'));
+  assert(workspace.includes('const next = keepAlphaUiRecoveryDocument(recoveryDocuments.current, draft);'));
+  assert(workspace.includes('const saved = uiRecovery.current.save(alphaUiRecoveryDocumentDrafts(next));'));
+  assert.match(workspace, /if \(!saved\.ok\) \{ setStorageError\(true\); return false; \}\s+recoveryDocuments\.current = next; setRecoveries\(saved\.value\); return true;/);
 });
 
 test('QA Q2: a document opened at today scrolls the surface the editor shows (its reading viewport while not typed in)', () => {

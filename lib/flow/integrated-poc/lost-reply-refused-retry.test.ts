@@ -96,7 +96,7 @@ test('a host that cannot say "not sent" keeps every attempt as possibly sent; a 
 
 test('the host says which refusals were never sent, and the editor saves the input left after a receipt', () => {
   const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
-  assert.match(space, /if \(!result\.ok && \(result\.reason === 'unresolved' \|\| result\.reason === 'busy'\)\) options\?\.onNotSent\?\.\(\);/);
+  assert.match(space, /if \(!result\.ok && \['unresolved','busy','not-sent','writing-preservation','writing-stale','worker-error'\]\.includes\(result\.reason\)\) options\?\.onNotSent\?\.\(\);/);
   const controller = readFileSync(new URL('./alpha-sync/controller.ts', import.meta.url), 'utf8');
   assert.match(controller, /if \(busy\) return rejected\('busy'\);\r?\n *if \(current\.pending \|\| /, 'both refusals come before anything is sent');
   const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');

@@ -124,7 +124,8 @@ export function createAlphaReaProgressHttpRepository(input:AlphaAuthConfig,ident
 function createHttpRepository<Space extends AlphaSpace=ProgramPrivateSpace>(input:AlphaAuthConfig,identity:VerifiedAlphaSession,request:typeof fetch,options:{social?:boolean;readProbe?:boolean},readPort:AlphaAccountAccess<Space>,typed:boolean,executeBody?:(command:unknown)=>unknown|null,typedGuard:(command:unknown)=>boolean=isAlphaReaTextEditCommand):AlphaRepository<Space>{
   const config = Object.freeze({ ...input }), session = Object.freeze({ ...identity });
   let references: AlphaReferenceContext | null = null, socialOpened = false;
-  async function rpc(body: unknown, nullable: boolean, endpoint = '/api/alpha/account'): Promise<AlphaResult<AlphaReceipt | null>> {
+  let submission: {bytes:string;dispatched:boolean} | null = null;
+  async function rpc(body: unknown, nullable: boolean, endpoint = '/api/alpha/account', dispatch?:()=>void): Promise<AlphaResult<AlphaReceipt | null>> {
     if (!isAlphaAuthConfig(config) || !session.accessToken || !programIdentifier(session.userId)) return { ok: false, reason: 'invalid' };
     const headers = { apikey: config.publishableKey, Authorization: `Bearer ${session.accessToken}`, 'Content-Type': 'application/json' };
     try {
@@ -132,6 +133,7 @@ function createHttpRepository<Space extends AlphaSpace=ProgramPrivateSpace>(inpu
       if (!auth.ok) return { ok: false, reason: auth.status === 401 || auth.status === 403 ? 'unauthenticated' : 'unavailable' };
       const user = await auth.json();
       if (!user || user.id !== session.userId || user.is_anonymous) return { ok: false, reason: 'unauthenticated' };
+      dispatch?.(); // Before fetch: a thrown/aborted POST still has an unknown outcome.
       const response = await request(endpoint, { method: 'POST', headers: { Authorization: headers.Authorization, 'Content-Type': 'application/json' }, body: JSON.stringify(body), cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(endpoint === '/api/alpha/creator' ? ALPHA_CREATOR_REQUEST_BUDGET.browserMs : 15000) });
       const decodeStart=performance.now();const result: unknown = await response.json();noteWritingPhase('ack-decode-receipt-await',decodeStart);
       if (programShape(result, ['ok', 'reason']) && result.ok === false && errors.includes(result.reason as AlphaError)) return result as AlphaResult<never>;
@@ -148,6 +150,7 @@ function createHttpRepository<Space extends AlphaSpace=ProgramPrivateSpace>(inpu
     return request(`${config.url}/rest/v1/rpc/${name}`, { method: 'POST', headers, body: '{}', cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(15000) });
   };
   return {
+    wasNotSubmitted: command => !typed && submission?.bytes === canonicalJson(command) && !submission.dispatched,
     references: () => detached(references),
     readTokens: () => lastTokens ? { ...lastTokens } : null,
     async probe(): Promise<AlphaReadProbe> {
@@ -203,11 +206,13 @@ function createHttpRepository<Space extends AlphaSpace=ProgramPrivateSpace>(inpu
         : { ok: false, reason: result.reason === 'session-expired' ? 'unauthenticated' : result.reason === 'invalid' ? 'invalid' : 'unavailable' };
     },
     async execute(command) {
+      submission=null;
       if (!isAlphaWireCommand(command)||typed&&!typedGuard(command)) return { ok: false, reason: 'invalid' };
       const body=executeBody?executeBody(command):{kind:'execute',command:detached(command)};
       if(body===null)return{ok:false,reason:'unavailable'};
+      const attempt={bytes:canonicalJson(command),dispatched:false};submission=attempt;
       return await rpc(body, false, isM3Command(command) ? '/api/alpha/account'
-        : command.kind === 'social' || command.kind === 'undo-social' ? '/api/alpha/social' : '/api/alpha/creator') as AlphaResult<AlphaReceipt>;
+        : command.kind === 'social' || command.kind === 'undo-social' ? '/api/alpha/social' : '/api/alpha/creator',()=>{attempt.dispatched=true;}) as AlphaResult<AlphaReceipt>;
     },
     async lookup(requestId) { return programIdentifier(requestId) && requestId.length <= 160 ? rpc({ kind: 'lookup', requestId }, true) : { ok: false, reason: 'invalid' }; },
   };
