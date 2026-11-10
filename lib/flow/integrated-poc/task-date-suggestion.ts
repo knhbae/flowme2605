@@ -41,6 +41,24 @@ export function undoTaskDateSuggestion(state: TextWorkspaceState, docId: string,
   return M.validate(next) ? next : null;
 }
 
+/** Whole-frame undo is owned only while that exact frame is current. N9 may
+ * acknowledge the one new date property's ID; no other identity or value is relaxed. */
+export function taskDateSuggestionUndoFrameMatches(current: TextWorkspaceState, docId: string,
+  before: TextWorkspaceState, after: TextWorkspaceState, redo: boolean): boolean {
+  const expected = redo ? before : after;
+  if (JSON.stringify(current) === JSON.stringify(expected)) return true;
+  if (redo || ![current, before, after].every(M.validate)) return false;
+  const oldIds = new Set([...before.documents, ...before.flows].flatMap(doc => doc.lines.map(line => line.id)));
+  const doc = M.getDocument(after, docId), actual = M.getDocument(current, docId);
+  const added = doc?.lines.filter(line => !oldIds.has(line.id)) ?? [];
+  if (!doc || !actual || added.length !== 1 || !/^ *- 날짜:/.test(added[0].text)) return false;
+  const index = doc.lines.findIndex(line => line.id === added[0].id), acknowledged = actual.lines[index];
+  if (!acknowledged || acknowledged.text !== added[0].text || oldIds.has(acknowledged.id)) return false;
+  const normalized = { ...after, documents: after.documents.map(item => item.id === docId
+    ? { ...item, lines: item.lines.map((line, at) => at === index ? { ...line, id: acknowledged.id } : line) } : item) };
+  return JSON.stringify(current) === JSON.stringify(normalized);
+}
+
 /** Use KST even when a browser's own time zone is elsewhere. */
 export function taskDateSuggestionToday(now = new Date()): string {
   const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(now);

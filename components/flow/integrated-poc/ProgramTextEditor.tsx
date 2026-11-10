@@ -65,7 +65,7 @@ import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt
 import {ProgramWritingInline} from './ProgramWritingInline';
 import {prepareWritingChild} from '@/lib/flow/integrated-poc/writing-child-command';
 import {planWritingInsertion} from '@/lib/flow/integrated-poc/writing-insertion-command';
-import { TASK_DATE_SUGGESTION_EVENT, TASK_DATE_SUGGESTION_KEY, readTaskDateSuggestion, undoTaskDateSuggestion, taskDateSuggestionLabel, taskDateSuggestionsEnabled, taskDateSuggestionToday, type TaskDateSuggestion } from '@/lib/flow/integrated-poc/task-date-suggestion';
+import { TASK_DATE_SUGGESTION_EVENT, TASK_DATE_SUGGESTION_KEY, readTaskDateSuggestion, undoTaskDateSuggestion, taskDateSuggestionUndoFrameMatches, taskDateSuggestionLabel, taskDateSuggestionsEnabled, taskDateSuggestionToday, type TaskDateSuggestion } from '@/lib/flow/integrated-poc/task-date-suggestion';
 
 export { createProgramTextDraft } from '@/lib/flow/integrated-poc/program-text-draft';
 export type { ProgramTextCommitOptions, ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
@@ -486,7 +486,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // back to its tools after a chip runs, on ×, or when the caret leaves the line it was opened on. A date chip's day
   // rides with the held press ('date'); 폴더 writes its `- /` line once and the folder suggestions take over.
   const [barMode, setBarModeState] = useState<BarMode>('tools'), barModeRef = useRef<{ mode: BarMode; line: number }>({ mode: 'tools', line: -1 });
-  const barDateUndo = useRef<{ docId: string; taskId: string; before: TextWorkspaceState; after: TextWorkspaceState; date: string; time: string; raw: string; redo: boolean } | null>(null);
+  const barDateUndo = useRef<{ docId: string; taskId: string; before: TextWorkspaceState; after: TextWorkspaceState; date: string; time: string; raw: string; redo: boolean; suggestion?: true } | null>(null);
   // Stage 2: `origin` is what the seed came from ('/' or '-/'); × then puts that back (none: the 폴더 button, × takes it away).
   const barChipDate = useRef<string | null>(null), folderSeedRef = useRef<{ docId: string; lineId: string; inPlace: boolean; before: TextWorkspaceState; origin?: '/' | '-/' } | null>(null), datePickRef = useRef<HTMLInputElement>(null);
   // Input v2 stage 2 (11/7): the line a chip row was opened from — a typed `[` (date chips), a typed `/` (folder chips),
@@ -910,19 +910,20 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     setSuggestion(null);
     const done = applyDateChip(candidate.lineId, candidate.date), after = controller.getState();
     if (after.raw === before.raw) return;
-    barDateUndo.current = { docId: p.docId, taskId: task.id, before: before.working, after: after.working,
-      date: candidate.date, time: task.time ?? '', raw: after.raw, redo: false };
+    const history = { docId: p.docId, taskId: task.id, before: before.working, after: after.working,
+      date: candidate.date, time: task.time ?? '', raw: after.raw, redo: false, suggestion: true as const };
+    barDateUndo.current = history;
     const oldIds = new Set(M.getDocument(before.working, p.docId)?.lines.map(line => line.id));
     const property = M.getDocument(after.working, p.docId)?.lines.find(line => !oldIds.has(line.id) && /^ *- 날짜:/.test(line.text));
     setDateApplied({ text: `${taskDateSuggestionLabel(candidate.date, taskDateSuggestionToday())} 옮겼습니다`, undo: whenComposed(() => {
-      if (p.docId !== propsRef.current.docId || !property || actionsDisabled()) return;
+      if (p.docId !== propsRef.current.docId || actionsDisabled()) return;
+      if (barDateUndo.current === history && undoBarDate()) { setDateApplied(null); return; }
+      if (!property) { setDateApplied(null); return; }
       const state = controller.getState(), next = undoTaskDateSuggestion(state.working, p.docId, task.id, property, candidate.date);
       if (!next) { setDateApplied(null); return; }
-      if (!undoBarDate()) {
-        // Continued writing must survive a notice undo: remove only the exact property this press added.
-        const restored = M.tasks(next).find(item => item.id === task.id);
-        if (restored) void apply(next, '날짜 말 제안 되돌리기', { taskId: restored.id, date: restored.date, time: restored.time ?? '' });
-      }
+      // Continued writing and another document's refresh survive: remove only this exact property.
+      const restored = M.tasks(next).find(item => item.id === task.id);
+      if (restored) void apply(next, '날짜 말 제안 되돌리기', { taskId: restored.id, date: restored.date, time: restored.time ?? '' });
       setDateApplied(null);
     }) });
     void done;
@@ -1303,6 +1304,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const last = barDateUndo.current, state = draftRef.current?.getState();
     if (!last || !state || last.docId !== propsRef.current.docId || state.raw !== last.raw) { if (last && state && state.raw !== last.raw) barDateUndo.current = null; return false; }
     if (last.redo !== redo) return false;
+    if (last.suggestion && !taskDateSuggestionUndoFrameMatches(state.working, last.docId, last.before, last.after, redo)) { barDateUndo.current = null; return false; }
     if (actionsDisabled() || composingRef.current || regionPendingRef.current) return true;
     const done = redo ? apply(last.after, '항목 날짜·시간', { taskId: last.taskId, date: last.date, time: last.time }) : apply(last.before, '항목 날짜·시간 되돌리기');
     const raw = draftRef.current?.getState().raw;

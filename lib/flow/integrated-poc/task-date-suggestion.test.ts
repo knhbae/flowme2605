@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
-import { readTaskDateSuggestion, undoTaskDateSuggestion, taskDateSuggestionLabel, taskDateSuggestionToday, taskDateSuggestionsEnabled } from './task-date-suggestion';
+import { readTaskDateSuggestion, undoTaskDateSuggestion, taskDateSuggestionUndoFrameMatches, taskDateSuggestionLabel, taskDateSuggestionToday, taskDateSuggestionsEnabled } from './task-date-suggestion';
+import { mergeProgramTextWorkspace } from './text-merge';
 
 const today = '2026-11-10';
 function fixture(raw: string) {
@@ -74,4 +75,46 @@ test('KST clock, cross-year labels and device preference are explicit', () => {
   assert.equal(taskDateSuggestionsEnabled(null), true);
   assert.equal(taskDateSuggestionsEnabled({ getItem: () => 'off' }), false);
   assert.equal(taskDateSuggestionsEnabled({ getItem: () => { throw Error('blocked'); } }), true);
+});
+
+test('date suggestion whole-frame undo cannot replace another document refreshed after acceptance', () => {
+  const initial = fixture('- [ ] 내일 합성 회의');
+  const withOther = M.addDocument(initial, { title: '다른 합성 문서', folderId: 'f' });
+  const otherId = withOther.documents.find(doc => doc.id !== 'd')!.id;
+  const before = M.editText(withOther, otherId, '- [ ] 합성 이전');
+  const task = M.tasks(before).find(item => item.docId === 'd')!, after = M.updateTask(before, task.id, { date: '2026-11-11', time: '' });
+  const updated = M.editText(after, otherId, '- [ ] 합성 최신');
+  assert.equal(M.raw(M.getDocument(updated, 'd')), M.raw(M.getDocument(after, 'd')));
+  assert.equal(taskDateSuggestionUndoFrameMatches(updated, 'd', before, after, false), false);
+  const oldIds = new Set(before.documents[0].lines.map(line => line.id));
+  const property = after.documents[0].lines.find(line => !oldIds.has(line.id))!;
+  const fallback = undoTaskDateSuggestion(updated, 'd', task.id, property, '2026-11-11');
+  assert.ok(fallback);
+  const merged = mergeProgramTextWorkspace(updated, fallback, updated);
+  assert.ok(merged);
+  assert.equal(M.raw(M.getDocument(merged, 'd')), M.raw(before.documents[0]));
+  assert.deepEqual(M.getDocument(merged, otherId), M.getDocument(updated, otherId));
+  assert.equal(taskDateSuggestionUndoFrameMatches(after, 'd', before, after, false), true);
+  assert.equal(taskDateSuggestionUndoFrameMatches(before, 'd', before, after, true), true);
+  const changedAfterUndo = M.editText(before, otherId, '- [ ] 합성 최신');
+  assert.equal(taskDateSuggestionUndoFrameMatches(changedAfterUndo, 'd', before, after, true), false);
+});
+
+test('only the one newly added date property may receive an authoritative ID for suggestion undo', () => {
+  const before = fixture('- [ ] 내일 합성 회의'), task = M.tasks(before)[0];
+  const after = M.updateTask(before, task.id, { date: '2026-11-11', time: '' });
+  const oldIds = new Set(before.documents[0].lines.map(line => line.id));
+  const property = after.documents[0].lines.find(line => !oldIds.has(line.id))!;
+  const acknowledged: TextWorkspaceState = { ...after, documents: after.documents.map(doc => ({ ...doc,
+    lines: doc.lines.map(line => line.id === property.id ? { ...line, id: 'server-date-property' } : line) })) };
+  assert.equal(taskDateSuggestionUndoFrameMatches(acknowledged, 'd', before, after, false), true);
+  const renamed = { ...acknowledged, documents: acknowledged.documents.map(doc => ({ ...doc, title: '후속 제목' })) };
+  assert.equal(taskDateSuggestionUndoFrameMatches(renamed, 'd', before, after, false), false);
+  const taskReplaced = { ...acknowledged, documents: acknowledged.documents.map(doc => ({ ...doc,
+    lines: doc.lines.map(line => line.id === task.id ? { ...line, id: 'different-task' } : line) })) };
+  assert.equal(taskDateSuggestionUndoFrameMatches(taskReplaced, 'd', before, after, false), false);
+  const changedDate = M.updateTask(acknowledged, task.id, { date: '2026-11-12', time: '' });
+  assert.equal(taskDateSuggestionUndoFrameMatches(changedDate, 'd', before, after, false), false);
+  const changedFolder = { ...acknowledged, folders: acknowledged.folders.map(folder => ({ ...folder, title: '후속 분류' })) };
+  assert.equal(taskDateSuggestionUndoFrameMatches(changedFolder, 'd', before, after, false), false);
 });
