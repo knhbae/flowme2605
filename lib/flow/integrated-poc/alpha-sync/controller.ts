@@ -4,7 +4,7 @@ import type {WritingCompute,WritingIdentity,WritingReply} from '../writing-compu
 import type { ProgramMutate, ProgramMutationResult, ProgramPrivateMutationObservation } from '../ui-contract';
 import { isAccountForOwner } from '../alpha-auth/account-access';
 import { createAlphaClient, type AlphaClientStatus } from '../alpha-persistence/client';
-import { ALPHA_COMMAND_SCHEMA, type AlphaAccount, type AlphaCommand, type AlphaReceipt, type AlphaRecoveryPort, type AlphaRepository, type AlphaReferenceContext } from '../alpha-persistence/contract';
+import { ALPHA_COMMAND_SCHEMA, type AlphaAccount, type AlphaCommand, type AlphaReceipt, type AlphaRecoveryPort, type AlphaRepository, type AlphaReferenceContext, type AlphaError } from '../alpha-persistence/contract';
 import { commandFromProgramTransition, materializeAccount, privateChanges } from '../alpha-persistence/program-adapter';
 import { detached, canonicalJson } from '../alpha-persistence/json';
 import { isM3Command } from './contract';
@@ -15,7 +15,7 @@ import { alphaSocialAllowedFields } from '../alpha-social/dispatch';
 import { isAlphaCreatorIntent } from '../alpha-creator/contract';
 
 export type AlphaSyncSnapshot = { ownerId: string | null; account: AlphaAccount | null; envelope: ProgramEnvelope | null;
-  status: AlphaClientStatus; busy: boolean; draft: AlphaCommand | null; pending: AlphaCommand | null; canUndo: boolean; canRedo: boolean; retryableRejectedDraft?: boolean; retryableNativeHandoff?: boolean; retryableRejectedSocialDraft?: boolean; ownWritingAck?:OwnedWritingAck|null; lastReceipt?: AlphaReceipt | null; publicRevision?: number; references?: AlphaReferenceContext };
+  status: AlphaClientStatus; busy: boolean; draft: AlphaCommand | null; pending: AlphaCommand | null; canUndo: boolean; canRedo: boolean; retryableRejectedDraft?: boolean; retryableNativeHandoff?: boolean; retryableRejectedSocialDraft?: boolean; ownWritingAck?:OwnedWritingAck|null; lastReceipt?: AlphaReceipt | null; lastError?: AlphaError | null; lastErrorPhase?:'execute'|'read'|'lookup'|null; publicRevision?: number; references?: AlphaReferenceContext };
 type Success = { command: AlphaCommand; before: AlphaAccount; after: AlphaAccount };
 /** Waits before each quiet lookup of a social write whose answer was lost (see lostSocialAnswer). */
 export const ALPHA_LOST_ANSWER_CHECKS_MS: readonly number[] = Object.freeze([1500, 3000]);
@@ -51,6 +51,8 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
       retryableNativeHandoff: !busy && current.retryableNativeHandoff,
       retryableRejectedSocialDraft: !busy && current.retryableRejectedSocialDraft,
       lastReceipt: current.lastReceipt,
+      lastError: current.lastError,
+      lastErrorPhase: current.lastError ? current.lastErrorPhase : null,
       ...(state?.references?.social ? { publicRevision: state.references.social.revision } : {}),
       ...(account ? { references: options.writingCompute?reference!:structuredClone(reference!) } : {}),
       canUndo: editable && undo?.after.revision === account?.revision, canRedo: editable && redo?.expectedRevision === account?.revision };
@@ -64,6 +66,23 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
   const lostSocialAnswer = (command: AlphaCommand, next: ReturnType<typeof readClient>) =>
     (command.kind === 'social' || command.kind === 'undo-social') && next.state?.pending?.requestId === command.requestId
     && (next.lastError === 'unavailable' || next.status === 'checking-result');
+  const lostPrivateAnswer=(command:AlphaCommand,next:ReturnType<typeof readClient>)=>
+    (command.kind==='change-private'||command.kind==='undo-private')&&next.state?.pending?.requestId===command.requestId
+    &&next.status!=='session-expired';
+  async function checkPrivateAnswer(command:AlphaCommand,epoch:number):Promise<boolean>{
+    quietCheck=true;emit();
+    for(let index=0;index<ALPHA_LOST_ANSWER_CHECKS_MS.length;index++){
+      await new Promise(done=>setTimeout(done,ALPHA_LOST_ANSWER_CHECKS_MS[index]));
+      if(epoch!==generation||!lostPrivateAnswer(command,readClient()))return false;
+      // The second lookup may resend only this exact stored ID/body, and ONLY
+      // when lookup succeeded with null. A failed lookup never sends a write.
+      const ok=await client.resolvePending(index===1);
+      if(epoch!==generation)return false;
+      if(ok)return true;
+      if(!lostPrivateAnswer(command,readClient()))return false;
+    }
+    return false;
+  }
   async function execute(command: AlphaCommand, result: string, before: AlphaAccount, mode: 'edit' | 'undo' | 'redo', recordHistory = true, retryRejectedDraft = false, retryNativeHandoff = false, retryRejectedSocialDraft = false,writingIdentity?:WritingIdentity,preparedReply?:WritingReply,writeCheckpoint?:()=>boolean,writingAckInput?:WritingAckInput): Promise<ProgramMutationResult> {
     if (!isAlphaWireCommand(command)) return rejected('forbidden');
     const epoch = generation; busy = true;
@@ -72,6 +91,7 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
       let ok = await operation;
       if (epoch !== generation) return rejected('session-expired');
       let next = readClient();
+      if(!ok&&lostPrivateAnswer(command,next)){ok=await checkPrivateAnswer(command,epoch);if(epoch!==generation)return rejected('session-expired');next=readClient();quietCheck=false;}
       if (!ok && lostSocialAnswer(command, next)) {
         quietCheck = true; emit();
         for (const wait of ALPHA_LOST_ANSWER_CHECKS_MS) {
@@ -121,8 +141,9 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
         const reply=await compute.run(identity,{kind:'save',account,references:reference,expected:writing.expected,next:writing.next,position:writing.position});
         if(epoch!==generation)return rejected('session-expired');
         const handoff=performance.now();
-        if(!reply.ok||!reply.command||reply.command.requestId!==requestId||reply.command.expectedRevision!==account.revision
-          ||!isM3Command(reply.command)||writing.canSubmit?.()===false||!checkpoint())return rejected('conflict');
+        if(!reply.ok)return rejected(reply.reason?.startsWith('worker-')?'worker-error':'writing-preservation');
+        if(!reply.command||reply.command.requestId!==requestId||reply.command.expectedRevision!==account.revision||!isM3Command(reply.command))return rejected('worker-error');
+        if(writing.canSubmit?.()===false||!checkpoint())return rejected('writing-stale');
         const observe=(event:ProgramPrivateMutationObservation)=>{try{mutationOptions.onPrivateMutation?.(detached(event));}catch{}};
         compute.note('handoff',performance.now()-handoff);const dispatch=performance.now();
         const operation=execute(reply.command,reply.result??writing.documentId,account,'edit',mutationOptions.history!==false,current.retryableRejectedDraft,false,false,identity,options.recovery.savePrepared?reply:undefined,checkpoint,{documentId:writing.documentId,generation:writing.workingGeneration,expected:writing.expected,next:writing.next});
@@ -207,8 +228,11 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
     const epoch = generation; busy = true;
     try {
       const operation = kind === 'refresh' ? client.refresh() : kind === 'refresh-if-changed' ? client.refreshIfChanged() : client.resolvePending(retry); emit();
-      const result = await operation;
+      let result = await operation;
       if (epoch !== generation) return false;
+      if(kind==='resolve'&&!retry&&!result&&previous?.pending&&lostPrivateAnswer(previous.pending,readClient())){
+        result=await checkPrivateAnswer(previous.pending,epoch);if(epoch!==generation)return false;
+      }
       const confirmed = readClient().state?.confirmed, revision = confirmed?.revision;
       if (undo && undo.after.revision !== revision) undo = null;
       if (redo && redo.expectedRevision !== revision) redo = null;
@@ -224,7 +248,7 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
         } else { redo = { expectedRevision: confirmed.revision, target: detached(previous.confirmed), ...(previous.pending.kind === 'undo-creator' ? { creatorUndoId: previous.pending.requestId } : {}), ...(previous.pending.kind === 'undo-social' ? { socialUndoId: previous.pending.requestId } : {}) }; undo = null; }
       }
       return result;
-    } finally { if (epoch === generation) { busy = false; emit(); } }
+    } finally { if (epoch === generation) { quietCheck=false;busy = false; emit(); } }
   }
   return {
     snapshot, mutate,

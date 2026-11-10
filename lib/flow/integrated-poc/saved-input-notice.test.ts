@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import * as ts from 'typescript';
 import { announcedRecoveries, announcedRecoveryEntries, recoveryDraftIdentity } from './saved-input-notice';
+import * as documentRecovery from './alpha-ui-recovery-document';
+import type { AlphaUiDraft } from './alpha-ui-recovery';
 
 // Every keystroke captures the editor's input to the tab (kept as before). R8a counted that capture,
 // so ordinary typing showed "보관한 입력 1개" from the first key until the save cleared it.
@@ -32,7 +34,8 @@ const typed = { documentId: 'doc', title: '작성 중 문서', raw: '첫 줄\n�
 function count(state: { parked: typeof typed[]; active: typeof typed[]; atRisk: boolean }) {
   const scope = {
     recoveries: { drafts: [typed] }, structuralRecoveries: null, creatorRecoveries: null, socialRecoveries: null,
-    parkedDrafts: { current: state.parked }, activeDrafts: { current: state.active }, parkedStructural: { current: [] }, activeStructural: { current: [] },
+    ...documentRecovery, recoveryDocuments: { current: { loaded: [], parked: state.parked, active: state.active } },
+    parkedStructural: { current: [] }, activeStructural: { current: [] },
     parkedCreator: { current: [] }, activeCreator: { current: null }, parkedSocial: { current: [] }, activeSocial: { current: [] },
     inputAtRisk: state.atRisk, announcedRecoveryEntries, recoveryDraftIdentity,
   };
@@ -62,7 +65,7 @@ test('the count rule for each kind of saved input', () => {
 
 test('the shell counts all four kinds this way and marks input at risk from protection, failure and session state', () => {
   const total = ['announcedDrafts', 'announcedStructural', 'announcedCreator', 'announcedSocial'].map(declaration).join('\n');
-  for (const kind of ['recoveries?.drafts, parkedDrafts.current, activeDrafts.current', 'structuralRecoveries?.entries, parkedStructural.current, activeStructural.current',
+  for (const kind of ['recoveries?.drafts, parkedAlphaUiRecoveryDocuments(recoveryDocuments.current), recoveryDocuments.current.active', 'structuralRecoveries?.entries, parkedStructural.current, activeStructural.current',
     'creatorRecoveries?.entries, parkedCreator.current, activeCreator.current ? [activeCreator.current] : []', 'socialRecoveries?.entries, parkedSocial.current, activeSocial.current'])
     assert(total.includes(`announcedRecoveryEntries(${kind}, inputAtRisk`), kind);
   assert.equal(declaration('savedTotal'), 'announcedDrafts.length + announcedStructural.length + announcedCreator.length + announcedSocial.length');
@@ -128,16 +131,16 @@ test('a local refusal in a document editor counts the kept input as at risk', as
 test('input an editor refused stays stored and announced after the editors are replaced', () => {
   const refused = { documentId: 'doc', title: '작성 중 문서', raw: '- /\n  - [ ] 안건' };
   const other = { documentId: 'doc-2', title: '다른 문서', raw: '새 글' };
-  const mergeRecoveryDrafts = evaluate<(parked: typeof typed[], active: typeof typed[]) => typeof typed[]>(functionText('mergeRecoveryDrafts'), {});
   const mergeStructuralRecoveryEntries = (parked: unknown[], active: unknown[]) => [...parked, ...active];
-  const refs = { parkedDrafts: { current: [] as typeof typed[] }, activeDrafts: { current: [refused] }, parkedStructural: { current: [] }, activeStructural: { current: [] },
+  const refs = { recoveryDocuments: { current: documentRecovery.captureAlphaUiRecoveryDocuments(documentRecovery.createAlphaUiRecoveryDocuments(), [refused]) },
+    parkedStructural: { current: [] }, activeStructural: { current: [] },
     parkedCreator: { current: [] }, activeCreator: { current: null }, parkedSocial: { current: [] }, activeSocial: { current: [] } };
-  const notice = (active: typeof typed[], atRisk: boolean) => announcedRecoveries([refused], refs.parkedDrafts.current, active, atRisk, recoveryDraftIdentity);
+  const notice = (active: typeof typed[], atRisk: boolean) => announcedRecoveries<AlphaUiDraft>([refused], documentRecovery.parkedAlphaUiRecoveryDocuments(refs.recoveryDocuments.current), active, atRisk, recoveryDraftIdentity);
   assert.equal(notice([refused], true), 1, 'announced while the editor reports the refusal');
   assert.equal(notice([refused], false), 0, 'before: once the editor is gone the stale capture looks like normal saving');
 
   const calls: string[] = [];
-  const parkEditorInput = evaluate<() => void>(functionText('parkEditorInput'), { ...refs, mergeRecoveryDrafts, mergeStructuralRecoveryEntries, canonicalJson: JSON.stringify });
+  const parkEditorInput = evaluate<() => void>(functionText('parkEditorInput'), { ...refs, ...documentRecovery, mergeStructuralRecoveryEntries, canonicalJson: JSON.stringify });
   const replaceEditors = evaluate<() => boolean>(functionText('replaceEditors'), {
     captureInput: () => { calls.push('capture'); return true; }, canReleaseInput: () => { calls.push('release'); return true; },
     parkEditorInput: () => { calls.push('park'); parkEditorInput(); }, setPresentation: () => { calls.push('remount'); } });
@@ -145,7 +148,8 @@ test('input an editor refused stays stored and announced after the editors are r
   assert.deepEqual(calls, ['capture', 'release', 'park', 'remount'], 'captured from the old editors, parked, then rebuilt');
   assert.equal(notice([refused], false), 1, 'still announced after the unmount clears the refusal');
   assert.equal(notice([other], false), 1, 'and after the new editors capture other input');
-  assert.deepEqual(mergeRecoveryDrafts(refs.parkedDrafts.current, [other]), [refused, other], 'the next capture keeps it in the 복구함');
+  const next = documentRecovery.captureAlphaUiRecoveryDocuments(refs.recoveryDocuments.current, [other]);
+  assert.deepEqual(documentRecovery.alphaUiRecoveryDocumentDrafts(next), [refused, other], 'the next capture keeps it in the 복구함');
 
   // Every rebuild of the presentation-keyed editors parks first: replaceEditors, or openLatest's own hand-off.
   assert.equal(source.match(/setPresentation\(/g)?.length, 2);
@@ -153,9 +157,20 @@ test('input an editor refused stays stored and announced after the editors are r
   assert(source.includes('await controller.current?.refresh(); if (!replaceEditors())'), 'after a preservation save');
   const openLatest = functionText('openLatest');
   assert(openLatest.indexOf('parkEditorInput();') > 0 && openLatest.indexOf('parkEditorInput();') < openLatest.indexOf('setPresentation('));
-  // It leaves only when it is resolved: a save whose confirmed text matches every stored draft, or the user clears.
-  assert.match(functionText('clearDrafts'), /parkedDrafts\.current = \[\]/);
-  assert.match(source, /saved\.value\.drafts\.every\(draft => draft\.documentId\s+&& !!M\.getDocument\(confirmed\.space\.text, draft\.documentId\)\s+&& M\.raw\(M\.getDocument\(confirmed\.space\.text, draft\.documentId\)\) === draft\.raw\)\) \{\s+const cleared = uiRecovery\.current\?\.clear\(saved\.value\);\s+if \(cleared\?\.ok\) \{ parkedDrafts\.current = \[\]; activeDrafts\.current = \[\]; setRecoveries\(null\); \}/);
+  // A5: each exact confirmed document/raw leaves individually; another document's input stays.
+  assert.match(functionText('clearDrafts'), /recoveryDocuments\.current = createAlphaUiRecoveryDocuments\(\)/);
+  assert(source.includes('if (confirmed) clearConfirmedDocumentInput(confirmed.space.text);'));
+  refs.recoveryDocuments.current = next;
+  let stored = { drafts: [refused, other] };
+  const clear = evaluate<(text: Record<string, typeof refused>) => void>(functionText('clearConfirmedDocumentInput'), {
+    ...refs, ...documentRecovery,
+    uiRecovery: { current: { read: () => ({ ok: true, value: stored }), save: (drafts: typeof typed[]) => { stored = { drafts }; return { ok: true }; } } },
+    M: { getDocument: (text: Record<string, typeof refused>, id: string) => text[id], raw: (doc: typeof refused) => doc.raw },
+    setStorageError: () => assert.fail('confirmed partial cleanup must persist'), setRecoveries: () => {},
+  });
+  clear({ doc: refused });
+  assert.deepEqual(stored.drafts, [other]);
+  assert.deepEqual(documentRecovery.alphaUiRecoveryDocumentDrafts(refs.recoveryDocuments.current), [other]);
 });
 
 // Codex re-review of 4a6d8e54 (P1): the swap ignored a failed last capture. With 100,001 characters typed
@@ -211,23 +226,24 @@ test('a failed last capture keeps the editors, on every rebuild path, and says w
 // left only in the notice; closed, it was gone. The editor hands it to the shell, which parks it at once.
 test('N7: input an editor refused and put back is parked at once, stored, announced, and kept until cleared', () => {
   const refusedName = { title: '‘Original’ 폴더 줄에 쓴 이름', raw: '- /NewTitle' };
-  const mergeRecoveryDrafts = evaluate<(parked: typeof typed[], active: typeof typed[]) => typeof typed[]>(functionText('mergeRecoveryDrafts'), {});
   const stored: unknown[] = [], shown: unknown[] = []; let storageError = false;
-  const refs = { parkedDrafts: { current: [] as typeof typed[] }, activeDrafts: { current: [typed] } };
-  const keep = (ok: boolean) => evaluate<(draft: typeof refusedName) => boolean>(functionText('keepRefusedInput'), { ...refs, mergeRecoveryDrafts,
+  const refs = { recoveryDocuments: { current: documentRecovery.captureAlphaUiRecoveryDocuments(documentRecovery.createAlphaUiRecoveryDocuments(), [typed]) } };
+  const keep = (ok: boolean) => evaluate<(draft: typeof refusedName) => boolean>(functionText('keepRefusedInput'), { ...refs, ...documentRecovery,
     uiRecovery: { current: { save: (drafts: unknown[]) => { stored.push(drafts); return ok ? { ok: true, value: { drafts } } : { ok: false }; } } },
     setStorageError: () => { storageError = true; }, setRecoveries: (value: unknown) => shown.push(value) });
   assert.equal(keep(true)(refusedName as typeof typed), true);
-  assert.deepEqual(refs.parkedDrafts.current, [refusedName]);
+  assert.deepEqual(documentRecovery.parkedAlphaUiRecoveryDocuments(refs.recoveryDocuments.current), [refusedName]);
   assert.deepEqual(stored.at(-1), [refusedName, typed], 'stored with the live capture');
   assert.equal(shown.length, 1); assert.equal(storageError, false);
-  const announced = announcedRecoveries([refusedName, typed] as typeof typed[], refs.parkedDrafts.current, [typed], false, recoveryDraftIdentity);
+  const announced = announcedRecoveries<AlphaUiDraft>([refusedName, typed], documentRecovery.parkedAlphaUiRecoveryDocuments(refs.recoveryDocuments.current), [typed], false, recoveryDraftIdentity);
   assert.equal(announced, 1, 'announced although nothing else is at risk');
-  assert.deepEqual(mergeRecoveryDrafts(refs.parkedDrafts.current, [typed]), [refusedName, typed], 'the next capture keeps it');
+  assert.deepEqual(documentRecovery.alphaUiRecoveryDocumentDrafts(documentRecovery.captureAlphaUiRecoveryDocuments(refs.recoveryDocuments.current, [typed])), [refusedName, typed], 'the next capture keeps it');
   // N7 review 4: storage that fails says so, parks nothing, and tells the editor (which then keeps the line as typed).
-  refs.parkedDrafts.current = [];
+  refs.recoveryDocuments.current = documentRecovery.captureAlphaUiRecoveryDocuments(documentRecovery.createAlphaUiRecoveryDocuments(), [typed]);
+  const before = refs.recoveryDocuments.current;
   assert.equal(keep(false)(refusedName as typeof typed), false); assert.equal(storageError, true);
-  assert.deepEqual(refs.parkedDrafts.current, []);
+  assert.equal(refs.recoveryDocuments.current, before, 'failed storage does not adopt proposed refs');
+  assert.deepEqual(documentRecovery.parkedAlphaUiRecoveryDocuments(refs.recoveryDocuments.current), []);
   assert(source.includes('onInputFailureChange={setEditorInputFailed} onKeepRefusedInput={keepRefusedInput}'));
   const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
   assert(space.includes('onInputFailureChange={failed => inputFailureChanged(id, failed)} onKeepRefusedInput={props.onKeepRefusedInput}'));

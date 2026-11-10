@@ -1,4 +1,5 @@
 import {privateTextChangeIsolatedToDocument} from './writing-ack';
+import {privateReceiptMatches} from './alpha-persistence/private-receipt';
 import type {WritingIdentity,WritingPayload,WritingReply} from './writing-compute';
 import {textWorkspaceModel as M,textEditorRows} from './text-workspace';
 import {commandFromProgramTransition,validateAlphaAccount} from './alpha-persistence/program-adapter';
@@ -19,9 +20,7 @@ export function computeWriting(identity:WritingIdentity,payload:WritingPayload):
   value=valid?{ok:true,recoveryRaw:payload.compact?encodeRecoveryStorage(recovery):canonicalJson(recovery)}:{ok:false,reason:'worker-recovery'};
  }else if(payload.kind==='receipt'){
   const {before,command,candidate,receipt}=payload;if(before.ownerId!==identity.ownerId||before.revision!==identity.baseRevision||command.kind!=='change-private')throw Error('worker-receipt-context');
-  const expected=detached(before);for(const change of command.changes){if(change.present)Reflect.set(expected.space,change.field,detached(change.value));else Reflect.deleteProperty(expected.space,change.field);}
-  const changed=canonicalJson(expected.space)!==canonicalJson(before.space);expected.revision=before.revision+(changed?1:0);
-  value={ok:receipt.changed===changed&&receipt.revision===expected.revision&&canonicalJson(candidate)===canonicalJson(expected)};
+  value={ok:privateReceiptMatches(before,command,candidate,receipt)};
  }else if(payload.kind==='save'){
   if(payload.account.ownerId!==identity.ownerId||payload.account.revision!==identity.baseRevision)throw Error('worker-owner');
   let result='';const command=commandFromProgramTransition(payload.account,payload.references,identity.requestId,current=>{const transition=programTextTransition(current,{actorId:payload.account.source.actorId,documentId:identity.docId,expected:payload.expected,next:payload.next,position:payload.position});if(transition.ok)result=transition.result;return transition;});

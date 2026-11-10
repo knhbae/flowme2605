@@ -2286,7 +2286,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       result = await attempt();
     }
     // The controller refuses 'unresolved' (a result still pending) and 'busy' before anything is sent.
-    if (!result.ok && (result.reason === 'unresolved' || result.reason === 'busy')) options?.onNotSent?.();
+    if (!result.ok && ['unresolved','busy','not-sent','writing-preservation','writing-stale','worker-error'].includes(result.reason)) options?.onNotSent?.();
     const authority = moveFlush.current;
     if (authority) {
       // Foreign private writes between local saves break the chain.
