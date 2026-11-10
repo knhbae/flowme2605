@@ -1,0 +1,2 @@
+.setting { display: flex; align-items: center; gap: 8px; min-height: 44px; padding-block: 8px; font-size: 15px; color: var(--flowme-b-ink); cursor: pointer; }
+.setting input { flex: none; width: 18px; height: 18px; margin: 0; accent-color: var(--flowme-b-primary); }
