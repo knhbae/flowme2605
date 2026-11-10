@@ -4,6 +4,18 @@
 
 | 담당 | 맡은 일 | 단독으로 쓰는 곳 | 상태 |
 | --- | --- | --- | --- |
+| 총괄 Claude (총괄 세션) | 분배·통합 판단·배포·위키·사용자 응대 | `D:/flowme2605/flow-wiki`의 `docs/wiki/**`(push는 `progress-wiki`), `D:/flowme-claude-scratch/outbox/`, 반영 로그 `app-light-*.log` | 활동(11/10) |
+| 개발 세션 (Claude) | 저장 B(오류 없는 쓰기)와 하위 할 일 수정, 복구함 +1 수정 | `D:/flowme2605/flow-alpha-saveb-20261110`(`agent/alpha-saveb-20261110`), 새 폴더 `agent/alpha-recovfix-20261110`. 포트 3110~3119 | 11/10 밤: recovfix |
+| 기획 세션 (Claude) | PRD(큰 요구사항)·RULES(한 줄 규칙) | `D:/flowme-claude-scratch/planning/`만. 코드·위키는 읽기만 | 11/10 밤: PRD/RULES 나누기 |
+| UX 세션 (Claude) | 화면 목업(사용자 확인용) | `D:/flowme-claude-scratch/ux/`, `inbox/ux-*`. 포트 3130~3134 | 대기 |
+| 기타 세션 (Claude) | 통합 후보 QA·반영 묶음(PACKAGE·release) | `D:/flowme-work/etc/<후보>-qa-<날짜>/`. 포트 3120~3129 | int7b QA 대기 |
+| 코덱스 총괄 스레드 `01a168e3-1e7c-7800-bda6-c05c355a0068` | 구현·통합·조사·리뷰, 운영 로그 읽기. 내부 세션으로 나눠 병렬 | `D:/flowme-work/codex/<주제>-<날짜>-01a168e3/`, inbox 회신. 포트 3000·3104 | 11/10 밤: int7b 통합, 저장 C(합성) |
+| 메인 체크아웃 미커밋 경로 | 10/26 이전 세션들의 작업 | 없음 (동결) | 정리 결정 전 수정·커밋 금지 |
+
+## 지난 행 (10/30 기준, 모두 종료)
+
+| 담당 | 맡은 일 | 단독으로 쓰는 곳 | 상태 |
+| --- | --- | --- | --- |
 | 총괄 Claude (총괄 세션) | 계획·설계·배포 판단·위임, 위키, R4·R6a 구현 | `D:/flowme2605/flow-wiki` 의 `docs/wiki/**`, R4 worktree `D:/flowme2605/flow-alpha-r4-20261029` (브랜치 `agent/alpha-r4-busy-intent-20261029`), R6a `D:/flowme2605/flow-alpha-r6a-20261030` (브랜치 `agent/alpha-r6a-status-20261030`, R5 위), R7 수정 `D:/flowme2605/flow-alpha-r7fix-20261030` (브랜치 `agent/alpha-r7fix-20261030`), 통합 후보 `D:/flowme2605/flow-alpha-next-20261030` (브랜치 `agent/alpha-next-20261030`), R4 원장 `…-01a168e3/revision4/` | 활동 |
 | 개발 세션 (Claude) | `main` 최신화 + 범위 인식 푸시 전 훅 → PR #220, `main` 의존성 보안 패치 → 별도 PR | `D:/flowme2605/flow-main-catchup-20261029` (브랜치 `agent/main-catchup-scoped-hook-20261029`), `D:/flowme2605/flow-main-deps-20261029` (브랜치 `agent/main-deps-audit-20261029`), E2E 시계 고정 `D:/flowme2605/flow-e2e-clock-pin-20261029` (브랜치 `agent/e2e-clock-pin-20261029`), R5 `D:/flowme2605/flow-alpha-r5-20261029` (브랜치 `agent/alpha-r5-ux-20261029`, R4 `c37dbcab` 위, 로컬 커밋만), S1 `D:/flowme2605/flow-alpha-s1-20261030` (브랜치 `agent/alpha-s1-writing-20261030`, R5 위), R9a `D:/flowme2605/flow-alpha-r9a-20261030` (브랜치 `agent/alpha-r9a-tokens-20261030`, R5 위), S2 `D:/flowme2605/flow-alpha-s2-20261030` (브랜치 `agent/alpha-s2-enter-20261030`, S1 위), S3 `D:/flowme2605/flow-alpha-s3-20261030` (브랜치 `agent/alpha-s3-toolbar-20261030`), R7 `D:/flowme2605/flow-alpha-r7-20261030` (브랜치 `agent/alpha-r7-today-20261030`), S1 수정 `D:/flowme2605/flow-alpha-s1fix-20261030` (브랜치 `agent/alpha-s1fix-20261030`), R6b `D:/flowme2605/flow-alpha-r6b-20261030` (브랜치 `agent/alpha-r6b-status-20261030`), R8a `D:/flowme2605/flow-alpha-r8a-20261030` (브랜치 `agent/alpha-r8a-more-20261030`), R9b-1 (브랜치 `agent/alpha-r9b1-20261030`), R8b `D:/flowme2605/flow-alpha-r8b-20261030` (브랜치 `agent/alpha-r8b-tabs-20261030`, R8a 위), R9b-2 (브랜치 `agent/alpha-r9b2-20261030`, R8b 위), S3 수정 `D:/flowme2605/flow-alpha-s3fix-20261030` (브랜치 `agent/alpha-s3fix-20261030`, 통합 후보 위), 미확정 시도 `agent/alpha-pending-attempts-20261030`, W8 `D:/flowme2605/flow-alpha-w8-20261030` (브랜치 `agent/alpha-w8-folder-editor-20261030`, v3 `d467ae24` 위, `ProgramFolderRegionEditor.*`만) | 10/30 저녁: W8. N1 QA 3차 결함 수정이 먼저 |
 | 기획 세션 (Claude) | 저장소 정리 결정안·기능 요구사항 검토·자료 위험 명세·쓰기 A 기획과 구현 명세(전달함), 누락 기능 점검(10/30) | `D:/flowme-claude-scratch/planning/` 만. repo·GitHub는 읽기 전용 | 10/30 저녁: S4 실폰 진행표(`planning/s4-20261030/`) |
@@ -12,7 +24,6 @@
 | 코덱스 총괄 스레드 `01a168e3-1e7c-7800-bda6-c05c355a0068` | 조사·테스트·리뷰, Supabase 읽기 (기본 읽기 전용). 10/30 묶음: R8a·R8b·R9b-1·R9b-2·S-a 리뷰, 공식 콘텐츠 사실 대조, worktree 보관 독립 검증, Alpha→main 계획, source-review 부채 11/21 대응, 성능 교차 확인 | `D:/flowme-<주제>-<날짜>-01a168e3/`, inbox 회신 | 활동 |
 | Dot (코덱스, 클라우드 크롬) | 합성 문서 화면 테스트 | 테스트 계정의 합성 문서, 결과는 총괄 스레드 경유 | 10/29 활동 |
 | 개발3 (10/26 구조, 코덱스) | 원문 복귀 후보 통합 | 과제 원장의 `revision*/candidate`, `development` | 원장상 소유, 현재 활동 미확인 |
-| 메인 체크아웃 미커밋 237경로 | 10/26 이전 세션들의 작업 | 없음 (동결) | 정리 결정 전 수정·커밋 금지 |
 
 ## 규칙
 
@@ -20,7 +31,7 @@
 0-1. 검증(합성 QA, 실계정 화면 확인, DB 비교, 재확인)도 코덱스나 쉬는 세션에 맡긴다. 총괄은 각 세션의 한 일·할 일을 관리하고, 모두 바쁠 때만 직접 검증한다 (사용자 10/30).
 0-2. 일을 시작하기 전에 담당을 먼저 고른다. 구현은 개발 세션(바쁘면 기타 세션), 기획은 기획 세션, 화면안은 UX 세션, 리뷰·검증·조사·DB 읽기 비교는 코덱스가 맡는다. 총괄은 분배, 머지·배포 판단, 위키, 그리고 총괄만 가진 접근(claude.ai 커넥터, 수동 승인 배포, 내장 브라우저 로그인)이 필요한 일만 직접 한다 (사용자 10/30).
 0-3. 실계정이나 Alpha 탭으로 확인한 뒤에는 탭을 닫는다. 열어 둔 탭은 20초마다 계정 전체를 읽어 Supabase 전송량을 쓴다 (10/30 초과 안내).
-0-4. 로컬 서버 포트는 세션별로 나눈다. 개발 세션 3110~3119, 기타 세션 3120~3129, 코덱스 3000·3104, 운영 3105(건드리지 않음). 띄우기 전에 포트가 비었는지 확인한다(10/30 두 번 겹침).
+0-4. 로컬 서버 포트는 세션별로 나눈다. 개발 세션 3110~3119, 기타 세션 3120~3129, UX 세션 3130~3134, 코덱스 3000·3104, 운영 3105(건드리지 않음). 띄우기 전에 포트가 비었는지 확인한다(10/30 두 번 겹침).
 
 1. 활동 중인 행끼리 쓰는 경로가 겹치면 안 된다. 총괄이 새 행을 넣기 전에 확인한다.
 2. 행이 없는 세션은 쓰지 않는다. 읽기는 누구나 한다.

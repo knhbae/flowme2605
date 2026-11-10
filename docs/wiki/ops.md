@@ -1,6 +1,6 @@
 # Alpha 운영
 
-2026-10-30 · 운영 중인 Alpha가 어떻게 돌고, 어떻게 반영·복귀하는지 한곳에 모은다. 원장 경로는 링크가 아니라 코드 표기로 적는다. 키·자격 정보와 계정 정보는 적지 않는다.
+2026-11-10 23:59 갱신(처음 10/30) · 운영 중인 Alpha가 어떻게 돌고, 어떻게 반영·복귀하는지 한곳에 모은다. 원장 경로는 링크가 아니라 코드 표기로 적는다. 키·자격 정보와 계정 정보는 적지 않는다.
 
 ## 1. 지금 운영 중인 것
 
@@ -9,14 +9,14 @@
 | 공개 주소 | `https://alpha.wikiplans.com/alpha` |
 | 내부 앱 | `127.0.0.1:3105` (`next start`) |
 | 상태 확인 | `http://127.0.0.1:13105/status` (supervisor, 이 PC에서만) |
-| 운영 빌드 | R4 `jhhnmp4NXb89Fh2IoLT8w`, 커밋 `c37dbcab` (10/30 07:21 KST 반영) |
-| appRoot | `D:/flowme-alpha-today-classification-20261029-01a168e3/revision4/followup-c37dbcab/candidate` |
-| 직전 빌드 | R3 `R7kGo8FaKQJkamGJKSeMN` (`.../revision3/candidate`) |
+| 운영 빌드 | int6a `L3t1Xyp_HGigDHPspReXX`, 커밋 `e01d6b51` (11/10 18:06 KST, 가벼운 반영 33회차) |
+| appRoot | `D:/flowme-work/etc/int6a-qa-20261110/product` |
+| 되돌리기 대상 | int5 `Ik4Y60q1E26VEH3nxcZRS` / `3ef6839a` (`D:/flowme-work/etc/int5-qa-20261110/` 아래 product) |
 | 쓰기 UI 설정 | `nativeAuthoringUi: enabled` |
 
-appRoot가 `revision4/candidate`가 아니라 `revision4/followup-c37dbcab/candidate`인 점에 주의한다. 기준은 supervisor의 `manifest.json`이다.
+기준은 supervisor의 `manifest.json`이다. 회차별 기록은 [지금 FlowMe](now.md) 기록 절에 남는다.
 
-> 10/30: 운영은 R4h다. 공개 주소에서는 `/alpha`와 그 아래, 로그인 콜백, Alpha API, 정적 파일, `/my`만 열리고 나머지는 404다(경로 차단). 그 전까지는 예전 화면과 예전 쓰기 API가 공개돼 있었다.
+> 공개 주소에서는 `/alpha`와 그 아래, 로그인 콜백, Alpha API, 정적 파일, `/my`만 열리고 나머지는 404다(경로 차단, 10/30부터).
 
 ## 2. 실행 구조
 
@@ -51,8 +51,8 @@ Invoke-WebRequest 'https://alpha.wikiplans.com/api/alpha/health'
 | `D:/flowme2605/_codex_temp/alpha-startup-20261003/` | supervisor와 manifest |
 | `D:/flowme2605/flow-alpha-backup-5d-publish-20260929/` (worktree) | 운영 설정·터널 설정 폴더 |
 | `D:/flowme2605/flow-poc-merge-prep-20260920/` (worktree) | 자료실 묶음 파일 |
-| `.../revision4/followup-c37dbcab/candidate` | 운영 R4 appRoot |
-| `.../revision3/candidate` | 복귀 대상 R3 appRoot |
+| 1절의 운영 appRoot와 되돌리기 대상 product | 지금 운영과 직전 운영. `.next` 포함 지우지 않음 |
+| 쓰이고 있는 모든 PACKAGE.json의 rollback·before product, manifest가 고정한 guard 파일 | 반영 실행기가 대조한다. 11/5 guard 파일을 지워 재시작이 막힌 적 있음 |
 | `D:/flowme-node24221-runtime-20261024-01a10108/` | 운영 Node 24.22.1 |
 | `D:/flowme-cloudflared-update-exec-20261027-01a10108/` | 운영 cloudflared |
 | `D:/flowme-alpha-today-classification-20261029-01a168e3/revision1/operations/controller.ps1`, `D:/flowme-alpha-mobile-writing-20261028-01a168e3/revision4/ops/controller.ps1` | R4 controller가 SHA로 고정해 가져다 쓰는 이전 controller |
@@ -77,19 +77,19 @@ Invoke-WebRequest 'https://alpha.wikiplans.com/api/alpha/health'
 5. 반영 판단과 영수증 작성
 6. controller 실행(5절), 실계정 확인(7절), 마감 기록
 
-## 5. controller 절차 (R4 기준)
+## 5. 가벼운 반영 절차 (11/5~, 실행기 app-light)
 
-회차 폴더 `revisionN/operations/`에 `PLAN.json`, `controller.ps1`, `manifest.candidate.json`, `execution.json`(실행 저널)을 둔다. 영수증은 `revisionN/orchestrator/operating-approval.json`이다.
+DB 변경이 없는 반영은 Codex가 만든 실행기 `app-light.ps1`(v3, SHA256 `3eb9c719…`)로 한다. 기타 세션이 QA 폴더에 후보 product, `PACKAGE.json`(후보·되돌리기 대상·SHA), release 폴더를 만든다.
 
-1. Inspect(읽기 전용): `controller.ps1 -Mode Inspect -VerifyCandidate`
-2. 영수증 작성(코덱스 READY 뒤 총괄)
-3. 영수증 검증 Inspect: `-AcceptedPlanSHA256`, `-ApprovalReceiptPath`, `-ApprovalReceiptSHA256`을 더해 다시
-4. Deploy: `-Mode Deploy -Execute` + 같은 세 인자
-5. 모드마다 작업 시작은 최대 1회. 자동 재시도·자동 복귀 없음
+1. 기타 QA_GO와 목업 대조를 받는다.
+2. PC 부하를 확인한다. CPU 35% 미만이 20초 간격 3번 이어질 때만 진행한다. 11/10 31회차는 Codex 부하(CPU 57~76%) 때문에 60초 안에 앱이 뜨지 않아 HOLD됐고, 약 3분 동안 502가 났다.
+3. 사용자에게 "10분 뒤 배포합니다 — 그동안 FlowMe 쓰지 마세요"라고 대화로 먼저 알린다. 폰 알림(push)은 꺼져 있다. 11/10 33회차 중단(약 70초) 동안 사용자가 쓰다가 저장 확인 필요가 났다.
+4. `pwsh -NoProfile -NonInteractive -File <release>/app-light.ps1 -Mode Inspect`, PASS면 `-Mode Deploy -Execute`. 로그는 `D:/flowme-claude-scratch/app-light-{inspect,deploy}-N.log`에 남긴다.
+5. 공개 10경로 기대값을 확인하고, "이제 다시 쓰셔도 됩니다"로 닫는다.
 
-R4 반영 때 실제 순서(10/30): 작업 실행 창 확보 → supervisor 정지(앱·터널이 따라 끝남) → `manifest.json` 한 파일 교체 → 등록된 작업 시작 → 앱·터널 기동. 공개 주소가 끊긴 시간은 약 45초였다. 저널 결과는 PASS, 운영 변경 3, 서버 시작 1, DB 쓰기 0.
-
-다음 회차는 R4를 직전 빌드로 삼는 새 PLAN·controller가 필요하다. R4 controller는 R3↔R4 쌍에 묶여 있다.
+- HOLD 뒤 같은 release 폴더는 state.json이 재실행을 막는다. 새 release 폴더를 만든다.
+- 실행기 v4(복구 예외 기록, `-CheckLoad`)는 LOCAL_PASS(11/10)이고 아직 운영 적용 전이다.
+- DB 구조를 바꾸는 반영은 예전 controller 절차(revision 원장, 영수증, Inspect/Deploy)를 따르고, 사용자 승인을 따로 받는다.
 
 ## 6. 복귀(롤백)
 
@@ -116,10 +116,10 @@ R4 반영 때 실제 순서(10/30): 작업 실행 창 확보 → supervisor 정�
 
 ## 8. Supabase 한도와 전송량
 
-| 항목 | 10/30 |
+| 항목 | 값 |
 | --- | --- |
-| egress | 9.56 GB / 5 GB (청구기간 10/12~11/12, 유예 11/29까지) |
-| DB | 113 MB / 500 MB |
+| egress | 9.56 GB / 5 GB (10/30, 청구기간 10/12~11/12, 유예 11/29까지). 새 기간 값은 11/12 뒤 ★확인 |
+| DB | 약 229 MB / 500 MB (11/7, 10/30에는 113 MB) |
 | Storage | 57.9 MB (객체 4개) |
 | MAU | 4 |
 

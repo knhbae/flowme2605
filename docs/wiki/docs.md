@@ -1,6 +1,6 @@
 # 문서 지도
 
-2026-10-30 13:00 KST · 총괄 갱신
+2026-11-10 23:59 KST · 총괄 갱신(처음 10/30)
 
 어떤 내용을 어디서 찾는지 정리한 표다. 기타 세션의 맥락 문서 점검(10/30)을 바탕으로 했다. 전체 표는 `D:/flowme-claude-scratch/misc/feedback-ideas-inventory-20261030/SOURCES.md`, 점검 내용은 같은 폴더의 `CONTEXT-GAPS.md`에 있다.
 
@@ -12,6 +12,10 @@
 | 순서·갈래·사용자 몫 | [backlog.md](backlog.md) | 코덱스 진행판 구성을 따름 |
 | 담당과 쓰는 경로 | [owners.md](owners.md) | 두 세션이 같은 파일에 쓰지 않게 한다 |
 | 결정 | [decision-log.md](decision-log.md) | 추가만 한다 |
+| 운영·반영 절차 | [ops.md](ops.md) | 지금 운영 빌드, 가벼운 반영, 지우면 안 되는 곳 |
+| 큰 요구사항(흐름·F번호 기능·완료 기준) | `D:/flowme-claude-scratch/planning/20261108-prd/PRD.md` | 기획 담당. 11/10부터 두 층 |
+| 한 줄 동작 규칙(ID·상태·근거·커밋·시험) | `D:/flowme-claude-scratch/planning/20261108-prd/RULES.md` | 11/10 새로 만듦. 버그 수정으로 정해진 규칙도 여기에 |
+| 화면 목업 | `D:/flowme-claude-scratch/inbox/ux-*` | 사용자 확인 뒤 개발 기준 |
 | 남은 피드백·아이디어 | [ideas.md](ideas.md) | 전체 표는 scratch |
 | repo의 예전 상태 문서 | repo `docs/PROJECT_CONTROL.md`·`STATUS.md`·`ROADMAP.md` | 10/29까지 코덱스가 관리. 지금은 위키가 앞선다(5단계 뒤 정리) |
 
