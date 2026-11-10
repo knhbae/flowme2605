@@ -65,6 +65,7 @@ import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt
 import {ProgramWritingInline} from './ProgramWritingInline';
 import {prepareWritingChild} from '@/lib/flow/integrated-poc/writing-child-command';
 import {planWritingInsertion} from '@/lib/flow/integrated-poc/writing-insertion-command';
+import { TASK_DATE_SUGGESTION_EVENT, TASK_DATE_SUGGESTION_KEY, readTaskDateSuggestion, undoTaskDateSuggestion, taskDateSuggestionLabel, taskDateSuggestionsEnabled, taskDateSuggestionToday, type TaskDateSuggestion } from '@/lib/flow/integrated-poc/task-date-suggestion';
 
 export { createProgramTextDraft } from '@/lib/flow/integrated-poc/program-text-draft';
 export type { ProgramTextCommitOptions, ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
@@ -396,6 +397,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const memoTipKeys = useRef(0);
   // Any other notice up (a move, a warning, a check, a folder, a repeat): the tip neither shows nor counts (UX).
   const memoTipBlockedRef = useRef(false);
+  const [dateSuggestion, setDateSuggestion] = useState<TaskDateSuggestion | null>(null);
+  const dateSuggestionRef = useRef<TaskDateSuggestion | null>(null);
+  const dateSuggestionSeen = useRef(new Set<string>()), dateSuggestionCaret = useRef<string | null>(null);
+  const dateSuggestionEnabled = useRef(true), dateSuggestionBlocked = useRef(false), dateSuggestionFinish = useRef(false);
+  const [dateApplied, setDateApplied] = useState<{ text: string; undo: () => void } | null>(null);
+  const setSuggestion = (next: TaskDateSuggestion | null) => { dateSuggestionRef.current = next; setDateSuggestion(next); };
   const [noticeHeld, setNoticeHeld] = useState(false);
   // N5 3b phone: a new folder's notice held while its D11 B ⇤ is open and the caret is on that folder's block.
   const [freshHeld, setFreshHeld] = useState(false);
@@ -870,6 +877,56 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     propsRef.current.onPosition?.({ start: textarea.selectionStart, end: textarea.selectionEnd, scrollTop: textarea.scrollTop }, currentDoc()?.lines[index]?.id ?? null);
     syncFreshNotice(); syncBarLine();
   }
+
+  /** Only the line just left is inspected. Typing on the next line keeps one suggestion until that line ends. */
+  function finishDateSuggestion() {
+    const controller = draftRef.current, area = textArea(), p = propsRef.current;
+    if (!controller || !area || p.folderId || !p.authoringMode || p.active === false || p.readOnly) return;
+    if (composingRef.current || area.value !== controller.getState().raw) { dateSuggestionFinish.current = true; return; }
+    dateSuggestionFinish.current = false;
+    const state = controller.getState(), lines = M.getDocument(state.working, p.docId)?.lines ?? [];
+    const current = area.ownerDocument.activeElement === area ? lines[caretLine(area)]?.id ?? null : null;
+    const previous = dateSuggestionCaret.current;
+    dateSuggestionCaret.current = current;
+    if (!previous || previous === current) return;
+    setSuggestion(null);
+    if (state.invalid || !dateSuggestionEnabled.current || dateSuggestionBlocked.current) return;
+    const candidate = readTaskDateSuggestion(state.working, p.docId, previous, taskDateSuggestionToday());
+    if (!candidate || p.repeatContext?.().copies.some(copy => copy.documentId === p.docId)) return;
+    const key = `${candidate.lineId}:${candidate.date}`;
+    if (dateSuggestionSeen.current.has(key)) return;
+    dateSuggestionSeen.current.add(key); setSuggestion(candidate);
+  }
+
+  function acceptDateSuggestion(candidate: TaskDateSuggestion) {
+    const controller = draftRef.current, p = propsRef.current, area = textArea();
+    if (!controller || !area || p.folderId || p.active === false || !dateSuggestionEnabled.current || actionsDisabled()
+      || composingRef.current || area.value !== controller.getState().raw || candidate.docId !== p.docId) return;
+    const before = controller.getState(), current = readTaskDateSuggestion(before.working, p.docId, candidate.lineId, taskDateSuggestionToday());
+    if (!current || current.source !== candidate.source || current.date !== candidate.date
+      || p.repeatContext?.().copies.some(copy => copy.documentId === p.docId)) { setSuggestion(null); return; }
+    const row = currentRow(candidate.lineId), target = row?.progressTargetId, task = target ? M.tasks(before.working).find(item => item.id === target) : undefined;
+    if (!task) return;
+    setSuggestion(null);
+    const done = applyDateChip(candidate.lineId, candidate.date), after = controller.getState();
+    if (after.raw === before.raw) return;
+    barDateUndo.current = { docId: p.docId, taskId: task.id, before: before.working, after: after.working,
+      date: candidate.date, time: task.time ?? '', raw: after.raw, redo: false };
+    const oldIds = new Set(M.getDocument(before.working, p.docId)?.lines.map(line => line.id));
+    const property = M.getDocument(after.working, p.docId)?.lines.find(line => !oldIds.has(line.id) && /^ *- 날짜:/.test(line.text));
+    setDateApplied({ text: `${taskDateSuggestionLabel(candidate.date, taskDateSuggestionToday())} 옮겼습니다`, undo: whenComposed(() => {
+      if (p.docId !== propsRef.current.docId || !property || actionsDisabled()) return;
+      const state = controller.getState(), next = undoTaskDateSuggestion(state.working, p.docId, task.id, property, candidate.date);
+      if (!next) { setDateApplied(null); return; }
+      if (!undoBarDate()) {
+        // Continued writing must survive a notice undo: remove only the exact property this press added.
+        const restored = M.tasks(next).find(item => item.id === task.id);
+        if (restored) void apply(next, '날짜 말 제안 되돌리기', { taskId: restored.id, date: restored.date, time: restored.time ?? '' });
+      }
+      setDateApplied(null);
+    }) });
+    void done;
+  }
   /** N5 3b (phone): D11 B's ⇤ lasts only while the new folder's notice shows, and on a phone getting back onto that
    *  line takes longer than an info notice's 6s. So, like a choice, that notice stays while the ⇤ is still open
    *  (nothing edited since) and the caret is on the new line or under it; once either ends, its 6s start.
@@ -1250,6 +1307,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const done = redo ? apply(last.after, '항목 날짜·시간', { taskId: last.taskId, date: last.date, time: last.time }) : apply(last.before, '항목 날짜·시간 되돌리기');
     const raw = draftRef.current?.getState().raw;
     barDateUndo.current = raw !== undefined && raw !== last.raw ? { ...last, raw, redo: !redo } : null;
+    if (!redo && raw !== last.raw) setDateApplied(null);
     void done;
     return true;
   }
@@ -2318,7 +2376,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           scheduleSave();
         }
         else if (timerRef.current) clearTimeout(timerRef.current);
-        rememberPosition();
+        rememberPosition(); finishDateSuggestion();
       },
       onAction: handleAction,
     });
@@ -2348,7 +2406,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         openCurrentInsertMenu(index);
       });
     }
-    const compositionStart = () => { compositionGeneration.current++;controller.cancelPreparedRaw();composingRef.current = true; setComposing(true); orderEpochRef.current++; setOrderPreview(null); propsRef.current.onDirtyChange?.(true); };
+    const compositionStart = () => { setSuggestion(null); compositionGeneration.current++;controller.cancelPreparedRaw();composingRef.current = true; setComposing(true); orderEpochRef.current++; setOrderPreview(null); propsRef.current.onDirtyChange?.(true); };
     const compositionEnd = () => {
       compositionGeneration.current++;controller.cancelPreparedRaw();composingRef.current = false; setComposing(false);
       // The native target listener publishes the final raw after this capture listener.
@@ -2359,6 +2417,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         propsRef.current.onDirtyChange?.(!!currentChild()||programTextInputPending(state,textArea()?.value,composingRef.current,regionPendingRef.current,!!checkPendingRef.current));
         setMessage(previous => previous === '한글 입력을 마친 뒤 보기 범위를 바꿔 주세요.' ? '' : previous);
         if (state.dirty && !state.saving && !state.invalid && !state.error) scheduleSave();
+        if (dateSuggestionFinish.current) finishDateSuggestion();
       });
     };
     host.addEventListener('compositionstart', compositionStart, true);
@@ -2424,6 +2483,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         textarea.scrollTop = position.scrollTop;
       }
       for (const event of ['select', 'scroll', 'keyup', 'click', 'blur']) textarea.addEventListener(event, rememberPosition);
+      for (const event of ['select', 'keyup', 'click', 'blur']) textarea.addEventListener(event, finishDateSuggestion);
       textarea.addEventListener('blur', finishOnBlur);
       for (const event of ['select', 'keyup', 'click']) textarea.addEventListener(event, settleOnMove);
       textarea.addEventListener('blur', settleOnBlur);
@@ -2446,6 +2506,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       window.removeEventListener('beforeunload', warnOnExit);
       if (timerRef.current) clearTimeout(timerRef.current);
       if (textarea) for (const event of ['select', 'scroll', 'keyup', 'click', 'blur']) textarea.removeEventListener(event, rememberPosition);
+      if (textarea) for (const event of ['select', 'keyup', 'click', 'blur']) textarea.removeEventListener(event, finishDateSuggestion);
       textarea?.removeEventListener('blur', finishOnBlur);
       if (textarea) for (const event of ['select', 'keyup', 'click']) textarea.removeEventListener(event, settleOnMove);
       textarea?.removeEventListener('blur', settleOnBlur);
@@ -2544,6 +2605,26 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     editorRef.current?.refresh();
   }, [props.readOnly, props.directWriting, props.docId]);
   useEffect(() => { editorRef.current?.setMode(mode); }, [mode, props.docId]);
+  useEffect(() => {
+    const read = () => { dateSuggestionEnabled.current = taskDateSuggestionsEnabled(); if (!dateSuggestionEnabled.current) setSuggestion(null); };
+    const changed = (event: StorageEvent) => { if (event.key === TASK_DATE_SUGGESTION_KEY || event.key === null) read(); };
+    read(); window.addEventListener(TASK_DATE_SUGGESTION_EVENT, read); window.addEventListener('storage', changed);
+    return () => { window.removeEventListener(TASK_DATE_SUGGESTION_EVENT, read); window.removeEventListener('storage', changed); };
+  }, []);
+  useEffect(() => {
+    if (props.active === false || props.folderId) { setSuggestion(null); setDateApplied(null); dateSuggestionCaret.current = null; }
+  }, [props.active, props.folderId]);
+  useEffect(() => { dateSuggestionSeen.current.clear(); dateSuggestionCaret.current = null; setSuggestion(null); setDateApplied(null); }, [props.docId]);
+  useEffect(() => {
+    const candidate = dateSuggestionRef.current;
+    if (!candidate) return;
+    const source = M.getDocument(draft.working, props.docId)?.lines.find(line => line.id === candidate.lineId), row = currentRow(candidate.lineId);
+    // Invalidation reads existing row metadata; date words are parsed only on a line finish or an explicit press.
+    if (candidate.docId !== props.docId || draft.invalid || dateSuggestionBlocked.current || source?.text !== candidate.source
+      || row?.kind !== 'task' || !row.isCanonical || row.isReference || row.scopeKind === 'flow'
+      || row.dateLineId && row.groupDate !== taskDateSuggestionToday() || row.task?.explicitDate) setSuggestion(null);
+  }, [draft.working, draft.invalid, moving, message, checkNotice, folderNotice, repeatNotice, memoTip, dateApplied]);
+  useEffect(() => { if (!dateApplied) return; const timer = setTimeout(() => setDateApplied(current => current === dateApplied ? null : current), 6000); return () => clearTimeout(timer); }, [dateApplied]);
   // W15: an info notice ends 6s after it shows, a choice 6s after the caret leaves its block; held, neither.
   // Waiting behind the move notice or a message, it has not shown yet (review P2): its time starts once it shows.
   // C2: the check notice, the newest tap's, goes before a folder notice of its rank or lower (never before a warning).
@@ -3203,7 +3284,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       actions: view.actions.map(button => ({ label: button.label, run: run(button.step) })),
       chips: view.chips.map(button => ({ label: button.label, current: button.current, run: run(button.step) })) };
   }
-  memoTipBlockedRef.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice;
+  dateSuggestionBlocked.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice || memoTip !== null || !!dateApplied;
+  memoTipBlockedRef.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice || !!dateSuggestion || !!dateApplied;
   const noticeViews = programNoticeOrder([
     ...(moving ? [{ moving: true, tone: 'choose' as const, text: `${moving.label} · 하위 ${moving.descendantCount}줄`, closeLabel: null, close: undefined,
       actions: [{ label: '위치 선택', run: () => setPanel({ kind: 'move', lineId: moving.lineId }) }, { label: '이동 취소', run: cancelMove }] }] : []),
@@ -3212,6 +3294,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     ...(folderNotice ? [{ tone: folderNotice.tone, text: folderNotice.text, actions: folderNotice.actions, closeLabel: '알림 닫기', close: () => setFolderNotice(null) }] : []),
     ...(repeatNotice ? [{ tone: repeatNotice.tone, text: repeatNotice.text, actions: repeatNotice.actions, closeLabel: '알림 닫기', close: () => setRepeatNotice(null) }] : []),
     ...(memoTip !== null ? [{ tone: 'info' as const, text: PROGRAM_MEMO_TIP_TEXT, closeLabel: '알림 닫기', close: () => setMemoTip(null) }] : []),
+    ...(dateApplied ? [{ tone: 'info' as const, text: dateApplied.text, actions: [{ label: '되돌리기', run: dateApplied.undo }], closeLabel: '알림 닫기', close: () => setDateApplied(null) }] : []),
+    ...(dateSuggestion && !dateSuggestionBlocked.current && !composing ? [{ tone: 'suggest' as const, text: dateSuggestion.source.replace(/^ *- \[ \] */, ''),
+      emphasis: { start: dateSuggestion.words.start - (dateSuggestion.source.match(/^ *- \[ \] */)?.[0].length ?? 0), end: dateSuggestion.words.end - (dateSuggestion.source.match(/^ *- \[ \] */)?.[0].length ?? 0) },
+      actions: [{ label: taskDateSuggestionLabel(dateSuggestion.date, taskDateSuggestionToday()), run: whenComposed(() => acceptDateSuggestion(dateSuggestion)) }],
+      closeLabel: '날짜 제안 무시', close: () => setSuggestion(null) }] : []),
   ]);
   const releaseNotice = () => { if (!noticeHeld) return; setNoticeHeld(false); restartFolderNotice(); restartCheckNotice(); };
   const notices = <div ref={noticeRef} className={styles.notices} onPointerDown={() => setNoticeHeld(true)} onPointerUp={releaseNotice} onPointerLeave={releaseNotice}

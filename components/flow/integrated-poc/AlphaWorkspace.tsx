@@ -5,6 +5,7 @@ import { remoteTextSparesDocuments } from '@/lib/flow/integrated-poc/remote-text
 import {createWritingCompute,type WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { ProgramDateSuggestionSetting } from './ProgramDateSuggestionSetting';
 import { restoreProgramDialogFocus, restoreProgramWritingReturn, watchProgramReturnIntent, type ProgramWritingReturn } from '@/lib/flow/integrated-poc/dialog-return-focus';
 import { programFailure } from '@/lib/flow/integrated-poc/contract';
 import type { AlphaAuthConfig } from '@/lib/flow/integrated-poc/alpha-auth/config';
@@ -1817,6 +1818,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     <span className={styles.meCount}>{savedTotal}</span><span className={styles.meChevron} aria-hidden="true"><ProgramIcon name="right" size={16} /></span></button>;
   const meHead = meRecoveryLine ? <div className={styles.meHead}>{meRecoveryLine}</div> : null;
   const meSections = <div className={styles.meSections}>
+    <details className={`${styles.menuGroup} ${styles.meFold}`} aria-label="설정"><summary>설정</summary>
+      <div className={styles.managementActions}><ProgramDateSuggestionSetting /></div>
+    </details>
     <section className={styles.menuGroup} aria-label="계정"><h3>계정</h3>
       <p className={styles.meEmail}>{email}</p>
       <div className={styles.meList}>{privacyAddress && <button type="button" onClick={() => setPrivacyOpen(true)}>저장과 공개 안내</button>}{signOutButton}</div>
