@@ -8,6 +8,7 @@ import { programClone } from './contract';
 import { mergeProgramTextWorkspace } from './text-merge';
 import type { ProgramPrivateMutationObserver } from './ui-contract';
 import { captureProgramFolderOperation, undoProgramFolderOperation, combineProgramFolderScopes, planProgramFreshFolderIndent, programFolderStillFree, programFolderNewUsesElsewhere, programFreshFolderAvailable, programFolderOperationNotice, type ProgramFolderOperation, type FolderIndentPlan } from './folder-operation';
+import { programHeldOnly, programPartialSave, programRecordedRemoval, type ProgramHeldLines } from './writing-hold';
 
 export type ProgramTaskProgressEdit = { taskId: string; date: string; percent: number; correctionAsOfDate?: string };
 export type ProgramTextCommitOptions = {
@@ -43,6 +44,9 @@ export interface ProgramTextDraftState {
   folderNotice?: string;
   /** The refused input is only a check mark still being typed: held unsaved and shown as editing, not as a refusal. */
   typingMark?: boolean;
+  /** 저장 재설계 B (11/10): the input is refused whole, but its other changed lines are taken and saved (working); these
+   *  lines of raw stay on screen unsaved until fixed. invalid stays true, so nothing rewrites the screen from working. */
+  held?: ProgramHeldLines;
 }
 
 /** 11/5 phone P2: one line, and only it, became a check mark not closed yet (`- [`, `- [ `, `- [5`). Deleting a task back
@@ -280,7 +284,7 @@ export function createProgramTextDraft(
       prepared={state,raw,signature:signature(input),ownerRevision:documentInput?.revision(),context:validationContext(),value};return true;
     },
     flush(){
-      if(state.invalid)return false;
+      if(state.invalid&&!state.held)return false;
       if(!M.validate(state.working)||!validateWorkspace(state.working)){state={...state,invalid:true,dirty:true,error:'현재 입력의 보존 조건을 확인하지 못했습니다. 원문을 유지했습니다.'};report();return false;}
       return true;
     },
@@ -289,7 +293,7 @@ export function createProgramTextDraft(
       privateTaskSchedule = undefined;
       if (folderOperation) folderOperation.fresh = false; folderEnter = null;
       inputGeneration++;
-      state = { ...state, raw, invalid: true, dirty: true, progressConflict: undefined, problemLine: undefined, error: '문서 문맥이 바뀌어 순서를 반영하지 않았습니다. 입력은 남아 있습니다.' }; report();
+      state = { ...state, raw, invalid: true, held: undefined, dirty: true, progressConflict: undefined, problemLine: undefined, error: '문서 문맥이 바뀌어 순서를 반영하지 않았습니다. 입력은 남아 있습니다.' }; report();
     },
     updateRaw(raw: string, progressDate = '', input?: Input) {
       privateTaskSchedule = undefined;
@@ -312,20 +316,41 @@ export function createProgramTextDraft(
         if(!owned)invalid=true;else working=owned;
       }
       if (!invalid && input?.inputSplice && next !== before) pasteHistory.push({ before, after: working });
-      state = { ...state, raw: invalid ? raw : acceptedRaw, working: invalid ? state.working : working, invalid,
+      // 저장 재설계 B (11/10): refused whole, the input's other changed lines are still taken (and saved); the lines the
+      // model refuses stay on screen, held. Folder finishes, splits and protected text keep their own refusal.
+      const refusal = folderError || (edit.reason === 'identity-ambiguous'
+        ? '여러 줄의 변경을 기존 항목과 연결하지 못해 반영하지 않았습니다. 제목 수정과 줄 이동은 나누고, 여러 제목은 한 줄씩 수정해 저장해 주세요. 입력은 그대로 남아 있습니다.'
+        : edit.reason === 'invalid-format'
+          ? '날짜·진행률·들여쓰기 형식을 확인해 주세요. 입력은 그대로 남아 있습니다.'
+          : edit.reason === 'progress-check-conflict'
+            ? '진행 기록과 다른 체크 표시로 바꿀 수 없습니다. 체크 표시를 되돌린 뒤 ‘진행 조절’에서 변경해 주세요. 입력은 남아 있습니다.'
+            : '입력을 안전하게 반영하지 못했습니다. 변경을 나눠서 다시 시도해 주세요. 입력은 그대로 남아 있습니다.');
+      // 저장 재설계 B (11/10): refused whole, the input's other changed lines are still taken (and saved); the lines the
+      // model refuses stay on screen, held, with the model's reason. Folder finishes, splits, a progress conflict and
+      // protected text keep their own refusal.
+      let held: ProgramHeldLines | undefined, heldWorking: TextWorkspaceState | null = null;
+      if (invalid && !protectedChange && !typingMark && edit.reason !== 'progress-check-conflict'
+        && !input?.folderDeclare && !input?.folderLink && !input?.folderMove && !input?.taskSplit) {
+        const partial = programPartialSave(M, state.working, docId, raw);
+        const owned = partial && validateWorkspace(partial.state) ? documentInput ? documentInput.install(partial.state) : partial.state : null;
+        if (partial && owned) { held = partial.held; heldWorking = owned; }
+        // Nothing else to save: the broken lines are still held (shown and fixed in place), not refused whole.
+        else held = programHeldOnly(M, state.working, docId, raw, edit.folderProblem ? edit.folderLine : undefined) ?? undefined;
+        // 11/10 18:05 (실사용): a checked task taken away keeps its progress records, so its removal is held with that
+        // reason and [되돌리기] puts the lines back (30-day keeping is C, with its own store).
+        const recorded = programRecordedRemoval(M, state.working, docId, raw);
+        if (recorded) held = { ...(held ?? { lines: [] }), lines: [...new Set([...(held?.lines ?? []), recorded.line])].sort((a, b) => a - b),
+          reasons: { ...(held?.reasons ?? {}), [recorded.line]: 'records' }, restore: { from: recorded.from, to: recorded.to, text: recorded.text } };
+        if (held) held = { ...held, message: refusal, ...(edit.folderLine !== undefined ? { line: edit.folderLine } : {}) };
+      }
+      state = { ...state, raw: invalid ? raw : acceptedRaw, working: invalid ? heldWorking ?? state.working : working, invalid, held,
         dirty: state.saving || acceptedRaw !== baseRaw || next !== state.committed,
         progressConflict: !protectedChange && invalid && edit.reason === 'progress-check-conflict' ? edit.progressConflict : undefined,
-        problemLine: !protectedChange && invalid ? edit.folderLine : undefined,
+        problemLine: !protectedChange && invalid && !held ? edit.folderLine : undefined,
         folderNotice: !invalid && edit.folderMoved ? edit.folderMoved.renamed ? `폴더 이름을 ‘${edit.folderMoved.title}’로 바꿨습니다` : `‘${edit.folderMoved.title}’ 폴더로 옮겼습니다` : undefined,
         typingMark: typingMark || undefined,
         error: protectedChange ? '보관·휴지통·복구 문서나 반복 규칙·보류 항목의 원문 표시는 여기서 바꿀 수 없습니다. 해당 줄을 원래대로 되돌리면 일반 할 일과 메모를 계속 편집할 수 있습니다. 입력은 보관 중입니다.'
-          : !invalid || typingMark ? '' : folderError || (edit.reason === 'identity-ambiguous'
-            ? '여러 줄의 변경을 기존 항목과 연결하지 못해 반영하지 않았습니다. 제목 수정과 줄 이동은 나누고, 여러 제목은 한 줄씩 수정해 저장해 주세요. 입력은 그대로 남아 있습니다.'
-            : edit.reason === 'invalid-format'
-              ? '날짜·진행률·들여쓰기 형식을 확인해 주세요. 입력은 그대로 남아 있습니다.'
-              : edit.reason === 'progress-check-conflict'
-                ? '진행 기록과 다른 체크 표시로 바꿀 수 없습니다. 체크 표시를 되돌린 뒤 ‘진행 조절’에서 변경해 주세요. 입력은 남아 있습니다.'
-              : '입력을 안전하게 반영하지 못했습니다. 변경을 나눠서 다시 시도해 주세요. 입력은 그대로 남아 있습니다.') };
+          : !invalid || typingMark || held ? '' : refusal };
       // The Enter that finished the line only adds an empty line; the move stays the one thing ↶ puts back.
       if (!invalid) lastMove = edit.folderMoved ? { before, after: state.working, lineIds: (input?.folderMove ?? []).map(index => M.getDocument(before, docId)?.lines[index]?.id).filter((id): id is string => !!id) }
         : lastMove && lastMove.after === before && onlyBlankLinesAdded(lastMove.after, state.working) ? { ...lastMove, after: state.working } : null;
@@ -475,13 +500,13 @@ export function createProgramTextDraft(
         try{
           // Every valid input entered the private immutable owner and its host
           // preservation guard. This exact receipt cannot acknowledge a newer raw.
-          if(!attempt||!state.saving||!state.dirty||state.invalid||!documentInput?.rows(state.working)
+          if(!attempt||!state.saving||!state.dirty||state.invalid&&!state.held||!documentInput?.rows(state.working)
             ||state.committed!==attempt.before||before!==attempt.before||next!==attempt.next
             ||!consumeOwnedWritingAck(ack,{documentId:docId,generation:attempt.generation,expected:attempt.before,next:attempt.next},inputGeneration))return false;
           state={...state,committed:attempt.next};report();return true;
         }finally{noteWritingPhase('ack-draft-accept',started,ack.identity);}
       }
-      if (!attempt || !state.dirty || state.invalid) return false;
+      if (!attempt || !state.dirty || state.invalid && !state.held) return false;
       // Any unconfirmed attempt from this base may be the one the server applied, the latest first; each is
       // judged exactly, then as merged onto the host's newer base.
       const attempts = [attempt, ...unconfirmed.slice().reverse()];
@@ -501,7 +526,7 @@ export function createProgramTextDraft(
         || !M.validate(next) || !M.validate(state.working)
         || !validateWorkspace(next) || !validateWorkspace(state.working)
         || !M.getDocument(next, docId) || !M.getDocument(state.working, docId)
-        || state.raw !== M.raw(M.getDocument(state.working, docId))) return false;
+        || !state.held && state.raw !== M.raw(M.getDocument(state.working, docId))) return false;
       // The shell proved this exact submitted receipt, not the latest input.
       // Preserve its live flight and all newer working/raw/identity/dirty state.
       // true means the receipt was consumed; callers must still check pending input.
@@ -521,10 +546,12 @@ export function createProgramTextDraft(
     },
     save(): Promise<boolean> {
       if (flight) return flight;
-      if (state.invalid) return Promise.resolve(false);
+      if (state.invalid && !state.held) return Promise.resolve(false);
       if (!state.dirty) return Promise.resolve(true);
       flight = (async () => {
-        while (state.dirty && !state.invalid) {
+        while (state.dirty && (!state.invalid || state.held)) {
+          // 저장 재설계 B: what the model took is saved; only held lines are left, unsaved until fixed.
+          if (state.held && programSame(state.working, state.committed)) break;
           if(documentInput&&!(backgroundSave ? !!documentInput.rows(state.working)&&validateWorkspace(state.working) : api.flush()))return false;
           const next = state.working, submittedRaw = M.raw(M.getDocument(next, docId));
           const before = state.committed, schedule = privateTaskSchedule;

@@ -169,7 +169,8 @@ export function captureProgramFolderOperation(before: TextWorkspaceState, after:
     return { ...row, born: true, before: folder?.id ?? (after.flows.some(flow => flow.id === owner?.id) ? owner!.id : owner?.folderId) ?? 'folder-unfiled' };
   };
   const taskScopes = dictionary(before.taskScopes, after.taskScopes).filter(relevant).map(existingOwner);
-  const itemScopes = dictionary(before.itemScopes, after.itemScopes).filter(row => row.before !== null && docs(after).some(doc => doc.lines.some(line => line.id === row.key)) || structural && affected.has(row.key)).map(existingOwner);
+  // 저장 재설계 B (11/10): an item whose line stopped being an item (its mark taken whole) loses its scope; that is no move.
+  const itemScopes = dictionary(before.itemScopes, after.itemScopes).filter(row => row.before !== null && row.after !== null && docs(after).some(doc => doc.lines.some(line => line.id === row.key)) || structural && affected.has(row.key)).map(existingOwner);
   if (!structural && !taskScopes.length && !itemScopes.length) return null;
   // Only structural indentation belongs to the inverse; association-only undo leaves typed text alone.
   for (const doc of docs(before)) {

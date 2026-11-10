@@ -29,3 +29,8 @@
 .chip:hover { background: var(--flowme-b-selected); }
 .chip[aria-pressed="true"] { background: var(--flowme-b-selected); color: var(--flowme-b-ink); cursor: default; }
 .chip:focus-visible { outline: 2px solid var(--flowme-b-primary); outline-offset: -2px; }
+/* 저장 재설계 B (11/10): a second line under the text (K2's "할 일 2개가 오늘로", a held line's note); kept on a phone too. */
+.detail { display: block; color: var(--flowme-b-muted); font-size: 13px; line-height: 18px; }
+@media (max-width: 700px) {
+  .row:has(.action + .action):has(.detail) > .text { -webkit-line-clamp: 2; }
+}

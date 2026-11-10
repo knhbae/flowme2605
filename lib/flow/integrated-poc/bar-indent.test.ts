@@ -159,7 +159,7 @@ test('review P2: a protection rule refusing ⇤·⇥ keeps its own notice; an un
     controller: { cancelPreparedRaw: () => {}, getState: () => ({ saving: false }), prepareRaw: () => false },  // validateWorkspace refuses
     composingRef: { current: false }, inputLockedRef: { current: false }, compositionGeneration: { current: 0 },
     propsRef: { current: { validateWorkspace: () => false, readOnly: false, folderId: '' } },
-    undoFolderMove: () => false, explainRawFolderUndo: () => {}, currentIndentAction: () => null,
+    undoFolderMove: () => false, explainRawFolderUndo: () => {}, currentIndentAction: () => null, writingRule: () => false,
     heldInput: () => [], accessFor: () => undefined, currentDoc: () => ({ lines: [{ id: 'l0' }, { id: 'l1' }] }),
   };
   const programTextProtectionMessage = evaluate<(access?: unknown) => string>(declared('programTextProtectionMessage'), {});

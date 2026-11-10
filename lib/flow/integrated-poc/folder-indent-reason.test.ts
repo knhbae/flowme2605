@@ -55,11 +55,13 @@ test('the draft shows the 4판 words; ↶ puts the line back, saving resumes and
   assert(draft.updateRaw(typed, '', { inputType: 'insertText' }), 'input before the move');
   assert.equal(draft.updateRaw(lines([0, '첫 줄 고침'], [2, '- /하위']), '', { inputType: '' }), false, '⇤ is refused');
   const state = draft.getState();
-  assert.equal(state.problemLine, 2);
-  assert.equal(state.error, '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. ↶로 되돌리거나 분류 화면의 상위 폴더에서 옮겨 주세요.');
-  assert.doesNotMatch(state.error, /TXT/);
-  assert.equal(await draft.save(), false, 'saving waits while refused');
-  assert.equal(sent.length, 0);
+  // 저장 재설계 B (11/10): that line is held with the 4판 words; the earlier input is saved meanwhile.
+  assert.deepEqual([state.held?.line, state.held?.reasons[2], state.error], [2, 'folder', '']);
+  assert.equal(state.held?.message, '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. ↶로 되돌리거나 분류 화면의 상위 폴더에서 옮겨 주세요.');
+  assert.doesNotMatch(state.held?.message ?? '', /TXT/);
+  assert.equal(await draft.save(), false, 'the held line waits');
+  assert.equal(sent.length, 1, 'the earlier input is saved');
+  assert.equal(M.raw(M.getDocument(sent[0], TYPED)), typed);
   assert(draft.updateRaw(typed, '', { inputType: 'historyUndo' }), '↶ puts the line back');
   assert.equal(draft.getState().invalid, false);
   assert.equal(await draft.save(), true);
