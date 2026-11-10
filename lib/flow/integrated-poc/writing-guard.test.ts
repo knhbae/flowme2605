@@ -195,6 +195,32 @@ test('11/10 18:05 (실사용): a checked task taken away is held with its reason
   assert(aligned.every((row, index) => !row || M.getDocument(state, id)!.lines.find(line => line.id === row.id)?.text === gone.split('\n')[index]), 'every row on its own text');
 });
 
+test('11/10 20:41 (실사용): after a blank line, \'- [ ] …\' typed key by key beside or under any task is saved as typed, never refused', async () => {
+  const { state: source, id } = workspace(), rows = M.rowMeta(source, id), raw0 = DOC.split('\n');
+  let trials = 0;
+  for (const [index, row] of rows.entries()) if (row.kind === 'task' || row.kind === 'subcheck') for (const step of [0, 1]) {
+    const end = row.subtreeEndIndex ?? index + 1, before = raw0.slice(0, end).join('\n') + '\n\n' + (end < raw0.length ? '\n' + raw0.slice(end).join('\n') : '');
+    const state = M.editTextResult(source, id, before, { folderText: true }).state, owner = createProgramDocumentInput(state, id);
+    let saved = '', raw = before, caret = raw0.slice(0, end).join('\n').length + 2;
+    const draft = createProgramTextDraft(owner.initial, id, async next => { saved = M.raw(M.getDocument(next, id)!); return true; }, () => {}, () => true, owner, true);
+    const key = (text: string) => {
+      const s = draft.getState(), splice = { start: caret, end: caret, text };
+      const planned = !s.invalid ? planProgramWritingInput(M, s.working, id, splice, 'insertText') : null;
+      assert(!planned || planned.kind === 'apply', `${index}/${step} ${JSON.stringify(text)} kept`);
+      const applied = planned?.kind === 'apply' ? planned.splice : splice;
+      raw = raw.slice(0, applied.start) + applied.text + raw.slice(applied.end); caret = applied.start + applied.text.length;
+      assert(draft.updateRaw(raw, '', { inputType: 'insertText', ...(planned ? { inputSplice: applied } : {}) }) || draft.getState().typingMark, `${index}/${step} refused at ${JSON.stringify(raw.slice(raw.lastIndexOf('\n', caret - 1) + 1, caret))}`);
+    };
+    for (let i = 0; i < row.depth + step; i++) key(' ');
+    for (const ch of `- [ ] 하위 ${++trials}`) key(ch);
+    await draft.save();
+    assert.equal(saved, raw, 'saved as typed');
+    const at = raw.split('\n').findIndex(text => text.endsWith(`하위 ${trials}`)), kind = M.rowMeta(draft.getState().working, id)[at]?.kind;
+    assert.equal(kind, step ? 'subcheck' : row.kind, `${index}/${step}: read as a ${step ? 'subtask' : 'sibling'}`);
+  }
+  assert(trials >= 10);
+});
+
 test('a fixed sample of the save fuzz (Codex EDIT-FUZZ shape, 300 edits) stays at or under 5% refused after the B rules', async () => {
   let seed = 0x53ef6839;
   const rnd = () => { seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5; return (seed >>> 0) / 4294967296; };
