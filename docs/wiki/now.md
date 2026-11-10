@@ -61,7 +61,7 @@
 | F4·F5 UX 한 벌 | `inbox/ux-f4f5-20261109-0354.md`, 목업 `inbox/ux-f4f5-20261109/f4f5-mockup-v2.html`, 토큰 `inbox/ux-f4f5-fix-tokens-1140.md` | 사용자 확인 '고쳐서 진행'(11/9). F4-a·F5-a 반영 `4d4ca748`, F4-b·F5-b 다음 |
 | PRD 3판(F6 시각·F7 자연어 날짜) | `planning/20261108-prd/PRD.md`(2판 `PRD-v2.md`), 보고 `inbox/prd3-20261109-1727.md` | F6 두 안 비교, F7 '내일' 유지, F6 먼저(결정 기록 11/9) |
 | PRD 14~16절(Enter 규칙·할 일 메뉴 = 옮기기·저장 재설계) | `planning/20261108-prd/PRD.md`, 원인 `inbox/save-rootcause-20261110-1640.md`, 목업 `inbox/ux-task-menu-20261110/`·`inbox/ux-save-b-20261110/` | 모두 사용자 확인(11/10). 3판 보강 6(11/10 23:12, `inbox/prd-update-20261110-2312.md`): 16-0 승인 3건·진행, 14-2 규칙 6·7(빈 줄 ↳·⇥ = 하위), 15-10 구현 차이 표(PRD 고침 3, 둠 4, 미루기·오늘로/내일로 옮김 여부 int7b QA로 확인) |
-| 규칙 목록 RULES(두 층 나누기) | `planning/20261108-prd/RULES.md`, 보고 `inbox/prd-split-20261110-2325.md`, 정리 전 PRD `PRD-v3-full-20261110.md` | 규칙 125개(검증 29·구현 50·확정 41·제안 5). PRD 834→418줄. 충돌 4건 총괄 판단(밀린 일은 보이기만, 미루기는 int7b QA로 확인) |
+| 규칙 목록 RULES(두 층 나누기) | `planning/20261108-prd/RULES.md`, 보고 `inbox/prd-split-20261110-2325.md`, 정리 전 PRD `PRD-v3-full-20261110.md` | 규칙 136개(검증 33·구현 55·확정 43·제안 3·보류 2, `inbox/rules-fix-20261110-2325.md`). PRD 834→418줄. 충돌 4건 총괄 판단(밀린 일은 보이기만, 미루기는 int7b QA로 확인, 같은 일 기준은 구현에 맞춤) |
 | 쓰기 모델·폴더 문법 | `planning/writing-model-20261029/`, `FOLDER-GRAMMAR.md` | 모델 A(10/29) |
 
 ## 기록 (11/5~, 새 줄이 아래. 11/4 이전과 N1~N6 시기 절은 [보관](tasks/2026-11-07-now-archive.md), 전체는 git 기록)
