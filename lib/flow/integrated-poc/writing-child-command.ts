@@ -21,9 +21,13 @@ export function prepareWritingChild(before:TextWorkspaceState,input:WritingChild
  const scope=input.scopeId??before.taskScopes[task.id];if(!scope||!M.scopes(before).some(s=>s.id===scope))return fail('분류를 확인해 주세요.');
  const date=input.date===undefined?task.date:input.date;if(date!==null&&(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(Date.parse(date+'T00:00:00Z'))||new Date(date+'T00:00:00Z').toISOString().slice(0,10)!==date))return fail('날짜를 확인해 주세요.');
  // Existing properties stay before the new child. Existing children keep order.
- const firstChild=parsed.rows.find(row=>row.index>parent.index&&row.index<parent.subtreeEndIndex&&['task','subcheck'].includes(row.kind)),at=firstChild?.index??parent.subtreeEndIndex;
+ const firstChild=parsed.rows.find(row=>row.index>parent.index&&row.index<parent.subtreeEndIndex&&['task','subcheck'].includes(row.kind)),end=firstChild?.index??parent.subtreeEndIndex;
+ // 11/10 21:04 (실사용): an empty line right under the parent's own lines (one Enter left there) becomes the new child, so
+ // no empty line stands between a task and its first subtask. Further empty lines stay after it.
+ let at=end;while(at>parent.index+1&&!doc.lines[at-1].text.trim())at-=1;
+ const replaced=at<end?1:0;
  const id=newId(),title=input.text.replace(/\r\n/g,'\n').split('\n')[0].trim();if(!title||/[\r\n]/.test(id)||doc.lines.some(l=>l.id===id))return fail('하위 항목을 확인해 주세요.');
- const line={id,text:'  '.repeat(parent.depth+1)+'- [ ] '+title},lines=doc.lines.slice();lines.splice(at,0,line);
+ const line={id,text:'  '.repeat(parent.depth+1)+'- [ ] '+title},lines=doc.lines.slice();lines.splice(at,replaced,line);
  const changed={...doc,lines};let next:TextWorkspaceState={...before,documents:before.documents.map(d=>d.id===doc.id?changed:d),flows:before.flows.map(d=>d.id===doc.id?{...changed,private:true as const,sourceVersion:d.sourceVersion}:d),taskScopes:{...before.taskScopes,[id]:scope},itemScopes:{...before.itemScopes,[id]:scope}};
  if(!M.validate(next))return fail('하위 할 일의 소속을 확인하지 못했습니다.');
  // 11/10 decision: the date line only when the child would read another day without it — a child reads its own
