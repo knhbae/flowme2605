@@ -1941,7 +1941,23 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       <div hidden={destination.view !== 'space'}>
         {collectionsMode && <p className={styles.notice}>모음 연결은 이 브라우저에만 저장됩니다. 문서·할 일은 기존 서버에 저장되며, 기존 폴더는 바뀌지 않습니다.</p>}
         {collectionsMessage && <p className={styles.message} role="status">{collectionsMessage}</p>}
-        <ProgramTaskMoveContext.Provider value={{read:()=>taskLocationSaveGate(controller.current?.snapshot(),!!needsInputProtection||storageError||externalRef.current),confirm:()=>{
+        <ProgramTaskMoveContext.Provider value={{read:()=>taskLocationSaveGate(controller.current?.snapshot(),!!needsInputProtection||storageError||externalRef.current),beginScheduleUndo:()=>{
+          const store=controller.current,before=store?.snapshot(),epoch=sessionEpochRef.current,owner=currentOwnerRef.current;
+          if(!store||!before?.account||taskLocationSaveGate(before,storageErrorRef.current||externalRef.current).blocked)return null;
+          const revision=before.account.revision;
+          return ()=>{
+            const after=store.snapshot(),receipt=after.lastReceipt,text=after.envelope?.data.spaces[session.userId]?.text;
+            if(!text||!receipt||!after.canUndo||after.account?.revision!==revision+1||receipt.revision!==revision+1||!['social','change-private'].includes(receipt.kind)
+              ||controller.current!==store||sessionEpochRef.current!==epoch||currentOwnerRef.current!==owner||taskLocationSaveGate(after,storageErrorRef.current||externalRef.current).blocked)return null;
+            let used=false;
+            return {text,undo:async()=>{
+              const current=store.snapshot();
+              if(used||disposed.current||controller.current!==store||sessionEpochRef.current!==epoch||currentOwnerRef.current!==owner||hasInput()||!current.canUndo
+                ||current.account?.revision!==revision+1||current.lastReceipt?.requestId!==receipt.requestId||taskLocationSaveGate(current,storageErrorRef.current||externalRef.current).blocked)return false;
+              used=true;const result=await store.undo();if(result?.ok)historyOrigin.current=programHistoryAfterStep(historyOrigin.current,'undo',revision+1,store.snapshot().account?.revision);return !!result?.ok;
+            }};
+          };
+        },confirm:()=>{
           const current=controller.current?.snapshot();if(current?.pending)void resolvePendingResult();else if(externalRef.current||current?.status==='conflict'||current?.draft)void openLatest();else void controller.current?.refresh();
         }}}>
         <ProgramServerStatusContext.Provider value={serverStatusView}>

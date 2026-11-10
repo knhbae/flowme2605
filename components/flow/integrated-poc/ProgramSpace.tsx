@@ -377,7 +377,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [taskNotice, setTaskNotice] = useState<{ taskId: string; title: string; text: string } | null>(null);
   const taskMoveGate=useContext(ProgramTaskMoveContext);
   const [detailFolderMove,setDetailFolderMove]=useState(false),[locationPending,setLocationPending]=useState(false);
-  type LocationNotice={actorId:string;documentId:string;taskId:string;before:TextWorkspaceState;after:TextWorkspaceState;date:string|null;folderId:string;text:string;kind:TaskLocationTarget['kind']};
+  type LocationNotice={actorId:string;documentId:string;taskId:string;before:TextWorkspaceState;after:TextWorkspaceState;date:string|null;folderId:string;text:string;kind:TaskLocationTarget['kind'];scheduleUndo?:()=>Promise<boolean>};
   const [locationNotice,setLocationNotice]=useState<LocationNotice|null>(null);
   const locationBusy=useRef(false);
   // I7: the notice after '시간순으로', holding the arrays it removed for its 되돌리기, or why that was refused.
@@ -1404,7 +1404,6 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   function editorDirtyChanged(id: string, ownerId: string, value: boolean) {
     if (dataRef.current.activeActorId !== ownerId) return;
-    if(value)setLocationNotice(null);
     const wasDirty = !!dirty.current[id]; dirty.current[id] = value;
     if (value) setViewChangeNotice(previous => {
       if (!previous || previous.actorId !== ownerId) return previous;
@@ -2357,8 +2356,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if(!task||policy.kind==='blocked'||!policy.documentId){setMessage(policy.message);return false;}
     if(policy.kind==='date-only'){
       if(target.kind!=='date'){setMessage(policy.message);return false;}
+      const finishUndo=taskMoveGate?.beginScheduleUndo?.(),dialogOwner=executionDraftOwner.current.dialog;
       const result=await run('실행 날짜·시간 변경',current=>updateProgramTask(current,{...base(current),taskId,patch:{date:target.date,...(target.time!==undefined?{time:target.time}:{})}}),true,{taskId,date:target.date,...(target.time!==undefined?{time:target.time}:{})});
-      if(result.ok)setMessage(policy.message);
+      const capability=result.ok?finishUndo?.():null;
+      if(capability&&dialogOwner===executionDraftOwner.current.dialog){
+        if(detail)close();setTaskNotice(null);setLocationNotice({actorId,documentId:task.docId,taskId,before:expected.text,after:capability.text,date:target.date,folderId:task.scopeId,kind:'date',scheduleUndo:capability.undo,text:`날짜를 ${target.date?programCalendarDate(target.date,today,false)+'로':'미정으로'} 바꿨습니다`});
+      }else if(result.ok)setMessage(policy.message);
       return result.ok;
     }
     locationBusy.current=true;setLocationPending(true);setLocationNotice(null);
@@ -2388,6 +2391,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if(locationBusy.current||locationAvailability().blocked){setMessage('저장을 확인한 뒤 되돌려 주세요.');return;}
     locationBusy.current=true;setLocationPending(true);
     try{
+      if(notice.scheduleUndo){
+        if(!programSame(dataRef.current.spaces[actorId].text,notice.after)){setMessage('그 뒤 내용이 바뀌어 되돌리지 않았습니다.');return;}
+        if(await notice.scheduleUndo())setLocationNotice(null);else setMessage('그 뒤 다른 변경이 있어 되돌리지 않았습니다.');return;
+      }
       const result=await run('할 일 옮기기 되돌리기',current=>undoProgramTaskLocation(current,{actorId,documentId:notice.documentId,after:notice.after,before:notice.before}));
       if(result.ok)setLocationNotice(null);
     }finally{locationBusy.current=false;setLocationPending(false);}

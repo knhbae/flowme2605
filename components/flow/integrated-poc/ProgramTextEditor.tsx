@@ -493,6 +493,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const locationUndo = useRef<LocationEdit | null>(null);
   const [locationNotice,setLocationNotice]=useState<LocationEdit|null>(null);
   const taskMoveGate=useContext(ProgramTaskMoveContext);
+  type ScheduleUndo={docId:string;working:TextWorkspaceState;raw:string;text:string;undo:()=>Promise<boolean>};
+  const scheduleUndo=useRef<ScheduleUndo|null>(null),[scheduleNotice,setScheduleNotice]=useState<ScheduleUndo|null>(null);
   // Stage 2: `origin` is what the seed came from ('/' or '-/'); × then puts that back (none: the 폴더 button, × takes it away).
   const barChipDate = useRef<string | null>(null), folderSeedRef = useRef<{ docId: string; lineId: string; inPlace: boolean; before: TextWorkspaceState; origin?: '/' | '-/' } | null>(null), datePickRef = useRef<HTMLInputElement>(null);
   // Input v2 stage 2 (11/7): the line a chip row was opened from — a typed `[` (date chips), a typed `/` (folder chips),
@@ -1313,6 +1315,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function undoInput() {
     const props = propsRef.current, state = draftRef.current?.getState();
     if (stepLocation(false)) return;
+    if(stepScheduleUndo())return;
     if(propsRef.current.onUndoTaskLocation?.())return;
     if (undoBarFolder()) return;
     if (undoFolderMove() || undoRepeatCheck()) return;
@@ -1322,6 +1325,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   /** The steps ↶ ↷ take before the text's own history, in the same order (undoInput, redoInput); true when one ran. */
   function historyStep(type: 'historyUndo' | 'historyRedo') {
     if (stepLocation(type === 'historyRedo')) return true;
+    if(type==='historyUndo'&&stepScheduleUndo())return true;
     if(type==='historyUndo'&&propsRef.current.onUndoTaskLocation?.())return true;
     return type === 'historyUndo' ? undoBarFolder() || undoFolderMove() || undoRepeatCheck() || undoBarDate() : redoBarFolder() || redoBarDate();
   }
@@ -1864,7 +1868,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function locationAvailability() { return {...(taskMoveGate?.read()??{blocked:false,checking:false}),confirm:taskMoveGate?.confirm}; }
   function highlightLocation(taskId:string) {
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      const folderId=propsRef.current.folderId,region=folderId?readProgramFolderRegions(currentState(),propsRef.current.docId,folderId).regions.find(entry=>entry.lineIds.includes(taskId)):undefined;
+      const folderId=propsRef.current.folderId,region=folderId?readProgramFolderRegions(currentState(),propsRef.current.docId,folderId)?.regions.find(entry=>entry.lineIds.includes(taskId)):undefined;
       const index=region?region.lineIds.indexOf(taskId):currentDoc()?.lines.findIndex(line=>line.id===taskId)??-1;
       if(index<0)return;
       const surface=region?Array.from(hostRef.current?.closest('section')?.querySelectorAll<HTMLElement>('[data-folder-region]')??[]).find(node=>node.dataset.folderRegion===region.key):hostRef.current;
@@ -1905,6 +1909,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if(!state||!programSame(state.working,moved.next))return;
     const record:LocationEdit={docId:propsRef.current.docId,taskId:policy.taskId,before,after:moved.next,raw:state.raw,redo:false,label,date:moved.date,folderId:moved.folderId,kind:target.kind};
     locationUndo.current=record;highlightLocation(policy.taskId);
+    if(propsRef.current.folderId===moved.folderId)requestAnimationFrame(()=>{
+      if(propsRef.current.docId===record.docId&&propsRef.current.active!==false&&!composingRef.current&&programSame(currentState(),record.after))regionPortRef.current?.revealLine?.(record.taskId);
+    });
     if(await pending&&locationUndo.current===record&&programSame(currentState(),record.after))setLocationNotice(record);
   }
   function stepLocation(redo:boolean) {
@@ -1919,6 +1926,24 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     setLocationNotice(null);
     locationUndo.current=installed&&programSame(installed.working,next)?{...last,raw:installed.raw,redo:!redo}:null;
     void pending;return true;
+  }
+  function stepScheduleUndo(){
+    const last=scheduleUndo.current,state=draftRef.current?.getState();
+    if(!last||!state)return false;
+    if(last.docId!==propsRef.current.docId||last.raw!==state.raw||!programSame(last.working,state.working)){scheduleUndo.current=null;setScheduleNotice(null);return false;}
+    if(actionsDisabled()||composingRef.current||regionPendingRef.current)return true;
+    scheduleUndo.current=null;setScheduleNotice(null);
+    void last.undo().then(ok=>{if(!ok)setMessage('그 뒤 다른 변경이 있어 되돌리지 않았습니다. 현재 내용은 유지했습니다.');});return true;
+  }
+  async function applyDateOnly(target:string,value:string|null,time:string){
+    const finishUndo=taskMoveGate?.beginScheduleUndo?.(),docId=propsRef.current.docId;
+    const next=M.updateTask(currentState(),target,{date:value,time});closePanel();
+    if(!await apply(next,'항목 날짜·시간',{taskId:target,date:value,time})||propsRef.current.docId!==docId)return;
+    const capability=finishUndo?.(),state=draftRef.current?.getState();
+    if(capability&&state){
+      const record:ScheduleUndo={docId,working:state.working,raw:state.raw,text:`날짜를 ${value?programCalendarDate(value,today(),false)+'로':'미정으로'} 바꿨습니다`,undo:capability.undo};
+      barDateUndo.current=null;scheduleUndo.current=record;setScheduleNotice(record);
+    }
   }
   function beginMove(lineId: string | null, openDialog: boolean) {
     if (!lineId || actionsDisabled()) return;
@@ -2715,6 +2740,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       locationUndo.current=null;setLocationNotice(null);
     }
   },[draft.working,props.docId,props.active]);
+  useEffect(()=>{const last=scheduleUndo.current;if(last&&(!programSame(draft.working,last.working)||last.docId!==props.docId||props.active===false)){scheduleUndo.current=null;setScheduleNotice(null);}},[draft.working,props.docId,props.active]);
   // Review P2: a screen or document hiding this retained editor changes none of its props, only its size.
   useEffect(() => {
     const host = hostRef.current; if (!host) return;
@@ -3122,9 +3148,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if(policy.kind==='move'){await performTaskLocation(panel?.lineId??null,{kind:'date',date:date||null,time});return;}
     const task = M.tasks(currentState()).find(item => item.id === target);
     if (task && task.date === (date || null) && (task.time ?? '') === time) { closePanel(); return; }
-    const next = M.updateTask(currentState(), target, { date: date || null, time });
-    if (next === currentState()) { closePanel(); return; }
-    closePanel(); await apply(next, '항목 날짜·시간', { taskId: target, date: date || null, time });
+    await applyDateOnly(target,date||null,time);
   }
   /** N9: a line menu date chip sets the date in one press, as 날짜·시간 적용 would, and keeps the time. */
   async function applyDateChip(lineId: string | null, value: string) {
@@ -3137,9 +3161,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if(policy.kind==='blocked'){setMessage(policy.message);return;}
     if(policy.kind==='move'){await performTaskLocation(lineId,{kind:'date',date:value});return;}
     if (task.date === value) { closePanel(); return; }
-    const time = task.time ?? '', next = M.updateTask(currentState(), target, { date: value, time });
-    if (next === currentState()) { closePanel(); return; }
-    closePanel(); if(await apply(next, '항목 날짜·시간', { taskId: target, date: value, time }))setMessage(policy.message);
+    await applyDateOnly(target,value,task.time??'');
   }
   function downloadDraft() {
     const blob = new Blob([captureDraftRaw()], { type: 'text/plain;charset=utf-8' });
@@ -3312,13 +3334,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       actions: view.actions.map(button => ({ label: button.label, run: run(button.step) })),
       chips: view.chips.map(button => ({ label: button.label, current: button.current, run: run(button.step) })) };
   }
-  memoTipBlockedRef.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice || !!locationNotice;
+  memoTipBlockedRef.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice || !!locationNotice || !!scheduleNotice;
   const noticeViews = programNoticeOrder([
     ...(moving ? [{ moving: true, tone: 'choose' as const, text: `${moving.label} · 하위 ${moving.descendantCount}줄`, closeLabel: null, close: undefined,
       actions: [{ label: '위치 선택', run: () => setPanel({ kind: 'move', lineId: moving.lineId }) }, { label: '이동 취소', run: cancelMove }] }] : []),
     ...(message && !panel ? [{ tone: 'warn' as const, text: message, closeLabel: '안내 닫기', close: () => setMessage('') }] : []),
     ...(checkNotice ? [checkNoticeView(checkNotice)] : []),
     ...(locationNotice ? [{tone:'choose' as const,text:locationNotice.label,closeLabel:'알림 닫기',close:()=>setLocationNotice(null),actions:[{label:'되돌리기',run:whenComposed(()=>{stepLocation(false);})},...(locationOutside(locationNotice)?[{label:props.folderId&&locationNotice.folderId!==props.folderId?'그 폴더 보기':'그날 보기',run:whenComposed(()=>showLocation(locationNotice))}]:[])]}] : []),
+    ...(scheduleNotice?[{tone:'choose' as const,text:scheduleNotice.text,closeLabel:'알림 닫기',close:()=>setScheduleNotice(null),actions:[{label:'되돌리기',run:whenComposed(()=>{stepScheduleUndo();})}]}]:[]),
     ...(folderNotice ? [{ tone: folderNotice.tone, text: folderNotice.text, actions: folderNotice.actions, closeLabel: '알림 닫기', close: () => setFolderNotice(null) }] : []),
     ...(repeatNotice ? [{ tone: repeatNotice.tone, text: repeatNotice.text, actions: repeatNotice.actions, closeLabel: '알림 닫기', close: () => setRepeatNotice(null) }] : []),
     ...(memoTip !== null ? [{ tone: 'info' as const, text: PROGRAM_MEMO_TIP_TEXT, closeLabel: '알림 닫기', close: () => setMemoTip(null) }] : []),
