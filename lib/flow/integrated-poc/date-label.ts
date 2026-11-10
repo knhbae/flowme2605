@@ -29,6 +29,15 @@ export function programStampLabel(instant: string, today = programSeoulDate(new 
   return date ? programCalendarDate(date, today) : instant.slice(0, 10);
 }
 
+/** P3 (11/11): a stored time with its Seoul clock time, "11월 10일 (화) 01:30" (another year shows its year), not the
+ *  UTC ISO string or "2026-11-09 16:30 UTC". Not a time: as stored. */
+export function programStampTimeLabel(instant: string, today = programSeoulDate(new Date().toISOString()) ?? ''): string {
+  const time = Date.parse(instant);
+  if (!/^\d{4}-\d\d-\d\dT\d\d:\d\d/.test(instant) || !Number.isFinite(time)) return instant;
+  const seoul = new Date(time + 9 * 3_600_000).toISOString();
+  return `${programCalendarDate(seoul.slice(0, 10), today)} ${seoul.slice(11, 16)}`;
+}
+
 /** 오늘 / 내일 / 어제, otherwise the calendar date. A missing date reads "날짜 없음". */
 export function programDateLabel(date: string | null | undefined, today: string, weekday = true): string {
   if (!date) return '날짜 없음';

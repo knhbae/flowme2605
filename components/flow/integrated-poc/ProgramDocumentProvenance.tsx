@@ -5,6 +5,7 @@ import { programDocumentCreatorDestination, readProgramDocumentCreatorLink } fro
 import styles from './ProgramDocumentProvenance.module.css';
 import { CatalogContentOriginal } from './CatalogContentOriginal';
 import { isNativeCreatorCatalogContentSource } from '../../../lib/flow/integrated-poc/native-creator-document-contract';
+import { programStampTimeLabel } from '../../../lib/flow/integrated-poc/date-label';
 
 export type ProgramDocumentProvenanceProps = { data: ProgramData; documentId: string; onOpenRevisions?: () => void;
   onOpenCreatorDraft?: (draftId: string) => void; disabled?: boolean };
@@ -37,11 +38,11 @@ export function ProgramDocumentProvenance({ data, documentId, onOpenRevisions, o
     {imported && <details className={styles.provenance}>
     <summary>가져온 제작 초안 확인</summary>
     <p>{imported.source.current.title} · 원래 초안의 저장 상태 {imported.source.current.recordRevision}</p>
-    <p className={styles.meta}>가져온 시각 {imported.importedAt.slice(0, 16).replace('T', ' ')} UTC · 가져올 당시 {imported.source.current.status === 'archived' ? '보관된 초안' : '사용 중인 초안'}</p>
+    <p className={styles.meta}>가져온 시각 {programStampTimeLabel(imported.importedAt)} · 가져올 당시 {imported.source.current.status === 'archived' ? '보관된 초안' : '사용 중인 초안'}</p>
     <p>아래는 가져올 당시 보존한 원문입니다. 지금 편집하는 개인 문서와 기존 제작 보관함은 자동으로 동기화되지 않습니다. 이 원문은 공개 미리보기에 자동 포함되지 않습니다.</p>
     <details><summary>가져온 당시 원문</summary><pre>{imported.source.current.rawText || '(빈 초안)'}</pre></details>
     {imported.source.undo ? <details><summary>실제로 남아 있던 직전 저장 상태</summary>
-      <p>{imported.source.undo.record.title} · 저장 상태 {imported.source.undo.record.recordRevision} · {imported.source.undo.record.updatedAt.slice(0, 16).replace('T', ' ')} UTC</p>
+      <p>{imported.source.undo.record.title} · 저장 상태 {imported.source.undo.record.recordRevision} · {programStampTimeLabel(imported.source.undo.record.updatedAt)}</p>
       <pre>{imported.source.undo.record.rawText || '(빈 초안)'}</pre>
       {imported.undoRevisionId && onOpenRevisions ? <button type="button" disabled={disabled} onClick={onOpenRevisions}>직전 본문 복구 검토</button>
         : !imported.undoRevisionId && <p>본문·제목이 같아 별도의 본문 판본을 만들지 않았습니다.</p>}
