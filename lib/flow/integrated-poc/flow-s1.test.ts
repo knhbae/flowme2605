@@ -115,7 +115,8 @@ test('the wiring: one check for 오늘 and the band; the band over my writing do
   const read = (path: string) => readFileSync(join(process.cwd(), path), 'utf8').replace(/\r\n/g, '\n');
   const space = read('components/flow/integrated-poc/ProgramSpace.tsx'), discovery = read('components/flow/integrated-poc/ProgramDiscovery.tsx');
   const band = read('components/flow/integrated-poc/ProgramFlowTodayBand.module.css'), workspace = read('components/flow/integrated-poc/AlphaWorkspace.tsx');
-  assert(space.includes('onClick={() => { void checkTaskFromList(task); }}'), 'the 오늘 list');
+  // F8 1단계: a row standing for '같은 일 n줄' finishes them all; any other is the one check.
+  assert(space.includes('onClick={() => { const same = sameGroups?.members.get(task.id); if (same && value === 0) void checkSameTasks(same); else void checkTaskFromList(task); }}'), 'the 오늘 list');
   assert(space.includes("void checkTaskFromList(live, 'band').then(outcome => {"), 'the band');
   assert.match(space, /const bandDocumentId = period === 'documents' && !folderId && !!selectedDoc && !selectedArchived && !selectedTrashed\n\s+&& space\.text\.documents\.some\(doc => doc\.id === selectedDoc\.id\)/);
   assert(space.includes("programOrderedExecutionRows(data, { period: 'today', date: today, today, folderId: '', query: '', includeHeld: false, includeExcluded: false, page: 0 }).rows"), '오늘\'s own query and order');

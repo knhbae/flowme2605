@@ -19,6 +19,7 @@ import { carryProgramHead, restoreProgramHead, type ProgramHeadCarry } from '@/l
 import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeLive, programCheckNoticeView, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
 import { ProgramMonthGrid } from './ProgramMonthGrid';
 import { ProgramFlowTodayBand, type ProgramFlowBandRow } from './ProgramFlowTodayBand';
+import { programContinueBand, programContinueMeta, programSameTaskGroups, type ProgramContinueRow } from '@/lib/flow/integrated-poc/continue-band';
 import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
 import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
@@ -27,7 +28,7 @@ import { programCalendarDate, programDaysBetween } from '@/lib/flow/integrated-p
 import { timeRo } from '@/lib/flow/integrated-poc/number-particle';
 import { programFirstOfficialFlows } from '@/lib/flow/integrated-poc/first-flows';
 import { useAlphaOfficialActors } from './AlphaOfficialActors';
-import { carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverItems, programCarryoverPlaces, programCarryoverProof, restoreProgramCarryover,
+import { programCarryoverSummary, programCarryoverGroupScope, carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverItems, programCarryoverPlaces, programCarryoverProof, restoreProgramCarryover,
   PROGRAM_CARRYOVER_LIMIT, type ProgramCarryoverBefore, type ProgramCarryoverChoice, type ProgramCarryoverItem, type ProgramCarryoverPlan } from '@/lib/flow/integrated-poc/carryover';
 import { programOpening } from '@/lib/flow/integrated-poc/carryover-opening';
 import { completeProgramRepeat, convertProgramLegacyRepeat, programLegacyRepeatSeries, programRepeatLine, programRepeatSeen, readProgramRepeatCheck, settleProgramRepeatLines, undoProgramRepeat,
@@ -396,6 +397,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const datesSheet = useRef<HTMLDialogElement>(null), datesBusy = useRef(false), [datesPending, setDatesPending] = useState(false);
   // N10: a repeat round finished from 오늘 ('다음은 …' with 되돌리기), and the old one-task repeat's card.
   const [repeatNotice, setRepeatNotice] = useState<{ actorId: string; text: string; check: ProgramRepeatCheck | null; refused?: boolean } | null>(null);
+  // F8 1단계 (CO-3 표시): '같은 일 n줄' — the notice after checking them all (its 되돌리기), and the sheet listing them.
+  const [sameNotice, setSameNotice] = useState<{ actorId: string; ids: string[]; before: ReadonlyMap<string, number>; undone?: boolean; refused?: boolean } | null>(null);
+  const [sameSheet, setSameSheet] = useState<string | null>(null);
+  const sameSheetRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => { const sheet = sameSheetRef.current; if (!sheet) return; if (sameSheet && !sheet.open) sheet.showModal(); else if (!sameSheet && sheet.open) sheet.close(); }, [sameSheet]);
   const [legacyRepeatLater, setLegacyRepeatLater] = useState(false), [legacyRepeatNotice, setLegacyRepeatNotice] = useState<string | null>(null);
   const [datesNotice, setDatesNotice] = useState<DatesNotice | null>(null), [datesNoticeHeld, setDatesNoticeHeld] =useState(false);
   useEffect(() => {
@@ -951,9 +957,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const executionList = programExecutionList(executionRows, period, date, today, emptyDaysOpen, manualOrderDays);
   // N11a: 오늘 with more than three past unfinished rows folds them under the 밀린 일 card; 고르기 shows them all.
   const carryShown = period === 'today' && date === today && !selecting;
+  const bandDocumentId = period === 'documents' && !folderId && !!selectedDoc && !selectedArchived && !selectedTrashed
+    && space.text.documents.some(doc => doc.id === selectedDoc.id) ? selectedDoc.id : null;
+  // The card has always planned over the full space, even when the visible list is filtered.
+  const todayRowsForBand = useMemo(() => !bandDocumentId && !carryShown ? []
+    : programOrderedExecutionRows(data, { period: 'today', date: today, today, folderId: '', query: '', includeHeld: false, includeExcluded: false, page: 0 }).rows, [!!bandDocumentId, carryShown, data, today]);
+  const carrySummary = useMemo(() => programCarryoverSummary(space, today, todayRowsForBand), [space, today, todayRowsForBand]);
+  const sameGroupScope = useMemo(() => programCarryoverGroupScope(space), [space]);
   const carryPast = carryShown ? executionList.filter(item => item.kind === 'row' && item.group === 'past-incomplete') : [];
-  const carryPlan = useMemo(() => carryShown && carryPast.length > 3 ? planProgramCarryover(space, today) : null, [carryShown, carryPast.length > 3, space, today]);
-  const carryCard = !!carryPlan && carryPlan.count > 0;
+  // F8 1단계 (CO-3): the late card from one late line (it was more than three), so 지난 미완료 is always folded under it.
+  const carryPlan = useMemo(() => carryShown && carryPast.length > 0 ? planProgramCarryover(space, today) : null, [carryShown, carryPast.length > 0, space, today]);
+  const carryCard = !!carryPlan && carrySummary.count > 0;
   // N11b: what the sheet's choices would do now (its save button says how many memos a deletion takes along).
   const carrySheetPlan = useMemo(() => carryItems && carrySheetSpace && period === 'today' ? planProgramCarryover(carrySheetSpace, today, undefined,
     new Map(carryItems.map(item => [item.kind, carryChoices.get(item.kind) ?? item.choice]))) : null, [carryItems, carryChoices, carrySheetSpace, period, today]);
@@ -961,6 +975,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const carryPlaces = useMemo(() => period === 'today' ? programCarryoverPlaces(space, executionRows.flatMap(row => row.kind === 'text-task' ? [row.task] : []))
     : new Map<string, { place: string; count: number }>(), [period, space, executionRows]);
   const listItems = carryCard && !carryOpen ? executionList.filter(item => !(item.kind === 'heading' && item.key === 'heading:past') && !(item.kind === 'row' && item.group === 'past-incomplete')) : executionList;
+  // F8 1단계 (CO-3 표시): 오늘's open rows of one group that are the same task in the same folder show as the first written,
+  // with '같은 일 n줄' (its sheet lists them); checking it finishes them all in one save, with one 되돌리기.
+  const sameGroups = period === 'today' && !selecting ? programSameTaskGroups(listItems.flatMap(item => item.kind === 'row' && item.entry.kind === 'text-task' && item.group
+    && !item.entry.task.done && !(M.currentProgress(space.text, item.entry.task.id) ?? 0) && !programRepeatLine(space, item.entry.task.id) ? [{ task: item.entry.task, group: item.group }] : []),
+    sameGroupScope) : null;
+  const shownItems = sameGroups?.hidden.size ? listItems.filter(item => !(item.kind === 'row' && item.entry.kind === 'text-task' && sameGroups.hidden.has(item.entry.task.id))) : listItems;
   const monthGrid = period === 'month' && monthView === 'grid';
   const wideMonth = monthWidth >= 840;
   // C6a: 고르기 ends with any view change (탭·기간·날짜·분류·검색) and with Esc; the picks are not kept. A view change
@@ -1155,17 +1175,23 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   sourceSession.current = sourceEpoch;
   // Flow pipeline S11: over a writing document of mine (not a Flow document, not a gathered folder), the unfinished tasks
   // of the Flows I took that 오늘 lists (its own query and order: today's and earlier ones still open). Drawn only.
-  const bandDocumentId = period === 'documents' && !folderId && !!selectedDoc && !selectedArchived && !selectedTrashed
-    && space.text.documents.some(doc => doc.id === selectedDoc.id) ? selectedDoc.id : null;
   const flowDocuments = useMemo(() => new Map(space.copies.filter(copy => !space.documentTrash?.[copy.documentId] && !space.archivedDocumentIds.includes(copy.documentId))
     .flatMap(copy => (doc => doc ? [[copy.documentId, doc.title] as const] : [])(space.text.flows.find(row => row.id === copy.documentId)))), [space]);
   // F6-B2: each Flow document's 실 (its days as dots, the done ones filled) and done/total, for 오늘's rows and the band.
   const flowThreads = useMemo(() => new Map([...flowDocuments.keys()].map(id => [id, programDocumentThread(space.text, id)] as const)), [flowDocuments, space.text]);
-  const flowTodayTasks = useMemo(() => !bandDocumentId || !flowDocuments.size ? []
-    : programOrderedExecutionRows(data, { period: 'today', date: today, today, folderId: '', query: '', includeHeld: false, includeExcluded: false, page: 0 }).rows
-      .flatMap(row => row.kind === 'text-task' && flowDocuments.has(row.task.docId) ? [row.task] : []), [!!bandDocumentId, flowDocuments, data, today]);
+  // F8 1단계 (CO-1): '이어지는 일' — 오늘's own query for today; the band takes the open rows dated today whose line is not in
+  // this document's today section (a Flow's, moved, another document's, a repeat's round), and counts the late ones.
+  const continueBand = useMemo(() => !bandDocumentId ? { rows: [] as ProgramContinueRow[], late: 0, flow: 0 } : programContinueBand(todayRowsForBand, { today, documentId: bandDocumentId,
+    flowTitle: id => flowDocuments.get(id) ?? null, repeat: id => (line => line && !line.block ? `↻ ${line.marker.label}` : null)(programRepeatLine(space, id)),
+    progress: id => M.currentProgress(space.text, id) }), [todayRowsForBand, bandDocumentId, flowDocuments, space, today]);
+  // Core3 P3 (UX F2): a list row's ⋯ starts with 미루기 — the row as 고르기 would pick it (not a repeat's round, not
+  // finished, not locked), moved by C6b's one save with its notice and 되돌리기. F8 1단계: in writing, the band's
+  // [미루기] opens the same sheet, its row read from 오늘's own query.
+  const deferRow = detailTask ? (period !== 'documents' ? executionRows : todayRowsForBand).find(row => row.kind === 'text-task' && row.task.id === detailTask.id) : undefined;
+  const deferChips = deferRow?.kind === 'text-task' && !programSelectBlock(space, deferRow, (taskProgress(deferRow.task.id).current ?? (deferRow.task.done ? 100 : 0)) === 100)
+    ? programDeferChips(today, deferRow.task.date) : null;
   // A row checked in the band stays (faded, where it was) until the screen is left; a finished round has moved on.
-  const [bandChecked, setBandChecked] = useState<ReadonlyMap<string, { task: TextTask; index: number }>>(() => new Map());
+  const [bandChecked, setBandChecked] = useState<ReadonlyMap<string, { row: ProgramContinueRow; index: number }>>(() => new Map());
   const [bandFailed, setBandFailed] = useState<string | null>(null);
   useEffect(() => { setBandChecked(new Map()); setBandFailed(null); }, [actorId, period, selected, folderId]);
   // The source open now waiting out the host's check, shown on its row and in the
@@ -2527,6 +2553,57 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     <ProgramNoticeRow notice={{ tone: repeatNotice.refused ? 'warn' : 'choose', text: repeatNotice.text, closeLabel: '알림 닫기',
       actions: repeatNotice.check ? [{ label: '되돌리기', run: () => void undoRepeatFromList(repeatNotice.check!) }] : [] }} onClose={() => setRepeatNotice(null)} />
   </div>;
+  /** F8 1단계 (CO-3, 사용자 11/10 '권장대로'): checking the row that stands for '같은 일 n줄' finishes them all, as of today, in one
+   *  save (the 오늘 check's own command, once per line); its notice's 되돌리기 puts each back as it was, in one save. */
+  async function checkSameTasks(members: readonly TextTask[]) {
+    const ids = completingInSession(completingTasks, sourceSession.current);
+    if (members.some(task => ids.has(task.id))) return;
+    for (const task of members) ids.add(task.id);
+    setCompletingTaskIds(new Set(ids));
+    const before = new Map(members.map(task => [task.id, M.currentProgress(space.text, task.id) ?? (task.done ? 100 : 0)] as const)), view = presentation.current, shown = space;
+    try {
+      const result = await run('같은 일 모두 끝냄', current => {
+        let state = current, last: ProgramTransition<string> | null = null;
+        for (const task of members) {
+          const step = completeProgramTask(state, { actorId, requestId: programId('request'), expectedSpace: last ? state.spaces[actorId] : shown, taskId: task.id, date: today, done: true });
+          if (!step.ok) return step;
+          state = step.data; last = step;
+        }
+        return last!;
+      }, true, undefined, undefined, true);
+      if (result.ok && checkViewOwns(view)) setSameNotice({ actorId, ids: members.map(task => task.id), before });
+    } finally {
+      let changed = false;
+      for (const task of members) changed = finishCompleting(completingTasks, ids, task.id) || changed;
+      if (changed) setCompletingTaskIds(new Set(ids));
+    }
+  }
+  async function undoSameTasks(notice: NonNullable<typeof sameNotice>) {
+    const result = await run('같은 일 되돌리기', current => {
+      let state = current, last: ProgramTransition<string> | null = null;
+      for (const id of notice.ids) {
+        const step = recordProgramTaskProgress(state, { actorId, requestId: programId('request'), expectedSpace: state.spaces[actorId], taskId: id, date: today, percent: notice.before.get(id) ?? 0 });
+        if (!step.ok) return step;
+        state = step.data; last = step;
+      }
+      return last!;
+    }, true, undefined, undefined, true);
+    setSameNotice(current => current === notice ? result.ok ? { ...notice, undone: true } : { ...notice, refused: true } : current);
+  }
+  const sameNoticeContent = sameNotice?.actorId === actorId && <div className={styles.orderNotice} data-same-notice>
+    <ProgramNoticeRow notice={{ tone: sameNotice.refused ? 'warn' : sameNotice.undone ? 'info' : 'choose', closeLabel: '알림 닫기',
+      text: sameNotice.refused ? '되돌리지 못했습니다. 지금 상태를 확인해 주세요' : sameNotice.undone ? `같은 일 ${sameNotice.ids.length}줄을 원래대로 되돌렸습니다` : `같은 일 ${sameNotice.ids.length}줄을 모두 끝냈습니다`,
+      actions: sameNotice.undone || sameNotice.refused ? [] : [{ label: '되돌리기', run: () => void undoSameTasks(sameNotice) }] }} onClose={() => setSameNotice(null)} />
+  </div>;
+  const sameSheetMembers = sameSheet ? sameGroups?.members.get(sameSheet) ?? null : null;
+  const sameSheetContent = period === 'today' && <dialog ref={sameSheetRef} className={`${styles.findDialog} ${styles.sameSheet}`} aria-labelledby="program-same-title" onClose={() => setSameSheet(null)}>
+    {sameSheetMembers && <>
+      <header><h2 id="program-same-title">같은 일 {sameSheetMembers.length}줄</h2><button type="button" aria-label="닫기" onClick={() => setSameSheet(null)}><ProgramIcon name="close" size={20} /></button></header>
+      <p>행을 체크하면 이 줄들을 모두 끝냅니다. 줄을 누르면 원래 글에서 엽니다.</p>
+      <ul>{sameSheetMembers.map(task => <li key={task.id}><button type="button" onClick={() => { setSameSheet(null); void openDocument(task.docId, task.id); }}>
+        <span>{task.title}</span><small>{task.groupDate ? programCalendarDate(task.groupDate, today, false) : '날짜 없음'} · {task.docTitle}</small></button></li>)}</ul>
+    </>}
+  </dialog>;
   // SPEC 6: an old one-task repeat ('내 반복') becomes a repeat line by one press of the person's; nothing converts by itself.
   const legacyRepeat = programLegacyRepeatSeries(space)[0];
   async function convertLegacyRepeat() {
@@ -2741,8 +2818,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const carryWriting = composingShown || Object.values(dirty.current).some(Boolean);
   const carryRepeats = (carryPlan?.repeats ?? 0) + carryPast.filter(item => item.kind === 'row' && item.entry.kind === 'occurrence').length;
   const carryCardContent = carryCard && carryPlan && <section className={styles.carryCard} aria-label="밀린 일" data-carryover>
-    <p className={styles.carryTitle}>{opening.since ? `${programCalendarDate(opening.since, today, false)} 이후 처음 열었습니다 · 밀린 일 ${carryPlan.kinds}가지`
-      : `밀린 일 ${carryPlan.kinds}가지 · ${carryPlan.count}줄`}</p>
+    <p className={styles.carryTitle}>{opening.since ? `${programCalendarDate(opening.since, today, false)} 이후 처음 열었습니다 · 밀린 일 ${carrySummary.count}가지`
+      : `밀린 일 ${carrySummary.count}가지 · ${carrySummary.lines}줄`}</p>
     {carryPlan.first && <p className={styles.carryMeta}>{programCalendarDate(carryPlan.first, today, false)}부터{carryPlan.repeated ? ' · 같은 일이 여러 날에 있음' : ''}</p>}
     <div className={styles.carryActions}>
       {carryPlan.lines.length > 0 && <button type="button" className={styles.carryMove} disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}
@@ -2778,7 +2855,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if(notice.kind!=='date'){void openFolderScreen(notice.folderId);return;}
     void changePeriod(notice.date?'today':'undated').then(ok=>{if(ok&&notice.date)setDate(notice.date);requestAnimationFrame(()=>highlightTaskLocation(notice.taskId));});
   }}]:[])]}} onClose={()=>setLocationNotice(null)}/></div>;
-  const bottomNoticeShown = !!(!sheetOpen && (orderNoticeContent || checkNoticeContent || repeatNoticeContent) || datesNoticeContent || carryNoticeContent || folderTodayNoticeContent || locationNoticeContent || selecting && selectNotice);
+  const bottomNoticeShown = !!(!sheetOpen && (orderNoticeContent || checkNoticeContent || repeatNoticeContent || sameNoticeContent) || datesNoticeContent || carryNoticeContent || folderTodayNoticeContent || locationNoticeContent || selecting && selectNotice);
   /** N11b [하나씩 정리]: the card's tasks one by one (PROPOSAL 4-3), each with the card's choice to start from. */
   function openCarrySheet(keep?: ReadonlyMap<string, ProgramCarryoverChoice>, from?: ProgramPrivateSpace | null) {
     const shown = from ?? dataRef.current.spaces[actorId] ?? space, items = programCarryoverItems(shown, today);
@@ -3008,7 +3085,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           return <li key={entry.key} className={styles.task} data-task-id={task.id} data-done={value === 100 || undefined} data-flow-row={rowFlowTitle(task) ? '' : undefined} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
-            <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskIds.has(task.id) ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskIds.has(task.id) || undefined} onClick={() => { void checkTaskFromList(task); }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
+            <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskIds.has(task.id) ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskIds.has(task.id) || undefined} onClick={() => { const same = sameGroups?.members.get(task.id); if (same && value === 0) void checkSameTasks(same); else void checkTaskFromList(task); }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
               {completingTaskIds.has(task.id) ? '' : value > 0 && value < 100 ? `${value}%` : ''}</span></button>
             <button className={styles.taskTitle} aria-label={`${repeatShown ? `${programRepeatTitle(task.title)} · ${repeatShown.block ? '반복 멈춤' : `반복 ${repeatShown.marker.label}`}` : task.title}${origin.label !== '직접 작성' ? ` · ${origin.label}` : ''} · ${task.docTitle} 원문 열기`} aria-busy={sourceWaitingTask === task.id || undefined} onClick={event => moving ? void moveBefore(moving, entry.key) : openFromList(task, event.currentTarget)}>{(line => line ? <span className={styles.taskTitleText}>{programRepeatTitle(task.title)}<span className={styles.repeatChip}>{line.block ? '반복 멈춤' : programRepeatText(`↻ ${line.marker.label}`, 13)}</span></span>
               : <span className={styles.taskTitleText}>{task.title}</span>)(repeatShown)}
@@ -3027,32 +3104,41 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}><ProgramIcon name="more" size={20} /></button>
+            {(same => same && <button type="button" className={styles.sameChip} data-same-chip aria-haspopup="dialog" onClick={() => setSameSheet(task.id)}><span>같은 일 {same.length}줄</span></button>)(sameGroups?.members.get(task.id))}
           </li>;
   }
-  // Flow pipeline S11: the band's rows — open ones in 오늘's order, and those checked here kept (faded) where they were.
+  // F8 1단계 (CO-1): the band's rows — open ones in its order (Flow, moved, progress, repeat), and those checked here kept
+  // (faded) where they were.
   const bandRows: ProgramFlowBandRow[] = (() => {
     if (!bandDocumentId) return [];
-    const valueOf = (task: TextTask) => taskProgress(task.id).current ?? (task.done ? 100 : 0);
-    const list = flowTodayTasks.filter(task => valueOf(task) !== 100 && !bandChecked.has(task.id)).map(task => ({ task, done: false }));
-    for (const [, kept] of [...bandChecked].sort((a, b) => a[1].index - b[1].index)) list.splice(Math.min(kept.index, list.length), 0, { task: kept.task, done: true });
-    return list.map(({ task, done }) => { const repeat = programRepeatLine(space, task.id);
-      return { id: task.id, title: repeat ? programRepeatTitle(task.title) : task.title, flowTitle: flowDocuments.get(task.docId) ?? task.docTitle, flowDocumentId: task.docId,
-        done, busy: completingTaskIds.has(task.id), repeat: repeat && !repeat.block ? `↻ ${repeat.marker.label}` : null }; });
+    const list = continueBand.rows.filter(row => !bandChecked.has(row.task.id)).map(row => ({ row, done: false }));
+    for (const [, kept] of [...bandChecked].sort((a, b) => a[1].index - b[1].index)) list.splice(Math.min(kept.index, list.length), 0, { row: kept.row, done: true });
+    return list.map(({ row, done }) => ({ id: row.task.id, title: row.repeat ? programRepeatTitle(row.task.title) : row.task.title, kind: row.kind,
+      meta: row.kind === 'flow' ? [] : programContinueMeta(row.task, bandDocumentId, rowFolderTitle(row.task), row.kind), flowTitle: row.flowTitle,
+      flowDocumentId: row.kind === 'flow' ? row.task.docId : null, percent: row.percent, done, busy: completingTaskIds.has(row.task.id), repeat: row.repeat }));
   })();
   function checkFromBand(id: string) {
-    const kept = bandChecked.get(id), index = bandRows.findIndex(row => row.id === id);
-    const live = M.tasks(space.text).find(task => task.id === id) ?? kept?.task;
-    if (!live || index < 0) return;
+    const kept = bandChecked.get(id), index = bandRows.findIndex(row => row.id === id), shown = continueBand.rows.find(row => row.task.id === id) ?? kept?.row;
+    const live = M.tasks(space.text).find(task => task.id === id) ?? kept?.row.task;
+    if (!live || !shown || index < 0) return;
     setBandFailed(null);
     void checkTaskFromList(live, 'band').then(outcome => {
       if (outcome === 'failed') { setBandFailed(id); return; }
-      if (outcome === 'saved') setBandChecked(current => { const next = new Map(current); if (kept) next.delete(id); else next.set(id, { task: live, index }); return next; });
+      if (outcome === 'saved') setBandChecked(current => { const next = new Map(current); if (kept) next.delete(id); else next.set(id, { row: { ...shown, task: live }, index }); return next; });
     });
   }
+  // The row's words: its original line (that document opened there; a folded section opens for this visit).
+  function showBandSource(id: string) {
+    const task = M.tasks(space.text).find(row => row.id === id) ?? bandChecked.get(id)?.row.task;
+    if (task) void openDocument(task.docId, task.id);
+  }
+  // [미루기]: the 오늘 row ⋯'s sheet (its 미루기 chips: 내일 · 이번 주말 · 다음 주 · 날짜 고르기).
+  function deferFromBand(id: string) { if (M.tasks(space.text).some(row => row.id === id)) openDetail({ kind: 'task', id }); }
   // F6-B2: the band draws one Flow's 실 when all its rows come from that Flow.
-  const bandThread = (ids => ids.size === 1 ? flowThreads.get([...ids][0]) ?? null : null)(new Set(bandRows.map(row => row.flowDocumentId)));
-  const flowBand = bandRows.length > 0 && <ProgramFlowTodayBand rows={bandRows} open={bandRows.filter(row => !row.done).length} failed={bandFailed} thread={bandThread}
-    onCheck={checkFromBand} onOpenFlow={documentId => { void openDocument(documentId); }} onShowToday={() => { void chooseMainTab('today'); }} />;
+  const bandThread = (ids => ids.size === 1 && !ids.has('') ? flowThreads.get([...ids][0]) ?? null : null)(new Set(bandRows.map(row => row.flowDocumentId ?? '')));
+  const flowBand = (bandRows.length > 0 || carrySummary.count > 0) && <ProgramFlowTodayBand rows={bandRows} open={bandRows.filter(row => !row.done).length} flow={continueBand.flow}
+    late={carrySummary.count} failed={bandFailed} thread={bandThread} onCheck={checkFromBand} onShowSource={showBandSource} onDefer={deferFromBand}
+    onShowToday={() => { void chooseMainTab('today'); }} />;
   const copyHeader = useMemo(() => selectedDoc ? programCopyHeader(data, actorId, selectedDoc.id) : null, [data, actorId, selectedDoc?.id]);
   // U44: on a tablet held sideways the title and ⋯ go into the open document's tool line, and the notices that sat
   // between them and the tools go under that line, above the body. Only their place changes: the editor keeps its key
@@ -3420,7 +3506,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <button type="button" className={styles.datesClose} onClick={closeDatesSheet}>닫기</button>
           </dialog></div>}
         {/* N11a: the 밀린 일 card, over 오늘's list (never with the calendar). */}
-        {!monthGrid && carryCardContent}{carrySheetContent}
+        {!monthGrid && carryCardContent}{carrySheetContent}{sameSheetContent}
         {/* Flow pipeline S3: the Flow taken just now, its days marked; × lets it go (nothing saved). */}
         {monthGrid && shownHighlight && <div className={styles.flowHighlight} data-flow-highlight={shownHighlight.documentId}>
           <span><i aria-hidden="true" />{shownHighlight.title} · {shownHighlight.count}개</span>
@@ -3453,11 +3539,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           {folderGroups.done.length > 0 && <li className={folderStyles.doneToggle}><button type="button" data-folder-done aria-expanded={folderDoneOpen}
             onClick={() => setFolderDoneOpen(open => !open)}>{folderDoneOpen ? `끝낸 일 ${folderGroups.done.length}개 접기 ⌃` : `끝낸 일 ${folderGroups.done.length}개 ›`}</button></li>}
           {folderDoneOpen && folderGroups.done.map(entry => renderListItem({ kind: 'row', entry, group: null, dated: false }, 'done'))}
-        </ul> : folderTab ? null : <ul className={styles.tasks} onKeyDown={selecting ? moveSelectFocus : undefined}>{listItems.map(item => renderListItem(item))}</ul>}
+        </ul> : folderTab ? null : <ul className={styles.tasks} onKeyDown={selecting ? moveSelectFocus : undefined}>{shownItems.map(item => renderListItem(item))}</ul>}
         {selecting && selectNotice && <div className={styles.orderNotice}><ProgramNoticeRow notice={{ tone: 'info', text: selectNotice }} onClose={() => setSelectNotice(null)} /></div>}
         {/* I7: under the list, held at the bottom of the screen (above the bottom tabs on a phone) while it scrolls. */}
         {!detail && !sheetOpen && orderNoticeContent}
-        {!detail && !sheetOpen && checkNoticeContent}{!detail && !sheetOpen && repeatNoticeContent}{!detail && !bottomNoticeShown && legacyRepeatContent}
+        {!detail && !sheetOpen && checkNoticeContent}{!detail && !sheetOpen && repeatNoticeContent}{!detail && !sheetOpen && sameNoticeContent}{!detail && !bottomNoticeShown && legacyRepeatContent}
         {!detail && datesNoticeContent}{!detail && carryNoticeContent}{!detail && folderTodayNoticeContent}{!detail&&locationNoticeContent}
       </div>
       </div></div>

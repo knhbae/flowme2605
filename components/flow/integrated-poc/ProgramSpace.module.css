@@ -428,7 +428,8 @@
 .space .carryMeta { margin: 0; font-size: 13px; line-height: 20px; color: var(--flowme-b-muted); }
 .space .carryMove { min-height: 44px; margin-top: 4px; padding: 0 16px; border: 0; border-radius: 10px; background: var(--flowme-b-primary); color: #ffffff; font-size: 15px; font-weight: 700; }
 .space .carryMove:disabled { opacity: 0.45; }
-.space .carryNote { font-size: 12px; line-height: 18px; color: var(--flowme-b-muted); }
+/* F8 1단계: the card shows from one late line now; its notes at 13px. */
+.space .carryNote { font-size: 13px; line-height: 18px; color: var(--flowme-b-muted); }
 .space .carryFold { min-height: 44px; padding: 0 2px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 13px; }
 /* N11b: [하나씩 정리] beside the main button, and its sheet (PROPOSAL 4-3): a W5 sheet on a phone, a panel on a PC. */
 .space .carryActions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 4px; }
@@ -673,3 +674,13 @@
 .dialog [data-task-location-menu] h3 small { font-size: 13px; font-weight: 400; }
 .dialog [data-task-location-menu] button:disabled { border-style: dashed; }
 .dialog:has([data-task-move-sheet]) { width: min(480px, calc(100vw - 24px)); }
+/* F8 1단계 (CO-3 표시): '같은 일 n줄' under the title of the row that stands for them (44 to press); its sheet lists them. */
+.space .task > .sameChip { grid-column: 2; justify-self: start; display: inline-flex; align-items: center; min-height: 44px; margin: -8px 0 0; padding: 0 8px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 13px; font-weight: 700; cursor: pointer; }
+.space .task > .sameChip > span { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 12px; background: var(--flowme-b-selected); }
+.sameSheet header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sameSheet header h2 { margin: 0; font-size: 18px; line-height: 26px; }
+.sameSheet header > button { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; color: var(--flowme-b-muted); }
+.sameSheet > p { margin: 4px 0 8px; color: var(--flowme-b-muted); font-size: 13px; line-height: 18px; }
+.sameSheet ul { list-style: none; margin: 0; padding: 0; display: grid; }
+.sameSheet li > button { display: grid; gap: 2px; width: 100%; min-height: 56px; padding: 8px 4px; border: 0; border-top: 1px solid var(--flowme-b-hair); border-radius: 0; background: transparent; color: var(--flowme-b-ink); font: inherit; text-align: left; cursor: pointer; }
+.sameSheet li small { color: var(--flowme-b-muted); font-size: 13px; line-height: 18px; }
