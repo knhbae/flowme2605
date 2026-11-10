@@ -503,7 +503,11 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       {step === 'pick' && <div className={styles.body}><ProgramPublicationPick draft={draft} originalRows={originalRows} today={today} disabled={blocked} onSelect={selectRows} /></div>}
       {step === 'refine' && <div className={styles.body}>
         <label className={styles.field}>공개 제목 · 필수<input data-publication-field="title" value={draft.title} maxLength={240} required onChange={event => edit({ title: event.target.value })} placeholder="다른 사람이 알아볼 제목" /></label>
-        <label className={styles.field}>한 줄 소개 · 선택<textarea data-publication-field="summary" value={programPublicationSummaryParts(draft.summary).body} rows={2} maxLength={29940} onChange={event => edit({ summary: composeProgramPublicationSummary(anchorName, event.target.value) })} placeholder="누구에게 어떤 도움이 되는지" /></label>
+        <label className={styles.field}>한 줄 소개 · 선택<textarea data-publication-field="summary" value={programPublicationSummaryParts(draft.summary).body} rows={2} maxLength={29940} enterKeyHint="done"
+          // Enter 우선 3 (11/10, PRD 14-4): '한 줄 소개' is one line — Enter adds no break (an IME's own Enter still commits), and a
+          // break that comes anyway (a phone keyboard, a paste) becomes a space.
+          onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing && event.keyCode !== 229) event.preventDefault(); }}
+          onChange={event => edit({ summary: composeProgramPublicationSummary(anchorName, event.target.value.replace(/[^\S\n]*\r?\n[^\S\n]*/g, ' ')) })} placeholder="누구에게 어떤 도움이 되는지" /></label>
         <section className={styles.anchorConvert} aria-labelledby="program-anchor-title" data-anchor-convert>
           <h3 id="program-anchor-title">날짜</h3>
           {showDateControls && <div className={styles.dateLine}><span>{anchorMode === 'none' ? '문서 날짜는 빼고 보여 줍니다' : dateExample?.allZero ? `고른 할 일은 모두 ‘${dateExample.text}’로 보여 줍니다` : dateExample ? `날짜는 '${dateExample.text}'처럼 바꿔서 보여 줍니다` : '기준일로 바꿀 문서 날짜가 있습니다'}</span><button type="button" className={styles.linkButton} aria-expanded={dateOptions} disabled={blocked} onClick={() => { if (!unavailable()) setDateOptions(!dateOptions); }}>바꾸기</button></div>}

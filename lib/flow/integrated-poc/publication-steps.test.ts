@@ -171,11 +171,12 @@ test('split summary native capture retains Korean metadata and a metadata-like b
     const parts = programPublicationSummaryParts(summary);
     assert.deepEqual(captureProgramPublicationStepInput(draft, [{ field: 'summary', value: parts.body }, { field: 'anchorName', value: parts.name }]), draft);
   }
+  // Enter 우선 3 (11/10): a changed '한 줄 소개' is one line (its break a space); a body that looks like metadata stays the body.
   const next = captureProgramPublicationStepInput(f.draft, [{ field: 'summary', value: '기준일: 점검일\n소개를 적는 중' }, { field: 'anchorName', value: '이사일' }]);
-  assert.equal(next.summary, '기준일: 이사일\n기준일: 점검일\n소개를 적는 중');
-  assert.equal(programPublicationStepNativeValue(next, 'summary'), '기준일: 점검일\n소개를 적는 중');
+  assert.equal(next.summary, '기준일: 이사일\n기준일: 점검일 소개를 적는 중');
+  assert.equal(programPublicationStepNativeValue(next, 'summary'), '기준일: 점검일 소개를 적는 중');
   assert.equal(programPublicationStepNativeValue(next, 'anchorName'), '이사일');
-  assert.equal(composeProgramPublicationSummary('옮기는 날', programPublicationSummaryParts(next.summary).body), '기준일: 옮기는 날\n기준일: 점검일\n소개를 적는 중');
+  assert.equal(composeProgramPublicationSummary('옮기는 날', programPublicationSummaryParts(next.summary).body), '기준일: 옮기는 날\n기준일: 점검일 소개를 적는 중');
 });
 
 test('exposure includes explicit notes and fixed recurring start/end dates', () => {

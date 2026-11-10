@@ -25,7 +25,10 @@ export function composeProgramPublicationSummary(name: string, body: string) {
 export function captureProgramPublicationStepInput(draft: ProgramPublicationDraft, values: ProgramPublicationNativeValue[]) {
   const parts = programPublicationSummaryParts(draft.summary);
   const name = values.find(value => !value.itemId && value.field === 'anchorName')?.value ?? parts.name;
-  const body = values.find(value => !value.itemId && value.field === 'summary')?.value ?? parts.body;
+  // Enter 우선 3 (11/10, PRD 14-4): '한 줄 소개' is one line — a break that came in (a phone keyboard, a paste) is a
+  // space once the field is changed; a summary nobody changed keeps its lines.
+  const typed = values.find(value => !value.itemId && value.field === 'summary')?.value;
+  const body = typed !== undefined && typed !== parts.body ? typed.replace(/[^\S\n]*\r?\n[^\S\n]*/g, ' ') : parts.body;
   const next = captureProgramPublicationInput(draft, values.filter(value => value.itemId || !['summary', 'anchorName'].includes(value.field)));
   const summary = name === parts.name && body === parts.body ? draft.summary : composeProgramPublicationSummary(name, body);
   return summary === next.summary ? next : { ...next, summary };

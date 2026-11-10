@@ -126,3 +126,29 @@ test('⚑7 inside a done task: the next open task after it (not a refused split)
   assert.equal(press(memo, '  - 메모: 우유').value, '- [ ] 장보기\n  - 메모: 우유\n  - 메모: ', 'a memo still continues');
   assert.equal(press('- [ ] 장보기\n  - 시간: 09:30', '  - 시간: 09:30', { v2: false }).value, '- [ ] 장보기\n  - 시간: 09:30\n  - ', 'without v2 as before');
 });
+
+test('Enter 우선 3 ⚑12: a numbered line\'s end opens the next number; an empty one drops its marker; inside, Shift+Enter, a date as before', () => {
+  assert.deepEqual(press('1. 첫째', '1. 첫째'), { value: '1. 첫째\n2. ', caret: '1. 첫째\n2. '.length });
+  assert.equal(press('  3. 셋째', '  3. 셋째').value, '  3. 셋째\n  4. ', 'indented, as it was written');
+  assert.equal(press('1. 첫째\n2. ', '1. 첫째\n2. ').value, '1. 첫째\n', 'an empty item: the marker goes');
+  assert.equal(press('1. 첫째 둘째', '1. 첫째').value, '1. 첫째\n 둘째', 'inside: a plain break, as before');
+  assert.equal(press('1. 첫째', '1. 첫째', { shift: true }).value, '1. 첫째\n', 'Shift+Enter: a plain break');
+  assert.equal(press('2026. 11. 10. 회의', '2026. 11. 10. 회의').value, '2026. 11. 10. 회의\n', 'a written date is not a list');
+  assert.deepEqual(press('1. 첫째', '1. 첫째', { composing: true }), { value: '1. 첫째', caret: '1. 첫째'.length });
+});
+
+test('Enter 우선 3 ⚑9: Shift+Enter on a memo continues it, an empty memo line too (Enter leaves it)', () => {
+  const memo = '- [ ] 장보기\n  - 메모: 우유\n  - 메모: ';
+  assert.equal(press(memo, memo, { shift: true }).value, memo + '\n  - 메모: ');
+  assert.equal(press(memo, memo).value, '- [ ] 장보기\n  - 메모: 우유\n- [ ] ');
+});
+
+test('Enter 우선 3: \'한 줄 소개\' takes no break; Flow 찾기\'s search Enter closes the keyboard', () => {
+  const read = (name: string) => readFileSync(new URL(`../../../components/flow/integrated-poc/${name}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  const publisher = read('ProgramPublisher.tsx'), discovery = read('ProgramDiscovery.tsx');
+  assert(publisher.includes("onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing && event.keyCode !== 229) event.preventDefault(); }}"));
+  assert(publisher.includes("composeProgramPublicationSummary(anchorName, event.target.value.replace(/[^\\S\\n]*\\r?\\n[^\\S\\n]*/g, ' '))"));
+  const steps = readFileSync(new URL('./publication-steps.ts', import.meta.url), 'utf8');
+  assert(steps.includes("const body = typed !== undefined && typed !== parts.body ? typed.replace("), 'saving reads the field: a changed summary is one line there too');
+  assert(discovery.includes('enterKeyHint="search"') && discovery.includes("if (event.key === 'Enter' && !composing.current && !event.nativeEvent.isComposing && event.keyCode !== 229) { event.preventDefault(); event.currentTarget.blur(); }"));
+});
