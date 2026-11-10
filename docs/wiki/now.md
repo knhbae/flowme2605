@@ -4,7 +4,7 @@
 
 ## 한눈에
 
-- 운영 Alpha: **F6-B2 시각 B 2단계** `1ba2ac26` / `udT8t_CBNHw_jBpkoyWZy` (11/10 01:4x 가벼운 반영 30회차, DB 변경 0): 오늘 하루 남색 큰 날짜·둥근 체크·Flow 실/청록·나 A+ 구조·폴더 흰 카드·날짜 서울 기준. 그 아래 F4-b·F6-B1·F5-b(`89b3336b`). 되돌리기 = 직전 운영 `89b3336b` / `zeFJxAbhqKHg6wt2ClYpt`(D:/flowme-work/etc/int4-qa-20261109/product — 디스크 정리 보존 필수).
+- 운영 Alpha: **int5** `3ef6839a` / `Ik4Y60q1E26VEH3nxcZRS` (11/10 16:37 가벼운 반영 32회차, DB 변경 0): 시트 추가 빈 머리 정리·하위 할 일 날짜 줄(구획≠부모만)·메모 Enter 이어쓰기+팁·B3 레일·반복 아이콘, 그 아래 F6-B2(`1ba2ac26`). 되돌리기 = 직전 운영 `1ba2ac26` / `udT8t_CBNHw_jBpkoyWZy`(D:/flowme-work/etc/b2-qa-20261110/product — 디스크 정리 보존 필수). 31회차(15:58)는 PC 부하로 HOLD, 약 3분 502 뒤 supervisor 자체 복귀.
 - 오늘 반영 순서: 첫 화면 공식 카드 `3f129de7`(03:35) → 번들 4 `edc588c2`(13:1x) → 입력 v2 1단계 `964d1070`(14:4x) → 번들 5 시각 A `f5cd4eb4`(15:2x) → P1+P3 `dbc3e0f0`(20:0x). 모두 독립 QA_GO 뒤 반영.
 - **R6 시험 계정 삭제·복원 연습 완료(11/7 18:47~19:05, 실행서 v6.8).** 지우기(DeleteCommit)→지운 뒤 확인·전체 8표 비교 PASS→되살리기(RestoreCommit)→원래와 같은지 확인 PASS→사전 사본 폐기·새 연결 10회 확인 PASS→정지 원값 복원. 총괄 확인: 정지 해제, 세션 1 유지, 대상 행 1·5·1·1 그대로, 시험 계정 다시 열면 저장본 그대로.
 - R5 정기 백업: 11/7 18:00 첫 예약 실행 PASS(40초, 사본 26MB). 같은 날(KST) 수동 첫 사본은 하루 1개 규칙으로 교체됨.
@@ -166,4 +166,5 @@
 - 11/10 00:2x 28회차 HOLD→자동 복구(int3, health 200, DB 0): 실행기 StopKnown이 끝나는 중인 wrapper를 TerminateProcess → ACCESS_DENIED 경쟁(지난 24회는 wrapper가 먼저 끝남). 근거 inbox/int4-hold-20261110-0028.md. 실행기 수정은 Codex.
 - 11/10 00:4x 29회차 DEPLOYED(release-r2 8a47b032): 89b3336b / zeFJxAbhqKHg6wt2ClYpt, QA_GO inbox/int4-qa-20261110-0001.md, 10경로 기대값, DB 0. 남은 P3: 관리·초안 날짜 UTC 'YYYY-MM-DD', 안내의 옛 메뉴 이름 '선택해서 공개', 1280 현재 탭 hover. 다음 배포 후보: F6-B2(+FIX5)·B3(Codex)·F7(목업 답 대기).
 - 11/10 01:4x 30회차 DEPLOYED: 1ba2ac26 / udT8t_CBNHw_jBpkoyWZy, QA_GO inbox/b2-qa-20261110-0135.md, 10경로 기대값, DB 0. 남은 P3: 가져오기 시트·공개 창 반복 칩의 글자 ↻(ProgramDiscovery 512·525, Publisher 275-276·533). 다음: B3 쓰기 레일(Codex), F7(★목업 질문 2), 실행기 경쟁 수정(Codex).
+- 11/10 16:37 32회차 DEPLOYED: int5 3ef6839a / Ik4Y60q1E26VEH3nxcZRS, QA_GO inbox/int5-qa-20261110-1543.md, release-r2(da294e93), 10경로 기대값, DB 0. 31회차 HOLD 진단 inbox/int5-hold-20261110-1625.md(부하, 제품 무관, 실행기 복구 예외는 v4에서). 남은 P2-INT5-1(빈 머리 정리 뒤 ↶ 줄 합쳐짐, 개발). 다음: Enter 14절(enter1 85e67db1), 옮기기(Codex), 저장 1단계 A(Codex), F7 UI, F8 성능.
 - 11/10 11:2x F8 목업(inbox/ux-f8-20261110-1105.md) 사용자 '권장대로 일단': 밀린 일 띠 요약 한 줄, 같은 일 행 체크 = 모두 끝냄, [오늘 기록]은 3단계. F8 1단계 개발은 메모 팁 뒤(outbox/f8-s1-dev-20261110). 사용자 '폴더 줄 Enter가 그냥 줄바꿈' → Codex Enter 사실표 → 기획 Enter 규칙.
