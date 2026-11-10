@@ -79,7 +79,7 @@ test('⚑4 a folder line: Enter inside its name is Enter at its end (the name st
   const raw = '- 집안일\n  - [ ] 빨래', options = { folderLine: '- 집안일' };
   const middle = press(raw, '- 집', options), end = press(raw, '- 집안일', options);
   assert.deepEqual(middle, end);
-  assert.equal(middle.value, '- 집안일\n  \n  - [ ] 빨래');
+  assert.equal(middle.value, '- 집안일\n  - [ ] \n  - [ ] 빨래', 'its end opens the first task under it (enter1 follow-up)');
 });
 
 test('⚑8 a memo: Enter inside it continues the memo below; ⚑11 a time or date property: as at its end', () => {
@@ -100,4 +100,29 @@ test('not cut, and only these: a task title still splits; the line start still o
   const memo = '- [ ] 장보기\n  - 메모: 우유';
   assert.equal(press(memo, '  - 메', { shift: true }).value, '- [ ] 장보기\n  - 메\n모: 우유', 'Shift+Enter keeps the browser break (unchanged)');
   assert.deepEqual(press(memo, '  - 메', { composing: true }), { value: memo, caret: memo.indexOf('  - 메') + '  - 메'.length }, 'an Enter of the composition changes nothing');
+});
+
+test('folder line end: the first task right under it; an empty one already there takes the caret; Shift+Enter gives the indented line', () => {
+  const options = { folderLine: '- 집안일' };
+  const plain = '- 집안일\n  - [ ] 빨래';
+  assert.deepEqual(press(plain, '- 집안일', options), { value: '- 집안일\n  - [ ] \n  - [ ] 빨래', caret: '- 집안일\n  - [ ] '.length });
+  const ready = '- 집안일\n  - [ ] \n  - [ ] 빨래';
+  assert.deepEqual(press(ready, '- 집안일', options), { value: ready, caret: '- 집안일\n  - [ ] '.length }, 'nothing added');
+  assert.deepEqual(press(plain, '- 집안일', { ...options, shift: true }), { value: '- 집안일\n  \n  - [ ] 빨래', caret: '- 집안일\n  '.length });
+  assert.equal(press(plain, '- 집안일', { ...options, v2: false }).value, '- 집안일\n  - [ ] \n  - [ ] 빨래', 'without v2 as before');
+});
+
+test('⚑7 inside a done task: the next open task after it (not a refused split); ⚑10 a date or time property\'s end: the owner\'s next task', () => {
+  const done = '- [x] 합성 끝낸 일\n- [ ] 다음';
+  assert.deepEqual(press(done, '- [x] 합성'), press(done, '- [x] 합성 끝낸 일'));
+  assert.equal(press(done, '- [x] 합성').value, '- [x] 합성 끝낸 일\n- [ ] \n- [ ] 다음');
+  for (const property of ['  - 시간: 09:30', '  - 날짜: 2026-11-12']) {
+    const raw = `- [ ] 장보기\n${property}\n  - [ ] 우유\n- [ ] 다음`;
+    const atEnd = press(raw, property), inside = press(raw, property.slice(0, 6));
+    assert.equal(atEnd.value, `- [ ] 장보기\n${property}\n  - [ ] 우유\n- [ ] \n- [ ] 다음`, `${property}: after the owner's block`);
+    assert.deepEqual(inside, atEnd, `${property}: inside it as at its end`);
+  }
+  const memo = '- [ ] 장보기\n  - 메모: 우유';
+  assert.equal(press(memo, '  - 메모: 우유').value, '- [ ] 장보기\n  - 메모: 우유\n  - 메모: ', 'a memo still continues');
+  assert.equal(press('- [ ] 장보기\n  - 시간: 09:30', '  - 시간: 09:30', { v2: false }).value, '- [ ] 장보기\n  - 시간: 09:30\n  - ', 'without v2 as before');
 });

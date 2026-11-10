@@ -389,6 +389,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const folderNoticeRestarting = useRef<FolderNotice | null>(null);
   const folderNoticeKeys = useRef(0);
   const folderRawUndoRef = useRef(false);
+  // enter1 (11/10): the text as the folder step shown in the notice left it; ↶ takes later text back before that step.
+  const folderStepRawRef = useRef<string | null>(null);
   // Sheet '추가' (11/10): the line start the line menu just wrote, until it is typed into or taken away.
   const scaffoldRef = useRef<{ lineId: string; text: string } | null>(null);
   // memo-enter (11/10): the tip after a plain Enter continued a memo (its key; null when none shows).
@@ -1032,6 +1034,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // N7 (review n6-fix): a name typed back, linked again, has no folder step to undo; ↶ is the text's own.
     if (!controller || id === undefined || operation?.id === id && !operation.undoable
       || composingRef.current || inputLockedRef.current || propsRef.current.readOnly) return false;
+    // enter1 (11/10, 사용자 '권장대로'): text written after the folder step (the first task a folder line's Enter opened)
+    // goes back first, by the text's own history; the folder step is undone once the text is as that step left it.
+    if (textAfterFolderStep()) return false;
     const previous = controller.getState();
     const result = controller.undoFolderOperation(id);
     if (!result.ok) { showFolderNotice(result.reason, 'warn'); return true; }
@@ -1069,12 +1074,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       if (folderNoticeRef.current?.operationId !== operation.id) { showFolderNotice('이 폴더 동작의 알림이 끝났습니다. 현재 입력은 유지했습니다.', 'warn'); return; }
       undoFolderMove();
     }) };
-    folderRawUndoRef.current = undoable;
+    folderRawUndoRef.current = undoable; folderStepRawRef.current = draftRef.current?.getState().raw ?? null;
     const next: FolderNotice = { text: operation.kind === 'scopes' ? operation.notice : text + (operation.notice ? ' · ' + operation.notice : ''), tone, actions: undoable ? [...actions, undo] : actions, lineId: tone === 'choose' ? lineId : undefined,
       shownAt: performance.now(), leftBlockAt: null, operationId: operation.id, key: ++folderNoticeKeys.current };
     folderNoticeRef.current = next; setFolderNotice(next);
   }
-  function explainRawFolderUndo() { if (folderRawUndoRef.current) { folderRawUndoRef.current = false; setMessage('글만 돌아갑니다'); } }
+  /** enter1: has the text changed since the folder step in the notice (so ↶ is the text's own first)? */
+  function textAfterFolderStep() { const raw = draftRef.current?.getState().raw; return folderStepRawRef.current !== null && raw !== undefined && raw !== folderStepRawRef.current; }
+  function explainRawFolderUndo() { if (folderRawUndoRef.current && !textAfterFolderStep()) { folderRawUndoRef.current = false; setMessage('글만 돌아갑니다'); } }
   /** The notice after Enter moved a linked folder line or renamed its folder, with its buttons. */
   function showFolderMove(before: TextWorkspaceState, after: TextWorkspaceState, lineId: string, fromId: string, oldTitle: string) {
     const notice = programFolderMoveNotice(before, after, propsRef.current.docId, lineId, fromId);

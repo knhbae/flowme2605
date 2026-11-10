@@ -151,10 +151,10 @@ test('S4 v16 phone path: the editor marks a held line named only when an edit ch
 // undid the link: '/식단' became plain '식단', unlinked. The editor's own ↶ step (undoFolderMove) now leaves such a link
 // to the text's undo, and the draft refuses to undo it for anyone else.
 const undoMove = find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'undoFolderMove').getText(tree);
-function undoFor(f: ReturnType<typeof fixture>, operationId: number | undefined) {
+function undoFor(f: ReturnType<typeof fixture>, operationId: number | undefined, textAfter = false) {
   const warned: string[] = [];
   const undo = evaluate<() => boolean>(undoMove, { draftRef: f.draftRef, folderNoticeRef: { current: { operationId } }, composingRef: f.composingRef,
-    inputLockedRef: f.inputLockedRef, propsRef: f.propsRef, shown: () => true, folderRawUndoRef: { current: true },
+    inputLockedRef: f.inputLockedRef, propsRef: f.propsRef, shown: () => true, folderRawUndoRef: { current: true }, textAfterFolderStep: () => textAfter,
     showFolderNotice: (text: string) => warned.push(text), scheduleSave: () => {} }, 'undoFolderMove');
   return { undo, warned };
 }
@@ -180,4 +180,17 @@ test('N7 review n6-fix: a new folder\'s own ↶ (its creation) still undoes', ()
   const { undo, warned } = undoFor(f, operation.id);
   assert.equal(undo(), true); assert.deepEqual(warned, ['폴더 동작을 되돌렸습니다'], 'its own notice, no warning');
   assert(!f.controller.getState().working.folders.some(folder => folder.title === '식단'));
+});
+// enter1 (11/10, 사용자 '권장대로'): the folder line's Enter now opens its first task; text written after the step goes
+// back first (the text's own ↶), and the step is undone once the text is as it left it.
+test('enter1: with text written after a new folder (its first task), ↶ is the text\'s first; the folder stays', () => {
+  const f = fixture(); f.enter();
+  const operation = f.controller.folderOperation()!, before = f.controller.getState();
+  const { undo, warned } = undoFor(f, operation.id, true);
+  assert.equal(undo(), false, 'left to the text undo');
+  assert.equal(f.controller.getState(), before); assert.deepEqual(warned, []);
+  assert(f.controller.getState().working.folders.some(folder => folder.title === '식단'), 'the folder stays');
+  const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
+  assert(editor.includes('folderRawUndoRef.current = undoable; folderStepRawRef.current = draftRef.current?.getState().raw ?? null;'));
+  assert(editor.includes('function explainRawFolderUndo() { if (folderRawUndoRef.current && !textAfterFolderStep()) {'));
 });

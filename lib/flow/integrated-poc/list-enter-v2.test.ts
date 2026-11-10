@@ -79,7 +79,7 @@ test('the fixtures carry the model row kinds the Enter rules read', () => {
   assert.equal(rows('- 집안일\n  - [ ] 빨래', '- 집안일')[0].kind, 'scope');
 });
 
-test('date header and folder lines end with a plain line under v2, an automatic task without it', () => {
+test('date header lines end with a plain line under v2; folder lines open their first task (enter1, 11/10); an automatic task without v2', () => {
   const date = '[2026-10-30]\n- [ ] 장보기';
   const [dateOff, dateOn] = both(date, 0);
   assert.equal(dateOff.value, '[2026-10-30]\n- [ ] \n- [ ] 장보기');
@@ -89,8 +89,9 @@ test('date header and folder lines end with a plain line under v2, an automatic 
   const folder = '- 집안일\n  - [ ] 빨래';
   const [folderOff, folderOn] = both(folder, 0, { folderLine: '- 집안일' });
   assert.equal(folderOff.value, '- 집안일\n  - [ ] \n  - [ ] 빨래');
-  assert.equal(folderOn.value, '- 집안일\n  \n  - [ ] 빨래');
-  assert.equal(folderOn.caret, end(folder, 0) + 3);
+  // enter1 (11/10, 사용자 '권장대로'): the folder line's end opens its first task right under it, as without v2.
+  assert.equal(folderOn.value, '- 집안일\n  - [ ] \n  - [ ] 빨래');
+  assert.equal(folderOn.caret, end(folder, 0) + 9);
 });
 
 test("Shift+Enter at a titled task end opens that task's memo line after its properties under v2", () => {
