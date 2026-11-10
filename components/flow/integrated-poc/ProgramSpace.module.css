@@ -669,3 +669,7 @@
 .space .quickDisclosure[open] > summary::before { transform: rotate(90deg); }
 /* F6-B2 FIX 2: under the 하루 view's navy head the list needs no line of its own (the head already divides). */
 .space .executionView[data-note-today="true"] .tasks { border-top: 0; }
+.locationHighlight { background: #eef5e8 !important; border-radius: 5px; transition: background .15s ease; }
+.dialog [data-task-location-menu] h3 small { font-size: 13px; font-weight: 400; }
+.dialog [data-task-location-menu] button:disabled { border-style: dashed; }
+.dialog:has([data-task-move-sheet]) { width: min(480px, calc(100vw - 24px)); }

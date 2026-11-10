@@ -5,6 +5,8 @@ import { remoteTextSparesDocuments } from '@/lib/flow/integrated-poc/remote-text
 import {createWritingCompute,type WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { ProgramTaskMoveContext } from './task-move-context';
+import { taskLocationSaveGate } from '@/lib/flow/integrated-poc/task-location-save-gate';
 import { restoreProgramDialogFocus, restoreProgramWritingReturn, watchProgramReturnIntent, type ProgramWritingReturn } from '@/lib/flow/integrated-poc/dialog-return-focus';
 import { programFailure } from '@/lib/flow/integrated-poc/contract';
 import type { AlphaAuthConfig } from '@/lib/flow/integrated-poc/alpha-auth/config';
@@ -1939,6 +1941,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       <div hidden={destination.view !== 'space'}>
         {collectionsMode && <p className={styles.notice}>모음 연결은 이 브라우저에만 저장됩니다. 문서·할 일은 기존 서버에 저장되며, 기존 폴더는 바뀌지 않습니다.</p>}
         {collectionsMessage && <p className={styles.message} role="status">{collectionsMessage}</p>}
+        <ProgramTaskMoveContext.Provider value={{read:()=>taskLocationSaveGate(controller.current?.snapshot(),!!needsInputProtection||storageError||externalRef.current),confirm:()=>{
+          const current=controller.current?.snapshot();if(current?.pending)void resolvePendingResult();else if(externalRef.current||current?.status==='conflict'||current?.draft)void openLatest();else void controller.current?.refresh();
+        }}}>
         <ProgramServerStatusContext.Provider value={serverStatusView}>
         <ProgramSpace key={`space:${session.userId}:${presentation}:${collectionsMode ? 'collections' : 'folders'}`} data={data} today={programLocalDate()} mutate={mutate}
         hostMainTabs onRegisterMainTabs={port => { mainTabs.current = port; }} onMainTabChange={setMainTab} onOpenDocumentChange={setShownDocumentId}
@@ -1962,6 +1967,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
             ...(importArrival.calendar ? { calendar: importArrival.calendar } : {}),
             onCancel: importArrival.revision !== null && snapshot?.account?.revision === importArrival.revision && !!snapshot?.canUndo && !external ? () => { void undoImportArrival(); } : undefined } : undefined}
         onStartReview={startReview} onRegisterReviewSpace={port => { reviewSpace.current = port; }} /></ProgramServerStatusContext.Provider>
+        </ProgramTaskMoveContext.Provider>
         {/* Over the top of the space, apart from the check notices and the tabs below; pressing it leaves the caret where it is. */}
         {tried?.epoch === sessionEpoch && tried.queue.shown && <div key={tried.queue.shown.flowId} className={styles.triedPrompt} role="status" data-tried-prompt={tried.queue.shown.flowId}>
           <p>{PROGRAM_TRIED_ASK}</p>

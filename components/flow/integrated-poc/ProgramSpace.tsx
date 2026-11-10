@@ -2,7 +2,7 @@
 
 import type {OwnedWritingAck} from '@/lib/flow/integrated-poc/writing-ack';
 import type {WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { programClone, programFailure, programId, programResult, type ProgramData, type ProgramPrivateSpace, type ProgramTransition, type ProgramWritingPosition } from '@/lib/flow/integrated-poc/contract';
 import { programDate } from '@/lib/flow/integrated-poc/program-data';
 import { programFolderCopyAccessProblem } from '@/lib/flow/integrated-poc/folder-copy';
@@ -20,7 +20,7 @@ import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFa
 import { ProgramMonthGrid } from './ProgramMonthGrid';
 import { ProgramFlowTodayBand, type ProgramFlowBandRow } from './ProgramFlowTodayBand';
 import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
-import { moveProgramTaskDates, programDeferChips, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
+import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
 import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate, programDaysBetween } from '@/lib/flow/integrated-poc/date-label';
@@ -88,7 +88,13 @@ import { addDocumentCollection, collectionDocumentIds, setDocumentCollectionLink
 import { createProgramWritingEntry } from '@/lib/flow/integrated-poc/writing-entry';
 import { createPendingProgramSourceNavigation } from '@/lib/flow/integrated-poc/pending-source-navigation';
 import { programCheckpointForWritingTarget } from '@/lib/flow/integrated-poc/writing-navigation';
-import { canClassifyProgramTask, setProgramTaskClassification } from '@/lib/flow/integrated-poc/task-classification';
+import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classification';
+import { moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
+import type { TaskLocationTarget } from '@/lib/flow/integrated-poc/task-location-move';
+import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
+import { programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
+import { ProgramTaskMoveSheet } from './ProgramTaskMoveSheet';
+import { ProgramTaskMoveContext } from './task-move-context';
 import { programCopyHeader } from '@/lib/flow/integrated-poc/program-copy-header';
 import { programImportTargets } from '@/lib/flow/integrated-poc/program-import-links';
 
@@ -277,7 +283,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const mutate: ProgramMutate = (label, build, options) => selectingNow.current ? Promise.resolve({ ok: false, reason: 'busy' })
     : countedMutate(label, build, options).then(result => { if (result.ok && result.changed !== false) setDatesNotice(null); return result; })
       // N11a: another save ends the 밀린 일 notice too (its 되돌리기 would be refused by then anyway); F4-b's as well.
-      .then(result => { if (result.ok && result.changed !== false) { setCarryNotice(null); setFolderTodayNotice(null); } return result; });
+      .then(result => { if (result.ok && result.changed !== false) { setCarryNotice(null); setFolderTodayNotice(null); setLocationNotice(null); } return result; });
   const countedHistory = async (run: () => Promise<void>) => { setSavesPending(count => count + 1); try { await run(); } finally { setSavesPending(count => count - 1); } };
   const onUndo = () => selectingNow.current ? Promise.resolve() : countedHistory(props.onUndo), onRedo = () => selectingNow.current ? Promise.resolve() : countedHistory(props.onRedo);
   const writingAccess=useMemo(()=>createProgramReferenceExecutionAccess(space,actorId),[space,actorId]);
@@ -369,6 +375,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [writingNotice, setWritingNotice] = useState<{ actorId: string; documentId: string; text: string } | null>(null);
   const [viewChangeNotice, setViewChangeNotice] = useState<{ actorId: string; reason: 'composition' | 'recurrence' | 'saving' | 'save-failed' | 'pending' } | null>(null);
   const [taskNotice, setTaskNotice] = useState<{ taskId: string; title: string; text: string } | null>(null);
+  const taskMoveGate=useContext(ProgramTaskMoveContext);
+  const [detailFolderMove,setDetailFolderMove]=useState(false),[locationPending,setLocationPending]=useState(false);
+  type LocationNotice={actorId:string;documentId:string;taskId:string;before:TextWorkspaceState;after:TextWorkspaceState;date:string|null;folderId:string;text:string;kind:TaskLocationTarget['kind']};
+  const [locationNotice,setLocationNotice]=useState<LocationNotice|null>(null);
+  const locationBusy=useRef(false);
   // I7: the notice after '시간순으로', holding the arrays it removed for its 되돌리기, or why that was refused.
   type OrderNotice = { actorId: string; removed: ProgramDayOrder; hidden: number; refused?: string; shownAt: number };
   const [orderNotice, setOrderNotice] = useState<OrderNotice | null>(null);
@@ -967,6 +978,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (programDatesNoticeAfterView(kept, kept?.undo, { period, date }).release) datesNoticeKept.current = null;
   }, [actorId, period, date, folderId, query]);
   useEffect(() => { setCarryNotice(null); }, [actorId, period, date, folderId, query]);
+  useEffect(()=>{setLocationNotice(null);},[actorId,period,date,folderId,query]);
+  useEffect(()=>{setLocationNotice(current=>current&&!programSame(current.after,space.text)?null:current);},[space.text]);
   useEffect(() => { setCheckNotice(null); }, [actorId, period, date, folderId, query]);
   useEffect(() => {
     if (!selecting) return;
@@ -1023,11 +1036,6 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const headingKeys = new Map<string, string[]>();
   if (selecting) { let heading = ''; for (const item of executionList) { if (item.kind === 'heading') heading = item.key; else if (item.kind === 'row' && heading) headingKeys.set(heading, [...(headingKeys.get(heading) ?? []), item.entry.key]); } }
   const detailTask = detail?.kind === 'task' ? allTasks.find(task => task.id === detail.id) : null;
-  // Core3 P3 (UX F2): a list row's ⋯ starts with 미루기 — the row as 고르기 would pick it (not a repeat's round, not
-  // finished, not locked), moved by C6b's one save with its notice and 되돌리기.
-  const deferRow = detailTask && period !== 'documents' ? executionRows.find(row => row.kind === 'text-task' && row.task.id === detailTask.id) : undefined;
-  const deferChips = deferRow?.kind === 'text-task' && !programSelectBlock(space, deferRow, (taskProgress(deferRow.task.id).current ?? (deferRow.task.done ? 100 : 0)) === 100)
-    ? programDeferChips(today, deferRow.task.date) : null;
   const deferPicker = useRef<HTMLInputElement>(null);
   const detailLinkedMemos = detailTask ? space.text.bindings.flatMap(binding => {
     if (binding.kind !== 'task' || binding.taskId !== detailTask.id) return [];
@@ -1396,6 +1404,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   function editorDirtyChanged(id: string, ownerId: string, value: boolean) {
     if (dataRef.current.activeActorId !== ownerId) return;
+    if(value)setLocationNotice(null);
     const wasDirty = !!dirty.current[id]; dirty.current[id] = value;
     if (value) setViewChangeNotice(previous => {
       if (!previous || previous.actorId !== ownerId) return previous;
@@ -1761,6 +1770,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   function cancelHold() { if (hold.current) clearTimeout(hold.current); hold.current = null; holdPoint.current = null; }
   function close() {
+    setDetailFolderMove(false);
     executionDraftOwner.current = { dialog: executionDraftOwner.current.dialog + 1, input: 0, taskId: null };
     dialog.current?.close(); detailExpected.current = null; clearScheduleAcknowledgment(); setDetail(null); setMessage(''); setDirectProgress(false);
     // A scheduled row can leave this period after applying its date. Return to
@@ -1769,6 +1779,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       focusViewControl();
   }
   function openDetail(next: Detail) {
+    setDetailFolderMove(false);
     setTaskNotice(null); setFolderDeleteAsk(null);
     previousFocus.current = document.activeElement as HTMLElement; detailExpected.current = space;
     const task = next?.kind === 'task' ? allTasks.find(task => task.id === next.id) : null;
@@ -2140,23 +2151,6 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       else if (result.reason !== 'busy') setSelectNotice(programErrorMessage(result.reason));
     } finally { datesBusy.current = false; setDatesPending(false); }
   }
-  /** Core3 P3: 미루기 from a row's ⋯ — the row's task to one date in C6b's one save (as 고르기's sheet moves its picks),
-   *  from the dates it was shown with. The ⋯ closes; the notice under the list says where it went, with 되돌리기. */
-  async function deferTask(task: { id: string; date: string | null; time?: string | null }, target: string) {
-    if (datesBusy.current || target === task.date) return;
-    const move: ProgramTaskDateMove = { taskId: task.id, expected: { date: task.date, time: task.time ?? '', state: programTaskDateState(space, task.id) ?? undefined }, date: target };
-    const requestId = programId('dates');
-    let undo: ProgramTaskDateMove[] = [];
-    close();
-    datesBusy.current = true; setDatesPending(true);
-    try {
-      const result = await countedMutate('미루기', current => { const next = moveProgramTaskDates(current, { actorId, requestId, moves: [move] }); if (next.ok) undo = programTaskDateUndo(current.spaces[actorId], next.data.spaces[actorId], [move]); return next; },
-        { history: true, awaitAutomaticRead: true, ...(programTaskDateMovesSocial(space, [move]) ? { alphaSocial: { type: 'private-task-dates' as const, moves: [move] } } : {}) });
-      if (result.ok) { setTaskNotice(null); setOrderNotice(null); setDatesNotice({ actorId, count: 1, date: target, undo, taskIds: undo.map(entry => entry.taskId), shownAt: Date.now() }); }
-      else if (result.reason === 'conflict') setMessage('그사이 바뀐 할 일이라 옮기지 않았습니다. 다시 확인해 주세요.');
-      else if (result.reason !== 'busy') setMessage(programErrorMessage(result.reason));
-    } finally { datesBusy.current = false; setDatesPending(false); }
-  }
   /** C6b 2-6: 되돌리기, one save putting the old dates back; a task changed since moves nothing, said in the notice. */
   async function restoreSelectDates(notice: DatesNotice) {
     if (datesBusy.current) return;
@@ -2354,18 +2348,61 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (direction > 0 && index < bucket.length - 1) void moveBefore(key, bucket[index + 2]?.key ?? null);
   }
   const moveStep = (task: TextTask, direction: -1 | 1) => moveExecutionStep(programTextExecutionKey(task), direction);
+  function locationAvailability(){return {...(taskMoveGate?.read()??{blocked:false,checking:false}),confirm:taskMoveGate?.confirm};}
+  async function moveTaskHere(taskId:string,target:TaskLocationTarget,expectedOverride?:ProgramPrivateSpace){
+    if(locationBusy.current)return false;
+    if(locationAvailability().blocked){setMessage('저장을 확인한 뒤 옮겨 주세요.');return false;}
+    const owner=dataRef.current.spaces[actorId],expected=expectedOverride??detailExpected.current??owner;
+    const task=M.tasks(expected.text).find(item=>item.id===taskId),policy=readTaskLocationPolicy(expected,taskId);
+    if(!task||policy.kind==='blocked'||!policy.documentId){setMessage(policy.message);return false;}
+    if(policy.kind==='date-only'){
+      if(target.kind!=='date'){setMessage(policy.message);return false;}
+      const result=await run('실행 날짜·시간 변경',current=>updateProgramTask(current,{...base(current),taskId,patch:{date:target.date,...(target.time!==undefined?{time:target.time}:{})}}),true,{taskId,date:target.date,...(target.time!==undefined?{time:target.time}:{})});
+      if(result.ok)setMessage(policy.message);
+      return result.ok;
+    }
+    locationBusy.current=true;setLocationPending(true);setLocationNotice(null);
+    const dialogOwner=executionDraftOwner.current.dialog,view=presentation.current;
+    try{
+      let committed:TextWorkspaceState|null=null,beforeCommit:TextWorkspaceState|null=null;
+      const result=await run('할 일 옮기기',current=>{const next=moveProgramTaskLocation(current,{actorId,requestId:programId('request'),expectedSpace:expected,taskId,target});if(next.ok){beforeCommit=current.spaces[actorId].text;committed=next.data.spaces[actorId].text;}return next;},true);
+      if(!result.ok||!committed)return false;
+      const after=committed as TextWorkspaceState,changed=M.tasks(after).find(item=>item.id===taskId);
+      if(!changed)return false;
+      const currentView=presentation.current;
+      if(dialogOwner===executionDraftOwner.current.dialog&&view.period===currentView.period&&view.date===currentView.date&&view.folderId===currentView.folderId&&view.query===currentView.query){
+        if(detail)close();setTaskNotice(null);setOrderNotice(null);setDatesNotice(null);
+        setLocationNotice({actorId,documentId:task.docId,taskId,before:beforeCommit!,after,date:changed.date,folderId:changed.scopeId,kind:target.kind,
+          text:target.kind==='date'?`${changed.date?programCalendarDate(changed.date,today,false):'날짜 미정'}로 옮겼습니다`:`/ ${programFolderPath(after,changed.scopeId)}로 옮겼습니다`});
+        requestAnimationFrame(()=>highlightTaskLocation(taskId));
+      }
+      return true;
+    }finally{locationBusy.current=false;setLocationPending(false);}
+  }
+  function highlightTaskLocation(taskId:string){
+    const row=Array.from(root.current?.querySelectorAll<HTMLElement>('[data-task-id]')??[]).find(node=>node.dataset.taskId===taskId);
+    if(row){row.classList.add(styles.locationHighlight);window.setTimeout(()=>row.classList.remove(styles.locationHighlight),1200);}
+  }
+  async function undoTaskLocation(notice:LocationNotice){
+    if(Object.values(dirty.current).some(Boolean)){setMessage('새 입력이 있어 되돌리지 않았습니다. 현재 내용은 유지했습니다.');return;}
+    if(locationBusy.current||locationAvailability().blocked){setMessage('저장을 확인한 뒤 되돌려 주세요.');return;}
+    locationBusy.current=true;setLocationPending(true);
+    try{
+      const result=await run('할 일 옮기기 되돌리기',current=>undoProgramTaskLocation(current,{actorId,documentId:notice.documentId,after:notice.after,before:notice.before}));
+      if(result.ok)setLocationNotice(null);
+    }finally{locationBusy.current=false;setLocationPending(false);}
+  }
   async function dateMove(taskId: string, nextDate: string | null) {
     const requested = { ...executionDraftOwner.current };
-    const result = await run('실행 날짜 변경', current => updateProgramTask(current, { ...base(current), taskId, patch: { date: nextDate } }), true, { taskId, date: nextDate });
+    const ok = await moveTaskHere(taskId,{kind:'date',date:nextDate});
     const current = executionDraftOwner.current;
     // A saved shortcut belongs to its original dialog and input generation.
     // It must not replace newer input or a task reopened while awaiting storage.
-    if (result.ok && current.taskId === taskId && current.dialog === requested.dialog && current.input === requested.input) setExecutionDateDraft(nextDate ?? '');
+    if (ok && current.taskId === taskId && current.dialog === requested.dialog && current.input === requested.input) setExecutionDateDraft(nextDate ?? '');
   }
   async function applySchedule(taskId: string) {
     if (executionTimeDraft && !/^([01]\d|2[0-3]):[0-5]\d$/.test(executionTimeDraft)) { setMessage('시간을 시:분 형식으로 입력해 주세요.'); return; }
-    await run('실행 날짜·시간 변경', current => updateProgramTask(current, { ...base(current), taskId, patch: { date: executionDateDraft || null, time: executionTimeDraft } }),
-      true, { taskId, date: executionDateDraft || null, time: executionTimeDraft });
+    await moveTaskHere(taskId,{kind:'date',date:executionDateDraft||null,time:executionTimeDraft});
   }
   async function findChangedTask() {
     const target = taskNotice;
@@ -2718,7 +2755,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       actions: folderTodayNotice.undo && !folderTodayPending ? [{ label: '되돌리기', run: () => void undoFolderToday(folderTodayNotice) }] : [] }}
       onClose={() => setFolderTodayNotice(null)} />
   </div>;
-  const bottomNoticeShown = !!(!sheetOpen && (orderNoticeContent || checkNoticeContent || repeatNoticeContent) || datesNoticeContent || carryNoticeContent || folderTodayNoticeContent || selecting && selectNotice);
+  const locationLeft=!!locationNotice&&(period==='documents'?!!recentViewRef.current(locationNotice.documentId)?.hidden.has(locationNotice.taskId):!executionRows.some(row=>row.kind==='text-task'&&row.task.id===locationNotice.taskId));
+  const locationNoticeContent=locationNotice?.actorId===actorId&&<div className={styles.orderNotice} data-task-location-notice><ProgramNoticeRow notice={{tone:'choose',text:locationNotice.text,actions:locationPending?[]:[{label:'되돌리기',run:()=>void undoTaskLocation(locationNotice)},...(locationLeft?[{label:locationNotice.kind==='date'?'그날 보기':'그 폴더 보기',run:()=>{
+    const notice=locationNotice;
+    if(period==='documents'){void openDocument(notice.documentId,notice.taskId);return;}
+    if(notice.kind!=='date'){void openFolderScreen(notice.folderId);return;}
+    void changePeriod(notice.date?'today':'undated').then(ok=>{if(ok&&notice.date)setDate(notice.date);requestAnimationFrame(()=>highlightTaskLocation(notice.taskId));});
+  }}]:[])]}} onClose={()=>setLocationNotice(null)}/></div>;
+  const bottomNoticeShown = !!(!sheetOpen && (orderNoticeContent || checkNoticeContent || repeatNoticeContent) || datesNoticeContent || carryNoticeContent || folderTodayNoticeContent || locationNoticeContent || selecting && selectNotice);
   /** N11b [하나씩 정리]: the card's tasks one by one (PROPOSAL 4-3), each with the card's choice to start from. */
   function openCarrySheet(keep?: ReadonlyMap<string, ProgramCarryoverChoice>, from?: ProgramPrivateSpace | null) {
     const shown = from ?? dataRef.current.spaces[actorId] ?? space, items = programCarryoverItems(shown, today);
@@ -3137,6 +3181,29 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onRegisterCaptureComplete={read => { captureReaders.current[id] = read; }}
           onRegisterExternalGuard={read => { externalReaders.current[id] = read; }}
           docId={id} workspace={recent ? recent.workspace : space.text} active={selected === id && period === 'documents'} initialPosition={recent && initial ? recentPosition(id, recent, initial, false) : initial}
+          taskLocationPolicy={(lineId,shown)=>{
+            const wide=recent?recentWide(id,recent,shown,false):{ok:true as const,state:shown},latest=dataRef.current.spaces[actorId];
+            return wide.ok?readTaskLocationPolicy({...latest,text:wide.state},lineId,id):{kind:'blocked',taskId:lineId,documentId:null,message:'지난 기록을 펼친 뒤 옮겨 주세요.'};
+          }}
+          onTaskLocation={recent?async(lineId,target,working)=>{
+            const wide=recentWide(id,recent,working,false);
+            if(!wide.ok||inputLockCount.current>0||locationAvailability().blocked)return false;
+            const release=lockInput();
+            try{
+              if(!await flushAllEditors()){showViewChangeBlocked();return false;}
+              await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+              const owner=dataRef.current.spaces[actorId];
+              if(selectedRef.current!==id||presentation.current.period!=='documents'||!programSame(owner.text,wide.state)){
+                setMessage('그사이 내용이 바뀌어 옮기지 않았습니다. 원문은 유지했습니다.');return false;
+              }
+              return await moveTaskHere(lineId,target,owner);
+            }finally{release();}
+          }:undefined}
+          onUndoTaskLocation={locationNotice?.documentId===id?()=>{if(dirty.current[id])return false;void undoTaskLocation(locationNotice);return true;}:undefined}
+          authorizeTaskLocation={(before,next)=>{
+            const wideBefore=recent?recentWide(id,recent,before,false):{ok:true as const,state:before},wideNext=recent?recentWide(id,recent,next):{ok:true as const,state:next};
+            return wideBefore.ok&&wideNext.ok&&programTextTransition(dataRef.current,{actorId,documentId:id,expected:wideBefore.state,next:wideNext.state}).ok;
+          }}
           noteStatus={selected === id ? props.noteStatus : undefined}
           noteActions={selected === id ? <>{props.noteHeader && !props.hostMainTabs && <>{period === 'documents' && findActions}{selectedDocumentTools}</>}{headInToolbar && phoneLayout && selectedDocumentTools}</> : undefined}
           headStart={headInToolbar && selected === id ? docTitle : undefined} headEnd={headInToolbar && selected === id && !phoneLayout ? docActions : undefined}
@@ -3241,6 +3308,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onConnectFlow={(docId, lineId, insertAfter) => openDetail({ kind: 'connect', docId, lineId, insertAfter })}
           readOnly={programDocumentContentLock(space, id) !== 'active'} disabledReason={space.documentTrash?.[id] ? '휴지통의 문서입니다. 복원하면 삭제 전 상태로 돌아갑니다.' : retainedIds.has(id) ? '저장본으로 되돌리며 보관된 내용 · 읽기 전용' : '보관한 문서입니다. 보관에서 꺼내면 이어서 쓸 수 있습니다.'}
         />{recentLine(id, recent, true)}</div>; })}
+        {locationNoticeContent}
         {/* F4-a (A3 ⑤): the folder's other documents, one folded line each; a press opens that one instead (one editor). */}
         {folderWriting && folderWritingDocuments.length > 1 && <ul className={folderStyles.docFolds} aria-label="이 폴더가 나오는 다른 글">
           {folderWritingDocuments.filter(doc => doc.id !== selected).map(doc => <li key={doc.id}><button type="button" className={folderStyles.docFold} data-folder-document={doc.id}
@@ -3373,23 +3441,25 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {/* I7: under the list, held at the bottom of the screen (above the bottom tabs on a phone) while it scrolls. */}
         {!detail && !sheetOpen && orderNoticeContent}
         {!detail && !sheetOpen && checkNoticeContent}{!detail && !sheetOpen && repeatNoticeContent}{!detail && !bottomNoticeShown && legacyRepeatContent}
-        {!detail && datesNoticeContent}{!detail && carryNoticeContent}{!detail && folderTodayNoticeContent}
+        {!detail && datesNoticeContent}{!detail && carryNoticeContent}{!detail && folderTodayNoticeContent}{!detail&&locationNoticeContent}
       </div>
       </div></div>
     </div>
-    <dialog ref={dialog} className={styles.dialog} data-task-detail={detail?.kind === 'task' ? true : undefined} aria-labelledby="program-detail-title" onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2 id="program-detail-title">{detail?.kind === 'task' ? detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 관리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>
+    <dialog ref={dialog} className={styles.dialog} data-task-detail={detail?.kind === 'task' ? true : undefined} aria-labelledby="program-detail-title" onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2 id="program-detail-title">{detail?.kind === 'task' ? detailFolderMove ? '폴더로 옮기기' : detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 관리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {!libraryOpen && detail && viewChangeNoticeContent}
-      {detail?.kind === 'task' && detailTask && <>
-        {/* Core3 P3 (UX F2 ⑦): 미루기 first — ⋯ then one chip (3~4 presses before). */}
-        {deferChips && deferRow?.kind === 'text-task' && <div className={styles.deferChips} role="group" aria-label="미루기" data-defer-chips>
-          {deferChips.map(chip => <button key={chip.key} type="button" data-defer={chip.key} aria-label={`${chip.label} · ${chip.detail}`} disabled={chip.off || datesPending || detailSchedulePending || detailProgressPending}
-            onClick={() => void deferTask(deferRow.task, chip.date)}>{chip.label}</button>)}
-          <button type="button" data-defer="pick" disabled={datesPending || detailSchedulePending || detailProgressPending}
-            onClick={() => { const input = deferPicker.current; if (!input) return; try { input.showPicker(); } catch { input.focus(); } }}>날짜 고르기</button>
-          <input ref={deferPicker} className={styles.deferPicker} type="date" tabIndex={-1} aria-label="미룰 날짜" min={programShiftDate(today, 1)} value=""
-            onChange={event => { const value = event.currentTarget.value; if (/^\d{4}-\d{2}-\d{2}$/.test(value)) void deferTask(deferRow.task, value); }} />
-        </div>}
+      {detail?.kind==='task'&&detailTask&&detailFolderMove&&<><ProgramTaskMoveSheet key={detailTask.id} workspace={space.text} documentId={detailTask.docId} taskId={detailTask.id} today={today} availability={locationAvailability()} disabled={locationPending||detailSchedulePending||detailProgressPending} onChoose={folderId=>void moveTaskHere(detailTask.id,{kind:'folder',folderId})} onCreate={title=>void moveTaskHere(detailTask.id,{kind:'new-folder',title})}/><button type="button" onClick={()=>setDetailFolderMove(false)}>이전</button></>}
+      {detail?.kind === 'task' && detailTask && !detailFolderMove && <>
+        <section data-task-location-menu aria-label="옮기기"><h3>옮기기 <small>하위 할 일·메모도 같이</small></h3>
+          {locationAvailability().blocked&&<p role="status" className={styles.muted}>저장을 확인하지 못해 옮기기를 잠시 막았습니다 <button type="button" disabled={locationAvailability().checking} onClick={taskMoveGate?.confirm}>{locationAvailability().checking?'확인 중…':'다시 확인'}</button></p>}
+          {readTaskLocationPolicy(space,detailTask.id).kind!=='move'&&<p className={styles.muted}>{readTaskLocationPolicy(space,detailTask.id).message}</p>}
+          <div className={styles.deferChips} role="group" aria-label="옮길 날">
+            {programLineDateChips(today).map(chip=><button type="button" key={chip.key} disabled={locationPending||detailSchedulePending||detailProgressPending||locationAvailability().blocked} onClick={()=>void dateMove(detailTask.id,chip.date)}>{chip.label}</button>)}
+            <button type="button" disabled={locationPending||detailSchedulePending||detailProgressPending||locationAvailability().blocked} onClick={()=>{const input=deferPicker.current;if(input){try{input.showPicker();}catch{input.focus();}}}}>날짜 고르기</button>
+            <input ref={deferPicker} className={styles.deferPicker} type="date" tabIndex={-1} aria-label="옮길 날짜" value="" onChange={event=>{const value=event.currentTarget.value;if(/^\d{4}-\d{2}-\d{2}$/.test(value))void dateMove(detailTask.id,value);}}/>
+          </div>
+          {props.capabilities?.taskClassification!==false&&<button type="button" disabled={detailSchedulePending||detailProgressPending||locationAvailability().blocked||readTaskLocationPolicy(space,detailTask.id).kind!=='move'} onClick={()=>setDetailFolderMove(true)}>폴더로 옮기기 · 지금 / {programFolderPath(space.text,detailTask.scopeId)}</button>}
+        </section>
         <div className={styles.detailOrigin}>
           <p className={styles.muted}>{readProgramTaskOrigin(data, detailTask).label} · {detailTask.docTitle}</p>
           <button disabled={detailSchedulePending || detailProgressPending} onClick={() => openDetailSource(detailTask.docId, detailTask.id)}>원문 열기</button>
@@ -3401,14 +3471,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {!collectionMode && (own => <button type="button" className={folderStyles.taskFolder} data-task-folder={own} disabled={detailSchedulePending || detailProgressPending}
           aria-label={`폴더 ${programFolderAncestry(space, own).map(item => item.title).join(' › ') || folderTitleOf(own)} 보기`}
           onClick={() => { close(); void openFolderScreen(own); }}><span>폴더</span><b>{programFolderAncestry(space, own).map(item => item.title).join(' › ') || folderTitleOf(own)} ›</b></button>)(programTaskFolderId(space, detailTask))}
-        {props.capabilities?.taskClassification !== false && canClassifyProgramTask(data, detailTask.id) && <label className={styles.field}>할 일 분류<select aria-label="할 일 분류" value={detailTask.scopeId ?? 'folder-unfiled'} disabled={detailSchedulePending || detailProgressPending} onChange={async event => {
-          const folderId = event.target.value;
-          await run('할 일 분류', current => setProgramTaskClassification(current, { ...base(current), taskId: detailTask.id, folderId }));
-        }}>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select><small>이 항목만 분류합니다. 글의 보관 위치와 다른 항목은 그대로입니다.</small></label>}
+        <p className={styles.muted}>{readTaskLocationPolicy(space,detailTask.id).kind==='move'?'폴더나 날짜를 바꾸면 글에서도 그 자리로 옮깁니다. 하위 할 일·메모도 같이 갑니다.':readTaskLocationPolicy(space,detailTask.id).message}</p>
         {taskNoticeContent}
         <section className={styles.detailSchedule} aria-labelledby="program-detail-schedule"><h3 id="program-detail-schedule">날짜·시간</h3>
         {detailDatePresentation && <p className={styles.muted} aria-label="날짜 출처">{detailDatePresentation.label}{detailDatePresentation.context && <small>{detailDatePresentation.context}</small>}</p>}
-        <form onSubmit={event => { event.preventDefault(); void applySchedule(detailTask.id); }}><div className={styles.scheduleFields}><label className={styles.field}>실행 날짜<input type="date" value={executionDateDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionDateDraft(event.target.value); }} /></label><label className={styles.field}>시간<input type="time" step="60" value={executionTimeDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionTimeDraft(event.target.value); }} /><small>비워 두면 시간 없음</small></label></div>{detailDateChangeHint && <p className={styles.muted} role="status">{detailDateChangeHint}</p>}<button className={styles.scheduleApply}>날짜·시간 적용</button></form><div className={styles.scheduleShortcuts}><button onClick={() => void dateMove(detailTask.id, today)}>오늘로 이동</button><button onClick={() => void dateMove(detailTask.id, programShiftDate(today, 1))}>내일로 이어하기</button><button onClick={() => void dateMove(detailTask.id, null)}>날짜 미정으로 이동</button></div>
+        <form onSubmit={event => { event.preventDefault(); void applySchedule(detailTask.id); }}><div className={styles.scheduleFields}><label className={styles.field}>실행 날짜<input type="date" value={executionDateDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionDateDraft(event.target.value); }} /></label><label className={styles.field}>시간<input type="time" step="60" value={executionTimeDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionTimeDraft(event.target.value); }} /><small>비워 두면 시간 없음</small></label></div>{detailDateChangeHint && <p className={styles.muted} role="status">{detailDateChangeHint}</p>}<button disabled={locationPending||locationAvailability().blocked} className={styles.scheduleApply}>날짜·시간 적용</button></form><div className={styles.scheduleShortcuts}><button disabled={locationPending||locationAvailability().blocked} onClick={() => void dateMove(detailTask.id, today)}>오늘로 이동</button><button disabled={locationPending||locationAvailability().blocked} onClick={() => void dateMove(detailTask.id, programShiftDate(today, 1))}>내일로 이어하기</button><button disabled={locationPending||locationAvailability().blocked} onClick={() => void dateMove(detailTask.id, null)}>날짜 미정으로 이동</button></div>
         {detailTask.time && <p className={styles.muted}>날짜만 미정으로 옮기면 시간은 유지됩니다.</p>}
         </section>
         <details key={`progress-${executionDraftOwner.current.dialog}`} className={styles.detailSection} data-detail-section="progress" open={directProgress || undefined}><summary>진행 기록</summary>
