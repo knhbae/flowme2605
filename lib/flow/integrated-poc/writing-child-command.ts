@@ -26,7 +26,11 @@ export function prepareWritingChild(before:TextWorkspaceState,input:WritingChild
  const line={id,text:'  '.repeat(parent.depth+1)+'- [ ] '+title},lines=doc.lines.slice();lines.splice(at,0,line);
  const changed={...doc,lines};let next:TextWorkspaceState={...before,documents:before.documents.map(d=>d.id===doc.id?changed:d),flows:before.flows.map(d=>d.id===doc.id?{...changed,private:true as const,sourceVersion:d.sourceVersion}:d),taskScopes:{...before.taskScopes,[id]:scope},itemScopes:{...before.itemScopes,[id]:scope}};
  if(!M.validate(next))return fail('하위 할 일의 소속을 확인하지 못했습니다.');
- next=M.updateTask(next,id,{date,note:input.text.split('\n').slice(1).join('\n')});
+ // 11/10 decision: the date line only when the child would read another day without it — a child reads its own
+ // section's day, not its parent's — so under a parent of its own section no '- 날짜:' is added, while under a moved
+ // parent or in an undated part it keeps the parent's day.
+ const sectionDate=M.tasks(next).find(t=>t.id===id)?.date??null;
+ next=M.updateTask(next,id,{...(sectionDate!==date?{date}:{}),note:input.text.split('\n').slice(1).join('\n')});
  const child=M.tasks(next).find(t=>t.id===id);if(!child||child.parentTaskId!==parent.id||child.date!==date||!M.validate(next))return fail('하위 할 일의 날짜·소속을 적용하지 못했습니다.');
  if(next.progressRecords.some(r=>r.taskId===id))return fail('새 하위 항목에 기존 기록을 연결하지 않았습니다.');
  const after=M.getDocument(next,doc.id)!,index=after.lines.findIndex(l=>l.id===id),offset=after.lines.slice(0,index).reduce((n,l)=>n+l.text.length+1,0)+after.lines[index].text.length;
