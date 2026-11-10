@@ -548,6 +548,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const externalReaders = useRef<Record<string, ((before: ProgramData, next: ProgramData) => boolean) | null>>({});
   const structuralDraftReaders = useRef<Record<string, (() => AlphaStructuralDraft | null) | null>>({});
   const childDraftReaders = useRef<Record<string, (() => ProgramChildDraft[]) | null>>({});
+  const bodyPendingReaders = useRef<Record<string, (() => boolean) | null>>({});
   const confirmedSaveReaders = useRef<Record<string, ((before: TextWorkspaceState, next: TextWorkspaceState, ack?:OwnedWritingAck) => boolean) | null>>({});
   const inputLocks = useRef<Record<string, ((locked: boolean) => void) | null>>({}), inputLockCount = useRef(0);
   const [recordDate, setRecordDate] = useState(today), [percent, setPercent] = useState('0');
@@ -1575,7 +1576,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       hasPendingInput: () => Object.values(dirty.current).some(Boolean) || Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.()),
       blocksExternalSnapshot: (before, next) => Object.values(externalReaders.current).some(read => read?.(before, next)) || Object.values(recurrencePorts.current).some(port => port?.blocksExternalSnapshot?.(before, next)),
       pendingDocumentIds: () => Object.keys(dirty.current).filter(id => dirty.current[id]),
-      captureDrafts: () => [...Object.keys(dirty.current).filter(id => dirty.current[id]).map(id => ({ documentId: id, title: documentsRef.current.find(doc => doc.id === id)?.title ?? '작성 중 문서', raw: draftReaders.current[id]?.() ?? '' })), ...Object.values(recurrencePorts.current).flatMap(port => port?.captureDrafts?.() ?? [])],
+      // Recovery (11/10 21:04): a document is a draft only with body input. A child panel open over an unchanged body
+      // keeps it pending (hasPendingInput, pendingDocumentIds) but is not kept as '이 문서에 복구할 입력'.
+      captureDrafts: () => [...Object.keys(dirty.current).filter(id => dirty.current[id] && bodyPendingReaders.current[id]?.() !== false).map(id => ({ documentId: id, title: documentsRef.current.find(doc => doc.id === id)?.title ?? '작성 중 문서', raw: draftReaders.current[id]?.() ?? '' })), ...Object.values(recurrencePorts.current).flatMap(port => port?.captureDrafts?.() ?? [])],
       // Unconfirmed child panels go to the tab's recovery only, never to captureDrafts: save-ACK
       // ownership needs exactly one document draft there, and input boundaries read it too.
       captureRecoveryDrafts: () => childDraftRecoveryEntries(Object.values(childDraftReaders.current).flatMap(read => read?.() ?? [])),
@@ -3190,6 +3193,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onRegisterInputCheckpoint={read => { inputCheckpointReaders.current[id] = read; }}
           onRegisterCaptureComplete={read => { captureReaders.current[id] = read; }}
           onRegisterExternalGuard={read => { externalReaders.current[id] = read; }}
+          onRegisterBodyPending={read => { bodyPendingReaders.current[id] = read; }}
           docId={id} workspace={recent ? recent.workspace : space.text} active={selected === id && period === 'documents'} initialPosition={recent && initial ? recentPosition(id, recent, initial, false) : initial}
           taskLocationPolicy={(lineId,shown)=>{
             const wide=recent?recentWide(id,recent,shown,false):{ok:true as const,state:shown},latest=dataRef.current.spaces[actorId];

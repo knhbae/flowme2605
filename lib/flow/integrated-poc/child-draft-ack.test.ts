@@ -29,7 +29,7 @@ const property = (name: string) => (node: ts.Node, tree: ts.SourceFile) => {
 };
 
 /** ProgramSpace's registered draft readers for one dirty document and one closed child panel draft. */
-function spacePort(options: { recurrenceDraft?: boolean } = {}): Pick<ProgramEditorFlush, 'captureDrafts' | 'captureRecoveryDrafts'> {
+function spacePort(options: { recurrenceDraft?: boolean; bodyPending?: boolean } = {}): Pick<ProgramEditorFlush, 'captureDrafts' | 'captureRecoveryDrafts'> {
   const child: ProgramChildDraft = { kind: 'task', parentTitle: '주말 장보기', text: '우유 사기' };
   const scope = {
     dirty: { current: { doc: true } },
@@ -37,6 +37,7 @@ function spacePort(options: { recurrenceDraft?: boolean } = {}): Pick<ProgramEdi
     draftReaders: { current: { doc: () => '- [ ] A\n- [ ] B' } },
     recurrencePorts: { current: options.recurrenceDraft ? { r: { captureDrafts: () => [{ title: '회차 날짜 변경 초안', raw: '{}' }] } } : {} },
     childDraftReaders: { current: { doc: () => [child] } },
+    bodyPendingReaders: { current: options.bodyPending === undefined ? {} : { doc: () => options.bodyPending } },
     childDraftRecoveryEntries,
   };
   return {
@@ -92,4 +93,46 @@ test('input boundaries ignore recovery-only drafts but still see document drafts
   assert.equal(programInputBoundaryCurrent(before, [port]), true);
   body = 'AB';
   assert.equal(programInputBoundaryCurrent(before, [port]), false);
+});
+test('11/10 21:04 (실사용): a child panel open over an unchanged body keeps the document pending, but no document draft is kept', () => {
+  // The panel alone: still pending (hasPendingInput, pendingDocumentIds keep their protection), no '이 문서에 복구할 입력'.
+  const scope = { dirty: { current: { doc: true } }, recurrencePorts: { current: {} } };
+  assert.equal(evaluate<() => boolean>(expression('ProgramSpace.tsx', property('hasPendingInput')), scope)(), true);
+  assert.deepEqual(evaluate<() => string[]>(expression('ProgramSpace.tsx', property('pendingDocumentIds')), scope)(), ['doc']);
+  const panelOnly = spacePort({ bodyPending: false });
+  assert.deepEqual(panelOnly.captureDrafts!(), []);
+  const kept = evaluate<{ title: string; raw: string; documentId?: string }[]>(expression('AlphaWorkspace.tsx', variable('drafts', 'captureInput')),
+    { editors: { current: pendingDoc(panelOnly) }, legacyEditors: { current: null } });
+  assert.deepEqual(kept.map(d => [d.title, d.documentId]), [['‘주말 장보기’ 아래 하위 할 일 초안', undefined]], 'the panel text alone, as a recovery draft');
+  // Body input with the panel open, or an editor that does not say: the body is kept as before.
+  assert.deepEqual(spacePort({ bodyPending: true }).captureDrafts!().map(d => [d.documentId, d.raw]), [['doc', '- [ ] A\n- [ ] B']]);
+  assert.deepEqual(spacePort().captureDrafts!().map(d => d.documentId), ['doc']);
+});
+
+test('the editor says body input from its own state: a panel over a saved body is none; typing, refusal, saving, composing are', () => {
+  const source = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
+  const tree = ts.createSourceFile('ProgramTextEditor.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  let found: ts.FunctionDeclaration | undefined;
+  const visit = (node: ts.Node) => { if (ts.isFunctionDeclaration(node) && node.name?.text === 'bodyInputPending') found = node; ts.forEachChild(node, visit); };
+  visit(tree); assert(found);
+  const code = ts.transpileModule(found.getText(tree) + ';return bodyInputPending;', { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
+  const pending = (state: Record<string, unknown> | null, more: { native?: string; composing?: boolean; check?: string | null; region?: boolean } = {}) =>
+    (new Function('draftRef', 'checkPendingRef', 'regionPortRef', 'programTextInputPending', 'textArea', 'composingRef', 'regionPendingRef', code)(
+      { current: state && { getState: () => state } }, { current: more.check ?? null }, { current: { hasPending: () => !!more.region } },
+      (s: { dirty: boolean; invalid: boolean; raw: string }, native: string | undefined, composing: boolean, region: boolean, checking: boolean) =>
+        s.dirty || s.invalid || composing || region || checking || (native !== undefined && native !== s.raw),
+      () => ({ value: more.native ?? 'A' }), { current: !!more.composing }, { current: !!more.region }) as () => boolean)();
+  const saved = { dirty: false, invalid: false, saving: false, raw: 'A' };
+  assert.equal(pending(saved), false, 'a panel over a saved body');
+  assert.equal(pending({ ...saved, dirty: true }), true);
+  assert.equal(pending({ ...saved, invalid: true }), true);
+  assert.equal(pending({ ...saved, saving: true }), true);
+  assert.equal(pending(saved, { native: 'AB' }), true, 'typed, not read yet');
+  assert.equal(pending(saved, { composing: true }), true);
+  assert.equal(pending(saved, { check: 'request' }), true);
+  assert.equal(pending(saved, { region: true }), true);
+  assert.equal(pending(null), true, 'no draft yet: kept');
+  // The host reads it per document and the editor clears it when it goes.
+  assert(source.includes('propsRef.current.onRegisterBodyPending?.(bodyInputPending);') && source.includes('propsRef.current.onRegisterBodyPending?.(null);'));
+  assert(readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').includes('onRegisterBodyPending={read => { bodyPendingReaders.current[id] = read; }}'));
 });
