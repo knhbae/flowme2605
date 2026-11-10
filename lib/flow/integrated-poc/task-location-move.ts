@@ -90,7 +90,10 @@ export function moveTaskLocation(state: TextWorkspaceState, input: { documentId:
   // Parsing the remainder is read-only: its old owner maps can temporarily refer to the held block.
   let restRows = M.parseDocument(remainder, remainderState).rows;
   const date = target.kind === 'date' ? target.date : row.groupDate;
-  let head = target.kind === 'date' ? restRows.find(item => item.kind === 'date' && item.date === date)
+  const datedHeads=target.kind==='date'?restRows.filter(item=>item.kind==='date'&&item.date===date):[];
+  const declaredIn=new Set(restRows.filter(item=>item.kind==='scope'&&item.scopeKind==='folder'&&item.scopeId===folderId).map(item=>item.dateLineId));
+  // Equal date heads are separate source sections. Prefer one already declaring this folder before creating another.
+  let head = target.kind === 'date' ? datedHeads.find(item=>declaredIn.has(item.id))??datedHeads[0]
     : row.dateLineId ? restRows.find(item => item.id === row.dateLineId) : undefined;
   const additions: TextLine[] = [], bindings = [...working.bindings];
   const addLine = (text: string) => ({ id: programId('line'), text });
