@@ -95,10 +95,12 @@ test('the editor wires the bar: one write per chip through its existing paths, h
   // A date chip rides with the held press ('date'); 날짜 and ⋯ only change what the bar shows.
   assert(editor.includes("function pressDateChip(date: string) { barChipDate.current = date; pressBar('date'); }"));
   assert(editor.includes("onClick={() => setBarMode('date')}") && editor.includes("onClick={() => setBarMode('more')}"));
-  // A task line takes N9's own date chip; any other line the head-line plan, through insertNative.
-  const choice = editor.slice(editor.indexOf('function runDateChoice('), editor.indexOf('function pickBarDate('));
-  assert(choice.includes('const done = applyDateChip(line.id, date), state = draftRef.current?.getState();') && choice.includes('if (plan && insertNative(plan.offset, plan.text, plan.caret) && plan.text.includes(`[${date}]`)) chainFolders(date, before);'));
-  // N9's path is not in the native history: ↶ right after it sets the old date back the same way, ↷ the chip's again.
+  // A canonical task moves its bundle; protected exceptions use the owned date-only path. Other lines insert a head.
+  const choice = editor.slice(editor.indexOf('function runDateChoice('), editor.indexOf("  /** N9's date path"));
+  assert(choice.includes("if (policy.kind === 'move') { void performTaskLocation(line.id,{kind:'date',date}); return; }") && choice.includes('void applyDateChip(line.id, date);'));
+  assert(!choice.includes('barDateUndo.current ='), 'new task date paths cannot stage the legacy whole-frame undo');
+  assert(choice.includes('if (plan && insertNative(plan.offset, plan.text, plan.caret) && plan.text.includes(`[${date}]`)) chainFolders(date, before);'));
+  // The pre-existing history fallback is retained; new task dates use the owned paths above.
   assert(editor.includes('if (undoBarDate()) return;') && editor.includes('if (redoBarFolder() || redoBarDate()) return;'));
   assert(editor.includes("apply(last.after, '항목 날짜·시간', { taskId: last.taskId, date: last.date, time: last.time }) : apply(last.before, '항목 날짜·시간 되돌리기')"));
   // 폴더 writes `- /` through insertNative and opens the existing suggestions; × takes back only that untouched line.

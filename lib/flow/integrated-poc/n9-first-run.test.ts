@@ -58,12 +58,14 @@ test('date chips: 오늘, 내일 and 이번 주말 from the date sheet defaults;
   assert.deepEqual(labels('2026-11-07').at(-1), '이번 주말 2026-11-07', 'a Saturday is its own weekend');
   assert.deepEqual(labels('2026-11-08').at(-1), '이번 주말 2026-11-08', 'so is a Sunday');
   assert.deepEqual(labels('2026-11-09').at(-1), '이번 주말 2026-11-14');
-  const menu = editor.slice(editor.indexOf('aria-label="선택 항목 진행·날짜"'), editor.indexOf('aria-label="이 위치에 추가"'));
+  const menu = editor.slice(editor.indexOf('data-task-location-menu'), editor.indexOf('aria-label="이 위치에 추가"'));
   assert(menu.indexOf('programLineDateChips(today())') < menu.indexOf('>진행 기록</button>'), 'the chips come first');
-  assert(menu.includes('>날짜 고르기</button>') && menu.includes("openProgress(panel.lineId, 'date')"));
-  // The chip writes the date as 날짜·시간 적용 does: the same - 날짜: property, the time kept.
+  assert(menu.includes('>고르기<small>날짜·시간</small>') && menu.includes("openProgress(panel.lineId,'date')"));
+  assert(menu.includes('폴더로 옮기기') && menu.includes('aria-label="옮길 날"'));
+  // Canonical tasks relocate; protected exceptions retain date-only semantics with the same time.
   const chip = editor.slice(editor.indexOf('  async function applyDateChip('), editor.indexOf('  function downloadDraft('));
-  assert(chip.includes("M.updateTask(currentState(), target, { date: value, time })") && chip.includes("const time = task.time ?? ''"));
+  assert(chip.includes("policy.kind==='move'") && chip.includes('performTaskLocation('));
+  assert(chip.includes("applyDateOnly(target,value,task.time??'')"));
   const state = written('- [ ] 서류 내기\n  - 시간: 09:30');
   const id = M.tasks(state)[0].id, next = M.updateTask(state, id, { date: '2026-11-07', time: '09:30' });
   assert.equal(M.raw(M.getDocument(next, DOC)), '- [ ] 서류 내기\n  - 날짜: 2026-11-07\n  - 시간: 09:30');
