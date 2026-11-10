@@ -1187,9 +1187,6 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // Core3 P3 (UX F2): a list row's ⋯ starts with 미루기 — the row as 고르기 would pick it (not a repeat's round, not
   // finished, not locked), moved by C6b's one save with its notice and 되돌리기. F8 1단계: in writing, the band's
   // [미루기] opens the same sheet, its row read from 오늘's own query.
-  const deferRow = detailTask ? (period !== 'documents' ? executionRows : todayRowsForBand).find(row => row.kind === 'text-task' && row.task.id === detailTask.id) : undefined;
-  const deferChips = deferRow?.kind === 'text-task' && !programSelectBlock(space, deferRow, (taskProgress(deferRow.task.id).current ?? (deferRow.task.done ? 100 : 0)) === 100)
-    ? programDeferChips(today, deferRow.task.date) : null;
   // A row checked in the band stays (faded, where it was) until the screen is left; a finished round has moved on.
   const [bandChecked, setBandChecked] = useState<ReadonlyMap<string, { row: ProgramContinueRow; index: number }>>(() => new Map());
   const [bandFailed, setBandFailed] = useState<string | null>(null);
