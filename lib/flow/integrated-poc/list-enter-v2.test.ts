@@ -263,7 +263,7 @@ test('memo-enter: Enter on an empty memo line leaves the memo for the next task,
 });
 
 test('memo-enter: only a plain Enter that continued a memo calls the host\'s tip hook', () => {
-  let calls = 0; const config = { onMemoContinue: () => { calls += 1; } };
+  let calls = 0, exits = 0; const config = { onMemoContinue: () => { calls += 1; }, onMemoExit: () => { exits += 1; } };
   const count = (raw: string, line: number, options: Press = {}) => { calls = 0; press(raw, line, { ...options, config }); return calls; };
   assert.equal(count('- [ ] 장보기\n  - 메모: 우유', 1, { v2: true }), 1);
   assert.equal(count('- [ ] 장보기\n  - 메모: 우유', 1, { v2: false }), 1);
@@ -271,4 +271,6 @@ test('memo-enter: only a plain Enter that continued a memo calls the host\'s tip
   assert.equal(count('- [ ] 장보기\n  - 메모: 우유\n  - 메모: ', 2, { v2: true }), 0, 'leaving the memo');
   assert.equal(count('- [ ] 장보기\n  - 메모: 우유', 1, { v2: true, composing: true }), 0);
   assert.equal(count('- [ ] 장보기', 0, { v2: true }), 0);
+  exits = 0; press('- [ ] 장보기\n  - 메모: 우유\n  - 메모: ', 2, { v2: true, config }); assert.equal(exits, 1, 'leaving calls the exit hook once');
+  exits = 0; press('- [ ] 장보기\n  - 메모: 우유', 1, { v2: true, config }); press('- [ ] 장보기\n  - 메모: 우유\n  - 메모: ', 2, { v2: true, shift: true, config }); assert.equal(exits, 0);
 });

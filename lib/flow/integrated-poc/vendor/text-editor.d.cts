@@ -41,6 +41,8 @@ declare namespace editor {
     listEnterV2?:()=>boolean;
     /** memo-enter (11/10): a plain Enter at a memo line's end continued the memo (the host may say how to leave it). */
     onMemoContinue?:()=>void;
+    /** memo-enter (11/10): Enter on an empty memo line left the memo. */
+    onMemoExit?:()=>void;
     getAddAnchor?:(lineIndex:number)=>{parentIndex:number;bottomIndex:number}|null;
     /** Separate direct-check admission; structural actions retain the common hold. */
     isCheckDisabled?: (lineIndex?: number) => boolean;

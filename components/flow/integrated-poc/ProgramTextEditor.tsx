@@ -51,7 +51,7 @@ import { childPlace, insertPlaceAfter, insertPreview, planLayoutInsertion, progr
 import { programWritingDialogPlace } from '@/lib/flow/integrated-poc/writing-dialog-place';
 import { revealProgramEditorLine } from './editor-reveal';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
-import { PROGRAM_MEMO_TIP_MS, PROGRAM_MEMO_TIP_TEXT, programMemoTipTake } from '@/lib/flow/integrated-poc/memo-enter-tip';
+import { PROGRAM_MEMO_TIP_MS, PROGRAM_MEMO_TIP_TEXT, programMemoTipLeft, programMemoTipStorage, programMemoTipTake } from '@/lib/flow/integrated-poc/memo-enter-tip';
 import { programNoticeEndsAt, programNoticeOrder, type ProgramNoticeAction, type ProgramNoticeTone } from '@/lib/flow/integrated-poc/program-notice';
 import { programFolderCreatedNotice, programFolderKeptText, programFolderMoveNotice, programFolderRelinkedNotice, programFolderRenamedEverywhere } from '@/lib/flow/integrated-poc/folder-notice';
 import { programFolderCreationLocation, programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
@@ -391,6 +391,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // memo-enter (11/10): the tip after a plain Enter continued a memo (its key; null when none shows).
   const [memoTip, setMemoTip] = useState<number | null>(null);
   const memoTipKeys = useRef(0);
+  // Any other notice up (a move, a warning, a check, a folder, a repeat): the tip neither shows nor counts (UX).
+  const memoTipBlockedRef = useRef(false);
   const [noticeHeld, setNoticeHeld] = useState(false);
   // N5 3b phone: a new folder's notice held while its D11 B ⇤ is open and the caret is on that folder's block.
   const [freshHeld, setFreshHeld] = useState(false);
@@ -2169,7 +2171,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       plusOpensAuthoring:()=>!!propsRef.current.authoringMode,
       listEnterV2:()=>!!propsRef.current.authoringMode,
       // memo-enter (11/10): after Enter continued a memo, how to leave it (the first few times on this device).
-      onMemoContinue:()=>{let storage:Storage|null=null;try{storage=window.localStorage;}catch{storage=null;}if(programMemoTipTake(storage))setMemoTip(++memoTipKeys.current);},
+      onMemoContinue:()=>{if(!memoTipBlockedRef.current&&programMemoTipTake(programMemoTipStorage()))setMemoTip(++memoTipKeys.current);},
+      onMemoExit:()=>{programMemoTipLeft(programMemoTipStorage());},
       // W12: the empty-line '/' hint follows the writing tools, whose '/' opens the tool menu.
       lineHints:()=>!!propsRef.current.authoringMode&&!propsRef.current.readOnly,
       getAddAnchor:index=>propsRef.current.authoringMode?{parentIndex:index,bottomIndex:index}:null,
@@ -2357,9 +2360,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     };
     host.addEventListener('compositionstart', compositionStart, true);
     host.addEventListener('compositionend', compositionEnd, true);
-    // The memo tip goes with the next key or press (captured first, so the Enter that shows it is not one of them).
+    // The memo tip goes with the next key, a composition starting, a press (the caret moving off) or the input left;
+    // captured first, so the Enter that shows it is not one of them.
     const clearMemoTip = () => setMemoTip(null);
-    host.addEventListener('keydown', clearMemoTip, true); host.addEventListener('pointerdown', clearMemoTip, true);
+    for (const type of ['keydown', 'compositionstart', 'pointerdown', 'focusout']) host.addEventListener(type, clearMemoTip, true);
     const preventLockedInput = (event: Event) => {
       controller.cancelPreparedRaw();
       const type = (event as InputEvent).inputType;
@@ -2435,7 +2439,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       alive = false; rememberPosition();
       propsRef.current.onRegisterConfirmedSave?.(null);
       host.removeEventListener('compositionstart', compositionStart, true); host.removeEventListener('compositionend', compositionEnd, true);
-      host.removeEventListener('keydown', clearMemoTip, true); host.removeEventListener('pointerdown', clearMemoTip, true);
+      for (const type of ['keydown', 'compositionstart', 'pointerdown', 'focusout']) host.removeEventListener(type, clearMemoTip, true);
       window.removeEventListener('beforeunload', warnOnExit);
       if (timerRef.current) clearTimeout(timerRef.current);
       if (textarea) for (const event of ['select', 'scroll', 'keyup', 'click', 'blur']) textarea.removeEventListener(event, rememberPosition);
@@ -3178,6 +3182,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       actions: view.actions.map(button => ({ label: button.label, run: run(button.step) })),
       chips: view.chips.map(button => ({ label: button.label, current: button.current, run: run(button.step) })) };
   }
+  memoTipBlockedRef.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice;
   const noticeViews = programNoticeOrder([
     ...(moving ? [{ moving: true, tone: 'choose' as const, text: `${moving.label} · 하위 ${moving.descendantCount}줄`, closeLabel: null, close: undefined,
       actions: [{ label: '위치 선택', run: () => setPanel({ kind: 'move', lineId: moving.lineId }) }, { label: '이동 취소', run: cancelMove }] }] : []),

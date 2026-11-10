@@ -151,8 +151,10 @@
 .tle-memo-syntax { position: relative; color: transparent; }
 .tle-memo-syntax::after { content: ""; position: absolute; top: 0; bottom: 0; right: 6px; width: 2px; background: var(--flowme-b-line); }
 .tle-memo-text { color: var(--flowme-b-muted); }
-/* memo-enter (11/10): the caret's memo line: '- 메모:' muted over its RAW advances (no rail: it would cross the ':'). */
-.tle-active-memo-syntax { color: var(--flowme-b-muted); }
+/* memo-enter (11/10, UX): the caret's memo line: '- 메모:' muted over its RAW advances, the rail where the other memo
+ * lines draw it, the words in ink (the active layer's colour). Colour only: no advance changes. */
+.tle-active-memo-syntax { position: relative; color: var(--flowme-b-muted); }
+.tle-active-memo-syntax::after { content: ""; position: absolute; top: 0; bottom: 0; right: 6px; width: 2px; background: var(--flowme-b-line); }
 .tle-check-glyph {
   position: absolute;
   display: block;
