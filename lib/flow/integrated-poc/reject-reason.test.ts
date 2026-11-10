@@ -42,9 +42,13 @@ test('the draft keeps the refused line and its reason, and checks again once the
   const start = account(100 - account().folders.length), draft = createProgramTextDraft(start, TYPED, async () => true, () => {});
   assert.equal(draft.updateRaw('첫 줄 고침\n- /미팅\n- /새 폴더', '', { inputType: 'insertText' }), false);
   assert.equal(draft.getState().invalid, true);
-  assert.equal(draft.getState().problemLine, 2);
-  assert.match(draft.getState().error, /폴더는 100개까지/);
+  // 저장 재설계 B (11/10): the refused line is held with the model's reason, and the other changed line is taken (saved).
+  assert.deepEqual([draft.getState().held?.lines, draft.getState().held?.line], [[2], 2]);
+  assert.match(draft.getState().held?.message ?? '', /폴더는 100개까지/);
+  assert.equal(draft.getState().error, '', 'held, not refused whole: saving goes on');
+  assert.equal(M.raw(M.getDocument(draft.getState().working, TYPED)), '첫 줄 고침\n- /미팅', 'the other line is taken');
   assert.equal(draft.recheck(), false, 'still refused');
+  assert.deepEqual(draft.getState().held?.lines, [2], 'still held on its line');
   assert(draft.updateRaw('첫 줄 고침\n- /미팅', '', { inputType: 'deleteContentBackward' }), 'the writer removes the extra line');
   assert.equal(draft.recheck(), true);
   assert.equal(draft.getState().invalid, false);

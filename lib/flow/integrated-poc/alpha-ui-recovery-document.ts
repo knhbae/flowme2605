@@ -30,6 +30,25 @@ export function parkedAlphaUiRecoveryDocuments(state: AlphaUiRecoveryDocuments):
   return [...copy(state.loaded), ...copy(state.parked)];
 }
 
+/** Only the generic toast is quiet for a live B-held document copy. Loaded and
+ * parked history keep their multiplicity; storage, badges and explicit A errors
+ * do not pass through this filter. No classification is persisted. */
+export function recoveryToastDraftsForHeldInput(announced: readonly AlphaUiDraft[], state: AlphaUiRecoveryDocuments,
+  held: readonly AlphaUiDraft[]): AlphaUiDraft[] {
+  const identity = (draft: AlphaUiDraft) => JSON.stringify([draft.documentId ?? null, draft.title, draft.raw]);
+  const pair = (draft: AlphaUiDraft) => JSON.stringify([draft.documentId, draft.raw]);
+  const protectedCounts = new Map<string, number>();
+  for (const draft of [...state.loaded, ...state.parked]) {
+    const key = identity(draft); protectedCounts.set(key, (protectedCounts.get(key) ?? 0) + 1);
+  }
+  const live = new Set(state.active.map(identity)), quiet = new Set(held.filter(draft => draft.documentId !== undefined).map(pair));
+  return announced.filter(draft => {
+    const key = identity(draft), protectedCount = protectedCounts.get(key) ?? 0;
+    if (protectedCount) { protectedCounts.set(key, protectedCount - 1); return true; }
+    return draft.documentId === undefined || !live.has(key) || !quiet.has(pair(draft));
+  });
+}
+
 export function captureAlphaUiRecoveryDocuments(state: AlphaUiRecoveryDocuments, drafts: readonly AlphaUiDraft[]): AlphaUiRecoveryDocuments {
   if (!drafts.length) return state;
   const active = latestAlphaUiDocumentDrafts(drafts), live = new Set(active.flatMap(draft => draft.documentId === undefined ? [] : [draft.documentId]));

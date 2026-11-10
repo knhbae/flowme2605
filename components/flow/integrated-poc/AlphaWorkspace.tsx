@@ -20,7 +20,7 @@ import { isSyntheticAlphaWorkspaceInput, type SyntheticAlphaWorkspaceRuntime } f
 import { newProgramReviewDraft, programReviewOriginReason, type ProgramReviewEntry, type ProgramReviewOrigin, type ProgramReviewSpacePort } from '@/lib/flow/integrated-poc/review-return';
 import { createAlphaTabRecovery } from '@/lib/flow/integrated-poc/alpha-sync/recovery';
 import { createAlphaUiRecovery, type AlphaUiDraft, type AlphaUiRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-ui-recovery';
-import { alphaUiRecoveryDocumentDrafts, captureAlphaUiRecoveryDocuments, clearConfirmedAlphaUiRecoveryDocuments, createAlphaUiRecoveryDocuments, groupAlphaUiRecoveryDocuments, keepAlphaUiRecoveryDocument, loadAlphaUiRecoveryDocuments, parkAlphaUiRecoveryDocuments, parkedAlphaUiRecoveryDocuments } from '@/lib/flow/integrated-poc/alpha-ui-recovery-document';
+import { alphaUiRecoveryDocumentDrafts, captureAlphaUiRecoveryDocuments, clearConfirmedAlphaUiRecoveryDocuments, createAlphaUiRecoveryDocuments, groupAlphaUiRecoveryDocuments, keepAlphaUiRecoveryDocument, loadAlphaUiRecoveryDocuments, parkAlphaUiRecoveryDocuments, parkedAlphaUiRecoveryDocuments, recoveryToastDraftsForHeldInput } from '@/lib/flow/integrated-poc/alpha-ui-recovery-document';
 import { createAlphaUiRecoveryKeep, keepAlphaUiRecovery, type AlphaUiRecoveryKeep } from '@/lib/flow/integrated-poc/alpha-ui-recovery-keep';
 import { createAlphaStructuralRecovery, resolveAlphaStructuralRecovery, type AlphaStructuralEditorPort, type AlphaStructuralRecoveryEntry, type AlphaStructuralRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
 import { type ProgramData, type ProgramParticipationDraft, type ProgramPublicationDraft, programId } from '@/lib/flow/integrated-poc/contract';
@@ -176,7 +176,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const mainTabs = useRef<{ choose(tab: ProgramMainTab): Promise<boolean>; openArchive(): Promise<boolean> } | null>(null);
   const [mainTab, setMainTab] = useState<ProgramMainTab>('documents');
   // Core3 P1 (X5, 11/8): a new 복구함 entry is said once by a bottom toast (10 s, or 닫기); the 나 badge keeps counting.
-  const [recoveryToast, setRecoveryToast] = useState<{ count: number; at: number } | null>(null);
+  const [recoveryToast, setRecoveryToast] = useState<{ count: number; at: number; tags: string[] } | null>(null);
   const recoverySeen = useRef<{ owner: string; tags: Set<string> } | null>(null), meTab = useRef<HTMLButtonElement>(null);
   // The last mutation failed; captured input counts as saved input until one succeeds.
   const [saveFailed, setSaveFailed] = useState(false);
@@ -1598,9 +1598,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const announcedCreator = announcedRecoveryEntries(creatorRecoveries?.entries, parkedCreator.current, activeCreator.current ? [activeCreator.current] : [], inputAtRisk);
   const announcedSocial = announcedRecoveryEntries(socialRecoveries?.entries, parkedSocial.current, activeSocial.current, inputAtRisk);
   const savedTotal = announcedDrafts.length + announcedStructural.length + announcedCreator.length + announcedSocial.length;
+  const toastDrafts = recoveryToastDraftsForHeldInput(announcedDrafts, recoveryDocuments.current,
+    allEditors().flatMap(port => port?.captureHeldDrafts?.() ?? []));
   // Each entry by a tag of its kind and identity: the toast says the ones not said yet on this device, once.
   const recoveryTags = (atRisk: boolean) => [
-    ...(atRisk ? recoveries?.drafts ?? [] : announcedDrafts).map(entry => recoveryEntryTag('draft', recoveryDraftIdentity(entry))),
+    ...(atRisk ? recoveries?.drafts ?? [] : toastDrafts).map(entry => recoveryEntryTag('draft', recoveryDraftIdentity(entry))),
     ...(atRisk ? structuralRecoveries?.entries ?? [] : announcedStructural).map(entry => recoveryEntryTag('structural', canonicalJson(entry))),
     ...(atRisk ? creatorRecoveries?.entries ?? [] : announcedCreator).map(entry => recoveryEntryTag('creator', canonicalJson(entry))),
     ...(atRisk ? socialRecoveries?.entries ?? [] : announcedSocial).map(entry => recoveryEntryTag('social', canonicalJson(entry)))];
@@ -1613,7 +1615,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (!fresh.length) return;
     for (const tag of fresh) recoverySeen.current.tags.add(tag);
     writeRecoverySeen(devNoticeStorage() ?? null, owner, recoverySeen.current.tags, recoveryTags(true));
-    setRecoveryToast({ count: fresh.length, at: Date.now() });
+    setRecoveryToast({ count: fresh.length, at: Date.now(), tags: fresh });
     // The tags stand for the entries; their joined text is the dependency.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [announcedSignature, session.userId]);
@@ -1753,8 +1755,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     + announcedStructural.filter(entry => entry.documentId === openDocumentId).length : 0;
   const documentRecovery = documentRecoveries > 0 && <p className={styles.documentRecovery} data-document-recovery>
     <button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>이 문서에 복구할 입력 {documentRecoveries}개 ›</button></p>;
-  const recoveryToastContent = recoveryToast && <div className={styles.recoveryToast} role="status" data-recovery-toast {...recoveryToastLife.hold}>
-    <p>{programRecoveryToastText(recoveryToast.count)}</p>
+  const recoveryToastCount = recoveryToast?.tags.filter(tag => announcedTags.includes(tag)).length ?? 0;
+  const recoveryToastContent = recoveryToast && recoveryToastCount > 0 && <div className={styles.recoveryToast} role="status" data-recovery-toast {...recoveryToastLife.hold}>
+    <p>{programRecoveryToastText(recoveryToastCount)}</p>
     <div><button type="button" onClick={() => setRecoveryToast(null)}>닫기</button>
       <button type="button" onClick={() => { recoveryToastLife.held.current = false; setRecoveryToast(null);
         // The toast goes as the sheet opens: closing the sheet brings the focus to 나 (where the badge is), not to nothing.

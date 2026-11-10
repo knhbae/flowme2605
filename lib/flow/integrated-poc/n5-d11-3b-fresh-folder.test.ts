@@ -70,6 +70,8 @@ ${declared('endFolderNoticeIfOver')}
 ${declared('rememberPosition')}
 let indentCandidate = null, indentAction = null;
 const currentIndentAction = (${valueOf('currentIndentAction')});
+// 저장 재설계 B: the writing rules are tested in writing-guard.test.ts; here they plan nothing.
+const writingRule = () => false;
 const applyFreshIndent = (${valueOf('applyFreshIndent')});
 const adjustIndentPlan = (${valueOf('adjustIndentPlan')});
 const canApplyIndent = (${valueOf('canApplyIndent')});

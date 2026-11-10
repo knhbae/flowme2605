@@ -50,7 +50,7 @@ function guardFor(draft: Draft, docId: string) {
   const messages: string[] = [], textarea = { value: draft.getState().raw, selectionStart: 0, selectionEnd: 0 };
   const scope = { controller: draft, textarea, props: { docId }, setMessage: (text: string) => messages.push(text), indentRefusal: { current: null },
     composingRef: { current: false }, inputLockedRef: { current: false }, compositionGeneration: { current: 0 }, propsRef: { current: { docId, validateWorkspace: () => true } },
-    undoFolderMove: () => false, explainRawFolderUndo: () => {}, currentIndentAction: () => null, heldInput: () => undefined, accessFor: () => undefined, folderRefusal: { current: null },
+    undoFolderMove: () => false, explainRawFolderUndo: () => {}, currentIndentAction: () => null, writingRule: () => false, heldInput: () => undefined, accessFor: () => undefined, folderRefusal: { current: null },
     currentDoc: () => M.getDocument(draft.getState().working, docId), programTextProtectionMessage: () => 'PROTECTED', FOLDER_INDENT_NOTICE, textEditTouchesLinkedFolderIndent, linkedFolderLinesTextEditMoves, M };
   const code = ts.transpileModule(refuseSource + '\nconst guard = (' + guardSource + ');', { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
   const guard = new Function(...Object.keys(scope), code + '\nreturn guard;')(...Object.values(scope)) as (event: unknown) => void;
@@ -79,7 +79,8 @@ test('N5 case 1: ⇤ on the automatic blank is an ordinary edit; ⌫ in the subf
   const old = phoneDoc((d, id) => { pick(d, id, 3, '- /폰임시'); pick(d, id, 4, '  - /새이름3'); });
   old.draft.updateRaw(plan.nextRaw, '', { inputType: 'insertText' });
   assert.equal(old.draft.updateRaw(broken, '', { inputType: 'deleteContentBackward' }), false);
-  assert.deepEqual([old.draft.getState().invalid, old.draft.getState().error], [true, '하위 폴더의 들여쓰기와 상위 폴더를 확인해 주세요. 입력은 남아 있습니다.']);
+  // 저장 재설계 B (11/10): the draft now holds that line (with the same reason) instead of refusing the document whole.
+  assert.deepEqual([old.draft.getState().invalid, old.draft.getState().error, old.draft.getState().held?.message], [true, '', '하위 폴더의 들여쓰기와 상위 폴더를 확인해 주세요. 입력은 남아 있습니다.']);
   // Now the editor's guard stops it: nothing changes, the reason shows, saving is not blocked.
   const guard = guardFor(draft, docId);
   assert.equal(guard.press('deleteContentBackward', at), true);

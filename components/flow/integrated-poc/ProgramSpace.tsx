@@ -1576,6 +1576,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       blocksExternalSnapshot: (before, next) => Object.values(externalReaders.current).some(read => read?.(before, next)) || Object.values(recurrencePorts.current).some(port => port?.blocksExternalSnapshot?.(before, next)),
       pendingDocumentIds: () => Object.keys(dirty.current).filter(id => dirty.current[id]),
       captureDrafts: () => [...Object.keys(dirty.current).filter(id => dirty.current[id]).map(id => ({ documentId: id, title: documentsRef.current.find(doc => doc.id === id)?.title ?? '작성 중 문서', raw: draftReaders.current[id]?.() ?? '' })), ...Object.values(recurrencePorts.current).flatMap(port => port?.captureDrafts?.() ?? [])],
+      captureHeldDrafts: () => [...Object.keys(draftReaders.current).filter(id => saveStatusReaders.current[id]?.().held === true)
+        .map(id => ({ documentId: id, title: documentsRef.current.find(doc => doc.id === id)?.title ?? '작성 중 문서', raw: draftReaders.current[id]?.() ?? '' })),
+        ...Object.values(recurrencePorts.current).flatMap(port => port?.captureHeldDrafts?.() ?? [])],
       // Unconfirmed child panels go to the tab's recovery only, never to captureDrafts: save-ACK
       // ownership needs exactly one document draft there, and input boundaries read it too.
       captureRecoveryDrafts: () => childDraftRecoveryEntries(Object.values(childDraftReaders.current).flatMap(read => read?.() ?? [])),

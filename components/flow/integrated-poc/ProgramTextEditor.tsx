@@ -12,7 +12,7 @@ import { programBracketDate, programBracketDatePlan, programDateHeaderPlan, prog
 import type { ProgramPrivateSpace } from '@/lib/flow/integrated-poc/contract';
 import { programRepeatLine, programRepeatSeen, settleProgramRepeatLines, PROGRAM_REPEAT_BLOCK_TEXT, PROGRAM_REPEAT_UNDO_REFUSED, type ProgramRepeatCheck } from '@/lib/flow/integrated-poc/repeat-commands';
 import { parseProgramRepeatWords, programRepeatTitle, readProgramRepeatMarker } from '@/lib/flow/integrated-poc/repeat-line';
-import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
+import { programCalendarDate, programDateLabel } from '@/lib/flow/integrated-poc/date-label';
 import { readChildDrafts, type ProgramChildDraft } from '@/lib/flow/integrated-poc/child-draft-recovery';
 import { createWritingBarHold, folderBarLine, heldTargetVerdict, taskMarkerLock, toggleTaskLine, writingBarLine, writingBarTarget, type WritingBarAction, type WritingBarLine, type WritingBarTarget } from '@/lib/flow/integrated-poc/writing-bar';
 import { programFlowBelow, programKeyboardBarCramped, programKeyboardBarPlace, programKeyboardBarSettle, programKeyboardRoom, programVisibleBottom } from '@/lib/flow/integrated-poc/keyboard-bar-place';
@@ -52,9 +52,12 @@ import { programWritingDialogPlace } from '@/lib/flow/integrated-poc/writing-dia
 import { revealProgramEditorLine } from './editor-reveal';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
 import { programScaffoldRemoval } from '@/lib/flow/integrated-poc/writing-scaffold';
+import { planProgramWritingInput, type WritingPlan, type WritingSplice } from '@/lib/flow/integrated-poc/writing-guard';
+import { programAlignRows } from '@/lib/flow/integrated-poc/writing-hold';
+import { programAbout, programHeldFix, programHeldPlain, programHeldReasonText, programPasteFit, programPasteOverLimit, programTextLimitShare, programTextRoom } from '@/lib/flow/integrated-poc/writing-guard-notice';
 import { PROGRAM_MEMO_TIP_MS, PROGRAM_MEMO_TIP_TEXT, programMemoTipLeft, programMemoTipStorage, programMemoTipTake } from '@/lib/flow/integrated-poc/memo-enter-tip';
 import { programNoticeEndsAt, programNoticeOrder, type ProgramNoticeAction, type ProgramNoticeTone } from '@/lib/flow/integrated-poc/program-notice';
-import { programFolderCreatedNotice, programFolderKeptText, programFolderMoveNotice, programFolderRelinkedNotice, programFolderRenamedEverywhere } from '@/lib/flow/integrated-poc/folder-notice';
+import { programFolderCreatedNotice, programFolderKeptText, programFolderMoveNotice, programFolderRelinkedNotice, programFolderRenamedEverywhere, ro } from '@/lib/flow/integrated-poc/folder-notice';
 import { programFolderCreationLocation, programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
 import { ProgramFolderRegionEditor, programRegionError, type ProgramFolderRegionPort, type ProgramFolderRegionSnapshot } from './ProgramFolderRegionEditor';
 import regionStyles from './ProgramFolderRegionEditor.module.css';
@@ -114,7 +117,7 @@ export function programTextSelectionAfterChange(before: TextWorkspaceState, next
 }
 export type ProgramSourceFocus = (target: { documentId: string; lineId: string; raw: string }) => boolean;
 /** Read-only UI state for explaining a refused view change, not save authority. */
-export type ProgramTextSaveStatus = { composing: boolean; saving: boolean; failed: boolean };
+export type ProgramTextSaveStatus = { composing: boolean; saving: boolean; failed: boolean; held?: boolean };
 
 export interface ProgramTextEditorProps {
   /** Optional integration ports are ignored by the legacy editor. */
@@ -405,6 +408,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // int5 QA P2-INT5-1: the text before a start was taken away and the end of that start, until the next input: a ↶ that
   // brings exactly that text back leaves the caret at the start's end, nothing selected (the browser selects what it restored).
   const scaffoldRestoreRef = useRef<{ raw: string; caret: number } | null>(null);
+  // 저장 재설계 B (11/10): a writing rule's own edit in flight (onChange hands its splice to the draft) and the notice of the
+  // writing rules (a mark taken whole, a head merge asked, a paste, the limit); the caret's line, for a held line's words.
+  const plannedInputRef = useRef<{ raw: string; splice?: WritingSplice } | null>(null);
+  const applyingPlanRef = useRef(false);
+  const [writingNotice, setWritingNotice] = useState<{ tone: ProgramNoticeTone; text: string; detail?: string; actions?: ProgramNoticeAction[]; key: number; paint?: number[] } | null>(null);
+  const writingNoticeKeys = useRef(0);
+  const [writingCaretLine, setWritingCaretLine] = useState(-1);
+  const [heldClosed, setHeldClosed] = useState<string | null>(null);
+  const limitStepRef = useRef<{ docId: string; step: number }>({ docId: '', step: 0 });
   // memo-enter (11/10): the tip after a plain Enter continued a memo (its key; null when none shows).
   const [memoTip, setMemoTip] = useState<number | null>(null);
   const memoTipKeys = useRef(0);
@@ -517,6 +529,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [picker, setPicker] = useState<FolderPickerView | null>(null), pickerRef = useRef<FolderPickerView | null>(null);
   const pickerCompositionOwner = useRef<FolderPickerCompositionOwner | null>(null);
   const pickerId = useId(), [pickerDismissed] = useState(createFolderPickerDismissal), pickerRecent = useRef<string[]>([]);
+  const writingRootId = useId();
+  // 저장 재설계 B: a plain writing notice (a mark taken whole, a paste) goes after 6 s, like the other plain notices.
+  useEffect(() => {
+    if (!writingNotice || writingNotice.tone !== 'info' || noticeHeld) return;
+    const key = writingNotice.key, timer = setTimeout(() => setWritingNotice(previous => previous?.key === key ? null : previous), 6000);
+    return () => clearTimeout(timer);
+  }, [writingNotice, noticeHeld]);
   const pickerIndex = useRef<{ folders: TextWorkspaceState['folders']; rows: FolderPickerCandidate[] } | null>(null);
   const [pickerHold] = useState(createFolderPickerHold), [pickerHeld, setPickerHeld] = useState(false);
   const pickerIme = useRef<PickerImeCycle | null>(null), pickerHoldLimit = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1543,6 +1562,129 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       : { kind: 'shape', why: programIndentShape(area.value, area.selectionStart, action === 'outdent') } as const);
     setMessage(programIndentRefusalNotice(action, refusal));
   }
+  /** 저장 재설계 B (11/10): one edit the writing rules planned, through the native editor (so one ↶ takes it back), its
+   *  splice handed to the draft with it (none for whole lines, which the model matches by their words). */
+  function applyWritingEdit(splice: WritingSplice, submitted: WritingSplice | undefined, selectionAfter?: { start: number; end: number }) {
+    const area = textArea(), editor = editorRef.current; if (!area || !editor) return false;
+    plannedInputRef.current = { raw: area.value.slice(0, splice.start) + splice.text + area.value.slice(splice.end), splice: submitted };
+    applyingPlanRef.current = true;
+    try { return editor.replaceRange(splice.start, splice.end, splice.text, selectionAfter ? { selectionAfter } : undefined) === true; }
+    finally { applyingPlanRef.current = false; plannedInputRef.current = null; setWritingCaretLine(area.value.slice(0, area.selectionStart).split('\n').length - 1); }
+  }
+  function showWritingNotice(tone: ProgramNoticeTone, text: string, actions?: ProgramNoticeAction[], detail?: string, paint?: number[]) {
+    setWritingNotice({ tone, text, detail, actions, key: ++writingNoticeKeys.current, paint });
+  }
+  /** A date head's name for a question: "내일 11월 11일", "11월 14일 (토)", "날짜 미정". */
+  function headDateName(date: string | null | undefined) {
+    if (!date) return '날짜 미정';
+    const near = programDateLabel(date, today());
+    return ['오늘', '내일', '어제'].includes(near) ? `${near} ${programCalendarDate(date, today(), false)}` : near;
+  }
+  /** The writing rules' outcome for one key or paste: a planned edit (with K1's notice when a mark went whole), a key
+   *  kept (with why), or K2's question. */
+  function runWritingPlan(plan: WritingPlan, typed: WritingSplice, type: string) {
+    const area = textArea(); if (!area) return;
+    if (plan.kind === 'keep') {
+      if (plan.why === 'indent-refused') { indentRefusal.current = { kind: 'model', reason: null }; explainIndent(typed.text ? 'indent' : 'outdent', area); }
+      else if (plan.why === 'folder-indent') setMessage(FOLDER_INDENT_NOTICE);
+      else if (plan.why === 'date-head') showWritingNotice('info', '날짜 머리는 날짜 고르기로 바꿉니다');
+      return;
+    }
+    if (plan.kind === 'ask') { askMerge(plan, typed); return; }
+    const before = area.value, removed = before.slice(plan.splice.start, plan.splice.end);
+    if (!applyWritingEdit(plan.splice, plan.structural ? undefined : plan.splice, plan.selectionAfter)) return;
+    // K1: ⌫ took a mark whole; the title stays as plain text. One ↶ (or 되돌리기) puts the mark back.
+    const property = /-\s+(메모|날짜|시간):/.exec(removed);
+    if ((plan.why === 'mark' || plan.why === 'join') && (/-\s+\[[^\]\n]*\]/.test(removed) || property))
+      showWritingNotice('info', property && !/-\s+\[/.test(removed) ? `${property[1]} 표식을 지웠습니다` : '할 일 표식을 지웠습니다', [{ label: '되돌리기', run: whenComposed(() => { setWritingNotice(null); undoInput(); }) }]);
+    else if (type === 'insertFromPaste') notePaste(plan.splice.start, plan.splice.text);
+  }
+  /** K2: a deletion that would break a date or folder head paints the section it heads and asks first. [합치기] takes the
+   *  head away (a folder's lines move out one step with it); [그대로 두기] changes nothing. The paint is drawn, not selected:
+   *  the caret stays where it was, so nothing typed next (a composition included) can replace the head. */
+  function askMerge(plan: Extract<WritingPlan, { kind: 'ask' }>, typed: WritingSplice) {
+    const area = textArea(), state = draftRef.current?.getState(); if (!area || !state) return;
+    const raw = area.value, lines = raw.split('\n'), at = (index: number) => lines.slice(0, index).reduce((sum, line) => sum + line.length + 1, 0);
+    const first = plan.heads[0];
+    const rows = M.rowMeta(state.working, propsRef.current.docId) as ({ kind: string; date?: string | null; subtreeEndIndex?: number })[];
+    const sectionEnd = first.kind === 'date' ? (index => index < 0 ? lines.length : index)(rows.findIndex((row, index) => index > first.index && row.kind === 'date'))
+      : rows[first.index]?.subtreeEndIndex ?? first.index + 1;
+    const paint = Array.from({ length: Math.max(1, sectionEnd - first.index) }, (_, offset) => first.index + offset);
+    let text: string, detail: string;
+    if (first.kind === 'date') {
+      const next = rows.findIndex((row, index) => index > first.index && row.kind === 'date'), end = next < 0 ? rows.length : next;
+      const count = rows.slice(first.index + 1, end).filter(row => row.kind === 'task').length;
+      const above = rows.slice(0, first.index).reverse().find(row => row.kind === 'date');
+      const into = above ? programDateLabel(above.date, today()) : '날짜 없음';
+      text = `‘${headDateName(rows[first.index]?.date)}’ 구획을 위 구획과 합칠까요?`;
+      detail = `할 일 ${count}개가 ${into}${ro(into)}`;
+    } else {
+      const end = rows[first.index]?.subtreeEndIndex ?? first.index + 1, count = rows.slice(first.index + 1, end).filter(row => row.kind === 'task').length;
+      text = `‘${first.text.replace(/^ *- \//, '').trim()}’ 폴더 줄을 지우고 위와 합칠까요?`;
+      detail = `할 일 ${count}개가 이 폴더 줄 밖으로`;
+    }
+    const keep = () => { setWritingNotice(null); const now = textArea(); if (now && now.value === raw) now.focus({ preventScroll: true }); };
+    const merge = () => {
+      setWritingNotice(null); const now = textArea(); if (!now || now.value !== raw) return;
+      const splice = plan.merge.splice;
+      applyWritingEdit(splice, plan.merge.structural ? undefined : splice, { start: splice.start, end: splice.start });
+    };
+    showWritingNotice('choose', text, [{ label: '합치기', run: whenComposed(merge) }, { label: '그대로 두기', run: whenComposed(keep) }], detail, paint);
+  }
+  /** P1: lines pasted are kept as typed; two or more plain lines get [할 일 n개로] and ↶ beside the notice. */
+  function notePaste(start: number, text: string) {
+    queueMicrotask(() => {
+      const area = textArea(); if (!area || area.value.slice(start, start + text.length) !== text) return;
+      const raw = area.value, first = raw.slice(0, start).split('\n').length - 1, count = text.split('\n').length;
+      const lines = raw.split('\n'), at = (index: number) => lines.slice(0, index).reduce((sum, line) => sum + line.length + 1, 0);
+      const from = start === at(first) ? first : first + 1, to = first + count - 1;
+      const plain = [] as number[];
+      for (let index = from; index <= to && index < lines.length; index++) {
+        const line = lines[index];
+        if (line.trim() && !/^ *-\s+\[/.test(line) && !/^ *- \//.test(line) && !/^ *-\s+(메모|날짜|시간):/.test(line) && !/^\[.*\]$/.test(line.trim())) plain.push(index);
+      }
+      if (to - from + 1 < 2) return;
+      const toTasks = () => {
+        const now = textArea(); if (!now || now.value !== raw) return;
+        const block = lines.slice(from, to + 1).map((line, offset) => plain.includes(from + offset) ? `${/^ */.exec(line)![0]}- [ ] ${line.trim().replace(/^-\s+/, '')}` : line).join('\n');
+        setWritingNotice(null);
+        applyWritingEdit({ start: at(from), end: at(to) + lines[to].length, text: block }, undefined);
+      };
+      showWritingNotice('info', `${to - from + 1}줄을 붙여넣었습니다 · 원문 그대로`, [
+        ...(plain.length >= 2 && to - from < 60 ? [{ label: `할 일 ${plain.length}개로`, run: whenComposed(toTasks) }] : []),
+        { label: '되돌리기', run: whenComposed(() => { setWritingNotice(null); undoInput(); }) }]);
+    });
+  }
+  /** P3: a paste that would take the text past the limit is asked before anything goes in. */
+  function askLongPaste(start: number, end: number, text: string) {
+    const area = textArea(); if (!area) return;
+    const raw = area.value, fit = programPasteFit(raw, start, end, text);
+    showWritingNotice('warn', `붙여넣을 글이 깁니다 · ${programAbout(text.length)} · ${text.split('\n').length.toLocaleString('ko-KR')}줄`,
+      fit ? [{ label: `앞부분 ${programAbout(fit.length)}만 붙여넣기`, run: whenComposed(() => {
+        const now = textArea(), controller = draftRef.current; if (!now || now.value !== raw || !controller) return;
+        // A long text goes in at once (the browser's own insertion sends one input per line, each a full render):
+        // the draft takes it, then the screen shows it. This one step is not in ↶'s history, and the notice says so.
+        const next = raw.slice(0, start) + fit + raw.slice(end), caret = start + fit.length;
+        const accepted = controller.updateRaw(next, '', { inputType: 'insertFromPaste', inputSplice: { start, end, text: fit } });
+        editorRef.current?.setValue(controller.getState().raw, { selection: { start: caret, end: caret } });
+        if (accepted || controller.getState().held) scheduleSave();
+        showWritingNotice('info', `앞부분 ${programAbout(fit.length)}를 붙여넣었습니다`, [], '이 붙여넣기는 ↶로 되돌리지 않습니다');
+        checkTextLimit(next);
+      }) }] : [], `이 글에 남은 자리 ${programTextRoom(raw.slice(0, start) + raw.slice(end))} · 아직 넣지 않았습니다`);
+  }
+  /** P2: once at 80% of the limit and once more at 90%, per document. */
+  function checkTextLimit(raw: string) {
+    const docId = propsRef.current.docId, step = limitStepRef.current.docId === docId ? limitStepRef.current.step : 0, share = programTextLimitShare(raw);
+    const next = share >= 0.9 ? 2 : share >= 0.8 ? 1 : 0;
+    limitStepRef.current = { docId, step: Math.max(next, step) };
+    if (next > step) showWritingNotice('warn', `이 글이 한도의 ${next === 2 ? 90 : 80}%에 닿았습니다`, [], `남은 ${programTextRoom(raw)}`);
+  }
+  /** L2·L4: the caret goes to a held line (its end), shown. */
+  function goToHeldLine(index: number) {
+    const area = textArea(); if (!area) return;
+    const lines = area.value.split('\n'), end = lines.slice(0, index + 1).reduce((sum, line) => sum + line.length + 1, 0) - 1;
+    area.focus({ preventScroll: true }); area.setSelectionRange(end, end); revealProgramEditorLine(area, index); setWritingCaretLine(index);
+  }
   function pressBar(action: WritingBarAction) {
     if (inputLockedRef.current || propsRef.current.readOnly) return;
     const busy = composingRef.current || !!draftRef.current?.getState().saving && !indentsNow(action);
@@ -1814,7 +1956,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   useEffect(() => { propsRef.current.onInputFailureChange?.(inputFailed); }, [inputFailed]);
   useEffect(() => () => propsRef.current.onInputFailureChange?.(false), []);
   useEffect(() => {
-    propsRef.current.onRegisterSave?.(saveNow, () => ({ composing: composingRef.current, saving: !!checkPendingRef.current || !!draftRef.current?.getState().saving, failed: !!draftRef.current?.getState().error }));
+    propsRef.current.onRegisterSave?.(saveNow, () => ({ composing: composingRef.current, saving: !!checkPendingRef.current || !!draftRef.current?.getState().saving, failed: !!draftRef.current?.getState().error, held: !!draftRef.current?.getState().held?.lines.length }));
     propsRef.current.onRegisterSourceFocus?.(focusSourceRow);
     propsRef.current.onRegisterDraft?.(captureDraftRaw, () => draftRef.current?.getState().working ?? null);
     propsRef.current.onRegisterStructuralDraft?.(captureStructuralDraft);
@@ -2288,7 +2430,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       value: controller.getState().raw, label: '문서 내용', taskSplitEnabled: !!propsRef.current.authorizeTaskSplit,
       getCheckAction: (_index, meta) => programCheckboxAction(meta,
         meta.progressTargetId ? propsRef.current.taskAccess?.(meta.progressTargetId,currentState()) : undefined, today()),
-      getRowMeta: () => documentInput.paint(controller.getState().working)??textEditorRows(controller.getState().working, props.docId),
+      // 11/10 18:05 (실사용): rows of the text the model took, placed on the text shown; a refused or held line has none.
+      getRowMeta: () => { const state = controller.getState(), rows = documentInput.paint(state.working) ?? textEditorRows(state.working, props.docId);
+        const accepted = M.raw(M.getDocument(state.working, props.docId)), shown = textArea()?.value ?? state.raw;
+        return accepted === shown ? rows : programAlignRows(accepted, shown, rows) as typeof rows; },
       isActionDisabled: actionsDisabled,
       isPaintDisabled: paintDisabled,
       isIndentDisabled: indentDisabled,
@@ -2394,7 +2539,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         } else if (restored) accepted = controller.apply(restored, historyType === 'historyUndo' ? '날짜순 정렬 입력 취소' : '날짜순 정렬 다시 실행');
         else if ((historyType === 'historyUndo' || historyType === 'historyRedo') && orderHistoryRef.current.can(controller.getState().working, historyType)) controller.rejectRaw(raw);
         else if (input?.taskSplit && propsRef.current.authorizeTaskSplit?.(input.taskSplit.sourceLineId, controller.getState().working) !== true) controller.rejectRaw(raw);
-        else accepted = controller.updateRaw(raw, '', { inputType: historyType || input?.inputType || '', inputSplice: input?.inputSplice,compositionGeneration:compositionGeneration.current, ...(input?.taskSplit ? { taskSplit: input.taskSplit } : {}), folderHold: hold });
+        // 저장 재설계 B: a writing rule's own edit comes with its splice (none for whole lines).
+        else { const planned = plannedInputRef.current, plannedSplice = planned && planned.raw === raw ? planned.splice : undefined;
+          accepted = controller.updateRaw(raw, '', { inputType: historyType || input?.inputType || '', inputSplice: input?.inputSplice ?? plannedSplice,compositionGeneration:compositionGeneration.current, ...(input?.taskSplit ? { taskSplit: input.taskSplit } : {}), folderHold: hold }); }
         if (restored && accepted) {
           const position = orderPositionsRef.current.slice().reverse().find(entry => programSame(M.getDocument(entry.state, props.docId), M.getDocument(restored, props.docId)));
           if (position) queueMicrotask(() => { const area = textArea(); if (area && area.value === raw) { area.setSelectionRange(position.selection.start, position.selection.end, position.selection.direction); area.scrollTop = position.scrollTop; rememberPosition(); } });
@@ -2442,7 +2589,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           barTriggerFn.current(beforeRaw,historyType||input?.inputType||'');
           scheduleSave();
         }
+        // 저장 재설계 B: a refused input with held lines still saves its other lines.
+        else if (controller.getState().held) scheduleSave();
         else if (timerRef.current) clearTimeout(timerRef.current);
+        if (accepted || controller.getState().held) checkTextLimit(raw);
         rememberPosition();
       },
       onAction: handleAction,
@@ -2492,6 +2642,28 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // captured first, so the Enter that shows it is not one of them.
     const clearMemoTip = () => setMemoTip(null);
     for (const type of ['keydown', 'compositionstart', 'pointerdown', 'focusout']) host.addEventListener(type, clearMemoTip, true);
+    /** 저장 재설계 B (11/10): the writing rules (writing-guard.ts) on a person's own ⌫, Delete, cut, paste or typed letter,
+     *  before the browser edits. Only on a draft whose model text is the text shown; never on an edit the editor or the
+     *  bar makes itself (theirs insert whole strings), a composition, or Enter (the native Enter rules own it). */
+    const writingRule = (event: InputEvent, type: string, start: number, end: number, insert: string | null) => {
+      if (applyingPlanRef.current || !textarea || composingRef.current || event.isComposing || propsRef.current.folderId) return false;
+      const text = type === 'insertFromPaste' ? (event.dataTransfer?.getData('text/plain') ?? event.data ?? '').replace(/\r\n?/g, '\n') : type === 'deleteByCut' ? '' : insert;
+      if (text === null || !(type === 'deleteContentBackward' || type === 'deleteContentForward' || type === 'deleteByCut'
+        || type === 'insertFromPaste' && !!text || type === 'insertText' && text.length === 1 && text !== '\n')) return false;
+      const shown = controller.getState();
+      if (shown.invalid || textarea.value !== shown.raw || M.raw(M.getDocument(shown.working, props.docId)) !== textarea.value) return false;
+      const from = type === 'deleteByCut' ? textarea.selectionStart : start, to = type === 'deleteByCut' ? textarea.selectionEnd : end;
+      if (type === 'deleteByCut' && from === to) return false;
+      const stop = () => { event.preventDefault(); event.stopImmediatePropagation(); };
+      // P3: a paste past the limit is asked before anything goes in.
+      if (type === 'insertFromPaste' && programPasteOverLimit(textarea.value, from, to, text)) { stop(); askLongPaste(from, to, text); return true; }
+      // A long paste goes in as the browser pastes it (one input); its line problems, if any, are held lines.
+      if (type === 'insertFromPaste' && (text.length > 4000 || text.split('\n').length > 60)) { notePaste(from, text); return false; }
+      const plan = planProgramWritingInput(M, shown.working, props.docId, { start: from, end: to, text }, type);
+      if (plan.kind === 'apply' && !plan.changed) { if (type === 'insertFromPaste') notePaste(from, text); return false; }
+      // A cut's copy is already made (the cut event comes first); only its deletion is planned.
+      stop(); runWritingPlan(plan, { start: from, end: to, text }, type); return true;
+    };
     const preventLockedInput = (event: Event) => {
       controller.cancelPreparedRaw();
       const type = (event as InputEvent).inputType;
@@ -2506,6 +2678,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         else if (type === 'insertParagraph' || type === 'insertLineBreak') insert = '\n';
         else if (type === 'deleteContentBackward') { insert = ''; if (start === end) start = Math.max(0, start - 1); }
         else if (type === 'deleteContentForward') { insert = ''; if (start === end) end = Math.min(textarea.value.length, end + 1); }
+        if (insert !== null && currentIndentAction(textarea.value.slice(0, start) + insert + textarea.value.slice(end))) return;
+        if (writingRule(event as InputEvent, type ?? '', start, end, insert)) return;
         if (insert !== null) {
           const raw=textarea.value.slice(0,start)+insert+textarea.value.slice(end);
           // D11 B: this proof exists only inside this exact synchronous native indentation.
@@ -2536,9 +2710,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // (a folder name selected and typed over in Hangul). The finish is scheduled anyway, for after compositionend.
     const finishOnBlur = () => { if (composingRef.current) finishAfterComposition.current = true; finishHeldFolderLine(); finishRenamedFolderLines(true); };
     // N10 (SPEC 1): the caret leaving a line (or the editor) settles the repeat lines it has left.
-    const settleOnMove = () => { settleRepeatLines(false); settleScaffold(); }, settleOnBlur = () => settleRepeatLines(true);
+    // 저장 재설계 B: the caret's line, for a held line's words and fixes.
+    const noteCaretLine = () => { if (textarea) setWritingCaretLine(textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1); };
+    const settleOnMove = () => { settleRepeatLines(false); settleScaffold(); noteCaretLine(); }, settleOnBlur = () => settleRepeatLines(true);
     const observeInput = (event: Event) => {
       const input=event as InputEvent;historyTypeRef.current=input.inputType||historyTypeRef.current;lastRepeatCheck.current=null;
+      // 저장 재설계 B: typing on ends K2's question (nothing was merged); the caret's line follows the typing. Not during a
+      // planned edit: the browser sends one input per line of it, and the editor would render each time.
+      if (!applyingPlanRef.current) { setWritingNotice(previous => previous?.tone === 'choose' ? null : previous); noteCaretLine(); }
       // int5 QA P2-INT5-1: a ↶ that brought back a start taken away leaves the caret at its end, nothing selected.
       const restore=scaffoldRestoreRef.current;
       if(restore&&textarea){if(textarea.value===restore.raw){scaffoldRestoreRef.current=null;textarea.setSelectionRange(restore.caret,restore.caret);}else if(input.inputType!=='historyUndo')scaffoldRestoreRef.current=null;}
@@ -3237,6 +3416,28 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // A refused edit that names its line: shown with the reason's first sentence (다시 저장 judges it again).
   const refused = draft.invalid && draft.problemLine !== undefined && !props.readOnly;
   const refusedLine = (draft.problemLine ?? 0) + 1, refusedReason = draft.error.split(/(?<=\.)\s/)[0];
+  // 저장 재설계 B (L2·L4, 11/10): held lines are marked (a wavy line and a band before it); the notice row says how many
+  // and goes to the first ([그 줄로]); with the caret on one, its reason and its one-press fix ([맞추기]·[할 일로]·[맨 앞으로],
+  // [글로 두기] for a broken mark). A fix is one edit: one ↶ takes it back.
+  const held = !props.readOnly && draft.held?.lines.length ? draft.held : null;
+  const heldKey = held ? `${draft.raw.length}:${held.lines.join(',')}` : '';
+  const heldAt = held && held.lines.includes(writingCaretLine) ? writingCaretLine : -1;
+  const applyHeldFix = (fix: { start: number; end: number; text: string }) => whenComposed(() => {
+    const area = textArea(); if (!area || area.value !== draftRef.current?.getState().raw) return;
+    applyWritingEdit({ start: fix.start, end: fix.end, text: fix.text }, undefined, { start: fix.start + fix.text.length, end: fix.start + fix.text.length });
+  });
+  const heldView = !held || heldClosed === heldKey ? null : heldAt >= 0 ? (() => {
+    const reason = held.reasons[heldAt] ?? 'other', fix = programHeldFix(draft.raw, heldAt, reason, held.restore), plain = programHeldPlain(draft.raw, heldAt, reason);
+    return { tone: 'warn' as const, text: programHeldReasonText(reason, held.message),
+      detail: reason === 'records' ? '기록은 그 할 일에 그대로 있습니다 · 다른 줄은 저장됩니다' : '이 줄은 아직 저장되지 않았습니다 · 다른 줄은 저장됩니다',
+      actions: [...(fix ? [{ label: fix.label, run: applyHeldFix(fix) }] : []), ...(plain ? [{ label: plain.label, run: applyHeldFix(plain) }] : [])],
+      closeLabel: '알림 닫기', close: () => setHeldClosed(heldKey) };
+  })() : { tone: 'warn' as const, text: `저장 안 됨 · 줄 ${held.lines.length}개를 고치면 저장됩니다`,
+    actions: [{ label: '그 줄로', run: () => goToHeldLine(held.lines[0]) }], closeLabel: '알림 닫기', close: () => setHeldClosed(heldKey) };
+  const heldCss = (held ? `${held.lines.map(index => `[data-writing-root="${writingRootId}"] .tle-line[data-line-index="${index}"]`).join(',')}`
+    + '{text-decoration:underline wavy #b45309;text-decoration-thickness:1px;text-underline-offset:4px;box-shadow:inset 3px 0 0 #b45309}' : '')
+    // K2: the section a merge would join, painted while the question shows.
+    + (writingNotice?.paint?.length ? `${writingNotice.paint.map(index => `[data-writing-root="${writingRootId}"] .tle-line[data-line-index="${index}"]`).join(',')}{background:var(--flowme-b-selected,#e6ecfb)}` : '');
   // While typing, anything short of a warning is one quiet dot, a fast "저장됨" included.
   const quietStatus = !!serverView && typing && !statusWarn && !inputLocked;
   // The bar's slot is the same status, short; the toolbar slot holds the one live announcement.
@@ -3349,17 +3550,21 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       actions: view.actions.map(button => ({ label: button.label, run: run(button.step) })),
       chips: view.chips.map(button => ({ label: button.label, current: button.current, run: run(button.step) })) };
   }
-  memoTipBlockedRef.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice || !!locationNotice || !!scheduleNotice;
+  memoTipBlockedRef.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice || !!writingNotice || !!heldView || !!locationNotice || !!scheduleNotice;
   const noticeViews = programNoticeOrder([
     ...(moving ? [{ moving: true, tone: 'choose' as const, text: `${moving.label} · 하위 ${moving.descendantCount}줄`, closeLabel: null, close: undefined,
       actions: [{ label: '위치 선택', run: () => setPanel({ kind: 'move', lineId: moving.lineId }) }, { label: '이동 취소', run: cancelMove }] }] : []),
     ...(message && !panel ? [{ tone: 'warn' as const, text: message, closeLabel: '안내 닫기', close: () => setMessage('') }] : []),
+    // 저장 재설계 B: a writing question or warning answers the latest key (K2's question above all), so it leads its tone.
+    ...(writingNotice && writingNotice.tone !== 'info' ? [{ tone: writingNotice.tone, text: writingNotice.text, detail: writingNotice.detail, actions: writingNotice.actions, closeLabel: '알림 닫기', close: () => setWritingNotice(null) }] : []),
     ...(checkNotice ? [checkNoticeView(checkNotice)] : []),
     ...(locationNotice ? [{tone:'choose' as const,text:locationNotice.label,closeLabel:'알림 닫기',close:()=>setLocationNotice(null),actions:[{label:'되돌리기',run:whenComposed(()=>{stepLocation(false);})},...(locationOutside(locationNotice)?[{label:props.folderId&&locationNotice.folderId!==props.folderId?'그 폴더 보기':'그날 보기',run:whenComposed(()=>showLocation(locationNotice))}]:[])]}] : []),
     ...(scheduleNotice?[{tone:'choose' as const,text:scheduleNotice.text,closeLabel:'알림 닫기',close:()=>setScheduleNotice(null),actions:[{label:'되돌리기',run:whenComposed(()=>{stepScheduleUndo();})}]}]:[]),
     ...(folderNotice ? [{ tone: folderNotice.tone, text: folderNotice.text, actions: folderNotice.actions, closeLabel: '알림 닫기', close: () => setFolderNotice(null) }] : []),
     ...(repeatNotice ? [{ tone: repeatNotice.tone, text: repeatNotice.text, actions: repeatNotice.actions, closeLabel: '알림 닫기', close: () => setRepeatNotice(null) }] : []),
     ...(memoTip !== null ? [{ tone: 'info' as const, text: PROGRAM_MEMO_TIP_TEXT, closeLabel: '알림 닫기', close: () => setMemoTip(null) }] : []),
+    ...(heldView ? [heldView] : []),
+    ...(writingNotice?.tone === 'info' ? [{ tone: writingNotice.tone, text: writingNotice.text, detail: writingNotice.detail, actions: writingNotice.actions, closeLabel: '알림 닫기', close: () => setWritingNotice(null) }] : []),
   ]);
   const releaseNotice = () => { if (!noticeHeld) return; setNoticeHeld(false); restartFolderNotice(); restartCheckNotice(); };
   const notices = <div ref={noticeRef} className={styles.notices} onPointerDown={() => setNoticeHeld(true)} onPointerUp={releaseNotice} onPointerLeave={releaseNotice}
@@ -3485,7 +3690,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     {/* Input v2 stage 2: 오늘 시작 줄 — today's head line in one press (focus first, so a phone's keyboard comes up). */}
     {todayStart && <button type="button" className={styles.todayStart} data-today-start disabled={inputLocked || draft.saving} onClick={startToday}>
       <span aria-hidden="true"><ProgramIcon name="plus" size={20} /></span>오늘 {programCalendarDate(today(), today())} 쓰기</button>}
-    <div ref={hostRef} className={`${styles.host}${props.directWriting ? ` ${styles.directWriting}` : ''}`} hidden={!!props.folderId} data-native-editor="v11-core" />
+    {heldCss && <style>{heldCss}</style>}
+    <div ref={hostRef} className={`${styles.host}${props.directWriting ? ` ${styles.directWriting}` : ''}`} hidden={!!props.folderId} data-native-editor="v11-core" data-writing-root={writingRootId} />
     {notices}
     {folderView && <ProgramFolderRegionEditor key={`${props.docId}:${props.folderId}`} styles={regionStyles} view={folderView} readOnly={!!props.readOnly} locked={inputLocked} saving={draft.saving} mode={mode} listEnterV2={!!props.authoringMode}
       hostClassName={styles.host} today={today()} onOpenLine={props.onOpenFolderLine}

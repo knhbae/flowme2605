@@ -66,24 +66,25 @@ test('P2: typing a task mark forward holds `- [` and `- [ ` until it closes, and
   assert.deepEqual(keys(percent, ['M3-END\n- [', 'M3-END\n- [5', 'M3-END\n- [50', 'M3-END\n- [50]', 'M3-END\n- [50] 반']), ['- [', '- [5', '- [50']);
 });
 
-test('P2: a closed mark that is wrong, or an open one with other lines changed, is still a refusal', () => {
+test('P2: a closed mark that is wrong, or an open one with other lines changed, is still not saved (저장 재설계 B: held on its lines)', () => {
   for (const raw of ['M3-END\n- [] 제목', 'M3-END\n- []']) {
     const draft = editor('M3-END\n- [ ] 제목');
     draft.updateRaw(raw, '', { inputType: 'insertText' });
     const state = draft.getState();
     assert.equal(state.invalid, true, raw);
     assert.equal(state.typingMark, undefined, raw);
-    assert.match(state.error, /형식을 확인해 주세요/, raw);
+    assert.deepEqual([state.held?.lines, state.held?.reasons[1], state.error], [[1], 'progress', ''], raw);
+    assert.match(state.held?.message ?? '', /형식을 확인해 주세요/, raw);
   }
   const pasted = editor('M3-END\n- [ ] 제목');
   pasted.updateRaw('M3-END 바뀜\n- [', '', { inputType: 'insertFromPaste' });
   assert.equal(pasted.getState().invalid, true);
   assert.equal(pasted.getState().typingMark, undefined);
-  assert.notEqual(pasted.getState().error, '');
+  assert.equal(pasted.getState().held?.reasons[1], 'mark');
   const added = editor('M3-END');
   added.updateRaw('M3-END\n메모\n- [', '', { inputType: 'insertFromPaste' });
   assert.equal(added.getState().typingMark, undefined);
-  assert.notEqual(added.getState().error, '');
+  assert.equal(added.getState().held?.reasons[2], 'mark');
 });
 
 test('P2: the editor tells the host of a refused input, not of a mark being typed', () => {

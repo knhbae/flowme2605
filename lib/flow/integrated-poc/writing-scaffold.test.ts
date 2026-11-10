@@ -33,7 +33,7 @@ test('the editor: remembered after the menu\'s insertion, settled when the caret
   assert(editor.includes("if(!doc||index<0||doc.lines[index].text!==held.text){scaffoldRef.current=null;return;}"));
   assert(editor.includes("if(area.value.slice(0,area.selectionStart).split('\\n').length-1===index)return;"));
   assert(editor.includes("editorRef.current?.replaceRange(removal.from,removal.to,'',{selectionAfter:removal.selection})"));
-  assert(editor.includes('const settleOnMove = () => { settleRepeatLines(false); settleScaffold(); }'));
+  assert(editor.includes('const settleOnMove = () => { settleRepeatLines(false); settleScaffold(); noteCaretLine(); }'));
 });
 
 test('int5 QA P3-INT5-2: a 소제목 or 일반 글 start left as written goes with its break', () => {

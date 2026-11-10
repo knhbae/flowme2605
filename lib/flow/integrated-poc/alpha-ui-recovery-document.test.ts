@@ -4,11 +4,34 @@ import { createAlphaUiRecovery, type AlphaUiDraft, type AlphaUiRecoveryPort } fr
 import {
   alphaUiRecoveryDocumentDrafts, captureAlphaUiRecoveryDocuments, clearConfirmedAlphaUiRecoveryDocuments,
   createAlphaUiRecoveryDocuments, groupAlphaUiRecoveryDocuments, keepAlphaUiRecoveryDocument,
-  latestAlphaUiDocumentDrafts, loadAlphaUiRecoveryDocuments, parkAlphaUiRecoveryDocuments, parkedAlphaUiRecoveryDocuments,
+  latestAlphaUiDocumentDrafts, loadAlphaUiRecoveryDocuments, parkAlphaUiRecoveryDocuments, parkedAlphaUiRecoveryDocuments, recoveryToastDraftsForHeldInput,
 } from './alpha-ui-recovery-document';
 
 const draft = (raw: string, documentId = 'document-a', title = '작성 문서'): AlphaUiDraft => ({ documentId, title, raw });
 const temporary = (raw: string): AlphaUiDraft => ({ title: '임시 입력', raw });
+
+test('B-held current RAW stays stored and counted while only its generic toast is quiet', () => {
+  const held = draft('합성 보류 줄'), state = captureAlphaUiRecoveryDocuments(createAlphaUiRecoveryDocuments(), [held]);
+  const stored = alphaUiRecoveryDocumentDrafts(state), before = structuredClone(state);
+  assert.deepEqual(recoveryToastDraftsForHeldInput(stored, state, [held]), []);
+  assert.deepEqual(stored, [held]); assert.equal(stored.length, 1);
+  assert.deepEqual(alphaUiRecoveryDocumentDrafts(state), [held]); assert.deepEqual(state, before);
+});
+
+test('quiet B toast preserves identical loaded history, parked copies and another document failure', () => {
+  const held = draft('합성 보류 줄'), prior = draft('합성 이전 원문', 'document-parked'), other = draft('합성 전송 실패 입력', 'document-b');
+  const state = { loaded: [held], parked: [prior], active: [held, other] };
+  const stored = alphaUiRecoveryDocumentDrafts(state), before = structuredClone(stored);
+  assert.deepEqual(recoveryToastDraftsForHeldInput(stored, state, [held]), [held, prior, other]);
+  assert.deepEqual(stored, before); assert.equal(alphaUiRecoveryDocumentDrafts(state).length, 4);
+});
+
+test('stale held snapshots and documentless inputs never silence a current recovery notice', () => {
+  const current = draft('합성 새 입력'), temp = temporary('합성 임시 입력');
+  const state = { loaded: [], parked: [], active: [current, temp] }, stored = alphaUiRecoveryDocumentDrafts(state);
+  assert.deepEqual(recoveryToastDraftsForHeldInput(stored, state, [draft('합성 이전 입력'), temp]), stored);
+  assert.deepEqual(recoveryToastDraftsForHeldInput(stored, state, []), stored);
+});
 class Storage {
   values = new Map<string, string>();
   removed: string[] = [];

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import * as ts from 'typescript';
-import { announcedRecoveries, announcedRecoveryEntries, recoveryDraftIdentity } from './saved-input-notice';
+import { announcedRecoveries, announcedRecoveryEntries, recoveryDraftIdentity, recoveryEntryTag } from './saved-input-notice';
 import * as documentRecovery from './alpha-ui-recovery-document';
 import type { AlphaUiDraft } from './alpha-ui-recovery';
 
@@ -92,8 +92,24 @@ test('the 복구함 lists and counts every stored entry even while the notice co
   assert(!source.includes('open={!!storedTotal'));
   // The badge names use their own label, so two different numbers never share "보관한 입력"; the toast counts the new ones.
   assert(source.includes("aria-label={`나${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`}"));
-  assert(source.includes('<p>{programRecoveryToastText(recoveryToast.count)}</p>'));
+  assert(source.includes('<p>{programRecoveryToastText(recoveryToastCount)}</p>'));
   assert(!/보관한 입력 \$?\{savedTotal\}/.test(source));
+});
+
+test('only current held draft toast tags go quiet; an already shown other-document toast stays visible', () => {
+  const held = { ...typed, raw: '합성 보류 줄' }, other = { ...typed, documentId: 'other-document', raw: '합성 다른 문서 입력' };
+  const recoveryDocuments = { current: documentRecovery.captureAlphaUiRecoveryDocuments(documentRecovery.createAlphaUiRecoveryDocuments(), [held, other]) };
+  const toastDrafts = evaluate<AlphaUiDraft[]>(declaration('toastDrafts'), { ...documentRecovery, recoveryDocuments,
+    announcedDrafts: [held, other], allEditors: () => [{ captureHeldDrafts: () => [held] }] });
+  assert.deepEqual(toastDrafts, [other]);
+  const tags = evaluate<(atRisk: boolean) => string[]>(declaration('recoveryTags'), { toastDrafts,
+    recoveries: { drafts: [held, other] }, structuralRecoveries: null, creatorRecoveries: null, socialRecoveries: null,
+    announcedStructural: [], announcedCreator: [], announcedSocial: [], recoveryEntryTag, recoveryDraftIdentity, canonicalJson: JSON.stringify });
+  const recoveryToast = { count: 2, at: 0, tags: tags(true) };
+  assert.equal(tags(true).length, 2, 'stored recovery identities are still retained for acknowledgement bookkeeping');
+  assert.equal(evaluate<number>(declaration('recoveryToastCount'), { recoveryToast, announcedTags: tags(false) }), 1);
+  assert.equal(evaluate<number>(declaration('recoveryToastCount'), { recoveryToast, announcedTags: [] }), 0);
+  assert.equal(recoveryDocuments.current.active.length, 2, 'presentation never removes or protects less input');
 });
 
 // Codex review F1: an editor can refuse input locally and keep it without any mutation, so saveFailed

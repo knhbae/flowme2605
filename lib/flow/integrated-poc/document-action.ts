@@ -34,6 +34,9 @@ export type ProgramEditorFlush = {
   hasPendingInput?: () => boolean;
   pendingDocumentIds?: () => string[];
   captureDrafts?: () => ProgramEditorDraft[];
+  /** Presentation only: currently held B lines keep their full recovery RAW.
+   * This never grants save/cleanup authority or changes pending-input protection. */
+  captureHeldDrafts?: () => ProgramEditorDraft[];
   /** Text kept only for the tab's input recovery, such as unconfirmed child panels. Unlike
    * captureDrafts it never counts as pending input, an input boundary, or save-ACK ownership. */
   captureRecoveryDrafts?: () => ProgramEditorDraft[];
