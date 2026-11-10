@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import * as ts from 'typescript';
 import {createProgramTextDraft,type ProgramTextDraftState} from './program-text-draft';
-import {prepareWritingChild} from './writing-child-command';import {textWorkspaceModel as M,type TextWorkspaceState} from './text-workspace';
+import {prepareWritingChild} from './writing-child-command';import {createEmptyTextWorkspace,textWorkspaceModel as M,type TextWorkspaceState} from './text-workspace';
 function fixture():TextWorkspaceState{const s:TextWorkspaceState={version:11,documents:[{id:'d',title:'합성',folder:'분류',folderId:'f',lines:[{id:'date',text:'[2026-10-28]'},{id:'p',text:'- [0] 부모'},{id:'pm',text:'  - 메모: 기존 메모'},{id:'simple',text:'  - [ ] 기존 간단 체크'},{id:'other',text:'- [ ] 다른 일'}]}],folders:[{id:'f',title:'분류',parentId:null}],flows:[],bindings:[],taskScopes:{p:'f',other:'f'},itemScopes:{p:'f',simple:'f',other:'f'},progressRecords:[{taskId:'p',date:'2026-10-27',percent:25}]};assert(M.validate(s));return s;}
 test('independent child uses its own registered ID/date/progress with real parent; old simple check and all old records remain',()=>{const before=fixture(),doc=M.getDocument(before,'d')!,r=prepareWritingChild(before,{docId:'d',parentId:'p',kind:'task',text:'새 하위\n하위 메모',expectedRaw:M.raw(doc)},()=> 'new-child');assert(r.ok,r.ok?'':r.reason);const child=M.tasks(r.workspace).find(t=>t.id==='new-child')!;assert.equal(child.parentTaskId,'p');assert.equal(child.date,'2026-10-28');assert.equal(r.workspace.taskScopes[child.id],'f');assert.equal(M.currentProgress(r.workspace,child.id),0);assert.deepEqual(r.workspace.progressRecords,before.progressRecords);assert.equal(r.workspace.taskScopes.simple,undefined);assert.equal(M.getDocument(r.workspace,'d')!.lines.find(l=>l.id==='simple')!.text,'  - [ ] 기존 간단 체크');const progress=M.recordProgress(r.workspace,child.id,'2026-10-28',40);assert.equal(M.currentProgress(progress,'p'),0);assert.equal(M.currentProgress(progress,child.id),40);});
 test('parent memo edits its owner in place, preserves old line and child/check identity; stale/empty requests allocate0',()=>{const before=fixture(),raw=M.raw(before.documents[0]);const r=prepareWritingChild(before,{docId:'d',parentId:'p',kind:'memo',text:'새 메모\n다음 줄',expectedRaw:raw});assert(r.ok,r.ok?'':r.reason);assert(M.getDocument(r.workspace,'d')!.lines.some(l=>l.id==='pm'));assert.equal(M.tasks(r.workspace).find(t=>t.id==='p')!.note,'새 메모\n다음 줄');assert.deepEqual(r.workspace.progressRecords,before.progressRecords);let ids=0;for(const text of['','   '])assert(!prepareWritingChild(before,{docId:'d',parentId:'p',kind:'task',text,expectedRaw:raw},()=>{ids++;return'x';}).ok);assert(!prepareWritingChild(before,{docId:'d',parentId:'p',kind:'task',text:'항목',expectedRaw:raw+'stale'},()=>{ids++;return'x';}).ok);assert.equal(ids,0);});
@@ -111,5 +111,27 @@ test('actual synchronize keeps protection for failed or missing installation and
   if(protection.startsWith('installation-failed')||protection==='editor-missing-equal-raw'||protection==='ime')assert.equal(h.area.value,nativeBefore,protection);
   if(protection.endsWith('equal-raw'))assert.equal(h.area.value,h.controller.getState().raw,'equal raw alone cannot certify installation: '+protection);
   await h.settle();
+ }
+});
+test('11/10 21:04 (실사용): ⋮ → 하위 할 일 takes the empty line right under the task (none left between them); with a child there it goes first',()=>{
+ const tail='[2026-11-10]\n- /미분류\n  - [x] 벤처투자정리 후 공유',task='  - [ ] 10 Min 잇(it) (11월)';
+ const cases:[string,string,string][]=[
+  ['no empty line',`${task}\n${tail}`,`${task}\n    - [ ] 새 하위\n${tail}`],
+  ['empty line',`${task}\n\n${tail}`,`${task}\n    - [ ] 새 하위\n${tail}`],
+  ['spaces only',`${task}\n    \n${tail}`,`${task}\n    - [ ] 새 하위\n${tail}`],
+  ['two empty lines',`${task}\n\n\n  - [ ] 다음 일\n${tail}`,`${task}\n    - [ ] 새 하위\n\n  - [ ] 다음 일\n${tail}`],
+  ['a child already',`${task}\n    - [ ] 발표자 공지\n${tail}`,`${task}\n    - [ ] 새 하위\n    - [ ] 발표자 공지\n${tail}`],
+  ['empty line, then a child',`${task}\n\n    - [ ] 발표자 공지\n${tail}`,`${task}\n    - [ ] 새 하위\n    - [ ] 발표자 공지\n${tail}`],
+  ['memo, then empty line',`${task}\n    - 메모: 자료\n\n${tail}`,`${task}\n    - 메모: 자료\n    - [ ] 새 하위\n${tail}`],
+ ];
+ for(const[label,body,expected]of cases){
+  let state=M.addDocument(createEmptyTextWorkspace(),{title:'업무'});const id=state.documents.at(-1)!.id,raw='[2026-11-11]\n- /EA\n'+body;
+  const edit=M.editTextResult(state,id,raw,{folderText:true});assert.equal(edit.reason,null,label);state=edit.state;
+  const parent=M.tasks(state).find(t=>t.title.startsWith('10 Min'))!,r=prepareWritingChild(state,{docId:id,parentId:parent.id,kind:'task',text:'새 하위',expectedRaw:raw},()=>'new-child');
+  assert(r.ok,r.ok?'':r.reason);const after=M.raw(M.getDocument(r.workspace,id)!);
+  assert.equal(after,'[2026-11-11]\n- /EA\n'+expected,label);assert(M.validate(r.workspace),label);
+  assert.equal(M.tasks(r.workspace).find(t=>t.id==='new-child')?.parentTaskId,parent.id,label);
+  // The caret goes to the new line's end.
+  assert.equal(r.offset,after.indexOf('새 하위')+'새 하위'.length,label);
  }
 });
