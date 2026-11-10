@@ -3,6 +3,13 @@
 사용자 결정과 진행 결정. 추가만 한다. 결정이 바뀌면 원래 항목은 두고 새 항목에 "대체:"를 적는다. 오래 갈 제품·UX 규칙은 `docs/DECISIONS.md`에 둔다.
 
 
+## 2026-11-10 · int5 배포 run 31 HOLD, 약 3분 중단
+
+- int5 3ef6839a(QA_GO `inbox/int5-qa-20261110-1543.md`, PACKAGE verify PASS, 실행기 v3)를 15:58 반영 시도 → 새 빌드 준비 확인 실패(START_NOT_CONFIRMED_NOT_READY), 실행기 복구도 UNEXPECTED_RECOVERY_ERROR로 HOLD.
+- 15:58~16:01 공개 주소 502. 16:00:50 supervisor가 스스로 다시 떠 이전 운영 `udT8t_CBNHw_jBpkoyWZy`로 복귀, 공개 200. DB 변경 0.
+- 의심: 같은 시각 Codex 내부 세션 여러 개의 시험·next start·퍼즈로 CPU 붐빔 → 준비 60초 초과. 기타가 원인 판정·release-r2 준비 중.
+- 교훈: 반영 직전에 Codex·세션의 무거운 작업(빌드·전체 시험·퍼즈·next start)이 도는지 확인하고, 돌면 끝나기를 기다리거나 잠시 멈춘 뒤 반영.
+
 ## 2026-11-10 · 할 일 메뉴 = 옮기기(PRD 15절)
 
 - 근거: 사용자 "폴더연결을 누르면 폴더 이동이 되어야지 않을까… 날짜 입력하면 그 날짜로 이동해야지 않을까?", 기획 `inbox/prd-task-menu-20261110-1445.md`, UX 목업 `inbox/ux-task-menu-20261110/task-menu-mockup.html`.
