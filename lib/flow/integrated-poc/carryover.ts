@@ -88,8 +88,9 @@ function carryoverPlaces(space: ProgramPrivateSpace) {
     }
     return labels.get(task.id)!;
   };
-  const scopes = new Map(M.scopes(space.text).map(scope => [scope.id, scope.title]));
-  const placeOf = (task: TextTask) => labelOf(task) || scopes.get(task.scopeId) || '';
+  const scopeText = space.text;
+  let scopes: Map<string, string> | null = null;
+  const placeOf = (task: TextTask) => labelOf(task) || (scopes ??= new Map(M.scopes(scopeText).map(scope => [scope.id, scope.title]))).get(task.scopeId) || '';
   return { rowsOf, labelOf, placeOf };
 }
 
@@ -102,7 +103,7 @@ export function programCarryoverGroupScope(space: ProgramPrivateSpace) {
 /** Read the existing unfiltered today query only; never build a write plan while typing.
  * Progress rows and repeats stay separate, just as today's same-task chips leave them separate. */
 export function programCarryoverSummary(space: ProgramPrivateSpace, today: string, rows: readonly ProgramOrderedExecutionRow[]) {
-  if (!rows.length) return { kinds: 0, repeats: 0, count: 0, lines: 0 };
+  if (!rows.some(row => row.date && row.date < today)) return { kinds: 0, repeats: 0, count: 0, lines: 0 };
   const { labelOf } = carryoverPlaces(space), repeat = programTaskRepeatMembers(space), progress = programTaskProgress(space.text);
   const kinds = new Set<string>(), repeats = new Set<string>(), seen = new Set<string>(); let lines = 0;
   for (const row of rows) {
