@@ -166,3 +166,4 @@
 - 11/10 00:2x 28회차 HOLD→자동 복구(int3, health 200, DB 0): 실행기 StopKnown이 끝나는 중인 wrapper를 TerminateProcess → ACCESS_DENIED 경쟁(지난 24회는 wrapper가 먼저 끝남). 근거 inbox/int4-hold-20261110-0028.md. 실행기 수정은 Codex.
 - 11/10 00:4x 29회차 DEPLOYED(release-r2 8a47b032): 89b3336b / zeFJxAbhqKHg6wt2ClYpt, QA_GO inbox/int4-qa-20261110-0001.md, 10경로 기대값, DB 0. 남은 P3: 관리·초안 날짜 UTC 'YYYY-MM-DD', 안내의 옛 메뉴 이름 '선택해서 공개', 1280 현재 탭 hover. 다음 배포 후보: F6-B2(+FIX5)·B3(Codex)·F7(목업 답 대기).
 - 11/10 01:4x 30회차 DEPLOYED: 1ba2ac26 / udT8t_CBNHw_jBpkoyWZy, QA_GO inbox/b2-qa-20261110-0135.md, 10경로 기대값, DB 0. 남은 P3: 가져오기 시트·공개 창 반복 칩의 글자 ↻(ProgramDiscovery 512·525, Publisher 275-276·533). 다음: B3 쓰기 레일(Codex), F7(★목업 질문 2), 실행기 경쟁 수정(Codex).
+- 11/10 11:2x F8 목업(inbox/ux-f8-20261110-1105.md) 사용자 '권장대로 일단': 밀린 일 띠 요약 한 줄, 같은 일 행 체크 = 모두 끝냄, [오늘 기록]은 3단계. F8 1단계 개발은 메모 팁 뒤(outbox/f8-s1-dev-20261110). 사용자 '폴더 줄 Enter가 그냥 줄바꿈' → Codex Enter 사실표 → 기획 Enter 규칙.
