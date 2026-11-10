@@ -89,7 +89,7 @@ import { createProgramWritingEntry } from '@/lib/flow/integrated-poc/writing-ent
 import { createPendingProgramSourceNavigation } from '@/lib/flow/integrated-poc/pending-source-navigation';
 import { programCheckpointForWritingTarget } from '@/lib/flow/integrated-poc/writing-navigation';
 import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classification';
-import { moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
+import { commitTaskDateWithUndo, moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
 import type { TaskLocationTarget } from '@/lib/flow/integrated-poc/task-location-move';
 import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
 import { programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
@@ -2356,13 +2356,16 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if(!task||policy.kind==='blocked'||!policy.documentId){setMessage(policy.message);return false;}
     if(policy.kind==='date-only'){
       if(target.kind!=='date'){setMessage(policy.message);return false;}
-      const finishUndo=taskMoveGate?.beginScheduleUndo?.(),dialogOwner=executionDraftOwner.current.dialog;
-      const result=await run('실행 날짜·시간 변경',current=>updateProgramTask(current,{...base(current),taskId,patch:{date:target.date,...(target.time!==undefined?{time:target.time}:{})}}),true,{taskId,date:target.date,...(target.time!==undefined?{time:target.time}:{})});
-      const capability=result.ok?finishUndo?.():null;
+      const dialogOwner=executionDraftOwner.current.dialog;
+      const outcome=await commitTaskDateWithUndo({begin:()=>taskMoveGate?.beginScheduleUndo?.(),apply:async()=>
+        (await run('실행 날짜·시간 변경',current=>updateProgramTask(current,{...base(current),taskId,patch:{date:target.date,...(target.time!==undefined?{time:target.time}:{})}}),true,{taskId,date:target.date,...(target.time!==undefined?{time:target.time}:{})})).ok});
+      if(outcome.kind==='blocked'){setMessage('저장 상태를 확인한 뒤 날짜를 다시 정해 주세요. 현재 내용은 유지했습니다.');return false;}
+      if(outcome.kind!=='saved')return false;
+      const capability=outcome.capability;
       if(capability&&dialogOwner===executionDraftOwner.current.dialog){
         if(detail)close();setTaskNotice(null);setLocationNotice({actorId,documentId:task.docId,taskId,before:expected.text,after:capability.text,date:target.date,folderId:task.scopeId,kind:'date',scheduleUndo:capability.undo,text:`날짜를 ${target.date?programCalendarDate(target.date,today,false)+'로':'미정으로'} 바꿨습니다`});
-      }else if(result.ok)setMessage(policy.message);
-      return result.ok;
+      }else setMessage('날짜는 저장했습니다. 그 뒤 상태가 바뀌어 지금은 되돌릴 수 없습니다.');
+      return true;
     }
     locationBusy.current=true;setLocationPending(true);setLocationNotice(null);
     const dialogOwner=executionDraftOwner.current.dialog,view=presentation.current;

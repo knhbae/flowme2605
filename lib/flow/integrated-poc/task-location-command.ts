@@ -28,6 +28,15 @@ export function readTaskLocationPolicy(space: ProgramPrivateSpace, lineId: strin
 
 export type TaskLocationCommandInput = ProgramPrivateMutationBase & { taskId: string; documentId?: string; target: TaskLocationTarget };
 
+/** A date-only exception never borrows the legacy whole-workspace undo.
+ * Begin authority precedes the write; a lost ACK is not proof that nothing was saved. */
+export async function commitTaskDateWithUndo<T>(input:{begin:()=> (()=>T|null)|null|undefined;apply:()=>Promise<boolean>}):Promise<{kind:'blocked'|'unconfirmed'}|{kind:'saved';capability:T|null}>{
+  const finish=input.begin();
+  if(!finish)return{kind:'blocked'};
+  if(!await input.apply())return{kind:'unconfirmed'};
+  return{kind:'saved',capability:finish()};
+}
+
 /** Uses the existing private text transaction. The save/HTTP/CAS owners and command format are unchanged. */
 export function moveProgramTaskLocation(data: ProgramData, input: TaskLocationCommandInput): ProgramTransition<string> {
   const space = data.spaces[input.actorId];

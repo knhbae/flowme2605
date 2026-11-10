@@ -3,7 +3,7 @@ import test from 'node:test';
 import { programClone, type ProgramData, type ProgramTransition } from './contract';
 import { createProgramData, validateProgramData } from './program-data';
 import { createProgramDocument, importProgramPublicVersion } from './private-space';
-import { moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from './task-location-command';
+import { commitTaskDateWithUndo, moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from './task-location-command';
 import { extendProgramRecent, programRecentHidden, programRecentHold, restrictProgramRecent } from './recent-writing';
 import { textWorkspaceModel as M } from './text-workspace';
 const space=(data:ProgramData)=>data.spaces[data.activeActorId];
@@ -100,4 +100,42 @@ test('Flow copy metadata stays on the date-only path and disallows folder moveme
   const moved=ok(moveProgramTaskLocation(data,{...base(data),taskId,target:{kind:'date',date:'2026-11-12'}}));
   assert.ok(validateProgramData(moved.data));
   assert.equal(M.getDocument(space(moved.data).text,copy.documentId)!.lines.findIndex(line=>line.id===taskId),before.lines.findIndex(line=>line.id===taskId));
+});
+
+test('date-only pre-cap absent: no date apply is called and newer B RAW stays byte-identical',async()=>{
+  const f=fixture('합성 부모 @매일'),other=ok(createProgramDocument(f.data,{...base(f.data),title:'합성 B',raw:'합성 B 최신'}));
+  let current=other.data,writes=0;const before=JSON.stringify(current);
+  const outcome=await commitTaskDateWithUndo({begin:()=>null,apply:async()=>{
+    writes++;current=ok(moveProgramTaskLocation(current,{...base(current),taskId:f.taskId,target:{kind:'date',date:'2026-11-12'}})).data;return true;
+  }});
+  assert.equal(outcome.kind,'blocked');assert.equal(writes,0);assert.equal(JSON.stringify(current),before);
+  assert.equal(M.raw(M.getDocument(space(current).text,other.result)!),'합성 B 최신');
+});
+test('date-only post-ACK cap absent: the saved date and newer B RAW remain, with no unsafe undo offered',async()=>{
+  const f=fixture('합성 부모 @매일'),other=ok(createProgramDocument(f.data,{...base(f.data),title:'합성 B',raw:'합성 B 최초'}));
+  let current=other.data,writes=0;
+  const outcome=await commitTaskDateWithUndo({begin:()=>()=>null,apply:async()=>{
+    writes++;current=ok(moveProgramTaskLocation(current,{...base(current),taskId:f.taskId,target:{kind:'date',date:'2026-11-12'}})).data;
+    space(current).text=M.editText(space(current).text,other.result,'합성 B 최신');return true;
+  }});
+  assert.equal(outcome.kind,'saved');if(outcome.kind!=='saved')throw Error('saved date was misclassified');
+  assert.equal(outcome.capability,null);assert.equal(writes,1);
+  assert.equal(M.tasks(space(current).text).find(task=>task.id===f.taskId)!.date,'2026-11-12');
+  assert.equal(M.raw(M.getDocument(space(current).text,other.result)!),'합성 B 최신');
+});
+test('date-only unconfirmed write never consumes a finish capability or presents a speculative undo',async()=>{
+  let finishCalls=0;
+  const outcome=await commitTaskDateWithUndo({begin:()=>()=>{finishCalls++;return{undo:async()=>true};},apply:async()=>false});
+  assert.equal(outcome.kind,'unconfirmed');assert.equal(finishCalls,0);
+});
+test('date-only owned cap remains usable when an ACK replaces generated date property IDs',async()=>{
+  const initial=createProgramData(),made=ok(createProgramDocument(initial,{...base(initial),title:'합성 조정된 ACK',raw:'- [ ] 합성 부모 @매일'})),before=space(made.data).text,taskId=M.tasks(before)[0].id;
+  const local=M.updateTask(before,taskId,{date:'2026-11-12'}),confirmed=programClone(local);
+  confirmed.documents[0].lines[1]={...confirmed.documents[0].lines[1],id:'ack-date-property'};assert.ok(M.validate(confirmed));
+  assert.notEqual(local.documents[0].lines[1].id,confirmed.documents[0].lines[1].id);
+  let current=before;const capability={text:confirmed,undo:async()=>{if(current!==confirmed)return false;current=before;return true;}};
+  const outcome=await commitTaskDateWithUndo({begin:()=>()=>capability,apply:async()=>{current=confirmed;return true;}});
+  assert.equal(outcome.kind,'saved');if(outcome.kind!=='saved'||!outcome.capability)throw Error('owned ACK capability was lost');
+  assert.equal(outcome.capability,capability);assert.equal(await outcome.capability.undo(),true);
+  assert.equal(M.raw(current.documents[0]),M.raw(before.documents[0]));
 });

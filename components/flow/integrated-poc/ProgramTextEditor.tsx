@@ -66,7 +66,7 @@ import {ProgramWritingInline} from './ProgramWritingInline';
 import {prepareWritingChild} from '@/lib/flow/integrated-poc/writing-child-command';
 import {planWritingInsertion} from '@/lib/flow/integrated-poc/writing-insertion-command';
 import { moveTaskLocation, readTaskLocationSource, TASK_LOCATION_FAILURE_TEXT, type TaskLocationTarget } from '@/lib/flow/integrated-poc/task-location-move';
-import type { TaskLocationPolicy } from '@/lib/flow/integrated-poc/task-location-command';
+import { commitTaskDateWithUndo, type TaskLocationPolicy } from '@/lib/flow/integrated-poc/task-location-command';
 import { ProgramTaskMoveSheet } from './ProgramTaskMoveSheet';
 import { ProgramTaskMoveContext } from './task-move-context';
 
@@ -1247,11 +1247,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       const policy=locationPolicy(line.id);
       if(policy.kind==='blocked'){setMessage(policy.message);return;}
       if (policy.kind === 'move') { void performTaskLocation(line.id,{kind:'date',date}); return; }
-      const before = currentState(), raw = draftRef.current?.getState().raw, docId = propsRef.current.docId, time = task.time ?? '';
-      // apply installs the change before its save starts, so the record is there for a ↶ pressed during that save.
-      const done = applyDateChip(line.id, date), state = draftRef.current?.getState();
-      if (state && state.raw !== raw) barDateUndo.current = { docId, taskId: target, before, after: state.working, date, time, raw: state.raw, redo: false };
-      void done;
+      // Exceptions own a receipt-bound undo. Never stage a speculative legacy whole-frame record here.
+      void applyDateChip(line.id, date);
       return;
     }
     const plan = programDateHeaderPlan(area.value, area.selectionStart, date), before = currentState();
@@ -1936,14 +1933,18 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     void last.undo().then(ok=>{if(!ok)setMessage('그 뒤 다른 변경이 있어 되돌리지 않았습니다. 현재 내용은 유지했습니다.');});return true;
   }
   async function applyDateOnly(target:string,value:string|null,time:string){
-    const finishUndo=taskMoveGate?.beginScheduleUndo?.(),docId=propsRef.current.docId;
-    const next=M.updateTask(currentState(),target,{date:value,time});closePanel();
-    if(!await apply(next,'항목 날짜·시간',{taskId:target,date:value,time})||propsRef.current.docId!==docId)return;
-    const capability=finishUndo?.(),state=draftRef.current?.getState();
+    const docId=propsRef.current.docId;barDateUndo.current=null;
+    const outcome=await commitTaskDateWithUndo({begin:()=>taskMoveGate?.beginScheduleUndo?.(),apply:()=>{
+      const next=M.updateTask(currentState(),target,{date:value,time});closePanel();
+      return apply(next,'항목 날짜·시간',{taskId:target,date:value,time});
+    }});
+    if(outcome.kind==='blocked'){setMessage('저장 상태를 확인한 뒤 날짜를 다시 정해 주세요. 현재 내용은 유지했습니다.');return;}
+    if(outcome.kind!=='saved'||propsRef.current.docId!==docId)return;
+    const capability=outcome.capability,state=draftRef.current?.getState();
     if(capability&&state){
       const record:ScheduleUndo={docId,working:state.working,raw:state.raw,text:`날짜를 ${value?programCalendarDate(value,today(),false)+'로':'미정으로'} 바꿨습니다`,undo:capability.undo};
       barDateUndo.current=null;scheduleUndo.current=record;setScheduleNotice(record);
-    }
+    }else{scheduleUndo.current=null;setScheduleNotice(null);setMessage('날짜는 저장했습니다. 그 뒤 상태가 바뀌어 지금은 되돌릴 수 없습니다.');}
   }
   function beginMove(lineId: string | null, openDialog: boolean) {
     if (!lineId || actionsDisabled()) return;
