@@ -30,8 +30,12 @@ export function ProgramFlowTodayBand(props: { rows: readonly ProgramFlowBandRow[
   useEffect(() => { try { setOpened(localStorage.getItem(OPEN_KEY) === '1'); } catch { /* folded, then */ } }, []);
   const remember = (next: boolean) => { setOpened(next); try { if (next) localStorage.setItem(OPEN_KEY, '1'); else localStorage.removeItem(OPEN_KEY); } catch { /* this visit only */ } };
   if (!props.rows.length && !props.late) return null;
+  if (!props.rows.length) return <section className={styles.band} data-flow-today-band data-continue-band data-late-only>
+    <h2 className={styles.heading}><button type="button" className={styles.head} onClick={props.onShowToday}>
+      <ProgramIcon name="today" size={18} className={styles.mark} /><span className={styles.lateLine}><strong>밀린 일 {props.late}가지</strong>{' · 오늘 탭에서 정리'}</span><ProgramIcon name="right" size={16} />
+    </button></h2></section>;
   const shown = props.rows.slice(0, PROGRAM_FLOW_BAND_ROWS), more = props.rows.length - shown.length;
-  const summary = props.rows.filter(row => !row.done).slice(0, 2).map(row => row.title).join(' · ') || (props.late ? `밀린 일 ${props.late}개` : '');
+  const summary = props.rows.filter(row => !row.done).slice(0, 2).map(row => row.title).join(' · ') || (props.late ? `밀린 일 ${props.late}가지` : '');
   return <section className={styles.band} aria-labelledby={`${uid}-head`} data-flow-today-band data-continue-band data-opened={opened || undefined}>
     <h2 className={styles.heading}><button type="button" id={`${uid}-head`} className={styles.head} aria-expanded={opened} aria-controls={`${uid}-rows`} onClick={() => remember(!opened)}>
       <ProgramIcon name="today" size={18} className={styles.mark} /><span className={styles.label}>이어지는 일</span><span className={styles.count}>{props.open}</span>
@@ -54,7 +58,7 @@ export function ProgramFlowTodayBand(props: { rows: readonly ProgramFlowBandRow[
         {props.failed === row.id && <p className={styles.failed} role="alert">체크하지 못했습니다. 다시 눌러 주세요</p>}
       </li>)}</ul>}
       {more > 0 && <button type="button" className={styles.foot} onClick={props.onShowToday}>{more}개 더 · 오늘 탭에서 보기<ProgramIcon name="right" size={16} /></button>}
-      {props.late > 0 && <button type="button" className={styles.foot} data-late onClick={props.onShowToday}><span className={styles.late}>밀린 일 {props.late}개</span> · 오늘 탭에서 정리<ProgramIcon name="right" size={16} /></button>}
+      {props.late > 0 && <button type="button" className={styles.foot} data-late onClick={props.onShowToday}><span><span className={styles.late}>밀린 일 {props.late}가지</span>{' · 오늘 탭에서 정리'}</span><ProgramIcon name="right" size={16} /></button>}
     </div>}
   </section>;
 }

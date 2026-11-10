@@ -43,4 +43,6 @@
 .failed { grid-column: 2 / -1; margin: 0 0 6px; font-size: 13px; line-height: 18px; color: var(--flowme-b-error-ink); }
 .band .foot { display: flex; align-items: center; gap: 2px; width: 100%; min-height: 48px; margin: 0; padding: 0 6px 0 14px; border: 0; border-top: 1px solid var(--flowme-b-hair); border-radius: 0; background: transparent; color: var(--flowme-b-primary); font-size: 14px; font-weight: 700; text-align: left; cursor: pointer; }
 .late { color: var(--flowme-b-late-ink); }
+.lateLine { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; line-height: 20px; color: var(--flowme-b-primary); }
+.lateLine strong { color: var(--flowme-b-late-ink); }
 .band :focus-visible { outline: 2px solid var(--flowme-b-primary); outline-offset: -2px; }

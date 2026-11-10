@@ -28,7 +28,7 @@ import { programCalendarDate, programDaysBetween } from '@/lib/flow/integrated-p
 import { timeRo } from '@/lib/flow/integrated-poc/number-particle';
 import { programFirstOfficialFlows } from '@/lib/flow/integrated-poc/first-flows';
 import { useAlphaOfficialActors } from './AlphaOfficialActors';
-import { carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverItems, programCarryoverPlaces, programCarryoverProof, restoreProgramCarryover,
+import { programCarryoverSummary, programCarryoverGroupScope, carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverItems, programCarryoverPlaces, programCarryoverProof, restoreProgramCarryover,
   PROGRAM_CARRYOVER_LIMIT, type ProgramCarryoverBefore, type ProgramCarryoverChoice, type ProgramCarryoverItem, type ProgramCarryoverPlan } from '@/lib/flow/integrated-poc/carryover';
 import { programOpening } from '@/lib/flow/integrated-poc/carryover-opening';
 import { completeProgramRepeat, convertProgramLegacyRepeat, programLegacyRepeatSeries, programRepeatLine, programRepeatSeen, readProgramRepeatCheck, settleProgramRepeatLines, undoProgramRepeat,
@@ -945,10 +945,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const executionList = programExecutionList(executionRows, period, date, today, emptyDaysOpen, manualOrderDays);
   // N11a: 오늘 with more than three past unfinished rows folds them under the 밀린 일 card; 고르기 shows them all.
   const carryShown = period === 'today' && date === today && !selecting;
+  const bandDocumentId = period === 'documents' && !folderId && !!selectedDoc && !selectedArchived && !selectedTrashed
+    && space.text.documents.some(doc => doc.id === selectedDoc.id) ? selectedDoc.id : null;
+  // The card has always planned over the full space, even when the visible list is filtered.
+  const todayRowsForBand = useMemo(() => !bandDocumentId && !carryShown ? []
+    : programOrderedExecutionRows(data, { period: 'today', date: today, today, folderId: '', query: '', includeHeld: false, includeExcluded: false, page: 0 }).rows, [!!bandDocumentId, carryShown, data, today]);
+  const carrySummary = useMemo(() => programCarryoverSummary(space, today, todayRowsForBand), [space, today, todayRowsForBand]);
+  const sameGroupScope = useMemo(() => programCarryoverGroupScope(space), [space]);
   const carryPast = carryShown ? executionList.filter(item => item.kind === 'row' && item.group === 'past-incomplete') : [];
   // F8 1단계 (CO-3): the late card from one late line (it was more than three), so 지난 미완료 is always folded under it.
   const carryPlan = useMemo(() => carryShown && carryPast.length > 0 ? planProgramCarryover(space, today) : null, [carryShown, carryPast.length > 0, space, today]);
-  const carryCard = !!carryPlan && carryPlan.count > 0;
+  const carryCard = !!carryPlan && carrySummary.count > 0;
   // N11b: what the sheet's choices would do now (its save button says how many memos a deletion takes along).
   const carrySheetPlan = useMemo(() => carryItems && carrySheetSpace && period === 'today' ? planProgramCarryover(carrySheetSpace, today, undefined,
     new Map(carryItems.map(item => [item.kind, carryChoices.get(item.kind) ?? item.choice]))) : null, [carryItems, carryChoices, carrySheetSpace, period, today]);
@@ -960,7 +967,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // with '같은 일 n줄' (its sheet lists them); checking it finishes them all in one save, with one 되돌리기.
   const sameGroups = period === 'today' && !selecting ? programSameTaskGroups(listItems.flatMap(item => item.kind === 'row' && item.entry.kind === 'text-task' && item.group
     && !item.entry.task.done && !(M.currentProgress(space.text, item.entry.task.id) ?? 0) && !programRepeatLine(space, item.entry.task.id) ? [{ task: item.entry.task, group: item.group }] : []),
-    task => programTaskFolderId(space, task)) : null;
+    sameGroupScope) : null;
   const shownItems = sameGroups?.hidden.size ? listItems.filter(item => !(item.kind === 'row' && item.entry.kind === 'text-task' && sameGroups.hidden.has(item.entry.task.id))) : listItems;
   const monthGrid = period === 'month' && monthView === 'grid';
   const wideMonth = monthWidth >= 840;
@@ -1154,16 +1161,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   sourceSession.current = sourceEpoch;
   // Flow pipeline S11: over a writing document of mine (not a Flow document, not a gathered folder), the unfinished tasks
   // of the Flows I took that 오늘 lists (its own query and order: today's and earlier ones still open). Drawn only.
-  const bandDocumentId = period === 'documents' && !folderId && !!selectedDoc && !selectedArchived && !selectedTrashed
-    && space.text.documents.some(doc => doc.id === selectedDoc.id) ? selectedDoc.id : null;
   const flowDocuments = useMemo(() => new Map(space.copies.filter(copy => !space.documentTrash?.[copy.documentId] && !space.archivedDocumentIds.includes(copy.documentId))
     .flatMap(copy => (doc => doc ? [[copy.documentId, doc.title] as const] : [])(space.text.flows.find(row => row.id === copy.documentId)))), [space]);
   // F6-B2: each Flow document's 실 (its days as dots, the done ones filled) and done/total, for 오늘's rows and the band.
   const flowThreads = useMemo(() => new Map([...flowDocuments.keys()].map(id => [id, programDocumentThread(space.text, id)] as const)), [flowDocuments, space.text]);
   // F8 1단계 (CO-1): '이어지는 일' — 오늘's own query for today; the band takes the open rows dated today whose line is not in
   // this document's today section (a Flow's, moved, another document's, a repeat's round), and counts the late ones.
-  const todayRowsForBand = useMemo(() => !bandDocumentId ? []
-    : programOrderedExecutionRows(data, { period: 'today', date: today, today, folderId: '', query: '', includeHeld: false, includeExcluded: false, page: 0 }).rows, [!!bandDocumentId, data, today]);
   const continueBand = useMemo(() => !bandDocumentId ? { rows: [] as ProgramContinueRow[], late: 0, flow: 0 } : programContinueBand(todayRowsForBand, { today, documentId: bandDocumentId,
     flowTitle: id => flowDocuments.get(id) ?? null, repeat: id => (line => line && !line.block ? `↻ ${line.marker.label}` : null)(programRepeatLine(space, id)),
     progress: id => M.currentProgress(space.text, id) }), [todayRowsForBand, bandDocumentId, flowDocuments, space, today]);
@@ -2757,8 +2760,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const carryWriting = composingShown || Object.values(dirty.current).some(Boolean);
   const carryRepeats = (carryPlan?.repeats ?? 0) + carryPast.filter(item => item.kind === 'row' && item.entry.kind === 'occurrence').length;
   const carryCardContent = carryCard && carryPlan && <section className={styles.carryCard} aria-label="밀린 일" data-carryover>
-    <p className={styles.carryTitle}>{opening.since ? `${programCalendarDate(opening.since, today, false)} 이후 처음 열었습니다 · 밀린 일 ${carryPlan.kinds}가지`
-      : `밀린 일 ${carryPlan.kinds}가지 · ${carryPlan.count}줄`}</p>
+    <p className={styles.carryTitle}>{opening.since ? `${programCalendarDate(opening.since, today, false)} 이후 처음 열었습니다 · 밀린 일 ${carrySummary.count}가지`
+      : `밀린 일 ${carrySummary.count}가지 · ${carrySummary.lines}줄`}</p>
     {carryPlan.first && <p className={styles.carryMeta}>{programCalendarDate(carryPlan.first, today, false)}부터{carryPlan.repeated ? ' · 같은 일이 여러 날에 있음' : ''}</p>}
     <div className={styles.carryActions}>
       {carryPlan.lines.length > 0 && <button type="button" className={styles.carryMove} disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}
@@ -3068,8 +3071,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   function deferFromBand(id: string) { if (M.tasks(space.text).some(row => row.id === id)) openDetail({ kind: 'task', id }); }
   // F6-B2: the band draws one Flow's 실 when all its rows come from that Flow.
   const bandThread = (ids => ids.size === 1 && !ids.has('') ? flowThreads.get([...ids][0]) ?? null : null)(new Set(bandRows.map(row => row.flowDocumentId ?? '')));
-  const flowBand = (bandRows.length > 0 || continueBand.late > 0) && <ProgramFlowTodayBand rows={bandRows} open={bandRows.filter(row => !row.done).length} flow={continueBand.flow}
-    late={continueBand.late} failed={bandFailed} thread={bandThread} onCheck={checkFromBand} onShowSource={showBandSource} onDefer={deferFromBand}
+  const flowBand = (bandRows.length > 0 || carrySummary.count > 0) && <ProgramFlowTodayBand rows={bandRows} open={bandRows.filter(row => !row.done).length} flow={continueBand.flow}
+    late={carrySummary.count} failed={bandFailed} thread={bandThread} onCheck={checkFromBand} onShowSource={showBandSource} onDefer={deferFromBand}
     onShowToday={() => { void chooseMainTab('today'); }} />;
   const copyHeader = useMemo(() => selectedDoc ? programCopyHeader(data, actorId, selectedDoc.id) : null, [data, actorId, selectedDoc?.id]);
   // U44: on a tablet held sideways the title and ⋯ go into the open document's tool line, and the notices that sat

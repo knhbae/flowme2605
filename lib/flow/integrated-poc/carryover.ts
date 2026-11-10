@@ -1,5 +1,7 @@
 import { programClone, type ProgramData, type ProgramPrivateSpace, type ProgramTransition } from './contract';
 import { programDate } from './program-data';
+import { programSameTaskKey } from './continue-band';
+import type { ProgramOrderedExecutionRow } from './recurrence-order';
 import { patchProgramTask, transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
 import { programExecutionTasks, programTaskProgress } from './execution';
 import { programStateHash, programTaskDateStates, programTaskRepeatMembers } from './task-date-move';
@@ -46,6 +48,9 @@ export type ProgramCarryoverPlan = {
 };
 
 const words = (task: TextTask) => task.title.trim().replace(/\s+/g, ' ');
+// A punctuation-only title has no shared key: it stays its own task, as sameGroups does.
+const taskWordsKey = (task: TextTask) => programSameTaskKey(task.title) || `\u0000${task.id}`;
+const taskKind = (task: TextTask, labelOf: (task: TextTask) => string) => `${task.scopeId}\n${labelOf(task)}\n${taskWordsKey(task)}`;
 const firstDay = (task: TextTask) => task.groupDate ?? task.date ?? '';
 const dateProperty = (row: TextRow) => row.kind === 'property' && /^ *-\s+날짜:/.test(row.text);
 
@@ -88,6 +93,34 @@ function carryoverPlaces(space: ProgramPrivateSpace) {
   return { rowsOf, labelOf, placeOf };
 }
 
+/** The same folder and still-text classification boundary for the display's same-task groups. */
+export function programCarryoverGroupScope(space: ProgramPrivateSpace) {
+  const { labelOf } = carryoverPlaces(space);
+  return (task: TextTask) => `${task.scopeId}\n${labelOf(task)}`;
+}
+
+/** Read the existing unfiltered today query only; never build a write plan while typing.
+ * Progress rows and repeats stay separate, just as today's same-task chips leave them separate. */
+export function programCarryoverSummary(space: ProgramPrivateSpace, today: string, rows: readonly ProgramOrderedExecutionRow[]) {
+  if (!rows.length) return { kinds: 0, repeats: 0, count: 0, lines: 0 };
+  const { labelOf } = carryoverPlaces(space), repeat = programTaskRepeatMembers(space), progress = programTaskProgress(space.text);
+  const kinds = new Set<string>(), repeats = new Set<string>(), seen = new Set<string>(); let lines = 0;
+  for (const row of rows) {
+    if (!row.date || row.date >= today || seen.has(row.key)) continue;
+    if (row.kind === 'occurrence') {
+      if (row.row.completion === 'completed') continue;
+      seen.add(row.key); repeats.add(row.key); lines++; continue;
+    }
+    const task = row.task;
+    const value = progress(task.id).current ?? (task.done ? 100 : 0);
+    if (task.done || value === 100) continue;
+    seen.add(row.key); lines++;
+    if (repeat.has(task.id)) repeats.add(row.key);
+    else kinds.add(value > 0 ? `progress:${task.id}` : taskKind(task, labelOf));
+  }
+  return { kinds: kinds.size, repeats: repeats.size, count: kinds.size + repeats.size, lines };
+}
+
 /** Which lines of the space may be touched, what each carries under it, and which of those may be taken out. */
 function carryoverRules(space: ProgramPrivateSpace) {
   // A line ID anywhere outside the writing itself (Flow sources, copies, repeat logs, legacy maps, …) keeps that line.
@@ -111,7 +144,7 @@ function carryoverRules(space: ProgramPrivateSpace) {
     return programReferenceExecutionAccess(space, task.id).kind === 'active' ? null : 'locked';
   };
   const untouchable = (task: TextTask) => { if (!touches.has(task.id)) touches.set(task.id, touchBlock(task)); return touches.get(task.id)!; };
-  const kindOf = (task: TextTask) => `${task.scopeId}\n${labelOf(task)}\n${words(task)}`;
+  const kindOf = (task: TextTask) => taskKind(task, labelOf);
   // What a line carries under it, as words with their indents below it (its own 날짜 property and blank lines aside),
   // or why it can never go: under a task, a progress box, under a line of another kind, a task or a held line under it.
   const shapeOf = (task: TextTask): Shape => {
@@ -175,8 +208,8 @@ function pastKinds(space: ProgramPrivateSpace, today: string, rules: ReturnType<
  *  name and how many 분류 have them: 오늘 shows them as one bundle ('분류 2곳'). */
 export function programCarryoverPlaces(space: ProgramPrivateSpace, tasks: readonly TextTask[]): Map<string, { place: string; count: number }> {
   const rules = carryoverPlaces(space), places = new Map<string, Set<string>>(), found = new Map<string, { place: string; count: number }>();
-  for (const task of tasks) places.set(words(task), new Set([...places.get(words(task)) ?? [], `${task.scopeId}\n${rules.labelOf(task)}`]));
-  for (const task of tasks) { const count = places.get(words(task))!.size; if (count > 1) found.set(task.id, { place: rules.placeOf(task), count }); }
+  for (const task of tasks) places.set(taskWordsKey(task), new Set([...places.get(taskWordsKey(task)) ?? [], `${task.scopeId}\n${rules.labelOf(task)}`]));
+  for (const task of tasks) { const count = places.get(taskWordsKey(task))!.size; if (count > 1) found.set(task.id, { place: rules.placeOf(task), count }); }
   return found;
 }
 
@@ -204,7 +237,7 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
   // Since the day the oldest of them was first written (its date section), as '7일째' counts.
   plan.first = plain.reduce<string | null>((first, task) => !first || firstDay(task) < first ? firstDay(task) : first, null);
   const places = new Map<string, Set<string>>();
-  for (const task of plain) places.set(words(task), new Set([...places.get(words(task)) ?? [], `${task.scopeId}\n${labelOf(task)}`]));
+  for (const task of plain) places.set(taskWordsKey(task), new Set([...places.get(taskWordsKey(task)) ?? [], `${task.scopeId}\n${labelOf(task)}`]));
   plan.split = [...places.values()].filter(set => set.size > 1).length;
   const order = new Map(space.text.documents.map((doc, index) => [doc.id, index]));
   const newestFirst = (a: TextTask, b: TextTask) => b.date!.localeCompare(a.date!) || Number(b.docId === space.position.documentId) - Number(a.docId === space.position.documentId)
