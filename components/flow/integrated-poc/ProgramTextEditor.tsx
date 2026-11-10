@@ -65,6 +65,10 @@ import { programCheckChipsFit, programCheckNoticeAfter, programCheckNoticeEndsAt
 import {ProgramWritingInline} from './ProgramWritingInline';
 import {prepareWritingChild} from '@/lib/flow/integrated-poc/writing-child-command';
 import {planWritingInsertion} from '@/lib/flow/integrated-poc/writing-insertion-command';
+import { moveTaskLocation, readTaskLocationSource, TASK_LOCATION_FAILURE_TEXT, type TaskLocationTarget } from '@/lib/flow/integrated-poc/task-location-move';
+import { commitTaskDateWithUndo, type TaskLocationPolicy } from '@/lib/flow/integrated-poc/task-location-command';
+import { ProgramTaskMoveSheet } from './ProgramTaskMoveSheet';
+import { ProgramTaskMoveContext } from './task-move-context';
 
 export { createProgramTextDraft } from '@/lib/flow/integrated-poc/program-text-draft';
 export type { ProgramTextCommitOptions, ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
@@ -122,6 +126,11 @@ export interface ProgramTextEditorProps {
   docId: string;
   workspace: TextWorkspaceState;
   onCommit: ProgramTextCommit;
+  taskLocationPolicy?: (lineId: string, state: TextWorkspaceState) => TaskLocationPolicy;
+  authorizeTaskLocation?: (before: TextWorkspaceState, next: TextWorkspaceState) => boolean;
+  /** A folded writing view delegates source placement to the host's complete document. */
+  onTaskLocation?: (lineId: string, target: TaskLocationTarget, working: TextWorkspaceState) => Promise<boolean>;
+  onUndoTaskLocation?: () => boolean;
   onPosition?: (selection: ProgramTextPosition, lineId: string | null) => void;
   initialPosition?: ProgramTextPosition;
   onOpenScope?: (scopeId: string) => void;
@@ -294,7 +303,7 @@ export function stageProgramRegionInput(controller: ReturnType<typeof createProg
 }
 
 type ChildTarget={documentId:string;parentId:string;workspace:TextWorkspaceState;raw:string;title:string;date:string|null;scope:string;memo:string;kind?:'memo'|'task'};
-type Panel = { kind: 'insert' | 'child' | 'progress' | 'date' | 'folder' | 'folder-copy' | 'move' | 'reference' | 'order' | 'repeat'; lineId: string | null; child?:ChildTarget; folderLinkPreview?: ProgramFolderLinkPreview; folderCopyPreview?: ProgramFolderCopyPreview } | null;
+type Panel = { kind: 'insert' | 'child' | 'progress' | 'date' | 'folder' | 'task-folder' | 'folder-copy' | 'move' | 'reference' | 'order' | 'repeat'; lineId: string | null; child?:ChildTarget; folderLinkPreview?: ProgramFolderLinkPreview; folderCopyPreview?: ProgramFolderCopyPreview; locationExpected?: TextWorkspaceState } | null;
 type Moving = TextMoveSelection & { targets: TextMoveTarget[] };
 
 export function programTextProtectionMessage(access?: ProgramReferenceAccess): string {
@@ -485,6 +494,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // rides with the held press ('date'); 폴더 writes its `- /` line once and the folder suggestions take over.
   const [barMode, setBarModeState] = useState<BarMode>('tools'), barModeRef = useRef<{ mode: BarMode; line: number }>({ mode: 'tools', line: -1 });
   const barDateUndo = useRef<{ docId: string; taskId: string; before: TextWorkspaceState; after: TextWorkspaceState; date: string; time: string; raw: string; redo: boolean } | null>(null);
+  type LocationEdit = { docId: string; taskId: string; before: TextWorkspaceState; after: TextWorkspaceState; raw: string; redo: boolean; label: string; date: string | null; folderId: string; kind: TaskLocationTarget['kind'] };
+  const locationUndo = useRef<LocationEdit | null>(null);
+  const [locationNotice,setLocationNotice]=useState<LocationEdit|null>(null);
+  const taskMoveGate=useContext(ProgramTaskMoveContext);
+  type ScheduleUndo={docId:string;working:TextWorkspaceState;raw:string;text:string;undo:()=>Promise<boolean>};
+  const scheduleUndo=useRef<ScheduleUndo|null>(null),[scheduleNotice,setScheduleNotice]=useState<ScheduleUndo|null>(null);
   // Stage 2: `origin` is what the seed came from ('/' or '-/'); × then puts that back (none: the 폴더 button, × takes it away).
   const barChipDate = useRef<string | null>(null), folderSeedRef = useRef<{ docId: string; lineId: string; inPlace: boolean; before: TextWorkspaceState; origin?: '/' | '-/' } | null>(null), datePickRef = useRef<HTMLInputElement>(null);
   // Input v2 stage 2 (11/7): the line a chip row was opened from — a typed `[` (date chips), a typed `/` (folder chips),
@@ -1180,9 +1195,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (action === 'undo') { undoInput(); return; }
     if (action === 'redo') { redoInput(); return; }
     if (action === 'repeat') { openRepeatFromTools(); return; }
+    if (action === 'date') { const date = barChipDate.current; barChipDate.current = null; if (date) runDateChoice(date, trigger); return; }
+    const activeLine = propsRef.current.folderId ? regionLineRef.current : currentDoc()?.lines[textArea() ? caretLine(textArea()!) : -1]?.id;
+    if (action === 'folder' && activeLine && currentRow(activeLine)?.progressTargetId) { openFolderPanel(activeLine); return; }
     const area = textArea();
     if (propsRef.current.folderId || !area) return;
-    if (action === 'date') { const date = barChipDate.current; barChipDate.current = null; if (date) runDateChoice(date, trigger); return; }
     const plan = programFolderSeedPlan(area.value, area.selectionStart), before = currentState();
     folderSeedRef.current = null;
     if (!insertNative(plan.offset, plan.text, plan.caret)) return;
@@ -1222,9 +1239,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   /** A task line (N9): its own date, as the line menu's chip sets it. Any other line: the day's head line (Q1, R1). */
   function runDateChoice(date: string, trigger: BarTrigger | null = null) {
-    const area = textArea(), doc = currentDoc();
+    const area = barEditor()?.area ?? textArea(), doc = currentDoc();
     if (!area || !doc) return;
-    const line = doc.lines[caretLine(area)], target = line ? currentRow(line.id)?.progressTargetId : undefined;
+    const line = propsRef.current.folderId ? doc.lines.find(item=>item.id===regionLineRef.current) : doc.lines[caretLine(area)], target = line ? currentRow(line.id)?.progressTargetId : undefined;
     // Stage 2: the chips a typed `[` opened: that `[…` line turns into the day's head line, in one edit (one ↶).
     if (trigger?.kind === 'bracket') {
       const index = doc.lines.findIndex(item => item.id === trigger.lineId), bracket = doc.lines[index];
@@ -1236,11 +1253,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     }
     const task = target ? M.tasks(currentState()).find(item => item.id === target) : undefined;
     if (line && target && task) {
-      const before = currentState(), raw = draftRef.current?.getState().raw, docId = propsRef.current.docId, time = task.time ?? '';
-      // apply installs the change before its save starts, so the record is there for a ↶ pressed during that save.
-      const done = applyDateChip(line.id, date), state = draftRef.current?.getState();
-      if (state && state.raw !== raw) barDateUndo.current = { docId, taskId: target, before, after: state.working, date, time, raw: state.raw, redo: false };
-      void done;
+      if(locationAvailability().blocked){setMessage('저장을 확인한 뒤 옮겨 주세요.');return;}
+      const policy=locationPolicy(line.id);
+      if(policy.kind==='blocked'){setMessage(policy.message);return;}
+      if (policy.kind === 'move') { void performTaskLocation(line.id,{kind:'date',date}); return; }
+      // Exceptions own a receipt-bound undo. Never stage a speculative legacy whole-frame record here.
+      void applyDateChip(line.id, date);
       return;
     }
     const plan = programDateHeaderPlan(area.value, area.selectionStart, date), before = currentState();
@@ -1265,9 +1283,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   /** 고르기: a task opens its date form (N9 날짜 고르기); another line, the phone's own date picker, then the head line. */
   function pickBarDate() {
-    const area = textArea(), doc = currentDoc(), input = datePickRef.current;
+    const area = barEditor()?.area??textArea(), doc = currentDoc(), input = datePickRef.current;
     if (!area || !doc || !input || inputLockedRef.current || propsRef.current.readOnly) return;
-    const line = doc.lines[caretLine(area)], target = line ? currentRow(line.id)?.progressTargetId : undefined;
+    const line = propsRef.current.folderId?doc.lines.find(item=>item.id===regionLineRef.current):doc.lines[caretLine(area)], target = line ? currentRow(line.id)?.progressTargetId : undefined;
     if (line && target && M.tasks(currentState()).some(task => task.id === target)) { setBarMode('tools'); openProgress(line.id, 'date'); return; }
     input.value = today();
     try { input.showPicker(); } catch { input.focus(); }
@@ -1303,6 +1321,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   /** The toolbar's ↶ ↷ 반복, also run from the bar's ⋯ row (Q2: hidden with the toolbar while the keyboard is up). */
   function undoInput() {
     const props = propsRef.current, state = draftRef.current?.getState();
+    if (stepLocation(false)) return;
+    if(stepScheduleUndo())return;
+    if(propsRef.current.onUndoTaskLocation?.())return;
     if (undoBarFolder()) return;
     if (undoFolderMove() || undoRepeatCheck()) return;
     if (undoBarDate()) return;
@@ -1310,10 +1331,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   /** The steps ↶ ↷ take before the text's own history, in the same order (undoInput, redoInput); true when one ran. */
   function historyStep(type: 'historyUndo' | 'historyRedo') {
+    if (stepLocation(type === 'historyRedo')) return true;
+    if(type==='historyUndo'&&stepScheduleUndo())return true;
+    if(type==='historyUndo'&&propsRef.current.onUndoTaskLocation?.())return true;
     return type === 'historyUndo' ? undoBarFolder() || undoFolderMove() || undoRepeatCheck() || undoBarDate() : redoBarFolder() || redoBarDate();
   }
   const historyStepFn = useRef(historyStep); historyStepFn.current = historyStep;
   function redoInput() {
+    if (stepLocation(true)) return;
     const props = propsRef.current, state = draftRef.current?.getState();
     if (redoBarFolder() || redoBarDate()) return;
     // 7k stage 1: in a folder view ↷ goes where its ↶ went (the saved steps), not to the hidden whole editor's history.
@@ -1840,6 +1865,96 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const operation = draftRef.current.folderOperation();
     if (operation && (operation.id !== beforeOperation?.id || operation.at !== beforeOperation.at)) showFolderOperation('폴더 동작을 반영했습니다', 'info');
     return saveNow();
+  }
+  function locationPolicy(lineId: string | null): TaskLocationPolicy {
+    const state=currentState(), target=currentRow(lineId)?.progressTargetId??lineId??'';
+    return propsRef.current.taskLocationPolicy?.(lineId??target,state)??{
+      kind:readTaskLocationSource(state,propsRef.current.docId,target)?'move':'date-only',taskId:target,documentId:propsRef.current.docId,
+      message:'연결·반복 항목은 자리 그대로 날짜만 바꿉니다.'};
+  }
+  function locationAvailability() { return {...(taskMoveGate?.read()??{blocked:false,checking:false}),confirm:taskMoveGate?.confirm}; }
+  function highlightLocation(taskId:string) {
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      const folderId=propsRef.current.folderId,region=folderId?readProgramFolderRegions(currentState(),propsRef.current.docId,folderId)?.regions.find(entry=>entry.lineIds.includes(taskId)):undefined;
+      const index=region?region.lineIds.indexOf(taskId):currentDoc()?.lines.findIndex(line=>line.id===taskId)??-1;
+      if(index<0)return;
+      const surface=region?Array.from(hostRef.current?.closest('section')?.querySelectorAll<HTMLElement>('[data-folder-region]')??[]).find(node=>node.dataset.folderRegion===region.key):hostRef.current;
+      const node=surface?.querySelector<HTMLElement>(`.tle-line[data-line-index="${index}"]`);
+      if(node){node.classList.add(styles.locationHighlight);window.setTimeout(()=>node.classList.remove(styles.locationHighlight),1200);}
+    }));
+  }
+  function showLocation(last:LocationEdit) {
+    if(last.docId!==propsRef.current.docId)return;
+    if(propsRef.current.folderId&&last.folderId!==propsRef.current.folderId){propsRef.current.onOpenScope?.(last.folderId);return;}
+    if(regionPortRef.current?.revealLine?.(last.taskId)){highlightLocation(last.taskId);return;}
+    const index=currentDoc()?.lines.findIndex(line=>line.id===last.taskId)??-1,area=textArea();
+    if(index>=0&&area){editorRef.current?.focus(index);revealProgramEditorLine(area,index);highlightLocation(last.taskId);}
+  }
+  function locationOutside(last:LocationEdit) {
+    if(props.folderId)return last.folderId!==props.folderId;
+    const index=currentDoc()?.lines.findIndex(line=>line.id===last.taskId)??-1;
+    const line=hostRef.current?.querySelector<HTMLElement>(`.tle-line[data-line-index="${index}"]`),area=textArea();
+    if(!line||!area)return true;
+    const box=line.getBoundingClientRect(),view=area.getBoundingClientRect();
+    return box.bottom<view.top||box.top>Math.min(view.bottom,window.innerHeight);
+  }
+  async function performTaskLocation(lineId:string|null,target:TaskLocationTarget) {
+    if(actionsDisabled()||composingRef.current||regionPendingRef.current)return;
+    const policy=locationPolicy(lineId);
+    if(policy.kind!=='move'||!policy.documentId){setMessage(policy.message);return;}
+    if(locationAvailability().blocked){setMessage('저장을 확인한 뒤 옮겨 주세요.');return;}
+    const before=currentState();
+    if(panel?.locationExpected&&!programSame(panel.locationExpected,before)){setMessage('그사이 내용이 바뀌었습니다. 닫고 다시 옮겨 주세요.');return;}
+    if(propsRef.current.onTaskLocation){closePanel();await propsRef.current.onTaskLocation(policy.taskId,target,before);return;}
+    const moved=moveTaskLocation(before,{documentId:policy.documentId,taskId:policy.taskId,target});
+    if(!moved.ok){setMessage(TASK_LOCATION_FAILURE_TEXT[moved.reason]);return;}
+    if(!moved.changed){closePanel();return;}
+    if(propsRef.current.authorizeTaskLocation?.(before,moved.next)===false){setMessage('이 묶음의 연결·반복 상태가 바뀌어 옮기지 않았습니다. 원문은 유지했습니다.');return;}
+    const label=target.kind==='date'?`${moved.date?programCalendarDate(moved.date,today(),false):'날짜 미정'}로 옮겼습니다`:`/ ${programFolderPath(moved.next,moved.folderId)}로 옮겼습니다`;
+    closePanel();barDateUndo.current=null;setLocationNotice(null);
+    const pending=apply(moved.next,'할 일 옮기기'),state=draftRef.current?.getState();
+    if(!state||!programSame(state.working,moved.next))return;
+    const record:LocationEdit={docId:propsRef.current.docId,taskId:policy.taskId,before,after:moved.next,raw:state.raw,redo:false,label,date:moved.date,folderId:moved.folderId,kind:target.kind};
+    locationUndo.current=record;highlightLocation(policy.taskId);
+    if(propsRef.current.folderId===moved.folderId)requestAnimationFrame(()=>{
+      if(propsRef.current.docId===record.docId&&propsRef.current.active!==false&&!composingRef.current&&programSame(currentState(),record.after))regionPortRef.current?.revealLine?.(record.taskId);
+    });
+    if(await pending&&locationUndo.current===record&&programSame(currentState(),record.after))setLocationNotice(record);
+  }
+  function stepLocation(redo:boolean) {
+    const last=locationUndo.current,state=draftRef.current?.getState();
+    if(!last||!state||last.docId!==propsRef.current.docId||last.redo!==redo)return false;
+    if(state.raw!==last.raw||!programSame(state.working,redo?last.before:last.after)){locationUndo.current=null;setLocationNotice(null);return false;}
+    if(actionsDisabled()||composingRef.current||regionPendingRef.current)return true;
+    if(locationAvailability().blocked){setMessage('저장을 확인한 뒤 되돌려 주세요.');return true;}
+    const next=redo?last.after:last.before;
+    if(propsRef.current.authorizeTaskLocation?.(state.working,next)===false){setMessage('다른 변경이 있어 되돌리지 않았습니다. 현재 내용은 유지했습니다.');return true;}
+    const pending=apply(next,redo?'할 일 다시 옮기기':'할 일 옮기기 되돌리기'),installed=draftRef.current?.getState();
+    setLocationNotice(null);
+    locationUndo.current=installed&&programSame(installed.working,next)?{...last,raw:installed.raw,redo:!redo}:null;
+    void pending;return true;
+  }
+  function stepScheduleUndo(){
+    const last=scheduleUndo.current,state=draftRef.current?.getState();
+    if(!last||!state)return false;
+    if(last.docId!==propsRef.current.docId||last.raw!==state.raw||!programSame(last.working,state.working)){scheduleUndo.current=null;setScheduleNotice(null);return false;}
+    if(actionsDisabled()||composingRef.current||regionPendingRef.current)return true;
+    scheduleUndo.current=null;setScheduleNotice(null);
+    void last.undo().then(ok=>{if(!ok)setMessage('그 뒤 다른 변경이 있어 되돌리지 않았습니다. 현재 내용은 유지했습니다.');});return true;
+  }
+  async function applyDateOnly(target:string,value:string|null,time:string){
+    const docId=propsRef.current.docId;barDateUndo.current=null;
+    const outcome=await commitTaskDateWithUndo({begin:()=>taskMoveGate?.beginScheduleUndo?.(),apply:()=>{
+      const next=M.updateTask(currentState(),target,{date:value,time});closePanel();
+      return apply(next,'항목 날짜·시간',{taskId:target,date:value,time});
+    }});
+    if(outcome.kind==='blocked'){setMessage('저장 상태를 확인한 뒤 날짜를 다시 정해 주세요. 현재 내용은 유지했습니다.');return;}
+    if(outcome.kind!=='saved'||propsRef.current.docId!==docId)return;
+    const capability=outcome.capability,state=draftRef.current?.getState();
+    if(capability&&state){
+      const record:ScheduleUndo={docId,working:state.working,raw:state.raw,text:`날짜를 ${value?programCalendarDate(value,today(),false)+'로':'미정으로'} 바꿨습니다`,undo:capability.undo};
+      barDateUndo.current=null;scheduleUndo.current=record;setScheduleNotice(record);
+    }else{scheduleUndo.current=null;setScheduleNotice(null);setMessage('날짜는 저장했습니다. 그 뒤 상태가 바뀌어 지금은 되돌릴 수 없습니다.');}
   }
   function beginMove(lineId: string | null, openDialog: boolean) {
     if (!lineId || actionsDisabled()) return;
@@ -2633,6 +2748,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }, [draft.saving]);
   useEffect(() => { settleCheckSaves(); }, [draft]);
   useEffect(() => { checkSaves.current.clear(); checkHeld.current.clear(); setCheckNotice(null); }, [props.docId]);
+  useEffect(()=>{
+    const last=locationUndo.current;
+    if(last&&(!programSame(draft.working,last.redo?last.before:last.after)||last.docId!==props.docId||props.active===false)){
+      locationUndo.current=null;setLocationNotice(null);
+    }
+  },[draft.working,props.docId,props.active]);
+  useEffect(()=>{const last=scheduleUndo.current;if(last&&(!programSame(draft.working,last.working)||last.docId!==props.docId||props.active===false)){scheduleUndo.current=null;setScheduleNotice(null);}},[draft.working,props.docId,props.active]);
   // Review P2: a screen or document hiding this retained editor changes none of its props, only its size.
   useEffect(() => {
     const host = hostRef.current; if (!host) return;
@@ -2975,6 +3097,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   function openFolderPanel(lineId: string | null) {
     if (actionsDisabled() || composingRef.current) return;
+    if(currentRow(lineId)?.progressTargetId){
+      const policy=locationPolicy(lineId);
+      if(policy.kind!=='move'){setMessage(policy.message);return;}
+      setMessage('');setPanel({kind:'task-folder',lineId,locationExpected:currentState()});return;
+    }
     const preview = programFolderLinkPreview(currentState(), propsRef.current.docId, lineId, 'direct');
     if (!preview) { setMessage('이 위치에는 폴더를 연결할 수 없습니다.'); return; }
     setFolderName(programFolderLineTitle(currentState(), propsRef.current.docId, lineId) ?? '');
@@ -3027,25 +3154,29 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   async function applyDate() {
     if (actionsDisabled() || composingRef.current || regionPendingRef.current) return;
+    if(locationAvailability().blocked){setMessage('저장을 확인한 뒤 옮겨 주세요.');return;}
     if (accessFor(panel?.lineId ?? null)?.reason) { setPanel({ kind: 'reference', lineId: panel?.lineId ?? null }); return; }
     const target = currentRow(panel?.lineId ?? null)?.progressTargetId;
     if (!target) return;
+    const policy=locationPolicy(panel?.lineId??null);
+    if(policy.kind==='blocked'){setMessage(policy.message);return;}
+    if(policy.kind==='move'){await performTaskLocation(panel?.lineId??null,{kind:'date',date:date||null,time});return;}
     const task = M.tasks(currentState()).find(item => item.id === target);
     if (task && task.date === (date || null) && (task.time ?? '') === time) { closePanel(); return; }
-    const next = M.updateTask(currentState(), target, { date: date || null, time });
-    if (next === currentState()) { closePanel(); return; }
-    closePanel(); await apply(next, '항목 날짜·시간', { taskId: target, date: date || null, time });
+    await applyDateOnly(target,date||null,time);
   }
   /** N9: a line menu date chip sets the date in one press, as 날짜·시간 적용 would, and keeps the time. */
   async function applyDateChip(lineId: string | null, value: string) {
     if (actionsDisabled() || composingRef.current || regionPendingRef.current) return;
+    if(locationAvailability().blocked){setMessage('저장을 확인한 뒤 옮겨 주세요.');return;}
     if (accessFor(lineId)?.reason) { setPanel({ kind: 'reference', lineId }); return; }
     const target = currentRow(lineId)?.progressTargetId, task = target ? M.tasks(currentState()).find(item => item.id === target) : undefined;
     if (!target || !task) return;
+    const policy=locationPolicy(lineId);
+    if(policy.kind==='blocked'){setMessage(policy.message);return;}
+    if(policy.kind==='move'){await performTaskLocation(lineId,{kind:'date',date:value});return;}
     if (task.date === value) { closePanel(); return; }
-    const time = task.time ?? '', next = M.updateTask(currentState(), target, { date: value, time });
-    if (next === currentState()) { closePanel(); return; }
-    closePanel(); await apply(next, '항목 날짜·시간', { taskId: target, date: value, time });
+    await applyDateOnly(target,value,task.time??'');
   }
   function downloadDraft() {
     const blob = new Blob([captureDraftRaw()], { type: 'text/plain;charset=utf-8' });
@@ -3072,7 +3203,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // W5: the ＋ menu's head is its target line in one line ("‘…’ 아래에", or 새 줄 for an empty line or a typed "/").
   // A registered task's menu also holds its 진행·날짜, so its head is the task alone and the add choices get "추가".
   const menuTargetText = row ? memoContext?.label || row.title || row.task?.title || row.text : '';
-  const title = panel?.kind==='child' ? childTarget?.kind==='task' ? `‘${childTarget.title}’ 아래 하위 할 일` : childTarget?.kind==='memo' ? `‘${childTarget.title}’ 메모` : programInsertMenuTitle(childTarget?.title) :protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'repeat' ? '반복' : panel?.kind === 'progress' ? '진행 기록' : panel?.kind === 'date' ? '날짜·시간' : panel?.kind === 'folder-copy' ? '폴더 사본 만들기' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : panel?.kind === 'insert' && row?.progressTargetId ? `‘${menuTargetText.trim()}’` : programInsertMenuTitle(menuTargetText);
+  const title = panel?.kind==='child' ? childTarget?.kind==='task' ? `‘${childTarget.title}’ 아래 하위 할 일` : childTarget?.kind==='memo' ? `‘${childTarget.title}’ 메모` : programInsertMenuTitle(childTarget?.title) :protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'repeat' ? '반복' : panel?.kind === 'progress' ? '진행 기록' : panel?.kind === 'date' ? '날짜·시간' : panel?.kind === 'task-folder' ? '폴더로 옮기기' : panel?.kind === 'folder-copy' ? '폴더 사본 만들기' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : panel?.kind === 'insert' && row?.progressTargetId ? `‘${menuTargetText.trim()}’` : programInsertMenuTitle(menuTargetText);
   // Region fix (11/7): one view per workspace (it was read anew on every draw: a new snapshot, every region repainted).
   const folderView = useMemo(() => props.folderId ? readProgramFolderRegions(draft.working, props.docId, props.folderId) : null,
     [draft.working, props.docId, props.folderId]);
@@ -3156,13 +3287,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
    *  toolbar keeps ☐ ⇤ ⇥ ↳. A folder view has no 날짜·폴더 (the region keeps its own structure). */
   function barButtons(place: 'toolbar' | 'bar') {
     const className = place === 'toolbar' ? styles.toolbarBarButton : undefined, locked = barLine.markerLock, moved = barLine.structureLock;
-    const keep = (event: React.PointerEvent) => { event.preventDefault(); }, body = place === 'bar' && !props.folderId;
+    const keep = (event: React.PointerEvent) => { event.preventDefault(); }, body = place === 'bar' && !props.folderId, dateBody=place==='bar'&&(!props.folderId||barLine.isTask);
+    const dateMoveOff=barOff||barLine.isTask&&locationAvailability().blocked;
     const close = (label: string) => <button type="button" className={styles.barClose} aria-label={label} onPointerDown={keep} onClick={() => setBarMode('tools')}><ProgramIcon name="close" size={20} /></button>;
     const tools = <>
       {barButton('task', <BarIcon name="task" />, barLine.isTask ? '일반 줄로 바꾸기' : '할 일로 바꾸기', '- [ ]', !!locked, className, locked ? barLockId + place : undefined)}
       {locked && <span id={barLockId + place} hidden>{barLine.markerLock}</span>}
       {moved && <span id={barLockId + place + 'move'} hidden>{moved}</span>}
-      {body && <button type="button" className={styles.barWide} data-bar-mode="date" aria-label="날짜 넣기" title="날짜 넣기" disabled={barOff}
+      {dateBody && <button type="button" className={styles.barWide} data-bar-mode="date" aria-label={barLine.isTask?'날짜로 옮기기':'날짜 넣기'} title={barLine.isTask?'날짜로 옮기기':'날짜 넣기'} disabled={barOff}
         onPointerDown={keep} onClick={() => setBarMode('date')}><BarIcon name="date" /><span>날짜</span></button>}
       {body && barButton('folder', <><BarIcon name="folder" /><span>폴더</span></>, '폴더 줄 넣기', '- /', false, styles.barWide)}
       {barButton('outdent', <BarIcon name="outdent" />, '내어쓰기', 'Shift+Tab', !barLine.canOutdent, className, moved ? barLockId + place + 'move' : undefined)}
@@ -3175,14 +3307,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const typed = barTriggerRef.current?.kind === 'bracket' ? programBracketDate(bracketText, today()) : null;
     const typedLabel = typed && ((year, month, day) => `${year !== Number(today().slice(0, 4)) ? `${year}년 ` : ''}${month}월 ${day}일 ${'일월화수목금토'[new Date(Date.UTC(year, month - 1, day)).getUTCDay()]}`)(...typed.split('-').map(Number) as [number, number, number]);
     const dates = <>
-      <span className={styles.barHeading}>{barLine.isTask ? '할 일 날짜' : '날짜 줄'}</span>
+      <span className={styles.barHeading} title={dateMoveOff?'저장 확인 뒤 옮길 수 있어요':undefined}>{barLine.isTask ? (dateMoveOff?'저장 확인 뒤 옮길 수 있어요':barMode==='date'&&locationPolicy(props.folderId?regionLineRef.current:currentDoc()?.lines[textArea()?caretLine(textArea()!):-1]?.id??null).kind!=='move'?'날짜만':'옮길 날') : '날짜 줄'}</span>
       <div className={styles.barChips} role="group" aria-label="날짜 고르기">
-        {typed && <button type="button" key="typed" data-bar-chip="typed" disabled={barOff} data-held={heldBar === 'date' && barChipDate.current === typed ? 'true' : undefined}
+        {typed && <button type="button" key="typed" data-bar-chip="typed" disabled={dateMoveOff} data-held={heldBar === 'date' && barChipDate.current === typed ? 'true' : undefined}
           aria-label={typedLabel ?? typed} onPointerDown={keep} onClick={() => pressDateChip(typed)}>{typedLabel}</button>}
-        {programLineDateChips(today()).map(chip => <button type="button" key={chip.key} data-bar-chip={chip.key} disabled={barOff}
+        {programLineDateChips(today()).map(chip => <button type="button" key={chip.key} data-bar-chip={chip.key} disabled={dateMoveOff}
           data-held={heldBar === 'date' && barChipDate.current === chip.date ? 'true' : undefined} aria-label={`${chip.label} · ${chip.detail}`}
           onPointerDown={keep} onClick={() => pressDateChip(chip.date)}>{chip.label}<small>{barDay(chip.date)}</small></button>)}
-        <button type="button" data-bar-chip="pick" disabled={barOff} onPointerDown={keep} onClick={pickBarDate}>고르기</button>
+        <button type="button" data-bar-chip="pick" disabled={dateMoveOff} onPointerDown={keep} onClick={pickBarDate}>고르기</button>
       </div>
       {close('날짜 닫기')}
     </>;
@@ -3204,7 +3336,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       {barTriggerRef.current?.kind === 'slash' && <button type="button" className={styles.barMenu} data-bar-slash-menu disabled={barOff} onPointerDown={keep} onClick={barMenu}>메뉴</button>}
       {close('폴더 닫기')}
     </>;
-    return place === 'bar' && barMode === 'date' && body ? dates : place === 'bar' && barMode === 'more' ? more : place === 'bar' && barMode === 'folders' && body ? folders : tools;
+    return place === 'bar' && barMode === 'date' && dateBody ? dates : place === 'bar' && barMode === 'more' ? more : place === 'bar' && barMode === 'folders' && body ? folders : tools;
   }
   /** W2: the move notice and the last message sit under the body (right above the keyboard bar while typing on
    *  a phone), never between the toolbar and the body: the body keeps its top and ends above them instead.
@@ -3217,12 +3349,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       actions: view.actions.map(button => ({ label: button.label, run: run(button.step) })),
       chips: view.chips.map(button => ({ label: button.label, current: button.current, run: run(button.step) })) };
   }
-  memoTipBlockedRef.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice;
+  memoTipBlockedRef.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice || !!locationNotice || !!scheduleNotice;
   const noticeViews = programNoticeOrder([
     ...(moving ? [{ moving: true, tone: 'choose' as const, text: `${moving.label} · 하위 ${moving.descendantCount}줄`, closeLabel: null, close: undefined,
       actions: [{ label: '위치 선택', run: () => setPanel({ kind: 'move', lineId: moving.lineId }) }, { label: '이동 취소', run: cancelMove }] }] : []),
     ...(message && !panel ? [{ tone: 'warn' as const, text: message, closeLabel: '안내 닫기', close: () => setMessage('') }] : []),
     ...(checkNotice ? [checkNoticeView(checkNotice)] : []),
+    ...(locationNotice ? [{tone:'choose' as const,text:locationNotice.label,closeLabel:'알림 닫기',close:()=>setLocationNotice(null),actions:[{label:'되돌리기',run:whenComposed(()=>{stepLocation(false);})},...(locationOutside(locationNotice)?[{label:props.folderId&&locationNotice.folderId!==props.folderId?'그 폴더 보기':'그날 보기',run:whenComposed(()=>showLocation(locationNotice))}]:[])]}] : []),
+    ...(scheduleNotice?[{tone:'choose' as const,text:scheduleNotice.text,closeLabel:'알림 닫기',close:()=>setScheduleNotice(null),actions:[{label:'되돌리기',run:whenComposed(()=>{stepScheduleUndo();})}]}]:[]),
     ...(folderNotice ? [{ tone: folderNotice.tone, text: folderNotice.text, actions: folderNotice.actions, closeLabel: '알림 닫기', close: () => setFolderNotice(null) }] : []),
     ...(repeatNotice ? [{ tone: repeatNotice.tone, text: repeatNotice.text, actions: repeatNotice.actions, closeLabel: '알림 닫기', close: () => setRepeatNotice(null) }] : []),
     ...(memoTip !== null ? [{ tone: 'info' as const, text: PROGRAM_MEMO_TIP_TEXT, closeLabel: '알림 닫기', close: () => setMemoTip(null) }] : []),
@@ -3417,13 +3551,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           <button type="button" data-slash-folder="new" disabled={insertionDisabled} onClick={slashNewFolder}>새 폴더…</button></div></section>}
         {memoContext && <p className={styles.contextHint}>{memoContext.continuation}</p>}
         {row?.kind === 'subcheck' && row.isCanonical === true && !row.isReference && <small className={styles.registeredNotice}>이 하위 항목은 별도 할 일로 등록돼 있습니다. 들여쓰기를 바꿔도 등록과 진행 기록은 유지됩니다.</small>}
-        {row?.progressTargetId && <section className={styles.menuSection} aria-label="선택 항목 진행·날짜"><h4>진행·날짜</h4>
+        {row?.progressTargetId && <section className={styles.menuSection} aria-label="옮기기" data-task-location-menu><h4>옮기기 <small>하위 할 일·메모도 같이</small></h4>
+          {locationAvailability().blocked&&<div role="status" className={styles.contextHint}>저장을 확인하지 못해 옮기기를 잠시 막았습니다 <button type="button" disabled={locationAvailability().checking} onClick={taskMoveGate?.confirm}>{locationAvailability().checking?'확인 중…':'다시 확인'}</button></div>}
+          {locationPolicy(panel.lineId).kind!=='move'&&<p className={styles.contextHint}>{locationPolicy(panel.lineId).message}</p>}
+          <div className={styles.dateChips} role="group" aria-label="옮길 날">
+            {programLineDateChips(today()).map(chip=><button type="button" key={chip.key} disabled={actionsDisabled()||locationAvailability().blocked||locationPolicy(panel.lineId).kind==='blocked'} onClick={()=>void applyDateChip(panel.lineId,chip.date)}>{chip.label}<small>{chip.detail}</small></button>)}
+            <button type="button" disabled={actionsDisabled()||locationAvailability().blocked||locationPolicy(panel.lineId).kind==='blocked'} onClick={()=>openProgress(panel.lineId,'date')}>고르기<small>날짜·시간</small></button>
+          </div>
+          <button type="button" disabled={actionsDisabled()||locationAvailability().blocked||locationPolicy(panel.lineId).kind!=='move'} onClick={()=>openFolderPanel(panel.lineId)}>폴더로 옮기기<small>지금 / {programFolderPath(currentState(),M.tasks(currentState()).find(item=>item.id===row.progressTargetId)?.scopeId??'folder-unfiled')}</small></button>
+        </section>}
+        {row?.progressTargetId && <section className={styles.menuSection} aria-label="선택 항목 진행"><h4>진행</h4>
           {accessFor(panel.lineId)?.reason ? <button type="button" onClick={() => setPanel({ kind: 'reference', lineId: panel.lineId })}>기록·원래 항목 보기</button> : (chipTask => <>
-            {/* N9: the date in one press at the top of the menu; 날짜 고르기 is the date form, its time included. */}
-            {chipTask && <div className={styles.dateChips} role="group" aria-label="날짜 정하기">
-              {programLineDateChips(today()).map(chip => <button type="button" key={chip.key} aria-pressed={chipTask.date === chip.date} disabled={actionsDisabled()}
-                onClick={() => void applyDateChip(panel.lineId, chip.date)}>{chip.label}<small>{chip.detail}</small></button>)}
-              <button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜 고르기</button></div>}
             <button type="button" onClick={() => openProgress(panel.lineId)}>진행 기록</button>
             {!chipTask && <button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜·시간</button>}
             {chipTask && props.repeatContext && row?.kind === 'task' && <button type="button" onClick={() => openRepeatPanel(panel.lineId)}>반복…</button>}
@@ -3445,7 +3583,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         </section>
         <details className={styles.menuGroup} aria-label="연결·구획"><summary>연결·구획</summary><div className={styles.choices}>
         <button type="button" onClick={insertDateSection}>날짜 구획 · 문서 끝에</button>
-        <button type="button" onClick={() => openFolderPanel(panel.lineId)}>폴더 연결</button>
+        {!row?.progressTargetId&&<button type="button" onClick={() => openFolderPanel(panel.lineId)}>폴더 연결</button>}
         {row?.isReference && panelAccess?.documentId && panelAccess.lineId === (row.progressTargetId ?? row.taskId) && !panelAccess.reason && <button type="button" disabled={disabled} onClick={() => {
           const current = currentRow(panel.lineId), access = accessFor(panel.lineId);
           if (actionsDisabled() || composingRef.current || !current?.isReference || !access?.documentId || access.lineId !== (current.progressTargetId ?? current.taskId)) return;
@@ -3468,10 +3606,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         onHistory={recordDate=>{const record=row?.progressTargetId?M.progressHistory(draft.working,row.progressTargetId).find(entry=>entry.date===recordDate):null;if(record){setProgressRecordDate(record.date);setDate(record.date);setPercent(String(record.percent));}}}
         onSubmit={()=>{void applyProgress();}} />}
       {panel.kind === 'date' && !protectedExecutionPanel && <form onSubmit={event => { event.preventDefault(); void applyDate(); }}><p className={styles.dateTarget}>{row?.title || row?.task?.title}</p>
+        <p className={styles.contextHint}>{locationPolicy(panel.lineId).kind==='move'?'같은 폴더의 고른 날짜로 하위 할 일·메모도 같이 옮깁니다.':locationPolicy(panel.lineId).message}</p>
         {dateContext && <p className={styles.contextHint} aria-label="날짜 출처">{dateContext.label}{dateContext.context && <small>{dateContext.context}</small>}</p>}
         <label>실행 날짜<input type="date" value={date} onChange={event => setDate(event.target.value)} /></label><label>시간<input type="time" step={60} value={time} onChange={event => setTime(event.target.value)} /></label>
         {dateChangeHint && <p className={styles.contextHint} role="status">{dateChangeHint}</p>}
-        <button type="button" onClick={() => setDate('')}>날짜 미정</button><button type="submit" disabled={disabled}>날짜·시간 적용</button></form>}
+        <button type="button" onClick={() => setDate('')}>날짜 미정</button><button type="submit" disabled={disabled||locationAvailability().blocked}>날짜·시간 적용</button></form>}
+      {panel.kind==='task-folder'&&<ProgramTaskMoveSheet workspace={draft.working} documentId={props.docId} taskId={locationPolicy(panel.lineId).taskId} today={today()} availability={locationAvailability()} disabled={disabled} onChoose={folderId=>void performTaskLocation(panel.lineId,{kind:'folder',folderId})} onCreate={title=>void performTaskLocation(panel.lineId,{kind:'new-folder',title})}/>}
       {panel.kind === 'folder-copy' && <form onSubmit={event => { event.preventDefault(); void makeFolderCopy(); }}>
         <p>선택한 ‘{panel.folderCopyPreview?.title}’ 묶음만 새 문서로 복사합니다.</p>
         <small>최상위 폴더에 새 사본을 만듭니다. 현재값·날짜·메모는 유지하고 날짜별 기록은 복사하지 않습니다.</small>

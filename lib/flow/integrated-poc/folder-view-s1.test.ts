@@ -33,14 +33,14 @@ test('the 쓰기 tab keeps the gathered folder; 오늘 and the 폴더 list show 
   assert.match(space, /if \(main\) \{ setQuery\(''\); if \(nextPeriod === 'documents'\) setFolderId\(writingFolder\.current\); else setFolderId\(''\); \}/);
 });
 
-test("the gathered view says '/이름만 보는 중' and ends by 전체 보기; the bar's 날짜 and 폴더 are not there", () => {
+test("the gathered view says '/이름만 보는 중'; a task can choose a date while 폴더 insertion stays outside", () => {
   const head = editor.slice(editor.indexOf('data-folder-gather'), editor.indexOf('data-folder-gather') + 700);
   assert.match(head, /<strong>\/\{folderView\?\.folderPath \?\? '선택한 폴더'\}<\/strong>만 보는 중/);
   assert.match(head, /data-gather-end[^>]*>전체 보기<\/button>/);
   assert.match(head, />폴더 전체 할 일<\/button>/);
-  // The writing bar's body (날짜, 폴더) is drawn only outside a folder view.
-  assert.match(editor, /body = place === 'bar' && !props\.folderId;/);
-  assert.match(editor, /\{body && <button type="button" className=\{styles\.barWide\} data-bar-mode="date"/);
+  // Task relocation permits dates across this folder's date regions; folder declaration insertion stays outside.
+  assert.match(editor, /body = place === 'bar' && !props\.folderId, dateBody=place==='bar'&&\(!props\.folderId\|\|barLine\.isTask\);/);
+  assert.match(editor, /\{dateBody && <button type="button" className=\{styles\.barWide\} data-bar-mode="date"/);
   assert.match(editor, /\{body && barButton\('folder'/);
 });
 

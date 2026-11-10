@@ -25,17 +25,17 @@ test('미루기 chips: 내일, 이번 주말, 다음 주 (its Monday), each with
   assert.deepEqual(view('2026-11-11', null).filter(chip => chip.endsWith('off')), []);
 });
 
-test('the chips sit at the top of the row\'s ⋯ for a row 고르기 could pick, and move it by C6b\'s one save', () => {
-  assert(space.includes("const deferRow = detailTask && period !== 'documents' ? executionRows.find(row => row.kind === 'text-task' && row.task.id === detailTask.id) : undefined;"));
-  assert(space.includes("const deferChips = deferRow?.kind === 'text-task' && !programSelectBlock(space, deferRow,"));
-  const dialog = space.slice(space.indexOf('{detail?.kind === \'task\' && detailTask && <>'), space.indexOf('<div className={styles.detailOrigin}>'));
-  assert(dialog.includes('role="group" aria-label="미루기" data-defer-chips') && dialog.includes('onClick={() => void deferTask(deferRow.task, chip.date)}>{chip.label}</button>'));
-  assert(dialog.includes('>날짜 고르기</button>') && dialog.includes('min={programShiftDate(today, 1)}'));
-  const defer = space.slice(space.indexOf('  async function deferTask('), space.indexOf('  /** C6b 2-6: 되돌리기'));
-  assert(defer.includes("expected: { date: task.date, time: task.time ?? '', state: programTaskDateState(space, task.id) ?? undefined }, date: target };"));
-  assert(defer.includes("countedMutate('미루기', current => { const next = moveProgramTaskDates(current, { actorId, requestId, moves: [move] });"));
-  assert(defer.includes('{ history: true, awaitAutomaticRead: true,') && defer.includes('setDatesNotice({ actorId, count: 1, date: target, undo,'));
-  assert(defer.indexOf('close();') < defer.indexOf('await countedMutate'), 'the ⋯ closes; the notice under the list says it');
+test('the row\'s ⋯ starts with bundle relocation; its date chips and classification share the movement path', () => {
+  const dialog = space.slice(space.indexOf('{detail?.kind === \'task\' && detailTask && !detailFolderMove && <>'), space.indexOf('<div className={styles.detailOrigin}>'));
+  assert(dialog.includes('data-task-location-menu aria-label="옮기기"') && dialog.includes('role="group" aria-label="옮길 날"'));
+  assert(dialog.includes('programLineDateChips(today)') && dialog.includes('onClick={()=>void dateMove(detailTask.id,chip.date)}'));
+  assert(dialog.includes('>날짜 고르기</button>') && dialog.includes('aria-label="옮길 날짜"'));
+  assert(dialog.includes('폴더로 옮기기') && dialog.includes('readTaskLocationPolicy(space,detailTask.id).kind!==\'move\''));
+  const move = space.slice(space.indexOf('  async function moveTaskHere('), space.indexOf('  function highlightTaskLocation('));
+  assert(move.includes('moveProgramTaskLocation(current,') && move.includes('beforeCommit=current.spaces[actorId].text'));
+  assert(move.includes("if(policy.kind==='date-only')") && move.includes('commitTaskDateWithUndo('), 'protected exceptions retain an owned date-only write');
+  assert(move.includes('setLocationNotice({actorId,documentId:task.docId,taskId,before:beforeCommit!,after'));
+  assert(space.includes("await moveTaskHere(taskId,{kind:'date',date:nextDate})"));
   assert(spaceCss.includes('.space .deferChips > button { min-height: 44px; padding: 0 16px;'));
 });
 

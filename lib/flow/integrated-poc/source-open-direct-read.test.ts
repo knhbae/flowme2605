@@ -31,6 +31,6 @@ test('the source open reads the shown data and never goes through the writer', (
   assert(text.includes('if (!ownsSource()) return false;\n    // Reading/navigation is presentation-only'));
   assert(text.includes("setMessage(programErrorMessage('missing')); return false;"));
   // No busy refusal is left for the detail panel's open either.
-  assert(!source('ProgramSpace.tsx').includes('onBusy'));
+  assert(!text.includes('onBusy'));
   assert(!source('AlphaWorkspace.tsx').includes('작성 위치 기억'));
 });
