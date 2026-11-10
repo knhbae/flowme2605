@@ -79,6 +79,12 @@ export function programTextRoom(raw: string) {
 export function programAbout(chars: number) {
   return chars >= 10_000 ? `${Math.floor(chars / 10_000)}만 자` : `${chars.toLocaleString('ko-KR')}자`;
 }
+/** P1 with P2 (11/11, 기타 3-5): the notice for lines pasted as they are. A limit the paste reached (80%·90%) goes first
+ *  and the paste is said after it: one notice for both, kept until closed like the limit's own. */
+export function programPasteNotice(count: number, limit?: { text: string; room: string } | null) {
+  const pasted = `${count}줄을 붙여넣었습니다 · 원문 그대로`;
+  return limit ? { tone: 'warn' as const, text: limit.text, detail: `${limit.room} · ${pasted}` } : { tone: 'info' as const, text: pasted };
+}
 /** P3: whether a paste would take the text past the limit. */
 export function programPasteOverLimit(raw: string, start: number, end: number, text: string) {
   const next = raw.length - (end - start) + text.length, lines = raw.split('\n').length + (text.split('\n').length - 1) - (raw.slice(start, end).split('\n').length - 1);

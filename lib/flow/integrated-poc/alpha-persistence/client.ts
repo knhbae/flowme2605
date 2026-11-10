@@ -92,6 +92,8 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
   // Only a live, definitive participation-save rejection can replace that
   // editor's draft. Never recovered, and never permission to publish or retarget.
   let rejectedSocialDraft: SocialDraftRejection | null = null;
+  const unsentDraft = () => !state?.pending && state?.draft?.kind === 'change-private' && !!state.confirmed
+    && state.draft.expectedRevision === state.confirmed.revision;
   const retryableRejectedDraft = () => !!repository && !busy && !blocked && !state?.pending
     && state?.draft?.kind === 'change-private' && !!state.confirmed
     && state.draft.expectedRevision === state.confirmed.revision
@@ -332,7 +334,10 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
       // Keep confirmed + references as the original pending request's preimage.
       // Only resolvePending's exact receipt/readback path can release it.
       if (state.pending) { status = 'checking-result'; return false; }
-      const rejected = retryableRejectedDraft() ? { requestId: rejectedDraftRequestId, error: lastError,
+      // int7b r3: a draft not sent stays 'not-sent' through a read (its retry depends on that status); before, any
+      // read (the 20 s poll, a return to the tab) made it 'recovery-required', no longer retryable, and the next read
+      // called it a conflict.
+      const rejected = retryableRejectedDraft() ? { requestId: rejectedDraftRequestId, error: lastError, notSent: status === 'not-sent',
         confirmed: canonicalJson(state.confirmed), references: canonicalJson(state.references ?? null) } : null;
       const nativeRejected = retryableNativeHandoff() ? rejectedNativeHandoff : null;
       const socialRejected = retryableRejectedSocialDraft() ? rejectedSocialDraft : null;
@@ -347,11 +352,18 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
             && state!.draft.requestId === rejected.requestId && state!.draft.expectedRevision === state!.confirmed?.revision
             && canonicalJson(state!.confirmed) === rejected.confirmed
             && canonicalJson(state!.references ?? null) === rejected.references) {
-            lastError = rejected.error; rejectedDraftRequestId = rejected.requestId; status = 'recovery-required';
+            lastError = rejected.error; rejectedDraftRequestId = rejected.requestId; status = rejected.notSent ? 'not-sent' : 'recovery-required';
           } else if (nativeRejected && matchesNativeRejection(nativeRejected)) {
             lastError = 'limit'; rejectedNativeHandoff = nativeRejected; status = 'recovery-required';
           } else if (socialRejected && matchesSocialRejection(socialRejected)) {
             lastError = socialRejected.reason; rejectedSocialDraft = socialRejected; status = 'recovery-required';
+          } else if (unsentDraft()) {
+            // int7b r3: a private draft with no request outstanding, built on the revision the server still has, was
+            // never applied (a sent one would have moved the revision; an unknown one keeps its pending). No other
+            // change came first, so it is not a conflict: it can be sent again, as one refused before sending can
+            // (a reload, or a draft already called a conflict by the old read). The server's revision check still
+            // decides; a draft behind the server's revision stays protected as a conflict.
+            rejectedDraftRequestId = state!.draft!.requestId; status = 'not-sent';
           } else status = state!.pending ? 'checking-result' : state!.draft ? 'conflict' : 'ready';
         }
         return ok;

@@ -4,8 +4,8 @@ import test from 'node:test';
 import { createEmptyTextWorkspace, textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 import { createProgramDocumentInput } from './program-document-input';
 import { createProgramTextDraft } from './program-text-draft';
-import { planProgramWritingInput, type WritingPlan } from './writing-guard';
-import { programHeldFix, programHeldPlain, programHeldReasonText, programPasteFit, programPasteOverLimit, programTextLimitShare } from './writing-guard-notice';
+import { planProgramWritingInput, programCompositionCaret, type WritingPlan } from './writing-guard';
+import { programHeldFix, programHeldPlain, programHeldReasonText, programPasteFit, programPasteNotice, programPasteOverLimit, programTextLimitShare } from './writing-guard-notice';
 import { programAlignRows, programLinePieces } from './writing-hold';
 
 // 저장 재설계 B '오류 없는 쓰기' (PRD 16절, UX inbox/ux-save-b-20261110-1704.md, 11/10).
@@ -272,4 +272,54 @@ test('the editor runs the rules on a person\'s own keys only, hands their splice
   assert(editor.includes("if (!applyingPlanRef.current) { setWritingNotice(previous => previous?.tone === 'choose' ? null : previous); noteCaretLine(); }"));
   assert(editor.includes("if (type === 'insertFromPaste' && (text.length > 4000 || text.split('\\n').length > 60)) { notePaste(from, text); return false; }"), 'a long paste goes in natively');
   assert(editor.includes('else if (controller.getState().held) scheduleSave();'), 'held lines do not stop the rest from saving');
+});
+test('int7b QA 0-5 (W-GUARD-07): a composition starting inside a mark starts at the title instead; the task keeps its line', () => {
+  const { state, id } = workspace(), rows = M.rowMeta(state, id), caret = (offset: number) => programCompositionCaret(DOC, rows, offset);
+  const task = at(DOC, '  - [ ] 보고서 초안'), title = at(DOC, '보고서 초안');
+  // Between '[' and ']', on '- ', in the leading spaces: the title's start, where a typed letter goes.
+  for (const inside of [task + 5, task + 3, task + 6, task + 1, task]) assert.equal(caret(inside), title, String(inside - task));
+  // At the title's start or in the title: where it is.
+  assert.equal(caret(title), null); assert.equal(caret(title + 2), null);
+  // A memo's '- 메모: ', a folder's '- /' (its name), a date head (its own rule), a plain line.
+  assert.equal(caret(at(DOC, '- 메모: 표 정리') + 3), at(DOC, '표 정리'));
+  assert.equal(caret(at(DOC, '- /집안일') + 1), at(DOC, '집안일'));
+  assert.equal(caret(at(DOC, '[2026-11-10]') + 3), null);
+  const plain = '[2026-11-10]\n그냥 글\n- [40%] 진행 중', p = workspace(plain), prow = M.rowMeta(p.state, p.id);
+  assert.equal(programCompositionCaret(plain, prow, at(plain, '그냥') + 1), null);
+  assert.equal(programCompositionCaret(plain, prow, at(plain, '[40%]') + 2), at(plain, '진행 중'), 'a progress mark too');
+  // What the composition then writes: '가' at the title's start, the task the same line (its ID), never '- [가 ]'.
+  const next = DOC.slice(0, title) + '가' + DOC.slice(title), edit = M.editTextResult(state, id, next, { folderText: true, inputSplice: { start: title, end: title, text: '가' } });
+  assert.equal(edit.reason, null); assert.equal(lines(edit.state, id)[3].id, lines(state, id)[3].id);
+  assert.equal(M.tasks(edit.state).find(item => item.id === lines(state, id)[3].id)?.title, '가보고서 초안');
+  const broken = M.editTextResult(state, id, DOC.slice(0, task + 5) + '가' + DOC.slice(task + 5), { folderText: true });
+  assert(!M.tasks(broken.state).some(item => item.title === '보고서 초안'), 'what QA saw: in the mark, the line stops being that task');
+});
+
+test('int7b QA: the editor moves the caret before a composition; a paste is read once it is in; the fit notice keeps its words', () => {
+  const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  // 0-5: first thing on compositionstart, before the native editor marks its anchor.
+  assert(editor.includes('const compositionStart = () => { compositionToTitle(); setSuggestion(null); compositionGeneration.current++;'));
+  assert(editor.includes('const to = programCompositionCaret(textarea.value, M.rowMeta(shown.working, props.docId), textarea.selectionStart);'));
+  // 3-4: notePaste reads in the next task, not a microtask the browser's own paste comes after.
+  const note = editor.slice(editor.indexOf('function notePaste('), editor.indexOf('function askLongPaste('));
+  assert(note.includes('setTimeout(() => {') && note.includes('}, 0);') && !note.includes('queueMicrotask'));
+  // W-GUARD-13: the limit the fit reaches is in the fit's own notice, after '↶로 되돌리지 않습니다'.
+  const fit = editor.slice(editor.indexOf('function askLongPaste('), editor.indexOf('function textLimitReached('));
+  assert(fit.includes('const reached = textLimitReached(next);') && fit.includes("['이 붙여넣기는 ↶로 되돌리지 않습니다', ...(reached ? [") && !fit.includes('checkTextLimit(next)'));
+});
+
+test('notice (11/11, 기타 3-5): the limit a paste reaches goes first in the paste notice; the paste notice never covers it', () => {
+  assert.deepEqual(programPasteNotice(4), { tone: 'info', text: '4줄을 붙여넣었습니다 · 원문 그대로' });
+  assert.deepEqual(programPasteNotice(4, { text: '이 글이 한도의 80%에 닿았습니다', room: '남은 약 2만 자 · 240줄' }),
+    { tone: 'warn', text: '이 글이 한도의 80%에 닿았습니다', detail: '남은 약 2만 자 · 240줄 · 4줄을 붙여넣었습니다 · 원문 그대로' });
+  const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  const slice = (from: string, to: string) => editor.slice(editor.indexOf(from), editor.indexOf(to));
+  // checkTextLimit keeps the notice it showed (by key); notePaste, a task later, takes one shown since the paste began.
+  assert(slice('function checkTextLimit(', 'function goToHeldLine(').includes('limitNoticeRef.current = { key: writingNoticeKeys.current, ...reached };'));
+  const note = slice('function notePaste(', 'function askLongPaste(');
+  assert(note.includes('function notePaste(start: number, text: string, since = writingNoticeKeys.current) {'));
+  assert(note.includes('programPasteNotice(to - from + 1, shown && shown.key > since ? shown : null)') && note.includes('}], notice.detail);'));
+  // A planned paste's input runs inside applyWritingEdit, before notePaste: the count is taken before the edit.
+  const plan = slice('function runWritingPlan(', 'function askMerge(');
+  assert(plan.indexOf('since = writingNoticeKeys.current') < plan.indexOf('applyWritingEdit(') && plan.includes('notePaste(plan.splice.start, plan.splice.text, since);'));
 });
