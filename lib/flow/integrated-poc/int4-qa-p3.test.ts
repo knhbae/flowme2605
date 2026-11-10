@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
-import { programSeoulDate, programStampLabel } from './date-label';
+import { programSeoulDate, programStampLabel, programStampTimeLabel } from './date-label';
 
 // int4 QA P3 (11/10): saved/published days in Seoul time, the arrival notice's menu name, the 1280 rail's current tab on hover.
 const component = (name: string) => readFileSync(new URL(`../../../components/flow/integrated-poc/${name}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
@@ -22,4 +22,16 @@ test('P3-INT4-2 and 3: the arrival notice names 공개하기; the current rail t
   const workspace = component('AlphaWorkspace.tsx');
   assert(workspace.includes('글 메뉴의 ‘공개하기’를 누르면 출처 칸이 채워져 있습니다.') && !workspace.includes('선택해서 공개'));
   assert(component('AlphaWorkspace.module.css').includes('  .page[data-alpha-frame="b"] .globalNavigation button[aria-current]:hover:not(:disabled) { background: var(--flowme-b-nav-active); color: #fff; }'));
+});
+test('P3 (11/11): saved and imported times in the creator read in Seoul with the clock time, never the stored UTC string', () => {
+  assert.equal(programStampTimeLabel('2026-11-09T16:30:00.000Z', '2026-11-10'), '11월 10일 (화) 01:30', '1:30 a.m. in Seoul, not 16:30 the day before');
+  assert.equal(programStampTimeLabel('2026-11-10T14:59:00.000Z', '2026-11-10'), '11월 10일 (화) 23:59');
+  assert.equal(programStampTimeLabel('2025-12-31T15:00:00.000Z', '2026-11-10'), '1월 1일 (목) 00:00', 'new year in Seoul');
+  assert.equal(programStampTimeLabel('2025-06-01T03:00:00.000Z', '2026-11-10'), '2025년 6월 1일 12:00');
+  for (const odd of ['not a time', '2026-11-10', '']) assert.equal(programStampTimeLabel(odd, '2026-11-10'), odd, 'not a stored time: as stored');
+  const provenance = component('ProgramDocumentProvenance.tsx'), creator = component('ProgramCreatorWorkspace.tsx'), library = component('ProgramCreatorDraftLibrary.tsx');
+  assert(provenance.includes('가져온 시각 {programStampTimeLabel(imported.importedAt)} · ') && provenance.includes('{programStampTimeLabel(imported.source.undo.record.updatedAt)}</p>'));
+  assert(!/UTC/.test(provenance.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')), 'no UTC label left');
+  assert(creator.includes('선택한 저장본 · {programStampTimeLabel(preview.entry.savedAt)}') && creator.includes('· {programStampTimeLabel(entry.savedAt)}</button>'));
+  assert(library.includes('· {programStampTimeLabel(r.savedAt)}</option>'));
 });
