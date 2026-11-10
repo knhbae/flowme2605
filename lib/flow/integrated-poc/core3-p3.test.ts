@@ -26,7 +26,8 @@ test('미루기 chips: 내일, 이번 주말, 다음 주 (its Monday), each with
 });
 
 test('the chips sit at the top of the row\'s ⋯ for a row 고르기 could pick, and move it by C6b\'s one save', () => {
-  assert(space.includes("const deferRow = detailTask && period !== 'documents' ? executionRows.find(row => row.kind === 'text-task' && row.task.id === detailTask.id) : undefined;"));
+  // F8 1단계: in writing the band's [미루기] opens this sheet, the row read from 오늘's own query.
+  assert(space.includes("const deferRow = detailTask ? (period !== 'documents' ? executionRows : todayRowsForBand).find(row => row.kind === 'text-task' && row.task.id === detailTask.id) : undefined;"));
   assert(space.includes("const deferChips = deferRow?.kind === 'text-task' && !programSelectBlock(space, deferRow,"));
   const dialog = space.slice(space.indexOf('{detail?.kind === \'task\' && detailTask && <>'), space.indexOf('<div className={styles.detailOrigin}>'));
   assert(dialog.includes('role="group" aria-label="미루기" data-defer-chips') && dialog.includes('onClick={() => void deferTask(deferRow.task, chip.date)}>{chip.label}</button>'));

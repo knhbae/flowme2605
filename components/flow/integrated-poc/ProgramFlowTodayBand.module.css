@@ -1,36 +1,46 @@
-/* Flow pipeline S11 (11/8): '오늘 Flow 할 일' over a writing document. Visual A tokens only; no new colour.
-   Core3 P1 (X9): one folded line by default (44px, the whole line a button); opened in place below it. */
-.band { box-sizing: border-box; margin: 0 0 4px; padding: 0 8px 0 4px; border: 1px solid var(--flowme-b-flow-soft); border-radius: 16px; background: var(--flowme-b-flow-soft); color: var(--flowme-b-ink); }
+/* F8 1단계 (11/10): '이어지는 일' over a writing document — the S11 Flow band (11/8) widened. Visual B tokens only.
+   One folded line by default (48px, the whole line a button); opened in place below it: rows of 56, a foot of 44+. */
+.band { box-sizing: border-box; margin: 0 0 4px; padding: 0 4px; border-radius: 16px; background: var(--flowme-b-canvas); color: var(--flowme-b-ink); }
 .band[data-opened] { padding-bottom: 4px; }
 /* The keyboard is up (input v2's focus signal): the band steps aside, as the '오늘 쓰기' line does. */
 :global([data-writing-keyboard="true"]) .band { display: none; }
 .heading { margin: 0; font: inherit; }
-.band .head { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; min-height: 44px; margin: 0; padding: 0 4px 0 8px; border: 0; border-radius: 10px; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-/* F6-B2: the 흐름 마크 and the count in teal (flow on flow-soft 5.18). */
-.mark { flex: none; width: 18px; height: 18px; color: var(--flowme-b-flow); }
-.label { flex: none; font-size: 14px; line-height: 20px; font-weight: 700; color: var(--flowme-b-ink); }
-.count { flex: none; min-width: 0; height: 20px; padding: 0; background: transparent; color: var(--flowme-b-flow); font-size: 14px; font-weight: 800; line-height: 20px; text-align: left; font-variant-numeric: tabular-nums; }
-.summary { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; line-height: 20px; color: var(--flowme-b-ink); }
+.band .head { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; min-height: 48px; margin: 0; padding: 0 4px 0 10px; border: 0; border-radius: 12px; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.mark { flex: none; width: 18px; height: 18px; color: var(--flowme-b-primary); }
+.label { flex: none; font-size: 15px; line-height: 20px; font-weight: 700; color: var(--flowme-b-ink); }
+.count { flex: none; color: var(--flowme-b-primary); font-size: 15px; font-weight: 800; line-height: 20px; font-variant-numeric: tabular-nums; }
+/* The Flows among them, in teal with the 흐름 마크 (flow on canvas, 5.0:1). */
+.flowCount { flex: none; display: inline-flex; align-items: center; gap: 3px; color: var(--flowme-b-flow); font-size: 14px; font-weight: 700; line-height: 20px; }
+.flowCount svg { width: 16px; height: 16px; }
+.summary { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--flowme-b-muted); }
 .chevron { flex: none; display: inline-flex; align-items: center; justify-content: center; margin-left: auto; width: 28px; height: 28px; color: var(--flowme-b-muted); }
 .chevron svg { width: 18px; height: 18px; }
 /* The editor tints a hovered button; a tap on a phone leaves that hover on, so the band keeps its own (real hover only). */
 .band.band button:hover:not(:disabled) { background: transparent; }
-@media (hover: hover) { .band.band .head:hover:not(:disabled) { background: var(--flowme-b-canvas); } }
-.rows { list-style: none; margin: 0; padding: 0 0 0 4px; display: grid; }
-.rows > li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; min-height: 44px; }
+@media (hover: hover) { .band.band .head:hover:not(:disabled) { background: var(--flowme-b-hair); } }
+.rows { list-style: none; margin: 0; padding: 0; display: grid; }
+.rows > li { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; min-height: 56px; border-top: 1px solid var(--flowme-b-hair); }
 .rows > li[data-done] .title { color: var(--flowme-b-muted); text-decoration: line-through; }
-.band .check { width: 44px; height: 44px; min-height: 0; margin: 0 0 0 -8px; padding: 0; border: 0; background: transparent; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
-/* F6-B2: round 22 checks; every row here is a Flow's, so the open ring is teal. Pressed: 120 ms to a primary disc with a
+.band .check { width: 48px; height: 48px; min-height: 0; margin: 0; padding: 0; border: 0; background: transparent; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+/* F6-B2: round 22 checks; a Flow's row is ringed teal, the others in control. Pressed: 120 ms to a primary disc with a
    white check, then 320 ms to the done look (the global reduced-motion rule makes both instant). */
-.check > span[data-check] { position: relative; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 2px solid var(--flowme-b-flow); border-radius: 50%; background: var(--flowme-b-paper); transition: background-color 320ms ease, border-color 320ms ease; }
-.check > span[data-check="done"] { border-color: var(--flowme-b-canvas); background: var(--flowme-b-canvas); }
+.check > span[data-check] { position: relative; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 2px solid var(--flowme-b-control); border-radius: 50%; background: var(--flowme-b-paper); transition: background-color 320ms ease, border-color 320ms ease; }
+.rows > li[data-kind="flow"] .check > span[data-check="open"] { border-color: var(--flowme-b-flow); }
+.check > span[data-check="done"] { border-color: var(--flowme-b-hair); background: var(--flowme-b-hair); }
 .check > span:is([data-check="done"], [data-check="busy"])::after { content: ""; position: absolute; left: 6px; top: 2.5px; width: 5px; height: 10px; border: solid var(--flowme-b-muted); border-width: 0 2px 2px 0; transform: rotate(45deg); }
 .check > span[data-check="done"], .check > span[data-check="done"]::after { transition: background-color 320ms ease 120ms, border-color 320ms ease 120ms; }
 .check > span[data-check="busy"] { border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); transition-duration: 0ms; }
 .check > span[data-check="busy"]::after { border-color: #fff; }
-.title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; line-height: 20px; }
-.chip { display: inline-block; vertical-align: 1px; height: 18px; margin-inline-start: 6px; padding: 0 6px; border-radius: 9px; background: var(--flowme-b-canvas); color: var(--flowme-b-muted); font-size: 13px; font-weight: 600; line-height: 18px; white-space: nowrap; }
-.band .flow { display: inline-flex; align-items: center; gap: 2px; max-width: 9em; min-height: 44px; height: 44px; margin: 0; padding: 0 4px 0 8px; border: 0; background: transparent; color: var(--flowme-b-flow); font-size: 13px; font-weight: 600; line-height: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+/* The words and where they were written: one button, the original line. */
+.band .text { display: grid; align-content: center; gap: 0; min-width: 0; min-height: 56px; margin: 0; padding: 4px 4px 4px 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.title { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; line-height: 22px; }
+.meta { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; line-height: 18px; color: var(--flowme-b-muted); }
+.meta u { text-decoration: underline; text-underline-offset: 2px; }
+.flowName { color: var(--flowme-b-flow); font-weight: 600; }
+.percent { display: inline-block; height: 18px; margin-inline-end: 4px; padding: 0 6px; border-radius: 9px; background: var(--flowme-b-selected); color: var(--flowme-b-primary); font-size: 13px; font-weight: 700; line-height: 18px; }
+.chip { display: inline-block; vertical-align: 1px; height: 18px; margin-inline-start: 6px; padding: 0 6px; border-radius: 9px; background: var(--flowme-b-paper); color: var(--flowme-b-muted); font-size: 13px; font-weight: 600; line-height: 18px; white-space: nowrap; }
+.band .defer { min-width: 44px; min-height: 44px; margin: 0; padding: 0 8px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 14px; font-weight: 700; cursor: pointer; }
 .failed { grid-column: 2 / -1; margin: 0 0 6px; font-size: 13px; line-height: 18px; color: var(--flowme-b-error-ink); }
-.band .more { display: block; min-height: 44px; margin: 0; padding: 0 0 0 40px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
+.band .foot { display: flex; align-items: center; gap: 2px; width: 100%; min-height: 48px; margin: 0; padding: 0 6px 0 14px; border: 0; border-top: 1px solid var(--flowme-b-hair); border-radius: 0; background: transparent; color: var(--flowme-b-primary); font-size: 14px; font-weight: 700; text-align: left; cursor: pointer; }
+.late { color: var(--flowme-b-late-ink); }
 .band :focus-visible { outline: 2px solid var(--flowme-b-primary); outline-offset: -2px; }

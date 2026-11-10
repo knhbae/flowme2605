@@ -62,7 +62,8 @@ test('P3: the old-repeat card waits while a notice holds the bottom, and is defi
   assert(source.includes('{!detail && !bottomNoticeShown && legacyRepeatContent}'));
   const shown = source.indexOf('  const bottomNoticeShown = ');
   // F4-b (11/9): the folder screen's '＋ 오늘 할 일' notice holds the bottom too.
-  assert(source.slice(shown, source.indexOf('\n', shown)).includes('!sheetOpen && (orderNoticeContent || checkNoticeContent || repeatNoticeContent) || datesNoticeContent || carryNoticeContent || folderTodayNoticeContent || selecting && selectNotice'));
-  for (const name of ['orderNoticeContent', 'checkNoticeContent', 'repeatNoticeContent', 'datesNoticeContent', 'carryNoticeContent', 'folderTodayNoticeContent'])
+  assert(source.slice(shown, source.indexOf('\n', shown)).includes('!sheetOpen && (orderNoticeContent || checkNoticeContent || repeatNoticeContent || sameNoticeContent) || datesNoticeContent || carryNoticeContent || folderTodayNoticeContent || selecting && selectNotice'));
+  // F8 1단계: the '같은 일 n줄' notice holds it too.
+  for (const name of ['orderNoticeContent', 'checkNoticeContent', 'repeatNoticeContent', 'sameNoticeContent', 'datesNoticeContent', 'carryNoticeContent', 'folderTodayNoticeContent'])
     assert(source.indexOf(`  const ${name} = `) > 0 && source.indexOf(`  const ${name} = `) < shown, name);
 });
