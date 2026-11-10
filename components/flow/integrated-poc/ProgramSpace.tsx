@@ -1169,7 +1169,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // this document's today section (a Flow's, moved, another document's, a repeat's round), and counts the late ones.
   const continueBand = useMemo(() => !bandDocumentId ? { rows: [] as ProgramContinueRow[], late: 0, flow: 0 } : programContinueBand(todayRowsForBand, { today, documentId: bandDocumentId,
     flowTitle: id => flowDocuments.get(id) ?? null, repeat: id => (line => line && !line.block ? `↻ ${line.marker.label}` : null)(programRepeatLine(space, id)),
-    progress: id => M.currentProgress(space.text, id) }), [todayRowsForBand, bandDocumentId, flowDocuments, space, today]);
+    progress: id => taskProgress(id).current }), [todayRowsForBand, bandDocumentId, flowDocuments, space, today, taskProgress]);
   // Core3 P3 (UX F2): a list row's ⋯ starts with 미루기 — the row as 고르기 would pick it (not a repeat's round, not
   // finished, not locked), moved by C6b's one save with its notice and 되돌리기. F8 1단계: in writing, the band's
   // [미루기] opens the same sheet, its row read from 오늘's own query.

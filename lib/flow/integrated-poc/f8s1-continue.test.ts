@@ -5,6 +5,7 @@ import { createProgramData } from './program-data';
 import { createProgramDocument } from './private-space';
 import { textWorkspaceModel as M } from './text-workspace';
 import { programOrderedExecutionRows } from './recurrence-order';
+import { programTaskProgress } from './execution';
 import { programContinueBand, programContinueMeta, programSameTaskGroups, programSameTaskKey } from './continue-band';
 
 // F8 1단계 (11/10): '이어지는 일' over a writing document, and 오늘's '같은 일 n줄'.
@@ -68,4 +69,20 @@ test('같은 일: words without the repeat marker, spaces folded, the ending pun
   const groups = programSameTaskGroups(rows, row => (row as unknown as { folderId: string }).folderId);
   assert.deepEqual([...groups.members].map(([id, members]) => [id, members.map(member => member.id)]), [['a', ['a', 'b', 'c']]]);
   assert.deepEqual([...groups.hidden].sort(), ['b', 'c'], 'another folder and today\'s group stay their own rows');
+});
+
+test('the writing band keeps the model result with the shared progress table at 0, 40 and 100 percent', () => {
+  for (const percent of [0, 40, 100]) {
+    const sample = written('[2026-11-08]\n- [ ] 합성 밀린 확인\n[2026-11-10]\n- [ ] 합성 현재 줄', '[2026-11-10]\n- [ ] 합성 다른 글 진행\n- [x] 합성 다른 글 완료');
+    const space = sample.data.spaces[sample.actor], task = M.tasks(space.text).find(task => task.title === '합성 다른 글 진행')!;
+    space.text = M.recordProgress(space.text, task.id, TODAY, percent, TODAY);
+    const rows = programOrderedExecutionRows(sample.data, { period: 'today', date: TODAY, today: TODAY, folderId: '', query: '', includeHeld: false, includeExcluded: false, page: 0 }).rows;
+    const context = { today: TODAY, documentId: sample.documentId, flowTitle: () => null, repeat: () => null }, read = programTaskProgress(space.text);
+    const direct = programContinueBand(rows, { ...context, progress: id => M.currentProgress(space.text, id) });
+    const shared = programContinueBand(rows, { ...context, progress: id => read(id).current });
+    assert.deepEqual(shared, direct);
+    assert.equal(shared.late, 1);
+    assert.equal(shared.rows.some(row => row.task.id === task.id), percent !== 100);
+    if (percent === 40) assert.equal(shared.rows.find(row => row.task.id === task.id)?.percent, 40);
+  }
 });
