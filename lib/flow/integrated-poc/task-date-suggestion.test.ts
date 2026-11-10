@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
+import { suggestTaskLineDate } from './natural-task-date';
 import { readTaskDateSuggestion, undoTaskDateSuggestion, taskDateSuggestionUndoFrameMatches, taskDateSuggestionLabel, taskDateSuggestionToday, taskDateSuggestionsEnabled } from './task-date-suggestion';
 import { mergeProgramTextWorkspace } from './text-merge';
 
@@ -20,6 +21,17 @@ test('only canonical unfinished task lines without a date property are suggested
   assert.equal(candidate('- [ ] 내일 합성 회의')?.date, '2026-11-11');
   for (const raw of ['내일 합성 메모', '- [x] 내일 합성 회의', '- [ ] 내일이나 모레 합성 회의',
     '- [ ] 내일 합성 회의\n  - 날짜: 2026-11-12', '- [ ] 내일 합성 회의\n  - 날짜: 미정']) assert.equal(candidate(raw), null, raw);
+});
+
+test('int8b (QA-int8 0-1): a date word ending the title is suggested; a bare number there and an interior date are not', () => {
+  const line = '- [ ] 할 일 둘 내일';
+  assert.deepEqual(suggestTaskLineDate(line, { today }), { date: '2026-11-11', words: { start: line.indexOf('내일'), end: line.indexOf('내일') + 2 } });
+  assert.equal(candidate(`[${today}]\n- /A\n  - [ ] 할 일 둘 내일`, 2)?.date, '2026-11-11');
+  for (const [raw, date] of [['- [ ] 보고서 모레', '2026-11-12'], ['- [ ] 보고서 금요일', '2026-11-13'], ['- [ ] 보고서 다음 주 월요일', '2026-11-16'],
+    ['- [ ] 보고서 11월 13일', '2026-11-13'], ['- [ ] 보고서 3일 뒤', '2026-11-13'], ['- [ ] 할 일 둘 내일  ', '2026-11-11'], ['- [ ] 할 일 둘 내일까지', '2026-11-11'],
+    ['- [ ] 내일 할 일 둘', '2026-11-11']] as const) assert.equal(suggestTaskLineDate(raw, { today })?.date, date, raw);
+  for (const raw of ['- [ ] 휴가 3일', '- [ ] 진도 3/4', '- [ ] 보고서 내일 제출', '- [ ] 할일둘내일', '- [ ] 금요일 회의', '- [ ] 보고서 내일 모레'])
+    assert.equal(suggestTaskLineDate(raw, { today }), null, raw);
 });
 
 test('all suggestions are suppressed under another date section, including explicit date words', () => {

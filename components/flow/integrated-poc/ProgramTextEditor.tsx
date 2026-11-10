@@ -431,7 +431,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [dateSuggestion, setDateSuggestion] = useState<TaskDateSuggestion | null>(null);
   const dateSuggestionRef = useRef<TaskDateSuggestion | null>(null);
   const dateSuggestionSeen = useRef(new Set<string>()), dateSuggestionCaret = useRef<string | null>(null);
-  const dateSuggestionEnabled = useRef(true), dateSuggestionBlocked = useRef(false), dateSuggestionFinish = useRef(false);
+  const dateSuggestionEnabled = useRef(true), dateSuggestionBlocked = useRef(false), dateSuggestionFinish = useRef(false), dateSuggestionSaving = useRef(false);
   const [dateApplied, setDateApplied] = useState<{ text: string; undo: () => void } | null>(null);
   const setSuggestion = (next: TaskDateSuggestion | null) => { dateSuggestionRef.current = next; setDateSuggestion(next); };
   const [noticeHeld, setNoticeHeld] = useState(false);
@@ -942,10 +942,26 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     dateSuggestionSeen.current.add(key); setSuggestion(candidate);
   }
 
-  function acceptDateSuggestion(candidate: TaskDateSuggestion) {
-    const controller = draftRef.current, p = propsRef.current, area = textArea();
-    if (!controller || !area || p.folderId || p.active === false || !dateSuggestionEnabled.current || actionsDisabled()
-      || composingRef.current || area.value !== controller.getState().raw || candidate.docId !== p.docId) return;
+  async function acceptDateSuggestion(candidate: TaskDateSuggestion) {
+    const controller = draftRef.current;
+    const usable = () => { const p = propsRef.current; return !!controller && draftRef.current === controller && !p.folderId && p.active !== false
+      && dateSuggestionEnabled.current && !composingRef.current && candidate.docId === p.docId; };
+    if (!controller || !usable() || dateSuggestionSaving.current) return;
+    // int8b (QA-int8 0-6): a chip pressed before this document's own input is saved (the Enter that ended the line, the
+    // date words just typed, a save in flight) saves it first. The move is judged against what is saved
+    // (authorizeTaskLocation), where this document's unsaved input reads as another change ('연결·반복 상태가 바뀌어
+    // 옮기지 않았습니다'); a real change from elsewhere is still refused there. The host's copy (this editor's workspace)
+    // is read once it shows the save.
+    if (controller.getState().dirty || controller.getState().saving) {
+      dateSuggestionSaving.current = true;
+      try {
+        if (!await saveNow(false) || !usable()) return;
+        for (let frame = 0; frame < 10 && !programSame(propsRef.current.workspace, controller.getState().committed); frame++)
+          await new Promise(resolve => requestAnimationFrame(resolve));
+      } finally { dateSuggestionSaving.current = false; }
+    }
+    const p = propsRef.current, area = textArea();
+    if (!area || !usable() || actionsDisabled() || area.value !== controller.getState().raw) return;
     const before = controller.getState(), current = readTaskDateSuggestion(before.working, p.docId, candidate.lineId, taskDateSuggestionToday());
     if (!current || current.source !== candidate.source || current.date !== candidate.date
       || p.repeatContext?.().copies.some(copy => copy.documentId === p.docId)) { setSuggestion(null); return; }
@@ -3690,7 +3706,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     ...(dateApplied ? [{ tone: 'info' as const, text: dateApplied.text, actions: [{ label: '되돌리기', run: dateApplied.undo }], closeLabel: '알림 닫기', close: () => setDateApplied(null) }] : []),
     ...(dateSuggestion && !dateSuggestionBlocked.current && !composing ? [{ tone: 'suggest' as const, text: dateSuggestion.source.replace(/^ *- \[ \] */, ''),
       emphasis: { start: dateSuggestion.words.start - (dateSuggestion.source.match(/^ *- \[ \] */)?.[0].length ?? 0), end: dateSuggestion.words.end - (dateSuggestion.source.match(/^ *- \[ \] */)?.[0].length ?? 0) },
-      actions: [{ label: taskDateSuggestionLabel(dateSuggestion.date, taskDateSuggestionToday()), run: whenComposed(() => acceptDateSuggestion(dateSuggestion)) }],
+      actions: [{ label: taskDateSuggestionLabel(dateSuggestion.date, taskDateSuggestionToday()), run: whenComposed(() => { void acceptDateSuggestion(dateSuggestion); }) }],
       closeLabel: '날짜 제안 무시', close: () => setSuggestion(null) }] : []),
   ]);
   const releaseNotice = () => { if (!noticeHeld) return; setNoticeHeld(false); restartFolderNotice(); restartCheckNotice(); };

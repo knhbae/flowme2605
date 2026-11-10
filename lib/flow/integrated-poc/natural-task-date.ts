@@ -119,6 +119,8 @@ function resolve(expression: string, base: Date, today: Date, todayText: string)
  * this-week weekday, an invalid immediate month/year, or multiple expressions
  * produces null. A bare weekday followed only by a noun also abstains: it may be
  * a meeting/work name. Add a date particle or an execution verb to disambiguate.
+ * A date that ends the title ('보고서 내일', '할 일 둘 금요일') reads like a leading one (int8b, QA-int8 0-1); a bare
+ * number there ('휴가 3일', '진도 3/4') may be a quantity and still needs a date particle.
  */
 export function suggestTaskLineDate(line: string, context: NaturalTaskDateContext): NaturalTaskDateCandidate | null {
   if (context.eligible === false || context.hasDateProperty || (context.timeZone !== undefined && context.timeZone !== 'Asia/Seoul')) return null;
@@ -140,8 +142,10 @@ export function suggestTaskLineDate(line: string, context: NaturalTaskDateContex
     || (after && WORD.test(after[0]) && !particle) || /^[\/\d+\-]/u.test(after)) return null;
   if (QUANTITY.test(after) || /^[ \t]*[-–—(（]/u.test(after)) return null;
   // An interior date needs an explicit date particle; otherwise a number/name in
-  // the object of the task is too easy to mistake for a schedule.
-  if (before.trim() && !particle) return null;
+  // the object of the task is too easy to mistake for a schedule. One that ends the title is not interior, unless
+  // it is a bare number (a day of the month or M/D), which may be a quantity.
+  const ending = !after.trim() && !/^\d{1,2}(?:일|\/\d{1,2})$/u.test(match[0].replace(/[ \t]/gu, ''));
+  if (before.trim() && !particle && !ending) return null;
   const resolved = resolve(match[0], base, today, context.today);
   if (!resolved.date) return null;
   if (resolved.rule === 'nearest-weekday' && after.trim() && !particle && !WEEKDAY_ACTION.test(after)) return null;

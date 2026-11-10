@@ -20,6 +20,7 @@ import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFa
 import { ProgramMonthGrid } from './ProgramMonthGrid';
 import { ProgramFlowTodayBand, type ProgramFlowBandRow } from './ProgramFlowTodayBand';
 import { programContinueBand, programContinueMeta, programSameTaskGroups, type ProgramContinueRow } from '@/lib/flow/integrated-poc/continue-band';
+import { programSameTaskProof, undoProgramSameTasks, type ProgramSameTaskProof } from '@/lib/flow/integrated-poc/same-task-undo';
 import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
 import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
@@ -398,7 +399,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // N10: a repeat round finished from 오늘 ('다음은 …' with 되돌리기), and the old one-task repeat's card.
   const [repeatNotice, setRepeatNotice] = useState<{ actorId: string; text: string; check: ProgramRepeatCheck | null; refused?: boolean } | null>(null);
   // F8 1단계 (CO-3 표시): '같은 일 n줄' — the notice after checking them all (its 되돌리기), and the sheet listing them.
-  const [sameNotice, setSameNotice] = useState<{ actorId: string; ids: string[]; before: ReadonlyMap<string, number>; undone?: boolean; refused?: boolean } | null>(null);
+  const [sameNotice, setSameNotice] = useState<{ actorId: string; ids: string[]; proof: ProgramSameTaskProof; undone?: boolean; refused?: boolean } | null>(null);
   const [sameSheet, setSameSheet] = useState<string | null>(null);
   const sameSheetRef = useRef<HTMLDialogElement>(null);
   useEffect(() => { const sheet = sameSheetRef.current; if (!sheet) return; if (sameSheet && !sheet.open) sheet.showModal(); else if (!sameSheet && sheet.open) sheet.close(); }, [sameSheet]);
@@ -2551,13 +2552,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       actions: repeatNotice.check ? [{ label: '되돌리기', run: () => void undoRepeatFromList(repeatNotice.check!) }] : [] }} onClose={() => setRepeatNotice(null)} />
   </div>;
   /** F8 1단계 (CO-3, 사용자 11/10 '권장대로'): checking the row that stands for '같은 일 n줄' finishes them all, as of today, in one
-   *  save (the 오늘 check's own command, once per line); its notice's 되돌리기 puts each back as it was, in one save. */
+   *  save (the 오늘 check's own command, once per line); its notice's 되돌리기 puts each back as it was, in one save:
+   *  the line and its record of today (int8b W-CARRY-10: a record the check added goes, not a 0% one left). */
   async function checkSameTasks(members: readonly TextTask[]) {
     const ids = completingInSession(completingTasks, sourceSession.current);
     if (members.some(task => ids.has(task.id))) return;
     for (const task of members) ids.add(task.id);
     setCompletingTaskIds(new Set(ids));
-    const before = new Map(members.map(task => [task.id, M.currentProgress(space.text, task.id) ?? (task.done ? 100 : 0)] as const)), view = presentation.current, shown = space;
+    const view = presentation.current, shown = space;
+    let proof = null as ProgramSameTaskProof | null;
     try {
       const result = await run('같은 일 모두 끝냄', current => {
         let state = current, last: ProgramTransition<string> | null = null;
@@ -2566,9 +2569,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           if (!step.ok) return step;
           state = step.data; last = step;
         }
+        proof = programSameTaskProof(current.spaces[actorId].text, state.spaces[actorId].text, members.map(task => task.id), today);
         return last!;
       }, true, undefined, undefined, true);
-      if (result.ok && checkViewOwns(view)) setSameNotice({ actorId, ids: members.map(task => task.id), before });
+      if (result.ok && checkViewOwns(view) && proof) setSameNotice({ actorId, ids: members.map(task => task.id), proof });
     } finally {
       let changed = false;
       for (const task of members) changed = finishCompleting(completingTasks, ids, task.id) || changed;
@@ -2576,15 +2580,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     }
   }
   async function undoSameTasks(notice: NonNullable<typeof sameNotice>) {
-    const result = await run('같은 일 되돌리기', current => {
-      let state = current, last: ProgramTransition<string> | null = null;
-      for (const id of notice.ids) {
-        const step = recordProgramTaskProgress(state, { actorId, requestId: programId('request'), expectedSpace: state.spaces[actorId], taskId: id, date: today, percent: notice.before.get(id) ?? 0 });
-        if (!step.ok) return step;
-        state = step.data; last = step;
-      }
-      return last!;
-    }, true, undefined, undefined, true);
+    const result = await run('같은 일 되돌리기', current => undoProgramSameTasks(current,
+      { actorId, requestId: programId('request'), expectedSpace: current.spaces[actorId], proof: notice.proof }), true, undefined, undefined, true);
     setSameNotice(current => current === notice ? result.ok ? { ...notice, undone: true } : { ...notice, refused: true } : current);
   }
   const sameNoticeContent = sameNotice?.actorId === actorId && <div className={styles.orderNotice} data-same-notice>
