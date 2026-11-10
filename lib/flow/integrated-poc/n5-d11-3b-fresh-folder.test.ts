@@ -271,7 +271,7 @@ function clockFor(t: Phone, bar: ReturnType<typeof editorFor>): Clock {
   return new Function('t', 'bar', 'programNoticeEndsAt', `
     let timer = null, folderNotice = null, freshHeld = false, seen = {}, cleanup, keys = 0;
     const noticeHeld = false, folderWaiting = false, draftRef = { current: t.draft }, freshHeldRef = { current: false };
-    const folderNoticeRef = t.notice, folderNoticeDue = t.due, folderNoticeRestarting = { current: null };
+    const folderNoticeRef = t.notice, folderNoticeDue = t.due, folderNoticeRestarting = { current: null }, folderRawUndoRef = { current: false };
     const performance = { now: () => t.time.now }, Date = { now: () => t.time.now + t.time.shift }, window = { setTimeout: (run, ms) => (timer = { run, at: t.time.now + ms }), clearTimeout: id => { if (timer === id) timer = null; } };
     const setFolderNotice = value => { t.state.current = typeof value === 'function' ? value(t.state.current) : value; };
     ${clockSource}

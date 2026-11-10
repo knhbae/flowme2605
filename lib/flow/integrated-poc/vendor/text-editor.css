@@ -151,6 +151,8 @@
 .tle-memo-syntax { position: relative; color: transparent; }
 .tle-memo-syntax::after { content: ""; position: absolute; top: 0; bottom: 0; right: 6px; width: 2px; background: var(--flowme-b-line); }
 .tle-memo-text { color: var(--flowme-b-muted); }
+/* memo-enter (11/10): the caret's memo line: '- 메모:' muted over its RAW advances (no rail: it would cross the ':'). */
+.tle-active-memo-syntax { color: var(--flowme-b-muted); }
 .tle-check-glyph {
   position: absolute;
   display: block;

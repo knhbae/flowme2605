@@ -51,6 +51,7 @@ import { childPlace, insertPlaceAfter, insertPreview, planLayoutInsertion, progr
 import { programWritingDialogPlace } from '@/lib/flow/integrated-poc/writing-dialog-place';
 import { revealProgramEditorLine } from './editor-reveal';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
+import { PROGRAM_MEMO_TIP_MS, PROGRAM_MEMO_TIP_TEXT, programMemoTipTake } from '@/lib/flow/integrated-poc/memo-enter-tip';
 import { programNoticeEndsAt, programNoticeOrder, type ProgramNoticeAction, type ProgramNoticeTone } from '@/lib/flow/integrated-poc/program-notice';
 import { programFolderCreatedNotice, programFolderKeptText, programFolderMoveNotice, programFolderRelinkedNotice, programFolderRenamedEverywhere } from '@/lib/flow/integrated-poc/folder-notice';
 import { programFolderCreationLocation, programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
@@ -387,6 +388,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const folderNoticeRestarting = useRef<FolderNotice | null>(null);
   const folderNoticeKeys = useRef(0);
   const folderRawUndoRef = useRef(false);
+  // memo-enter (11/10): the tip after a plain Enter continued a memo (its key; null when none shows).
+  const [memoTip, setMemoTip] = useState<number | null>(null);
+  const memoTipKeys = useRef(0);
   const [noticeHeld, setNoticeHeld] = useState(false);
   // N5 3b phone: a new folder's notice held while its D11 B ⇤ is open and the caret is on that folder's block.
   const [freshHeld, setFreshHeld] = useState(false);
@@ -1040,6 +1044,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   /** W15: show a folder notice in the notice row. A choice notice remembers its line, for its lifetime. */
   function showFolderNotice(text: string, tone: ProgramNoticeTone, lineId?: string, actions?: ProgramNoticeAction[]) {
+    // memo-enter (11/10): a plain notice has no folder step for '글만 돌아갑니다' to speak of.
+    folderRawUndoRef.current = false;
     draftRef.current?.endFolderNotice();
     const next = { text, tone, actions, lineId: tone === 'choose' ? lineId : undefined, shownAt: performance.now(), leftBlockAt: null, key: ++folderNoticeKeys.current };
     folderNoticeRef.current = next; setFolderNotice(next);
@@ -2162,6 +2168,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       typingPickers:()=>!propsRef.current.authoringMode,
       plusOpensAuthoring:()=>!!propsRef.current.authoringMode,
       listEnterV2:()=>!!propsRef.current.authoringMode,
+      // memo-enter (11/10): after Enter continued a memo, how to leave it (the first few times on this device).
+      onMemoContinue:()=>{let storage:Storage|null=null;try{storage=window.localStorage;}catch{storage=null;}if(programMemoTipTake(storage))setMemoTip(++memoTipKeys.current);},
       // W12: the empty-line '/' hint follows the writing tools, whose '/' opens the tool menu.
       lineHints:()=>!!propsRef.current.authoringMode&&!propsRef.current.readOnly,
       getAddAnchor:index=>propsRef.current.authoringMode?{parentIndex:index,bottomIndex:index}:null,
@@ -2349,6 +2357,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     };
     host.addEventListener('compositionstart', compositionStart, true);
     host.addEventListener('compositionend', compositionEnd, true);
+    // The memo tip goes with the next key or press (captured first, so the Enter that shows it is not one of them).
+    const clearMemoTip = () => setMemoTip(null);
+    host.addEventListener('keydown', clearMemoTip, true); host.addEventListener('pointerdown', clearMemoTip, true);
     const preventLockedInput = (event: Event) => {
       controller.cancelPreparedRaw();
       const type = (event as InputEvent).inputType;
@@ -2424,6 +2435,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       alive = false; rememberPosition();
       propsRef.current.onRegisterConfirmedSave?.(null);
       host.removeEventListener('compositionstart', compositionStart, true); host.removeEventListener('compositionend', compositionEnd, true);
+      host.removeEventListener('keydown', clearMemoTip, true); host.removeEventListener('pointerdown', clearMemoTip, true);
       window.removeEventListener('beforeunload', warnOnExit);
       if (timerRef.current) clearTimeout(timerRef.current);
       if (textarea) for (const event of ['select', 'scroll', 'keyup', 'click', 'blur']) textarea.removeEventListener(event, rememberPosition);
@@ -2549,8 +2561,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!freshHeldRef.current) return;
     freshHeldRef.current = false; restartFolderNotice();
   }, [freshHeld]);
+  useEffect(() => { if (memoTip === null) return; const timer = window.setTimeout(() => setMemoTip(current => current === memoTip ? null : current), PROGRAM_MEMO_TIP_MS); return () => window.clearTimeout(timer); }, [memoTip]);
   useEffect(() => {
-    if (!folderNotice) draftRef.current?.endFolderNotice();
+    // memo-enter (11/10): once that folder step's notice is gone, a later ↶ is the text's own: no '글만 돌아갑니다'.
+    if (!folderNotice) { draftRef.current?.endFolderNotice(); folderRawUndoRef.current = false; }
     if (!folderNotice) { folderNoticeDue.current = folderNoticeRestarting.current = null; return; }
     const ends = programNoticeEndsAt({ tone: folderNotice.tone, shownAt: folderNotice.shownAt, leftBlockAt: folderNotice.leftBlockAt, held: noticeHeld || freshHeld, waiting: folderWaiting });
     const restarting = folderNoticeRestarting.current === folderNotice; if (!restarting) folderNoticeRestarting.current = null;
@@ -3171,6 +3185,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     ...(checkNotice ? [checkNoticeView(checkNotice)] : []),
     ...(folderNotice ? [{ tone: folderNotice.tone, text: folderNotice.text, actions: folderNotice.actions, closeLabel: '알림 닫기', close: () => setFolderNotice(null) }] : []),
     ...(repeatNotice ? [{ tone: repeatNotice.tone, text: repeatNotice.text, actions: repeatNotice.actions, closeLabel: '알림 닫기', close: () => setRepeatNotice(null) }] : []),
+    ...(memoTip !== null ? [{ tone: 'info' as const, text: PROGRAM_MEMO_TIP_TEXT, closeLabel: '알림 닫기', close: () => setMemoTip(null) }] : []),
   ]);
   const releaseNotice = () => { if (!noticeHeld) return; setNoticeHeld(false); restartFolderNotice(); restartCheckNotice(); };
   const notices = <div ref={noticeRef} className={styles.notices} onPointerDown={() => setNoticeHeld(true)} onPointerUp={releaseNotice} onPointerLeave={releaseNotice}

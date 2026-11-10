@@ -37,7 +37,7 @@ function rows(raw: string, folderLine?: string): TextEditorRowMeta[] {
 /** Offset of the end of line `index`. */
 const end = (raw: string, index: number) => raw.split('\n').slice(0, index + 1).join('\n').length;
 
-type Press = { v2?: boolean; shift?: boolean; composing?: boolean; consumed?: boolean; selectStart?: number; folderLine?: string };
+type Press = { v2?: boolean; shift?: boolean; composing?: boolean; consumed?: boolean; selectStart?: number; folderLine?: string; config?: Record<string, unknown> };
 /** Press Enter with the caret at the end of line `line` (or a selection from selectStart to there). */
 function press(raw: string, line: number, options: Press = {}) {
   const meta = rows(raw, options.folderLine), caret = end(raw, line);
@@ -60,7 +60,7 @@ function press(raw: string, line: number, options: Press = {}) {
     }
     ${keydown}
     return { onKeydown, compose(on) { composing = on; } };`)(
-    textarea, selection, { keydown: () => !!options.consumed }, resolve({ listEnterV2: () => !!options.v2 }), inputPlans, {}, () => meta);
+    textarea, selection, { keydown: () => !!options.consumed }, resolve({ listEnterV2: () => !!options.v2 }), inputPlans, options.config ?? {}, () => meta);
   if (options.composing) editor.compose(true);
   let prevented = false;
   editor.onKeydown({ key: 'Enter', code: 'Enter', keyCode: options.composing ? 229 : 13, shiftKey: !!options.shift, ctrlKey: false, metaKey: false,
@@ -260,4 +260,15 @@ test('memo-enter: Enter on an empty memo line leaves the memo for the next task,
   assert.equal(at(memo, end(memo, 2), end(memo, 1) + 1), null);
   assert.equal(at('- 집안일\n  - 메모: ', end('- 집안일\n  - 메모: ', 1)), null);
   assert.equal(exit(memo, { start: end(memo, 2), end: end(memo, 2), direction: 'none' }, { kind: 'task' }), null);
+});
+
+test('memo-enter: only a plain Enter that continued a memo calls the host\'s tip hook', () => {
+  let calls = 0; const config = { onMemoContinue: () => { calls += 1; } };
+  const count = (raw: string, line: number, options: Press = {}) => { calls = 0; press(raw, line, { ...options, config }); return calls; };
+  assert.equal(count('- [ ] 장보기\n  - 메모: 우유', 1, { v2: true }), 1);
+  assert.equal(count('- [ ] 장보기\n  - 메모: 우유', 1, { v2: false }), 1);
+  assert.equal(count('- [ ] 장보기\n  - 메모: 우유', 1, { v2: true, shift: true }), 0);
+  assert.equal(count('- [ ] 장보기\n  - 메모: 우유\n  - 메모: ', 2, { v2: true }), 0, 'leaving the memo');
+  assert.equal(count('- [ ] 장보기\n  - 메모: 우유', 1, { v2: true, composing: true }), 0);
+  assert.equal(count('- [ ] 장보기', 0, { v2: true }), 0);
 });

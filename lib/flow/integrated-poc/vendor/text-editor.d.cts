@@ -39,6 +39,8 @@ declare namespace editor {
     plusOpensAuthoring?:()=>boolean;
     /** List Enter v2: date header and folder lines end with a plain line; Shift+Enter at a task's end opens its memo line. */
     listEnterV2?:()=>boolean;
+    /** memo-enter (11/10): a plain Enter at a memo line's end continued the memo (the host may say how to leave it). */
+    onMemoContinue?:()=>void;
     getAddAnchor?:(lineIndex:number)=>{parentIndex:number;bottomIndex:number}|null;
     /** Separate direct-check admission; structural actions retain the common hold. */
     isCheckDisabled?: (lineIndex?: number) => boolean;
