@@ -142,3 +142,39 @@ test('a line bound to another document task is never structurally moved',()=>{
   assert.equal(moveTaskLocation(state,{documentId,taskId:lineId,target:{kind:'date',date:'2026-11-12'}}).ok,false);
   assert.equal(JSON.stringify(state),before);
 });
+test('11/11 dateslot: a missing date head goes in the document date order (R1), newest first or oldest first; reopened the same', () => {
+  const N = '[2026-11-10]\n- [ ] 오늘 일\n[2026-11-08]\n- [ ] 합성 부모\n- [ ] 지난 일 둘\n[2026-11-05]\n- [ ] 오래된 일';
+  const O = '[2026-11-05]\n- [ ] 오래된 일\n[2026-11-08]\n- [ ] 합성 부모\n- [ ] 지난 일 둘\n[2026-11-10]\n- [ ] 오늘 일';
+  const cases: [string, string, string, string][] = [
+    // Newest first: today exists; tomorrow and next week go on top; a past day between goes before the older head; one
+    // older than every head goes at the end.
+    ['newest, today', N, '2026-11-10', '[2026-11-10]\n- [ ] 오늘 일\n- [ ] 합성 부모\n[2026-11-08]\n- [ ] 지난 일 둘\n[2026-11-05]\n- [ ] 오래된 일'],
+    ['newest, tomorrow', N, '2026-11-11', '[2026-11-11]\n- [ ] 합성 부모\n[2026-11-10]\n- [ ] 오늘 일\n[2026-11-08]\n- [ ] 지난 일 둘\n[2026-11-05]\n- [ ] 오래된 일'],
+    ['newest, next week', N, '2026-11-17', '[2026-11-17]\n- [ ] 합성 부모\n[2026-11-10]\n- [ ] 오늘 일\n[2026-11-08]\n- [ ] 지난 일 둘\n[2026-11-05]\n- [ ] 오래된 일'],
+    ['newest, past between', N, '2026-11-06', '[2026-11-10]\n- [ ] 오늘 일\n[2026-11-08]\n- [ ] 지난 일 둘\n[2026-11-06]\n- [ ] 합성 부모\n[2026-11-05]\n- [ ] 오래된 일'],
+    ['newest, past oldest', N, '2026-11-01', '[2026-11-10]\n- [ ] 오늘 일\n[2026-11-08]\n- [ ] 지난 일 둘\n[2026-11-05]\n- [ ] 오래된 일\n[2026-11-01]\n- [ ] 합성 부모'],
+    // Oldest first: later days at the end, a past day before the next later head, one older than every head on top.
+    ['oldest, today', O, '2026-11-10', '[2026-11-05]\n- [ ] 오래된 일\n[2026-11-08]\n- [ ] 지난 일 둘\n[2026-11-10]\n- [ ] 오늘 일\n- [ ] 합성 부모'],
+    ['oldest, tomorrow', O, '2026-11-11', '[2026-11-05]\n- [ ] 오래된 일\n[2026-11-08]\n- [ ] 지난 일 둘\n[2026-11-10]\n- [ ] 오늘 일\n[2026-11-11]\n- [ ] 합성 부모'],
+    ['oldest, next week', O, '2026-11-17', '[2026-11-05]\n- [ ] 오래된 일\n[2026-11-08]\n- [ ] 지난 일 둘\n[2026-11-10]\n- [ ] 오늘 일\n[2026-11-17]\n- [ ] 합성 부모'],
+    ['oldest, past between', O, '2026-11-06', '[2026-11-05]\n- [ ] 오래된 일\n[2026-11-06]\n- [ ] 합성 부모\n[2026-11-08]\n- [ ] 지난 일 둘\n[2026-11-10]\n- [ ] 오늘 일'],
+    ['oldest, past oldest', O, '2026-11-01', '[2026-11-01]\n- [ ] 합성 부모\n[2026-11-05]\n- [ ] 오래된 일\n[2026-11-08]\n- [ ] 지난 일 둘\n[2026-11-10]\n- [ ] 오늘 일'],
+    // One dated head reads newest first (as the bar); words above the first head stay above; [미정] stays last.
+    ['one head', '메모 한 줄\n[2026-11-10]\n- [ ] 합성 부모\n- [ ] 오늘 일', '2026-11-11', '메모 한 줄\n[2026-11-11]\n- [ ] 합성 부모\n[2026-11-10]\n- [ ] 오늘 일'],
+    ['before 미정', '[2026-11-10]\n- [ ] 합성 부모\n- [ ] 오늘 일\n[미정]\n- [ ] 언젠가', '2026-11-01', '[2026-11-10]\n- [ ] 오늘 일\n[2026-11-01]\n- [ ] 합성 부모\n[미정]\n- [ ] 언젠가'],
+  ];
+  for (const [label, source, date, expected] of cases) {
+    const f = fixture(source), result = apply(f, { kind: 'date', date }), text = M.raw(result.next.documents[0]);
+    assert.equal(text, expected, label);
+    assert.equal(M.tasks(result.next).find(task => task.id === f.taskId)?.date, date, label);
+    // Only the bundle and (when made) its head moved: every other line keeps its words and order.
+    const others = (value: string) => value.split('\n').filter(line => line !== '- [ ] 합성 부모' && line !== `[${date}]`);
+    assert.deepEqual(others(text), others(source), label);
+    // Reopened (the saved words read anew): the same text, the task on that day, every other task's day unchanged.
+    let reopened = M.addDocument(createEmptyTextWorkspace(), { title: '다시 열기' });
+    reopened = M.editText(reopened, reopened.documents[0].id, text, { folderText: true });
+    assert.equal(M.raw(reopened.documents[0]), text, label);
+    const days = (state: TextWorkspaceState) => Object.fromEntries(M.tasks(state).map(task => [task.title, task.date]));
+    assert.deepEqual(days(reopened), { ...days(f.state), '합성 부모': date }, label);
+  }
+});

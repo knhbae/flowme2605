@@ -1,5 +1,6 @@
 import { programId } from './contract';
 import { programDate } from './program-data';
+import { programDateHeadIndex } from './input-bar';
 import { readProgramRepeatMarker } from './repeat-line';
 import { textWorkspaceModel as M, type TextLine, type TextRow, type TextTask, type TextWorkspaceState } from './text-workspace';
 
@@ -98,7 +99,10 @@ export function moveTaskLocation(state: TextWorkspaceState, input: { documentId:
   const additions: TextLine[] = [], bindings = [...working.bindings];
   const addLine = (text: string) => ({ id: programId('line'), text });
   if (target.kind === 'date' && !head) {
-    const line = addLine(`[${date ?? '미정'}]`); remaining = [...remaining, line];
+    // 11/11 dateslot: a dated head goes where the writing bar's date chip would make it (R1, the document's date order),
+    // not after the oldest day of a newest-first document; `[미정]` stays at the end.
+    const line = addLine(`[${date ?? '미정'}]`), index = date ? programDateHeadIndex(remaining.map(item => item.text), date) : remaining.length;
+    remaining = [...remaining.slice(0, index), line, ...remaining.slice(index)];
     restRows = M.parseDocument({ ...remainder, lines: remaining }, remainderState).rows;
     head = restRows.find(item => item.id === line.id);
     if (head?.kind !== 'date') return fail('unsafe-position');
