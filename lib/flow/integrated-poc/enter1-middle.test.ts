@@ -152,3 +152,33 @@ test('Enter 우선 3: \'한 줄 소개\' takes no break; Flow 찾기\'s search E
   assert(steps.includes("const body = typed !== undefined && typed !== parts.body ? typed.replace("), 'saving reads the field: a changed summary is one line there too');
   assert(discovery.includes('enterKeyHint="search"') && discovery.includes("if (event.key === 'Enter' && !composing.current && !event.nativeEvent.isComposing && event.keyCode !== 229) { event.preventDefault(); event.currentTarget.blur(); }"));
 });
+
+test('saveb2 (11/10 20:46 실사용): ↳ on the empty start Enter left under a task makes it that task\'s subtask start, in place', () => {
+  const raw = '[2026-11-11]\n- /EA\n  - [ ] 10 Min 잇(it) (11월)\n  - [ ] \n[2026-11-10]';
+  // Before: a new line under the empty start, which then stayed between the task and the subtask written next.
+  const bar = press(raw, '10 Min 잇(it) (11월)\n  - [ ] ', { shift: true });
+  assert.equal(bar.value, '[2026-11-11]\n- /EA\n  - [ ] 10 Min 잇(it) (11월)\n    - [ ] \n[2026-11-10]');
+  assert.equal(bar.caret, bar.value.indexOf('    - [ ] ') + '    - [ ] '.length);
+  // An empty line right under a task (Enter twice) does the same; under the task's memo too.
+  const blank = '[2026-11-11]\n- /EA\n  - [ ] 10 Min 잇(it) (11월)\n\n[2026-11-10]';
+  assert.equal(press(blank, '10 Min 잇(it) (11월)\n', { shift: true }).value, blank.replace('(11월)\n\n', '(11월)\n    - [ ] \n'));
+  const memo = '[2026-11-11]\n- [ ] 회의\n  - 메모: 자료\n\n끝';
+  assert.equal(press(memo, '자료\n', { shift: true }).value, '[2026-11-11]\n- [ ] 회의\n  - 메모: 자료\n  - [ ] \n끝');
+  // A subtask start already under it, or a line under plain text: the ordinary Shift+Enter (a line break).
+  const under = '[2026-11-11]\n- [ ] 회의\n  - [ ] \n끝';
+  assert.equal(press(under, '- [ ] 회의\n  - [ ] ', { shift: true }).value, '[2026-11-11]\n- [ ] 회의\n  - [ ] \n\n끝');
+  const note = '[2026-11-11]\n일반 글\n\n끝';
+  assert.equal(press(note, '일반 글\n', { shift: true }).value, '[2026-11-11]\n일반 글\n\n\n끝');
+});
+
+test('saveb2: ⇥ on an empty line under a task opens its subtask there; an empty line under plain text indents as before', () => {
+  const raw = '[2026-11-11]\n- /EA\n  - [ ] 10 Min 잇(it) (11월)\n\n[2026-11-10]', caret = raw.indexOf('(11월)\n') + '(11월)\n'.length;
+  const plan = inputPlans.planIndent(raw, { start: caret, end: caret }, rows(raw), false, []);
+  assert.equal(plan.nextRaw, raw.replace('(11월)\n\n', '(11월)\n    - [ ] \n'));
+  assert.deepEqual([plan.startLine, plan.endLine, plan.outdent], [3, 3, false]);
+  const note = '[2026-11-11]\n일반 글\n\n끝', at = note.indexOf('글\n') + 2;
+  assert.equal(inputPlans.planIndent(note, { start: at, end: at }, rows(note), false, []).nextRaw, '[2026-11-11]\n일반 글\n  \n끝');
+  // The empty start beside the task indents as before (it already was the subtask's way).
+  const start = '[2026-11-11]\n- [ ] 회의\n- [ ] \n끝', end = start.indexOf('\n- [ ] \n') + '\n- [ ] '.length;
+  assert.equal(inputPlans.planIndent(start, { start: end, end }, rows(start), false, []).nextRaw, '[2026-11-11]\n- [ ] 회의\n  - [ ] \n끝');
+});

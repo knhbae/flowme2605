@@ -221,6 +221,30 @@ test('11/10 20:41 (실사용): after a blank line, \'- [ ] …\' typed key by ke
   assert(trials >= 10);
 });
 
+test('11/10 20:46 (실사용): spaces typed by hand on the line Enter left under a task stop at its subtask\'s step; the subtask is saved', async () => {
+  const task = '  - [ ] 10 Min 잇(it) (11월)', tail = '\n[2026-11-10]\n- /미분류\n  - [x] 벤처투자정리 후 공유';
+  for (const [blank, presses, cols] of [['  ', 1, 4], ['  ', 4, 4], ['', 1, 2], ['', 2, 4], ['', 5, 4]] as const) {
+    const before = `[2026-11-11]\n- /EA\n${task}\n${blank}${tail}`, { state, id } = workspace(before), owner = createProgramDocumentInput(state, id);
+    let saved = '', raw = before, caret = before.indexOf(tail);
+    const draft = createProgramTextDraft(owner.initial, id, async next => { saved = M.raw(M.getDocument(next, id)!); return true; }, () => {}, () => true, owner, true);
+    const key = (text: string) => {
+      const s = draft.getState(), splice = { start: caret, end: caret, text };
+      const planned = !s.invalid ? planProgramWritingInput(M, s.working, id, splice, 'insertText') : null;
+      if (planned?.kind === 'keep') { assert.equal(planned.why, 'blank-deepest'); return; }
+      const applied = planned?.kind === 'apply' ? planned.splice : splice;
+      raw = raw.slice(0, applied.start) + applied.text + raw.slice(applied.end); caret = applied.start + applied.text.length;
+      assert(draft.updateRaw(raw, '', { inputType: 'insertText', ...(planned ? { inputSplice: applied } : {}) }) || draft.getState().typingMark, `refused at ${JSON.stringify(raw.slice(raw.lastIndexOf('\n', caret - 1) + 1, caret))}`);
+    };
+    for (let i = 0; i < presses; i++) key(' ');
+    for (const ch of '- [ ] 발표자 공지') key(ch);
+    await draft.save();
+    const line = `${' '.repeat(cols)}- [ ] 발표자 공지`;
+    assert.equal(raw, before.replace(`${task}\n${blank}\n`, `${task}\n${line}\n`), `${JSON.stringify(blank)} ${presses}`);
+    assert.equal(saved, raw, 'saved as shown');
+    assert.equal(M.rowMeta(draft.getState().working, id)[3]?.kind, cols === 4 ? 'subcheck' : 'task');
+  }
+});
+
 test('a fixed sample of the save fuzz (Codex EDIT-FUZZ shape, 300 edits) stays at or under 5% refused after the B rules', async () => {
   let seed = 0x53ef6839;
   const rnd = () => { seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5; return (seed >>> 0) / 4294967296; };

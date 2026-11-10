@@ -17,7 +17,7 @@ import type { TextWorkspaceState, textWorkspaceModel } from './text-workspace';
  *  Composition is never planned here: nothing is read while composing. */
 type Model = typeof textWorkspaceModel;
 export type WritingSplice = { start: number; end: number; text: string };
-export type WritingWhy = 'mark' | 'join' | 'indent' | 'outdent' | 'title-start' | 'date-head' | 'folder-indent' | 'folder-mark' | 'line-start' | 'indent-refused' | 'paste-indent';
+export type WritingWhy = 'mark' | 'join' | 'indent' | 'outdent' | 'title-start' | 'date-head' | 'folder-indent' | 'folder-mark' | 'line-start' | 'indent-refused' | 'paste-indent' | 'blank-deepest';
 export type WritingHead = { index: number; kind: 'date' | 'scope'; text: string };
 export type WritingPlan =
   | { kind: 'apply'; splice: WritingSplice; inputType: string; changed: boolean; why?: WritingWhy;
@@ -119,6 +119,15 @@ function shift(context: Context, line: Line, outdent: boolean, inputType: string
     changed: plan.start !== typed.start || plan.end !== typed.end || plan.text !== typed.text, structural: outdent ? 'outdent' : 'indent', selectionAfter: plan.selectionAfter };
 }
 
+/** The spaces Space adds to a blank line: up to the next 2-space step, when a task written at that step is taken there
+ *  (the deepest a task or plain words can stand is the same); 0 when the line is already that deep. */
+function blankLineRoom(context: Context, line: Line) {
+  const { model, state, docId, raw } = context, cols = line.text.length, next = cols + (cols % 2 ? 1 : 2);
+  const probe = raw.slice(0, line.start) + ' '.repeat(next) + '- [ ] 가' + raw.slice(line.end);
+  const check = model.editTextResult(state, docId, probe, { folderText: true });
+  return check.reason === null && model.raw(model.getDocument(check.state, docId)) === probe ? next - cols : 0;
+}
+
 /** K2 [합치기]: only the touched head lines go, each whole with its line break; the lines under a folder head move out
  *  one step with it, so they stay where they were in the outline. The rest of a selection (or a paste over it) is
  *  not applied: the question was about the heads, and the words around them stay as they were. */
@@ -207,9 +216,15 @@ function planInsertion(context: Context, splice: WritingSplice, inputType: strin
   const { start, end, text } = splice, line = lineAt(lines, start);
   if (!text) return as(splice);
   const space = text === ' ' || text === '\t', inLead = end === start && start >= line.start && start <= line.start + line.indent;
-  // Space or Tab in a line's leading spaces is ⇥ (a blank line just takes two spaces).
+  // Space or Tab in a line's leading spaces is ⇥ (a blank line just takes two spaces, as deep as a line there can stand).
   if (space && inLead) {
-    if (!line.text.trim()) return line.kind === 'fence' ? as(splice) : as({ start, end, text: '  ' }, text === '\t' ? 'indent' : undefined);
+    if (!line.text.trim()) {
+      if (line.kind === 'fence' || line.text.includes('\t')) return as(splice);
+      // saveb2 (11/10 20:46 실사용): only as deep as a line written there can stand (the model takes a task there), so
+      // '    - [ ] ' typed by hand on the line Enter left under a task is that task's subtask, never one too deep to save.
+      const room = blankLineRoom(context, line);
+      return room ? as({ start, end, text: ' '.repeat(room) }, text === '\t' ? 'indent' : undefined) : { kind: 'keep', why: 'blank-deepest' };
+    }
     return shift(context, line, false, inputType, typed);
   }
   if (line.head === 'date' && end === start) {
