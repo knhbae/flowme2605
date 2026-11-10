@@ -12,6 +12,17 @@ function header(line: string): { date: string | null } | null {
   const dated = DATE_HEADER.exec(line.trim());
   return { date: dated ? `${dated[1]}-${dated[2].padStart(2, '0')}-${dated[3].padStart(2, '0')}` : null };
 }
+/** R1 (11/11 dateslot, shared with moves): the line a new `[date]` head goes before, in the document's date order
+ *  (newest first unless its first two dated heads go up): right before the first dated head that comes after it in
+ *  that order, else before the head that follows the last dated one (`[미정]`), else at the end (lines.length). Never
+ *  between a head and its lines, so no line under a head moves to another one. */
+export function programDateHeadIndex(lines: readonly string[], date: string): number {
+  const heads = lines.flatMap((line, index) => { const head = header(line); return head ? [{ index, date: head.date }] : []; });
+  const dated = heads.filter(head => head.date), ascending = dated.length >= 2 && dated[0].date! < dated[1].date!;
+  const before = dated.find(head => ascending ? head.date! > date : head.date! < date);
+  const last = dated.at(-1), after = last ? heads.find(head => head.index > last.index) : heads[0];
+  return before?.index ?? after?.index ?? lines.length;
+}
 const lineAt = (raw: string, caret: number) => raw.slice(0, Math.max(0, Math.min(caret, raw.length))).split('\n').length - 1;
 const lineStart = (lines: readonly string[], index: number) => lines.slice(0, index).reduce((sum, line) => sum + line.length + 1, 0);
 
@@ -33,10 +44,7 @@ export function programDateHeaderPlan(raw: string, caret: number, date: string):
     const offset = lineStart(lines, end) + lines[end].length;
     return { offset, text: '\n', caret: offset + 1 };
   }
-  const dated = heads.filter(head => head.date), ascending = dated.length >= 2 && dated[0].date! < dated[1].date!;
-  const before = dated.find(head => ascending ? head.date! > date : head.date! < date);
-  const last = dated.at(-1), after = last ? heads.find(head => head.index > last.index) : heads[0];
-  const index = before?.index ?? after?.index ?? lines.length;
+  const index = programDateHeadIndex(lines, date);
   const head = `[${date}]`;
   if (index < lines.length) {
     const gap = index > 0 && !!lines[index - 1].trim(), offset = lineStart(lines, index);
