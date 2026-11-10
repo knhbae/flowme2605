@@ -1,6 +1,6 @@
 # Alpha 운영
 
-2026-11-10 23:59 갱신(처음 10/30) · 운영 중인 Alpha가 어떻게 돌고, 어떻게 반영·복귀하는지 한곳에 모은다. 원장 경로는 링크가 아니라 코드 표기로 적는다. 키·자격 정보와 계정 정보는 적지 않는다.
+2026-11-11 07:15 갱신(처음 10/30) · 운영 중인 Alpha가 어떻게 돌고, 어떻게 반영·복귀하는지 한곳에 모은다. 원장 경로는 링크가 아니라 코드 표기로 적는다. 키·자격 정보와 계정 정보는 적지 않는다.
 
 ## 1. 지금 운영 중인 것
 
@@ -9,9 +9,9 @@
 | 공개 주소 | `https://alpha.wikiplans.com/alpha` |
 | 내부 앱 | `127.0.0.1:3105` (`next start`) |
 | 상태 확인 | `http://127.0.0.1:13105/status` (supervisor, 이 PC에서만) |
-| 운영 빌드 | int6a `L3t1Xyp_HGigDHPspReXX`, 커밋 `e01d6b51` (11/10 18:06 KST, 가벼운 반영 33회차) |
-| appRoot | `D:/flowme-work/etc/int6a-qa-20261110/product` |
-| 되돌리기 대상 | int5 `Ik4Y60q1E26VEH3nxcZRS` / `3ef6839a` (`D:/flowme-work/etc/int5-qa-20261110/` 아래 product) |
+| 운영 빌드 | int7b r3 `S_K1gGsWiyrKkchbWVJmz`, 커밋 `76129d17` (11/11 07:13 KST, 가벼운 반영 34회차, manifest SHA `a29bfcd4…`) |
+| appRoot | `D:/flowme-work/etc/int7b-qa-20261111/product` |
+| 되돌리기 대상 | int6a `L3t1Xyp_HGigDHPspReXX` / `e01d6b51` (`D:/flowme-work/etc/int6a-qa-20261110/` 아래 product) |
 | 쓰기 UI 설정 | `nativeAuthoringUi: enabled` |
 
 기준은 supervisor의 `manifest.json`이다. 회차별 기록은 [지금 FlowMe](now.md) 기록 절에 남는다.
