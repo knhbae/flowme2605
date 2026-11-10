@@ -5,7 +5,7 @@ import { createEmptyTextWorkspace, textWorkspaceModel as M, type TextWorkspaceSt
 import { createProgramDocumentInput } from './program-document-input';
 import { createProgramTextDraft } from './program-text-draft';
 import { planProgramWritingInput, programCompositionCaret, type WritingPlan } from './writing-guard';
-import { programHeldFix, programHeldPlain, programHeldReasonText, programPasteFit, programPasteOverLimit, programTextLimitShare } from './writing-guard-notice';
+import { programHeldFix, programHeldPlain, programHeldReasonText, programPasteFit, programPasteNotice, programPasteOverLimit, programTextLimitShare } from './writing-guard-notice';
 import { programAlignRows, programLinePieces } from './writing-hold';
 
 // 저장 재설계 B '오류 없는 쓰기' (PRD 16절, UX inbox/ux-save-b-20261110-1704.md, 11/10).
@@ -306,4 +306,20 @@ test('int7b QA: the editor moves the caret before a composition; a paste is read
   // W-GUARD-13: the limit the fit reaches is in the fit's own notice, after '↶로 되돌리지 않습니다'.
   const fit = editor.slice(editor.indexOf('function askLongPaste('), editor.indexOf('function textLimitReached('));
   assert(fit.includes('const reached = textLimitReached(next);') && fit.includes("['이 붙여넣기는 ↶로 되돌리지 않습니다', ...(reached ? [") && !fit.includes('checkTextLimit(next)'));
+});
+
+test('notice (11/11, 기타 3-5): the limit a paste reaches goes first in the paste notice; the paste notice never covers it', () => {
+  assert.deepEqual(programPasteNotice(4), { tone: 'info', text: '4줄을 붙여넣었습니다 · 원문 그대로' });
+  assert.deepEqual(programPasteNotice(4, { text: '이 글이 한도의 80%에 닿았습니다', room: '남은 약 2만 자 · 240줄' }),
+    { tone: 'warn', text: '이 글이 한도의 80%에 닿았습니다', detail: '남은 약 2만 자 · 240줄 · 4줄을 붙여넣었습니다 · 원문 그대로' });
+  const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  const slice = (from: string, to: string) => editor.slice(editor.indexOf(from), editor.indexOf(to));
+  // checkTextLimit keeps the notice it showed (by key); notePaste, a task later, takes one shown since the paste began.
+  assert(slice('function checkTextLimit(', 'function goToHeldLine(').includes('limitNoticeRef.current = { key: writingNoticeKeys.current, ...reached };'));
+  const note = slice('function notePaste(', 'function askLongPaste(');
+  assert(note.includes('function notePaste(start: number, text: string, since = writingNoticeKeys.current) {'));
+  assert(note.includes('programPasteNotice(to - from + 1, shown && shown.key > since ? shown : null)') && note.includes('}], notice.detail);'));
+  // A planned paste's input runs inside applyWritingEdit, before notePaste: the count is taken before the edit.
+  const plan = slice('function runWritingPlan(', 'function askMerge(');
+  assert(plan.indexOf('since = writingNoticeKeys.current') < plan.indexOf('applyWritingEdit(') && plan.includes('notePaste(plan.splice.start, plan.splice.text, since);'));
 });

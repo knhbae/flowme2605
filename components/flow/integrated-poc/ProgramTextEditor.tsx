@@ -54,7 +54,7 @@ import { ProgramNoticeRow } from './ProgramNoticeRow';
 import { programScaffoldRemoval } from '@/lib/flow/integrated-poc/writing-scaffold';
 import { planProgramWritingInput, programCompositionCaret, type WritingPlan, type WritingSplice } from '@/lib/flow/integrated-poc/writing-guard';
 import { programAlignRows } from '@/lib/flow/integrated-poc/writing-hold';
-import { programAbout, programHeldFix, programHeldPlain, programHeldReasonText, programPasteFit, programPasteOverLimit, programTextLimitShare, programTextRoom } from '@/lib/flow/integrated-poc/writing-guard-notice';
+import { programAbout, programHeldFix, programHeldPlain, programHeldReasonText, programPasteFit, programPasteNotice, programPasteOverLimit, programTextLimitShare, programTextRoom } from '@/lib/flow/integrated-poc/writing-guard-notice';
 import { PROGRAM_MEMO_TIP_MS, PROGRAM_MEMO_TIP_TEXT, programMemoTipLeft, programMemoTipStorage, programMemoTipTake } from '@/lib/flow/integrated-poc/memo-enter-tip';
 import { programNoticeEndsAt, programNoticeOrder, type ProgramNoticeAction, type ProgramNoticeTone } from '@/lib/flow/integrated-poc/program-notice';
 import { programFolderCreatedNotice, programFolderKeptText, programFolderMoveNotice, programFolderRelinkedNotice, programFolderRenamedEverywhere, ro } from '@/lib/flow/integrated-poc/folder-notice';
@@ -420,6 +420,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [writingCaretLine, setWritingCaretLine] = useState(-1);
   const [heldClosed, setHeldClosed] = useState<string | null>(null);
   const limitStepRef = useRef<{ docId: string; step: number }>({ docId: '', step: 0 });
+  /** The last limit notice shown (its notice key): a paste notice after it says it too (notePaste). */
+  const limitNoticeRef = useRef<{ key: number; text: string; room: string } | null>(null);
   // memo-enter (11/10): the tip after a plain Enter continued a memo (its key; null when none shows).
   const [memoTip, setMemoTip] = useState<number | null>(null);
   const memoTipKeys = useRef(0);
@@ -1594,13 +1596,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       return;
     }
     if (plan.kind === 'ask') { askMerge(plan, typed); return; }
-    const before = area.value, removed = before.slice(plan.splice.start, plan.splice.end);
+    // A planned paste's own input (checkTextLimit) comes inside applyWritingEdit: notices are counted from before it.
+    const before = area.value, removed = before.slice(plan.splice.start, plan.splice.end), since = writingNoticeKeys.current;
     if (!applyWritingEdit(plan.splice, plan.structural ? undefined : plan.splice, plan.selectionAfter)) return;
     // K1: ⌫ took a mark whole; the title stays as plain text. One ↶ (or 되돌리기) puts the mark back.
     const property = /-\s+(메모|날짜|시간):/.exec(removed);
     if ((plan.why === 'mark' || plan.why === 'join') && (/-\s+\[[^\]\n]*\]/.test(removed) || property))
       showWritingNotice('info', property && !/-\s+\[/.test(removed) ? `${property[1]} 표식을 지웠습니다` : '할 일 표식을 지웠습니다', [{ label: '되돌리기', run: whenComposed(() => { setWritingNotice(null); undoInput(); }) }]);
-    else if (type === 'insertFromPaste') notePaste(plan.splice.start, plan.splice.text);
+    else if (type === 'insertFromPaste') notePaste(plan.splice.start, plan.splice.text, since);
   }
   /** K2: a deletion that would break a date or folder head paints the section it heads and asks first. [합치기] takes the
    *  head away (a folder's lines move out one step with it); [그대로 두기] changes nothing. The paint is drawn, not selected:
@@ -1635,7 +1638,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     showWritingNotice('choose', text, [{ label: '합치기', run: whenComposed(merge) }, { label: '그대로 두기', run: whenComposed(keep) }], detail, paint);
   }
   /** P1: lines pasted are kept as typed; two or more plain lines get [할 일 n개로] and ↶ beside the notice. */
-  function notePaste(start: number, text: string) {
+  function notePaste(start: number, text: string, since = writingNoticeKeys.current) {
     // int7b QA 3-4 (W-SAVE-04): a paste the rules leave as it is goes in by the browser after this beforeinput (and
     // after its microtasks): the lines are read in the next task, once they are there.
     setTimeout(() => {
@@ -1655,9 +1658,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         setWritingNotice(null);
         applyWritingEdit({ start: at(from), end: at(to) + lines[to].length, text: block }, undefined);
       };
-      showWritingNotice('info', `${to - from + 1}줄을 붙여넣었습니다 · 원문 그대로`, [
+      // notice (11/11, 기타 3-5): the 80%·90% notice this paste brought (checkTextLimit, in its input, before this task)
+      // goes first; the paste is said in the same notice, not over it.
+      const shown = limitNoticeRef.current, notice = programPasteNotice(to - from + 1, shown && shown.key > since ? shown : null);
+      showWritingNotice(notice.tone, notice.text, [
         ...(plain.length >= 2 && to - from < 60 ? [{ label: `할 일 ${plain.length}개로`, run: whenComposed(toTasks) }] : []),
-        { label: '되돌리기', run: whenComposed(() => { setWritingNotice(null); undoInput(); }) }]);
+        { label: '되돌리기', run: whenComposed(() => { setWritingNotice(null); undoInput(); }) }], notice.detail);
     }, 0);
   }
   /** P3: a paste that would take the text past the limit is asked before anything goes in. */
@@ -1688,7 +1694,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   function checkTextLimit(raw: string) {
     const reached = textLimitReached(raw);
-    if (reached) showWritingNotice('warn', reached.text, [], reached.room);
+    if (!reached) return;
+    showWritingNotice('warn', reached.text, [], reached.room);
+    limitNoticeRef.current = { key: writingNoticeKeys.current, ...reached };
   }
   /** L2·L4: the caret goes to a held line (its end), shown. */
   function goToHeldLine(index: number) {
