@@ -451,7 +451,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
             const sourceUrl = classifiedSource && classifiedSource.kind !== 'invalid' ? item.sourceUrl!.trim() : null;
             const repeatView = programImportItemView(item), title = repeatView?.title ?? item.title;
             const dateLabel = repeatView?.label ?? programItemDateLabel(item, detail.anchor || null);
-            const row = <><span className={styles.taskNumber}>{index + 1}</span><span className={styles.taskTitle} data-task-clip={item.id}>{title}</span><span className={styles.taskDate} data-task-clip={item.id}>{dateLabel}</span></>;
+            const row = <><span className={styles.taskNumber}>{index + 1}</span><span className={styles.taskTitle} data-task-clip={item.id}>{title}</span><span className={styles.taskDate} data-task-clip={item.id}>{programRepeatText(dateLabel)}</span></>;
             // UX 2절 8: ▸ on the row opens the method, criteria and item source; the row itself stays one 44px line,
             // so a long title or date is cut there and read in full under ▸.
             const detailsKey = `${version.id}:${item.id}`, detailsId = `${uid}-item-${index}`, open = openItems.includes(detailsKey);
@@ -460,8 +460,8 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
             return <li key={item.id} id={`program-public-item-${encodeURIComponent(version.id)}-${encodeURIComponent(item.id)}`} tabIndex={-1} aria-current={selectedItemId === item.id ? 'location' : undefined}>
               <div className={styles.taskLine}>{choosing ? <label className={styles.taskRow}><input type="checkbox" disabled={pending} checked={detail.selectedItemIds.includes(item.id)} onChange={event => patchDetail({ selectedItemIds: event.target.checked ? [...detail.selectedItemIds, item.id] : detail.selectedItemIds.filter(id => id !== item.id) })} />{row}</label> : <div className={styles.taskRow}>{row}</div>}
                 {hasDetails && <button type="button" className={styles.taskToggle} aria-expanded={open} aria-controls={detailsId} aria-label={`${title} ${hasMethod ? '방법과 완료 기준' : '전체 제목과 날짜'} ${open ? '접기' : '펼치기'}`}
-                  onClick={() => setOpenItems(prior => open ? prior.filter(key => key !== detailsKey) : [...prior, detailsKey])}>{open ? '▾' : '▸'}</button>}</div>
-              {hasDetails && open && <div id={detailsId} className={styles.itemDetails}>{cut && <p className={styles.taskFull}><strong>{title}</strong><br />{dateLabel}</p>}{item.description &&<p className={styles.pre}>{item.description}</p>}{sourceUrl && <p><a href={sourceUrl} target="_blank" rel="noreferrer noopener" aria-label={`${item.title} 원문 열기`}>항목 원문 열기 ↗</a></p>}{item.completionCriteria && <p><strong>완료 기준</strong><br />{item.completionCriteria}</p>}{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</div>}</li>;
+                  onClick={() => setOpenItems(prior => open ? prior.filter(key => key !== detailsKey) : [...prior, detailsKey])}><ProgramIcon name={open ? 'down' : 'right'} size={20} /></button>}</div>
+              {hasDetails && open && <div id={detailsId} className={styles.itemDetails}>{cut && <p className={styles.taskFull}><strong>{title}</strong><br />{programRepeatText(dateLabel)}</p>}{item.description &&<p className={styles.pre}>{item.description}</p>}{sourceUrl && <p><a href={sourceUrl} target="_blank" rel="noreferrer noopener" aria-label={`${item.title} 원문 열기`}>항목 원문 열기 ↗</a></p>}{item.completionCriteria && <p><strong>완료 기준</strong><br />{item.completionCriteria}</p>}{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</div>}</li>;
           })}</ol>
           {chooseButton(`${styles.chooseButton} ${styles.phoneOnly}`)}
           <div className={styles.phoneOnly}>{extras}</div>

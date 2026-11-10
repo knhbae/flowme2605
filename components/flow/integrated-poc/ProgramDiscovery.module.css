@@ -175,4 +175,5 @@
 .searchField input{padding-left:44px;background:var(--flowme-b-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23857f72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='6'/%3E%3Cpath d='M19.5 19.5l-4-4'/%3E%3C/svg%3E") no-repeat 14px center/20px 20px}
 
 /* F6-B2 (목업 B): the Flow title 26/800. */
-.listHeader[data-list-head="flow"] h1{font-size:26px;line-height:34px;font-weight:800;letter-spacing:-.3px}
+.listHeader[data-list-head="flow"] h1{font-size:26px;line-height:34px;font-weight:800;letter-spacing:-.3px}/* int5 QA P3-INT5-3: the row toggle draws the icon set's chevron (it was the letter ▸/▾). */
+.taskToggle{display:inline-flex;align-items:center;justify-content:center}

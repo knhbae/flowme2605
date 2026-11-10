@@ -393,6 +393,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const folderStepRawRef = useRef<string | null>(null);
   // Sheet '추가' (11/10): the line start the line menu just wrote, until it is typed into or taken away.
   const scaffoldRef = useRef<{ lineId: string; text: string } | null>(null);
+  // int5 QA P2-INT5-1: the text before a start was taken away and the end of that start, until the next input: a ↶ that
+  // brings exactly that text back leaves the caret at the start's end, nothing selected (the browser selects what it restored).
+  const scaffoldRestoreRef = useRef<{ raw: string; caret: number } | null>(null);
   // memo-enter (11/10): the tip after a plain Enter continued a memo (its key; null when none shows).
   const [memoTip, setMemoTip] = useState<number | null>(null);
   const memoTipKeys = useRef(0);
@@ -2421,6 +2424,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const settleOnMove = () => { settleRepeatLines(false); settleScaffold(); }, settleOnBlur = () => settleRepeatLines(true);
     const observeInput = (event: Event) => {
       const input=event as InputEvent;historyTypeRef.current=input.inputType||historyTypeRef.current;lastRepeatCheck.current=null;
+      // int5 QA P2-INT5-1: a ↶ that brought back a start taken away leaves the caret at its end, nothing selected.
+      const restore=scaffoldRestoreRef.current;
+      if(restore&&textarea){if(textarea.value===restore.raw){scaffoldRestoreRef.current=null;textarea.setSelectionRange(restore.caret,restore.caret);}else if(input.inputType!=='historyUndo')scaffoldRestoreRef.current=null;}
     };
     if (textarea) {
       textarea.id = `program-text-${encodeURIComponent(props.docId)}`;
@@ -2830,8 +2836,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       scaffoldRef.current=line&&programScaffoldRemoval(plan.nextRaw,index,plan.selectionAfter)?{lineId:line.id,text:line.text}:null;}
     return true;
   }
-  /** Sheet '추가' (11/10, a real-use report): the menu's line start ('- [ ] ', '- 메모: ', '- ') left as it was written when
-   *  the caret goes to another line is taken away again — one browser step, so one ↶ brings it back. Typed into, it is
+  /** Sheet '추가' (11/10, a real-use report): the menu's line start ('- [ ] ', '- 메모: ', '- ', '## ', an empty line) left as it was written when
+   *  the caret goes to another line is taken away again — one browser step, so one ↶ brings it back (the caret at its end). Typed into, it is
    *  the person's line and stays. Never while composing, saving's raw differs, or in a folder view. */
   function settleScaffold(){
     const held=scaffoldRef.current,area=textArea(),controller=draftRef.current;
@@ -2843,7 +2849,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const removal=programScaffoldRemoval(raw,index,{start:area.selectionStart,end:area.selectionEnd});
     scaffoldRef.current=null;
     if(!removal||!controller.prepareRaw(removal.nextRaw,{inputType:'deleteContentBackward',compositionGeneration:compositionGeneration.current},true))return;
-    editorRef.current?.replaceRange(removal.from,removal.to,'',{selectionAfter:removal.selection});
+    const caret=raw.split('\n').slice(0,index).reduce((n,line)=>n+line.length+1,0)+held.text.length;
+    if(editorRef.current?.replaceRange(removal.from,removal.to,'',{selectionAfter:removal.selection}))scaffoldRestoreRef.current={raw,caret};
   }
   function insertAuthoringLayout(kind:'step'|'description'){
     // After the pressed line's whole block, and only where no line changes what it belongs to.

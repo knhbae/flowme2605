@@ -24,9 +24,10 @@ test('a task row stays one 44px line: title and date are cut, never wrapped', ()
   assert(css.includes('.taskToggle{flex:0 0 44px;width:44px;min-height:44px!important;'));
   // Cut rows are measured and get ▸, which opens the full title and date first.
   // 공식 반복 Flow: a repeat item's row reads its words without the marker (`title`) and its chip as the date.
-  assert.match(tsx, /data-task-clip=\{item\.id\}>\{title\}<\/span><span className=\{styles\.taskDate\} data-task-clip=\{item\.id\}>\{dateLabel\}/);
+  // int5 QA P3-INT5-3: the date cell draws a repeat's ↻ as the icon set's repeat icon.
+  assert.match(tsx, /data-task-clip=\{item\.id\}>\{title\}<\/span><span className=\{styles\.taskDate\} data-task-clip=\{item\.id\}>\{programRepeatText\(dateLabel\)\}/);
   assert.match(tsx, /title = repeatView\?\.title \?\? item\.title;/);
   assert.match(tsx, /element\.scrollWidth > element\.clientWidth \+ 1/);
   assert.match(tsx, /hasDetails = cut \|\| hasMethod;/);
-  assert.match(tsx, /\{cut && <p className=\{styles\.taskFull\}><strong>\{title\}<\/strong><br \/>\{dateLabel\}<\/p>\}/);
+  assert.match(tsx, /\{cut && <p className=\{styles\.taskFull\}><strong>\{title\}<\/strong><br \/>\{programRepeatText\(dateLabel\)\}<\/p>\}/);
 });
