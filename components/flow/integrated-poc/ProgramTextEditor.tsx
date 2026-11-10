@@ -51,6 +51,7 @@ import { childPlace, insertPlaceAfter, insertPreview, planLayoutInsertion, progr
 import { programWritingDialogPlace } from '@/lib/flow/integrated-poc/writing-dialog-place';
 import { revealProgramEditorLine } from './editor-reveal';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
+import { programScaffoldRemoval } from '@/lib/flow/integrated-poc/writing-scaffold';
 import { PROGRAM_MEMO_TIP_MS, PROGRAM_MEMO_TIP_TEXT, programMemoTipLeft, programMemoTipStorage, programMemoTipTake } from '@/lib/flow/integrated-poc/memo-enter-tip';
 import { programNoticeEndsAt, programNoticeOrder, type ProgramNoticeAction, type ProgramNoticeTone } from '@/lib/flow/integrated-poc/program-notice';
 import { programFolderCreatedNotice, programFolderKeptText, programFolderMoveNotice, programFolderRelinkedNotice, programFolderRenamedEverywhere } from '@/lib/flow/integrated-poc/folder-notice';
@@ -388,6 +389,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const folderNoticeRestarting = useRef<FolderNotice | null>(null);
   const folderNoticeKeys = useRef(0);
   const folderRawUndoRef = useRef(false);
+  // Sheet '추가' (11/10): the line start the line menu just wrote, until it is typed into or taken away.
+  const scaffoldRef = useRef<{ lineId: string; text: string } | null>(null);
   // memo-enter (11/10): the tip after a plain Enter continued a memo (its key; null when none shows).
   const [memoTip, setMemoTip] = useState<number | null>(null);
   const memoTipKeys = useRef(0);
@@ -2408,7 +2411,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     // (a folder name selected and typed over in Hangul). The finish is scheduled anyway, for after compositionend.
     const finishOnBlur = () => { if (composingRef.current) finishAfterComposition.current = true; finishHeldFolderLine(); finishRenamedFolderLines(true); };
     // N10 (SPEC 1): the caret leaving a line (or the editor) settles the repeat lines it has left.
-    const settleOnMove = () => settleRepeatLines(false), settleOnBlur = () => settleRepeatLines(true);
+    const settleOnMove = () => { settleRepeatLines(false); settleScaffold(); }, settleOnBlur = () => settleRepeatLines(true);
     const observeInput = (event: Event) => {
       const input=event as InputEvent;historyTypeRef.current=input.inputType||historyTypeRef.current;lastRepeatCheck.current=null;
     };
@@ -2815,7 +2818,25 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     }
     editorRef.current?.refreshViewport();rememberPosition();
     revealProgramEditorLine(area,plan.nextRaw.slice(0,plan.selectionAfter.start).split('\n').length-1);
+    // Sheet '추가' (11/10): remember the line start just written; left as it is when the caret goes on, it is taken away.
+    {const index=plan.nextRaw.slice(0,plan.selectionAfter.start).split('\n').length-1,line=currentDoc()?.lines[index];
+      scaffoldRef.current=line&&programScaffoldRemoval(plan.nextRaw,index,plan.selectionAfter)?{lineId:line.id,text:line.text}:null;}
     return true;
+  }
+  /** Sheet '추가' (11/10, a real-use report): the menu's line start ('- [ ] ', '- 메모: ', '- ') left as it was written when
+   *  the caret goes to another line is taken away again — one browser step, so one ↶ brings it back. Typed into, it is
+   *  the person's line and stays. Never while composing, saving's raw differs, or in a folder view. */
+  function settleScaffold(){
+    const held=scaffoldRef.current,area=textArea(),controller=draftRef.current;
+    if(!held||!area||!controller||composingRef.current||propsRef.current.folderId)return;
+    const doc=currentDoc(),index=doc?.lines.findIndex(line=>line.id===held.lineId)??-1;
+    if(!doc||index<0||doc.lines[index].text!==held.text){scaffoldRef.current=null;return;}
+    if(area.value.slice(0,area.selectionStart).split('\n').length-1===index)return;
+    const raw=controller.getState().raw;if(area.value!==raw||controller.getState().invalid)return;
+    const removal=programScaffoldRemoval(raw,index,{start:area.selectionStart,end:area.selectionEnd});
+    scaffoldRef.current=null;
+    if(!removal||!controller.prepareRaw(removal.nextRaw,{inputType:'deleteContentBackward',compositionGeneration:compositionGeneration.current},true))return;
+    editorRef.current?.replaceRange(removal.from,removal.to,'',{selectionAfter:removal.selection});
   }
   function insertAuthoringLayout(kind:'step'|'description'){
     // After the pressed line's whole block, and only where no line changes what it belongs to.
