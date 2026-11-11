@@ -1283,6 +1283,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [closeSheet, setCloseSheet] = useState<{ taskId: string; run: ProgramFlowRun | null; at: number } | null>(null);
   const closeSheetDialog = useRef<HTMLDialogElement>(null);
   const closeHold = useRef<{ timer: ReturnType<typeof setTimeout>; fired: boolean } | null>(null);
+  // UX r3 D1 (총괄 11/11 23:4x): in the day close the finished rows fold into '끝낸 일 n' (open for this visit only).
+  const [closeDoneOpen, setCloseDoneOpen] = useState(false);
   useEffect(() => { const box = deferDialog.current; if (!box) return; if (deferAsk && !box.open) box.showModal(); if (!deferAsk && box.open) box.close(); }, [deferAsk]);
   useEffect(() => { const box = closeSheetDialog.current; if (!box) return; if (closeSheet && !box.open) box.showModal(); if (!closeSheet && box.open) box.close(); }, [closeSheet]);
   const [bandRepeatNotice, setBandRepeatNotice] = useState<{ actorId: string; documentId: string; taskId: string; text: string; check: ProgramRepeatCheck | null } | null>(null);
@@ -3289,6 +3291,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // Today's own 오늘 with nothing narrowing it: the progress lines and rechecks show; from 18:00 (assumed) the day close.
   const todayHere = () => period === 'today' && date === today && !folderTab && !selecting && !monthGrid && !folderId && !query;
   const closing = () => todayHere() && closeHour >= PROGRAM_DAY_CLOSE_HOUR;
+  /** A finished row of 오늘's list (its check, or a 100% record), folded away in the day close. */
+  const closeDoneRow = (item: ProgramExecutionListItem) => item.kind === 'row' && item.entry.kind !== 'occurrence'
+    && (taskProgress(item.entry.task.id).current ?? (item.entry.task.done ? 100 : 0)) === 100;
   function deferTask(task: TextTask, nextDate: string) {
     const owner = runOfTask(task.id);
     if (owner) { deferFlowStep(owner, task.id, nextDate); return; }
@@ -3717,6 +3722,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           </dialog></div>}
         {/* F12 1차 (W-FLOW-04·05·07): the progress lines, then '다시 확인할 일' (always, its day come), over 오늘's list. */}
         {todayHere() && <ProgramFlowRuns runs={flowRuns} today={today} tablet={!phoneLayout} saving={completingTaskIds} onCheck={checkRunStep} onOpen={openRun} />}
+        {/* UX r3 D1: the day close opens with the finished rows folded ('끝낸 일 n · 펼치기'), then the rechecks. */}
+        {closing() && (done => done.length > 0 && <div className={styles.closeDone} data-close-done>
+          <button type="button" className={styles.closeDoneToggle} aria-expanded={closeDoneOpen} onClick={() => setCloseDoneOpen(open => !open)}>
+            <ProgramIcon name="check" size={18} />끝낸 일 {done.length}<span>{closeDoneOpen ? '접기' : '펼치기'}</span></button>
+          {closeDoneOpen && <ul className={styles.tasks}>{done.map(item => renderListItem(item))}</ul>}</div>)(shownItems.filter(closeDoneRow))}
         {todayHere() && <ProgramRechecks rows={rechecks} today={today} saving={flowBusy} onCheck={checkRecheck} onTomorrow={recheckTomorrow}
           onOpen={row => void openDocument(row.docId, row.taskId)} />}
         {/* W-FLOW-08: from 18:00 the open rows are '오늘 남은 일', each with [내일] (or [건너뛰기] for a repeat round). */}
@@ -3756,7 +3766,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           {folderGroups.done.length > 0 && <li className={folderStyles.doneToggle}><button type="button" data-folder-done aria-expanded={folderDoneOpen}
             onClick={() => setFolderDoneOpen(open => !open)}>{folderDoneOpen ? `끝낸 일 ${folderGroups.done.length}개 접기 ⌃` : `끝낸 일 ${folderGroups.done.length}개 ›`}</button></li>}
           {folderDoneOpen && folderGroups.done.map(entry => renderListItem({ kind: 'row', entry, group: null, dated: false }, 'done'))}
-        </ul> : folderTab ? null : <ul className={styles.tasks} onKeyDown={selecting ? moveSelectFocus : undefined}>{shownItems.map(item => renderListItem(item))}</ul>}
+        </ul> : folderTab ? null : <ul className={styles.tasks} onKeyDown={selecting ? moveSelectFocus : undefined}>{(closing() ? shownItems.filter(item => !closeDoneRow(item)) : shownItems).map(item => renderListItem(item))}</ul>}
         {selecting && selectNotice && <div className={styles.orderNotice}><ProgramNoticeRow notice={{ tone: 'info', text: selectNotice }} onClose={() => setSelectNotice(null)} /></div>}
         {/* I7: under the list, held at the bottom of the screen (above the bottom tabs on a phone) while it scrolls. */}
         {!detail && !sheetOpen && orderNoticeContent}

@@ -94,4 +94,7 @@ test('ProgramSpace wires them: lines and rechecks over 오늘, the day close fro
   assert(space.includes('export const PROGRAM_CLOSE_SHEET_SETTLE_MS = 500;'));
   const css = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/ProgramSpace.module.css'), 'utf8');
   assert(css.includes('.space .executionView .task[data-close-row] { grid-template-columns: 48px minmax(0, 1fr) auto 48px; }'), '[내일] has its own column (390: it was squeezed into the ⋯ column)');
+  // UX r3 D1 (총괄 11/11 23:4x): the finished rows fold into '끝낸 일 n' in the day close, and leave the list there.
+  assert(space.includes("{closeDoneOpen && <ul className={styles.tasks}>{done.map(item => renderListItem(item))}</ul>}</div>)(shownItems.filter(closeDoneRow))}"));
+  assert(space.includes('{(closing() ? shownItems.filter(item => !closeDoneRow(item)) : shownItems).map(item => renderListItem(item))}'));
 });
