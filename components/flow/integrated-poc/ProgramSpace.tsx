@@ -22,7 +22,8 @@ import { ProgramFlowTodayBand, type ProgramFlowBandRow } from './ProgramFlowToda
 import { programContinueBand, programContinueMeta, programSameTaskGroups, type ProgramContinueRow } from '@/lib/flow/integrated-poc/continue-band';
 import { programSameTaskProof, undoProgramSameTasks, type ProgramSameTaskProof } from '@/lib/flow/integrated-poc/same-task-undo';
 import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
-import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, programTaskRepeatMember, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
+import { programFollowToday, programLaterToday, startProgramDayClock, type ProgramDayClock } from '@/lib/flow/integrated-poc/day-clock';
+import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, programTaskDateUndoLines, programTaskRepeatMember, restoreProgramTaskDates, type ProgramTaskDateLines, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
 import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate, programDaysBetween } from '@/lib/flow/integrated-poc/date-label';
@@ -300,8 +301,24 @@ function sameScheduleWorkspace(before: TextWorkspaceState, expected: TextWorkspa
   return programSame(comparable, actual);
 }
 
+/** Codex f12a review P2-3, 기타 F4 (11/12): today and the hour from one clock (day-clock.ts), so a screen left open across
+ *  midnight or 18:00 moves on by itself; until the clock runs (and in a server render) the host's today stands. */
+function useProgramDayClock(hostToday: string): { today: string; hour: number } {
+  const [clock, setClock] = useState<ProgramDayClock | null>(null);
+  useEffect(() => startProgramDayClock({
+    now: () => new Date(), setTimeout: (run, ms) => window.setTimeout(run, ms), clearTimeout: timer => window.clearTimeout(timer as number),
+    onVisible: run => {
+      const shown = () => { if (document.visibilityState === 'visible') run(); };
+      document.addEventListener('visibilitychange', shown); window.addEventListener('focus', run); window.addEventListener('pageshow', run);
+      return () => { document.removeEventListener('visibilitychange', shown); window.removeEventListener('focus', run); window.removeEventListener('pageshow', run); };
+    },
+  }, setClock), []);
+  return { today: programLaterToday(hostToday, clock?.date ?? null), hour: clock?.hour ?? new Date().getHours() };
+}
+
 export function ProgramSpace(props: ProgramSpaceProps) {
-  const { data, today } = props, actorId = data.activeActorId, space = data.spaces[actorId];
+  const dayClock = useProgramDayClock(props.today);
+  const { data } = props, today = dayClock.today, actorId = data.activeActorId, space = data.spaces[actorId];
   // typelag (11/11): the tasks of the saved text, read once per text (the screen draws again at every key; the band
   // asked them again for each of its rows). Read only.
   const textTasks = useMemo(() => M.tasks(space.text), [space.text]);
@@ -369,6 +386,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       || textTasks.some(task => task.docId !== id && taskIds.includes(task.id));
   }
   const [date, setDate] = useState(today), [folderId, setFolderId] = useState(''), [query, setQuery] = useState('');
+  // P2-3, 기타 F4: past midnight a view on the day that was today moves to the new today (left on yesterday, 오늘 showed
+  // none of its progress lines, rechecks or day close).
+  const shownToday = useRef(today);
+  useEffect(() => { const was = shownToday.current; shownToday.current = today; if (was !== today) setDate(current => programFollowToday(current, was, today)); }, [today]);
   /** F4-a (11/9): the 폴더 tab's open folder — its [할 일] (period 'all', the folder as folderId; '' is 모든 할 일) or its
    *  [글] (period 'documents' with the folder's parts gathered in the document shown, as 이 폴더만 모아 보기 did). Null on
    *  the folder list. `writing`: the document 쓰기 showed before [글] took the editor (it comes back with 쓰기);
@@ -427,7 +448,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [selecting, setSelecting] = useState<Selecting | null>(null), [selectNotice, setSelectNotice] = useState<string | null>(null);
   const selectScrollBack = useRef<number | null>(null);
   // C6b: the date sheet, the one save it makes (pressed once), and its notice with 되돌리기.
-  type DatesNotice = { actorId: string; count: number; date: string | null; undo: ProgramTaskDateMove[]; taskIds: string[]; shownAt: number; refused?: string; undone?: boolean;
+  // Codex f12a review P1 (11/12): `lines`, a list with no copy's task: 되돌리기 puts each task's lines back exactly.
+  type DatesNotice = { actorId: string; count: number; date: string | null; undo: ProgramTaskDateMove[]; lines?: ProgramTaskDateLines[] | null; taskIds: string[]; shownAt: number; refused?: string; undone?: boolean;
   /** F12 1차 (W-FLOW-09): a Flow step and the steps after it moved together say so in their own words. */
   text?: string };
   const datesSheet = useRef<HTMLDialogElement>(null), datesBusy = useRef(false), [datesPending, setDatesPending] = useState(false);
@@ -1276,8 +1298,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const flowRuns = useMemo(() => period === 'today' ? programFlowRuns(data, actorId, today, textTasks) : [], [period, data, actorId, today, textTasks]);
   const rechecks = useMemo(() => period === 'today' ? programRechecks(space, today) : [], [period, space, today]);
   const [flowBusy, setFlowBusy] = useState<ReadonlySet<string>>(() => new Set());
-  const [closeHour, setCloseHour] = useState(() => new Date().getHours());
-  useEffect(() => { const timer = window.setInterval(() => setCloseHour(new Date().getHours()), 60_000); return () => window.clearInterval(timer); }, []);
+  // P2-3: the day close's hour is the clock's, read with today's date (never a minute late).
+  const closeHour = dayClock.hour;
   const [deferAsk, setDeferAsk] = useState<{ run: ProgramFlowRun; taskId: string; date: string; plans: Record<ProgramDeferMode, ProgramDeferPlan>; time?: string } | null>(null);
   // 기타 F12 1차 QA P3: 다시 확인할 일's check and [내일] say what they did with [되돌리기].
   const [flowNotice, setFlowNotice] = useState<{ text: string; undo?: () => Promise<boolean>; busy?: boolean } | null>(null);
@@ -2268,15 +2290,16 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (moves.every(move => move.date === move.expected.date)) return;
     const requestId = programId('dates');
     // 되돌리기 is made inside the save, from the very state the move applies to (not the one shown before a read).
-    let undo: ProgramTaskDateMove[] = [];
+    let undo: ProgramTaskDateMove[] = [], undoLines: ProgramTaskDateLines[] | null = null;
+    const social = programTaskDateMovesSocial(space, moves);
     datesBusy.current = true; setDatesPending(true); setSelectNotice(null);
     try {
-      const result = await countedMutate('날짜 한꺼번에 바꾸기', current => { const next = moveProgramTaskDates(current, { actorId, requestId, moves }); if (next.ok) undo = programTaskDateUndo(current.spaces[actorId], next.data.spaces[actorId], moves); return next; },
-        { history: true, awaitAutomaticRead: true, ...(programTaskDateMovesSocial(space, moves) ? { alphaSocial: { type: 'private-task-dates' as const, moves } } : {}) });
+      const result = await countedMutate('날짜 한꺼번에 바꾸기', current => { const next = moveProgramTaskDates(current, { actorId, requestId, moves }); if (next.ok) { undo = programTaskDateUndo(current.spaces[actorId], next.data.spaces[actorId], moves); undoLines = social ? null : programTaskDateUndoLines(current.spaces[actorId], undo); } return next; },
+        { history: true, awaitAutomaticRead: true, ...(social ? { alphaSocial: { type: 'private-task-dates' as const, moves } } : {}) });
       if (result.ok) {
         if (selectingNow.current) stopSelecting();
         setTaskNotice(null); setOrderNotice(null);
-        setDatesNotice({ actorId, count: picks.length, date: target, undo, taskIds: undo.map(move => move.taskId), shownAt: Date.now() });
+        setDatesNotice({ actorId, count: picks.length, date: target, undo, lines: undoLines, taskIds: undo.map(move => move.taskId), shownAt: Date.now() });
       }
       else if (result.reason === 'conflict') setSelectNotice('그사이 바뀐 할 일이 있어 옮기지 않았습니다. 다시 확인해 주세요.');
       else if (result.reason !== 'busy') setSelectNotice(programErrorMessage(result.reason));
@@ -2288,8 +2311,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const requestId = programId('dates');
     datesBusy.current = true; setDatesPending(true);
     try {
-      const result = await countedMutate('날짜 되돌리기', current => moveProgramTaskDates(current, { actorId, requestId, moves: notice.undo }),
-        { history: true, awaitAutomaticRead: true, ...(programTaskDateMovesSocial(space, notice.undo) ? { alphaSocial: { type: 'private-task-dates' as const, moves: notice.undo } } : {}) });
+      // P1: a list with no copy's task gets its lines back exactly; one with a copy's task keeps the server's date command.
+      const lines = notice.lines;
+      const result = await countedMutate('날짜 되돌리기', current => lines ? restoreProgramTaskDates(current, { actorId, requestId, moves: notice.undo, lines })
+        : moveProgramTaskDates(current, { actorId, requestId, moves: notice.undo }),
+        { history: true, awaitAutomaticRead: true, ...(!lines && programTaskDateMovesSocial(space, notice.undo) ? { alphaSocial: { type: 'private-task-dates' as const, moves: notice.undo } } : {}) });
       if (result.ok) setDatesNotice({ ...notice, undone: true, shownAt: Date.now() });
       else if (result.reason === 'conflict') setDatesNotice({ ...notice, refused: '그 뒤 바뀐 할 일이 있어 되돌리지 않았습니다', shownAt: Date.now() });
       else if (result.reason !== 'busy') setMessage(programErrorMessage(result.reason));
@@ -3352,16 +3378,22 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const moves: ProgramTaskDateMove[] = plan.moves.flatMap(move => { const task = tasks.find(entry => entry.id === move.taskId);
       return task ? [{ taskId: move.taskId, expected: { date: task.date, time: task.time ?? '', state: programTaskDateState(current, move.taskId) ?? undefined }, date: move.to }] : []; });
     if (moves.length !== plan.moves.length) { setMessage('그사이 바뀐 할 일이 있어 옮기지 않았습니다. 다시 확인해 주세요.'); return; }
+    // Codex f12a review P2-2 (11/12): a time picked with the asked step's date goes into the same save and 되돌리기. A copy's
+    // steps go to the server, whose command has no time: then nothing moves and it says so.
+    const social = programTaskDateMovesSocial(space, moves), asked = moves[0];
+    const timeChange = time !== undefined && time !== asked.expected.time ? { taskId: asked.taskId, time } : undefined;
+    if (social && timeChange) { setMessage('사본의 단계 여러 개를 함께 옮길 때는 시간을 같이 바꿀 수 없습니다. 날짜를 옮긴 뒤 시간을 바꿔 주세요.'); return; }
     const requestId = programId('dates');
-    let undo: ProgramTaskDateMove[] = [];
+    let undo: ProgramTaskDateMove[] = [], undoLines: ProgramTaskDateLines[] | null = null;
     datesBusy.current = true; setDatesPending(true);
     try {
-      const result = await countedMutate('Flow 단계 함께 옮기기', state => { const next = moveProgramTaskDates(state, { actorId, requestId, moves }); if (next.ok) undo = programTaskDateUndo(state.spaces[actorId], next.data.spaces[actorId], moves); return next; },
-        { history: true, awaitAutomaticRead: true, ...(programTaskDateMovesSocial(space, moves) ? { alphaSocial: { type: 'private-task-dates' as const, moves } } : {}) });
+      const result = await countedMutate('Flow 단계 함께 옮기기', state => { const next = moveProgramTaskDates(state, { actorId, requestId, moves, ...(timeChange ? { time: timeChange } : {}) });
+        if (next.ok) { undo = programTaskDateUndo(state.spaces[actorId], next.data.spaces[actorId], moves); undoLines = social ? null : programTaskDateUndoLines(state.spaces[actorId], undo); } return next; },
+        { history: true, awaitAutomaticRead: true, ...(social ? { alphaSocial: { type: 'private-task-dates' as const, moves } } : {}) });
       if (result.ok) {
         setTaskNotice(null); setOrderNotice(null);
         const titles = plan.moves.map(move => move.title), last = plan.moves[plan.moves.length - 1].to;
-        setDatesNotice({ actorId, count: moves.length, date: last, undo, taskIds: undo.map(move => move.taskId), shownAt: Date.now(),
+        setDatesNotice({ actorId, count: moves.length, date: last, undo, lines: undoLines, taskIds: undo.map(move => move.taskId), shownAt: Date.now(),
           text: `${titles[0]} 등 ${titles.length}개를 옮겼습니다 · ${programCalendarDate(last, today, false)}까지` });
       } else if (result.reason === 'conflict') setMessage('그사이 바뀐 할 일이 있어 옮기지 않았습니다. 다시 확인해 주세요.');
       else if (result.reason !== 'busy') setMessage(programErrorMessage(result.reason));
@@ -3518,7 +3550,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {opened.filter(id => docs.some(doc => doc.id === id)).map(id => { const recent = recentViewOf(id), recentTop = recentLine(id, recent, false), views = viewSwitch(id);
           const initial = positions.current[id] ?? (space.position.documentId === id ? space.position : undefined);
           return <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor key={recent ? `recent:${recentDoneShown[id] ? 'done' : 'folded'}` : 'whole'}
-          authoringMode={!!props.nativeAuthoringEnabled} onOpenPersonalAuthoring={() => requestPersonalAuthoring(id)} onFlowStepDate={(taskId, nextDate) => { const owner = runOfTaskNow(taskId); if (!owner) return false; deferFlowStep(owner, taskId, nextDate); return true; }} flowStepAnchor={taskId => (owner => owner?.basis === 'last' ? owner.anchor : null)(runOfTaskNow(taskId))} hostContext={props.pmTextHost}
+          authoringMode={!!props.nativeAuthoringEnabled} onOpenPersonalAuthoring={() => requestPersonalAuthoring(id)} onFlowStepDate={(taskId, nextDate, time) => { const owner = runOfTaskNow(taskId); if (!owner) return false; deferFlowStep(owner, taskId, nextDate, undefined, time); return true; }} flowStepAnchor={taskId => (owner => owner?.basis === 'last' ? owner.anchor : null)(runOfTaskNow(taskId))} hostContext={props.pmTextHost}
           repeatLabel={props.hostMainTabs && props.nativeAuthoringEnabled && selected === id ? repeatLabel(id) : undefined}
           onRegisterInputCheckpoint={read => { inputCheckpointReaders.current[id] = read; }}
           onRegisterCaptureComplete={read => { captureReaders.current[id] = read; }}

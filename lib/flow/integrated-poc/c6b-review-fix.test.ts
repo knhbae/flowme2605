@@ -77,7 +77,8 @@ test('P2-3: 되돌리기 comes from the state the move applied to, so an overrid
   assert.equal(task(back.data, ids.copy).date, '2026-10-31');
   // The space makes it inside the save, from the very state the command gets.
   const source = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
-  assert.match(source, /current => \{ const next = moveProgramTaskDates\(current, \{ actorId, requestId, moves \}\); if \(next\.ok\) undo = programTaskDateUndo\(current\.spaces\[actorId\], next\.data\.spaces\[actorId\], moves\); return next; \}/);
+  // F12 review P1 (11/12): with it, the lines of a list with no copy's task, from the same state.
+  assert.match(source, /current => \{ const next = moveProgramTaskDates\(current, \{ actorId, requestId, moves \}\); if \(next\.ok\) \{ undo = programTaskDateUndo\(current\.spaces\[actorId\], next\.data\.spaces\[actorId\], moves\); undoLines = social \? null : programTaskDateUndoLines\(current\.spaces\[actorId\], undo\); \} return next; \}/);
 });
 
 test('P2-4: 되돌리기 expects each task as the move left it: a title changed since, or the override taken away, refuses it all', () => {

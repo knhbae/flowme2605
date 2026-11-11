@@ -107,7 +107,8 @@ test('F12 1차 QA fixes: one plan for every Flow step move, the editor sheet\'s 
   assert(space.includes('async function moveTaskHere(taskId:string,target:TaskLocationTarget,expectedOverride?:ProgramPrivateSpace,planned=false){'));
   assert(space.includes('if(owner&&now&&now.date!==target.date){deferFlowStep(owner,taskId,target.date,undefined,target.time);return false;}'));
   assert(space.includes("void moveTaskHere(plan.moves[0].taskId, { kind: 'date', date: plan.moves[0].to, ...(time !== undefined ? { time } : {}) }, undefined, true);"), 'the plan\'s own move is planned');
-  assert(space.includes('onFlowStepDate={(taskId, nextDate) => { const owner = runOfTaskNow(taskId); if (!owner) return false; deferFlowStep(owner, taskId, nextDate); return true; }}'));
+  // F12 review P2-1 (11/12): with the 날짜·시간 form's time.
+  assert(space.includes('onFlowStepDate={(taskId, nextDate, time) => { const owner = runOfTaskNow(taskId); if (!owner) return false; deferFlowStep(owner, taskId, nextDate, undefined, time); return true; }}'));
   assert(space.includes("flowStepAnchor={taskId => (owner => owner?.basis === 'last' ? owner.anchor : null)(runOfTaskNow(taskId))}"));
   assert(space.includes("actions: flowNotice.undo && !flowNotice.busy ? [{ label: '되돌리기', run: () => void undoFlowNotice() }] : []"));
   assert(!space.includes('(↶로 되돌리기)'), 'no ↶ on 오늘');
