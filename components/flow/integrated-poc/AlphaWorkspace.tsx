@@ -1811,6 +1811,8 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // W11: on the 쓰기 tab the notices around the title share one line, by priority: this document's saved input, then
   // the development notice, then the new-document notice (ProgramSpace keeps that one for screen readers only).
   const writingTab = usesNoteChrome && mainTab === 'documents';
+  // W-VER-04: away from 쓰기 (where the notice line is), the newer build waits as a dot on the 쓰기 tab.
+  const versionDot = !!newBuild && !writingTab;
   // F11 W-HEIGHT-01/02 (11/11, 안2): on 쓰기 one line under the tool bar says the most pressing of: the save state (its
   // one action: 다시 확인 or 최신 내용 열기, [복구함 n], [자세히] for the whole box), this document's kept input, the
   // last message. It replaces the banner, the recovery line under the title, the 안내 line and the box at the tool bar.
@@ -1831,9 +1833,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         : conflictInput ? { label: '최신 내용 열기', run: () => { void openLatest(); }, disabled: !!snapshot?.busy } : null,
       recoveries: documentRecoveries, openRecovery: opener => openRecoveryBox(opener),
       // The rest (the last message) goes under [자세히] with the box.
-      detail: <>{inputProtectionFor(false)}{message && !participationMessage && <p className={styles.feedbackMessageText}>{message}</p>}</>, note: versionNote(false) || null }
+      detail: <>{inputProtectionFor(false)}{message && !participationMessage && <p className={styles.feedbackMessageText}>{message}</p>}</>, note: versionNote(false) || null, newVersion: !!newBuild }
     : documentRecoveries > 0 ? { tone: 'info', text: `이 문서에 복구할 입력 ${documentRecoveries}개`, recoveries: documentRecoveries, openRecovery: opener => openRecoveryBox(opener),
-      note: versionNote(true) || null }
+      note: versionNote(true) || null, newVersion: !!newBuild }
     : newBuild ? { tone: 'info', text: versionText, action: versionAction,
       detail: message && !participationMessage ? <p className={styles.feedbackMessageText}>{message}</p> : null }
     : message && !participationMessage ? { tone: 'info', text: message, close: () => setMessage('') } : null;
@@ -1942,8 +1944,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}><ProgramFlowMark className={styles.brandMark} /><span className={styles.brandName}>FlowMe</span></a>
       {!unavailable && <nav className={styles.globalNavigation} aria-label="주요 메뉴">
         {([['documents', '쓰기', 'write'], ['today', '오늘', 'today'], ['all', '폴더', 'folder']] as const).map(([tab, label, icon]) =>
-          <button type="button" key={tab} data-main-tab={tab} aria-current={destination.view === 'space' && mainTab === tab ? 'page' : undefined} onClick={() => void chooseMainTab(tab)}>
-            <ProgramIcon name={icon} /><span>{label}</span></button>)}
+          <button type="button" key={tab} data-main-tab={tab} aria-current={destination.view === 'space' && mainTab === tab ? 'page' : undefined} onClick={() => void chooseMainTab(tab)}
+            aria-label={tab === 'documents' && versionDot ? `${label} · 새 버전 있음` : undefined}>
+            <ProgramIcon name={icon} /><span>{label}</span>
+            {/* W-VER-04 (11/11): off 쓰기, a newer build is a dot on 쓰기 (no height: nothing below moves). */}
+            {tab === 'documents' && versionDot && <span className={styles.navDot} data-version-dot aria-hidden="true" />}</button>)}
         {/* UX B3 (11/7): Flow and 나 are screens like the three before them (no pointerdown hold): a press moves by
             navigate(), which ends a composition through blur and keeps its result as 쓰기 → 오늘 does. */}
         <button type="button" data-main-tab="flow" aria-current={browse ? 'page' : undefined} onClick={() => void chooseFlowTab()}>

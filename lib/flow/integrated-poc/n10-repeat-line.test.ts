@@ -192,7 +192,7 @@ test('the editor and 오늘 use the one command; no C2 chips on a repeat line; t
   assert(editor.indexOf('void finishRepeatHere(') < editor.indexOf('const checkTitle = currentRow(lineId)?.title'), 'before the C2 check and its chips');
   assert(editor.includes('if (undoFolderMove() || undoRepeatCheck()) return;'));
   assert(editor.includes('const settleOnMove = () => { settleRepeatLines(false); settleScaffold(); noteCaretLine(); }, settleOnBlur = () => settleRepeatLines(true);')) // sheet '추가' (11/10): moving on settles the menu's bare line start too;
-  assert(host.includes("return finishRepeatFromList(task.id, task.title, task.date, from === 'band')"));
+  assert(host.includes("return finishRepeatFromList(task.id, task.title, task.date, from === 'band', onRepeatCheck)"));
   assert(host.includes('onRepeatFinish={finishRepeatRound} onRepeatUndo={undoRepeatRound}'));
   const css = read('./vendor/text-editor.css'), vendor = read('./vendor/text-editor.cjs');
   assert(css.includes('.tle-repeat-source::after') && vendor.includes("marker.dataset.repeatLabel = safeMeta.repeatLabel;"));

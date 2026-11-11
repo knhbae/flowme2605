@@ -1255,9 +1255,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // finished, not locked), moved by C6b's one save with its notice and 되돌리기. F8 1단계: in writing, the band's
   // [미루기] opens the same sheet, its row read from 오늘's own query.
   // A row checked in the band stays (faded, where it was) until the screen is left; a finished round has moved on.
-  const [bandChecked, setBandChecked] = useState<ReadonlyMap<string, { row: ProgramContinueRow; index: number }>>(() => new Map());
+  const [bandChecked, setBandChecked] = useState<ReadonlyMap<string, { row: ProgramContinueRow; index: number; repeatCheck?: ProgramRepeatCheck | null }>>(() => new Map());
+  // int9 r2 (기타 int9 QA P3): a repeat round finished from the band says so in the writing view's notice line, with [되돌리기].
+  const [bandRepeatNotice, setBandRepeatNotice] = useState<{ actorId: string; documentId: string; taskId: string; text: string; check: ProgramRepeatCheck | null } | null>(null);
   const [bandFailed, setBandFailed] = useState<string | null>(null);
-  useEffect(() => { setBandChecked(new Map()); setBandFailed(null); }, [actorId, period, selected, folderId]);
+  useEffect(() => { setBandChecked(new Map()); setBandFailed(null); setBandRepeatNotice(null); }, [actorId, period, selected, folderId]);
   // The source open now waiting out the host's check, shown on its row and in the
   // host notice. A token, so an older wait on the same task cannot clear a newer one.
   const sourceWaiting = useRef<object | null>(null);
@@ -2573,9 +2575,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   const repeatNextText = (title: string, check: ProgramRepeatCheck) => `${programRepeatTitle(title)} · ${check.applied ? '' : '다른 곳에서 이미 끝낸 회차입니다 · '}다음은 ${programCalendarDate(check.after, today)}`;
   // QA P3: as with C2/C6, a slow save's answer speaks only in the view the tap was made in.
-  async function finishRepeatFromList(taskId: string, title: string, expected: string | null, quiet = false) {
+  async function finishRepeatFromList(taskId: string, title: string, expected: string | null, quiet = false, onCheck?: (check: ProgramRepeatCheck) => void) {
     const view = presentation.current, check = await finishRepeatRound(taskId, expected, programRepeatSeen(space, taskId));
     const saved = !!check && check !== 'refused';
+    if (check && check !== 'refused' && check.applied) onCheck?.(check);
     if (quiet || !checkViewOwns(view)) return saved;
     // QA F1: a check that changed nothing here (the round was finished elsewhere first) offers no 되돌리기.
     setRepeatNotice(check && check !== 'refused' ? { actorId, text: repeatNextText(title, check), check: check.applied ? check : null }
@@ -2585,7 +2588,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   /** The 오늘 list's check, and the S11 band's (Flow pipeline 11/8: one function, so both save the same). A repeat line
    *  finishes its round; a task between 0 and 100% opens its chips (the band, which shows no notice, its form); any other
    *  is done, or opened again, as of today. Resolves 'saved', 'failed', or 'ignored' (a tap while one waits; chips or form). */
-  function checkTaskFromList(task: TextTask, from: 'list' | 'band' = 'list'): Promise<'saved' | 'failed' | 'ignored'> {
+  function checkTaskFromList(task: TextTask, from: 'list' | 'band' = 'list', onRepeatCheck?: (check: ProgramRepeatCheck) => void): Promise<'saved' | 'failed' | 'ignored'> {
     const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
     // N10: a repeat line's tap finishes its round (the box stays empty, the date moves on); no chips.
     const repeat = programRepeatLine(space, task.id);
@@ -2593,7 +2596,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       const ids = completingInSession(completingTasks, sourceSession.current);
       if (ids.has(task.id)) return Promise.resolve('ignored');
       ids.add(task.id); setCompletingTaskIds(new Set(ids));
-      return finishRepeatFromList(task.id, task.title, task.date, from === 'band').then(saved => saved ? 'saved' as const : 'failed' as const).finally(() => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); });
+      return finishRepeatFromList(task.id, task.title, task.date, from === 'band', onRepeatCheck).then(saved => saved ? 'saved' as const : 'failed' as const).finally(() => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); });
     }
     // A record dated after today keeps the form (review P2): today's record would not change what shows.
     if (value > 0 && value < 100 && (from === 'band' || (progress?.date ?? '') > today)) { setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); return Promise.resolve('ignored'); }
@@ -3196,10 +3199,22 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const live = textTasks.find(task => task.id === id) ?? kept?.row.task;
     if (!live || !shown || index < 0) return;
     setBandFailed(null);
-    void checkTaskFromList(live, 'band').then(outcome => {
+    // int9 r2 (기타 int9 QA P3): the band shows no notice, so a repeat round finished here is undone by the same box, once:
+    // its round comes back (never the next round finished by a second press).
+    if (kept?.repeatCheck) { void undoBandRepeat(id, kept.repeatCheck); return; }
+    let repeatCheck: ProgramRepeatCheck | null = null;
+    void checkTaskFromList(live, 'band', check => { repeatCheck = check; }).then(outcome => {
       if (outcome === 'failed') { setBandFailed(id); return; }
-      if (outcome === 'saved') setBandChecked(current => { const next = new Map(current); if (kept) next.delete(id); else next.set(id, { row: { ...shown, task: live }, index }); return next; });
+      if (outcome === 'saved') setBandChecked(current => { const next = new Map(current); if (kept) next.delete(id); else next.set(id, { row: { ...shown, task: live }, index, repeatCheck }); return next; });
+      const check = repeatCheck as ProgramRepeatCheck | null;
+      if (outcome === 'saved' && check && bandDocumentId) setBandRepeatNotice({ actorId, documentId: bandDocumentId, taskId: id, text: repeatNextText(live.title, check), check });
     });
+  }
+  async function undoBandRepeat(id: string, check: ProgramRepeatCheck) {
+    const done = await undoRepeatRound(check);
+    if (!done) { setBandFailed(id); setBandRepeatNotice(current => current && current.taskId === id ? { ...current, text: PROGRAM_REPEAT_UNDO_REFUSED, check: null } : current); return; }
+    setBandChecked(current => { const next = new Map(current); next.delete(id); return next; });
+    setBandRepeatNotice(current => current && current.taskId === id ? null : current);
   }
   // The row's words: its original line (that document opened there; a folded section opens for this visit).
   function showBandSource(id: string) {
@@ -3379,7 +3394,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           }:undefined}
           onUndoTaskLocation={locationNotice?.documentId===id?()=>{if(dirty.current[id])return false;void undoTaskLocation(locationNotice);return true;}:undefined}
           moveTraceKey={programMoveTraceKey(actorId)} onRegisterSectionOrder={open => { sectionOrderOpeners.current[id] = open; }}
-          hostNotice={noteLineMessage && selected === id ? { text: message, close: () => setMessage('') } : undefined}
+          hostNotice={bandRepeatNotice && bandRepeatNotice.actorId === actorId && bandRepeatNotice.documentId === id && selected === id
+            ? { text: bandRepeatNotice.text, close: () => setBandRepeatNotice(null), repeat: true,
+              action: bandRepeatNotice.check ? { label: '되돌리기', run: () => { const notice = bandRepeatNotice; if (notice.check) void undoBandRepeat(notice.taskId, notice.check); } } : null }
+            : noteLineMessage && selected === id ? { text: message, close: () => setMessage('') } : undefined}
           authorizeTaskLocation={(before,next)=>{
             const wideBefore=recent?recentWide(id,recent,before,false):{ok:true as const,state:before},wideNext=recent?recentWide(id,recent,next):{ok:true as const,state:next};
             return wideBefore.ok&&wideNext.ok&&programTextTransition(dataRef.current,{actorId,documentId:id,expected:wideBefore.state,next:wideNext.state}).ok;

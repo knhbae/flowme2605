@@ -86,3 +86,17 @@ test('the writing band keeps the model result with the shared progress table at 
     if (percent === 40) assert.equal(shared.rows.find(row => row.task.id === task.id)?.percent, 40);
   }
 });
+
+test('int9 r2 (W-CARRY-01, 기타 QA P2): a Flow\'s tasks still going from an earlier day are the band\'s Flow rows, not 밀린 일', () => {
+  // The other document stands for a Flow copy here (flowTitle names it): its tasks dated before today are on 오늘.
+  const { rows, documentId, otherId } = written(['[2026-11-07]', '- [ ] 밀린 서류', '[2026-11-10]', '- [ ] 회의실 잡기'].join('\n'),
+    ['[2026-11-08]', '- [ ] 짐 목록 만들기', '- [ ] 전입 신고 예약', '[2026-11-10]', '- [ ] 인터넷 이전'].join('\n'));
+  const band = programContinueBand(rows, context(documentId, { flowTitle: id => id === otherId ? '이사 준비 2주' : null }));
+  assert.deepEqual(band.rows.map(row => [row.task.title, row.kind]), [['짐 목록 만들기', 'flow'], ['전입 신고 예약', 'flow'], ['인터넷 이전', 'flow']]);
+  assert.equal(band.flow, 3);
+  assert.equal(band.late, 1, 'only my own earlier task is late');
+  // Without the Flow (an ordinary document), its earlier tasks are late as before.
+  const plain = programContinueBand(rows, context(documentId));
+  assert.deepEqual(plain.rows.map(row => row.task.title), ['인터넷 이전']);
+  assert.equal(plain.late, 3);
+});

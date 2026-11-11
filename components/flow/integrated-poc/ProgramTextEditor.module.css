@@ -614,4 +614,7 @@
 .alertActions button:disabled { color: var(--flowme-b-muted); }
 .alertDetail { flex: 1 0 100%; padding: 4px 0 10px; color: var(--flowme-b-ink); font-size: 13px; line-height: 20px; font-weight: 400; }
 .alertNote { margin: 6px 0 0; }
+/* W-VER-04 (11/11): the line's words open [자세히] (a phone hides the button with three); a newer build's dot beside them. */
+.alertTextMore { cursor: pointer; }
+.alertVersionDot { flex: none; width: 8px; height: 8px; margin-right: 4px; border-radius: 50%; background: var(--flowme-b-primary); }
 @media (max-width: 600px) { .alertActions > button:nth-of-type(n+3) { display: none; } .alertLine > p { flex-basis: 120px; } }

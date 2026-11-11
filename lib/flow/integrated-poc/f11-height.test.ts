@@ -27,7 +27,8 @@ test('W-HEIGHT-01/02: the save state, this document\'s kept input and the last m
   // The space hands its message to that line on 쓰기 (no banner there).
   assert.match(space, /const noteLineMessage = !!message && message !== FIND_BLOCKED && !!props\.noteHeader && period === 'documents' && !!selectedDoc && !collectionMode;/);
   assert.match(space, /: noteLineMessage \? null : <p role="alert" className=\{styles\.error\}>\{message\}<\/p>\)\}/);
-  assert.match(space, /hostNotice=\{noteLineMessage && selected === id \? \{ text: message, close: \(\) => setMessage\(''\) \} : undefined\}/);
+  // int9 r2: a repeat round finished from the band goes first in that line (with [되돌리기]); else the space's message.
+  assert.match(space, /: noteLineMessage && selected === id \? \{ text: message, close: \(\) => setMessage\(''\) \} : undefined\}/);
 });
 
 test('W-HEIGHT-03: the finished tasks share the one fold line with the old days, folded ([보기]) or shown ([접기])', () => {

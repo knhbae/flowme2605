@@ -61,10 +61,11 @@ test('W-VER-02/03: the notice is third in the line and never reloads by itself; 
   const line = alpha.slice(alpha.indexOf('const alertLine: ProgramAlertLine | null'), alpha.indexOf('const noteNotice ='));
   const order = ['needsInputProtection ?', 'documentRecoveries > 0 ?', 'newBuild ?', 'message && !participationMessage ?'].map(part => line.indexOf(part));
   assert(order.every((at, i) => at > 0 && (i === 0 || at > order[i - 1])), `order ${order}`);
-  assert(line.includes('note: versionNote(false) || null }') && line.includes('note: versionNote(true) || null }'), 'under the save line and the kept input');
+  // int9 r2 (W-VER-04): with the flag that ends the line's words '· 새 버전'.
+  assert(line.includes('note: versionNote(false) || null, newVersion: !!newBuild }') && line.includes('note: versionNote(true) || null, newVersion: !!newBuild }'), 'under the save line and the kept input');
   // The note rides along whichever line wins, the editor's own save trouble too, under [자세히].
   const editor = read('../../../components/flow/integrated-poc/ProgramTextEditor.tsx');
-  assert(editor.includes('detail: editorRecoveryBody(serverView.recoveryBody), note: serverView.alert?.note } : null;'));
+  assert(editor.includes('detail: editorRecoveryBody(serverView.recoveryBody), note: serverView.alert?.note,\n    newVersion: serverView.alert?.newVersion } : null;'));
   assert(editor.includes('{alertDetail && (alertLine.detail || alertLine.note) && <div className={styles.alertDetail}>{alertLine.detail}{alertLine.note}</div>}'));
   // One place reloads, and only from the person's [새로 고침] (at once when clean, or after the saves it waited for).
   assert.equal(alpha.split('window.location.reload()').length - 1, 2);

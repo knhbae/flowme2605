@@ -9,7 +9,9 @@ import type { ProgramStatus } from '@/lib/flow/integrated-poc/program-status';
 export type ProgramAlertLine = { tone: 'warn' | 'info'; text: string; action?: { label: string; run: () => void; disabled?: boolean } | null;
   recoveries?: number; openRecovery?: (opener: HTMLElement) => void; detail?: ReactNode | null; close?: (() => void) | null;
   /** W-VER-02 (11/11): a lower notice said under [자세히] whichever line wins (the editor's own save trouble too). */
-  note?: ReactNode | null };
+  note?: ReactNode | null;
+  /** W-VER-04 (11/11): the note holds a newer build; the line's words end '· 새 버전' (a dot when they do not fit). */
+  newVersion?: boolean };
 
 /** The host's save status for the open document's editor, so the editor can draw one status slot.
  *  The editor owns the status words and the one live announcement. `recovery` is the host's recovery

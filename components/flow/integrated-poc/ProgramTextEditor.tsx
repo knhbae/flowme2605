@@ -2,7 +2,7 @@
 
 import type {OwnedWritingAck} from '@/lib/flow/integrated-poc/writing-ack';
 import type {WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
-import React, { useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { programEditorStatus, serverStatusWins } from '@/lib/flow/integrated-poc/program-status';
 import { ProgramServerStatusContext, type ProgramAlertLine } from './program-status-context';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
@@ -147,7 +147,7 @@ export interface ProgramTextEditorProps {
   /** F10 W-ORDER-05: the host's 글 ⋮ '날짜 순서 바꾸기' opens this editor's preview. */
   onRegisterSectionOrder?: (open: (() => void) | null) => void;
   /** F11 W-HEIGHT-02: a passing notice of the host (the space's message) for the one notice line under the tool bar. */
-  hostNotice?: { text: string; close: () => void } | null;
+  hostNotice?: { text: string; close: () => void; action?: { label: string; run: () => void } | null; repeat?: boolean } | null;
   onPosition?: (selection: ProgramTextPosition, lineId: string | null) => void;
   initialPosition?: ProgramTextPosition;
   onOpenScope?: (scopeId: string) => void;
@@ -1046,7 +1046,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const row = currentRow(candidate.lineId), target = row?.progressTargetId, task = target ? M.tasks(before.working).find(item => item.id === target) : undefined;
     if (!task) return;
     setSuggestion(null);
-    const done = applyDateChip(candidate.lineId, candidate.date), after = controller.getState();
+    // int9 r2 (W-NLDATE-07, 기타 int9 QA P2): a document without date heads only gets the date ('- 날짜:' under the task, in
+    // place); no date head is made and nothing moves. Otherwise the ⋮ date's own path (W-MENU-07).
+    const headless = !M.rowMeta(before.working, p.docId).some(item => item.kind === 'date');
+    const done = headless && target && !accessFor(candidate.lineId)?.reason ? applyDateOnly(target, candidate.date, task.time ?? '')
+      : applyDateChip(candidate.lineId, candidate.date), after = controller.getState();
     if (after.raw === before.raw) return;
     const history = { docId: p.docId, taskId: task.id, before: before.working, after: after.working,
       date: candidate.date, time: task.time ?? '', raw: after.raw, redo: false, suggestion: true as const };
@@ -3684,14 +3688,30 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const ownAlert: ProgramAlertLine | null = serverView && draft.error ? { tone: 'warn',
     text: hostWarn?.text ?? (props.readOnly ? '읽기 전용 · 입력은 남아 있습니다' : inputLocked ? '입력 보호 · 입력은 남아 있습니다' : '저장 확인 필요 · 입력은 남아 있습니다'),
     action: hostWarn?.action ?? (props.readOnly ? null : { label: '다시 저장', run: () => { if (draftRef.current?.getState().invalid) draftRef.current.recheck(); void saveNow(); }, disabled: draft.saving }),
-    recoveries: serverView.alert?.recoveries, openRecovery: serverView.alert?.openRecovery, detail: editorRecoveryBody(serverView.recoveryBody), note: serverView.alert?.note } : null;
-  const baseAlert: ProgramAlertLine | null = ownAlert ?? serverView?.alert ?? (serverView && props.hostNotice ? { tone: 'info', text: props.hostNotice.text, close: props.hostNotice.close } : null);
+    recoveries: serverView.alert?.recoveries, openRecovery: serverView.alert?.openRecovery, detail: editorRecoveryBody(serverView.recoveryBody), note: serverView.alert?.note,
+    newVersion: serverView.alert?.newVersion } : null;
+  const baseAlert: ProgramAlertLine | null = ownAlert ?? serverView?.alert ?? (serverView && props.hostNotice ? { tone: 'info', text: props.hostNotice.text, close: props.hostNotice.close,
+    action: props.hostNotice.action ?? null } : null);
   const alertLine: ProgramAlertLine | null = baseAlert && props.hostNotice && baseAlert.text !== props.hostNotice.text
     ? { ...baseAlert, detail: <>{baseAlert.detail}<p className={styles.alertNote}>{props.hostNotice.text}</p></> } : baseAlert;
   const alertKey = alertLine ? alertLine.tone + alertLine.text : '';
   useEffect(() => { setAlertDetail(false); }, [alertKey]);
-  const alertView = alertLine && <div className={styles.alertLine} data-alert-line data-alert-tone={alertLine.tone}>
-    <p role={alertLine.tone === 'warn' ? 'alert' : 'status'} title={alertLine.text}>{alertLine.tone === 'warn' && <span aria-hidden="true">⚠ </span>}{alertLine.text}</p>
+  // W-VER-04 (11/11): the line's words open [자세히] too (a phone hides that button when the line has three); a newer build
+  // under it ends the words '· 새 버전', or a dot beside them when the words would not fit on the line.
+  const alertMore = !!alertLine && !!(alertLine.detail || alertLine.note);
+  const alertTextRef = useRef<HTMLParagraphElement | null>(null), [versionCompact, setVersionCompact] = useState(false);
+  useEffect(() => { setVersionCompact(false); }, [alertKey]);
+  useLayoutEffect(() => {
+    const words = alertTextRef.current;
+    if (alertLine?.newVersion && !versionCompact && words && words.scrollWidth > words.clientWidth + 1) setVersionCompact(true);
+  });
+  const alertView = alertLine && <div className={styles.alertLine} data-alert-line data-alert-tone={alertLine.tone}
+    data-repeat-notice={baseAlert === alertLine && !ownAlert && !serverView?.alert && props.hostNotice?.repeat ? '' : undefined}>
+    <p ref={alertTextRef} role={alertLine.tone === 'warn' ? 'alert' : 'status'} title={alertLine.newVersion ? `${alertLine.text} · 새 버전` : alertLine.text}
+      data-alert-text className={alertMore ? styles.alertTextMore : undefined} onClick={alertMore ? () => setAlertDetail(open => !open) : undefined}>
+      {alertLine.tone === 'warn' && <span aria-hidden="true">⚠ </span>}{alertLine.text}
+      {alertLine.newVersion && !versionCompact && <span data-alert-new-version="words"> · 새 버전</span>}</p>
+    {alertLine.newVersion && versionCompact && <span className={styles.alertVersionDot} data-alert-new-version="dot"><span className={styles.srOnly}>새 버전</span></span>}
     <div className={styles.alertActions}>
       {alertLine.action && <button type="button" data-alert-action disabled={alertLine.action.disabled} onClick={alertLine.action.run}>{alertLine.action.label}</button>}
       {!!alertLine.recoveries && alertLine.openRecovery && <button type="button" data-alert-recovery onClick={event => alertLine.openRecovery!(event.currentTarget)}>복구함 {alertLine.recoveries}</button>}

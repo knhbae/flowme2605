@@ -336,6 +336,8 @@
 /* R8b: bottom tabs. UX B3 (11/7): five (쓰기·오늘·분류·Flow·나); the "…" menu is left only when the account cannot open,
    and there are no tabs then, so its own button shows. */
 .page[data-alpha-frame="b"] .globalNavigation button { position: relative; }
+/* W-VER-04 (11/11): a newer build's dot on 쓰기 while another tab shows; absolute, so the tab keeps its height. */
+.navDot { position: absolute; top: 8px; right: calc(50% - 16px); width: 8px; height: 8px; border-radius: 50%; background: var(--flowme-b-primary); box-shadow: 0 0 0 2px var(--flowme-b-paper, #fbfaf7); pointer-events: none; }
 .navBadge { position: absolute; top: 6px; right: calc(50% - 22px); display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--flowme-b-warning-bg); color: var(--flowme-b-warning-ink); box-shadow: 0 0 0 1px var(--flowme-b-warning-border); font-size: 13px; font-weight: 800; line-height: 1; }
 @media (max-width: 700px) {
   .page[data-alpha-frame="b"] .globalNavigation { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; padding-inline: 8px; }

@@ -117,7 +117,8 @@ test('the wiring: one check for 오늘 and the band; the band over my writing do
   const band = read('components/flow/integrated-poc/ProgramFlowTodayBand.module.css'), workspace = read('components/flow/integrated-poc/AlphaWorkspace.tsx');
   // F8 1단계: a row standing for '같은 일 n줄' finishes them all; any other is the one check.
   assert(space.includes('onClick={() => { const same = sameGroups?.members.get(task.id); if (same && value === 0) void checkSameTasks(same); else void checkTaskFromList(task); }}'), 'the 오늘 list');
-  assert(space.includes("void checkTaskFromList(live, 'band').then(outcome => {"), 'the band');
+  // int9 r2 (QA-int8 2-3): the band's check also hands back a repeat round's proof, for its 되돌리기.
+  assert(space.includes("void checkTaskFromList(live, 'band', check => { repeatCheck = check; }).then(outcome => {"), 'the band');
   assert.match(space, /const bandDocumentId = period === 'documents' && !folderId && !!selectedDoc && !selectedArchived && !selectedTrashed\n\s+&& space\.text\.documents\.some\(doc => doc\.id === selectedDoc\.id\)/);
   assert(space.includes("programOrderedExecutionRows(data, { period: 'today', date: today, today, folderId: '', query: '', includeHeld: false, includeExcluded: false, page: 0 }).rows"), '오늘\'s own query and order');
   const calendar = space.slice(space.indexOf('async function showFlowOnCalendar('), space.indexOf('/** C6a: into 고르기'));

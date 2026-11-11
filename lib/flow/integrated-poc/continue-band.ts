@@ -20,10 +20,13 @@ export function programContinueBand(rows: readonly ProgramOrderedExecutionRow[],
     if (row.kind !== 'text-task' || !row.date || seen.has(row.task.id)) continue;
     const task = row.task, value = context.progress(task.id) ?? (task.done ? 100 : 0);
     if (task.done || value === 100) continue;
-    if (row.date < context.today) { late.add(task.id); continue; }
-    if (row.date !== context.today || task.docId === context.documentId && task.groupDate === context.today) continue;
+    // int9 r2 (W-CARRY-01, 기타 int9 QA P2): a Flow's tasks 오늘 lists — today's and the ones still going from an earlier
+    // day — are the band's Flow rows, as the Flow band drew them before F8; only my own earlier tasks are 밀린 일.
+    const flowTitle = context.flowTitle(task.docId);
+    if (row.date < context.today && flowTitle === null) { late.add(task.id); continue; }
+    if (flowTitle === null && row.date !== context.today || task.docId === context.documentId && task.groupDate === context.today) continue;
     seen.add(task.id);
-    const flowTitle = context.flowTitle(task.docId), repeat = context.repeat(task.id);
+    const repeat = context.repeat(task.id);
     list.push({ task, kind: flowTitle !== null ? 'flow' : value > 0 ? 'progress' : repeat ? 'repeat' : 'moved', percent: value > 0 ? value : null, repeat, flowTitle });
   }
   // Flow, moved, progress, repeat; within each, the first written first (a stable sort keeps 오늘's order otherwise).
