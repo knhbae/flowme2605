@@ -20,8 +20,9 @@ test('one slot under the title on 쓰기: saved input first, then the developmen
   assert.match(host, /const writingTab = usesNoteChrome && mainTab === 'documents';/);
   // Core3 P1 (X5, 11/8): the band is gone. The slot under the title takes this document's own saved input (one small
   // line to the 복구함), then the development notice; a new entry anywhere is said once by the bottom toast.
-  assert.match(host, /const noteNotice = writingTab \? documentRecovery \|\| publicNotice : publicNotice;/);
-  assert.match(host, /const noteNoticeShown = writingTab && \(!!documentRecovery \|\| !devNoticeSeen\);/);
+  // F11 W-HEIGHT-01 (11/11): with the one notice line under the tool bar (which says it), not under the title too.
+  assert.match(host, /const noteNotice = writingTab \? \(alertLine \? publicNotice : documentRecovery \|\| publicNotice\) : publicNotice;/);
+  assert.match(host, /const noteNoticeShown = writingTab && \(!!documentRecovery && !alertLine \|\| !devNoticeSeen\);/);
   assert.match(host, /noteHeader=\{usesNoteChrome \? noteNotice : undefined\} noteNoticeShown=\{noteNoticeShown\}/);
   assert(host.includes('{!usesNoteChrome && publicNotice}'));
   assert(!host.includes('savedNotice'), 'no band left on any screen');

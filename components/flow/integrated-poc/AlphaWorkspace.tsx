@@ -32,7 +32,7 @@ import { automaticReadToAwait, queueTap, sourceReturnWait, unqueueTap, type Queu
 import { AUTOMATIC_READ_INPUT_EVENTS, automaticReadSchedule } from '@/lib/flow/integrated-poc/automatic-read-idle';
 import { pendingResultUnknown } from '@/lib/flow/integrated-poc/save-status';
 import { programServerStatus } from '@/lib/flow/integrated-poc/program-status';
-import { ProgramServerStatusContext, type ProgramServerStatusView } from './program-status-context';
+import { ProgramServerStatusContext, type ProgramAlertLine, type ProgramServerStatusView } from './program-status-context';
 import { addProgramLinkMemo, createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
 import { programCanonicalLink, programLinkHome, programLinkMemoRaw } from '@/lib/flow/integrated-poc/link-lookup';
 import { programFencedRecoveryRaw } from '@/lib/flow/integrated-poc/recovery-restore';
@@ -1766,8 +1766,24 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // W11: on the 쓰기 tab the notices around the title share one line, by priority: this document's saved input, then
   // the development notice, then the new-document notice (ProgramSpace keeps that one for screen readers only).
   const writingTab = usesNoteChrome && mainTab === 'documents';
-  const noteNotice = writingTab ? documentRecovery || publicNotice : publicNotice;
-  const noteNoticeShown = writingTab && (!!documentRecovery || !devNoticeSeen);
+  // F11 W-HEIGHT-01/02 (11/11, 안2): on 쓰기 one line under the tool bar says the most pressing of: the save state (its
+  // one action: 다시 확인 or 최신 내용 열기, [복구함 n], [자세히] for the whole box), this document's kept input, the
+  // last message. It replaces the banner, the recovery line under the title, the 안내 line and the box at the tool bar.
+  const rejectedInput = !!(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft);
+  const conflictInput = !!(external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !rejectedInput);
+  const alertLine: ProgramAlertLine | null = !writingTab || localParticipationRecovery ? null
+    : needsInputProtection ? { tone: 'warn',
+      text: storageError ? '입력 보관 실패 · 작성 중인 내용을 파일로 보관해 주세요' : pendingUnknown ? '저장 확인 필요 · 입력은 남아 있습니다'
+        : rejectedInput ? '저장되지 않음 · 입력은 남아 있습니다' : conflictInput ? '다른 곳에서 먼저 바뀜 · 입력은 이 기기에 있습니다' : '입력 보호 · 입력은 남아 있습니다',
+      action: pendingUnknown ? { label: snapshot?.busy ? '확인 중…' : '다시 확인', run: () => { void resolvePendingResult(); }, disabled: !!snapshot?.busy }
+        : conflictInput ? { label: '최신 내용 열기', run: () => { void openLatest(); }, disabled: !!snapshot?.busy } : null,
+      recoveries: documentRecoveries, openRecovery: opener => openRecoveryBox(opener),
+      // The rest (the last message) goes under [자세히] with the box.
+      detail: <>{inputProtectionFor(false)}{message && !participationMessage && <p className={styles.feedbackMessageText}>{message}</p>}</> }
+    : documentRecoveries > 0 ? { tone: 'info', text: `이 문서에 복구할 입력 ${documentRecoveries}개`, recoveries: documentRecoveries, openRecovery: opener => openRecoveryBox(opener) }
+    : message && !participationMessage ? { tone: 'info', text: message, close: () => setMessage('') } : null;
+  const noteNotice = writingTab ? (alertLine ? publicNotice : documentRecovery || publicNotice) : publicNotice;
+  const noteNoticeShown = writingTab && (!!documentRecovery && !alertLine || !devNoticeSeen);
   const browseHistory = (kind: 'undo' | 'redo') => !browse || programBrowseHistoryAllowed(historyOrigin.current, kind, snapshot?.account?.revision);
   const serverUndo = <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external} aria-disabled={browseHistory('undo') ? undefined : true}>되돌리기</button>;
   // The recovery box with its actions. `announce` is off inside the note editor, whose one status
@@ -1855,10 +1871,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   </div>;
   const serverStatusView: ProgramServerStatusView | null = usesNoteChrome ? {
     ...serverSlot,
-    recovery: destination.view === 'space' && needsInputProtection ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,
+    recovery: destination.view === 'space' && needsInputProtection && !alertLine ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,
     recoveryBody: destination.view === 'space' && needsInputProtection ? <div className={styles.inputRecoveryGroup}>{inputProtectionFor(false)}</div> : null,
-    extras: destination.view === 'space' && message && !participationMessage
+    extras: destination.view === 'space' && message && !participationMessage && !alertLine
       ? <div className={styles.statusRow}>{serverStatusExtras}</div> : null,
+    alert: alertLine,
   } : null;
   return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} data-browse-layout={browse ? destination.view === 'flow' ? 'detail' : 'list' : undefined} data-me-layout={destination.view === 'activity' ? '' : undefined} onInput={event => { queueMicrotask(captureInput);
       // Core3 P2c: the first input into my writing closes a Flow's arrival toast.

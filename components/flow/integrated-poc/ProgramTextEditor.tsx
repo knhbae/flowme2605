@@ -4,7 +4,7 @@ import type {OwnedWritingAck} from '@/lib/flow/integrated-poc/writing-ack';
 import type {WritingCompute} from '@/lib/flow/integrated-poc/writing-compute';
 import React, { useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { programEditorStatus, serverStatusWins } from '@/lib/flow/integrated-poc/program-status';
-import { ProgramServerStatusContext } from './program-status-context';
+import { ProgramServerStatusContext, type ProgramAlertLine } from './program-status-context';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextRow, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
@@ -137,6 +137,8 @@ export interface ProgramTextEditorProps {
   /** A folded writing view delegates source placement to the host's complete document. */
   onTaskLocation?: (lineId: string, target: TaskLocationTarget, working: TextWorkspaceState) => Promise<boolean>;
   onUndoTaskLocation?: () => boolean;
+  /** F11 W-HEIGHT-02: a passing notice of the host (the space's message) for the one notice line under the tool bar. */
+  hostNotice?: { text: string; close: () => void } | null;
   onPosition?: (selection: ProgramTextPosition, lineId: string | null) => void;
   initialPosition?: ProgramTextPosition;
   onOpenScope?: (scopeId: string) => void;
@@ -491,6 +493,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // The insert menu's place preview follows the focused or hovered choice; null means the first one.
   const [previewKey,setPreviewKey]=useState<string|null>(null);
   const [moving, setMoving] = useState<Moving | null>(null);
+  // F11: whether the notice line's [자세히] is open.
+  const [alertDetail, setAlertDetail] = useState(false);
   const [date, setDate] = useState(today);
   const [time, setTime] = useState('');
   const [percent, setPercent] = useState('0');
@@ -3444,6 +3448,30 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const editorStatus = programEditorStatus({ readOnly: !!props.readOnly, readOnlyLabel: props.disabledReason, error: !!draft.error,
     locked: inputLocked, saving: draft.saving, checking: checkPending, pending: inputPending });
   const serverWins = serverStatusWins(serverView, editorStatus);
+  // F11 W-HEIGHT-01/02 (11/11, 안2): one notice line under the tool bar, the most pressing first: this editor's own save
+  // trouble ([다시 저장]; its box under [자세히]), the host's line (save state, this document's kept input, its last
+  // message), then the space's passing notice. The rest goes under [자세히]. Only with the host's status (the 쓰기 tab).
+  // With the host's warning too, its words and its action (다시 확인: the server first, as in the W2 box) come first.
+  const hostWarn = serverView?.alert?.tone === 'warn' ? serverView.alert : null;
+  const ownAlert: ProgramAlertLine | null = serverView && draft.error ? { tone: 'warn',
+    text: hostWarn?.text ?? (props.readOnly ? '읽기 전용 · 입력은 남아 있습니다' : inputLocked ? '입력 보호 · 입력은 남아 있습니다' : '저장 확인 필요 · 입력은 남아 있습니다'),
+    action: hostWarn?.action ?? (props.readOnly ? null : { label: '다시 저장', run: () => { if (draftRef.current?.getState().invalid) draftRef.current.recheck(); void saveNow(); }, disabled: draft.saving }),
+    recoveries: serverView.alert?.recoveries, openRecovery: serverView.alert?.openRecovery, detail: editorRecoveryBody(serverView.recoveryBody) } : null;
+  const baseAlert: ProgramAlertLine | null = ownAlert ?? serverView?.alert ?? (serverView && props.hostNotice ? { tone: 'info', text: props.hostNotice.text, close: props.hostNotice.close } : null);
+  const alertLine: ProgramAlertLine | null = baseAlert && props.hostNotice && baseAlert.text !== props.hostNotice.text
+    ? { ...baseAlert, detail: <>{baseAlert.detail}<p className={styles.alertNote}>{props.hostNotice.text}</p></> } : baseAlert;
+  const alertKey = alertLine ? alertLine.tone + alertLine.text : '';
+  useEffect(() => { setAlertDetail(false); }, [alertKey]);
+  const alertView = alertLine && <div className={styles.alertLine} data-alert-line data-alert-tone={alertLine.tone}>
+    <p role={alertLine.tone === 'warn' ? 'alert' : 'status'} title={alertLine.text}>{alertLine.tone === 'warn' && <span aria-hidden="true">⚠ </span>}{alertLine.text}</p>
+    <div className={styles.alertActions}>
+      {alertLine.action && <button type="button" data-alert-action disabled={alertLine.action.disabled} onClick={alertLine.action.run}>{alertLine.action.label}</button>}
+      {!!alertLine.recoveries && alertLine.openRecovery && <button type="button" data-alert-recovery onClick={event => alertLine.openRecovery!(event.currentTarget)}>복구함 {alertLine.recoveries}</button>}
+      {alertLine.detail && <button type="button" data-alert-more aria-expanded={alertDetail} onClick={() => setAlertDetail(open => !open)}>{alertDetail ? '접기' : '자세히'}</button>}
+      {alertLine.close && <button type="button" data-alert-close aria-label="알림 닫기" onClick={alertLine.close}><ProgramIcon name="close" size={18} /></button>}
+    </div>
+    {alertDetail && alertLine.detail && <div className={styles.alertDetail}>{alertLine.detail}</div>}
+  </div>;
   const statusWarn = (serverWins ? serverView!.level : editorStatus.level) <= 4;
   // The words show the winner; the recovery boxes stay whichever wins, so no action is lost.
   const statusLabel = serverWins ? serverView!.label : editorStatus.label;
@@ -3500,20 +3528,24 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
    * box holds both, the server's first, so there is one summary to open. */
   function editorRecovery(announce: boolean, server?: React.ReactNode) {
     const label = props.readOnly ? '읽기 전용 · 복구' : inputLocked ? '입력 보호 · 복구' : '저장 확인 필요 · 복구';
+    return <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
+        if (event.key !== 'Escape' || event.nativeEvent.isComposing || composingRef.current || !event.currentTarget.open) return;
+        event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
+        event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
+      }}><summary title={props.readOnly ? props.disabledReason || '읽기 전용' : draft.error}>{announce ? <span role="alert">{label}</span> : <span>{label}</span>}</summary>{editorRecoveryBody(server)}</details>;
+  }
+  /** The recovery box's content (its reason and actions; the server's first, W2), also what F11's [자세히] opens. */
+  function editorRecoveryBody(server?: React.ReactNode) {
     const own = <><p>{draft.error}</p><div className={styles.recoveryActions}>
       {progressConflict && <button type="button" onClick={showProgressConflict}>진행 조절 보기</button>}
       <button type="button" disabled={!!props.readOnly || draft.saving} onClick={() => { if (draftRef.current?.getState().invalid) draftRef.current.recheck(); void saveNow(); }}>다시 저장</button>
       <button type="button" onClick={downloadDraft}>입력한 원문 받기</button>
       <button type="button" disabled={inputLocked || draft.saving} onClick={() => { if (draftRef.current?.discard(propsRef.current.workspace)) { orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++; editorRef.current?.setValue(draftRef.current.getState().raw, { preserveSelection: true }); } }}>저장본으로 되돌리기</button>
       </div></>;
-    return <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
-        if (event.key !== 'Escape' || event.nativeEvent.isComposing || composingRef.current || !event.currentTarget.open) return;
-        event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
-        event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
-      }}><summary title={props.readOnly ? props.disabledReason || '읽기 전용' : draft.error}>{announce ? <span role="alert">{label}</span> : <span>{label}</span>}</summary><div className={styles.error}>
+    return <div className={styles.error}>
       {server ? <><section className={styles.recoveryGroup} aria-label="서버 저장"><h4>서버 저장</h4>{server}</section>
         <section className={styles.recoveryGroup} aria-label="이 기기의 입력"><h4>이 기기의 입력</h4>{own}</section></> : own}
-      </div></details>;
+      </div>;
   }
   function barButton(action: WritingBarAction, icon: React.ReactNode, label: string, keys: string, off: boolean, className?: string, describedBy?: string) {
     const folderHint = (action === 'indent' || action === 'outdent') && barLine.structureLock === FOLDER_INDENT_NOTICE;
@@ -3706,15 +3738,18 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       </details>
       {serverView ? <div className={styles.statusSlot} data-warn={statusWarn || undefined}>
         {/* One live node: an alert for a warning (words hidden when a recovery box shows them), else a quiet status. */}
+        {/* F11 W-HEIGHT-01: with the warning in the notice line (which announces it), the tool bar says '확인 필요' only. */}
+        {alertLine?.tone === 'warn' ? <span className={styles.status} data-alert-short>확인 필요</span> : <>
         {statusWarn ? <span className={hasRecovery ? styles.srOnly : styles.status} role="alert">{statusLabel}</span>
           : <span className={styles.status} role="status" aria-live="polite" data-quiet={quietStatus || undefined}>{quietStatus ? <span aria-hidden="true">●</span> : statusLabel}</span>}
-        {draft.error ? editorRecovery(false, serverView.recoveryBody) : serverView.recovery}
+        {draft.error ? editorRecovery(false, serverView.recoveryBody) : serverView.recovery}</>}
       </div> : <>
         {props.noteStatus && <div className={styles.noteStatus}>{props.noteStatus}</div>}
         {draft.error ? editorRecovery(true) : <span className={styles.status} role="status" aria-live="polite">{editorStatus.label}</span>}
       </>}
       {props.headEnd && <div className={styles.headEnd} data-editor-head="end">{props.headEnd}</div>}
     </div>
+    {alertView}
     {props.headBelow && <div className={styles.headBelow} data-editor-head="below">{props.headBelow}</div>}
     {props.folderId && props.folderScreen && <div className={regionStyles.docHead} data-folder-doc-head><strong>{currentDoc()?.title || '현재 글'}</strong><small>할 일 {props.folderScreen.open}</small>
       {/* A3 ①: the whole document, at the line being written (the gathered view's 전체 보기). */}

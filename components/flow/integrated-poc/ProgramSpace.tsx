@@ -889,18 +889,25 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   function recentLine(id: string, view: ProgramRecentView | null, atEnd: boolean) {
     // [미정]'s line goes under the body with the old days' line, and both at once are one line of two buttons: each line
     // took the body two lines, the very ones the folds had freed for today's first task (390 check).
-    if (atEnd && view?.done.count && view.folds.some(fold => fold.atEnd)) return recentPairLine(id, view);
+    // F11 W-HEIGHT-03 (11/11): shown ([접기]) or folded ([보기]), the finished tasks share the one line with the old days.
+    const shownDone = atEnd && view && !view.done.count ? recentDoneShownCount(id) : 0;
+    if (atEnd && view && (view.done.count || shownDone) && view.folds.some(fold => fold.atEnd)) return recentPairLine(id, view, shownDone);
     const done = atEnd ? recentDoneLine(id, view) : null, past = recentPastLine(id, view, atEnd);
     return done || past ? <>{done}{past}</> : null;
   }
-  /** Both folds under the body: '✓ 끝낸 일 n개 보기' and '지난 기록 n일 펼치기', their full words as the buttons' names. */
-  function recentPairLine(id: string, view: ProgramRecentView) {
+  /** How many finished tasks of [미정] are shown now ([보기] pressed on this device), for the line that folds them again. */
+  const recentDoneShownCount = (id: string) => recentDoneShown[id] && !recentWhole[id] && !collectionMode && !editorFolderOf(id) ? recentDoneCountOf(id) : 0;
+  /** Both folds under the body: '✓ 끝낸 일 n개 보기' (or, shown, '접기') and '지난 기록 n일 펼치기', their full words as
+   *  the buttons' names. */
+  function recentPairLine(id: string, view: ProgramRecentView, shownDone = 0) {
     const folds = view.folds.filter(fold => fold.atEnd), through = folds.reduce((last, fold) => fold.through > last ? fold.through : last, '');
     const sum = (key: 'days' | 'tasks' | 'open') => folds.reduce((total, fold) => total + fold[key], 0);
-    const done = view.done.whole ? `날짜 미정 · 끝낸 일 ${view.done.count}개` : `✓ 날짜 미정에서 끝낸 일 ${view.done.count}개`;
+    const done = shownDone ? `✓ 날짜 미정에서 끝낸 일 ${shownDone}개` : view.done.whole ? `날짜 미정 · 끝낸 일 ${view.done.count}개` : `✓ 날짜 미정에서 끝낸 일 ${view.done.count}개`;
     const past = `지난 기록 · ${through ? `${recentDay(through)}까지 ` : ''}${sum('days')}일 · 할 일 ${sum('tasks')}개 · 남은 일 ${sum('open')}개`;
-    return <div className={`${styles.recentFold} ${styles.recentPair}`} data-recent-done data-recent-fold="end">
-      <button type="button" data-recent-action="done-show" title={done} aria-label={`${done} · 보기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>날짜 미정 끝낸 일 {view.done.count}개</button>
+    return <div className={`${styles.recentFold} ${styles.recentPair}`} data-recent-done={shownDone ? 'shown' : ''} data-recent-fold="end">
+      {shownDone
+        ? <button type="button" data-recent-action="done-fold" title={done} aria-label={`${done} · 접기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, false)}>✓ 끝낸 일 {shownDone}개 접기</button>
+        : <button type="button" data-recent-action="done-show" title={done} aria-label={`${done} · 보기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>날짜 미정 끝낸 일 {view.done.count}개</button>}
       <button type="button" data-recent-action="past-show" title={past} aria-label={`${past} · 펼치기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentWhole(id)}>지난 {sum('days')}일 펼치기</button></div>;
   }
   /** W-b: '✓ 날짜 미정에서 끝낸 일 n개 [보기]' ('날짜 미정 · 끝낸 일 n개' when [미정] folded whole), or [접기] once shown. */
@@ -908,7 +915,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (view?.done.count) return <div className={styles.recentFold} data-recent-done>
       <p><span>{view.done.whole ? `날짜 미정 · 끝낸 일 ${view.done.count}개` : `✓ 날짜 미정에서 끝낸 일 ${view.done.count}개`}</span></p>
       <button type="button" data-recent-action="done-show" onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>보기</button></div>;
-    const count = recentDoneShown[id] && !recentWhole[id] && !collectionMode && !editorFolderOf(id) ? recentDoneCountOf(id) : 0;
+    const count = recentDoneShownCount(id);
     return count ? <div className={styles.recentFold} data-recent-done="shown"><p><span>✓ 날짜 미정에서 끝낸 일 {count}개</span></p>
       <button type="button" data-recent-action="done-fold" onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, false)}>접기</button></div> : null;
   }
@@ -930,6 +937,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   const docs = [...space.text.documents, ...space.text.flows];
   const selectedDoc = docs.find(doc => doc.id === selected);
+  // F11 W-HEIGHT-02: the message goes to the open document's notice line (the note layout's 쓰기, an editor showing).
+  const noteLineMessage = !!message && message !== FIND_BLOCKED && !!props.noteHeader && period === 'documents' && !!selectedDoc && !collectionMode;
   const firstFlows = !selected && props.capabilities?.discovery !== false ? programFirstOfficialFlows(data, actorId, officialActors) : [];
   const retainedIds = new Set(Object.values(space.retentionDocuments ?? {}));
   const retentionSource = Object.entries(space.retentionDocuments ?? {}).find(([, id]) => id === selected)?.[0];
@@ -3167,9 +3176,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {props.outputReturn && <div hidden={!!selecting}><ProgramOutputReturn key={`${actorId}:${props.outputReturn.executionKey}`} data={data} destination={props.outputReturn} today={today} mutate={mutate}
         onOpenSource={(id, line) => void openDocument(id, line)} onRegisterEditors={(port, key) => { recurrencePorts.current[key] = port; }} onUndo={onUndo} onRedo={onRedo} /></div>}
       {/* S4 v19: the find notice floats over the head row (it goes once input ends), so the body does not move. */}
+      {/* F11 W-HEIGHT-02 (11/11): on 쓰기 with an open document the editor's one notice line says the message instead. */}
       {message && (message === FIND_BLOCKED
         ? <div className={styles.floatingNotice}><p role="alert" className={styles.error}>{message}</p></div>
-        : <p role="alert" className={styles.error}>{message}</p>)}
+        : noteLineMessage ? null : <p role="alert" className={styles.error}>{message}</p>)}
       {!libraryOpen && !detail && viewChangeNoticeContent}
       {!detail && !sheetOpen && taskNoticeContent}
       {/* F4-a (F4 1280): on a wide screen the folder list stays beside an open folder. The frame is always here (it is
@@ -3217,6 +3227,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             }finally{release();}
           }:undefined}
           onUndoTaskLocation={locationNotice?.documentId===id?()=>{if(dirty.current[id])return false;void undoTaskLocation(locationNotice);return true;}:undefined}
+          hostNotice={noteLineMessage && selected === id ? { text: message, close: () => setMessage('') } : undefined}
           authorizeTaskLocation={(before,next)=>{
             const wideBefore=recent?recentWide(id,recent,before,false):{ok:true as const,state:before},wideNext=recent?recentWide(id,recent,next):{ok:true as const,state:next};
             return wideBefore.ok&&wideNext.ok&&programTextTransition(dataRef.current,{actorId,documentId:id,expected:wideBefore.state,next:wideNext.state}).ok;
