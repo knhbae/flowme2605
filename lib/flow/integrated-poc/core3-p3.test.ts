@@ -26,6 +26,8 @@ test('미루기 chips: 내일, 이번 주말, 다음 주 (its Monday), each with
 });
 
 test('the row\'s ⋯ starts with bundle relocation; its date chips and classification share the movement path', () => {
+  // The approved F8 band enters the same detail; int7b retains its structural move command and owned exceptions.
+  assert(space.includes("function deferFromBand(id: string) { if (M.tasks(space.text).some(row => row.id === id)) openDetail({ kind: 'task', id }); }"));
   const dialog = space.slice(space.indexOf('{detail?.kind === \'task\' && detailTask && !detailFolderMove && <>'), space.indexOf('<div className={styles.detailOrigin}>'));
   assert(dialog.includes('data-task-location-menu aria-label="옮기기"') && dialog.includes('role="group" aria-label="옮길 날"'));
   assert(dialog.includes('programLineDateChips(today)') && dialog.includes('onClick={()=>void dateMove(detailTask.id,chip.date)}'));

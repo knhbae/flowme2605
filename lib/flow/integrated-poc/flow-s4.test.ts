@@ -71,14 +71,15 @@ test('a scheme-less video link is searched, kept, and compared as the same safe 
 test('[내 글에 링크로 두기]: under today\'s head (at its end), or a new head for today where no line moves', () => {
   assert.equal(programLinkMemoRaw('[2026-11-08]\n- [ ] 장보기\n\n[2026-11-07]\n- 어제', TODAY, 'https://www.example.com/a/'),
     '[2026-11-08]\n- [ ] 장보기\n- https://www.example.com/a\n\n[2026-11-07]\n- 어제');
-  assert.equal(programLinkMemoRaw('[2026-11-07]\n- [ ] 어제 할 일', TODAY, 'https://example.com/a'), '[2026-11-08]\n- https://example.com/a\n\n[2026-11-07]\n- [ ] 어제 할 일');
+  // F10 W-ORDER-01 (11/11): one dated head is a new document, oldest first: today's new head goes under it.
+  assert.equal(programLinkMemoRaw('[2026-11-07]\n- [ ] 어제 할 일', TODAY, 'https://example.com/a'), '[2026-11-07]\n- [ ] 어제 할 일\n\n[2026-11-08]\n- https://example.com/a');
   assert.equal(programLinkMemoRaw('', TODAY, 'https://example.com/a'), '[2026-11-08]\n- https://example.com/a');
   assert.equal(programLinkMemoRaw('[2026-11-08]', TODAY, 'http://localhost/a'), null);
   // Through the private command: the memo line only; every task keeps its date.
   const made = ok(createProgramDocument(createProgramData(), { ...base(createProgramData()), expectedSpace: createProgramData().spaces[ACTOR], title: '일기', raw: '[2026-11-07]\n- [ ] 어제 할 일\n- 메모' }));
   const before = M.tasks(made.data.spaces[ACTOR].text).map(task => [task.title, task.date]);
   const kept = ok(addProgramLinkMemo(made.data, { ...base(made.data), documentId: made.result, link: 'https://example.com/a', today: TODAY }));
-  assert.equal(M.raw(M.getDocument(kept.data.spaces[ACTOR].text, made.result)), '[2026-11-08]\n- https://example.com/a\n\n[2026-11-07]\n- [ ] 어제 할 일\n- 메모');
+  assert.equal(M.raw(M.getDocument(kept.data.spaces[ACTOR].text, made.result)), '[2026-11-07]\n- [ ] 어제 할 일\n- 메모\n\n[2026-11-08]\n- https://example.com/a');
   assert.deepEqual(M.tasks(kept.data.spaces[ACTOR].text).map(task => [task.title, task.date]), before);
   const trashed = ok(setProgramDocumentTrashed(made.data, { ...base(made.data), documentId: made.result, trashed: true, now: NOW }));
   const refused = addProgramLinkMemo(trashed.data, { ...base(trashed.data), documentId: made.result, link: 'https://example.com/a', today: TODAY });

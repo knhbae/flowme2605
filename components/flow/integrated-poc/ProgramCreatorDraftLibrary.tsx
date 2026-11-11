@@ -8,6 +8,7 @@ import type { PersonalWorkspacePocCreatorDraftLibraryLoadResult } from '@/lib/fl
 import styles from './ProgramRevisionHistory.module.css';
 import libraryStyles from './ProgramCreatorDraftLibrary.module.css';
 import { continueProgramCreatorDraft } from '@/lib/flow/integrated-poc/creator-workspace';
+import { programStampTimeLabel } from '@/lib/flow/integrated-poc/date-label';
 import { readNativeCreatorHistory, type NativeCreatorHistoryRead } from '@/lib/flow/integrated-poc/creator-history-codec';
 import { importNativeCreatorSavedHistory } from '@/lib/flow/integrated-poc/creator-history';
 import {ProgramLegacyCreatorRecovery,type ProgramLegacyCreatorRecoveryProps} from './ProgramLegacyCreatorRecovery';
@@ -104,7 +105,7 @@ export function ProgramCreatorDraftLibrary({ data, mutate, onClose, onOpenDocume
       {native?.kind==='ready'&&<><label>기존 제작 초안<select value={nativeId} disabled={busy} onChange={event=>{setNativeId(event.target.value);setNativeVersion('');nativeRequest.current={id:programId('history-import'),expectedSpace:space,now:null};}}><option value="">초안 선택</option>{native.records.map(r=><option key={r.draftId} value={r.draftId}>{r.title} · {r.history.length}개 저장본</option>)}</select></label>
         {!native.records.length&&<p>가져올 제작자 초안이 없습니다. 개인·제안 문서는 이 목록에 넣지 않습니다.</p>}
         {nativeRecord&&<><details open><summary>현재 저장 원문 · {nativeRecord.currentRevisionId}</summary><pre className={styles.raw}>{nativeRecord.currentRaw||'(원문 없음)'}</pre></details>
-          <label>실제로 남아 있는 이전 저장본<select value={nativeVersion} disabled={busy} onChange={event=>setNativeVersion(event.target.value)}><option value="">비교할 저장본 선택</option>{nativeRecord.history.map(r=><option key={r.id} value={r.id}>{r.kind==='text-authoring-v1'?r.origin.versionId:r.id} · {r.savedAt}</option>)}</select></label>
+          <label>실제로 남아 있는 이전 저장본<select value={nativeVersion} disabled={busy} onChange={event=>setNativeVersion(event.target.value)}><option value="">비교할 저장본 선택</option>{nativeRecord.history.map(r=><option key={r.id} value={r.id}>{r.kind==='text-authoring-v1'?r.origin.versionId:r.id} · {programStampTimeLabel(r.savedAt)}</option>)}</select></label>
           {nativeRecord.history.filter(r=>r.id===nativeVersion).map(r=><section key={r.id} aria-label="기존 제작기 저장본 비교"><pre className={styles.raw}>{r.rawText||'(원문 없음)'}</pre>{r.kind==='text-authoring-v1'&&<details><summary>원래 저장본의 전체 구조 자료</summary><pre className={styles.raw}>{r.origin.documentJson}</pre></details>}</section>)}
           <p>현재 원문과 실제 저장 이력을 별도 Program 제작 초안으로 가져옵니다. 이후 이력에서 원문 복구를 명시합니다. 기존 구조 자료는 읽기 보존하며 실행·공개를 자동 생성하지 않습니다.</p>
           <button disabled={busy||!nativeRecord.currentRaw.trim()} onClick={()=>void importNative()}>현재 원문과 저장 이력을 제작 초안으로 가져오기</button></>}

@@ -298,7 +298,7 @@ test('int7b QA 0-5 (W-GUARD-07): a composition starting inside a mark starts at 
 test('int7b QA: the editor moves the caret before a composition; a paste is read once it is in; the fit notice keeps its words', () => {
   const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   // 0-5: first thing on compositionstart, before the native editor marks its anchor.
-  assert(editor.includes('const compositionStart = () => { compositionToTitle(); compositionGeneration.current++;'));
+  assert(editor.includes('const compositionStart = () => { compositionToTitle(); setSuggestion(null); compositionGeneration.current++;'));
   assert(editor.includes('const to = programCompositionCaret(textarea.value, M.rowMeta(shown.working, props.docId), textarea.selectionStart);'));
   // 3-4: notePaste reads in the next task, not a microtask the browser's own paste comes after.
   const note = editor.slice(editor.indexOf('function notePaste('), editor.indexOf('function askLongPaste('));

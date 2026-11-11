@@ -45,6 +45,8 @@ declare namespace editor {
     onMemoContinue?:()=>void;
     /** memo-enter (11/10): Enter on an empty memo line left the memo. */
     onMemoExit?:()=>void;
+    /** F9 W-MENU-26: [그날 보기] pressed on a row's trace line (its row, and which of its entries). */
+    onTraceOpen?:(lineIndex:number,entry:number)=>void;
     getAddAnchor?:(lineIndex:number)=>{parentIndex:number;bottomIndex:number}|null;
     /** Separate direct-check admission; structural actions retain the common hold. */
     isCheckDisabled?: (lineIndex?: number) => boolean;

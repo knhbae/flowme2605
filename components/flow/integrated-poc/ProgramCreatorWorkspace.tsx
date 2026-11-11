@@ -26,6 +26,7 @@ import { readNativeCreatorHistory } from '@/lib/flow/integrated-poc/creator-hist
 import type { ProgramCreatorSavedRevision } from '@/lib/flow/integrated-poc/creator-history-contract';
 import { planCreatorCalendarSourceOrder } from '@/lib/flow/integrated-poc/creator-calendar-source-order';
 import { ProgramCreatorStructureForm } from './ProgramCreatorStructureForm';
+import { programStampTimeLabel } from '@/lib/flow/integrated-poc/date-label';
 import { commitProgramCreatorStructure, prepareProgramCreatorStructure, restoreProgramCreatorStructureHistory, type ProgramCreatorStructurePrepared, type ProgramCreatorStructureSidecar } from '@/lib/flow/integrated-poc/creator-structure-sidecar';
 import { ProgramCreatorNativeContext, ProgramCreatorNativeResult, ProgramCreatorNativeComparison, type ProgramCreatorNativeOperationRequest } from './ProgramCreatorNativeContext';
 import { applyProgramNativeCreatorOperation } from '@/lib/flow/integrated-poc/creator-native-workspace';
@@ -112,7 +113,7 @@ export function ProgramCreatorHistoryComparison({preview}:{preview:CreatorHistor
   return <section className={styles.comparison} aria-label="제작 저장본 비교"><h2>현재 원문과 선택한 저장본</h2>
     <p>{preview.mode==='full-document'?'복구하면 이 제작 초안의 원문과 포함·역할·구조·검토 설정을 함께 저장합니다.':'복구하면 이 제작 초안의 원문과 이 저장본에 남아 있는 작성 틀 설정을 저장합니다.'} 개인 인계 문서·실행 기록·공개 판본은 바꾸지 않습니다.</p>
     <details open><summary>현재 제작 원문 · {preview.currentTitle}</summary><pre>{preview.currentRaw}</pre></details>
-    <details open><summary>선택한 저장본 · {preview.entry.savedAt}</summary><pre>{preview.entry.rawText}</pre></details>
+    <details open><summary>선택한 저장본 · {programStampTimeLabel(preview.entry.savedAt)}</summary><pre>{preview.entry.rawText}</pre></details>
     {native&&<>{previous?<ProgramCreatorNativeComparison before={previous} after={native}/>:<details><summary>복구할 제작 설정과 결과</summary><ProgramCreatorNativeResult owner={native}/></details>}</>}
     {preview.entry.kind==='program'&&preview.entry.context&&<details><summary>이 저장본의 작성 설정 · {preview.entry.context.contextRevision}</summary><pre>{JSON.stringify(preview.entry.context.structure??null,null,2)}</pre></details>}
     {preview.entry.kind==='text-authoring-v1'&&<><p>기존 제작기의 실제 저장 ID {preview.entry.origin.versionId}. 원래 저장소와 판본은 유지합니다.</p><details><summary>원래 저장본의 전체 구조 자료 · 읽기 전용</summary><pre>{preview.entry.origin.documentJson}</pre></details></>}
@@ -945,7 +946,7 @@ export function ProgramCreatorWorkspace(props: ProgramCreatorWorkspaceProps) {
       {record && <details className={styles.manage}><summary>제작 초안 관리·출처</summary><p>이 Program 제작 초안의 저장 판본 {record.recordRevision}. 개인 문서·공개 Flow와 별도로 저장됩니다.</p>
         <details className={styles.history}><summary>제작 초안의 저장 이력</summary><p>실제로 남아 있는 저장본만 표시합니다. Program 명시 저장은 최근 5개, 가져온 기존 제작기 저장본은 별도로 보존합니다. 자동 임시저장·개인 문서 저장 이력과는 다릅니다.</p>
           {!(workspace?.savedHistory?.drafts[record.draftId]?.length)&&<p>아직 수집한 저장 이력이 없습니다. 과거 저장본을 임의로 만들지 않습니다.</p>}
-          <div className={styles.actions}>{[...(workspace?.savedHistory?.drafts[record.draftId]??[])].reverse().map(entry=><button key={entry.id} disabled={busy||locked} onClick={()=>compareSaved(entry)}>{entry.kind==='program'?`Program 저장 ${entry.record.recordRevision}${entry.context?` · 작성 설정 ${entry.context.contextRevision}`:''}`:`기존 저장 ${entry.origin.versionId}`} · {entry.savedAt}</button>)}</div>
+          <div className={styles.actions}>{[...(workspace?.savedHistory?.drafts[record.draftId]??[])].reverse().map(entry=><button key={entry.id} disabled={busy||locked} onClick={()=>compareSaved(entry)}>{entry.kind==='program'?`Program 저장 ${entry.record.recordRevision}${entry.context?` · 작성 설정 ${entry.context.contextRevision}`:''}`:`기존 저장 ${entry.origin.versionId}`} · {programStampTimeLabel(entry.savedAt)}</button>)}</div>
           {historyEntry&&!historyPreview&&<><pre>{historyEntry.rawText||'(원문 없음)'}</pre>{historyEntry.kind==='text-authoring-v1'&&<details><summary>원래 저장본의 전체 구조 자료 · 읽기 전용</summary><pre>{historyEntry.origin.documentJson}</pre></details>}</>}
           {historyPreview&&<><ProgramCreatorHistoryComparison preview={historyPreview}/><button disabled={busy||locked||needsSave} onClick={()=>void restoreSaved()}>{historyPreview.mode==='full-document'?'이 저장본의 원문·제작 설정으로 복구':'이 저장본의 원문으로 복구'}</button></>}
           {historyEntry&&<button disabled={busy} onClick={()=>{setHistoryEntry(null);setHistoryPreview(null);historyRequest.current=null;}}>저장본 비교 닫기</button>}

@@ -12,13 +12,14 @@ function header(line: string): { date: string | null } | null {
   const dated = DATE_HEADER.exec(line.trim());
   return { date: dated ? `${dated[1]}-${dated[2].padStart(2, '0')}-${dated[3].padStart(2, '0')}` : null };
 }
-/** R1 (11/11 dateslot, shared with moves): the line a new `[date]` head goes before, in the document's date order
- *  (newest first unless its first two dated heads go up): right before the first dated head that comes after it in
- *  that order, else before the head that follows the last dated one (`[미정]`), else at the end (lines.length). Never
- *  between a head and its lines, so no line under a head moves to another one. */
+/** R1 (11/11 dateslot, shared with moves): the line a new `[date]` head goes before, in the document's date order: right
+ *  before the first dated head that comes after it in that order, else before the head that follows the last dated one
+ *  (`[미정]`), else at the end (lines.length). Never between a head and its lines, so no line under a head moves to
+ *  another one. F10 W-ORDER-01/04 (11/11): a document's order is read from its first two dated heads (newest first when
+ *  they go down); a new document, with one dated head or none, is oldest first (위가 과거). */
 export function programDateHeadIndex(lines: readonly string[], date: string): number {
   const heads = lines.flatMap((line, index) => { const head = header(line); return head ? [{ index, date: head.date }] : []; });
-  const dated = heads.filter(head => head.date), ascending = dated.length >= 2 && dated[0].date! < dated[1].date!;
+  const dated = heads.filter(head => head.date), ascending = dated.length < 2 || dated[0].date! < dated[1].date!;
   const before = dated.find(head => ascending ? head.date! > date : head.date! < date);
   const last = dated.at(-1), after = last ? heads.find(head => head.index > last.index) : heads[0];
   return before?.index ?? after?.index ?? lines.length;
@@ -28,7 +29,7 @@ const lineStart = (lines: readonly string[], index: number) => lines.slice(0, in
 
 /** 날짜 칩 on a line that is not a task (Q1, R1). The day's head line exists: a new empty line at the end of its block
  *  (or nothing, when the caret is already on an empty line of that block). It does not: `[YYYY-MM-DD]` and an empty
- *  line for the caret, in the document's date order (newest first unless its first two dated heads go up), always
+ *  line for the caret, in the document's date order (programDateHeadIndex: oldest first for a new document), always
  *  right before another head line or at the end, so no line that was under a head moves to another one and no task
  *  changes its date. A blank line keeps the new block apart from its neighbours. */
 export function programDateHeaderPlan(raw: string, caret: number, date: string): ProgramBarInsertion | null {

@@ -34,7 +34,8 @@ test('a key no longer reads the layout for the phone bar unless a lone "/" was t
 test('the screen reads the tasks of the saved text once per text, for the band and the repeat rows', () => {
   const space = read('../../../components/flow/integrated-poc/ProgramSpace.tsx');
   assert.match(space, /const textTasks = useMemo\(\(\) => M\.tasks\(space\.text\), \[space\.text\]\);/);
-  assert.match(space, /const repeat = programRepeatLine\(space, task\.id, textTasks\);/);
+  // int9: the band is F8's '이어지는 일' (continueBand); each row's repeat reads the same textTasks.
+  assert.match(space, /\(programRepeatLine\(space, id, textTasks\)\),/);
   assert.match(space, /const repeatRow = programRepeatLine\(space, task\.id, textTasks\)/);
   assert.doesNotMatch(space, /M\.tasks\(space\.text\)\.(find|some)\(/);
 });

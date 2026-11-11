@@ -159,9 +159,11 @@ test('11/11 dateslot: a missing date head goes in the document date order (R1), 
     ['oldest, next week', O, '2026-11-17', '[2026-11-05]\n- [ ] 오래된 일\n[2026-11-08]\n- [ ] 지난 일 둘\n[2026-11-10]\n- [ ] 오늘 일\n[2026-11-17]\n- [ ] 합성 부모'],
     ['oldest, past between', O, '2026-11-06', '[2026-11-05]\n- [ ] 오래된 일\n[2026-11-06]\n- [ ] 합성 부모\n[2026-11-08]\n- [ ] 지난 일 둘\n[2026-11-10]\n- [ ] 오늘 일'],
     ['oldest, past oldest', O, '2026-11-01', '[2026-11-01]\n- [ ] 합성 부모\n[2026-11-05]\n- [ ] 오래된 일\n[2026-11-08]\n- [ ] 지난 일 둘\n[2026-11-10]\n- [ ] 오늘 일'],
-    // One dated head reads newest first (as the bar); words above the first head stay above; [미정] stays last.
-    ['one head', '메모 한 줄\n[2026-11-10]\n- [ ] 합성 부모\n- [ ] 오늘 일', '2026-11-11', '메모 한 줄\n[2026-11-11]\n- [ ] 합성 부모\n[2026-11-10]\n- [ ] 오늘 일'],
-    ['before 미정', '[2026-11-10]\n- [ ] 합성 부모\n- [ ] 오늘 일\n[미정]\n- [ ] 언젠가', '2026-11-01', '[2026-11-10]\n- [ ] 오늘 일\n[2026-11-01]\n- [ ] 합성 부모\n[미정]\n- [ ] 언젠가'],
+    // F10 W-ORDER-01 (11/11): one dated head is a new document, oldest first (as the bar): a later day goes under it;
+    // words above the first head stay above; [미정] stays last.
+    ['one head', '메모 한 줄\n[2026-11-10]\n- [ ] 합성 부모\n- [ ] 오늘 일', '2026-11-11', '메모 한 줄\n[2026-11-10]\n- [ ] 오늘 일\n[2026-11-11]\n- [ ] 합성 부모'],
+    ['before 미정', '[2026-11-10]\n- [ ] 합성 부모\n- [ ] 오늘 일\n[미정]\n- [ ] 언젠가', '2026-11-12', '[2026-11-10]\n- [ ] 오늘 일\n[2026-11-12]\n- [ ] 합성 부모\n[미정]\n- [ ] 언젠가'],
+    ['one head, earlier day', '[2026-11-10]\n- [ ] 합성 부모\n- [ ] 오늘 일\n[미정]\n- [ ] 언젠가', '2026-11-01', '[2026-11-01]\n- [ ] 합성 부모\n[2026-11-10]\n- [ ] 오늘 일\n[미정]\n- [ ] 언젠가'],
   ];
   for (const [label, source, date, expected] of cases) {
     const f = fixture(source), result = apply(f, { kind: 'date', date }), text = M.raw(result.next.documents[0]);

@@ -72,7 +72,8 @@ test('round checks 22 with the press motion (120 ms primary, 320 ms done), a Flo
   assert(css.includes('transition: background-color 320ms ease, border-color 320ms ease; }') && css.includes('background: var(--flowme-b-primary); transition-duration: 0ms; }') && css.includes('transition: background-color 320ms ease 120ms, border-color 320ms ease 120ms; }'));
   assert(css.includes('.space .task[data-flow-row] .check > .checkMark[data-check="open"] { border-color: var(--flowme-b-flow); }'));
   assert(space.includes("data-flow-row={rowFlowTitle(task) ? '' : undefined}"));
-  assert(band.includes('width: 22px; height: 22px; border: 2px solid var(--flowme-b-flow); border-radius: 50%;'));
+  // F8 1단계: the band holds more than Flows; a Flow's row keeps the teal ring.
+  assert(band.includes('width: 22px; height: 22px; border: 2px solid var(--flowme-b-control); border-radius: 50%;') && band.includes('.rows > li[data-kind="flow"] .check > span[data-check="open"] { border-color: var(--flowme-b-flow); }'));
 });
 
 test('the 실 sits where a Flow shows: 오늘 rows (name · 실 · n/m), the band, Flow 찾기 and the publish preview card, 나', () => {

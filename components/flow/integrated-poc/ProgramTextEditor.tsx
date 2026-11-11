@@ -7,7 +7,10 @@ import { programEditorStatus, serverStatusWins } from '@/lib/flow/integrated-poc
 import { ProgramServerStatusContext } from './program-status-context';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextRow, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
-import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
+import { programLineDateChips, programTaskDatesMovedText } from '@/lib/flow/integrated-poc/task-date-move';
+import { keepProgramMoveTraces, programMoveTrace, programMoveTraceLines, readProgramMoveTraces, PROGRAM_MOVE_TRACE_EVENT, type ProgramMoveTrace } from '@/lib/flow/integrated-poc/task-move-trace';
+import { planProgramDateSectionReverse, type DateSectionOrderPlan } from '@/lib/flow/integrated-poc/date-section-order';
+import { ProgramDateSheet } from './ProgramDateSheet';
 import { programBracketDate, programBracketDatePlan, programDateHeaderPlan, programFolderSeedPlan, programTodayStartPlan } from '@/lib/flow/integrated-poc/input-bar';
 import type { ProgramPrivateSpace } from '@/lib/flow/integrated-poc/contract';
 import { programRepeatLine, programRepeatSeen, settleProgramRepeatLines, PROGRAM_REPEAT_BLOCK_TEXT, PROGRAM_REPEAT_UNDO_REFUSED, type ProgramRepeatCheck } from '@/lib/flow/integrated-poc/repeat-commands';
@@ -73,6 +76,7 @@ import { moveTaskLocation, readTaskLocationSource, TASK_LOCATION_FAILURE_TEXT, t
 import { commitTaskDateWithUndo, type TaskLocationPolicy } from '@/lib/flow/integrated-poc/task-location-command';
 import { ProgramTaskMoveSheet } from './ProgramTaskMoveSheet';
 import { ProgramTaskMoveContext } from './task-move-context';
+import { TASK_DATE_SUGGESTION_EVENT, TASK_DATE_SUGGESTION_KEY, readTaskDateSuggestion, undoTaskDateSuggestion, taskDateSuggestionUndoFrameMatches, taskDateSuggestionLabel, taskDateSuggestionsEnabled, taskDateSuggestionToday, type TaskDateSuggestion } from '@/lib/flow/integrated-poc/task-date-suggestion';
 
 export { createProgramTextDraft } from '@/lib/flow/integrated-poc/program-text-draft';
 export type { ProgramTextCommitOptions, ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
@@ -138,6 +142,10 @@ export interface ProgramTextEditorProps {
   /** A folded writing view delegates source placement to the host's complete document. */
   onTaskLocation?: (lineId: string, target: TaskLocationTarget, working: TextWorkspaceState) => Promise<boolean>;
   onUndoTaskLocation?: () => boolean;
+  /** F9 W-MENU-26: where this device keeps the moves the trace lines are drawn from (localStorage); none, no traces. */
+  moveTraceKey?: string;
+  /** F10 W-ORDER-05: the host's 글 ⋮ '날짜 순서 바꾸기' opens this editor's preview. */
+  onRegisterSectionOrder?: (open: (() => void) | null) => void;
   onPosition?: (selection: ProgramTextPosition, lineId: string | null) => void;
   initialPosition?: ProgramTextPosition;
   onOpenScope?: (scopeId: string) => void;
@@ -269,6 +277,12 @@ function inEditorHead(target: EventTarget | null) {
   return target instanceof Element && !!target.closest('[data-editor-head]');
 }
 
+/** F10 W-ORDER-05: a date line as the order preview names it ('11월 13일 (금)', '날짜 미정'). */
+function sectionHeadLabel(head: string) {
+  const dated = /^\[(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})\]$/.exec(head.trim());
+  if (dated) return programCalendarDate(`${dated[1]}-${dated[2].padStart(2, '0')}-${dated[3].padStart(2, '0')}`, today());
+  return head.trim() === '[미정]' ? '날짜 미정' : head.trim();
+}
 function today() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -310,7 +324,7 @@ export function stageProgramRegionInput(controller: ReturnType<typeof createProg
 }
 
 type ChildTarget={documentId:string;parentId:string;workspace:TextWorkspaceState;raw:string;title:string;date:string|null;scope:string;memo:string;kind?:'memo'|'task'};
-type Panel = { kind: 'insert' | 'child' | 'progress' | 'date' | 'folder' | 'task-folder' | 'folder-copy' | 'move' | 'reference' | 'order' | 'repeat'; lineId: string | null; child?:ChildTarget; folderLinkPreview?: ProgramFolderLinkPreview; folderCopyPreview?: ProgramFolderCopyPreview; locationExpected?: TextWorkspaceState } | null;
+type Panel = { kind: 'insert' | 'child' | 'progress' | 'date' | 'date-sheet' | 'folder' | 'task-folder' | 'folder-copy' | 'move' | 'reference' | 'order' | 'section-order' | 'repeat'; lineId: string | null; child?:ChildTarget; folderLinkPreview?: ProgramFolderLinkPreview; folderCopyPreview?: ProgramFolderCopyPreview; locationExpected?: TextWorkspaceState } | null;
 type Moving = TextMoveSelection & { targets: TextMoveTarget[] };
 
 export function programTextProtectionMessage(access?: ProgramReferenceAccess): string {
@@ -428,6 +442,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const memoTipKeys = useRef(0);
   // Any other notice up (a move, a warning, a check, a folder, a repeat): the tip neither shows nor counts (UX).
   const memoTipBlockedRef = useRef(false);
+  const [dateSuggestion, setDateSuggestion] = useState<TaskDateSuggestion | null>(null);
+  const dateSuggestionRef = useRef<TaskDateSuggestion | null>(null);
+  const dateSuggestionSeen = useRef(new Set<string>()), dateSuggestionCaret = useRef<string | null>(null);
+  const dateSuggestionEnabled = useRef(true), dateSuggestionBlocked = useRef(false), dateSuggestionFinish = useRef(false), dateSuggestionSaving = useRef(false);
+  const [dateApplied, setDateApplied] = useState<{ text: string; undo: () => void } | null>(null);
+  const setSuggestion = (next: TaskDateSuggestion | null) => { dateSuggestionRef.current = next; setDateSuggestion(next); };
   const [noticeHeld, setNoticeHeld] = useState(false);
   // N5 3b phone: a new folder's notice held while its D11 B ⇤ is open and the caret is on that folder's block.
   const [freshHeld, setFreshHeld] = useState(false);
@@ -513,8 +533,66 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // back to its tools after a chip runs, on ×, or when the caret leaves the line it was opened on. A date chip's day
   // rides with the held press ('date'); 폴더 writes its `- /` line once and the folder suggestions take over.
   const [barMode, setBarModeState] = useState<BarMode>('tools'), barModeRef = useRef<{ mode: BarMode; line: number }>({ mode: 'tools', line: -1 });
-  const barDateUndo = useRef<{ docId: string; taskId: string; before: TextWorkspaceState; after: TextWorkspaceState; date: string; time: string; raw: string; redo: boolean } | null>(null);
-  type LocationEdit = { docId: string; taskId: string; before: TextWorkspaceState; after: TextWorkspaceState; raw: string; redo: boolean; label: string; date: string | null; folderId: string; kind: TaskLocationTarget['kind'] };
+  const barDateUndo = useRef<{ docId: string; taskId: string; before: TextWorkspaceState; after: TextWorkspaceState; date: string; time: string; raw: string; redo: boolean; suggestion?: true } | null>(null);
+  type LocationEdit = { docId: string; taskId: string; before: TextWorkspaceState; after: TextWorkspaceState; raw: string; redo: boolean; label: string; date: string | null; folderId: string; kind: TaskLocationTarget['kind']; trace?: ProgramMoveTrace | null };
+  // F9 W-MENU-26: the moves this device keeps for the trace lines (see task-move-trace); read again when another tab
+  // of this browser writes them.
+  const [moveTraces, setMoveTraces] = useState<ProgramMoveTrace[]>(() => props.moveTraceKey && typeof window !== 'undefined' ? readProgramMoveTraces(window.localStorage, props.moveTraceKey) : []);
+  const moveTracesRef = useRef(moveTraces); moveTracesRef.current = moveTraces;
+  function keepMoveTraces(change: (list: ProgramMoveTrace[]) => ProgramMoveTrace[]) {
+    const key = propsRef.current.moveTraceKey;
+    if (!key) return;
+    let storage: Storage | null = null;
+    try { storage = window.localStorage; } catch { storage = null; }
+    // The stored list is the base (another tab may have added to it); without storage, this visit's list.
+    const next = keepProgramMoveTraces(storage, key, change, today(), moveTracesRef.current);
+    moveTracesRef.current = next; setMoveTraces(next);
+  }
+  function rememberMove(before: TextWorkspaceState, taskId: string, toDate: string | null) {
+    const trace = programMoveTrace(before, propsRef.current.docId, taskId, toDate, Date.now(), `trace-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`);
+    if (trace) keepMoveTraces(list => [...list, trace]);
+    return trace;
+  }
+  function forgetMove(trace: ProgramMoveTrace | null | undefined) { if (trace) keepMoveTraces(list => list.filter(entry => entry.id !== trace.id)); }
+  /** The rows the vendor paints, with each trace line on the row it goes under (drawn in the reading view only). */
+  const traceLinesKnown = useRef<{ state: TextWorkspaceState; traces: ProgramMoveTrace[]; day: string; docId: string; lines: ReturnType<typeof programMoveTraceLines> } | null>(null);
+  function traceLinesOf(working: TextWorkspaceState) {
+    const traces = moveTracesRef.current, day = today(), docId = propsRef.current.docId, known = traceLinesKnown.current;
+    if (known && known.state === working && known.traces === traces && known.day === day && known.docId === docId) return known.lines;
+    const lines: ReturnType<typeof programMoveTraceLines> = propsRef.current.moveTraceKey && traces.length ? programMoveTraceLines(working, docId, traces, day) : new Map();
+    traceLinesKnown.current = { state: working, traces, day, docId, lines };
+    return lines;
+  }
+  function withMoveTraces<T extends { id?: string } | null | undefined>(working: TextWorkspaceState, rows: T[]): T[] {
+    if (propsRef.current.folderId || !moveTracesRef.current.length) return rows;
+    const lines = traceLinesOf(working);
+    if (!lines.size) return rows;
+    return rows.map(row => { const drawn = row?.id ? lines.get(row.id) : undefined; return drawn ? { ...row, trace: drawn.map(line => line.text).join('\n') } as T : row; });
+  }
+  /** [그날 보기]: the moved task's line in view (the reading view stays; no keyboard comes up) and briefly marked. */
+  function openTrace(lineIndex: number, at: number) {
+    const doc = currentDoc(), lineId = doc?.lines[lineIndex]?.id, line = lineId ? traceLinesOf(currentState()).get(lineId)?.[at] : undefined;
+    const index = line ? doc?.lines.findIndex(entry => entry.id === line.taskId) ?? -1 : -1;
+    const row = index >= 0 ? hostRef.current?.querySelector<HTMLElement>(`.tle-line[data-line-index="${index}"]`) : null, area = textArea();
+    if (!line || !row || !area) return;
+    const root = row.closest<HTMLElement>('.tle-root'), viewport = root?.querySelector<HTMLElement>('.tle-viewport');
+    const surface = viewport && root && (root.classList.contains('tle-reading-view') || root.classList.contains('tle-folded-view')) ? viewport : area;
+    const top = Math.max(0, row.offsetTop - Math.min(40, Math.max(20, surface.clientHeight / 8)));
+    surface.scrollTop = top; if (surface !== area) area.scrollTop = top;
+    row.scrollIntoView({ block: 'nearest' });
+    highlightLocation(line.taskId);
+  }
+  const openTraceRef = useRef(openTrace); openTraceRef.current = openTrace;
+  useEffect(() => { editorRef.current?.refresh(); }, [moveTraces]);
+  useEffect(() => {
+    const key = props.moveTraceKey;
+    if (!key) return;
+    const read = (event: StorageEvent) => { if (event.key === key) { const next = readProgramMoveTraces(window.localStorage, key); moveTracesRef.current = next; setMoveTraces(next); } };
+    // W-MENU-27: the host's moves (오늘 row detail, the band, the folded view) are kept in this tab too.
+    const here = (event: Event) => { if ((event as CustomEvent<{ key?: string }>).detail?.key === key) { const next = readProgramMoveTraces(window.localStorage, key); moveTracesRef.current = next; setMoveTraces(next); } };
+    window.addEventListener('storage', read); window.addEventListener(PROGRAM_MOVE_TRACE_EVENT, here);
+    return () => { window.removeEventListener('storage', read); window.removeEventListener(PROGRAM_MOVE_TRACE_EVENT, here); };
+  }, [props.moveTraceKey]);
   const locationUndo = useRef<LocationEdit | null>(null);
   const [locationNotice,setLocationNotice]=useState<LocationEdit|null>(null);
   const taskMoveGate=useContext(ProgramTaskMoveContext);
@@ -917,6 +995,73 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     propsRef.current.onPosition?.({ start: textarea.selectionStart, end: textarea.selectionEnd, scrollTop: textarea.scrollTop }, currentDoc()?.lines[index]?.id ?? null);
     syncFreshNotice(); syncBarLine();
   }
+
+  /** Only the line just left is inspected. Typing on the next line keeps one suggestion until that line ends. */
+  function finishDateSuggestion() {
+    const controller = draftRef.current, area = textArea(), p = propsRef.current;
+    if (!controller || !area || p.folderId || !p.authoringMode || p.active === false || p.readOnly) return;
+    if (composingRef.current || area.value !== controller.getState().raw) { dateSuggestionFinish.current = true; return; }
+    dateSuggestionFinish.current = false;
+    const state = controller.getState(), lines = M.getDocument(state.working, p.docId)?.lines ?? [];
+    const current = area.ownerDocument.activeElement === area ? lines[caretLine(area)]?.id ?? null : null;
+    const previous = dateSuggestionCaret.current;
+    dateSuggestionCaret.current = current;
+    if (!previous || previous === current) return;
+    setSuggestion(null);
+    if (state.invalid || !dateSuggestionEnabled.current || dateSuggestionBlocked.current) return;
+    const candidate = readTaskDateSuggestion(state.working, p.docId, previous, taskDateSuggestionToday());
+    if (!candidate || p.repeatContext?.().copies.some(copy => copy.documentId === p.docId)) return;
+    const key = `${candidate.lineId}:${candidate.date}`;
+    if (dateSuggestionSeen.current.has(key)) return;
+    dateSuggestionSeen.current.add(key); setSuggestion(candidate);
+  }
+
+  async function acceptDateSuggestion(candidate: TaskDateSuggestion) {
+    const controller = draftRef.current;
+    const usable = () => { const p = propsRef.current; return !!controller && draftRef.current === controller && !p.folderId && p.active !== false
+      && dateSuggestionEnabled.current && !composingRef.current && candidate.docId === p.docId; };
+    if (!controller || !usable() || dateSuggestionSaving.current) return;
+    // int8b (QA-int8 0-6): a chip pressed before this document's own input is saved (the Enter that ended the line, the
+    // date words just typed, a save in flight) saves it first. The move is judged against what is saved
+    // (authorizeTaskLocation), where this document's unsaved input reads as another change ('연결·반복 상태가 바뀌어
+    // 옮기지 않았습니다'); a real change from elsewhere is still refused there. The host's copy (this editor's workspace)
+    // is read once it shows the save.
+    if (controller.getState().dirty || controller.getState().saving) {
+      dateSuggestionSaving.current = true;
+      try {
+        if (!await saveNow(false) || !usable()) return;
+        for (let frame = 0; frame < 10 && !programSame(propsRef.current.workspace, controller.getState().committed); frame++)
+          await new Promise(resolve => requestAnimationFrame(resolve));
+      } finally { dateSuggestionSaving.current = false; }
+    }
+    const p = propsRef.current, area = textArea();
+    if (!area || !usable() || actionsDisabled() || area.value !== controller.getState().raw) return;
+    const before = controller.getState(), current = readTaskDateSuggestion(before.working, p.docId, candidate.lineId, taskDateSuggestionToday());
+    if (!current || current.source !== candidate.source || current.date !== candidate.date
+      || p.repeatContext?.().copies.some(copy => copy.documentId === p.docId)) { setSuggestion(null); return; }
+    const row = currentRow(candidate.lineId), target = row?.progressTargetId, task = target ? M.tasks(before.working).find(item => item.id === target) : undefined;
+    if (!task) return;
+    setSuggestion(null);
+    const done = applyDateChip(candidate.lineId, candidate.date), after = controller.getState();
+    if (after.raw === before.raw) return;
+    const history = { docId: p.docId, taskId: task.id, before: before.working, after: after.working,
+      date: candidate.date, time: task.time ?? '', raw: after.raw, redo: false, suggestion: true as const };
+    barDateUndo.current = history;
+    const oldIds = new Set(M.getDocument(before.working, p.docId)?.lines.map(line => line.id));
+    const property = M.getDocument(after.working, p.docId)?.lines.find(line => !oldIds.has(line.id) && /^ *- 날짜:/.test(line.text));
+    setDateApplied({ text: `${taskDateSuggestionLabel(candidate.date, taskDateSuggestionToday())} 옮겼습니다`, undo: whenComposed(() => {
+      if (p.docId !== propsRef.current.docId || actionsDisabled()) return;
+      if (barDateUndo.current === history && undoBarDate()) { setDateApplied(null); return; }
+      if (!property) { setDateApplied(null); return; }
+      const state = controller.getState(), next = undoTaskDateSuggestion(state.working, p.docId, task.id, property, candidate.date);
+      if (!next) { setDateApplied(null); return; }
+      // Continued writing and another document's refresh survive: remove only this exact property.
+      const restored = M.tasks(next).find(item => item.id === task.id);
+      if (restored) void apply(next, '날짜 말 제안 되돌리기', { taskId: restored.id, date: restored.date, time: restored.time ?? '' });
+      setDateApplied(null);
+    }) });
+    void done;
+  }
   /** N5 3b (phone): D11 B's ⇤ lasts only while the new folder's notice shows, and on a phone getting back onto that
    *  line takes longer than an info notice's 6s. So, like a choice, that notice stays while the ⇤ is still open
    *  (nothing edited since) and the caret is on the new line or under it; once either ends, its 6s start.
@@ -1301,10 +1446,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const last = barDateUndo.current, state = draftRef.current?.getState();
     if (!last || !state || last.docId !== propsRef.current.docId || state.raw !== last.raw) { if (last && state && state.raw !== last.raw) barDateUndo.current = null; return false; }
     if (last.redo !== redo) return false;
+    if (last.suggestion && !taskDateSuggestionUndoFrameMatches(state.working, last.docId, last.before, last.after, redo)) { barDateUndo.current = null; return false; }
     if (actionsDisabled() || composingRef.current || regionPendingRef.current) return true;
     const done = redo ? apply(last.after, '항목 날짜·시간', { taskId: last.taskId, date: last.date, time: last.time }) : apply(last.before, '항목 날짜·시간 되돌리기');
     const raw = draftRef.current?.getState().raw;
     barDateUndo.current = raw !== undefined && raw !== last.raw ? { ...last, raw, redo: !redo } : null;
+    if (!redo && raw !== last.raw) setDateApplied(null);
     void done;
     return true;
   }
@@ -1313,7 +1460,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const area = barEditor()?.area??textArea(), doc = currentDoc(), input = datePickRef.current;
     if (!area || !doc || !input || inputLockedRef.current || propsRef.current.readOnly) return;
     const line = propsRef.current.folderId?doc.lines.find(item=>item.id===regionLineRef.current):doc.lines[caretLine(area)], target = line ? currentRow(line.id)?.progressTargetId : undefined;
-    if (line && target && M.tasks(currentState()).some(task => task.id === target)) { setBarMode('tools'); openProgress(line.id, 'date'); return; }
+    // F9 W-MENU-24: a task's 고르기 is the calendar sheet, as in its ⋮ (the time stays in 진행 [날짜·시간]).
+    if (line && target && M.tasks(currentState()).some(task => task.id === target)) { setBarMode('tools'); openDateSheet(line.id); return; }
     input.value = today();
     try { input.showPicker(); } catch { input.focus(); }
   }
@@ -1861,6 +2009,22 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     setOrderPreview({ plan: planProgramDateBlockOrder(state, doc.id, scope, selection), before: state, epoch: orderEpochRef.current, selection, scrollTop: textarea.scrollTop });
     setPanel({ kind: 'order', lineId: scope });
   }
+  /** F10 W-ORDER-05: 글 ⋮ '날짜 순서 바꾸기' — the dated sections turned round, previewed; applied as the K4-W order is
+   *  (applyOrder: one native edit, one save, one ↶). Input not saved yet is saved first. */
+  async function previewSectionOrder() {
+    if (composingRef.current || inputLockedRef.current || propsRef.current.readOnly || propsRef.current.folderId) return;
+    if (draftRef.current?.getState().dirty) await saveNow(false);
+    const state = currentState(), doc = currentDoc(), textarea = textArea(); if (!doc || !textarea) return;
+    const selection: DateOrderSelection = { start: textarea.selectionStart, end: textarea.selectionEnd, direction: textarea.selectionDirection || 'none' };
+    const plan: DateSectionOrderPlan = draftRef.current?.getState().dirty || actionsDisabled() ? { status: 'blocked', reason: 'unsaved' } : planProgramDateSectionReverse(state, doc.id, selection);
+    setOrderPreview({ plan, before: state, epoch: orderEpochRef.current, selection, scrollTop: textarea.scrollTop });
+    setMessage(''); setPanel({ kind: 'section-order', lineId: null });
+  }
+  const previewSectionOrderRef = useRef(previewSectionOrder); previewSectionOrderRef.current = previewSectionOrder;
+  useEffect(() => {
+    props.onRegisterSectionOrder?.(() => { void previewSectionOrderRef.current(); });
+    return () => props.onRegisterSectionOrder?.(null);
+  }, []);
   function applyOrder() {
     const capture = orderPreview, controller = draftRef.current, textarea = textArea();
     if (!capture || capture.plan.status !== 'ready' || !controller || !textarea || actionsDisabled() || composingRef.current ||
@@ -2078,16 +2242,20 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if(locationAvailability().blocked){setMessage('저장을 확인한 뒤 옮겨 주세요.');return;}
     const before=currentState();
     if(panel?.locationExpected&&!programSame(panel.locationExpected,before)){setMessage('그사이 내용이 바뀌었습니다. 닫고 다시 옮겨 주세요.');return;}
+    // W-MENU-27: the host keeps that move's trace (moveTaskHere), as for its other ways in.
     if(propsRef.current.onTaskLocation){closePanel();await propsRef.current.onTaskLocation(policy.taskId,target,before);return;}
     const moved=moveTaskLocation(before,{documentId:policy.documentId,taskId:policy.taskId,target});
     if(!moved.ok){setMessage(TASK_LOCATION_FAILURE_TEXT[moved.reason]);return;}
     if(!moved.changed){closePanel();return;}
     if(propsRef.current.authorizeTaskLocation?.(before,moved.next)===false){setMessage('이 묶음의 연결·반복 상태가 바뀌어 옮기지 않았습니다. 원문은 유지했습니다.');return;}
-    const label=target.kind==='date'?`${moved.date?programCalendarDate(moved.date,today(),false):'날짜 미정'}로 옮겼습니다`:`/ ${programFolderPath(moved.next,moved.folderId)}로 옮겼습니다`;
+    // F9 (UX ux-carry-order): '11월 13일 (금)으로 옮겼습니다', the particle by ro() (programTaskDatesMovedText).
+    const label=target.kind==='date'?programTaskDatesMovedText(1,moved.date,today()):`/ ${programFolderPath(moved.next,moved.folderId)}로 옮겼습니다`;
     closePanel();barDateUndo.current=null;setLocationNotice(null);
     const pending=apply(moved.next,'할 일 옮기기'),state=draftRef.current?.getState();
     if(!state||!programSame(state.working,moved.next))return;
     const record:LocationEdit={docId:propsRef.current.docId,taskId:policy.taskId,before,after:moved.next,raw:state.raw,redo:false,label,date:moved.date,folderId:moved.folderId,kind:target.kind};
+    // W-MENU-26: a move to another day leaves its trace (kept on this device); 되돌리기 takes it back (stepLocation).
+    if(target.kind==='date')record.trace=rememberMove(before,policy.taskId,moved.date);
     locationUndo.current=record;highlightLocation(policy.taskId);
     if(propsRef.current.folderId===moved.folderId)requestAnimationFrame(()=>{
       if(propsRef.current.docId===record.docId&&propsRef.current.active!==false&&!composingRef.current&&programSame(currentState(),record.after))regionPortRef.current?.revealLine?.(record.taskId);
@@ -2103,6 +2271,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const next=redo?last.after:last.before;
     if(propsRef.current.authorizeTaskLocation?.(state.working,next)===false){setMessage('다른 변경이 있어 되돌리지 않았습니다. 현재 내용은 유지했습니다.');return true;}
     const pending=apply(next,redo?'할 일 다시 옮기기':'할 일 옮기기 되돌리기'),installed=draftRef.current?.getState();
+    if(installed&&programSame(installed.working,next)&&last.trace){const trace=last.trace;if(redo)keepMoveTraces(list=>[...list.filter(entry=>entry.id!==trace.id),trace]);else forgetMove(trace);}
     setLocationNotice(null);
     locationUndo.current=installed&&programSame(installed.working,next)?{...last,raw:installed.raw,redo:!redo}:null;
     void pending;return true;
@@ -2468,12 +2637,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       // 11/10 18:05 (실사용): rows of the text the model took, placed on the text shown; a refused or held line has none.
       getRowMeta: () => { const state = controller.getState(), rows = documentInput.paint(state.working) ?? textEditorRows(state.working, props.docId);
         const accepted = M.raw(M.getDocument(state.working, props.docId)), shown = textArea()?.value ?? state.raw;
-        if (accepted === shown) return rows;
+        if (accepted === shown) return withMoveTraces(state.working, rows);
         // typelag ②: a composition renders several times over the same texts; the rows placed once serve them all.
-        if (rowPatch && aligned && aligned.accepted === accepted && aligned.shown === shown && aligned.rows === rows) return aligned.out;
+        if (rowPatch && aligned && aligned.accepted === accepted && aligned.shown === shown && aligned.rows === rows) return withMoveTraces(state.working, aligned.out);
         const out = programAlignRows(accepted, shown, rows, rowPatch) as typeof rows;
         aligned = { accepted, shown, rows, out };
-        return out; },
+        return withMoveTraces(state.working, out); },
+      // F9 W-MENU-26: [그날 보기] on a trace line (vendor appendMoveTrace).
+      onTraceOpen: (lineIndex: number, at: number) => { openTraceRef.current(lineIndex, at); },
       isActionDisabled: actionsDisabled,
       isPaintDisabled: paintDisabled,
       isIndentDisabled: indentDisabled,
@@ -2633,7 +2804,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         else if (controller.getState().held) scheduleSave();
         else if (timerRef.current) clearTimeout(timerRef.current);
         if (accepted || controller.getState().held) checkTextLimit(raw);
-        rememberPosition();
+        rememberPosition(); finishDateSuggestion();
       },
       onAction: handleAction,
     });
@@ -2674,7 +2845,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       const to = programCompositionCaret(textarea.value, M.rowMeta(shown.working, props.docId), textarea.selectionStart);
       if (to !== null) textarea.setSelectionRange(to, to);
     };
-    const compositionStart = () => { compositionToTitle(); compositionGeneration.current++;controller.cancelPreparedRaw();composingRef.current = true; setComposing(true); orderEpochRef.current++; setOrderPreview(null); propsRef.current.onDirtyChange?.(true); };
+    const compositionStart = () => { compositionToTitle(); setSuggestion(null); compositionGeneration.current++;controller.cancelPreparedRaw();composingRef.current = true; setComposing(true); orderEpochRef.current++; setOrderPreview(null); propsRef.current.onDirtyChange?.(true); };
     const compositionEnd = () => {
       compositionGeneration.current++;controller.cancelPreparedRaw();composingRef.current = false; setComposing(false);
       // The native target listener publishes the final raw after this capture listener.
@@ -2685,6 +2856,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         propsRef.current.onDirtyChange?.(!!currentChild()||programTextInputPending(state,textArea()?.value,composingRef.current,regionPendingRef.current,!!checkPendingRef.current));
         setMessage(previous => previous === '한글 입력을 마친 뒤 보기 범위를 바꿔 주세요.' ? '' : previous);
         if (state.dirty && !state.saving && !state.invalid && !state.error) scheduleSave();
+        if (dateSuggestionFinish.current) finishDateSuggestion();
       });
     };
     host.addEventListener('compositionstart', compositionStart, true);
@@ -2782,6 +2954,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         textarea.scrollTop = position.scrollTop;
       }
       for (const event of ['select', 'scroll', 'keyup', 'click', 'blur']) textarea.addEventListener(event, rememberPosition);
+      for (const event of ['select', 'keyup', 'click', 'blur']) textarea.addEventListener(event, finishDateSuggestion);
       textarea.addEventListener('blur', finishOnBlur);
       for (const event of ['select', 'keyup', 'click']) textarea.addEventListener(event, settleOnMove);
       textarea.addEventListener('blur', settleOnBlur);
@@ -2804,6 +2977,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       window.removeEventListener('beforeunload', warnOnExit);
       if (timerRef.current) clearTimeout(timerRef.current);
       if (textarea) for (const event of ['select', 'scroll', 'keyup', 'click', 'blur']) textarea.removeEventListener(event, rememberPosition);
+      if (textarea) for (const event of ['select', 'keyup', 'click', 'blur']) textarea.removeEventListener(event, finishDateSuggestion);
       textarea?.removeEventListener('blur', finishOnBlur);
       if (textarea) for (const event of ['select', 'keyup', 'click']) textarea.removeEventListener(event, settleOnMove);
       textarea?.removeEventListener('blur', settleOnBlur);
@@ -2902,6 +3076,26 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     editorRef.current?.refresh();
   }, [props.readOnly, props.directWriting, props.docId]);
   useEffect(() => { editorRef.current?.setMode(mode); }, [mode, props.docId]);
+  useEffect(() => {
+    const read = () => { dateSuggestionEnabled.current = taskDateSuggestionsEnabled(); if (!dateSuggestionEnabled.current) setSuggestion(null); };
+    const changed = (event: StorageEvent) => { if (event.key === TASK_DATE_SUGGESTION_KEY || event.key === null) read(); };
+    read(); window.addEventListener(TASK_DATE_SUGGESTION_EVENT, read); window.addEventListener('storage', changed);
+    return () => { window.removeEventListener(TASK_DATE_SUGGESTION_EVENT, read); window.removeEventListener('storage', changed); };
+  }, []);
+  useEffect(() => {
+    if (props.active === false || props.folderId) { setSuggestion(null); setDateApplied(null); dateSuggestionCaret.current = null; }
+  }, [props.active, props.folderId]);
+  useEffect(() => { dateSuggestionSeen.current.clear(); dateSuggestionCaret.current = null; setSuggestion(null); setDateApplied(null); }, [props.docId]);
+  useEffect(() => {
+    const candidate = dateSuggestionRef.current;
+    if (!candidate) return;
+    const source = M.getDocument(draft.working, props.docId)?.lines.find(line => line.id === candidate.lineId), row = currentRow(candidate.lineId);
+    // Invalidation reads existing row metadata; date words are parsed only on a line finish or an explicit press.
+    if (candidate.docId !== props.docId || draft.invalid || dateSuggestionBlocked.current || source?.text !== candidate.source
+      || row?.kind !== 'task' || !row.isCanonical || row.isReference || row.scopeKind === 'flow'
+      || row.dateLineId && row.groupDate !== taskDateSuggestionToday() || row.task?.explicitDate) setSuggestion(null);
+  }, [draft.working, draft.invalid, moving, message, checkNotice, folderNotice, repeatNotice, memoTip, dateApplied]);
+  useEffect(() => { if (!dateApplied) return; const timer = setTimeout(() => setDateApplied(current => current === dateApplied ? null : current), 6000); return () => clearTimeout(timer); }, [dateApplied]);
   // W15: an info notice ends 6s after it shows, a choice 6s after the caret leaves its block; held, neither.
   // Waiting behind the move notice or a message, it has not shown yet (review P2): its time starts once it shows.
   // C2: the check notice, the newest tap's, goes before a folder notice of its rank or lower (never before a warning).
@@ -3395,6 +3589,27 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (task && task.date === (date || null) && (task.time ?? '') === time) { closePanel(); return; }
     await applyDateOnly(target,date||null,time);
   }
+  /** F9 W-MENU-24: the calendar sheet of a task (⋮ [고르기], the bar's 고르기). */
+  function openDateSheet(lineId: string | null) {
+    const row = currentRow(lineId);
+    if (!row?.progressTargetId) return;
+    if (accessFor(lineId)?.reason) { setMessage(''); setPanel({ kind: 'reference', lineId }); return; }
+    setMessage(''); setPanel({ kind: 'date-sheet', lineId });
+  }
+  /** A day (or 날짜 미정) pressed in the sheet: moved at once, as a ⋮ chip moves (W-MENU-07); the sheet closes. */
+  async function pickSheetDate(lineId: string | null, value: string | null) {
+    if (value !== null) { await applyDateChip(lineId, value); return; }
+    if (actionsDisabled() || composingRef.current || regionPendingRef.current) return;
+    if(locationAvailability().blocked){setMessage('저장을 확인한 뒤 옮겨 주세요.');return;}
+    if (accessFor(lineId)?.reason) { setPanel({ kind: 'reference', lineId }); return; }
+    const target = currentRow(lineId)?.progressTargetId, task = target ? M.tasks(currentState()).find(item => item.id === target) : undefined;
+    if (!target || !task) return;
+    const policy=locationPolicy(lineId);
+    if(policy.kind==='blocked'){setMessage(policy.message);return;}
+    if(policy.kind==='move'){await performTaskLocation(lineId,{kind:'date',date:null});return;}
+    if (task.date === null) { closePanel(); return; }
+    await applyDateOnly(target,null,task.time??'');
+  }
   /** N9: a line menu date chip sets the date in one press, as 날짜·시간 적용 would, and keeps the time. */
   async function applyDateChip(lineId: string | null, value: string) {
     if (actionsDisabled() || composingRef.current || regionPendingRef.current) return;
@@ -3433,7 +3648,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   // W5: the ＋ menu's head is its target line in one line ("‘…’ 아래에", or 새 줄 for an empty line or a typed "/").
   // A registered task's menu also holds its 진행·날짜, so its head is the task alone and the add choices get "추가".
   const menuTargetText = row ? memoContext?.label || row.title || row.task?.title || row.text : '';
-  const title = panel?.kind==='child' ? childTarget?.kind==='task' ? `‘${childTarget.title}’ 아래 하위 할 일` : childTarget?.kind==='memo' ? `‘${childTarget.title}’ 메모` : programInsertMenuTitle(childTarget?.title) :protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'repeat' ? '반복' : panel?.kind === 'progress' ? '진행 기록' : panel?.kind === 'date' ? '날짜·시간' : panel?.kind === 'task-folder' ? '폴더로 옮기기' : panel?.kind === 'folder-copy' ? '폴더 사본 만들기' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : panel?.kind === 'insert' && row?.progressTargetId ? `‘${menuTargetText.trim()}’` : programInsertMenuTitle(menuTargetText);
+  const title = panel?.kind==='child' ? childTarget?.kind==='task' ? `‘${childTarget.title}’ 아래 하위 할 일` : childTarget?.kind==='memo' ? `‘${childTarget.title}’ 메모` : programInsertMenuTitle(childTarget?.title) :protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'repeat' ? '반복' : panel?.kind === 'progress' ? '진행 기록' : panel?.kind === 'date' ? '날짜·시간' : panel?.kind === 'date-sheet' ? '옮길 날' : panel?.kind === 'section-order' ? '날짜 순서 바꾸기' : panel?.kind === 'task-folder' ? '폴더로 옮기기' : panel?.kind === 'folder-copy' ? '폴더 사본 만들기' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : panel?.kind === 'insert' && row?.progressTargetId ? `‘${menuTargetText.trim()}’` : programInsertMenuTitle(menuTargetText);
   // Region fix (11/7): one view per workspace (it was read anew on every draw: a new snapshot, every region repainted).
   const folderView = useMemo(() => props.folderId ? readProgramFolderRegions(draft.working, props.docId, props.folderId) : null,
     [draft.working, props.docId, props.folderId]);
@@ -3601,7 +3816,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       actions: view.actions.map(button => ({ label: button.label, run: run(button.step) })),
       chips: view.chips.map(button => ({ label: button.label, current: button.current, run: run(button.step) })) };
   }
-  memoTipBlockedRef.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice || !!writingNotice || !!heldView || !!locationNotice || !!scheduleNotice;
+  dateSuggestionBlocked.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice || !!writingNotice || !!heldView || !!locationNotice || !!scheduleNotice || memoTip !== null || !!dateApplied;
+  memoTipBlockedRef.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice || !!writingNotice || !!heldView || !!locationNotice || !!scheduleNotice || !!dateSuggestion || !!dateApplied;
   const noticeViews = programNoticeOrder([
     ...(moving ? [{ moving: true, tone: 'choose' as const, text: `${moving.label} · 하위 ${moving.descendantCount}줄`, closeLabel: null, close: undefined,
       actions: [{ label: '위치 선택', run: () => setPanel({ kind: 'move', lineId: moving.lineId }) }, { label: '이동 취소', run: cancelMove }] }] : []),
@@ -3616,6 +3832,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     ...(memoTip !== null ? [{ tone: 'info' as const, text: PROGRAM_MEMO_TIP_TEXT, closeLabel: '알림 닫기', close: () => setMemoTip(null) }] : []),
     ...(heldView ? [heldView] : []),
     ...(writingNotice?.tone === 'info' ? [{ tone: writingNotice.tone, text: writingNotice.text, detail: writingNotice.detail, actions: writingNotice.actions, closeLabel: '알림 닫기', close: () => setWritingNotice(null) }] : []),
+    ...(dateApplied ? [{ tone: 'info' as const, text: dateApplied.text, actions: [{ label: '되돌리기', run: dateApplied.undo }], closeLabel: '알림 닫기', close: () => setDateApplied(null) }] : []),
+    ...(dateSuggestion && !dateSuggestionBlocked.current && !composing ? [{ tone: 'suggest' as const, text: dateSuggestion.source.replace(/^ *- \[ \] */, ''),
+      emphasis: { start: dateSuggestion.words.start - (dateSuggestion.source.match(/^ *- \[ \] */)?.[0].length ?? 0), end: dateSuggestion.words.end - (dateSuggestion.source.match(/^ *- \[ \] */)?.[0].length ?? 0) },
+      actions: [{ label: taskDateSuggestionLabel(dateSuggestion.date, taskDateSuggestionToday()), run: whenComposed(() => { void acceptDateSuggestion(dateSuggestion); }) }],
+      closeLabel: '날짜 제안 무시', close: () => setSuggestion(null) }] : []),
   ]);
   const releaseNotice = () => { if (!noticeHeld) return; setNoticeHeld(false); restartFolderNotice(); restartCheckNotice(); };
   const notices = <div ref={noticeRef} className={styles.notices} onPointerDown={() => setNoticeHeld(true)} onPointerUp={releaseNotice} onPointerLeave={releaseNotice}
@@ -3771,6 +3992,18 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <button type="button" onClick={closePanel}>취소</button>
         <button type="button" disabled={disabled || orderPreview?.plan.status !== 'ready'} onClick={applyOrder}>원문에 날짜순 적용</button>
       </div>}
+      {panel.kind === 'section-order' && (plan => <div className={styles.choices} data-section-order>
+        {plan?.status === 'ready' ? <>
+          <p>날짜 구획의 순서만 거꾸로 바꿉니다. 구획 안 줄의 순서와 내용은 그대로이고, ↶ 한 번으로 되돌립니다.</p>
+          <div className={styles.sectionOrderPreview}>
+            <section aria-label="지금 순서"><h4>지금</h4><ol>{plan.headsBefore?.map((head, index) => <li key={index}>{sectionHeadLabel(head)}</li>)}</ol></section>
+            <section aria-label="바꾼 뒤 순서"><h4>바꾼 뒤</h4><ol>{plan.headsAfter?.map((head, index) => <li key={index}>{sectionHeadLabel(head)}</li>)}</ol></section>
+          </div>
+        </> : <p role="status">{plan?.status === 'noop' ? '날짜 구획이 둘 이상인 글에서 바꿀 수 있습니다.' : plan?.status === 'blocked' && plan.reason === 'unsaved' ? '입력을 저장한 뒤 다시 열어 주세요. 원문은 그대로입니다.'
+          : plan?.status === 'blocked' && plan.reason === 'execution-meaning-change' ? '바꾸면 어떤 할 일의 날짜나 폴더가 달라져 바꾸지 않습니다. 원문은 그대로입니다.' : '이 글은 순서를 안전하게 바꿀 수 없습니다. 원문은 그대로입니다.'}</p>}
+        <button type="button" onClick={closePanel}>취소</button>
+        <button type="button" data-section-order-apply disabled={disabled || plan?.status !== 'ready'} onClick={applyOrder}>순서 바꾸기</button>
+      </div>)(orderPreview?.plan as DateSectionOrderPlan | undefined)}
       {panel.kind === 'repeat' && (target => <div className={styles.choices} data-repeat-panel>
         {/* N10 (SPEC 5): 이 줄 반복 writes the same "@…" marker a person can type; 반복·Flow 만들기 is the old sheet. */}
         <h4>이 줄 반복</h4>
@@ -3813,14 +4046,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           {locationPolicy(panel.lineId).kind!=='move'&&<p className={styles.contextHint}>{locationPolicy(panel.lineId).message}</p>}
           <div className={styles.dateChips} role="group" aria-label="옮길 날">
             {programLineDateChips(today()).map(chip=><button type="button" key={chip.key} disabled={actionsDisabled()||locationAvailability().blocked||locationPolicy(panel.lineId).kind==='blocked'} onClick={()=>void applyDateChip(panel.lineId,chip.date)}>{chip.label}<small>{chip.detail}</small></button>)}
-            <button type="button" disabled={actionsDisabled()||locationAvailability().blocked||locationPolicy(panel.lineId).kind==='blocked'} onClick={()=>openProgress(panel.lineId,'date')}>고르기<small>날짜·시간</small></button>
+            <button type="button" data-date-sheet-open disabled={actionsDisabled()||locationAvailability().blocked||locationPolicy(panel.lineId).kind==='blocked'} onClick={()=>openDateSheet(panel.lineId)}>고르기<small>달력</small></button>
           </div>
           <button type="button" disabled={actionsDisabled()||locationAvailability().blocked||locationPolicy(panel.lineId).kind!=='move'} onClick={()=>openFolderPanel(panel.lineId)}>폴더로 옮기기<small>지금 / {programFolderPath(currentState(),M.tasks(currentState()).find(item=>item.id===row.progressTargetId)?.scopeId??'folder-unfiled')}</small></button>
         </section>}
         {row?.progressTargetId && <section className={styles.menuSection} aria-label="선택 항목 진행"><h4>진행</h4>
           {accessFor(panel.lineId)?.reason ? <button type="button" onClick={() => setPanel({ kind: 'reference', lineId: panel.lineId })}>기록·원래 항목 보기</button> : (chipTask => <>
             <button type="button" onClick={() => openProgress(panel.lineId)}>진행 기록</button>
-            {!chipTask && <button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜·시간</button>}
+            {/* F9 W-MENU-24: [고르기] is the calendar now; the time stays here, for every task. */}
+            <button type="button" data-progress-date onClick={() => openProgress(panel.lineId, 'date')}>날짜·시간</button>
             {chipTask && props.repeatContext && row?.kind === 'task' && <button type="button" onClick={() => openRepeatPanel(panel.lineId)}>반복…</button>}
           </>)(M.tasks(currentState()).find(item => item.id === row.progressTargetId))}
         </section>}
@@ -3868,6 +4102,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <label>실행 날짜<input type="date" value={date} onChange={event => setDate(event.target.value)} /></label><label>시간<input type="time" step={60} value={time} onChange={event => setTime(event.target.value)} /></label>
         {dateChangeHint && <p className={styles.contextHint} role="status">{dateChangeHint}</p>}
         <button type="button" onClick={() => setDate('')}>날짜 미정</button><button type="submit" disabled={disabled||locationAvailability().blocked}>날짜·시간 적용</button></form>}
+      {panel.kind==='date-sheet'&&(sheetRow=>{
+        const task=sheetRow?.progressTargetId?M.tasks(draft.working).find(item=>item.id===sheetRow.progressTargetId):undefined,policy=locationPolicy(panel.lineId);
+        const rows=sheetRow?M.rowMeta(draft.working,props.docId).slice(sheetRow.index+1,sheetRow.subtreeEndIndex):[];
+        const children=rows.filter(entry=>entry.kind==='task'||entry.kind==='subcheck').length,memos=rows.filter(entry=>entry.kind==='property'&&/^ *-\s+메모:/.test(entry.text)||entry.kind==='note'&&!!entry.text.trim()).length;
+        const summary=policy.kind!=='move'?policy.message:[children?`하위 할 일 ${children}`:'',memos?`메모 ${memos}줄`:''].filter(Boolean).join(' · ')+(children||memos?' 같이 갑니다':'할 일을 통째로 옮깁니다');
+        const marked=new Set(M.tasks(draft.working).flatMap(item=>!item.done&&item.date?[item.date]:[]));
+        return <ProgramDateSheet title={sheetRow?.title||task?.title||''} summary={summary} today={today()} current={task?.date??null} marked={marked}
+          disabled={disabled||actionsDisabled()||locationAvailability().blocked||policy.kind==='blocked'}
+          blockedNote={locationAvailability().blocked?'저장을 확인한 뒤 옮길 수 있어요.':policy.kind==='blocked'?policy.message:null}
+          onPick={value=>{void pickSheetDate(panel.lineId,value);}}/>;
+      })(currentRow(panel.lineId))}
       {panel.kind==='task-folder'&&<ProgramTaskMoveSheet workspace={draft.working} documentId={props.docId} taskId={locationPolicy(panel.lineId).taskId} today={today()} availability={locationAvailability()} disabled={disabled} onChoose={folderId=>void performTaskLocation(panel.lineId,{kind:'folder',folderId})} onCreate={title=>void performTaskLocation(panel.lineId,{kind:'new-folder',title})}/>}
       {panel.kind === 'folder-copy' && <form onSubmit={event => { event.preventDefault(); void makeFolderCopy(); }}>
         <p>선택한 ‘{panel.folderCopyPreview?.title}’ 묶음만 새 문서로 복사합니다.</p>

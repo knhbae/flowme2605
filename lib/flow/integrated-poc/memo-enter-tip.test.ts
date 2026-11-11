@@ -57,7 +57,7 @@ test('the host: the hooks, the notice row line, its ends (key, composition, pres
   assert(vendor.includes("if (left && typeof config.onMemoExit === 'function') config.onMemoExit();"));
   assert(editor.includes('onMemoContinue:()=>{if(!memoTipBlockedRef.current&&programMemoTipTake(programMemoTipStorage()))setMemoTip(++memoTipKeys.current);},'));
   assert(editor.includes('onMemoExit:()=>{programMemoTipLeft(programMemoTipStorage());},'));
-  assert(editor.includes('memoTipBlockedRef.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice || !!writingNotice || !!heldView || !!locationNotice || !!scheduleNotice;'));
+  assert(editor.includes('memoTipBlockedRef.current = !!moving || !!message && !panel || !!checkNotice || !!folderNotice || !!repeatNotice || !!writingNotice || !!heldView || !!locationNotice || !!scheduleNotice || !!dateSuggestion || !!dateApplied;'));
   assert(editor.includes("...(memoTip !== null ? [{ tone: 'info' as const, text: PROGRAM_MEMO_TIP_TEXT, closeLabel: '알림 닫기', close: () => setMemoTip(null) }] : []),"));
   assert.equal(editor.split("for (const type of ['keydown', 'compositionstart', 'pointerdown', 'focusout'])").length, 3, 'added and removed');
   assert(/if \(memoTip === null\) return;[^\n]*PROGRAM_MEMO_TIP_MS/.test(editor));

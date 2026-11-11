@@ -234,7 +234,8 @@ test('Insert plan alone: a too deep chain is refused; the insert is one range', 
   const plan = programFolderTodayInsert(raw(data, home), M.rowMeta(space(data).text, home), TODAY, [], '오늘 일');
   assert(plan && plan.head && plan.folderLines === 0);
   const next = raw(data, home).slice(0, plan.start) + plan.text + raw(data, home).slice(plan.start);
-  assert.equal(next, '[2026-11-09]\n- [ ] 오늘 일\n\n[2026-11-08]\n- [ ] 어제');
+  // F10 W-ORDER-01 (11/11): one dated head is a new document, oldest first: today's head goes under yesterday.
+  assert.equal(next, '[2026-11-08]\n- [ ] 어제\n\n[2026-11-09]\n- [ ] 오늘 일');
 });
 
 test('ProgramSpace: the ＋ 오늘 할 일 row at the end of 오늘 (a field with the place line, Enter/[적기], 되돌리기); the empty state uses it; no 빠른 할 일 here', () => {
