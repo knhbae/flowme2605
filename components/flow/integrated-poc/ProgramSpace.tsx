@@ -99,8 +99,8 @@ import { ProgramTaskMoveSheet } from './ProgramTaskMoveSheet';
 import { ProgramTaskMoveContext } from './task-move-context';
 import { programCopyHeader } from '@/lib/flow/integrated-poc/program-copy-header';
 import { programImportTargets } from '@/lib/flow/integrated-poc/program-import-links';
-import { programDateSectionDirection } from '@/lib/flow/integrated-poc/date-section-order';
-import { programMoveTraceKey } from '@/lib/flow/integrated-poc/task-move-trace';
+import { programDateHeadIndex } from '@/lib/flow/integrated-poc/input-bar';
+import { keepProgramMoveTraces, programMoveTrace, programMoveTraceKey } from '@/lib/flow/integrated-poc/task-move-trace';
 
 export { programMobileWritingKeyboardOpen, useProgramMobileWritingChrome } from './useProgramMobileWritingChrome';
 
@@ -384,7 +384,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [taskNotice, setTaskNotice] = useState<{ taskId: string; title: string; text: string } | null>(null);
   const taskMoveGate=useContext(ProgramTaskMoveContext);
   const [detailFolderMove,setDetailFolderMove]=useState(false),[locationPending,setLocationPending]=useState(false);
-  type LocationNotice={actorId:string;documentId:string;taskId:string;before:TextWorkspaceState;after:TextWorkspaceState;date:string|null;folderId:string;text:string;kind:TaskLocationTarget['kind'];scheduleUndo?:()=>Promise<boolean>};
+  type LocationNotice={actorId:string;documentId:string;taskId:string;before:TextWorkspaceState;after:TextWorkspaceState;date:string|null;folderId:string;text:string;kind:TaskLocationTarget['kind'];scheduleUndo?:()=>Promise<boolean>;traceId?:string};
+  /** W-MENU-27: the trace store of this device (null when the browser keeps none). */
+  const traceStorage=()=>{try{return window.localStorage;}catch{return null;}};
   const [locationNotice,setLocationNotice]=useState<LocationNotice|null>(null);
   const locationBusy=useRef(false);
   // I7: the notice after '시간순으로', holding the arrays it removed for its 되돌리기, or why that was refused.
@@ -843,8 +845,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (!space.text.documents.some(doc => doc.id === id)) return;
     PROGRAM_TODAY_SHOWN.add(todayKey(id));
     if (pendingSourceFocus.current?.documentId === id) return;
-    const oldestFirst = ['oldest-first', 'none'].includes(programDateSectionDirection(space.text, id));
-    if (!recentViewRef.current(id) && !oldestFirst) return;
+    // W-ORDER-02 (총괄 11/11 08:3x): every document, in any date order (newest first too).
     // Read from the text the editor shows now, each try: opening may write first (a repeat line's first round, say).
     let known: { text: TextWorkspaceState; index: number; caret: number | null; raw: string } | null = null;
     const plan = () => {
@@ -852,11 +853,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (!text) return null;
       if (known?.text === text) return known;
       const rows = M.rowMeta(text, id), head = rows.find(row => row.kind === 'date' && row.date === today), doc = M.getDocument(text, id);
-      if (!head || !doc) return known = { text, index: -1, caret: null, raw: '' };
+      if (!doc || !doc.lines.length) return known = { text, index: -1, caret: null, raw: '' };
+      // W-ORDER-08: no section for today: no line is made; the screen goes near where today's would come, no caret.
+      if (!head) return known = { text, index: Math.min(programDateHeadIndex(doc.lines.map(line => line.text), today), doc.lines.length - 1), caret: null, raw: M.raw(doc) };
       // The end of today's section: its last line that is not blank, or the empty line right under it in the section.
       let caretLine = [...rows].reverse().find(row => row.dateLineId === head.id && row.id !== head.id && row.kind !== 'blank')?.index ?? head.index;
       if (rows[caretLine + 1]?.kind === 'blank' && rows[caretLine + 1]?.dateLineId === head.id) caretLine += 1;
-      const caret = oldestFirst ? doc.lines.slice(0, caretLine + 1).reduce((sum, line) => sum + line.text.length + 1, 0) - 1 : null;
+      const caret = doc.lines.slice(0, caretLine + 1).reduce((sum, line) => sum + line.text.length + 1, 0) - 1;
       return known = { text, index: head.index, caret, raw: M.raw(doc) };
     };
     // QA Q2: not being typed in, the editor shows its text on its reading viewport (the vendor's scroll surface), the
@@ -878,7 +881,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       const viewport = root.querySelector<HTMLElement>('.tle-viewport');
       const surface = viewport && (root.classList.contains('tle-reading-view') || root.classList.contains('tle-folded-view')) ? viewport : textarea;
       // Today's date line in the upper part of the screen; already there, the screen stays.
-      if (row.offsetTop >= surface.scrollTop && row.offsetTop + row.offsetHeight <= surface.scrollTop + surface.clientHeight * (oldestFirst ? .4 : 1)) return;
+      if (row.offsetTop >= surface.scrollTop && row.offsetTop + row.offsetHeight <= surface.scrollTop + surface.clientHeight * .4) return;
       const top = Math.max(0, row.offsetTop - 20);
       textarea.scrollTop = top;
       if (surface !== textarea) surface.scrollTop = top;
@@ -2445,11 +2448,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if(!result.ok||!committed)return false;
       const after=committed as TextWorkspaceState,changed=M.tasks(after).find(item=>item.id===taskId);
       if(!changed)return false;
+      // W-MENU-27: a move to a later day (or 날짜 미정) leaves its trace in the day it left, kept on this device.
+      const trace=target.kind==='date'&&beforeCommit?programMoveTrace(beforeCommit,task.docId,taskId,changed.date??null,Date.now(),programId('trace')):null;
+      if(trace)keepProgramMoveTraces(traceStorage(),programMoveTraceKey(actorId),list=>[...list,trace],today);
       const currentView=presentation.current;
       if(dialogOwner===executionDraftOwner.current.dialog&&view.period===currentView.period&&view.date===currentView.date&&view.folderId===currentView.folderId&&view.query===currentView.query){
         if(detail)close();setTaskNotice(null);setOrderNotice(null);setDatesNotice(null);
-        setLocationNotice({actorId,documentId:task.docId,taskId,before:beforeCommit!,after,date:changed.date,folderId:changed.scopeId,kind:target.kind,
-          text:target.kind==='date'?`${changed.date?programCalendarDate(changed.date,today,false):'날짜 미정'}로 옮겼습니다`:`/ ${programFolderPath(after,changed.scopeId)}로 옮겼습니다`});
+        setLocationNotice({actorId,documentId:task.docId,taskId,before:beforeCommit!,after,date:changed.date,folderId:changed.scopeId,kind:target.kind,traceId:trace?.id,
+          text:target.kind==='date'?programTaskDatesMovedText(1,changed.date,today):`/ ${programFolderPath(after,changed.scopeId)}로 옮겼습니다`});
         requestAnimationFrame(()=>highlightTaskLocation(taskId));
       }
       return true;
@@ -2469,7 +2475,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         if(await notice.scheduleUndo())setLocationNotice(null);else setMessage('그 뒤 다른 변경이 있어 되돌리지 않았습니다.');return;
       }
       const result=await run('할 일 옮기기 되돌리기',current=>undoProgramTaskLocation(current,{actorId,documentId:notice.documentId,after:notice.after,before:notice.before}));
-      if(result.ok)setLocationNotice(null);
+      if(result.ok){setLocationNotice(null);if(notice.traceId)keepProgramMoveTraces(traceStorage(),programMoveTraceKey(actorId),list=>list.filter(entry=>entry.id!==notice.traceId),today);}
     }finally{locationBusy.current=false;setLocationPending(false);}
   }
   async function dateMove(taskId: string, nextDate: string | null) {

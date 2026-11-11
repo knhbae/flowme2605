@@ -8,7 +8,7 @@ import { ProgramServerStatusContext } from './program-status-context';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
 import { textEditorRows, textWorkspaceModel as M, type TextEditorRowMeta, type TextMoveSelection, type TextMoveTarget, type TextRow, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { programLineDateChips, programTaskDatesMovedText } from '@/lib/flow/integrated-poc/task-date-move';
-import { programMoveTrace, programMoveTraceLines, readProgramMoveTraces, writeProgramMoveTraces, type ProgramMoveTrace } from '@/lib/flow/integrated-poc/task-move-trace';
+import { keepProgramMoveTraces, programMoveTrace, programMoveTraceLines, readProgramMoveTraces, PROGRAM_MOVE_TRACE_EVENT, type ProgramMoveTrace } from '@/lib/flow/integrated-poc/task-move-trace';
 import { planProgramDateSectionReverse, type DateSectionOrderPlan } from '@/lib/flow/integrated-poc/date-section-order';
 import { ProgramDateSheet } from './ProgramDateSheet';
 import { programBracketDate, programBracketDatePlan, programDateHeaderPlan, programFolderSeedPlan, programTodayStartPlan } from '@/lib/flow/integrated-poc/input-bar';
@@ -542,8 +542,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     let storage: Storage | null = null;
     try { storage = window.localStorage; } catch { storage = null; }
     // The stored list is the base (another tab may have added to it); without storage, this visit's list.
-    const next = change(storage ? readProgramMoveTraces(storage, key) : moveTracesRef.current);
-    writeProgramMoveTraces(storage, key, next, today());
+    const next = keepProgramMoveTraces(storage, key, change, today(), moveTracesRef.current);
     moveTracesRef.current = next; setMoveTraces(next);
   }
   function rememberMove(before: TextWorkspaceState, taskId: string, toDate: string | null) {
@@ -586,8 +585,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const key = props.moveTraceKey;
     if (!key) return;
     const read = (event: StorageEvent) => { if (event.key === key) { const next = readProgramMoveTraces(window.localStorage, key); moveTracesRef.current = next; setMoveTraces(next); } };
-    window.addEventListener('storage', read);
-    return () => window.removeEventListener('storage', read);
+    // W-MENU-27: the host's moves (오늘 row detail, the band, the folded view) are kept in this tab too.
+    const here = (event: Event) => { if ((event as CustomEvent<{ key?: string }>).detail?.key === key) { const next = readProgramMoveTraces(window.localStorage, key); moveTracesRef.current = next; setMoveTraces(next); } };
+    window.addEventListener('storage', read); window.addEventListener(PROGRAM_MOVE_TRACE_EVENT, here);
+    return () => { window.removeEventListener('storage', read); window.removeEventListener(PROGRAM_MOVE_TRACE_EVENT, here); };
   }, [props.moveTraceKey]);
   const locationUndo = useRef<LocationEdit | null>(null);
   const [locationNotice,setLocationNotice]=useState<LocationEdit|null>(null);
@@ -2238,7 +2239,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if(locationAvailability().blocked){setMessage('저장을 확인한 뒤 옮겨 주세요.');return;}
     const before=currentState();
     if(panel?.locationExpected&&!programSame(panel.locationExpected,before)){setMessage('그사이 내용이 바뀌었습니다. 닫고 다시 옮겨 주세요.');return;}
-    if(propsRef.current.onTaskLocation){closePanel();const done=await propsRef.current.onTaskLocation(policy.taskId,target,before);if(done&&target.kind==='date')rememberMove(before,policy.taskId,target.date);return;}
+    // W-MENU-27: the host keeps that move's trace (moveTaskHere), as for its other ways in.
+    if(propsRef.current.onTaskLocation){closePanel();await propsRef.current.onTaskLocation(policy.taskId,target,before);return;}
     const moved=moveTaskLocation(before,{documentId:policy.documentId,taskId:policy.taskId,target});
     if(!moved.ok){setMessage(TASK_LOCATION_FAILURE_TEXT[moved.reason]);return;}
     if(!moved.changed){closePanel();return;}

@@ -68,16 +68,38 @@ test('W-MENU-26: only a move the text still agrees with is drawn (되돌리기, 
   // Moved on again (13 → 12) without its own kept move: the last kept move ends on 13, not where it is: nothing.
   const again = moved(after, id, report, '2026-11-12');
   assert.equal(programMoveTraceLines(again, id, [trace], TODAY).size, 0);
-  // With that second move kept too: the 11th says where it is now, and the 13th (not passed) says it as well.
-  const second = programMoveTrace(after, id, report, '2026-11-12', 2, 't4')!;
-  const lines = [...programMoveTraceLines(again, id, [trace, second], TODAY).values()].flat();
-  assert.deepEqual(lines.map(line => line.text).sort(), ['→ 보고서 쓰기 · 11월 12일 (목)으로 옮김', '→ 보고서 쓰기 · 11월 12일 (목)으로 옮김']);
+  // W-MENU-27 (11/11): a move to an earlier day keeps no trace (13 → 12).
+  assert.equal(programMoveTrace(after, id, report, '2026-11-12', 2, 't4'), null);
+  // Moved on to a later day (13 → 16), kept too: the 11th says where it is now, and the 13th (not passed) says it as well.
+  const further = moved(after, id, report, '2026-11-16'), second = programMoveTrace(after, id, report, '2026-11-16', 2, 't5')!;
+  const lines = [...programMoveTraceLines(further, id, [trace, second], TODAY).values()].flat();
+  assert.deepEqual(lines.map(line => line.text).sort(), ['→ 보고서 쓰기 · 11월 16일 (월)로 옮김', '→ 보고서 쓰기 · 11월 16일 (월)로 옮김']);
   // The section it left is gone (its date line deleted by hand): nothing drawn there.
   const raw = M.raw(M.getDocument(after, id)).replace('[2026-11-11]\n', '');
   const edited = M.editText(after, id, raw, { folderText: true });
   assert.equal(programMoveTraceLines(edited, id, [trace], TODAY).size, 0);
   // Another document's trace is not drawn here.
   assert.equal(programMoveTraceLines(after, id, [{ ...trace, docId: 'other' }], TODAY).size, 0);
+});
+
+test('W-MENU-27: every way to a day keeps its trace (the editor\'s, and the host\'s 오늘 detail, band and folded view); a move back keeps none', () => {
+  const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  const editor = read('../../../components/flow/integrated-poc/ProgramTextEditor.tsx'), space = read('../../../components/flow/integrated-poc/ProgramSpace.tsx');
+  // The editor's own moves (⋮ sheet and chips, the F7 chip, the bar's 날짜) all go through performTaskLocation.
+  assert.match(editor, /if\(target\.kind==='date'\)record\.trace=rememberMove\(before,policy\.taskId,moved\.date\);/);
+  // The folded view's moves are the host's: kept once, there.
+  assert.match(editor, /if\(propsRef\.current\.onTaskLocation\)\{closePanel\(\);await propsRef\.current\.onTaskLocation\(policy\.taskId,target,before\);return;\}/);
+  // The host's moveTaskHere (오늘 row detail, the band's 미루기 opens it, the folded view): kept, and taken back by 되돌리기.
+  assert.match(space, /const trace=target\.kind==='date'&&beforeCommit\?programMoveTrace\(beforeCommit,task\.docId,taskId,changed\.date\?\?null,Date\.now\(\),programId\('trace'\)\):null;/);
+  assert.match(space, /if\(notice\.traceId\)keepProgramMoveTraces\(traceStorage\(\),programMoveTraceKey\(actorId\),list=>list\.filter\(entry=>entry\.id!==notice\.traceId\),today\);/);
+  // This tab's editors hear the host's moves at once.
+  assert.match(editor, /window\.addEventListener\(PROGRAM_MOVE_TRACE_EVENT, here\);/);
+  // Not the 밀린 일 [오늘로 옮기기] (carryToToday): its day has passed, so there is nothing to draw.
+  assert.doesNotMatch(space.slice(space.indexOf('async function carryToToday('), space.indexOf('async function carryToToday(') + 1500), /programMoveTrace\(/);
+  // An earlier day keeps none; 날짜 미정 is not earlier.
+  const { state, id } = doc(RAW), report = taskId(state, '보고서 쓰기');
+  assert.equal(programMoveTrace(state, id, report, '2026-11-10', 1, 'back'), null);
+  assert.ok(programMoveTrace(state, id, report, null, 1, 'undated'));
 });
 
 test('W-MENU-26: the kept moves live in this device only, read back exactly, cleaned of old days and capped', () => {
@@ -186,4 +208,7 @@ test('F9/F10 wiring: vendor trace (reading view only, never source), sheet, 진�
   assert.match(space, /text = view \? view\.workspace : dataRef\.current\.spaces\[actorId\]\?\.text;/);
   assert.match(space, /if \(pendingSourceFocus\.current\?\.documentId === id \|\| document\.activeElement === textarea\) return;/);
   assert.doesNotMatch(space.slice(space.indexOf('F10 W-ORDER-02 (11/11)'), space.indexOf('const recentDay')), /\.focus\(/);
+  // W-ORDER-02 (총괄 08:3x): every document, newest first too; W-ORDER-08: no section for today, no line made, scrolled near its place.
+  assert.doesNotMatch(space, /oldestFirst/);
+  assert.match(space, /if \(!head\) return known = \{ text, index: Math\.min\(programDateHeadIndex\(doc\.lines\.map\(line => line\.text\), today\), doc\.lines\.length - 1\), caret: null, raw: M\.raw\(doc\) \};/);
 });

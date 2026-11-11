@@ -44,14 +44,26 @@ export function writeProgramMoveTraces(storage: TraceStorage | null | undefined,
   try { storage?.setItem(key, JSON.stringify(kept)); return !!storage; } catch { return false; }
 }
 
+/** W-MENU-27: every way that moves a task to a date keeps its move here (the editor's ⋮ sheet and chips, the F7 chip,
+ *  the bar; the host's 오늘 row detail, the band's 미루기, the folded writing view). The stored list is the base (another
+ *  tab may have added to it); this tab's editors hear the change through PROGRAM_MOVE_TRACE_EVENT. */
+export const PROGRAM_MOVE_TRACE_EVENT = 'flowme:move-trace';
+export function keepProgramMoveTraces(storage: TraceStorage | null | undefined, key: string, change: (list: ProgramMoveTrace[]) => ProgramMoveTrace[], today: string, fallback: ProgramMoveTrace[] = []): ProgramMoveTrace[] {
+  const next = change(storage ? readProgramMoveTraces(storage, key) : fallback);
+  writeProgramMoveTraces(storage, key, next, today);
+  try { if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent(PROGRAM_MOVE_TRACE_EVENT, { detail: { key } })); } catch { /* nothing listens */ }
+  return next;
+}
+
 /** The move to keep when `taskId` of `docId` goes from where it is in `before` to `toDate`: null when it was not in a
- *  dated section (no day to draw the line in) or stays on its day. */
+ *  dated section (no day to draw the line in), stays on its day, or goes to an earlier day (W-MENU-27: a trace shows
+ *  work carried forward; moved back, there is none). */
 export function programMoveTrace(before: TextWorkspaceState, docId: string, taskId: string, toDate: string | null, at: number, id: string): ProgramMoveTrace | null {
   const doc = M.getDocument(before, docId);
   if (!doc) return null;
   const rows = M.rowMeta(before, docId), row = rows.find(entry => entry.id === taskId);
   const head = row?.dateLineId ? rows.find(entry => entry.id === row.dateLineId) : undefined;
-  if (!row || !head || head.kind !== 'date' || !head.date || !DATE.test(head.date) || head.date === toDate) return null;
+  if (!row || !head || head.kind !== 'date' || !head.date || !DATE.test(head.date) || head.date === toDate || toDate !== null && toDate < head.date) return null;
   const above = row.index > head.index ? doc.lines[row.index - 1]?.id : head.id;
   if (!above) return null;
   const percent = M.currentProgress(before, taskId);
