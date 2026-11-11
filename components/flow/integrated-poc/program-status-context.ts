@@ -7,7 +7,9 @@ import type { ProgramStatus } from '@/lib/flow/integrated-poc/program-status';
  *  (다시 확인, 최신 내용 열기), [복구함 n] when this document has kept input, and [자세히] for the whole explanation (the
  *  host's recovery box content). `close` for a passing notice only. */
 export type ProgramAlertLine = { tone: 'warn' | 'info'; text: string; action?: { label: string; run: () => void; disabled?: boolean } | null;
-  recoveries?: number; openRecovery?: (opener: HTMLElement) => void; detail?: ReactNode | null; close?: (() => void) | null };
+  recoveries?: number; openRecovery?: (opener: HTMLElement) => void; detail?: ReactNode | null; close?: (() => void) | null;
+  /** W-VER-02 (11/11): a lower notice said under [자세히] whichever line wins (the editor's own save trouble too). */
+  note?: ReactNode | null };
 
 /** The host's save status for the open document's editor, so the editor can draw one status slot.
  *  The editor owns the status words and the one live announcement. `recovery` is the host's recovery

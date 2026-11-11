@@ -3456,7 +3456,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const ownAlert: ProgramAlertLine | null = serverView && draft.error ? { tone: 'warn',
     text: hostWarn?.text ?? (props.readOnly ? '읽기 전용 · 입력은 남아 있습니다' : inputLocked ? '입력 보호 · 입력은 남아 있습니다' : '저장 확인 필요 · 입력은 남아 있습니다'),
     action: hostWarn?.action ?? (props.readOnly ? null : { label: '다시 저장', run: () => { if (draftRef.current?.getState().invalid) draftRef.current.recheck(); void saveNow(); }, disabled: draft.saving }),
-    recoveries: serverView.alert?.recoveries, openRecovery: serverView.alert?.openRecovery, detail: editorRecoveryBody(serverView.recoveryBody) } : null;
+    recoveries: serverView.alert?.recoveries, openRecovery: serverView.alert?.openRecovery, detail: editorRecoveryBody(serverView.recoveryBody), note: serverView.alert?.note } : null;
   const baseAlert: ProgramAlertLine | null = ownAlert ?? serverView?.alert ?? (serverView && props.hostNotice ? { tone: 'info', text: props.hostNotice.text, close: props.hostNotice.close } : null);
   const alertLine: ProgramAlertLine | null = baseAlert && props.hostNotice && baseAlert.text !== props.hostNotice.text
     ? { ...baseAlert, detail: <>{baseAlert.detail}<p className={styles.alertNote}>{props.hostNotice.text}</p></> } : baseAlert;
@@ -3467,10 +3467,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     <div className={styles.alertActions}>
       {alertLine.action && <button type="button" data-alert-action disabled={alertLine.action.disabled} onClick={alertLine.action.run}>{alertLine.action.label}</button>}
       {!!alertLine.recoveries && alertLine.openRecovery && <button type="button" data-alert-recovery onClick={event => alertLine.openRecovery!(event.currentTarget)}>복구함 {alertLine.recoveries}</button>}
-      {alertLine.detail && <button type="button" data-alert-more aria-expanded={alertDetail} onClick={() => setAlertDetail(open => !open)}>{alertDetail ? '접기' : '자세히'}</button>}
+      {(alertLine.detail || alertLine.note) && <button type="button" data-alert-more aria-expanded={alertDetail} onClick={() => setAlertDetail(open => !open)}>{alertDetail ? '접기' : '자세히'}</button>}
       {alertLine.close && <button type="button" data-alert-close aria-label="알림 닫기" onClick={alertLine.close}><ProgramIcon name="close" size={18} /></button>}
     </div>
-    {alertDetail && alertLine.detail && <div className={styles.alertDetail}>{alertLine.detail}</div>}
+    {alertDetail && (alertLine.detail || alertLine.note) && <div className={styles.alertDetail}>{alertLine.detail}{alertLine.note}</div>}
   </div>;
   const statusWarn = (serverWins ? serverView!.level : editorStatus.level) <= 4;
   // The words show the winner; the recovery boxes stay whichever wins, so no action is lost.
