@@ -58,6 +58,7 @@ import { emptyProgramRecurrencePresentation, programNavigationMatchesDocument, t
 import { ProgramDocumentProvenance } from './ProgramDocumentProvenance';
 import { ProgramPersonalAuthoring } from './ProgramPersonalAuthoring';
 import { programRowPatchEnabled } from '@/lib/flow/integrated-poc/typing-row-patch';
+import { applyProgramParseCache } from '@/lib/flow/integrated-poc/typing-parse-cache';
 
 /** typelag ② (11/11): the 반복·Flow sheet stays mounted while closed, so its input survives closing; while it is closed
  *  (live false) it is not drawn again, so a key typed in the text no longer redraws its row per task. Opening draws it
@@ -116,6 +117,8 @@ export { programMobileWritingKeyboardOpen, useProgramMobileWritingChrome } from 
 
 /** F10 W-ORDER-02: the documents (by account) already opened at today in this page visit; not again until a reload. */
 const PROGRAM_TODAY_SHOWN = new Set<string>();
+// typelag (나): the model's document parse cache follows this device's switch (on unless 'flowme:alpha:parse-cache' = 'off').
+if (typeof window !== 'undefined') applyProgramParseCache();
 
 /** The document sheet's selection-only surface: no navigation, creation or editor is mounted here. */
 export function ProgramImportDocumentPicker({ data, actorId, copyDocumentId, pendingDocumentIds, onChoose, onClose }: {

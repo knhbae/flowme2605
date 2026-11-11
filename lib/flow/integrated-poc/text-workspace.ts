@@ -131,6 +131,10 @@ export interface TextWorkspaceModel {
   progressHistory(state: TextWorkspaceState, taskId: string): TextProgress[];
   latestProgress(state: TextWorkspaceState, taskId: string): TextProgress | null;
   parseProgressToken(token: string): { ok: boolean; percent: number | null; kind: 'percent' | 'integer' | 'ratio' | null };
+  /** typelag (나): the document parse cache switch (on in a browser window, off on the server and in workers); its counts. */
+  parseCache(on?: boolean): { on: boolean; hits: number; misses: number; documents: number };
+  /** The parse the model's own queries read: parseDocument's, through the cache when it is on (frozen then). */
+  parseDocumentCached(doc: TextDocument, state?: TextWorkspaceState, skipSourceDates?: boolean): TextAnalysis;
 }
 
 /** Pure source transitions. Persistence and undo belong to the program transaction owner. */
