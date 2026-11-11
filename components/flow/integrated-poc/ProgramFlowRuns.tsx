@@ -34,7 +34,7 @@ export function ProgramFlowRuns(props: { runs: readonly ProgramFlowRun[]; today:
             onClick={() => props.onCheck(run, run.next!.taskId)}><span aria-hidden="true" data-check={busy ? 'busy' : 'open'} /></button>}
         <button type="button" className={styles.text} onClick={() => props.onOpen(run)}
           aria-label={`${run.title} · ${run.done}/${run.total} · ${run.mark}${busy ? ' · 확인 중' : ''} · ${run.wait ? `기다림 ${run.wait.title}` : `다음 ${run.next?.title ?? ''}`} · 글 열기`}>
-          <span className={styles.head}><ProgramFlowMark size={16} /><span className={styles.name}>{run.title}</span>
+          <span className={styles.head}><ProgramFlowMark size={16} /><span className={styles.name}>{run.flow}{run.run && <span className={styles.runName} data-run-name> {run.run}</span>}</span>
             <span className={styles.count}>{run.done}/{run.total}</span>{busy && <span className={styles.checking}>확인 중</span>}<span className={styles.mark}>{run.mark}</span></span>
           <span className={styles.next}>{run.wait ? <>기다림: {run.wait.title}{run.wait.days ? ` (${run.wait.days}일째)` : ''}</>
             : run.next && <>다음: {run.next.title} · {programFlowRunNextLabel(run.next.date, props.today)}</>}</span>

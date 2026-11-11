@@ -16,8 +16,9 @@ export type ProgramFlowRun = {
   key: string; kind: 'copy' | 'personal';
   /** The execution's document (the copy's, or the personal execution's). */
   documentId: string;
-  /** 1차: the Flow's name (a copy's document title; a personal execution's document title), no run name. */
-  title: string;
+  /** F12 2차 (W-FLOW-01·04, 기획 11/11 21:31): the Flow's name and the run's name, which is the run document's title
+   *  (nothing else stores it); title is both, as the line shows them ('월간 발표 12월'). */
+  title: string; flow: string; run: string | null;
   done: number; total: number;
   /** W-FLOW-02 1차: read from the steps' day offsets — all ≤ 0 and one < 0 is the last day; anything else the first. */
   basis: 'last' | 'first';
@@ -31,6 +32,14 @@ export type ProgramFlowRun = {
   wait: ProgramFlowRunWait | null;
 };
 
+/** F12 2차 (W-FLOW-01): the run's name read from its document's title — none when the title is the Flow's name; what
+ *  follows the Flow's name when the title starts with it ('월간 발표 · 12월' → '12월'); else the whole title. */
+export function programRunName(flow: string, title: string): string | null {
+  const name = title.trim(), base = flow.trim();
+  if (!name || name === base) return null;
+  if (base && name.startsWith(base)) return name.slice(base.length).replace(/^[\s·:\-–—]+/, '').trim() || null;
+  return name;
+}
 /** W-FLOW-02: the basis of a run from its steps' day offsets (undated steps have none). */
 export function programFlowRunBasis(offsets: readonly (number | null)[]): 'last' | 'first' {
   const days = offsets.filter((day): day is number => day !== null);
@@ -43,7 +52,7 @@ export function programFlowRunMark(basis: 'last' | 'first', anchor: string | nul
   return days > 0 ? '시작 전' : `${1 - days}일째`;
 }
 
-type Source = { key: string; kind: 'copy' | 'personal'; documentId: string; title: string; anchor: string | null; offsets: (number | null)[]; taskIds: string[] };
+type Source = { key: string; kind: 'copy' | 'personal'; documentId: string; flow: string; run: string | null; anchor: string | null; offsets: (number | null)[]; taskIds: string[] };
 function sources(data: ProgramData, space: ProgramPrivateSpace): Source[] {
   const live = (documentId: string) => !space.documentTrash?.[documentId] && !space.archivedDocumentIds.includes(documentId);
   const out: Source[] = [];
@@ -52,7 +61,8 @@ function sources(data: ProgramData, space: ProgramPrivateSpace): Source[] {
     if (!doc || !live(copy.documentId)) continue;
     const version = data.public.versions.find(entry => entry.id === copy.baseVersionId);
     const ids = copy.includedItemIds.filter(id => copy.itemOverrides[id]?.included !== false && !copy.recurrence?.itemIds.includes(id) && copy.itemLines[id]);
-    out.push({ key: `copy:${copy.id}`, kind: 'copy', documentId: copy.documentId, title: doc.title || version?.title || 'Flow', anchor: copy.anchor,
+    const flow = version?.title.trim() || doc.title || 'Flow';
+    out.push({ key: `copy:${copy.id}`, kind: 'copy', documentId: copy.documentId, flow, run: programRunName(flow, doc.title), anchor: copy.anchor,
       offsets: ids.map(id => { const schedule = version?.items.find(item => item.id === id)?.schedule; return schedule && schedule.kind === 'relative' ? schedule.days : null; }),
       taskIds: ids.map(id => copy.itemLines[id]) });
   }
@@ -63,7 +73,8 @@ function sources(data: ProgramData, space: ProgramPrivateSpace): Source[] {
     const version = authoring!.flows.find(flow => flow.flowId === execution.flowId)?.versions.find(entry => entry.id === execution.versionId);
     // Steps: the version's top task references (its subchecks are the steps' own), in the version's order.
     const refs = (version?.taskRefs ?? []).filter(ref => ref.parentTaskId === null && execution.taskIds[ref.taskId]);
-    out.push({ key: `personal:${execution.id}`, kind: 'personal', documentId: execution.executionDocumentId, title: doc.title || 'Flow', anchor: execution.anchorDate,
+    const flow = M.getDocument(space.text, execution.flowId)?.title.trim() || doc.title.split(' · ')[0] || 'Flow';
+    out.push({ key: `personal:${execution.id}`, kind: 'personal', documentId: execution.executionDocumentId, flow, run: programRunName(flow, doc.title), anchor: execution.anchorDate,
       offsets: refs.map(ref => ref.date.kind === 'relative' ? ref.date.offsetDays : null), taskIds: refs.map(ref => execution.taskIds[ref.taskId]) });
   }
   return out;
@@ -94,7 +105,7 @@ export function programFlowRuns(data: ProgramData, actorId: string, today: strin
     const next = steps.find(step => !step.done) ?? null;
     if (!next && !wait) continue;
     const basis = programFlowRunBasis(source.offsets);
-    runs.push({ key: source.key, kind: source.kind, documentId: source.documentId, title: source.title, done: steps.filter(step => step.done).length, total: steps.length,
+    runs.push({ key: source.key, kind: source.kind, documentId: source.documentId, title: source.run ? `${source.flow} ${source.run}` : source.flow, flow: source.flow, run: source.run, done: steps.filter(step => step.done).length, total: steps.length,
       basis, anchor: source.anchor, mark: programFlowRunMark(basis, source.anchor, today), steps, next, wait });
   }
   const group = (run: ProgramFlowRun) => run.wait ? 1 : run.next?.date ? 0 : 2;

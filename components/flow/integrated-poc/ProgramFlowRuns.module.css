@@ -30,3 +30,5 @@
 .runs.runs button:hover:not(:disabled), .rechecks.rechecks button:hover:not(:disabled) { background: transparent; }
 @media (hover: hover) { .runs.runs .text:hover:not(:disabled), .rechecks.rechecks .text:hover:not(:disabled) { background: var(--flowme-b-hair); } }
 .runs :focus-visible, .rechecks :focus-visible { outline: 2px solid var(--flowme-b-primary); outline-offset: -2px; }
+/* F12 2차 (W-FLOW-01): the run's name after the Flow's ('월간 발표 12월'). */
+.runName { font-weight: 600; color: var(--flowme-b-ink); }

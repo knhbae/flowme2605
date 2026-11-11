@@ -697,3 +697,5 @@
 .space .closeDone .closeDoneToggle { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 48px; margin: 0; padding: 0 12px; border: 0; border-radius: 16px; background: transparent; color: var(--flowme-b-muted); font-size: 15px; font-weight: 700; text-align: left; cursor: pointer; }
 .closeDoneToggle svg { flex: none; color: var(--flowme-b-muted); }
 .closeDoneToggle span { margin-left: auto; color: var(--flowme-b-primary); font-size: 14px; }
+/* F12 2차 (W-FLOW-01): under a run document's name field — its title is the run name. */
+.runNameHint { display: block; margin-top: 4px; color: var(--flowme-b-muted); font-size: 13px; line-height: 18px; }

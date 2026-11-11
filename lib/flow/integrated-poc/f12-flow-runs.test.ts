@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { programClone, type ProgramData, type ProgramTransition } from './contract';
 import { createProgramData, validateProgramData } from './program-data';
-import { completeProgramTask, createProgramDocument, importProgramPublicVersion } from './private-space';
+import { completeProgramTask, createProgramDocument, importProgramPublicVersion, renameProgramDocument } from './private-space';
 import { createPersonalFlow, startPersonalFlow } from './personal-authoring-commands';
 import { textWorkspaceModel as M } from './text-workspace';
-import { programDayCloseRows, programDeferPlan, programFlowRunBasis, programFlowRunMark, programFlowRuns, programRechecks,
+import { programDayCloseRows, programDeferPlan, programFlowRunBasis, programFlowRunMark, programFlowRuns, programRechecks, programRunName,
   readProgramDeferChoice, writeProgramDeferChoice } from './flow-run-progress';
 
 // F12 1차 (PRD §20-4 ①②③, W-FLOW-02·04·07·08·09·10·11): progress lines, rechecks, the day close's rows and the defer plan.
@@ -90,7 +90,9 @@ test('runs in order: by the next step\'s date, then waiting, then undated; finis
   assert(personal, 'the personal execution has a line');
   const execution = space(data).personalAuthoring!.executions![0];
   assert.equal(personal.documentId, execution.executionDocumentId);
-  assert.equal(personal.title, M.getDocument(space(data).text, execution.executionDocumentId)!.title, 'its name is the execution document title');
+  // F12 2차 (W-FLOW-01): the run's name is its document's title after the Flow's name ('디자인 외주 · 2026-12-08').
+  assert.equal(M.getDocument(space(data).text, execution.executionDocumentId)!.title, '디자인 외주 · 2026-12-08');
+  assert.deepEqual([personal.flow, personal.run, personal.title], ['디자인 외주', '2026-12-08', '디자인 외주 2026-12-08']);
   assert.deepEqual([personal.done, personal.total], [0, 3]);
   assert.equal(personal.basis, 'first'); assert.equal(personal.mark, '3일째');
   assert.deepEqual(runs.map(run => [run.kind, run.next?.date]), [['copy', '2026-11-30'], ['personal', '2026-12-01']], 'by the next step\'s date (the personal version keeps the written dates); the source document is not a run');
@@ -136,4 +138,23 @@ test('the defer choice is remembered per run on this device', () => {
   writeProgramDeferChoice('copy:y', 'none', storage);
   assert.equal(readProgramDeferChoice('copy:x', storage), 'keep-gaps');
   assert.equal(readProgramDeferChoice('copy:y', storage), 'none');
+});
+
+// F12 2차 (W-FLOW-01·04, 기획 11/11 21:31): the run name is the run document's title; renaming the document names the run.
+test('the run name: none when the title is the Flow\'s; what follows the Flow\'s name; else the whole title', () => {
+  assert.equal(programRunName('월간 발표', '월간 발표'), null);
+  assert.equal(programRunName('월간 발표', '월간 발표 12월'), '12월');
+  assert.equal(programRunName('월간 발표', '월간 발표 · 12월'), '12월');
+  assert.equal(programRunName('디자인 외주', '가람 상사'), '가람 상사');
+  assert.equal(programRunName('월간 발표', '  '), null);
+});
+test('renaming a copy\'s document names its run on the progress line, with no other data', () => {
+  let { data, copy } = presentation();
+  data = ok(renameProgramDocument(data, { ...base(data), documentId: copy.documentId, title: '월간 발표 12월' })).data;
+  let [run] = programFlowRuns(data, data.activeActorId, '2026-12-09');
+  assert.deepEqual([run.flow, run.run, run.title], ['월간 발표', '12월', '월간 발표 12월']);
+  data = ok(renameProgramDocument(data, { ...base(data), documentId: copy.documentId, title: '고객 A' })).data;
+  [run] = programFlowRuns(data, data.activeActorId, '2026-12-09');
+  assert.deepEqual([run.flow, run.run, run.title], ['월간 발표', '고객 A', '월간 발표 고객 A']);
+  assert.deepEqual(Object.keys(space(data).copies[0]).sort(), Object.keys(copy).sort(), 'the copy\'s own data is shaped as before');
 });

@@ -13,7 +13,7 @@ import type { ProgramDeferPlan, ProgramFlowRun } from '@/lib/flow/integrated-poc
 // F12 1차 (PRD §20-4 ①②③, W-FLOW-04·05·07·08·09·10, UX r3 C3·C4·D1·D2·D4·E2): 오늘's progress lines, '다시 확인할 일',
 // the once-per-run question and the date sheet's last-day stop; and how ProgramSpace wires them.
 const step = (taskId: string, title: string, date: string | null, done = false) => ({ taskId, title, date, done });
-const run = (key: string, title: string, extra: Partial<ProgramFlowRun> = {}): ProgramFlowRun => ({ key, kind: 'copy', documentId: `doc-${key}`, title, done: 2, total: 7, basis: 'last',
+const run = (key: string, title: string, extra: Partial<ProgramFlowRun> = {}): ProgramFlowRun => ({ key, kind: 'copy', documentId: `doc-${key}`, title, flow: title, run: null, done: 2, total: 7, basis: 'last',
   anchor: '2026-12-21', mark: 'D-12', steps: [step('a', '발표자 선정', '2026-11-30', true), step('b', '발표자 공지', '2026-12-09')], next: step('b', '발표자 공지', '2026-12-09'), wait: null, ...extra });
 const NO = new Set<string>();
 const lines = (runs: ProgramFlowRun[], tablet = false, saving = NO) => renderToStaticMarkup(<ProgramFlowRuns runs={runs} today="2026-12-09" tablet={tablet} saving={saving} onCheck={() => {}} onOpen={() => {}} />);
@@ -117,4 +117,10 @@ test('F12 1차 QA fixes: one plan for every Flow step move, the editor sheet\'s 
   assert(editor.includes('current={task?.date??null} marked={marked} notAfter={anchor}'));
   const css = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/AlphaWorkspace.module.css'), 'utf8');
   assert(css.includes('@media (max-width: 700px) { .triedPrompt { top: calc(env(safe-area-inset-top) + 8px); bottom: auto;'));
+test('F12 2차: a run\'s name follows its Flow\'s on the line; a run document\'s name field says it is the run name', () => {
+  const html = lines([run('p', '월간 발표 12월', { flow: '월간 발표', run: '12월' })]);
+  assert.match(html, />월간 발표<span[^>]*data-run-name="true"> 12월<\/span>/);
+  const space = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/ProgramSpace.tsx'), 'utf8');
+  assert(space.includes('이 이름이 실행 이름입니다. 오늘 진행 줄에 Flow 이름 뒤로 붙습니다(예: 월간 발표 12월).'));
+  assert(space.includes('space.personalAuthoring?.executions?.some(execution => execution.executionDocumentId === selectedDoc.id)'));
 });
