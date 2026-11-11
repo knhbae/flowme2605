@@ -5,7 +5,7 @@ import { createProgramData, validateProgramData } from './program-data';
 import { completeProgramTask, createProgramDocument, importProgramPublicVersion, renameProgramDocument } from './private-space';
 import { createPersonalFlow, startPersonalFlow } from './personal-authoring-commands';
 import { textWorkspaceModel as M } from './text-workspace';
-import { programDayCloseRows, programDeferPlan, programFlowRunBasis, programFlowRunMark, programFlowRuns, programRechecks, programRunName,
+import { programDayCloseRows, programDeferPlan, programFlowRunBasis, programFlowRunMark, programFlowRuns, programRechecks, programRunName, programDefaultRunName,
   readProgramDeferChoice, writeProgramDeferChoice } from './flow-run-progress';
 
 // F12 1차 (PRD §20-4 ①②③, W-FLOW-02·04·07·08·09·10·11): progress lines, rechecks, the day close's rows and the defer plan.
@@ -157,4 +157,28 @@ test('renaming a copy\'s document names its run on the progress line, with no ot
   [run] = programFlowRuns(data, data.activeActorId, '2026-12-09');
   assert.deepEqual([run.flow, run.run, run.title], ['월간 발표', '고객 A', '월간 발표 고객 A']);
   assert.deepEqual(Object.keys(space(data).copies[0]).sort(), Object.keys(copy).sort(), 'the copy\'s own data is shaped as before');
+});
+
+// F12 2차 (목업 C2, 총괄 11/12 00:1x): a new personal run takes its name at start; it is kept as the document title only.
+test('starting a personal run with a name: the title is the Flow name and the run name; the line shows it; nothing else stored', () => {
+  let { data } = presentation();
+  const actor = data.activeActorId;
+  const made = ok(createProgramDocument(data, { ...base(data), title: '디자인 외주 원본' })); data = programClone(made.data);
+  const edited = M.editTextResult(space(data).text, made.result, ['[2026-12-01]', '- [ ] 요청 내용 정리', '[2026-12-02]', '- [ ] 견적서 보내기'].join('\n'), { folderText: true });
+  assert.equal(edited.reason, null); data.spaces[actor] = { ...space(data), text: edited.state };
+  const ids = M.tasks(space(data).text).filter(task => task.docId === made.result).map(task => task.id);
+  const flow = ok(createPersonalFlow(data, { title: '디자인 외주', documentId: made.result, taskIds: ids })); data = flow.data;
+  const version = space(data).personalAuthoring!.flows[0].currentVersionId;
+  const named = ok(startPersonalFlow(data, { flowId: flow.result, versionId: version, anchorDate: '2026-12-08', runName: '  가람\n상사 ' })).data;
+  const execution = space(named).personalAuthoring!.executions![0];
+  assert.equal(M.getDocument(space(named).text, execution.executionDocumentId)!.title, '디자인 외주 가람 상사', 'one line, trimmed');
+  assert.deepEqual(Object.keys(execution).sort(), ['anchorDate', 'executionDocumentId', 'flowId', 'id', 'taskIds', 'versionId'], 'the run itself is shaped as before');
+  const run = programFlowRuns(named, actor, '2026-12-10').find(entry => entry.kind === 'personal')!;
+  assert.deepEqual([run.flow, run.run, run.title], ['디자인 외주', '가람 상사', '디자인 외주 가람 상사']);
+  // No name given (another caller): the title as before.
+  const plain = ok(startPersonalFlow(data, { flowId: flow.result, versionId: version, anchorDate: '2026-12-08' })).data;
+  assert.equal(M.getDocument(space(plain).text, space(plain).personalAuthoring!.executions![0].executionDocumentId)!.title, '디자인 외주 · 2026-12-08');
+  assert.equal(programDefaultRunName('2026-12-21'), '12월');
+  assert.equal(programDefaultRunName('2027-01-03'), '1월');
+  assert.equal(programDefaultRunName(''), '');
 });

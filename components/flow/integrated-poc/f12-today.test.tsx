@@ -124,3 +124,9 @@ test('F12 2차: a run\'s name follows its Flow\'s on the line; a run document\'s
   assert(space.includes('이 이름이 실행 이름입니다. 오늘 진행 줄에 Flow 이름 뒤로 붙습니다(예: 월간 발표 12월).'));
   assert(space.includes('space.personalAuthoring?.executions?.some(execution => execution.executionDocumentId === selectedDoc.id)'));
 });
+test('F12 2차: the personal start form has a run name field, filled with the 기준일\'s month, sent as runName', () => {
+  const form = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/ProgramPersonalAuthoring.tsx'), 'utf8');
+  assert(form.includes('<label>실행 이름<input aria-label="실행 이름" data-run-name-input value={runName??defaultRunName} placeholder={defaultRunName} maxLength={80}'));
+  assert(form.includes('startPersonalFlow(data,{flowId,versionId:version.id,anchorDate:newAnchor,runName:(runName??\'\').trim()||defaultRunName})'));
+  assert(form.includes('const [runName,setRunName]=useState<string|null>(null),defaultRunName=programDefaultRunName(newAnchor);'));
+});

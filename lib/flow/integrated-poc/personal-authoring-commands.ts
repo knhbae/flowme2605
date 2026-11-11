@@ -78,11 +78,14 @@ export function setPersonalRepeat(data:ProgramData,input:{flowId?:string;taskId?
  return complete(data,{...space,personalAuthoring:owner},series.id);
 }
 export function stopPersonalRepeat(data:ProgramData,seriesId:string):ProgramTransition<string>{const space=data.spaces[data.activeActorId],owner=metadata(space),series=owner.series.find(s=>s.id===seriesId);if(!series)return programFailure(data,'missing');series.stopped=true;return complete(data,{...space,personalAuthoring:owner},seriesId);}
-export function startPersonalFlow(data:ProgramData,input:{flowId:string;versionId:string;anchorDate:string}):ProgramTransition<string>{
+/** F12 2차 (W-FLOW-01, 목업 C2): runName is the run's name, kept as its document's title after the Flow's name (no other
+ *  data); left out, the title is 'Flow 이름 · 기준일' as before. */
+export function startPersonalFlow(data:ProgramData,input:{flowId:string;versionId:string;anchorDate:string;runName?:string}):ProgramTransition<string>{
  const space=data.spaces[data.activeActorId],owner=metadata(space),flow=owner.flows.find(f=>f.flowId===input.flowId),version=flow?.versions.find(v=>v.id===input.versionId);
  if(!flow||!version)return programFailure(data,'missing');const dates=new Map<string,string|null>();
  for(const ref of version.taskRefs){const date=resolvePersonalTaskDate(ref.date,input.anchorDate);if(!date.ok)return programFailure(data,'invalid');dates.set(ref.taskId,date.value);}
- const result=materializePersonalContent(space.text,{title:(M.getDocument(space.text,flow.flowId)?.title??'개인 Flow')+' · '+input.anchorDate,version,nodes:version.nodes,dates,anchorDate:input.anchorDate});if(!result)return programFailure(data,'invalid');
+ const flowTitle=M.getDocument(space.text,flow.flowId)?.title??'개인 Flow',runName=typeof input.runName==='string'?input.runName.replace(/\s+/g,' ').trim().slice(0,80):'';
+ const result=materializePersonalContent(space.text,{title:runName?`${flowTitle} ${runName}`:flowTitle+' · '+input.anchorDate,version,nodes:version.nodes,dates,anchorDate:input.anchorDate});if(!result)return programFailure(data,'invalid');
  (owner.executions??=[]).push({id:programId('personal-start'),flowId:flow.flowId,versionId:version.id,anchorDate:input.anchorDate,executionDocumentId:result.documentId,taskIds:result.taskIds});return complete(data,{...space,text:result.text,personalAuthoring:owner},result.documentId);
 }
 export function changePersonalAnchor(data:ProgramData,executionId:string,anchorDate:string):ProgramTransition<string>{

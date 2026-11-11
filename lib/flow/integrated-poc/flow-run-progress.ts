@@ -40,6 +40,12 @@ export function programRunName(flow: string, title: string): string | null {
   if (base && name.startsWith(base)) return name.slice(base.length).replace(/^[\s·:\-–—]+/, '').trim() || null;
   return name;
 }
+/** F12 2차 (목업 C2·E1): the run name a new run gets when its field is left as it was — the month of its 기준일
+ *  ('12월'; for a last-day Flow the month of its last day, as C2 fills it). */
+export function programDefaultRunName(anchorDate: string): string {
+  const month = Number(anchorDate.slice(5, 7));
+  return Number.isInteger(month) && month >= 1 && month <= 12 ? `${month}월` : '';
+}
 /** W-FLOW-02: the basis of a run from its steps' day offsets (undated steps have none). */
 export function programFlowRunBasis(offsets: readonly (number | null)[]): 'last' | 'first' {
   const days = offsets.filter((day): day is number => day !== null);

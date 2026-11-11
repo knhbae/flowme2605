@@ -5,6 +5,7 @@ import type {ProgramData,ProgramTransition} from '@/lib/flow/integrated-poc/cont
 import {textWorkspaceModel as M} from '@/lib/flow/integrated-poc/text-workspace';
 import {previewPersonalRounds,documentRepeatSeries,describePersonalRepeatRule,type PersonalTaskDate,type PersonalRepeatRule,type PersonalFlowVersion,type PersonalSeriesOwner,type PersonalStandaloneExecution} from '@/lib/flow/integrated-poc/personal-authoring';
 import {capturePersonalVersion,createPersonalFlow,savePersonalVersion,connectPersonalFlow,startPersonalFlow,setPersonalRepeat,stopPersonalRepeat,startPersonalRound,changePersonalAnchor} from '@/lib/flow/integrated-poc/personal-authoring-commands';
+import {programDefaultRunName} from '@/lib/flow/integrated-poc/flow-run-progress';
 import styles from './ProgramSpace.module.css';
 
 type AuthoringCommand=(label:string,build:(data:ProgramData)=>ProgramTransition<string>,open?:boolean)=>Promise<void>;
@@ -46,6 +47,8 @@ export function ProgramPersonalAuthoring(props:{data:ProgramData;documentId:stri
  const [flowId,setFlowId]=useState(owner?.flows.find(f=>f.flowId===doc.id)?.flowId??owner?.flows[0]?.flowId??'');
  const flow=owner?.flows.find(f=>f.flowId===flowId),[versionId,setVersionId]=useState(''),version=flow?.versions.find(v=>v.id===versionId)??flow?.versions.find(v=>v.id===flow.currentVersionId);
  const [newAnchor,setNewAnchor]=useState(props.today),[dateModes,setDateModes]=useState<Record<string,PersonalTaskDate>>({});
+ // F12 2차 (목업 C2): the new run's name, filled with its 기준일's month until it is typed in (null: not typed).
+ const [runName,setRunName]=useState<string|null>(null),defaultRunName=programDefaultRunName(newAnchor);
  // Reopen on this document's saved rule; never start on a disabled option or another document's Flow rule.
  const [target,setTarget]=useState(()=>{const first=savedRepeats[0]?.source;return first?first.kind==='task'?first.taskId:'flow':owner?.flows.some(f=>f.flowId===doc.id)?'flow':'';});
  const [busy,setBusy]=useState(false),[notice,setNotice]=useState('');const composing=useRef(false);
@@ -83,11 +86,13 @@ export function ProgramPersonalAuthoring(props:{data:ProgramData;documentId:stri
    <button type="button" disabled={!title.trim()||!chosen.length&&!newTitle.trim()} onClick={()=>void command('개인 Flow 구성',data=>createPersonalFlow(data,{documentId:doc.id,title,taskIds:chosen,newTaskTitle:newTitle,description}),true)}>Flow 만들기</button>
   </fieldset>
   {!!owner?.flows.length&&<fieldset disabled={disabled}><legend>내 Flow 연결 또는 새로 시작</legend>
-   <label>대상 Flow<select value={flowId} onChange={event=>{setFlowId(event.target.value);setVersionId('');setDateModes({});setNewAnchor(props.today);setNotice('');}}>{owner.flows.map(f=><option key={f.flowId} value={f.flowId}>{M.getDocument(space.text,f.flowId)?.title??f.flowId}</option>)}</select></label>
+   <label>대상 Flow<select value={flowId} onChange={event=>{setFlowId(event.target.value);setVersionId('');setDateModes({});setNewAnchor(props.today);setRunName(null);setNotice('');}}>{owner.flows.map(f=><option key={f.flowId} value={f.flowId}>{M.getDocument(space.text,f.flowId)?.title??f.flowId}</option>)}</select></label>
    {flow&&<><label>구성 판본<select value={version?.id??''} onChange={event=>setVersionId(event.target.value)}>{flow.versions.map((v,index)=><option key={v.id} value={v.id}>판본 {index+1}{v.id===flow.currentVersionId?' · 현재':''}</option>)}</select></label>
     <button type="button" disabled={doc.id===flowId} onClick={()=>void command('내 Flow 연결',data=>connectPersonalFlow(data,{flowId,documentId:doc.id}))}>이 문서에 내 Flow 연결 · 같은 진행·기록</button>
     <label>새 실행 기준일<input type="date" aria-label="새 실행 기준일" value={newAnchor} onChange={event=>setNewAnchor(event.target.value)} /></label>
-    <button type="button" disabled={!version||!newAnchor} onClick={()=>version&&void command('개인 Flow 새 시작',data=>startPersonalFlow(data,{flowId,versionId:version.id,anchorDate:newAnchor}),true)}>선택한 판본으로 새로 시작 · 진행 0</button>
+    <label>실행 이름<input aria-label="실행 이름" data-run-name-input value={runName??defaultRunName} placeholder={defaultRunName} maxLength={80} onChange={event=>setRunName(event.target.value)} /></label>
+    <small>비우면 {defaultRunName||'기준일의 달'}로 둡니다. 이 실행의 글 제목이 되고, 오늘 진행 줄에 Flow 이름 뒤로 붙습니다.</small>
+    <button type="button" disabled={!version||!newAnchor} onClick={()=>version&&void command('개인 Flow 새 시작',data=>startPersonalFlow(data,{flowId,versionId:version.id,anchorDate:newAnchor,runName:(runName??'').trim()||defaultRunName}),true)}>선택한 판본으로 새로 시작 · 진행 0</button>
     {doc.id===flowId&&<><p>이 본문을 고쳐도 확정한 판본은 바뀌지 않습니다. 새 판본에 날짜 방식을 지정하세요.</p>
      {version?.taskRefs.map(ref=>{const task=tasks.find(t=>t.id===ref.taskId),mode=dateModes[ref.taskId]??ref.date;return <label key={ref.taskId}>{task?.title}<select value={mode.kind} onChange={event=>setDateModes(previous=>({...previous,[ref.taskId]:event.target.value==='relative'?{kind:'relative',offsetDays:0}:event.target.value==='fixed'?{kind:'fixed',date:task?.date??props.today}:{kind:'undated'}}))}><option value="relative">기준일에서 며칠 뒤</option><option value="fixed">고정 날짜</option><option value="undated">날짜 미정</option></select>{mode.kind==='relative'?<input type="number" aria-label={`${task?.title} 상대 일수`} value={mode.offsetDays} onChange={event=>setDateModes(previous=>({...previous,[ref.taskId]:{kind:'relative',offsetDays:Number(event.target.value)}}))}/>:mode.kind==='fixed'?<input type="date" value={mode.date} onChange={event=>setDateModes(previous=>({...previous,[ref.taskId]:{kind:'fixed',date:event.target.value}}))}/>:null}</label>;})}
      <button type="button" onClick={saveVersion}>현재 본문을 새 판본으로 확정</button>
