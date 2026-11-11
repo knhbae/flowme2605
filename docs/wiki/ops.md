@@ -9,9 +9,9 @@
 | 공개 주소 | `https://alpha.wikiplans.com/alpha` |
 | 내부 앱 | `127.0.0.1:3105` (`next start`) |
 | 상태 확인 | `http://127.0.0.1:13105/status` (supervisor, 이 PC에서만) |
-| 운영 빌드 | int7b r3 `S_K1gGsWiyrKkchbWVJmz`, 커밋 `76129d17` (11/11 07:13 KST, 가벼운 반영 34회차, manifest SHA `a29bfcd4…`) |
-| appRoot | `D:/flowme-work/etc/int7b-qa-20261111/product` |
-| 되돌리기 대상 | int6a `L3t1Xyp_HGigDHPspReXX` / `e01d6b51` (`D:/flowme-work/etc/int6a-qa-20261110/` 아래 product) |
+| 운영 빌드 | typelag 1차 `Q71loFCHfXu6pnypEncKT`, 커밋 `0e324f9c` (11/11 13:10 KST, 가벼운 반영 35회차, r3 위 입력 지연 수정) |
+| appRoot | `D:/flowme-work/etc/typelag-qa-20261111/product` |
+| 되돌리기 대상 | int7b r3 `S_K1gGsWiyrKkchbWVJmz` / `76129d17` (`D:/flowme-work/etc/int7b-qa-20261111/` 아래 product). 그 전 int6a `e01d6b51`도 보존 |
 | 쓰기 UI 설정 | `nativeAuthoringUi: enabled` |
 
 기준은 supervisor의 `manifest.json`이다. 회차별 기록은 [지금 FlowMe](now.md) 기록 절에 남는다.
@@ -82,7 +82,7 @@ Invoke-WebRequest 'https://alpha.wikiplans.com/api/alpha/health'
 DB 변경이 없는 반영은 Codex가 만든 실행기 `app-light.ps1`(v3, SHA256 `3eb9c719…`)로 한다. 기타 세션이 QA 폴더에 후보 product, `PACKAGE.json`(후보·되돌리기 대상·SHA), release 폴더를 만든다.
 
 1. 기타 QA_GO와 목업 대조를 받는다.
-2. PC 부하를 확인한다. CPU 35% 미만이 20초 간격 3번 이어질 때만 진행한다. 11/10 31회차는 Codex 부하(CPU 57~76%) 때문에 60초 안에 앱이 뜨지 않아 HOLD됐고, 약 3분 동안 502가 났다.
+2. PC 부하를 확인한다(11/11 사용자 요청으로 완화). 먼저 개발·기타·Codex에 측정·빌드를 멈춰 달라고 하고 최대 15분 기다린다. CPU를 20초 간격 3번 재서 평균 60% 미만이면 진행한다. 15분 지나도 안 내려가면 사용자에게 알리고 진행한다(최악은 몇 분 502 뒤 HOLD·되돌리기). 근거: 11/10 31회차는 Codex 부하(CPU 57~76%)로 60초 안에 앱이 뜨지 않아 HOLD, 약 3분 502. 11/11 35회차는 59~97%에서 2분 만에 성공. 성능 측정 블록의 35% 버림 기준은 그대로다.
 3. 사용자에게 "10분 뒤 배포합니다 — 그동안 FlowMe 쓰지 마세요"라고 대화로 먼저 알린다. 폰 알림(push)은 꺼져 있다. 11/10 33회차 중단(약 70초) 동안 사용자가 쓰다가 저장 확인 필요가 났다.
 4. `pwsh -NoProfile -NonInteractive -File <release>/app-light.ps1 -Mode Inspect`, PASS면 `-Mode Deploy -Execute`. 로그는 `D:/flowme-claude-scratch/app-light-{inspect,deploy}-N.log`에 남긴다.
 5. 공개 10경로 기대값을 확인하고, "이제 다시 쓰셔도 됩니다"로 닫는다.
