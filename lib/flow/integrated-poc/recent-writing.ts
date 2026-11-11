@@ -1,6 +1,7 @@
 import { textWorkspaceModel as M, type TextLine, type TextRow, type TextWorkspaceState } from './text-workspace';
 import { programShiftDate } from './execution';
 import { programDate } from './program-data';
+import { programRowPatchEnabled } from './typing-row-patch';
 
 /** 11/5 결정 (쓰기 '최근만 쓰기', W-a): a long document is written in its recent part. The writing view's editor gets the
  *  document without its old date sections (dated before the last 7 days), and a save puts them back exactly where they
@@ -191,17 +192,32 @@ export function extendProgramRecentRaw(base: TextWorkspaceState, documentId: str
   if (!doc || !hidden.size) return raw;
   const shown = doc.lines.filter(line => !hidden.has(line.id));
   if (raw === shown.map(line => line.text).join('\n')) return M.raw(doc);
-  const putBack = (state: TextWorkspaceState) => {
+  const putBackLines = (state: TextWorkspaceState) => {
     const put = extendProgramRecent(base, state, documentId, hidden, false), lines = put.ok ? M.getDocument(put.state, documentId)!.lines : null;
-    return lines && hiddenOrder(lines, hidden) === hiddenOrder(doc.lines, hidden) ? lines.map(line => line.text).join('\n') : null;
+    return lines && hiddenOrder(lines, hidden) === hiddenOrder(doc.lines, hidden) ? lines : null;
   };
+  const putBack = (state: TextWorkspaceState) => putBackLines(state)?.map(line => line.text).join('\n') ?? null;
+  const workingRaw = working ? M.raw(M.getDocument(working, documentId)) : null;
   // The editor's own state for this raw (each key: no model run here), else the model's reading of it.
-  if (working && M.raw(M.getDocument(working, documentId)) === raw) { const whole = putBack(working); if (whole !== null) return whole; }
+  if (working && workingRaw === raw) { const whole = putBack(working); if (whole !== null) return whole; }
   else {
+    // typelag ③ (11/11, with the row patch switch): words typed within one line of the editor's own state (a composition,
+    // a key the draft has not taken yet) are that line's words in its place, the folded lines back by ID; no model run.
+    const edit = working && workingRaw !== null && programRowPatchEnabled() ? programOneLineEdit(workingRaw, raw) : null;
+    const lines = edit ? putBackLines(working!) : null, lineId = edit ? M.getDocument(working!, documentId)?.lines[edit.index]?.id : undefined;
+    if (edit && lines && lineId) return lines.map(line => line.id === lineId ? edit.text : line.text).join('\n');
     const typed = M.editTextResult(restrictProgramRecent(base, documentId, hidden), documentId, raw);
     if (!typed.reason && M.raw(M.getDocument(typed.state, documentId)) === raw) { const whole = putBack(typed.state); if (whole !== null) return whole; }
   }
   return alignedRaw(doc.lines, shown, raw.split('\n'), hidden);
+}
+/** typelag ③: `next` is `before` with the words of exactly one line changed (same line count); that line and its words. */
+export function programOneLineEdit(before: string, next: string): { index: number; text: string } | null {
+  const a = before.split('\n'), b = next.split('\n');
+  if (a.length !== b.length) return null;
+  let index = -1;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) { if (index >= 0) return null; index = i; }
+  return index < 0 ? null : { index, text: b[index] };
 }
 /** The folded runs put into typed lines by the recent part's lines they still match (a longest common subsequence of
  *  identical lines): each after the typed place of the line before it, else before that of the line after it, else

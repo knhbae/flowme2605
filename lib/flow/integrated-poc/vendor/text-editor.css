@@ -323,3 +323,8 @@
  * Clip the 44px box to the RAW prefix/first line without changing text metrics. */
 .tle-root[data-mode="live"].tle-edit-check-ready:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-hit { display: block; clip-path: inset(0 var(--tle-check-clip-right, 44px) var(--tle-check-clip-bottom, 44px) 0); }
 .tle-root[data-mode="live"].tle-edit-check-ready:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-hit > .tle-progress-badge { visibility: hidden; }
+/* typelag ③ (11/11): with the row patch, the check controls sit in one layer (.tle-check-layer) that the editor shows or
+ * hides by its visibility for the check-ready state, so a composition or a save restyles one element, not each control. */
+.tle-check-layer { position: static; }
+.tle-root.tle-check-layered[data-mode="live"]:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-layer > .tle-check-hit { display: block; clip-path: inset(0 var(--tle-check-clip-right, 44px) var(--tle-check-clip-bottom, 44px) 0); }
+.tle-root.tle-check-layered[data-mode="live"]:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) .tle-check-layer > .tle-check-hit > .tle-progress-badge { visibility: hidden; }
