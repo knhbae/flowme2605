@@ -254,6 +254,8 @@ const mainPeriods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today
 export const PROGRAM_EMPTY_EXAMPLE = '이번 주 준비\n- [ ] 확인할 일\n  - [ ] 먼저 확인할 내용\n자유롭게 적는 메모';
 // A06 / V41-004–005: restore the approved v4.1 touch thresholds, not a new policy.
 export const PROGRAM_MOVE_GESTURE_V1 = Object.freeze({ version: 1, holdMs: 350, cancelDistancePx: 8 });
+/** F12 1차: how long the day close's date sheet, opened by a long press, ignores picks (the lifting finger's tap). */
+export const PROGRAM_CLOSE_SHEET_SETTLE_MS = 500;
 // U44: a tablet held sideways (a touch screen; a PC or laptop of the same size keeps its layout). The writing screen's
 // title and ⋯ share the editor's tool line there; phones, portrait screens and taller ones keep the title line.
 // A tap on 글 찾기 or the title while a composition or a document action is on: the find waits, and says so until then.
@@ -1278,7 +1280,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   useEffect(() => { const timer = window.setInterval(() => setCloseHour(new Date().getHours()), 60_000); return () => window.clearInterval(timer); }, []);
   const [deferAsk, setDeferAsk] = useState<{ run: ProgramFlowRun; taskId: string; date: string; plans: Record<ProgramDeferMode, ProgramDeferPlan> } | null>(null);
   const deferDialog = useRef<HTMLDialogElement>(null);
-  const [closeSheet, setCloseSheet] = useState<{ taskId: string; run: ProgramFlowRun | null } | null>(null);
+  const [closeSheet, setCloseSheet] = useState<{ taskId: string; run: ProgramFlowRun | null; at: number } | null>(null);
   const closeSheetDialog = useRef<HTMLDialogElement>(null);
   const closeHold = useRef<{ timer: ReturnType<typeof setTimeout>; fired: boolean } | null>(null);
   useEffect(() => { const box = deferDialog.current; if (!box) return; if (deferAsk && !box.open) box.showModal(); if (!deferAsk && box.open) box.close(); }, [deferAsk]);
@@ -3184,7 +3186,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
           const meta = programExecutionRowMeta({ date: task.date, done: value === 100, progress: progress?.date ? { date: progress.date, percent: progress.percent } : null, today, dated: item.dated,
             since: task.explicitDate ? task.groupDate : null });
-          return <li key={entry.key} className={styles.task} data-task-id={task.id} data-done={value === 100 || undefined} data-flow-row={rowFlowTitle(task) ? '' : undefined} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
+          return <li key={entry.key} className={styles.task} data-task-id={task.id} data-done={value === 100 || undefined} data-close-row={closing() && item.kind === 'row' && value < 100 && !moving ? '' : undefined} data-flow-row={rowFlowTitle(task) ? '' : undefined} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
             <button className={value > 0 && value < 100 ? `${styles.check} ${styles.partialProgress}` : styles.check} aria-label={`${task.title} ${completingTaskIds.has(task.id) ? (value === 100 ? '다시 열기 대기 중' : '완료 대기 중') : value > 0 && value < 100 ? `${value}% · 진행 기록 열기` : value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value > 0 && value < 100 ? undefined : value === 100} aria-busy={completingTaskIds.has(task.id) || undefined} onClick={() => { const same = sameGroups?.members.get(task.id); if (same && value === 0) void checkSameTasks(same); else void checkTaskFromList(task); }}><span aria-hidden="true" className={styles.checkMark} data-check={completingTaskIds.has(task.id) ? 'busy' : value > 0 && value < 100 ? 'partial' : value === 100 ? 'done' : 'open'}>
@@ -3324,13 +3326,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         setTaskNotice(null); setOrderNotice(null);
         const titles = plan.moves.map(move => move.title), last = plan.moves[plan.moves.length - 1].to;
         setDatesNotice({ actorId, count: moves.length, date: last, undo, taskIds: undo.map(move => move.taskId), shownAt: Date.now(),
-          text: `${titles.length === 2 ? `${titles[0]}과(와) ${titles[1]}` : `${titles[0]} 외 ${titles.length - 1}개`}를 옮겼습니다 · ${programCalendarDate(last, today, false)}까지` });
+          text: `${titles[0]} 등 ${titles.length}개를 옮겼습니다 · ${programCalendarDate(last, today, false)}까지` });
       } else if (result.reason === 'conflict') setMessage('그사이 바뀐 할 일이 있어 옮기지 않았습니다. 다시 확인해 주세요.');
       else if (result.reason !== 'busy') setMessage(programErrorMessage(result.reason));
     } finally { datesBusy.current = false; setDatesPending(false); }
   }
   // A long press on [내일] opens the date sheet (W-MENU-24); a last-day Flow's step cannot pick a day after its anchor.
-  const closeHoldStart = (task: TextTask) => { closeHoldCancel(); const hold = { fired: false, timer: setTimeout(() => { hold.fired = true; setCloseSheet({ taskId: task.id, run: runOfTask(task.id) }); }, PROGRAM_MOVE_GESTURE_V1.holdMs) }; closeHold.current = hold; };
+  // The sheet opens under the finger: the tap its lift makes (390 browser check, 11/11) must not pick a day, so a pick in
+  // its first moment is ignored.
+  const closeHoldStart = (task: TextTask) => { closeHoldCancel(); const hold = { fired: false, timer: setTimeout(() => { hold.fired = true; setCloseSheet({ taskId: task.id, run: runOfTask(task.id), at: Date.now() }); }, PROGRAM_MOVE_GESTURE_V1.holdMs) }; closeHold.current = hold; };
   function closeHoldCancel() { if (closeHold.current) clearTimeout(closeHold.current.timer); }
   // [미루기]: the 오늘 row ⋯'s sheet (its 미루기 chips: 내일 · 이번 주말 · 다음 주 · 날짜 고르기).
   function deferFromBand(id: string) { if (textTasks.some(row => row.id === id)) openDetail({ kind: 'task', id }); }
@@ -3716,8 +3720,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {todayHere() && <ProgramRechecks rows={rechecks} today={today} saving={flowBusy} onCheck={checkRecheck} onTomorrow={recheckTomorrow}
           onOpen={row => void openDocument(row.docId, row.taskId)} />}
         {/* W-FLOW-08: from 18:00 the open rows are '오늘 남은 일', each with [내일] (or [건너뛰기] for a repeat round). */}
-        {closing() && executionRows.some(row => row.kind === 'text-task' && !row.task.done) && <h2 className={styles.closeHead} data-day-close>오늘 남은 일
-          <small>{executionRows.filter(row => row.kind === 'text-task' && !row.task.done).length}</small><span>저녁 6시부터 · [내일]을 길게 누르면 다른 날</span></h2>}
+        {closing() && (open => open > 0 && <h2 className={styles.closeHead} data-day-close>오늘 남은 일
+          <small>{open}</small><span>저녁 6시부터 · [내일]을 길게 누르면 다른 날</span></h2>)(shownItems.filter(item => item.kind === 'row' && item.entry.kind !== 'occurrence' && !item.entry.task.done).length)}
         {/* N11a: the 밀린 일 card, over 오늘's list (never with the calendar). */}
         {!monthGrid && carryCardContent}{carrySheetContent}{sameSheetContent}
         {/* Flow pipeline S3: the Flow taken just now, its days marked; × lets it go (nothing saved). */}
@@ -3774,7 +3778,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             return <><ProgramDateSheet title={task.title} summary={closeSheet.run ? `${closeSheet.run.title} · ${closeSheet.run.mark}` : '내 할 일'} today={today} current={task.date}
               marked={new Set(textTasks.flatMap(entry => !entry.done && entry.date ? [entry.date] : []))} notAfter={anchor}
               blockedNote={anchor ? `기준일 ${programCalendarDate(anchor, today)} 뒤로는 옮길 수 없습니다. 이 Flow는 마지막 일 기준이라 기준일은 고정입니다.` : null}
-              onPick={value => { setCloseSheet(null); if (value) deferTask(task, value); else void moveTaskHere(task.id, { kind: 'date', date: null }); }} />
+              onPick={value => { if (Date.now() - closeSheet.at < PROGRAM_CLOSE_SHEET_SETTLE_MS) return; setCloseSheet(null); if (value) deferTask(task, value); else void moveTaskHere(task.id, { kind: 'date', date: null }); }} />
               <button type="button" className={styles.datesClose} onClick={() => setCloseSheet(null)}>닫기</button></>; })(textTasks.find(entry => entry.id === closeSheet.taskId))}
         </dialog>
       </div>

@@ -89,4 +89,9 @@ test('ProgramSpace wires them: lines and rechecks over 오늘, the day close fro
   assert(space.includes("void moveTaskHere(task.id, { kind: 'date', date: nextDate });"), 'my own task: W-MENU-07');
   assert(space.includes('const next = programRepeatNextDate(marker.rule, task.date, today);'));
   assert(space.includes("patch: { date: tomorrow } }), true);"), 'a recheck\'s [내일] changes only its date');
+  // 390 browser check (11/11): the sheet a long press opens is under the finger; the lifting tap must not pick a day.
+  assert(space.includes('onPick={value => { if (Date.now() - closeSheet.at < PROGRAM_CLOSE_SHEET_SETTLE_MS) return;'));
+  assert(space.includes('export const PROGRAM_CLOSE_SHEET_SETTLE_MS = 500;'));
+  const css = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/ProgramSpace.module.css'), 'utf8');
+  assert(css.includes('.space .executionView .task[data-close-row] { grid-template-columns: 48px minmax(0, 1fr) auto 48px; }'), '[내일] has its own column (390: it was squeezed into the ⋯ column)');
 });
