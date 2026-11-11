@@ -170,3 +170,18 @@ test('the switch: on in a window unless this device says off; the model is off w
   assert.equal(M.parseCache().on, false, 'node (no window): off');
   assert.equal(applyProgramParseCache(null), false, 'no window: stays off');
 });
+
+test('Codex P3 (11/11): a line whose id is not a string is parsed as before, not kept, and its id object is not frozen', () => {
+  try {
+    M.parseCache(true);
+    let state = M.addDocument(createEmptyTextWorkspace(), { title: '잘못된 줄' });
+    const doc = { ...state.documents[0], lines: [{ id: { odd: true } as unknown as string, text: '- [ ] 할 일' }, { id: 'ok-line', text: '글' }] };
+    state = { ...state, documents: [doc] };
+    const before = M.parseCache().misses;
+    const parsed = M.parseDocumentCached(doc, state);
+    assert.deepEqual(parsed, M.parseDocument(doc, state));
+    assert.equal(Object.isFrozen(doc.lines[0].id), false, 'the caller\'s object stays as it was');
+    assert.equal(Object.isFrozen(parsed), false, 'not kept, so not frozen');
+    assert.equal(M.parseCache().misses, before, 'not counted as a kept parse');
+  } finally { M.parseCache(false); }
+});
