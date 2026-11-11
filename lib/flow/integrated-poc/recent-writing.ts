@@ -203,8 +203,13 @@ export function extendProgramRecentRaw(base: TextWorkspaceState, documentId: str
   else {
     // typelag ③ (11/11, with the row patch switch): words typed within one line of the editor's own state (a composition,
     // a key the draft has not taken yet) are that line's words in its place, the folded lines back by ID; no model run.
+    // Codex review P1 (11/11): only words the model reads as the same kind of line (programSameLineKind), which keep the
+    // line's ID, so the folded lines go back where a save puts them; any other change takes the model's path below.
     const edit = working && workingRaw !== null && programRowPatchEnabled() ? programOneLineEdit(workingRaw, raw) : null;
-    const lines = edit ? putBackLines(working!) : null, lineId = edit ? M.getDocument(working!, documentId)?.lines[edit.index]?.id : undefined;
+    const lineId = edit ? M.getDocument(working!, documentId)?.lines[edit.index]?.id : undefined;
+    const same = !!edit && !!lineId && programSameLineKind(workingRaw!.split('\n')[edit.index], edit.text)
+      && !working!.bindings.some(binding => binding.docId === documentId && binding.lineId === lineId);
+    const lines = same ? putBackLines(working!) : null;
     if (edit && lines && lineId) return lines.map(line => line.id === lineId ? edit.text : line.text).join('\n');
     const typed = M.editTextResult(restrictProgramRecent(base, documentId, hidden), documentId, raw);
     if (!typed.reason && M.raw(M.getDocument(typed.state, documentId)) === raw) { const whole = putBack(typed.state); if (whole !== null) return whole; }
@@ -218,6 +223,25 @@ export function programOneLineEdit(before: string, next: string): { index: numbe
   let index = -1;
   for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) { if (index >= 0) return null; index = i; }
   return index < 0 ? null : { index, text: b[index] };
+}
+/** Codex review P1 (11/11): what the parser makes of a line whatever its words, when its words alone change: a task or
+ *  subcheck with a title (its indent, mark and token), a property (its indent and name), or a plain line or list line
+ *  (its indent) that starts with no mark, date, heading, fence, folder or number. Null for any other line. The model
+ *  keeps a changed line's ID only when its kind is the same (text-model reconcile, a one-line gap), so two lines with
+ *  the same shape here keep the ID; a task turned into words ('- [가] …', '새 글') does not. */
+function programLineShape(line: string): string | null {
+  if (line.includes('\t')) return null;
+  const task = /^( *-\s+\[)([ xX]|\d+(?:\.\d+)?%?)(\]\s+)(.*?)(\s*)$/.exec(line);
+  if (task) return task[4].trim() && !task[4].startsWith('[') ? `task|${task[1]}${task[2]}${task[3]}` : null;
+  const lead = /^ */.exec(line)![0], rest = line.slice(lead.length);
+  const property = /^-\s+(날짜|메모|시간):/.exec(rest);
+  if (property) return lead ? `property|${lead}${property[0]}` : null;
+  if (!rest.trim() || /^[[#`~>|*+\d]/.test(rest) || /^-\s*(?:\[|\/|$)/.test(rest) || /^-\S/.test(rest)) return null;
+  return `${rest.startsWith('-') ? 'list' : 'note'}|${lead}${rest.startsWith('-') ? /^-\s+/.exec(rest)![0] : ''}`;
+}
+export function programSameLineKind(before: string, after: string): boolean {
+  const shape = programLineShape(before);
+  return shape !== null && shape === programLineShape(after);
 }
 /** The folded runs put into typed lines by the recent part's lines they still match (a longest common subsequence of
  *  identical lines): each after the typed place of the line before it, else before that of the line after it, else

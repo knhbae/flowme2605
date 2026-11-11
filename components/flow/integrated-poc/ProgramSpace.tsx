@@ -1260,6 +1260,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // A row checked in the band stays (faded, where it was) until the screen is left; a finished round has moved on.
   const [bandChecked, setBandChecked] = useState<ReadonlyMap<string, { row: ProgramContinueRow; index: number; repeatCheck?: ProgramRepeatCheck | null }>>(() => new Map());
   // int9 r2 (기타 int9 QA P3): a repeat round finished from the band says so in the writing view's notice line, with [되돌리기].
+  const [bandUndoing, setBandUndoing] = useState<ReadonlySet<string>>(() => new Set());
   const [bandRepeatNotice, setBandRepeatNotice] = useState<{ actorId: string; documentId: string; taskId: string; text: string; check: ProgramRepeatCheck | null } | null>(null);
   const [bandFailed, setBandFailed] = useState<string | null>(null);
   useEffect(() => { setBandChecked(new Map()); setBandFailed(null); setBandRepeatNotice(null); }, [actorId, period, selected, folderId]);
@@ -3194,7 +3195,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     for (const [, kept] of [...bandChecked].sort((a, b) => a[1].index - b[1].index)) list.splice(Math.min(kept.index, list.length), 0, { row: kept.row, done: true });
     return list.map(({ row, done }) => ({ id: row.task.id, title: row.repeat ? programRepeatTitle(row.task.title) : row.task.title, kind: row.kind,
       meta: row.kind === 'flow' ? [] : programContinueMeta(row.task, bandDocumentId, rowFolderTitle(row.task), row.kind), flowTitle: row.flowTitle,
-      flowDocumentId: row.kind === 'flow' ? row.task.docId : null, percent: row.percent, done, busy: completingTaskIds.has(row.task.id), repeat: row.repeat }));
+      flowDocumentId: row.kind === 'flow' ? row.task.docId : null, percent: row.percent, done, busy: completingTaskIds.has(row.task.id) || bandUndoing.has(row.task.id), repeat: row.repeat,
+      undo: done && !!bandChecked.get(row.task.id)?.repeatCheck }));
   })();
   function checkFromBand(id: string) {
     const kept = bandChecked.get(id), index = bandRows.findIndex(row => row.id === id), shown = continueBand.rows.find(row => row.task.id === id) ?? kept?.row;
@@ -3214,7 +3216,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     });
   }
   async function undoBandRepeat(id: string, check: ProgramRepeatCheck) {
-    const done = await undoRepeatRound(check);
+    // The box is busy while the round comes back, so a second press cannot ask for it twice.
+    if (bandUndoing.has(id)) return;
+    setBandUndoing(current => new Set(current).add(id));
+    const done = await undoRepeatRound(check).finally(() => setBandUndoing(current => { const next = new Set(current); next.delete(id); return next; }));
     if (!done) { setBandFailed(id); setBandRepeatNotice(current => current && current.taskId === id ? { ...current, text: PROGRAM_REPEAT_UNDO_REFUSED, check: null } : current); return; }
     setBandChecked(current => { const next = new Map(current); next.delete(id); return next; });
     setBandRepeatNotice(current => current && current.taskId === id ? null : current);

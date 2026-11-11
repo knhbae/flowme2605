@@ -19,7 +19,9 @@ export type ProgramFlowBandRow = { id: string; title: string; kind: ProgramConti
   meta: readonly string[];
   flowTitle: string | null; flowDocumentId: string | null; percent: number | null; done: boolean; busy: boolean;
   /** A repeat line's chip ("↻ 매주 토"); a finished round is done here, and stays so. */
-  repeat: string | null };
+  repeat: string | null;
+  /** int9 r2 (기타 QA P3, 11/11): a repeat round finished from this band: its box, pressed again, brings the round back. */
+  undo?: boolean };
 export const PROGRAM_FLOW_BAND_ROWS = 5;
 const OPEN_KEY = 'flowme-continue-band-open:v2';
 
@@ -45,8 +47,8 @@ export function ProgramFlowTodayBand(props: { rows: readonly ProgramFlowBandRow[
       <span className={styles.chevron} aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d={opened ? 'm6 15 6-6 6 6' : 'm6 9 6 6 6-6'} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg></span></button></h2>
     {opened && <div id={`${uid}-rows`}>
       {shown.length > 0 && <ul className={styles.rows}>{shown.map(row => <li key={row.id} data-band-task={row.id} data-kind={row.kind} data-done={row.done || undefined}>
-        <button type="button" className={styles.check} aria-pressed={row.done} aria-busy={row.busy || undefined} disabled={row.busy || row.done && !!row.repeat}
-          aria-label={`${row.title} ${row.busy ? '저장 중' : row.done ? row.repeat ? '이번 회차 끝냄' : '다시 열기' : '완료'}`} onClick={() => props.onCheck(row.id)}>
+        <button type="button" className={styles.check} aria-pressed={row.done} aria-busy={row.busy || undefined} disabled={row.busy || row.done && !!row.repeat && !row.undo}
+          aria-label={`${row.title} ${row.busy ? '저장 중' : row.done ? row.repeat ? row.undo ? '이번 회차 되돌리기' : '이번 회차 끝냄' : '다시 열기' : '완료'}`} onClick={() => props.onCheck(row.id)}>
           <span aria-hidden="true" data-check={row.busy ? 'busy' : row.done ? 'done' : 'open'} /></button>
         {/* The words and where they were written are one button: the original line (its document opened there). */}
         <button type="button" className={styles.text} onClick={() => props.onShowSource(row.id)} aria-label={`${row.title} · ${row.flowTitle ?? row.meta.join(' · ')} · 원래 줄 보기`}>
