@@ -117,6 +117,8 @@ test('F12 1차 QA fixes: one plan for every Flow step move, the editor sheet\'s 
   assert(editor.includes('current={task?.date??null} marked={marked} notAfter={anchor}'));
   const css = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/AlphaWorkspace.module.css'), 'utf8');
   assert(css.includes('@media (max-width: 700px) { .triedPrompt { top: calc(env(safe-area-inset-top) + 8px); bottom: auto;'));
+});
+
 test('F12 2차: a run\'s name follows its Flow\'s on the line; a run document\'s name field says it is the run name', () => {
   const html = lines([run('p', '월간 발표 12월', { flow: '월간 발표', run: '12월' })]);
   assert.match(html, />월간 발표<span[^>]*data-run-name="true"> 12월<\/span>/);
