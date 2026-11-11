@@ -199,3 +199,8 @@
 - 11/11 16:18 가벼운 반영 36회차 DEPLOYED: typelag 2차 6fda5f27 / h8jrAIv8SOZjvbibyH6QA. Inspect 통과, CPU 평균 60% 미만 확인, 10경로 기대값, DB 0, 복귀 typelag 1차.
 - 11/11 16:20 개발 int9 fd9bd89b / ANC3B9CARfdH801ZHEJ_4(typelag 2차 + int8b F7·F8 + carry-order + authprobe·F11 + W-VER·W-VER-04, savec4 제외): 284줄에서 키당 66~129ms 유지(부하 속). 기타 QA로. 개발은 typelag 3차(체크 단추 숨김 묶음·모델 검사 좁히기·Enter).
 - 11/11 15:55 Codex 6.1 Sol xhigh 전환(사용자). 첫 일: typelag 2차 독립 검토, F12 2차 데이터 설계 초안.
+- 11/11 18:40 기타 int9 QA FIX → 개발 r2 25ee139d / 9Cq4Ncw5D4DZDZfr0zI6c(F8 띠 Flow 할 일, F7 머리 없는 글 칩, 띠 반복 되돌리기, W-VER-04, Codex typelag 2차 P2 2건).
+- 11/11 17:58 Codex typelag 3차 2f67b68e 검토: P1 1건(recent-writing 한 줄 빠른 경로가 줄 종류 변경 시 ID 교체를 가정 못 해 복구 원문 줄 순서가 저장 원문과 다름, 글자 손실 0, 합성 178개 중 32개 차이). 개발 3차 묶음 첫 항목. 저장 C r5 명령 카드·한 장 카드 받음(HOLD_OPERATING_BEFORE_NOT_OBSERVED, 당일 읽기 필요).
+- 11/11 20:4x 기타 int9 r2 QA_GO(PACKAGE c549ead4): 고친 4건 PASS, 회귀 0(저장 원문·복구함·한글 17/17·row-patch 켬/끔 같음). 새 P3: 띠 흐린 반복 칸 다시 누르기로는 못 되돌림(알림 되돌리기는 됨).
+- 11/11 20:10~20:5x 조용한 창 측정(284줄 전체 보기, ② → r2 키당 중앙값): 4배 Enter 1,396→1,319ms·조합 207→207·할 일 251→339, 6배 Enter 1,993→2,370(+19%)·조합 364→408·할 일 501→619(+24%). 최근만 보기는 비슷. int9 'Enter 2.3초'는 부하 탓.
+- 11/11 21:0x 총괄 판단: int9 r2 반영 보류. 사용자 불편 1순위가 탭S6 입력 지연인데 6배 전체 보기에서 20% 느려짐. 개발 3차에 P1 + Codex P2 + 띠 P3 + '6배 전체 보기에서 ②보다 느리지 않음'을 묶어 다음 후보로 함께 반영. int9r2-qa product 보존.
