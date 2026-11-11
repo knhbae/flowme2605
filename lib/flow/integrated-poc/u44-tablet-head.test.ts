@@ -46,7 +46,8 @@ test('U44: the title row and its notices are drawn in one place: their own row, 
 test('U44: the editor\'s tool line starts with the title and ends with ⋯; the notices sit under it, above the body', () => {
   const toolbar = editor.slice(editor.indexOf('    <div className={styles.toolbar}>'), editor.indexOf('<div ref={hostRef}'));
   assert(toolbar.startsWith('    <div className={styles.toolbar}>\n      {props.headStart && <div className={styles.headStart} data-editor-head="start">{props.headStart}</div>}'));
-  assert(toolbar.includes('      {props.headEnd && <div className={styles.headEnd} data-editor-head="end">{props.headEnd}</div>}\n    </div>\n    {props.headBelow && <div className={styles.headBelow} data-editor-head="below">{props.headBelow}</div>}\n    {props.folderId &&'));
+  // F11 W-HEIGHT-01 (11/11): the one notice line comes right under the tool line, before the notices under it.
+  assert(toolbar.includes('      {props.headEnd && <div className={styles.headEnd} data-editor-head="end">{props.headEnd}</div>}\n    </div>\n    {alertView}\n    {props.headBelow && <div className={styles.headBelow} data-editor-head="below">{props.headBelow}</div>}\n    {props.folderId &&'));
   assert(editorCss.includes('.toolbar > .headStart { order: -1;'));
   assert(editorCss.includes('.toolbar > .headEnd { order: 9; flex: 0 0 auto; }'));
   // The title is at most 220px and shortens with "…" (its button already does); ⋯ keeps its 44px target.

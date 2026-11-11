@@ -604,3 +604,14 @@
 .sectionOrderPreview { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .sectionOrderPreview h4 { margin: 0 0 4px; font-size: 13px; color: var(--flowme-b-muted); }
 .sectionOrderPreview ol { margin: 0; padding-left: 20px; font-size: 15px; line-height: 24px; }
+/* F11 W-HEIGHT-01/02 알림 한 줄 (UX ux-tablet-height 안2): 44px under the tool bar; [자세히] opens under it. A phone shows two
+   buttons at most (the action and [복구함 n]). */
+.alertLine { display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; min-height: 44px; margin: 4px 0; padding: 0 4px 0 12px; border-radius: 10px; background: var(--flowme-b-surface-subtle); color: var(--flowme-b-ink); font-size: 14px; line-height: 20px; }
+.alertLine[data-alert-tone="warn"] { background: #fff5e8; color: #7a3604; }
+.alertLine > p { flex: 1 1 200px; min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 650; }
+.alertActions { display: flex; align-items: center; gap: 2px; flex: none; }
+.alertActions button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 10px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 14px; font-weight: 650; }
+.alertActions button:disabled { color: var(--flowme-b-muted); }
+.alertDetail { flex: 1 0 100%; padding: 4px 0 10px; color: var(--flowme-b-ink); font-size: 13px; line-height: 20px; font-weight: 400; }
+.alertNote { margin: 6px 0 0; }
+@media (max-width: 600px) { .alertActions > button:nth-of-type(n+3) { display: none; } .alertLine > p { flex-basis: 120px; } }

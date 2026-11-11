@@ -6,7 +6,7 @@ import { programClone } from '../contract';
 import { textWorkspaceModel as M } from '../text-workspace';
 import { createAlphaFakeServer } from '../alpha-persistence/fake-server';
 import { captureAlphaAccount, commandFromProgramTransition } from '../alpha-persistence/program-adapter';
-import { createAlphaClient } from '../alpha-persistence/client';
+import { ALPHA_SESSION_RENEWAL, createAlphaClient } from '../alpha-persistence/client';
 import { canonicalJson } from '../alpha-persistence/json';
 import { isAccountForOwner } from '../alpha-auth/account-access';
 import { ALPHA_ENVIRONMENT_POLICY } from '../alpha-persistence/environment';
@@ -173,13 +173,51 @@ test('a failed full read is not covered by unchanged tokens: the next automatic 
 });
 
 test('after an expired session the account comes back only through a full read', async () => {
+  const wait = ALPHA_SESSION_RENEWAL.waitMs; ALPHA_SESSION_RENEWAL.waitMs = 30;
+  try {
   const backend = supabase({ v2: true }), client = connect(backend);
   await client.refreshIfChanged(); backend.live.session = false;
   assert.equal(await client.refreshIfChanged(), false); assert.equal(client.snapshot().status, 'session-expired');
   backend.live.session = true;
   assert.equal(await client.refreshIfChanged(), true);
-  assert.equal(backend.calls['/rest/v1/rpc/flowme_alpha_read_probe_v2'], 1, 'the expired probe (401) only'); assert.equal(backend.calls['probe-v2'] ?? 0, 0);
+  // authprobe (11/11): a 401 waits for a new session, then asks once more; both answered 401 here.
+  assert.equal(backend.calls['/rest/v1/rpc/flowme_alpha_read_probe_v2'], 2, 'the expired probe (401) and its one re-check'); assert.equal(backend.calls['probe-v2'] ?? 0, 0);
   assert.equal(backend.calls['full-v2'], 2, 'the hidden account is read in full');
   assert.equal(client.snapshot().status, 'ready');
   assert.equal(await client.refreshIfChanged(), true); assert.equal(backend.calls['full-v2'], 2); assert.equal(backend.calls['probe-v2'], 1, 'normal again: probe only');
+  } finally { ALPHA_SESSION_RENEWAL.waitMs = wait; }
+});
+
+// authprobe (11/11, 운영 08:27 태블릿): waking up, the automatic read's probe still carried the token that expired asleep
+// while the SDK refreshed it (twice: two windows of the same site woke together). That 401 used to end in
+// 'session-expired' when it came back before the host rebound the fresh session.
+test('authprobe: a 401 that a fresh session follows is not an expired session; the new session reads', async () => {
+  const wait = ALPHA_SESSION_RENEWAL.waitMs; ALPHA_SESSION_RENEWAL.waitMs = 2000;
+  try {
+    const backend = supabase({ v2: true }), client = connect(backend);
+    await client.refreshIfChanged(); assert.equal(client.snapshot().status, 'ready');
+    backend.live.session = false;
+    const probing = client.refreshIfChanged();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    // The SDK refreshed: the host binds the fresh session (AlphaWorkspace: bindSession, then the automatic read).
+    backend.live.session = true;
+    client.bindSession(OWNER, createAlphaHttpRepository(CONFIG, { accessToken: 'synthetic-token-fresh', userId: OWNER }, backend.request, { social: true, readProbe: true }));
+    assert.equal(await probing, false, 'the old probe stands down');
+    assert.notEqual(client.snapshot().status, 'session-expired');
+    assert.equal(await client.refreshIfChanged(), true, 'the fresh session reads');
+    assert.equal(client.snapshot().status, 'ready'); assert.equal(client.snapshot().lastError, null);
+  } finally { ALPHA_SESSION_RENEWAL.waitMs = wait; }
+});
+test('authprobe: a 401 with no new session is asked once more; answered then, nothing is shown', async () => {
+  const wait = ALPHA_SESSION_RENEWAL.waitMs; ALPHA_SESSION_RENEWAL.waitMs = 30;
+  try {
+    const backend = supabase({ v2: true }), client = connect(backend);
+    await client.refreshIfChanged();
+    backend.live.session = false;
+    const probing = client.refreshIfChanged();
+    setTimeout(() => { backend.live.session = true; }, 5);
+    assert.equal(await probing, true, 'the re-check found the same tokens');
+    assert.equal(client.snapshot().status, 'ready'); assert.equal(client.snapshot().lastError, null);
+    assert.equal(backend.calls['/rest/v1/rpc/flowme_alpha_read_probe_v2'], 1, 'one 401'); assert.equal(backend.calls['probe-v2'], 1, 'one answered re-check (the first read was full)');
+  } finally { ALPHA_SESSION_RENEWAL.waitMs = wait; }
 });

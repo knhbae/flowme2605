@@ -79,16 +79,19 @@ test('W2: one recovery box holds the server\'s 다시 확인 and the editor\'s t
   const slotExpression = pick(node => ts.isJsxExpression(node) && !!node.expression && ts.isConditionalExpression(node.expression)
     && node.expression.condition.getText(tree) === 'serverView' && node.expression.whenTrue.getText(tree).includes('styles.statusSlot')).slice(1, -1);
   const editorRecovery = pick(node => ts.isFunctionDeclaration(node) && node.name?.text === 'editorRecovery');
+  // F11 (11/11): the box's content is its own function now (also what the notice line's [자세히] opens).
+  const editorRecoveryBody = pick(node => ts.isFunctionDeclaration(node) && node.name?.text === 'editorRecoveryBody');
   const noop = () => {};
   function slot(server: boolean, error: boolean) {
     const serverView = { label: '저장 여부 확인 못 함', level: 4,
       recovery: server ? h('details', { 'data-test': 'server-recovery' }, h('summary', null, '저장 여부 확인 못 함'), h('button', null, '다시 확인')) : null,
       recoveryBody: server ? h('section', { 'data-test': 'server-body' }, h('button', null, '다시 확인')) : null, extras: null };
     const draft = { error: error ? '여러 줄의 변경을 기존 항목과 연결하지 못해 반영하지 않았습니다.' : '', saving: false };
-    const recovery = run<(announce: boolean, server?: unknown) => El>(editorRecovery, { props: { readOnly: false }, inputLocked: false, refused: false, refusedLine: 1, refusedReason: '',
+    const recoveryScope = { props: { readOnly: false }, inputLocked: false, refused: false, refusedLine: 1, refusedReason: '',
       styles, composingRef: { current: false }, draft, progressConflict: null, showProgressConflict: noop, draftRef: { current: null }, saveNow: noop,
-      downloadDraft: noop, orderHistoryRef: { current: null }, orderPositionsRef: { current: [] }, orderEpochRef: { current: 0 }, editorRef: { current: null }, propsRef: { current: {} } });
-    const nodes = all(run(slotExpression, { serverView, styles, statusWarn: true, hasRecovery: server || error, statusLabel: '저장 확인 필요', quietStatus: false,
+      downloadDraft: noop, orderHistoryRef: { current: null }, orderPositionsRef: { current: [] }, orderEpochRef: { current: 0 }, editorRef: { current: null }, propsRef: { current: {} } };
+    const recovery = run<(announce: boolean, server?: unknown) => El>(editorRecovery, { ...recoveryScope, editorRecoveryBody: run(editorRecoveryBody, recoveryScope) });
+    const nodes = all(run(slotExpression, { serverView, styles, alertLine: null /* F11: no notice line here */, statusWarn: true, hasRecovery: server || error, statusLabel: '저장 확인 필요', quietStatus: false,
       draft, editorRecovery: recovery, props: {}, editorStatus: { label: '저장 확인 필요' } }));
     const boxes = nodes.filter(node => node.type === 'details');
     return { boxes: boxes.length, text: boxes.map(text), groups: nodes.filter(node => node.type === 'section' && node.props['aria-label']).map(node => String(node.props['aria-label'])) };

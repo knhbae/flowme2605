@@ -14,14 +14,16 @@ const tablet = block('(min-width: 701px) and (max-width: 1279px), (min-width: 12
 const writing = '.page[data-alpha-frame="b"][data-note-layout="true"]:has([data-program-period="documents"][aria-current="page"])';
 
 test('U41: the writing screen of a tablet held sideways keeps thin paddings, so its body reaches the screen\'s bottom', () => {
-  assert(tablet.includes(`${writing} { padding-top: 12px; padding-bottom: 12px; }`));
-  assert(tablet.includes(`${writing} .workPane { padding-block: 12px; }`));
+  // F11 W-HEIGHT-04 (11/11, 안2): 8 (was 12).
+  assert(tablet.includes(`${writing} { padding-top: 8px; padding-bottom: 8px; }`));
+  assert(tablet.includes(`${writing} .workPane { padding-block: 8px; }`));
 });
 
 test('U41 review: the root\'s canvas has the same reach as the paddings (that width, the writing screen only)', () => {
   assert(tablet.includes(':global(html):has(.page[data-alpha-frame="b"][data-note-layout="true"] [data-program-period="documents"][aria-current="page"]) { background: var(--flowme-b-paper); }')); // F6-B1: the page's paper
   // Nothing else in that block, and no root background anywhere else in the file: 오늘·분류·더보기, phones and wide
   // screens keep theirs.
-  assert.equal(tablet.split('\n').filter(line => line.startsWith('  ')).length, 3);
+  // The three rules and F11's comment line.
+  assert.equal(tablet.split('\n').filter(line => line.startsWith('  ') && !line.trim().startsWith('/*')).length, 3);
   assert.equal(css.match(/:global\(html\)/g)?.length, 1);
 });

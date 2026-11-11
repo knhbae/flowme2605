@@ -33,7 +33,7 @@ import { automaticReadToAwait, queueTap, sourceReturnWait, unqueueTap, type Queu
 import { AUTOMATIC_READ_INPUT_EVENTS, automaticReadSchedule } from '@/lib/flow/integrated-poc/automatic-read-idle';
 import { pendingResultUnknown } from '@/lib/flow/integrated-poc/save-status';
 import { programServerStatus } from '@/lib/flow/integrated-poc/program-status';
-import { ProgramServerStatusContext, type ProgramServerStatusView } from './program-status-context';
+import { ProgramServerStatusContext, type ProgramAlertLine, type ProgramServerStatusView } from './program-status-context';
 import { addProgramLinkMemo, createProgramDocument, importProgramPublicVersion } from '@/lib/flow/integrated-poc/private-space';
 import { programCanonicalLink, programLinkHome, programLinkMemoRaw } from '@/lib/flow/integrated-poc/link-lookup';
 import { programFencedRecoveryRaw } from '@/lib/flow/integrated-poc/recovery-restore';
@@ -72,6 +72,7 @@ import { AlphaConflictReview } from './AlphaConflictReview';
 import { AlphaCatalogPanels } from './AlphaCatalogPanels';
 import { AlphaPrivacyNotice } from './AlphaPrivacyNotice';
 import { readPrivacyContact } from '@/lib/flow/integrated-poc/privacy-notice';
+import { ALPHA_VERSION, alphaOwnBuild, createAlphaVersionWatch, fetchAlphaServedBuild } from '@/lib/flow/integrated-poc/alpha-version';
 import { ProgramFlowMark, ProgramIcon } from './icons';
 import styles from './AlphaWorkspace.module.css';
 
@@ -312,6 +313,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const collectionsSwitchingRef = useRef(false);
   const collectionsPort = useRef<ReturnType<typeof createAlphaDocumentCollections> | null>(null);
   const storageErrorRef = useRef(storageError); storageErrorRef.current = storageError;
+  // W-VER (11/11): a newer build on the server (null: none seen) and where [새로 고침] stands; the save line's state.
+  const [newBuild, setNewBuild] = useState<string | null>(null), [versionReload, setVersionReload] = useState<'idle' | 'waiting' | 'blocked'>('idle');
+  const protectionRef = useRef(false);
   // Park only explicit context handoffs/reloads, not every intermediate keystroke.
   const recoveryDocuments = useRef(createAlphaUiRecoveryDocuments());
   const allEditors = () => [editors.current, legacyEditors.current, creatorEditors.current, publisherEditors.current, communityEditors.current, inspectorEditors.current];
@@ -763,6 +767,31 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       window.removeEventListener('pagehide', pageHide); window.removeEventListener('pageshow', pageShow);
       for (const type of AUTOMATIC_READ_INPUT_EVENTS) window.removeEventListener(type, reads.input, input); };
   }, []);
+  // W-VER-01 (11/11): back on the screen (shown again, page restored, online) at once, and every 15 minutes while it
+  // shows, the server's build is compared with this page's. Nothing else changes; a newer one only raises the notice.
+  useEffect(() => {
+    const watch = createAlphaVersionWatch({ own: alphaOwnBuild(document), served: () => fetchAlphaServedBuild(), onNewer: setNewBuild, now: Date.now });
+    const shown = () => { if (document.visibilityState === 'visible') void watch.check(); };
+    const restored = (event: PageTransitionEvent) => { if (event.persisted) void watch.check(true); };
+    document.addEventListener('visibilitychange', shown); window.addEventListener('online', shown); window.addEventListener('pageshow', restored);
+    const timer = window.setInterval(() => { if (document.visibilityState === 'visible') void watch.check(true); }, ALPHA_VERSION.everyMs);
+    return () => { clearInterval(timer); document.removeEventListener('visibilitychange', shown); window.removeEventListener('online', shown); window.removeEventListener('pageshow', restored); };
+  }, []);
+  // W-VER-03: [새로 고침] reloads only once nothing is left to save: no input waiting in an editor, no save on its way or
+  // in question, the kept input stored. Otherwise it waits for the saves; a save state that needs the person (the save
+  // line) or no save within the wait stops it, says so, and leaves the screen and the input as they are.
+  const versionClean = () => !storageErrorRef.current && !protectionRef.current && !hasInput()
+    && !controller.current?.snapshot().pending && !controller.current?.snapshot().busy;
+  const requestNewVersion = () => { captureInput(); if (versionClean()) { window.location.reload(); return; } setVersionReload('waiting'); };
+  useEffect(() => {
+    if (versionReload !== 'waiting') return;
+    const started = Date.now();
+    const timer = window.setInterval(() => {
+      if (protectionRef.current || storageErrorRef.current || Date.now() - started > ALPHA_VERSION.waitMs) { setVersionReload('blocked'); return; }
+      if (versionClean()) { clearInterval(timer); window.location.reload(); }
+    }, 300);
+    return () => clearInterval(timer);
+  }, [versionReload]);
   const performMutation: ProgramMutate = async (label, build, options) => {
     const store = controller.current, owner = currentOwnerRef.current, epoch = sessionEpochRef.current;
     const startedInBrowse = PROGRAM_BROWSE_VIEWS.includes(destinationRef.current.view);
@@ -1598,6 +1627,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     || (snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending
     || external || snapshot?.status === 'conflict'
     || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft);
+  protectionRef.current = !!needsInputProtection;
   // R8a: saved input. The 복구함 always lists and counts everything stored (storedTotal). The notice and
   // badges count only input that needs attention (savedTotal): every input is still captured to the tab,
   // but the capture of input the editors are saving normally counts only once it is at risk: protection,
@@ -1781,8 +1811,34 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // W11: on the 쓰기 tab the notices around the title share one line, by priority: this document's saved input, then
   // the development notice, then the new-document notice (ProgramSpace keeps that one for screen readers only).
   const writingTab = usesNoteChrome && mainTab === 'documents';
-  const noteNotice = writingTab ? documentRecovery || publicNotice : publicNotice;
-  const noteNoticeShown = writingTab && (!!documentRecovery || !devNoticeSeen);
+  // F11 W-HEIGHT-01/02 (11/11, 안2): on 쓰기 one line under the tool bar says the most pressing of: the save state (its
+  // one action: 다시 확인 or 최신 내용 열기, [복구함 n], [자세히] for the whole box), this document's kept input, the
+  // last message. It replaces the banner, the recovery line under the title, the 안내 line and the box at the tool bar.
+  const rejectedInput = !!(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft);
+  const conflictInput = !!(external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !rejectedInput);
+  // W-VER-02 (11/11): a newer build comes third, after the save state and this document's kept input (then it is said
+  // under their [자세히]), and before a passing message (which then goes under its [자세히]).
+  const versionText = versionReload === 'blocked' ? '새 버전이 있습니다 · 저장을 확인하지 못해 새로 고치지 않았습니다' : '새 버전이 있습니다';
+  const versionAction = { label: versionReload === 'waiting' ? '저장 확인 중…' : '새로 고침', run: requestNewVersion, disabled: versionReload === 'waiting' };
+  const versionNote = (withAction: boolean) => newBuild && <p className={styles.feedbackMessageText} data-version-note>
+    {withAction ? versionText : '새 버전이 있습니다 · 저장이 확인되면 새로 고칠 수 있습니다'}
+    {withAction && <> <button type="button" data-version-reload disabled={versionAction.disabled} onClick={versionAction.run}>{versionAction.label}</button></>}</p>;
+  const alertLine: ProgramAlertLine | null = !writingTab || localParticipationRecovery ? null
+    : needsInputProtection ? { tone: 'warn',
+      text: storageError ? '입력 보관 실패 · 작성 중인 내용을 파일로 보관해 주세요' : pendingUnknown ? '저장 확인 필요 · 입력은 남아 있습니다'
+        : rejectedInput ? '저장되지 않음 · 입력은 남아 있습니다' : conflictInput ? '다른 곳에서 먼저 바뀜 · 입력은 이 기기에 있습니다' : '입력 보호 · 입력은 남아 있습니다',
+      action: pendingUnknown ? { label: snapshot?.busy ? '확인 중…' : '다시 확인', run: () => { void resolvePendingResult(); }, disabled: !!snapshot?.busy }
+        : conflictInput ? { label: '최신 내용 열기', run: () => { void openLatest(); }, disabled: !!snapshot?.busy } : null,
+      recoveries: documentRecoveries, openRecovery: opener => openRecoveryBox(opener),
+      // The rest (the last message) goes under [자세히] with the box.
+      detail: <>{inputProtectionFor(false)}{message && !participationMessage && <p className={styles.feedbackMessageText}>{message}</p>}</>, note: versionNote(false) || null }
+    : documentRecoveries > 0 ? { tone: 'info', text: `이 문서에 복구할 입력 ${documentRecoveries}개`, recoveries: documentRecoveries, openRecovery: opener => openRecoveryBox(opener),
+      note: versionNote(true) || null }
+    : newBuild ? { tone: 'info', text: versionText, action: versionAction,
+      detail: message && !participationMessage ? <p className={styles.feedbackMessageText}>{message}</p> : null }
+    : message && !participationMessage ? { tone: 'info', text: message, close: () => setMessage('') } : null;
+  const noteNotice = writingTab ? (alertLine ? publicNotice : documentRecovery || publicNotice) : publicNotice;
+  const noteNoticeShown = writingTab && (!!documentRecovery && !alertLine || !devNoticeSeen);
   const browseHistory = (kind: 'undo' | 'redo') => !browse || programBrowseHistoryAllowed(historyOrigin.current, kind, snapshot?.account?.revision);
   const serverUndo = <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external} aria-disabled={browseHistory('undo') ? undefined : true}>되돌리기</button>;
   // The recovery box with its actions. `announce` is off inside the note editor, whose one status
@@ -1873,10 +1929,11 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   </div>;
   const serverStatusView: ProgramServerStatusView | null = usesNoteChrome ? {
     ...serverSlot,
-    recovery: destination.view === 'space' && needsInputProtection ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,
+    recovery: destination.view === 'space' && needsInputProtection && !alertLine ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,
     recoveryBody: destination.view === 'space' && needsInputProtection ? <div className={styles.inputRecoveryGroup}>{inputProtectionFor(false)}</div> : null,
-    extras: destination.view === 'space' && message && !participationMessage
+    extras: destination.view === 'space' && message && !participationMessage && !alertLine
       ? <div className={styles.statusRow}>{serverStatusExtras}</div> : null,
+    alert: alertLine,
   } : null;
   return <main ref={chromeRoot} className={styles.page} data-alpha-frame="b" data-writing-keyboard={writingWithKeyboard ? 'true' : undefined} data-synthetic-runtime={syntheticRuntime ? 'fixture-only' : undefined} data-note-layout={usesNoteChrome} data-browse-layout={browse ? destination.view === 'flow' ? 'detail' : 'list' : undefined} data-me-layout={destination.view === 'activity' ? '' : undefined} onInput={event => { queueMicrotask(captureInput);
       // Core3 P2c: the first input into my writing closes a Flow's arrival toast.

@@ -47,7 +47,7 @@ function slot(state: { server?: Partial<NonNullable<Server>> | null; storageErro
   const serverWins = serverStatusWins(serverView, editorStatus), statusWarn = (serverWins ? serverView.level : editorStatus.level) <= 4;
   const statusLabel = serverWins ? serverView.label : editorStatus.label, hasRecovery = !!serverView.recovery || !!state.error;
   const quietStatus = !!state.typing && !statusWarn;
-  const scope = { serverView, styles, statusWarn, hasRecovery, statusLabel, quietStatus, draft: { error: state.error ? '저장하지 못했습니다' : '' },
+  const scope = { serverView, styles, statusWarn, hasRecovery, statusLabel, quietStatus, alertLine: null /* F11: no notice line here */, draft: { error: state.error ? '저장하지 못했습니다' : '' },
     editorRecovery: (announce: boolean, inner?: unknown) => h('details', { 'data-test': 'editor-recovery', announce }, h('summary', null, '다시 저장 · 입력한 원문 받기'), inner ?? null),
     props: { noteStatus: 'host line' }, editorStatus };
   const nodes = all(run(slotExpression, scope));
@@ -91,7 +91,8 @@ test('F3: one live node at a time, and the bar\'s copy is never announced', () =
   }
   // The host's recovery box comes without its own alert inside the editor; elsewhere it keeps it.
   assert(alpha.includes("<summary>{announce ? <span role=\"alert\">{inputRecoveryLabel}</span> : <span>{inputRecoveryLabel}</span>}</summary>"));
-  assert(alpha.includes('recovery: destination.view === \'space\' && needsInputProtection ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,'));
+  // F11 (11/11): with the notice line (which carries the box under [자세히]) the tool bar keeps no box.
+  assert(alpha.includes('recovery: destination.view === \'space\' && needsInputProtection && !alertLine ? <div className={styles.statusSlot}>{inputRecoveryBox(false)}</div> : null,'));
   assert(alpha.includes('{inputRecoveryBox(true)}'));
   // The box's body follows the same switch, so no alert or status is left inside it either.
   assert(alpha.includes('<div className={styles.inputRecoveryBody}>{inputProtectionFor(announce)}</div>'));

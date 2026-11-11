@@ -58,8 +58,8 @@ test('QA Q1 (390): a press on [펼치기] keeps the editor focused, so the butto
 test('p3: every fold-line button ([보기], [접기], [최근만 보기] too) keeps the editor focused while pressed; each action lets go of it first', () => {
   for (const action of ['past-show', 'past-fold', 'done-show', 'done-fold'])
     for (const button of space.split(`data-recent-action="${action}"`).slice(1)) assert(button.slice(0, button.indexOf('onClick')).includes('onMouseDown={holdRecentFocus}'), action);
-  // Those six; the document menu's button is reached by opening the menu first (the editor already let go).
-  assert.equal(space.split('onMouseDown={holdRecentFocus}').length - 1, 6);
+  // Those seven (F11: the one line's [접기] too); the document menu's button is reached by opening the menu first.
+  assert.equal(space.split('onMouseDown={holdRecentFocus}').length - 1, 7);
   for (const name of ['showRecentDone(id: string, show: boolean)', 'showRecentOnly(id: string)']) {
     const at = space.indexOf(`  async function ${name} {`), body = space.slice(at, space.indexOf('await settleRecent(id)', at));
     assert(at > 0 && body.includes('await releaseRecentEditor(id);'), name);
@@ -107,7 +107,9 @@ test('W-b: [미정]\'s folded finished tasks have their line under the body, [�
   assert(space.includes('data-recent-action="done-show" onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>보기</button>'));
   assert(space.includes('data-recent-action="done-fold" onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, false)}>접기</button>'));
   // Both under the body: one line of two buttons, their full words as names.
-  assert(space.includes('if (atEnd && view?.done.count && view.folds.some(fold => fold.atEnd)) return recentPairLine(id, view);'));
+  // F11 W-HEIGHT-03 (11/11): shown or folded, the finished tasks share the one line with the old days.
+  assert(space.includes('if (atEnd && view && (view.done.count || shownDone) && view.folds.some(fold => fold.atEnd)) return recentPairLine(id, view, shownDone);'));
+  assert(space.includes('data-recent-action="done-fold" title={done} aria-label={`${done} · 접기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, false)}>✓ 끝낸 일 {shownDone}개 접기</button>'));
   assert(space.includes("aria-label={`${done} · 보기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentDone(id, true)}>날짜 미정 끝낸 일 {view.done.count}개</button>"));
   assert(space.includes("aria-label={`${past} · 펼치기`} onMouseDown={holdRecentFocus} onClick={() => void showRecentWhole(id)}>지난 {sum('days')}일 펼치기</button>"));
   assert(space.includes('const recentDoneKey = `flow:alpha:writing-done:v1:${actorId}`;'));
