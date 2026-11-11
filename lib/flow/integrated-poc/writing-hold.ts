@@ -44,7 +44,9 @@ export function programAlignRows<T extends object>(acceptedRaw: string, shownRaw
   const out: (T | undefined)[] = new Array(b.length).fill(undefined);
   let i = 0, j = 0;
   for (const piece of [...programLinePieces(a, b), { a: [a.length, a.length], b: [b.length, b.length] } as Piece]) {
-    while (i < piece.a[0] && j < piece.b[0]) { const row = rows[i]; if (row) { const copy = { ...row } as T & { subtreeEndIndex?: number }; if (!spans) delete copy.subtreeEndIndex; out[j] = copy; } i++; j++; }
+    // Codex review P2-1 (11/11): the same outline holds index by index, so only a row kept at its own index keeps its span;
+    // one the line pieces moved to another index (i ≠ j) has none (else a folder there would fold lines it does not hold).
+    while (i < piece.a[0] && j < piece.b[0]) { const row = rows[i]; if (row) { const copy = { ...row } as T & { subtreeEndIndex?: number }; if (!spans || i !== j) delete copy.subtreeEndIndex; out[j] = copy; } i++; j++; }
     i = piece.a[1]; j = piece.b[1];
   }
   return out;
