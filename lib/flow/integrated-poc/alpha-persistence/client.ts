@@ -43,9 +43,14 @@ export const ALPHA_STATUS_COPY: Record<AlphaClientStatus, string> = {
   'session-expired': '로그인 만료', 'checking-result': '결과 확인 중', 'recovery-required': '복구 필요',
   'not-sent': '보내지 못함 · 다시 저장',
 };
+/** authprobe (11/11): how long a probe answered 401 waits for a fresh session (the SDK's refresh on waking, then the host's
+ *  bindSession) before it asks once more. A field so tests can shorten it. */
+export const ALPHA_SESSION_RENEWAL = { waitMs: 2500 };
 export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace>(validate: (value: unknown, ownerId: string, references?: AlphaReferenceContext) => value is AlphaAccount<Space>,
   recovery: AlphaRecoveryPort<Space> = createAlphaMemoryRecovery<Space>(),writingCompute?:WritingCompute) {
   let generation = 0, ownerId: string | null = null, repository: AlphaRepository<Space> | null = null;
+  // authprobe (11/11): a probe answered 401 waits here for the host to bind a fresh session (bindSession resolves it).
+  let sessionWaiters: ((renewed: boolean) => void)[] = [];
   let state: AlphaRecovery<Space> | null = null, status: AlphaClientStatus = 'signed-out', busy = false, blocked = false;
   let lastReceipt: AlphaReceipt | null = null;
   let writingIdentity:WritingIdentity|undefined;
@@ -309,6 +314,7 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
       accountHidden = accountHidden && nextOwner !== null && port !== null && nextOwner === ownerId;
       ackIssuer.clear();activeAck=null;confirmedFrame=Object.freeze({});viewFrame=null;viewSlots.clear();confirmedRead=null;
       generation++; ownerId = nextOwner; repository = port; state = null; busy = false; blocked = false; lastReceipt = null;writingIdentity=undefined;
+      { const waiting = sessionWaiters; sessionWaiters = []; queueMicrotask(() => { for (const renewed of waiting) renewed(true); }); }
       lastError = null; rejectedDraftRequestId = null; rejectedNativeHandoff = null; rejectedSocialDraft = null;
       status = 'signed-out';
       if (nextOwner === null || port === null) { repository = null; ownerId = null; return; }
@@ -387,7 +393,25 @@ export function createAlphaClient<Space extends AlphaSpace = ProgramPrivateSpace
       try { probe = await port.probe(); } catch { probe = null; } finally { if (current(epoch)) busy = false; }
       if (!current(epoch) || repository !== port || state !== own || confirmedRead !== read) return false;
       if (probe?.kind === 'tokens' && probe.tokens.privateToken === read.tokens.privateToken && probe.tokens.publicToken === read.tokens.publicToken) return true;
-      if (probe?.kind === 'failed' && probe.reason === 'unauthenticated') { fail('unauthenticated'); return false; }
+      if (probe?.kind === 'failed' && probe.reason === 'unauthenticated') {
+        // authprobe (11/11, 운영 08:27): waking up, this probe still carried the token that expired asleep while the SDK
+        // refreshed it. The host binds the fresh session (bindSession), and that read checks again: so a 401 waits for a
+        // new session first; with none, the same probe once more; only a second 401 is an expired session.
+        const renewed = await new Promise<boolean>(resolve => {
+          const done = (value: boolean) => { clearTimeout(timer); resolve(value); };
+          const timer = setTimeout(() => { sessionWaiters = sessionWaiters.filter(entry => entry !== done); resolve(false); }, ALPHA_SESSION_RENEWAL.waitMs);
+          sessionWaiters.push(done);
+        });
+        if (renewed || !current(epoch) || repository !== port || state !== own || confirmedRead !== read || busy) return false;
+        busy = true;
+        let again: AlphaReadProbe | null = null;
+        try { again = await port.probe(); } catch { again = null; } finally { if (current(epoch)) busy = false; }
+        if (!current(epoch) || repository !== port || state !== own || confirmedRead !== read) return false;
+        if (again?.kind === 'failed' && again.reason === 'unauthenticated') { fail('unauthenticated'); return false; }
+        if (again?.kind === 'tokens' && again.tokens.privateToken === read.tokens.privateToken && again.tokens.publicToken === read.tokens.publicToken) return true;
+        if (!again || again.kind === 'failed' && again.reason === 'unavailable') return false;
+        return this.refresh();
+      }
       if (!probe || probe.kind === 'failed' && probe.reason === 'unavailable') return false;
       return this.refresh();
     },
