@@ -1,7 +1,7 @@
 import { programFailure, type ProgramData, type ProgramPrivateSpace, type ProgramTransition } from './contract';
 import { patchProgramTask, transitionProgramPrivateSpace } from './private-space';
 import { programSeriesMetadata } from './recurrence-target';
-import { textWorkspaceModel as M, type TextRow, type TextTask } from './text-workspace';
+import { textWorkspaceModel as M, type TextDocument, type TextRow, type TextTask } from './text-workspace';
 import { programShiftDate, programTaskProgress } from './execution';
 import { programCalendarDate } from './date-label';
 import { ALPHA_TASK_DATE_MOVE_LIMIT, isAlphaTaskDateMoves, type AlphaTaskDateMove } from './alpha-social/contract';
@@ -93,10 +93,15 @@ export const programTaskDateMovesSocial = (space: ProgramPrivateSpace, moves: re
  *  date (with a copy's date override) changes: ids, progress, time, text and the lines' places stay, the day orders
  *  too. The whole space is not compared, only these tasks, so an unrelated save in between does not block it.
  *  되돌리기 is the same command (programTaskDateUndo). A retry of the request changes nothing again. */
-export function moveProgramTaskDates(data: ProgramData, input: { actorId: string; requestId: string; moves: ProgramTaskDateMove[] }): ProgramTransition<string> {
+export function moveProgramTaskDates(data: ProgramData, input: { actorId: string; requestId: string; moves: ProgramTaskDateMove[]; time?: ProgramTaskDateTime }): ProgramTransition<string> {
   if (!isAlphaTaskDateMoves(input.moves) || !Object.hasOwn(data.spaces, input.actorId)) return programFailure(data, 'invalid');
+  // Codex f12a review P2-2 (11/12): a time picked with the date of a Flow step whose plan moves several steps is saved in
+  // the same change (and comes back with 되돌리기). Only on this device: a list with a copy's task goes to the server
+  // without it (the server's command has no time), so the screen never sends one there.
+  const time = input.time;
+  if (time && (typeof time.taskId !== 'string' || typeof time.time !== 'string' || !input.moves.some(move => move.taskId === time.taskId))) return programFailure(data, 'invalid');
   const current = data.spaces[input.actorId];
-  return transitionProgramPrivateSpace(data, { actorId: input.actorId, requestId: input.requestId, expectedSpace: current }, 'private-task-dates', { moves: input.moves }, space => {
+  return transitionProgramPrivateSpace(data, { actorId: input.actorId, requestId: input.requestId, expectedSpace: current }, 'private-task-dates', time ? { moves: input.moves, time } : { moves: input.moves }, space => {
     const tasks = M.tasks(space.text);
     // Every expectation reads the same untouched transaction snapshot. A prior
     // pick's date change must not invalidate a selected ancestor's state token.
@@ -128,6 +133,74 @@ export function moveProgramTaskDates(data: ProgramData, input: { actorId: string
         if (Object.keys(rest).length) copy.itemOverrides[itemId] = rest; else delete copy.itemOverrides[itemId];
       }
     }
+    if (time) {
+      if (copyOf(space, time.taskId)) return { result: time.taskId, reason: 'invalid' };
+      const patched = patchProgramTask(space, time.taskId, { time: time.time });
+      if (patched.reason) return patched;
+    }
+    return { result: input.moves[0].taskId };
+  });
+}
+/** The time set with a list's dates (P2-2): one moved task's new time. */
+export type ProgramTaskDateTime = { taskId: string; time: string };
+
+/** Codex f12a review P1 (11/12): what 되돌리기 puts back for each task of a list with no copy's task: its lines exactly as
+ *  they were before the move: a 날짜 line there or not, with its words, place and line ID, and a time set with the move. */
+export type ProgramTaskDateLines = { taskId: string; lines: { id: string; text: string }[] };
+/** A task's lines (the task and the lines under it, as its state token reads them), in the document holding it. */
+function programTaskBlock(space: ProgramPrivateSpace, taskId: string): { doc: TextDocument; at: number; end: number } | null {
+  for (const doc of [...space.text.documents, ...space.text.flows]) {
+    const at = doc.lines.findIndex(line => line.id === taskId);
+    if (at < 0) continue;
+    const row = M.parseDocument(doc, space.text).rows[at];
+    return { doc, at, end: row?.subtreeEndIndex ?? at + 1 };
+  }
+  return null;
+}
+/** The lines of each task 되돌리기 moves back, read in the space the move applied to (`before`). */
+export function programTaskDateUndoLines(before: ProgramPrivateSpace, undo: readonly ProgramTaskDateMove[]): ProgramTaskDateLines[] | null {
+  const out: ProgramTaskDateLines[] = [];
+  for (const move of undo) {
+    const block = programTaskBlock(before, move.taskId);
+    if (!block) return null;
+    out.push({ taskId: move.taskId, lines: block.doc.lines.slice(block.at, block.end).map(line => ({ id: line.id, text: line.text })) });
+  }
+  return out;
+}
+/** 되돌리기 of a list with no copy's task (P1): each task's lines back exactly as before the move. The date command alone
+ *  cannot: a 날짜 line equal to its day heading's date is dropped by it (Core3 P3b), also one written before the move.
+ *  Each task must still be exactly as the move left it (its date, time and state token, as the date command checks); a
+ *  save elsewhere in between does not block it. A task inside another undone task's lines comes back with them. Its
+ *  receipt is the date command's (kind and moves). A list with a copy's task keeps the date command (the server runs it). */
+export function restoreProgramTaskDates(data: ProgramData, input: { actorId: string; requestId: string; moves: ProgramTaskDateMove[]; lines: ProgramTaskDateLines[] }): ProgramTransition<string> {
+  if (!isAlphaTaskDateMoves(input.moves) || !Object.hasOwn(data.spaces, input.actorId) || input.lines.length !== input.moves.length
+    || input.moves.some((move, index) => input.lines[index]?.taskId !== move.taskId || !input.lines[index].lines.length || input.lines[index].lines[0].id !== move.taskId)) return programFailure(data, 'invalid');
+  const current = data.spaces[input.actorId];
+  return transitionProgramPrivateSpace(data, { actorId: input.actorId, requestId: input.requestId, expectedSpace: current }, 'private-task-dates', { moves: input.moves }, space => {
+    const tasks = M.tasks(space.text);
+    for (const move of input.moves) {
+      if (copyOf(space, move.taskId)) return { result: move.taskId, reason: 'invalid' };
+      if (programTaskRepeatMember(space, move.taskId)) return { result: move.taskId, reason: 'unresolved' };
+      const now = tasks.find(task => task.id === move.taskId);
+      if (!now) return { result: move.taskId, reason: 'missing' };
+      if (now.date !== move.expected.date || (now.time ?? '') !== move.expected.time
+        || move.expected.state !== undefined && programTaskDateState(space, move.taskId) !== move.expected.state
+        || now.done || M.currentProgress(space.text, move.taskId) === 100) return { result: move.taskId, reason: 'conflict' };
+    }
+    const blocks = input.moves.map((move, index) => ({ block: programTaskBlock(space, move.taskId)!, lines: input.lines[index].lines }));
+    const inside = (a: { doc: TextDocument; at: number; end: number }, b: { doc: TextDocument; at: number; end: number }) =>
+      a !== b && a.doc === b.doc && b.at <= a.at && a.end <= b.end && (b.at < a.at || a.end < b.end);
+    const outer = blocks.filter(entry => !blocks.some(other => inside(entry.block, other.block)));
+    for (const doc of new Set(outer.map(entry => entry.block.doc))) {
+      const lines = doc.lines.slice();
+      // From the bottom up, so each block's place is still where it was read.
+      for (const entry of outer.filter(item => item.block.doc === doc).sort((a, b) => b.block.at - a.block.at)) {
+        lines.splice(entry.block.at, entry.block.end - entry.block.at, ...entry.lines.map(line => ({ id: line.id, text: line.text })));
+      }
+      space.text = { ...space.text, documents: space.text.documents.map(item => item === doc ? { ...item, lines } : item), flows: space.text.flows.map(item => item === doc ? { ...item, lines } : item) };
+    }
+    const back = M.tasks(space.text);
+    if (input.moves.some(move => back.find(task => task.id === move.taskId)?.date !== move.date)) return { result: input.moves[0].taskId, reason: 'conflict' };
     return { result: input.moves[0].taskId };
   });
 }
@@ -136,10 +209,12 @@ export function moveProgramTaskDates(data: ProgramData, input: { actorId: string
  *  back to its old date, expecting it exactly as the move left it, and a copy's override taken away again where it had
  *  none when the move applied. */
 export function programTaskDateUndo(before: ProgramPrivateSpace, after: ProgramPrivateSpace, moves: readonly ProgramTaskDateMove[]): ProgramTaskDateMove[] {
+  const moved = new Map(M.tasks(after.text).map(task => [task.id, task]));
   return moves.filter(move => move.date !== move.expected.date).map(move => {
     const copy = copyOf(before, move.taskId), itemId = copy && Object.keys(copy.itemLines).find(id => copy.itemLines[id] === move.taskId);
     const hadOverride = !!copy && !!itemId && copy.itemOverrides[itemId]?.date !== undefined;
-    return { taskId: move.taskId, expected: { date: move.date, time: move.expected.time, state: programTaskDateState(after, move.taskId)! }, date: move.expected.date,
+    // P2-2: a time set with the move is the time it is expected with (the move left it).
+    return { taskId: move.taskId, expected: { date: move.date, time: moved.get(move.taskId)?.time ?? move.expected.time, state: programTaskDateState(after, move.taskId)! }, date: move.expected.date,
       ...(copy && !hadOverride ? { clearOverride: true as const } : {}) };
   });
 }

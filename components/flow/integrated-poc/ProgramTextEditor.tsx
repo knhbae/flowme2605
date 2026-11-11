@@ -192,7 +192,7 @@ export interface ProgramTextEditorProps {
   /** F12 1차 (W-FLOW-09·10, 기타 QA P2 11/12): a Flow step's new day goes to the host, which asks once per run and stops at
    *  a last-day run's anchor; true when the host took it (the editor then changes nothing). flowStepAnchor: that anchor
    *  for the date sheet (days after it cannot be picked). */
-  onFlowStepDate?: (taskId: string, date: string) => boolean;
+  onFlowStepDate?: (taskId: string, date: string, time?: string) => boolean;
   flowStepAnchor?: (taskId: string) => string | null;
   /** R8b toolbar button for the Flow·반복 sheet ("반복 2" or "반복"); absent, no button. */
   repeatLabel?: string;
@@ -3597,6 +3597,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!target) return;
     const policy=locationPolicy(panel?.lineId??null);
     if(policy.kind==='blocked'){setMessage(policy.message);return;}
+    // Codex f12a review P2-1 (11/12): a Flow step's new day from this form goes through the host's plan too (asked once per
+    // run, stopped at a last-day anchor), with the time picked here.
+    const step = M.tasks(currentState()).find(item => item.id === target);
+    if(step&&date&&step.date!==date&&propsRef.current.onFlowStepDate?.(target,date,time!==(step.time??'')?time:undefined)){closePanel();return;}
     if(policy.kind==='move'){await performTaskLocation(panel?.lineId??null,{kind:'date',date:date||null,time});return;}
     const task = M.tasks(currentState()).find(item => item.id === target);
     if (task && task.date === (date || null) && (task.time ?? '') === time) { closePanel(); return; }
