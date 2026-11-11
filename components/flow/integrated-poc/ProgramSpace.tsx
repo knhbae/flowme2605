@@ -1278,7 +1278,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [flowBusy, setFlowBusy] = useState<ReadonlySet<string>>(() => new Set());
   const [closeHour, setCloseHour] = useState(() => new Date().getHours());
   useEffect(() => { const timer = window.setInterval(() => setCloseHour(new Date().getHours()), 60_000); return () => window.clearInterval(timer); }, []);
-  const [deferAsk, setDeferAsk] = useState<{ run: ProgramFlowRun; taskId: string; date: string; plans: Record<ProgramDeferMode, ProgramDeferPlan> } | null>(null);
+  const [deferAsk, setDeferAsk] = useState<{ run: ProgramFlowRun; taskId: string; date: string; plans: Record<ProgramDeferMode, ProgramDeferPlan>; time?: string } | null>(null);
+  // 기타 F12 1차 QA P3: 다시 확인할 일's check and [내일] say what they did with [되돌리기].
+  const [flowNotice, setFlowNotice] = useState<{ text: string; undo?: () => Promise<boolean>; busy?: boolean } | null>(null);
   const deferDialog = useRef<HTMLDialogElement>(null);
   const [closeSheet, setCloseSheet] = useState<{ taskId: string; run: ProgramFlowRun | null; at: number } | null>(null);
   const closeSheetDialog = useRef<HTMLDialogElement>(null);
@@ -2478,9 +2480,16 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   const moveStep = (task: TextTask, direction: -1 | 1) => moveExecutionStep(programTextExecutionKey(task), direction);
   function locationAvailability(){return {...(taskMoveGate?.read()??{blocked:false,checking:false}),confirm:taskMoveGate?.confirm};}
-  async function moveTaskHere(taskId:string,target:TaskLocationTarget,expectedOverride?:ProgramPrivateSpace){
+  async function moveTaskHere(taskId:string,target:TaskLocationTarget,expectedOverride?:ProgramPrivateSpace,planned=false){
     if(locationBusy.current)return false;
     if(locationAvailability().blocked){setMessage('저장을 확인한 뒤 옮겨 주세요.');return false;}
+    // W-FLOW-09·10 (기타 F12 1차 QA P2, 11/12): every way of moving a Flow step to another day (the list's ⋯ chips and
+    // date, the writing view's ⋮, the day close) goes through its plan: asked once per run when it passes the next
+    // step, and never after a last-day run's anchor. The plan's own moves come back here as planned.
+    if(!planned&&target.kind==='date'&&target.date){
+      const owner=runOfTaskNow(taskId),now=owner?.steps.find(step=>step.taskId===taskId);
+      if(owner&&now&&now.date!==target.date){deferFlowStep(owner,taskId,target.date,undefined,target.time);return false;}
+    }
     const owner=dataRef.current.spaces[actorId],expected=expectedOverride??detailExpected.current??owner;
     const task=M.tasks(expected.text).find(item=>item.id===taskId),policy=readTaskLocationPolicy(expected,taskId);
     if(!task||policy.kind==='blocked'||!policy.documentId){setMessage(policy.message);return false;}
@@ -3275,47 +3284,69 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     try { await work(); } finally { setFlowBusy(current => { const next = new Set(current); next.delete(id); return next; }); }
   };
   // W-FLOW-07·08: '다시 확인할 일' — its box checks the subcheck; [내일] moves only its day to look again.
+  // 기타 F12 1차 QA P3 (11/12): both actions offer [되돌리기] (오늘 has no ↶): the box's by checking it open again, [내일]'s by
+  // the saved schedule's own undo (the exact state before, an inherited day back to inherited).
   function checkRecheck(row: ProgramRecheck) {
-    void flowBusyWhile(row.taskId, () => run('완료', current => completeProgramTask(current, { ...base(current), taskId: row.taskId, date: today, done: true }), true));
+    void flowBusyWhile(row.taskId, async () => {
+      const result = await run('완료', current => completeProgramTask(current, { ...base(current), taskId: row.taskId, date: today, done: true }), true);
+      if (result.ok) setFlowNotice({ text: `${row.title} · 완료했습니다`, undo: async () => {
+        // Later, from the notice: the space it expects is the one saved then (base() holds this render's).
+        const back = await run('완료 되돌리기', current => completeProgramTask(current, { ...base(current), expectedSpace: current.spaces[actorId], taskId: row.taskId, date: today, done: false }), true);
+        return back.ok;
+      } });
+    });
   }
   function recheckTomorrow(row: ProgramRecheck) {
     const tomorrow = programShiftDate(today, 1);
     void flowBusyWhile(row.taskId, async () => {
-      const result = await run('다시 볼 날 바꾸기', current => updateProgramTask(current, { ...base(current), taskId: row.taskId, patch: { date: tomorrow } }), true);
-      if (result.ok) setMessage(`${row.title} · 다시 볼 날을 ${programCalendarDate(tomorrow, today, false)}로 바꿨습니다 (↶로 되돌리기)`);
+      if (locationAvailability().blocked) { setMessage('저장을 확인한 뒤 옮겨 주세요.'); return; }
+      // Its [되돌리기] puts the text back exactly as it was (a day it inherited is inherited again), only while nothing changed since.
+      let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
+      const result = await run('다시 볼 날 바꾸기', current => { const next = updateProgramTask(current, { ...base(current), taskId: row.taskId, patch: { date: tomorrow } });
+        if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
+      if (!result.ok || !before || !after) return;
+      const was: TextWorkspaceState = before, now: TextWorkspaceState = after;
+      setFlowNotice({ text: `${row.title} · 다시 볼 날을 ${programCalendarDate(tomorrow, today, false)}로 바꿨습니다`, undo: async () =>
+        (await run('다시 볼 날 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: row.docId, before: was, after: now }), true)).ok });
     });
+  }
+  async function undoFlowNotice() {
+    const notice = flowNotice;
+    if (!notice?.undo || notice.busy) return;
+    setFlowNotice({ ...notice, busy: true });
+    const done = await notice.undo();
+    setFlowNotice(done ? null : { text: '그 뒤 다른 변경이 있어 되돌리지 않았습니다', busy: false });
   }
   // W-FLOW-08·11: the evening's [내일] (a Flow step through the defer plan, my own task to tomorrow's section, W-MENU-07)
   // and [건너뛰기] (a repeat line's round: its day goes to the next round, nothing kept in its log).
-  const runOfTask = (taskId: string) => flowRuns.find(entry => entry.steps.some(step => step.taskId === taskId)) ?? null;
+  // The run a task is a step of, read now from the saved data (any view: the writing view has no progress lines).
+  const runOfTaskNow = (taskId: string) => programFlowRuns(dataRef.current, actorId, today).find(entry => entry.steps.some(step => step.taskId === taskId)) ?? null;
   // Today's own 오늘 with nothing narrowing it: the progress lines and rechecks show; from 18:00 (assumed) the day close.
   const todayHere = () => period === 'today' && date === today && !folderTab && !selecting && !monthGrid && !folderId && !query;
   const closing = () => todayHere() && closeHour >= PROGRAM_DAY_CLOSE_HOUR;
   /** A finished row of 오늘's list (its check, or a 100% record), folded away in the day close. */
   const closeDoneRow = (item: ProgramExecutionListItem) => item.kind === 'row' && item.entry.kind !== 'occurrence'
     && (taskProgress(item.entry.task.id).current ?? (item.entry.task.done ? 100 : 0)) === 100;
-  function deferTask(task: TextTask, nextDate: string) {
-    const owner = runOfTask(task.id);
-    if (owner) { deferFlowStep(owner, task.id, nextDate); return; }
-    void moveTaskHere(task.id, { kind: 'date', date: nextDate });
-  }
+  // A Flow step goes through its plan inside moveTaskHere; my own task to tomorrow's section (W-MENU-07).
+  function deferTask(task: TextTask, nextDate: string) { void moveTaskHere(task.id, { kind: 'date', date: nextDate }); }
   function skipRepeatRound(task: TextTask) {
     const marker = readProgramRepeatMarker(task.title);
     if (!marker) return;
     const next = programRepeatNextDate(marker.rule, task.date, today);
     if (next && next !== task.date) void moveTaskHere(task.id, { kind: 'date', date: next });
   }
-  function deferFlowStep(owner: ProgramFlowRun, taskId: string, nextDate: string, chosen?: ProgramDeferMode) {
+  function deferFlowStep(owner: ProgramFlowRun, taskId: string, nextDate: string, chosen?: ProgramDeferMode, time?: string) {
     const plans = { overlap: programDeferPlan(owner, taskId, nextDate, 'overlap'), 'keep-gaps': programDeferPlan(owner, taskId, nextDate, 'keep-gaps'), none: programDeferPlan(owner, taskId, nextDate, 'none') };
     // Not past the next step: only this step moves (the same day as the next one is not past it).
     const mode = !plans.overlap.ask ? 'none' : chosen ?? readProgramDeferChoice(owner.key);
-    if (!mode) { setDeferAsk({ run: owner, taskId, date: nextDate, plans }); return; }
-    void applyDeferPlan(owner, plans[mode]);
+    if (!mode) { setDeferAsk({ run: owner, taskId, date: nextDate, plans, time }); return; }
+    void applyDeferPlan(owner, plans[mode], time);
   }
-  async function applyDeferPlan(owner: ProgramFlowRun, plan: ProgramDeferPlan) {
+  async function applyDeferPlan(owner: ProgramFlowRun, plan: ProgramDeferPlan, time?: string) {
     // W-FLOW-10: nothing lands after a last-day run's anchor; such a plan moves nothing and says why.
     if (plan.blocked) { setMessage(`${plan.blocked.title}이(가) 기준일 ${programCalendarDate(owner.anchor!, today, false)} 뒤로 가서 옮기지 않았습니다. 기준일을 바꾸려면 Flow 글의 기준일 바꾸기를 쓰세요.`); return; }
-    if (plan.moves.length === 1) { void moveTaskHere(plan.moves[0].taskId, { kind: 'date', date: plan.moves[0].to }); return; }
+    if (plan.moves.length === 1) { void moveTaskHere(plan.moves[0].taskId, { kind: 'date', date: plan.moves[0].to, ...(time !== undefined ? { time } : {}) }, undefined, true); return; }
+    if (detail) close();
     if (datesBusy.current) return;
     const current = dataRef.current.spaces[actorId], tasks = M.tasks(current.text);
     const moves: ProgramTaskDateMove[] = plan.moves.flatMap(move => { const task = tasks.find(entry => entry.id === move.taskId);
@@ -3339,7 +3370,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // A long press on [내일] opens the date sheet (W-MENU-24); a last-day Flow's step cannot pick a day after its anchor.
   // The sheet opens under the finger: the tap its lift makes (390 browser check, 11/11) must not pick a day, so a pick in
   // its first moment is ignored.
-  const closeHoldStart = (task: TextTask) => { closeHoldCancel(); const hold = { fired: false, timer: setTimeout(() => { hold.fired = true; setCloseSheet({ taskId: task.id, run: runOfTask(task.id), at: Date.now() }); }, PROGRAM_MOVE_GESTURE_V1.holdMs) }; closeHold.current = hold; };
+  const closeHoldStart = (task: TextTask) => { closeHoldCancel(); const hold = { fired: false, timer: setTimeout(() => { hold.fired = true; setCloseSheet({ taskId: task.id, run: runOfTaskNow(task.id), at: Date.now() }); }, PROGRAM_MOVE_GESTURE_V1.holdMs) }; closeHold.current = hold; };
   function closeHoldCancel() { if (closeHold.current) clearTimeout(closeHold.current.timer); }
   // [미루기]: the 오늘 row ⋯'s sheet (its 미루기 chips: 내일 · 이번 주말 · 다음 주 · 날짜 고르기).
   function deferFromBand(id: string) { if (textTasks.some(row => row.id === id)) openDetail({ kind: 'task', id }); }
@@ -3487,7 +3518,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {opened.filter(id => docs.some(doc => doc.id === id)).map(id => { const recent = recentViewOf(id), recentTop = recentLine(id, recent, false), views = viewSwitch(id);
           const initial = positions.current[id] ?? (space.position.documentId === id ? space.position : undefined);
           return <div key={id} hidden={selected !== id} data-program-document={id}><TextEditor key={recent ? `recent:${recentDoneShown[id] ? 'done' : 'folded'}` : 'whole'}
-          authoringMode={!!props.nativeAuthoringEnabled} onOpenPersonalAuthoring={() => requestPersonalAuthoring(id)} hostContext={props.pmTextHost}
+          authoringMode={!!props.nativeAuthoringEnabled} onOpenPersonalAuthoring={() => requestPersonalAuthoring(id)} onFlowStepDate={(taskId, nextDate) => { const owner = runOfTaskNow(taskId); if (!owner) return false; deferFlowStep(owner, taskId, nextDate); return true; }} flowStepAnchor={taskId => (owner => owner?.basis === 'last' ? owner.anchor : null)(runOfTaskNow(taskId))} hostContext={props.pmTextHost}
           repeatLabel={props.hostMainTabs && props.nativeAuthoringEnabled && selected === id ? repeatLabel(id) : undefined}
           onRegisterInputCheckpoint={read => { inputCheckpointReaders.current[id] = read; }}
           onRegisterCaptureComplete={read => { captureReaders.current[id] = read; }}
@@ -3772,28 +3803,31 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {!detail && !sheetOpen && orderNoticeContent}
         {!detail && !sheetOpen && checkNoticeContent}{!detail && !sheetOpen && repeatNoticeContent}{!detail && !sheetOpen && sameNoticeContent}{!detail && !bottomNoticeShown && legacyRepeatContent}
         {!detail && datesNoticeContent}{!detail && carryNoticeContent}{!detail && folderTodayNoticeContent}{!detail&&locationNoticeContent}
-        {/* F12 1차 (W-FLOW-09): the once-per-run question when a deferred Flow step passes the next step. */}
-        <dialog ref={deferDialog} className={`${styles.findDialog} ${styles.daySheet}`} aria-labelledby="program-defer-title" data-defer-dialog
-          onCancel={event => { event.preventDefault(); setDeferAsk(null); }}>
-          {deferAsk && (ask => { const index = ask.run.steps.findIndex(step => step.taskId === ask.taskId), next = ask.run.steps.slice(index + 1).find(step => !step.done && step.date);
-            return next && <ProgramDeferAsk title={ask.run.steps[index]?.title ?? ''} date={ask.date} today={today} nextTitle={next.title} nextDate={next.date!} anchor={ask.run.anchor}
-              last={ask.run.basis === 'last'} plans={ask.plans} onCancel={() => setDeferAsk(null)}
-              onChoose={mode => { writeProgramDeferChoice(ask.run.key, mode); setDeferAsk(null); void applyDeferPlan(ask.run, ask.plans[mode]); }} />; })(deferAsk)}
-        </dialog>
-        {/* W-FLOW-08·10: a long press on [내일] — the date sheet (W-MENU-24); a last-day Flow's step stops at its anchor. */}
-        <dialog ref={closeSheetDialog} className={`${styles.findDialog} ${styles.daySheet}`} aria-label="옮길 날 고르기" data-close-sheet
-          onCancel={event => { event.preventDefault(); setCloseSheet(null); }}>
-          {closeSheet && (task => { if (!task) return null;
-            const anchor = closeSheet.run?.basis === 'last' ? closeSheet.run.anchor : null;
-            return <><ProgramDateSheet title={task.title} summary={closeSheet.run ? `${closeSheet.run.title} · ${closeSheet.run.mark}` : '내 할 일'} today={today} current={task.date}
-              marked={new Set(textTasks.flatMap(entry => !entry.done && entry.date ? [entry.date] : []))} notAfter={anchor}
-              blockedNote={anchor ? `기준일 ${programCalendarDate(anchor, today)} 뒤로는 옮길 수 없습니다. 이 Flow는 마지막 일 기준이라 기준일은 고정입니다.` : null}
-              onPick={value => { if (Date.now() - closeSheet.at < PROGRAM_CLOSE_SHEET_SETTLE_MS) return; setCloseSheet(null); if (value) deferTask(task, value); else void moveTaskHere(task.id, { kind: 'date', date: null }); }} />
-              <button type="button" className={styles.datesClose} onClick={() => setCloseSheet(null)}>닫기</button></>; })(textTasks.find(entry => entry.id === closeSheet.taskId))}
-        </dialog>
+        {/* 기타 F12 1차 QA P3: '다시 확인할 일' actions' notice with [되돌리기]. */}
+        {!detail && flowNotice && <div className={styles.orderNotice} data-flow-notice><ProgramNoticeRow notice={{ tone: 'choose', text: flowNotice.text, actions: flowNotice.undo && !flowNotice.busy ? [{ label: '되돌리기', run: () => void undoFlowNotice() }] : [] }} onClose={() => setFlowNotice(null)} /></div>}
       </div>
       </div></div>
     </div>
+    {/* F12 1차: the question and the date sheet sit at the root, so the writing view (the 오늘 view hidden) opens them too. */}
+    {/* F12 1차 (W-FLOW-09): the once-per-run question when a deferred Flow step passes the next step. */}
+    <dialog ref={deferDialog} className={`${styles.findDialog} ${styles.daySheet}`} aria-labelledby="program-defer-title" data-defer-dialog
+      onCancel={event => { event.preventDefault(); setDeferAsk(null); }}>
+      {deferAsk && (ask => { const index = ask.run.steps.findIndex(step => step.taskId === ask.taskId), next = ask.run.steps.slice(index + 1).find(step => !step.done && step.date);
+      return next && <ProgramDeferAsk title={ask.run.steps[index]?.title ?? ''} date={ask.date} today={today} nextTitle={next.title} nextDate={next.date!} anchor={ask.run.anchor}
+      last={ask.run.basis === 'last'} plans={ask.plans} onCancel={() => setDeferAsk(null)}
+      onChoose={mode => { writeProgramDeferChoice(ask.run.key, mode); setDeferAsk(null); void applyDeferPlan(ask.run, ask.plans[mode], ask.time); }} />; })(deferAsk)}
+    </dialog>
+    {/* W-FLOW-08·10: a long press on [내일] — the date sheet (W-MENU-24); a last-day Flow's step stops at its anchor. */}
+    <dialog ref={closeSheetDialog} className={`${styles.findDialog} ${styles.daySheet}`} aria-label="옮길 날 고르기" data-close-sheet
+      onCancel={event => { event.preventDefault(); setCloseSheet(null); }}>
+      {closeSheet && (task => { if (!task) return null;
+      const anchor = closeSheet.run?.basis === 'last' ? closeSheet.run.anchor : null;
+      return <><ProgramDateSheet title={task.title} summary={closeSheet.run ? `${closeSheet.run.title} · ${closeSheet.run.mark}` : '내 할 일'} today={today} current={task.date}
+      marked={new Set(textTasks.flatMap(entry => !entry.done && entry.date ? [entry.date] : []))} notAfter={anchor}
+      blockedNote={anchor ? `기준일 ${programCalendarDate(anchor, today)} 뒤로는 옮길 수 없습니다. 이 Flow는 마지막 일 기준이라 기준일은 고정입니다.` : null}
+      onPick={value => { if (Date.now() - closeSheet.at < PROGRAM_CLOSE_SHEET_SETTLE_MS) return; setCloseSheet(null); if (value) deferTask(task, value); else void moveTaskHere(task.id, { kind: 'date', date: null }); }} />
+      <button type="button" className={styles.datesClose} onClick={() => setCloseSheet(null)}>닫기</button></>; })(textTasks.find(entry => entry.id === closeSheet.taskId))}
+    </dialog>
     <dialog ref={dialog} className={styles.dialog} data-task-detail={detail?.kind === 'task' ? true : undefined} aria-labelledby="program-detail-title" onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2 id="program-detail-title">{detail?.kind === 'task' ? detailFolderMove ? '폴더로 옮기기' : detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 관리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {!libraryOpen && detail && viewChangeNoticeContent}

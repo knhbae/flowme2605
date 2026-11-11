@@ -189,6 +189,11 @@ export interface ProgramTextEditorProps {
   authoringMode?:boolean;
   /** Opens this document's Flow·repeat box from the ＋ menu. */
   onOpenPersonalAuthoring?: () => void;
+  /** F12 1차 (W-FLOW-09·10, 기타 QA P2 11/12): a Flow step's new day goes to the host, which asks once per run and stops at
+   *  a last-day run's anchor; true when the host took it (the editor then changes nothing). flowStepAnchor: that anchor
+   *  for the date sheet (days after it cannot be picked). */
+  onFlowStepDate?: (taskId: string, date: string) => boolean;
+  flowStepAnchor?: (taskId: string) => string | null;
   /** R8b toolbar button for the Flow·반복 sheet ("반복 2" or "반복"); absent, no button. */
   repeatLabel?: string;
   /** Host-owned status/actions share the existing toolbar, not the input owner. */
@@ -3627,6 +3632,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!target || !task) return;
     const policy=locationPolicy(lineId);
     if(policy.kind==='blocked'){setMessage(policy.message);return;}
+    // F12 1차 (W-FLOW-09·10): a Flow step's new day is the host's (asked once per run, stopped at a last-day anchor).
+    if(task.date!==value&&propsRef.current.onFlowStepDate?.(target,value)){closePanel();return;}
     if(policy.kind==='move'){await performTaskLocation(lineId,{kind:'date',date:value});return;}
     if (task.date === value) { closePanel(); return; }
     await applyDateOnly(target,value,task.time??'');
@@ -4163,9 +4170,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         const children=rows.filter(entry=>entry.kind==='task'||entry.kind==='subcheck').length,memos=rows.filter(entry=>entry.kind==='property'&&/^ *-\s+메모:/.test(entry.text)||entry.kind==='note'&&!!entry.text.trim()).length;
         const summary=policy.kind!=='move'?policy.message:[children?`하위 할 일 ${children}`:'',memos?`메모 ${memos}줄`:''].filter(Boolean).join(' · ')+(children||memos?' 같이 갑니다':'할 일을 통째로 옮깁니다');
         const marked=new Set(M.tasks(draft.working).flatMap(item=>!item.done&&item.date?[item.date]:[]));
-        return <ProgramDateSheet title={sheetRow?.title||task?.title||''} summary={summary} today={today()} current={task?.date??null} marked={marked}
+        // F12 1차 (W-FLOW-10, 기타 QA P2): a last-day Flow's step cannot pick a day after its anchor, said as the day close says it.
+        const anchor=task?props.flowStepAnchor?.(task.id)??null:null;
+        return <ProgramDateSheet title={sheetRow?.title||task?.title||''} summary={summary} today={today()} current={task?.date??null} marked={marked} notAfter={anchor}
           disabled={disabled||actionsDisabled()||locationAvailability().blocked||policy.kind==='blocked'}
-          blockedNote={locationAvailability().blocked?'저장을 확인한 뒤 옮길 수 있어요.':policy.kind==='blocked'?policy.message:null}
+          blockedNote={locationAvailability().blocked?'저장을 확인한 뒤 옮길 수 있어요.':policy.kind==='blocked'?policy.message:anchor?`기준일 ${programCalendarDate(anchor,today())} 뒤로는 옮길 수 없습니다. 이 Flow는 마지막 일 기준이라 기준일은 고정입니다.`:null}
           onPick={value=>{void pickSheetDate(panel.lineId,value);}}/>;
       })(currentRow(panel.lineId))}
       {panel.kind==='task-folder'&&<ProgramTaskMoveSheet workspace={draft.working} documentId={props.docId} taskId={locationPolicy(panel.lineId).taskId} today={today()} availability={locationAvailability()} disabled={disabled} onChoose={folderId=>void performTaskLocation(panel.lineId,{kind:'folder',folderId})} onCreate={title=>void performTaskLocation(panel.lineId,{kind:'new-folder',title})}/>}

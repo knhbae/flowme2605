@@ -88,7 +88,8 @@ test('ProgramSpace wires them: lines and rechecks over 오늘, the day close fro
   assert(space.includes('if (plan.blocked) { setMessage('), 'past the anchor: nothing moves, said');
   assert(space.includes("void moveTaskHere(task.id, { kind: 'date', date: nextDate });"), 'my own task: W-MENU-07');
   assert(space.includes('const next = programRepeatNextDate(marker.rule, task.date, today);'));
-  assert(space.includes("patch: { date: tomorrow } }), true);"), 'a recheck\'s [내일] changes only its date');
+  assert(space.includes("patch: { date: tomorrow } });"), 'a recheck\'s [내일] changes only its date');
+  assert(space.includes('undoProgramTaskLocation(current, { actorId, documentId: row.docId, before: was, after: now })'), 'its [되돌리기] puts the text back exactly');
   // 390 browser check (11/11): the sheet a long press opens is under the finger; the lifting tap must not pick a day.
   assert(space.includes('onPick={value => { if (Date.now() - closeSheet.at < PROGRAM_CLOSE_SHEET_SETTLE_MS) return;'));
   assert(space.includes('export const PROGRAM_CLOSE_SHEET_SETTLE_MS = 500;'));
@@ -97,4 +98,23 @@ test('ProgramSpace wires them: lines and rechecks over 오늘, the day close fro
   // UX r3 D1 (총괄 11/11 23:4x): the finished rows fold into '끝낸 일 n' in the day close, and leave the list there.
   assert(space.includes("{closeDoneOpen && <ul className={styles.tasks}>{done.map(item => renderListItem(item))}</ul>}</div>)(shownItems.filter(closeDoneRow))}"));
   assert(space.includes('{(closing() ? shownItems.filter(item => !closeDoneRow(item)) : shownItems).map(item => renderListItem(item))}'));
+});
+
+// 기타 F12 1차 QA (11/12): P2 every way of moving a Flow step's day goes through its plan (W-FLOW-09·10), the writing view's
+// date sheet stops at the anchor; P3 다시 확인할 일's actions offer [되돌리기], and a phone's 'Flow를 다 했어요' card sits at the top.
+test('F12 1차 QA fixes: one plan for every Flow step move, the editor sheet\'s anchor stop, [되돌리기] on rechecks, the card off the notices', () => {
+  const space = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/ProgramSpace.tsx'), 'utf8');
+  assert(space.includes('async function moveTaskHere(taskId:string,target:TaskLocationTarget,expectedOverride?:ProgramPrivateSpace,planned=false){'));
+  assert(space.includes('if(owner&&now&&now.date!==target.date){deferFlowStep(owner,taskId,target.date,undefined,target.time);return false;}'));
+  assert(space.includes("void moveTaskHere(plan.moves[0].taskId, { kind: 'date', date: plan.moves[0].to, ...(time !== undefined ? { time } : {}) }, undefined, true);"), 'the plan\'s own move is planned');
+  assert(space.includes('onFlowStepDate={(taskId, nextDate) => { const owner = runOfTaskNow(taskId); if (!owner) return false; deferFlowStep(owner, taskId, nextDate); return true; }}'));
+  assert(space.includes("flowStepAnchor={taskId => (owner => owner?.basis === 'last' ? owner.anchor : null)(runOfTaskNow(taskId))}"));
+  assert(space.includes("actions: flowNotice.undo && !flowNotice.busy ? [{ label: '되돌리기', run: () => void undoFlowNotice() }] : []"));
+  assert(!space.includes('(↶로 되돌리기)'), 'no ↶ on 오늘');
+  const editor = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/ProgramTextEditor.tsx'), 'utf8');
+  assert(editor.includes('if(task.date!==value&&propsRef.current.onFlowStepDate?.(target,value)){closePanel();return;}'));
+  assert(editor.includes('const anchor=task?props.flowStepAnchor?.(task.id)??null:null;'));
+  assert(editor.includes('current={task?.date??null} marked={marked} notAfter={anchor}'));
+  const css = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/AlphaWorkspace.module.css'), 'utf8');
+  assert(css.includes('@media (max-width: 700px) { .triedPrompt { top: calc(env(safe-area-inset-top) + 8px); bottom: auto;'));
 });
