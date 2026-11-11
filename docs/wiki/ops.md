@@ -9,9 +9,9 @@
 | 공개 주소 | `https://alpha.wikiplans.com/alpha` |
 | 내부 앱 | `127.0.0.1:3105` (`next start`) |
 | 상태 확인 | `http://127.0.0.1:13105/status` (supervisor, 이 PC에서만) |
-| 운영 빌드 | typelag 2차 `h8jrAIv8SOZjvbibyH6QA`, 커밋 `6fda5f27` (11/11 16:18 KST, 가벼운 반영 36회차, 바뀐 행만 다시 그리기) |
-| appRoot | `D:/flowme-work/etc/typelag2-qa-20261111/product` |
-| 되돌리기 대상 | typelag 1차 `Q71loFCHfXu6pnypEncKT` / `0e324f9c` (`D:/flowme-work/etc/typelag-qa-20261111/` 아래 product). 그 전 int7b r3 `76129d17`도 보존 |
+| 운영 빌드 | typelag 4차 `HMo2FPIDgeCEThLLpCrQs`, 커밋 `ab2d8036` (11/11 23:51 KST, 가벼운 반영 37회차, int9 r2 기능 + typelag 3·4차) |
+| appRoot | `D:/flowme-work/etc/typelag4-qa-20261111/product` |
+| 되돌리기 대상 | typelag 2차 `h8jrAIv8SOZjvbibyH6QA` / `6fda5f27` (`D:/flowme-work/etc/typelag2-qa-20261111/` 아래 product). 그 전 typelag 1차 `0e324f9c`, int9r2-qa product도 보존 |
 | 쓰기 UI 설정 | `nativeAuthoringUi: enabled` |
 
 기준은 supervisor의 `manifest.json`이다. 회차별 기록은 [지금 FlowMe](now.md) 기록 절에 남는다.
