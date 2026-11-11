@@ -8,8 +8,9 @@ import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspa
 export type ProgramSameTaskMark = { line: string; percent: number | null };
 export type ProgramSameTaskProof = { day: string; tasks: Record<string, { before: ProgramSameTaskMark; after: ProgramSameTaskMark }> };
 
+// W-CARRY-10 (총괄 11/12): a line of a Flow document (a personal run's step) too.
 function sameTaskMark(text: TextWorkspaceState, taskId: string, day: string): ProgramSameTaskMark | null {
-  for (const doc of text.documents) {
+  for (const doc of [...text.documents, ...text.flows]) {
     const line = doc.lines.find(entry => entry.id === taskId);
     if (line) return { line: line.text, percent: text.progressRecords.find(record => record.taskId === taskId && record.date === day)?.percent ?? null };
   }
@@ -26,6 +27,14 @@ export function programSameTaskProof(before: TextWorkspaceState, after: TextWork
   }
   return ids.length ? { day, tasks } : null;
 }
+/** W-CARRY-10 (총괄 11/12): a notice's later save (a check's 진행률 chips): its 되돌리기 goes back to before the first save,
+ *  expecting what the latest left. Another day or other lines: none (the notice then records its old value, as before). */
+export function programSameTaskProofThen(first: ProgramSameTaskProof | null | undefined, next: ProgramSameTaskProof | null): ProgramSameTaskProof | null {
+  if (!next || !first) return next ?? null;
+  const ids = Object.keys(next.tasks);
+  if (first.day !== next.day || ids.length !== Object.keys(first.tasks).length || ids.some(id => !first.tasks[id])) return null;
+  return { day: next.day, tasks: Object.fromEntries(ids.map(id => [id, { before: first.tasks[id].before, after: next.tasks[id].after }])) };
+}
 
 /** One 되돌리기 for the whole check: each line and its record of that day go back to what they were (a record the check
  *  added goes; one it changed gets its value back; other days' records are not touched), in one save. Only while every
@@ -36,6 +45,7 @@ export function undoProgramSameTasks(data: ProgramData, input: ProgramPrivateMut
     if (!ids.length || !programDate(proof.day)) return { result: '', reason: 'invalid' };
     const records = space.text.progressRecords.slice();
     const documents = space.text.documents.map(doc => ({ ...doc, lines: doc.lines.slice() }));
+    const flows = space.text.flows.map(doc => ({ ...doc, lines: doc.lines.slice() }));
     for (const id of ids) {
       const { before, after } = proof.tasks[id], now = sameTaskMark(space.text, id, proof.day);
       if (!now || now.line !== after.line || now.percent !== after.percent) return { result: id, reason: 'conflict' };
@@ -43,12 +53,12 @@ export function undoProgramSameTasks(data: ProgramData, input: ProgramPrivateMut
       if (before.percent === null) { if (at >= 0) records.splice(at, 1); }
       else if (at >= 0) records[at] = { ...records[at], percent: before.percent };
       else return { result: id, reason: 'conflict' };
-      for (const doc of documents) {
+      for (const doc of [...documents, ...flows]) {
         const index = doc.lines.findIndex(line => line.id === id);
         if (index >= 0) doc.lines[index] = { ...doc.lines[index], text: before.line };
       }
     }
-    const next: TextWorkspaceState = { ...space.text, documents, progressRecords: records };
+    const next: TextWorkspaceState = { ...space.text, documents, flows, progressRecords: records };
     if (!M.validate(next)) return { result: ids[0], reason: 'invalid' };
     space.text = next;
     return { result: ids[0] };

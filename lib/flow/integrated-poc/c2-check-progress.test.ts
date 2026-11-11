@@ -133,8 +133,8 @@ test('mid-composition: a notice button keeps the caret and runs once the composi
 test('오늘: the check tap completes and announces; a partial task gets the chips, not the detail', () => {
   // Flow pipeline S11 (11/8): the same steps, now in checkTaskFromList (the band calls it too; only the list announces).
   assert.match(space, /if \(value > 0 && value < 100\) \{ setCheckNotice\(\{ actorId, stage: 'chips', targetId: task\.id,/);
-  assert.match(space, /\}, true, undefined, undefined, true\)\.then\(result => \{ done\(\); if \(result\.ok && from === 'list' && checkViewOwns\(view\)\) checkSaved\(task\.id, task\.title, value, after\); return result\.ok \? 'saved' as const : 'failed' as const; \},\n\s+\(\) => \{ done\(\); return 'failed' as const; \}\);/);
-  assert.match(space, /const next = recordProgramTaskProgress\(current, \{ \.\.\.base\(current\), taskId: task\.id, date: today, percent \}\);/);
+  assert.match(space, /\}, true, undefined, undefined, true\)\.then\(result => \{ done\(\); if \(result\.ok && from === 'list' && checkViewOwns\(view\)\) checkSaved\(task\.id, task\.title, value, after, proof\); return result\.ok \? 'saved' as const : 'failed' as const; \},\n\s+\(\) => \{ done\(\); return 'failed' as const; \}\);/);
+  assert.match(space, /: recordProgramTaskProgress\(current, \{ \.\.\.base\(current\), taskId: task\.id, date: today, percent \}\);/);
   // [직접] opens the task's detail with its 진행 기록 open.
   assert.match(space, /data-detail-section="progress" open=\{directProgress \|\| undefined\}>/);
   // The notice sits at the screen's bottom; the row it names is scrolled up above it (headless 390: it covered it).
@@ -207,7 +207,7 @@ test('review P2 (3): on 오늘 a record dated after today sends a step, and a pa
   assert.match(space, /if \(\(M\.latestProgress\(dataRef\.current\.spaces\[actorId\]\.text, task\.id\)\?\.date \?\? ''\) > today\) \{\n      setCheckNotice\(null\); setRecordDate\(today\); setPercent\(String\(progressNow\)\); openDetail\(\{ kind: 'task', id: task\.id \}\);/);
   assert.match(space, /if \(value > 0 && value < 100 && \(from === 'band' \|\| \(progress\?\.date \?\? ''\) > today\)\) \{ setRecordDate\(today\); setPercent\(String\(value\)\); openDetail\(\{ kind: 'task', id: task\.id \}\); return Promise\.resolve\('ignored'\); \}/);
   // And whatever the save leaves is what the notice says: another value is "바뀌지 않았습니다", not "기록했습니다".
-  assert.match(space, /if \(saved !== percent\) \{ failed\(saved, 'changed'\); return; \}/);
+  assert.match(space, /if \(!exact && saved !== percent\) \{ failed\(saved, 'changed'\); return; \}/);
   assert.match(space, /if \(after !== 100\) return;/);
 });
 

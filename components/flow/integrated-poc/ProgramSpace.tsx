@@ -20,7 +20,7 @@ import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFa
 import { ProgramMonthGrid } from './ProgramMonthGrid';
 import { ProgramFlowTodayBand, type ProgramFlowBandRow } from './ProgramFlowTodayBand';
 import { programContinueBand, programContinueMeta, programSameTaskGroups, type ProgramContinueRow } from '@/lib/flow/integrated-poc/continue-band';
-import { programSameTaskProof, undoProgramSameTasks, type ProgramSameTaskProof } from '@/lib/flow/integrated-poc/same-task-undo';
+import { programSameTaskProof, programSameTaskProofThen, undoProgramSameTasks, type ProgramSameTaskProof } from '@/lib/flow/integrated-poc/same-task-undo';
 import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
 import { programFollowToday, programLaterToday, startProgramDayClock, type ProgramDayClock } from '@/lib/flow/integrated-poc/day-clock';
 import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, programTaskDateUndoLines, programTaskRepeatMember, restoreProgramTaskDates, type ProgramTaskDateLines, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
@@ -494,7 +494,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }, [carryNotice, carryNoticeHeld]);
   // C2: a check tap still completes at once; its notice offers 되돌리기 and 진행률로 (then the percent chips) for that
   // task, by ID. 10s, held while pressed or focused. [직접] opens the detail with its 진행 기록 open.
-  type CheckNotice = ProgramCheckNotice & { actorId: string };
+  // W-CARRY-10 (총괄 11/12): `proof`, the line and its record of that day before the notice's first save and after its last;
+  // 되돌리기 puts them back exactly (a record the check added goes, one it changed gets its value back, other days' stay).
+  type CheckNotice = ProgramCheckNotice & { actorId: string; proof?: ProgramSameTaskProof | null };
   const [checkNotice, setCheckNotice] = useState<CheckNotice | null>(null), [checkNoticeHeld, setCheckNoticeHeld] = useState(false);
   const checkNoticeRef = useRef(checkNotice); checkNoticeRef.current = checkNotice;
   const checkNoticeKeys = useRef(0), checkStepBusy = useRef(false), [directProgress, setDirectProgress] = useState(false);
@@ -2672,13 +2674,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (ids.has(task.id)) return Promise.resolve('ignored');
     ids.add(task.id); setCompletingTaskIds(new Set(ids));
     const done = () => { if (finishCompleting(completingTasks, ids, task.id)) setCompletingTaskIds(new Set(ids)); };
-    let after: number | null = null;
+    let after: number | null = null, proof = null as ProgramSameTaskProof | null;
     const view = presentation.current;
     return run(value === 100 ? '다시 열기' : '완료', current => {
       const next = completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 });
-      if (next.ok) after = M.currentProgress(next.data.spaces[actorId].text, task.id);
+      if (next.ok) { after = M.currentProgress(next.data.spaces[actorId].text, task.id); proof = programSameTaskProof(current.spaces[actorId].text, next.data.spaces[actorId].text, [task.id], today); }
       return next;
-    }, true, undefined, undefined, true).then(result => { done(); if (result.ok && from === 'list' && checkViewOwns(view)) checkSaved(task.id, task.title, value, after); return result.ok ? 'saved' as const : 'failed' as const; },
+    }, true, undefined, undefined, true).then(result => { done(); if (result.ok && from === 'list' && checkViewOwns(view)) checkSaved(task.id, task.title, value, after, proof); return result.ok ? 'saved' as const : 'failed' as const; },
       () => { done(); return 'failed' as const; });
   }
   async function undoRepeatFromList(check: ProgramRepeatCheck) {
@@ -2757,11 +2759,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   </div>;
   const checkViewOwns = (view: typeof presentation.current) => dataRef.current.activeActorId === actorId && view.period === presentation.current.period
     && view.date === presentation.current.date && view.folderId === presentation.current.folderId && view.query === presentation.current.query;
-  function checkSaved(taskId: string, title: string, before: number, after: number | null) {
+  function checkSaved(taskId: string, title: string, before: number, after: number | null, proof: ProgramSameTaskProof | null = null) {
     if (before === 100) { setCheckNotice(current => current?.targetId === taskId ? null : current); return; }
     if (after !== 100) return;
     setTaskNotice(current => current?.taskId === taskId ? null : current);
-    setCheckNotice({ actorId, stage: 'done', targetId: taskId, title, before, after: 100, shownAt: Date.now(), key: ++checkNoticeKeys.current });
+    setCheckNotice({ actorId, stage: 'done', targetId: taskId, title, before, after: 100, shownAt: Date.now(), key: ++checkNoticeKeys.current, proof });
   }
   /** C2: a check notice button. It acts on the task the notice names, wherever its row now is; a replaced notice does nothing. */
   async function runCheckStep(key: number, step: ProgramCheckStep) {
@@ -2780,22 +2782,30 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     }
     const percent = step.kind === 'undo' ? notice.before : step.percent, undo = step.kind === 'undo';
     // The value the save leaves, read off the data it commits; the notice says what was saved only when that matches.
-    let saved: number | null = null;
+    let saved: number | null = null, stepProof = null as ProgramSameTaskProof | null;
+    // W-CARRY-10 (총괄 11/12): with the notice's proof, 되돌리기 puts the line and its record of that day back exactly (no 0%
+    // record left), only while they are as the notice's last save left them. Without one, the old value is recorded.
+    const exact = undo && notice.proof ? notice.proof : null;
     checkStepBusy.current = true;
     setCheckNotice({ ...notice, saving: { percent, undo, quiet: false } });
     try {
       const result = await run(undo ? '완료 되돌리기' : percent === 100 ? '완료' : '진행률 기록', current => {
-        const next = recordProgramTaskProgress(current, { ...base(current), taskId: task.id, date: today, percent });
-        if (next.ok) saved = M.currentProgress(next.data.spaces[actorId].text, task.id);
+        const next = exact ? undoProgramSameTasks(current, { actorId, requestId: programId('request'), expectedSpace: current.spaces[actorId], proof: exact })
+          : recordProgramTaskProgress(current, { ...base(current), taskId: task.id, date: today, percent });
+        if (next.ok) {
+          saved = M.currentProgress(next.data.spaces[actorId].text, task.id);
+          if (!undo) stepProof = programSameTaskProof(current.spaces[actorId].text, next.data.spaces[actorId].text, [task.id], today);
+        }
         return next;
       }, true, undefined, undefined, true);
       const failed = (kept: number | null, why: 'save' | 'changed') => setCheckNotice(shown => shown?.key !== key ? shown
         : { ...programCheckNoticeFailed(shown, { why, asked: percent, askedUndo: undo, kept }, Date.now(), ++checkNoticeKeys.current), actorId: shown.actorId });
-      if (!result.ok) { if (result.reason === 'busy') setCheckNotice(shown => shown?.key !== key ? shown : { ...shown, saving: undefined }); else failed(progressNow, 'save'); return; }
-      if (saved !== percent) { failed(saved, 'changed'); return; }
+      if (!result.ok) { if (result.reason === 'busy') setCheckNotice(shown => shown?.key !== key ? shown : { ...shown, saving: undefined }); else failed(progressNow, exact && result.reason === 'conflict' ? 'changed' : 'save'); return; }
+      // An exact 되돌리기 is checked by its command (the line and record as left, then as before); no record may be left to read.
+      if (!exact && saved !== percent) { failed(saved, 'changed'); return; }
       if (percent === 100) setTaskNotice(currentNotice => currentNotice?.taskId === task.id ? null : currentNotice);
       setCheckNotice(shown => shown?.key !== key ? shown : undo ? null
-        : { ...programCheckNoticeAfter(shown, percent, Date.now(), ++checkNoticeKeys.current), actorId: shown.actorId });
+        : { ...programCheckNoticeAfter(shown, percent, Date.now(), ++checkNoticeKeys.current), actorId: shown.actorId, proof: programSameTaskProofThen(shown.proof, stepProof) });
     } finally { checkStepBusy.current = false; }
   }
   const runCheckStepRef = useRef(runCheckStep); runCheckStepRef.current = runCheckStep;
@@ -3317,10 +3327,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // the saved schedule's own undo (the exact state before, an inherited day back to inherited).
   function checkRecheck(row: ProgramRecheck) {
     void flowBusyWhile(row.taskId, async () => {
-      const result = await run('완료', current => completeProgramTask(current, { ...base(current), taskId: row.taskId, date: today, done: true }), true);
+      let proof = null as ProgramSameTaskProof | null;
+      const result = await run('완료', current => { const next = completeProgramTask(current, { ...base(current), taskId: row.taskId, date: today, done: true });
+        if (next.ok) proof = programSameTaskProof(current.spaces[actorId].text, next.data.spaces[actorId].text, [row.taskId], today); return next; }, true);
+      const exact = proof;
       if (result.ok) setFlowNotice({ text: `${row.title} · 완료했습니다`, undo: async () => {
-        // Later, from the notice: the space it expects is the one saved then (base() holds this render's).
-        const back = await run('완료 되돌리기', current => completeProgramTask(current, { ...base(current), expectedSpace: current.spaces[actorId], taskId: row.taskId, date: today, done: false }), true);
+        // Later, from the notice: the space it expects is the one saved then (base() holds this render's). W-CARRY-10: the
+        // line and its record of today back exactly (the check's record goes; no 0% left).
+        const back = await run('완료 되돌리기', current => exact ? undoProgramSameTasks(current, { actorId, requestId: programId('request'), expectedSpace: current.spaces[actorId], proof: exact })
+          : completeProgramTask(current, { ...base(current), expectedSpace: current.spaces[actorId], taskId: row.taskId, date: today, done: false }), true);
         return back.ok;
       } });
     });
