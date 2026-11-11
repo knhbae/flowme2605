@@ -20,7 +20,8 @@ test('writing view: a tap on a folder line start places the caret, a hold moves;
   const tap = vendor.slice(vendor.indexOf('function tapScopeStart('), vendor.indexOf('function gestureHandle('));
   assert.match(tap, /textarea\.setSelectionRange\(offset, offset\);/);
   assert.match(tap, /Math\.min\(column, limit\)/);
-  assert.match(vendor, /if \(type === 'scope-open'\) gestureHandle\(button, index, type\);/);
+  // typelag ⑤ (11/12): its line is read when pressed ('at': the row's index attribute with the row patch on).
+  assert.match(vendor, /if \(type === 'scope-open'\) gestureHandle\(button, at, type\);/);
   const item = editor.slice(editor.indexOf('data-open-scope'), editor.indexOf('data-open-scope') + 400);
   assert.ok(item.includes("row.scopeKind === 'folder'") || editor.includes("row.scopeKind === 'folder' && row.scopeId && props.onOpenScope && <button type=\"button\" data-open-scope"));
   assert.match(item, /saveNow\(\)\.then\(saved => \{ if \(saved\) propsRef\.current\.onOpenScope\?\.\(scopeId\); \}\)/);

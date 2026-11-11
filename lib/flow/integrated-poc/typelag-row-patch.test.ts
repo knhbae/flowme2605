@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { captureProgramFolderOperation } from './folder-operation';
-import { createEmptyTextWorkspace, textWorkspaceModel as M } from './text-workspace';
+import { createEmptyTextWorkspace, textEditorRows, textWorkspaceModel as M } from './text-workspace';
 import { PROGRAM_ROW_PATCH, PROGRAM_ROW_PATCH_KEY, programRowPatchEnabled } from './typing-row-patch';
 import { programAlignRows, programSameOutline } from './writing-hold';
 
@@ -84,9 +84,10 @@ test('the editor: the patch path runs only with config.rowPatch; anything else r
   assert(vendor.includes('const nextRowRender = rowPatchOn ? null : copyRowRender(rowRenderContext, lines, metadata, fenced, startLine, endLine, actionsDisabled);'), 'off: r3\'s plain-row path unchanged');
   assert(vendor.includes('const rowPatch = rowPatchOn ? planRowPatch(lines, metadata, fenced, editorActive, startLine, endLine, paintDisabled) : null;'));
   assert(vendor.includes("if (mode !== 'live' || readingView || foldedIds.size || hiddenRows.size || gesture || moveState || targetEntries.length) return null;"), 'reading, folded and move views draw every row');
-  assert(vendor.includes('if (!last || last.view !== memo.view || last.sigs.length !== sigs.length || !rowsIntact(last.rows)) return { changed: null, memo };'), 'a new row count draws every row');
+  assert(vendor.includes('if (!last || last.view !== memo.view || !rowsIntact(last.rows)) return { changed: null, memo };'));
+  assert(vendor.includes('if (last.sigs.length !== sigs.length) return planRowSplice(last, memo);'), 'a new row count: the splice plan (typelag ⑤)');
   assert(vendor.includes("lines.forEach((line, index) => { const row = buildRow(line, index); rows.push(row); fragment.append(row); });"), 'the full path builds each row with the same buildRow');
-  assert(vendor.includes('if (only && (lineHeight !== geometryMemo.lineHeight || [...only].some((index) => rows[index].offsetHeight !== geometryMemo.heights[index]))) { syncGeometry(); return; }'), 'a height change measures every row');
+  assert(vendor.includes('[...only].some((index) => rows[index].offsetHeight !== geometryMemo.heights[index])))) { syncGeometry(); return; }'), 'a height change measures every row');
   assert(vendor.includes("if (!rowPatchOn) { root.style.setProperty('--tle-native-top',`${top}px`);root.style.setProperty('--tle-native-bottom',`${bottom}px`); }"), 'off: the root variables, as r3');
   const css = readFileSync(new URL('./vendor/text-editor.css', import.meta.url), 'utf8');
   assert(css.includes("@property --tle-native-top-own { syntax: '*'; inherits: false; }"));
@@ -95,4 +96,46 @@ test('the editor: the patch path runs only with config.rowPatch; anything else r
   assert(editor.includes('const rowPatch = programRowPatchEnabled();') && editor.includes('      rowPatch,\n') && editor.includes('programAlignRows(accepted, shown, rows, rowPatch)'));
   const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r/g, '');
   assert(space.includes('<ProgramPersonalAuthoringSheet live={!rowPatch || authoringSheetOpen}') && space.includes('onClose={() => setAuthoringSheetOpen(false)}'), 'the closed sheet stays mounted, frozen');
+});
+
+// typelag ⑤ (총괄 11/12, Codex inbox/enter-breakdown-20261111-2338): Enter and other edits that change the row count keep
+// the rows before and after the edit, under the same switch.
+test('the editor: a new row count keeps the rows before and after the edit (switch on), every row as before (off)', () => {
+  const vendor = readFileSync(new URL('./vendor/text-editor.cjs', import.meta.url), 'utf8').replace(/\r/g, '');
+  // The plan: the same text before and after the edit; a kept row whose signature changed, and every new line, is drawn.
+  assert(vendor.includes('while (head < most && before[head] === after[head]) head++;'));
+  assert(vendor.includes('if ((old < 0 || sigs[index] !== last.sigs[old]) && changed.push(index) > ROW_PATCH_LIMIT) return { changed: null, memo };'), 'more than a few rows: every row');
+  // Signatures read other rows relative to the row; a move trace's button keeps its own index.
+  assert(vendor.includes('owner === null ? null : owner - index, scope, action, owns, label, relativeDay(line), end, traced]) + metaJson;'));
+  assert(vendor.includes("withoutSubtreeEnd = (key, value) => key === 'subtreeEndIndex' ? undefined : value;"));
+  // A kept row takes its new index, owner and controls; its controls read their line when pressed (switch on only).
+  assert(vendor.includes('row.dataset.lineIndex = String(index);\n          if (row.dataset.checkOwner !== undefined) row.dataset.checkOwner = String(Number(row.dataset.checkOwner) + delta);'));
+  assert.equal(vendor.split('const at = () => rowPatchOn ? Number(button.dataset.lineIndex) : index;').length - 1, 2, 'check and row controls');
+  assert(vendor.includes("button.addEventListener('click', () => toggleFold(rowPatchOn ? Number(button.dataset.lineIndex) : index));"));
+  // The measure: kept controls move vertically only; a kept row whose height changed, or a control never measured, measures every row.
+  assert(vendor.includes('(moved ? heights.some((value, index) => !only.has(index) && value !== geometryMemo.heights[index]) :'));
+  assert(vendor.includes('if (movedChecks.includes(null)) { syncGeometry(); return; }'));
+  // Native paint: the ruler is spliced, and measured once per command (switch on); off keeps r3's order and rebuild.
+  assert(vendor.includes("if (rowPatchOn && nativePaintRows.length !== lines.length && nativePaintRows.length && nativePaintRows.length === old.split('\\n').length) {"));
+  assert(vendor.includes("if (rowPatchOn && nativeDepth && !reconciled && doc.activeElement === textarea) { root.classList.add('tle-native-input'); return; }"));
+  assert(vendor.includes('if (rowPatchOn) syncNativePaint(true);\n      syncGeometry(patchedRows, patchOwnersBefore);\n      if (!rowPatchOn) syncNativePaint(true);'));
+});
+
+test('row paint metadata names no row by position but its subtree\'s end: an Enter keeps every other row\'s, relative to the row', () => {
+  const { state, id } = workspace(), before = textEditorRows(state, id), lines = DOC.split('\n');
+  const relative = (row: (typeof before)[number], index: number) => JSON.stringify({ ...row, subtreeEndIndex: row.subtreeEndIndex === undefined ? undefined : row.subtreeEndIndex - index });
+  let edits = 0;
+  lines.forEach((line, n) => {
+    if (!/^\s*- \[ \] \S/.test(line)) return;
+    const end = lines.slice(0, n + 1).join('\n').length, next = DOC.slice(0, end) + `\n${/^(\s*)/.exec(line)![1]}- [ ] ` + DOC.slice(end);
+    const edit = M.editTextResult(state, id, next, { folderText: true });
+    if (edit.reason !== null) return;
+    const after = textEditorRows(edit.state, id);
+    assert.equal(after.length, before.length + 1);
+    const changed = after.filter((row, index) => index === n + 1 || relative(row, index) !== relative(before[index <= n ? index : index - 1], index <= n ? index : index - 1)).length;
+    // The new line, and the rows whose subtree now takes it in (its date head, folder and parent task).
+    assert(changed <= 5, `${n}: ${changed} rows changed`);
+    edits++;
+  });
+  assert(edits >= 5, `${edits} edits`);
 });
