@@ -1,0 +1,32 @@
+/* F12 1차 (UX r3 C3·C4·D1·E2·E3): the progress lines over 오늘 and '다시 확인할 일'. Visual B tokens only; touch targets
+   48 (check) and 56 (a line), as the '이어지는 일' band. */
+.runs, .rechecks { box-sizing: border-box; margin: 0 0 8px; padding: 0 4px; border-radius: 16px; background: var(--flowme-b-canvas); color: var(--flowme-b-ink); }
+.list { list-style: none; margin: 0; padding: 0; display: grid; }
+.list > li { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; min-height: 56px; }
+.list > li + li { border-top: 1px solid var(--flowme-b-hair); }
+.runs .check, .rechecks .check { width: 48px; height: 48px; min-height: 0; margin: 0; padding: 0; border: 0; background: transparent; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.check > span[data-check] { position: relative; box-sizing: border-box; display: inline-flex; width: 22px; height: 22px; border: 2px solid var(--flowme-b-flow); border-radius: 50%; background: var(--flowme-b-paper); }
+/* 다시 확인할 일: a dashed ring (the answer is not here yet). */
+.waitCheck > span[data-check] { border-style: dashed; border-color: var(--flowme-b-control); }
+.check > span[data-check="busy"] { border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); }
+.check > span[data-check="busy"]::after { content: ""; position: absolute; left: 6px; top: 2.5px; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.waitMark { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; color: var(--flowme-b-muted); }
+.runs .text, .rechecks .text { grid-column: 2 / -1; display: grid; align-content: center; min-width: 0; min-height: 56px; margin: 0; padding: 4px 8px 4px 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.rechecks .text { grid-column: 2; }
+.head { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.head svg { flex: none; width: 16px; height: 16px; color: var(--flowme-b-flow); }
+.name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; line-height: 22px; font-weight: 700; }
+.count { flex: none; color: var(--flowme-b-flow); font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.mark { flex: none; margin-left: auto; padding: 0 6px; border-radius: 9px; background: var(--flowme-b-paper); color: var(--flowme-b-ink); font-size: 13px; font-weight: 700; line-height: 18px; font-variant-numeric: tabular-nums; }
+.checking { flex: none; color: var(--flowme-b-muted); font-size: 13px; font-weight: 600; }
+.next { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; line-height: 18px; color: var(--flowme-b-muted); }
+.list > li[data-waiting] .next { color: var(--flowme-b-ink); }
+.runs .fold { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 48px; margin: 0; padding: 0 12px; border: 0; border-top: 1px solid var(--flowme-b-hair); border-radius: 0; background: transparent; color: var(--flowme-b-primary); font-size: 14px; font-weight: 700; text-align: left; cursor: pointer; }
+.fold span { margin-left: auto; color: var(--flowme-b-muted); font-weight: 600; }
+.groupHead { display: flex; align-items: baseline; gap: 6px; margin: 0; padding: 12px 8px 4px 12px; font-size: 15px; line-height: 20px; font-weight: 800; }
+.groupHead small { color: var(--flowme-b-primary); font-size: 14px; font-weight: 800; }
+.groupHead span { margin-left: auto; color: var(--flowme-b-muted); font-size: 13px; font-weight: 500; }
+.rechecks .later { min-width: 56px; min-height: 44px; margin: 0 4px 0 0; padding: 0 10px; border: 1px solid var(--flowme-b-hair); border-radius: 22px; background: var(--flowme-b-paper); color: var(--flowme-b-primary); font-size: 14px; font-weight: 700; cursor: pointer; }
+.runs.runs button:hover:not(:disabled), .rechecks.rechecks button:hover:not(:disabled) { background: transparent; }
+@media (hover: hover) { .runs.runs .text:hover:not(:disabled), .rechecks.rechecks .text:hover:not(:disabled) { background: var(--flowme-b-hair); } }
+.runs :focus-visible, .rechecks :focus-visible { outline: 2px solid var(--flowme-b-primary); outline-offset: -2px; }

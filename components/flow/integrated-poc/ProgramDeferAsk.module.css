@@ -1,0 +1,15 @@
+/* F12 1차 (UX r3 D2): the once-per-run question when a deferred step passes the next one. Visual B tokens only. */
+.ask { display: grid; gap: 10px; color: var(--flowme-b-ink); }
+.ask h2 { margin: 0; font-size: 17px; line-height: 24px; font-weight: 800; }
+.sub, .hint { margin: 0; font-size: 14px; line-height: 20px; color: var(--flowme-b-muted); }
+.options { display: grid; gap: 8px; }
+.option { display: grid; gap: 2px; width: 100%; min-height: 56px; margin: 0; padding: 8px 12px; border: 1px solid var(--flowme-b-hair); border-radius: 12px; background: var(--flowme-b-paper); color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.option[aria-checked="true"] { border: 2px solid var(--flowme-b-primary); padding: 7px 11px; background: var(--flowme-b-selected); }
+.option:disabled { opacity: .6; cursor: not-allowed; }
+.label { font-size: 15px; line-height: 20px; font-weight: 700; }
+.tag { margin-left: 6px; padding: 0 6px; border-radius: 9px; background: var(--flowme-b-canvas); color: var(--flowme-b-primary); font-size: 12px; font-weight: 700; }
+.detail { font-size: 13px; line-height: 18px; color: var(--flowme-b-muted); }
+.actions { display: flex; justify-content: flex-end; gap: 8px; }
+.actions button { min-height: 44px; padding: 0 16px; border: 1px solid var(--flowme-b-hair); border-radius: 22px; background: var(--flowme-b-paper); color: var(--flowme-b-ink); font-size: 15px; font-weight: 700; cursor: pointer; }
+.actions .primary { border-color: var(--flowme-b-primary); background: var(--flowme-b-primary); color: #fff; }
+.actions .primary:disabled { opacity: .5; }

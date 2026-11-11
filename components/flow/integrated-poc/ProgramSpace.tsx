@@ -22,7 +22,7 @@ import { ProgramFlowTodayBand, type ProgramFlowBandRow } from './ProgramFlowToda
 import { programContinueBand, programContinueMeta, programSameTaskGroups, type ProgramContinueRow } from '@/lib/flow/integrated-poc/continue-band';
 import { programSameTaskProof, undoProgramSameTasks, type ProgramSameTaskProof } from '@/lib/flow/integrated-poc/same-task-undo';
 import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } from '@/lib/flow/integrated-poc/month-grid';
-import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
+import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, programTaskRepeatMember, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
 import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
 import { programCalendarDate, programDaysBetween } from '@/lib/flow/integrated-poc/date-label';
@@ -59,6 +59,12 @@ import { ProgramDocumentProvenance } from './ProgramDocumentProvenance';
 import { ProgramPersonalAuthoring } from './ProgramPersonalAuthoring';
 import { programRowPatchEnabled } from '@/lib/flow/integrated-poc/typing-row-patch';
 import { applyProgramParseCache } from '@/lib/flow/integrated-poc/typing-parse-cache';
+import { PROGRAM_DAY_CLOSE_HOUR, programDeferPlan, programFlowRuns, programRechecks, readProgramDeferChoice, writeProgramDeferChoice,
+  type ProgramDeferMode, type ProgramDeferPlan, type ProgramFlowRun, type ProgramRecheck } from '@/lib/flow/integrated-poc/flow-run-progress';
+import { ProgramFlowRuns, ProgramRechecks } from './ProgramFlowRuns';
+import { ProgramDeferAsk } from './ProgramDeferAsk';
+import { ProgramDateSheet } from './ProgramDateSheet';
+import { programRepeatNextDate, readProgramRepeatMarker } from '@/lib/flow/integrated-poc/repeat-line';
 
 /** typelag ② (11/11): the 반복·Flow sheet stays mounted while closed, so its input survives closing; while it is closed
  *  (live false) it is not drawn again, so a key typed in the text no longer redraws its row per task. Opening draws it
@@ -419,7 +425,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [selecting, setSelecting] = useState<Selecting | null>(null), [selectNotice, setSelectNotice] = useState<string | null>(null);
   const selectScrollBack = useRef<number | null>(null);
   // C6b: the date sheet, the one save it makes (pressed once), and its notice with 되돌리기.
-  type DatesNotice = { actorId: string; count: number; date: string | null; undo: ProgramTaskDateMove[]; taskIds: string[]; shownAt: number; refused?: string; undone?: boolean };
+  type DatesNotice = { actorId: string; count: number; date: string | null; undo: ProgramTaskDateMove[]; taskIds: string[]; shownAt: number; refused?: string; undone?: boolean;
+  /** F12 1차 (W-FLOW-09): a Flow step and the steps after it moved together say so in their own words. */
+  text?: string };
   const datesSheet = useRef<HTMLDialogElement>(null), datesBusy = useRef(false), [datesPending, setDatesPending] = useState(false);
   // N10: a repeat round finished from 오늘 ('다음은 …' with 되돌리기), and the old one-task repeat's card.
   const [repeatNotice, setRepeatNotice] = useState<{ actorId: string; text: string; check: ProgramRepeatCheck | null; refused?: boolean } | null>(null);
@@ -1261,6 +1269,20 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [bandChecked, setBandChecked] = useState<ReadonlyMap<string, { row: ProgramContinueRow; index: number; repeatCheck?: ProgramRepeatCheck | null }>>(() => new Map());
   // int9 r2 (기타 int9 QA P3): a repeat round finished from the band says so in the writing view's notice line, with [되돌리기].
   const [bandUndoing, setBandUndoing] = useState<ReadonlySet<string>>(() => new Set());
+  // F12 1차 (W-FLOW-04·05·07·08·09·10): 오늘's progress lines, '다시 확인할 일', the evening's [내일]/[건너뛰기], the
+  // once-per-run question and the date sheet a long press on [내일] opens. Read in memory at each render; nothing stored.
+  const flowRuns = useMemo(() => period === 'today' ? programFlowRuns(data, actorId, today, textTasks) : [], [period, data, actorId, today, textTasks]);
+  const rechecks = useMemo(() => period === 'today' ? programRechecks(space, today) : [], [period, space, today]);
+  const [flowBusy, setFlowBusy] = useState<ReadonlySet<string>>(() => new Set());
+  const [closeHour, setCloseHour] = useState(() => new Date().getHours());
+  useEffect(() => { const timer = window.setInterval(() => setCloseHour(new Date().getHours()), 60_000); return () => window.clearInterval(timer); }, []);
+  const [deferAsk, setDeferAsk] = useState<{ run: ProgramFlowRun; taskId: string; date: string; plans: Record<ProgramDeferMode, ProgramDeferPlan> } | null>(null);
+  const deferDialog = useRef<HTMLDialogElement>(null);
+  const [closeSheet, setCloseSheet] = useState<{ taskId: string; run: ProgramFlowRun | null } | null>(null);
+  const closeSheetDialog = useRef<HTMLDialogElement>(null);
+  const closeHold = useRef<{ timer: ReturnType<typeof setTimeout>; fired: boolean } | null>(null);
+  useEffect(() => { const box = deferDialog.current; if (!box) return; if (deferAsk && !box.open) box.showModal(); if (!deferAsk && box.open) box.close(); }, [deferAsk]);
+  useEffect(() => { const box = closeSheetDialog.current; if (!box) return; if (closeSheet && !box.open) box.showModal(); if (!closeSheet && box.open) box.close(); }, [closeSheet]);
   const [bandRepeatNotice, setBandRepeatNotice] = useState<{ actorId: string; documentId: string; taskId: string; text: string; check: ProgramRepeatCheck | null } | null>(null);
   const [bandFailed, setBandFailed] = useState<string | null>(null);
   useEffect(() => { setBandChecked(new Map()); setBandFailed(null); setBandRepeatNotice(null); }, [actorId, period, selected, folderId]);
@@ -2555,7 +2577,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     <ProgramNoticeRow notice={{ tone: datesNotice.refused ? 'warn' : datesNotice.undone ? 'info' : 'choose',
       // Core3 P3b (UX): short enough for one line at 390; that a moved row left the view the list itself shows.
       text: datesNotice.refused ?? (datesNotice.undone ? `${datesNotice.undo.length === 1 ? '' : `${datesNotice.undo.length}개를 `}원래 날짜로 되돌렸습니다`
-        : programTaskDatesMovedText(datesNotice.count, datesNotice.date, today)),
+        : datesNotice.text ?? programTaskDatesMovedText(datesNotice.count, datesNotice.date, today)),
       actions: datesNotice.refused || datesNotice.undone || datesPending ? [] : [{ label: '되돌리기', run: () => void restoreSelectDates(datesNotice) }, ...(datesLeft ? [{ label: '그날 보기', run: () => void showMovedDay(datesNotice.date) }] : [])] }}
       onClose={() => setDatesNotice(null)} />
   </div>;
@@ -3181,6 +3203,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                   .map((part, index) => <React.Fragment key={index}>{part} · </React.Fragment>)}
                 <span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}<span className={styles.taskFolder}>{taskFolderPath(task)} / </span>{task.docTitle} →</span>
               </>}</small></button>
+            {/* F12 1차 (W-FLOW-08·11): the day close's action on an open row — [건너뛰기] for a repeat line's round, [내일]
+                for the rest (a long press opens the date sheet); a series' occurrence keeps its own controls. */}
+            {closing() && item.kind === 'row' && value < 100 && !moving && (readProgramRepeatMarker(task.title) && !repeatRow?.block
+              ? <button type="button" className={styles.closeAction} data-close-action="skip" aria-label={`${programRepeatTitle(task.title)} 이번 회차 건너뛰기`} onClick={() => skipRepeatRound(task)}>건너뛰기</button>
+              : !programTaskRepeatMember(space, task.id) && <button type="button" className={styles.closeAction} data-close-action="tomorrow" aria-label={`${task.title} 내일로`}
+                onClick={() => { if (closeHold.current?.fired) { closeHold.current = null; return; } deferTask(task, programShiftDate(today, 1)); }}
+                onPointerDown={() => closeHoldStart(task)} onPointerUp={closeHoldCancel} onPointerLeave={closeHoldCancel} onPointerCancel={closeHoldCancel}
+                onContextMenu={event => event.preventDefault()}>내일</button>)}
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}><ProgramIcon name="more" size={20} /></button>
@@ -3229,6 +3259,79 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const task = textTasks.find(row => row.id === id) ?? bandChecked.get(id)?.row.task;
     if (task) void openDocument(task.docId, task.id);
   }
+  // F12 1차: a progress line's box checks its step with the list's own check (one save, its [되돌리기], W-FLOW-05).
+  function checkRunStep(_run: ProgramFlowRun, taskId: string) {
+    const task = textTasks.find(entry => entry.id === taskId);
+    if (task) void checkTaskFromList(task);
+  }
+  function openRun(run: ProgramFlowRun) { void openDocument(run.documentId, run.wait?.taskId ?? run.next?.taskId); }
+  const flowBusyWhile = async (id: string, work: () => Promise<unknown>) => {
+    if (flowBusy.has(id)) return;
+    setFlowBusy(current => new Set(current).add(id));
+    try { await work(); } finally { setFlowBusy(current => { const next = new Set(current); next.delete(id); return next; }); }
+  };
+  // W-FLOW-07·08: '다시 확인할 일' — its box checks the subcheck; [내일] moves only its day to look again.
+  function checkRecheck(row: ProgramRecheck) {
+    void flowBusyWhile(row.taskId, () => run('완료', current => completeProgramTask(current, { ...base(current), taskId: row.taskId, date: today, done: true }), true));
+  }
+  function recheckTomorrow(row: ProgramRecheck) {
+    const tomorrow = programShiftDate(today, 1);
+    void flowBusyWhile(row.taskId, async () => {
+      const result = await run('다시 볼 날 바꾸기', current => updateProgramTask(current, { ...base(current), taskId: row.taskId, patch: { date: tomorrow } }), true);
+      if (result.ok) setMessage(`${row.title} · 다시 볼 날을 ${programCalendarDate(tomorrow, today, false)}로 바꿨습니다 (↶로 되돌리기)`);
+    });
+  }
+  // W-FLOW-08·11: the evening's [내일] (a Flow step through the defer plan, my own task to tomorrow's section, W-MENU-07)
+  // and [건너뛰기] (a repeat line's round: its day goes to the next round, nothing kept in its log).
+  const runOfTask = (taskId: string) => flowRuns.find(entry => entry.steps.some(step => step.taskId === taskId)) ?? null;
+  // Today's own 오늘 with nothing narrowing it: the progress lines and rechecks show; from 18:00 (assumed) the day close.
+  const todayHere = () => period === 'today' && date === today && !folderTab && !selecting && !monthGrid && !folderId && !query;
+  const closing = () => todayHere() && closeHour >= PROGRAM_DAY_CLOSE_HOUR;
+  function deferTask(task: TextTask, nextDate: string) {
+    const owner = runOfTask(task.id);
+    if (owner) { deferFlowStep(owner, task.id, nextDate); return; }
+    void moveTaskHere(task.id, { kind: 'date', date: nextDate });
+  }
+  function skipRepeatRound(task: TextTask) {
+    const marker = readProgramRepeatMarker(task.title);
+    if (!marker) return;
+    const next = programRepeatNextDate(marker.rule, task.date, today);
+    if (next && next !== task.date) void moveTaskHere(task.id, { kind: 'date', date: next });
+  }
+  function deferFlowStep(owner: ProgramFlowRun, taskId: string, nextDate: string, chosen?: ProgramDeferMode) {
+    const plans = { overlap: programDeferPlan(owner, taskId, nextDate, 'overlap'), 'keep-gaps': programDeferPlan(owner, taskId, nextDate, 'keep-gaps'), none: programDeferPlan(owner, taskId, nextDate, 'none') };
+    // Not past the next step: only this step moves (the same day as the next one is not past it).
+    const mode = !plans.overlap.ask ? 'none' : chosen ?? readProgramDeferChoice(owner.key);
+    if (!mode) { setDeferAsk({ run: owner, taskId, date: nextDate, plans }); return; }
+    void applyDeferPlan(owner, plans[mode]);
+  }
+  async function applyDeferPlan(owner: ProgramFlowRun, plan: ProgramDeferPlan) {
+    // W-FLOW-10: nothing lands after a last-day run's anchor; such a plan moves nothing and says why.
+    if (plan.blocked) { setMessage(`${plan.blocked.title}이(가) 기준일 ${programCalendarDate(owner.anchor!, today, false)} 뒤로 가서 옮기지 않았습니다. 기준일을 바꾸려면 Flow 글의 기준일 바꾸기를 쓰세요.`); return; }
+    if (plan.moves.length === 1) { void moveTaskHere(plan.moves[0].taskId, { kind: 'date', date: plan.moves[0].to }); return; }
+    if (datesBusy.current) return;
+    const current = dataRef.current.spaces[actorId], tasks = M.tasks(current.text);
+    const moves: ProgramTaskDateMove[] = plan.moves.flatMap(move => { const task = tasks.find(entry => entry.id === move.taskId);
+      return task ? [{ taskId: move.taskId, expected: { date: task.date, time: task.time ?? '', state: programTaskDateState(current, move.taskId) ?? undefined }, date: move.to }] : []; });
+    if (moves.length !== plan.moves.length) { setMessage('그사이 바뀐 할 일이 있어 옮기지 않았습니다. 다시 확인해 주세요.'); return; }
+    const requestId = programId('dates');
+    let undo: ProgramTaskDateMove[] = [];
+    datesBusy.current = true; setDatesPending(true);
+    try {
+      const result = await countedMutate('Flow 단계 함께 옮기기', state => { const next = moveProgramTaskDates(state, { actorId, requestId, moves }); if (next.ok) undo = programTaskDateUndo(state.spaces[actorId], next.data.spaces[actorId], moves); return next; },
+        { history: true, awaitAutomaticRead: true, ...(programTaskDateMovesSocial(space, moves) ? { alphaSocial: { type: 'private-task-dates' as const, moves } } : {}) });
+      if (result.ok) {
+        setTaskNotice(null); setOrderNotice(null);
+        const titles = plan.moves.map(move => move.title), last = plan.moves[plan.moves.length - 1].to;
+        setDatesNotice({ actorId, count: moves.length, date: last, undo, taskIds: undo.map(move => move.taskId), shownAt: Date.now(),
+          text: `${titles.length === 2 ? `${titles[0]}과(와) ${titles[1]}` : `${titles[0]} 외 ${titles.length - 1}개`}를 옮겼습니다 · ${programCalendarDate(last, today, false)}까지` });
+      } else if (result.reason === 'conflict') setMessage('그사이 바뀐 할 일이 있어 옮기지 않았습니다. 다시 확인해 주세요.');
+      else if (result.reason !== 'busy') setMessage(programErrorMessage(result.reason));
+    } finally { datesBusy.current = false; setDatesPending(false); }
+  }
+  // A long press on [내일] opens the date sheet (W-MENU-24); a last-day Flow's step cannot pick a day after its anchor.
+  const closeHoldStart = (task: TextTask) => { closeHoldCancel(); const hold = { fired: false, timer: setTimeout(() => { hold.fired = true; setCloseSheet({ taskId: task.id, run: runOfTask(task.id) }); }, PROGRAM_MOVE_GESTURE_V1.holdMs) }; closeHold.current = hold; };
+  function closeHoldCancel() { if (closeHold.current) clearTimeout(closeHold.current.timer); }
   // [미루기]: the 오늘 row ⋯'s sheet (its 미루기 chips: 내일 · 이번 주말 · 다음 주 · 날짜 고르기).
   function deferFromBand(id: string) { if (textTasks.some(row => row.id === id)) openDetail({ kind: 'task', id }); }
   // F6-B2: the band draws one Flow's 실 when all its rows come from that Flow.
@@ -3608,6 +3711,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                 {choice('none')}</>; })()}
             <button type="button" className={styles.datesClose} onClick={closeDatesSheet}>닫기</button>
           </dialog></div>}
+        {/* F12 1차 (W-FLOW-04·05·07): the progress lines, then '다시 확인할 일' (always, its day come), over 오늘's list. */}
+        {todayHere() && <ProgramFlowRuns runs={flowRuns} today={today} tablet={!phoneLayout} saving={completingTaskIds} onCheck={checkRunStep} onOpen={openRun} />}
+        {todayHere() && <ProgramRechecks rows={rechecks} today={today} saving={flowBusy} onCheck={checkRecheck} onTomorrow={recheckTomorrow}
+          onOpen={row => void openDocument(row.docId, row.taskId)} />}
+        {/* W-FLOW-08: from 18:00 the open rows are '오늘 남은 일', each with [내일] (or [건너뛰기] for a repeat round). */}
+        {closing() && executionRows.some(row => row.kind === 'text-task' && !row.task.done) && <h2 className={styles.closeHead} data-day-close>오늘 남은 일
+          <small>{executionRows.filter(row => row.kind === 'text-task' && !row.task.done).length}</small><span>저녁 6시부터 · [내일]을 길게 누르면 다른 날</span></h2>}
         {/* N11a: the 밀린 일 card, over 오늘's list (never with the calendar). */}
         {!monthGrid && carryCardContent}{carrySheetContent}{sameSheetContent}
         {/* Flow pipeline S3: the Flow taken just now, its days marked; × lets it go (nothing saved). */}
@@ -3648,6 +3758,25 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {!detail && !sheetOpen && orderNoticeContent}
         {!detail && !sheetOpen && checkNoticeContent}{!detail && !sheetOpen && repeatNoticeContent}{!detail && !sheetOpen && sameNoticeContent}{!detail && !bottomNoticeShown && legacyRepeatContent}
         {!detail && datesNoticeContent}{!detail && carryNoticeContent}{!detail && folderTodayNoticeContent}{!detail&&locationNoticeContent}
+        {/* F12 1차 (W-FLOW-09): the once-per-run question when a deferred Flow step passes the next step. */}
+        <dialog ref={deferDialog} className={`${styles.findDialog} ${styles.daySheet}`} aria-labelledby="program-defer-title" data-defer-dialog
+          onCancel={event => { event.preventDefault(); setDeferAsk(null); }}>
+          {deferAsk && (ask => { const index = ask.run.steps.findIndex(step => step.taskId === ask.taskId), next = ask.run.steps.slice(index + 1).find(step => !step.done && step.date);
+            return next && <ProgramDeferAsk title={ask.run.steps[index]?.title ?? ''} date={ask.date} today={today} nextTitle={next.title} nextDate={next.date!} anchor={ask.run.anchor}
+              last={ask.run.basis === 'last'} plans={ask.plans} onCancel={() => setDeferAsk(null)}
+              onChoose={mode => { writeProgramDeferChoice(ask.run.key, mode); setDeferAsk(null); void applyDeferPlan(ask.run, ask.plans[mode]); }} />; })(deferAsk)}
+        </dialog>
+        {/* W-FLOW-08·10: a long press on [내일] — the date sheet (W-MENU-24); a last-day Flow's step stops at its anchor. */}
+        <dialog ref={closeSheetDialog} className={`${styles.findDialog} ${styles.daySheet}`} aria-label="옮길 날 고르기" data-close-sheet
+          onCancel={event => { event.preventDefault(); setCloseSheet(null); }}>
+          {closeSheet && (task => { if (!task) return null;
+            const anchor = closeSheet.run?.basis === 'last' ? closeSheet.run.anchor : null;
+            return <><ProgramDateSheet title={task.title} summary={closeSheet.run ? `${closeSheet.run.title} · ${closeSheet.run.mark}` : '내 할 일'} today={today} current={task.date}
+              marked={new Set(textTasks.flatMap(entry => !entry.done && entry.date ? [entry.date] : []))} notAfter={anchor}
+              blockedNote={anchor ? `기준일 ${programCalendarDate(anchor, today)} 뒤로는 옮길 수 없습니다. 이 Flow는 마지막 일 기준이라 기준일은 고정입니다.` : null}
+              onPick={value => { setCloseSheet(null); if (value) deferTask(task, value); else void moveTaskHere(task.id, { kind: 'date', date: null }); }} />
+              <button type="button" className={styles.datesClose} onClick={() => setCloseSheet(null)}>닫기</button></>; })(textTasks.find(entry => entry.id === closeSheet.taskId))}
+        </dialog>
       </div>
       </div></div>
     </div>

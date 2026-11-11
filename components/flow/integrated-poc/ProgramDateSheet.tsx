@@ -1,5 +1,5 @@
 'use client';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
 import { programDateSheetChips, programMonthGrid, programMonthLabel, programShiftMonth } from '@/lib/flow/integrated-poc/date-sheet';
 import { ProgramIcon } from './icons';
@@ -8,15 +8,18 @@ import styles from './ProgramDateSheet.module.css';
 /** F9 W-MENU-24: ⋮ [고르기] — the quick chips and this month's calendar; a press moves the task there at once (the
  *  editor closes the sheet and offers 되돌리기, W-MENU-03). The time stays in 진행 [날짜·시간]. */
 export function ProgramDateSheet(props: { title: string; summary: string; today: string; current: string | null;
-  marked: ReadonlySet<string>; disabled?: boolean; blockedNote?: string | null; onPick: (date: string | null) => void }) {
+  marked: ReadonlySet<string>; disabled?: boolean; blockedNote?: string | null; onPick: (date: string | null) => void;
+  /** F12 1차 (W-FLOW-10): a last-day Flow's step: days after its anchor cannot be picked (blockedNote says why). */
+  notAfter?: string | null }) {
   const [month, setMonth] = useState(() => props.today.slice(0, 7));
+  const past = (date: string | null) => !!props.notAfter && !!date && date > props.notAfter;
   const chips = useMemo(() => programDateSheetChips(props.today, props.current), [props.today, props.current]);
   const weeks = useMemo(() => programMonthGrid(month, props.today, props.current, props.marked), [month, props.today, props.current, props.marked]);
   return <section data-date-sheet className={styles.sheet}>
     <p className={styles.place}><strong>{props.title || '옮길 할 일'}</strong><span>{props.summary}</span></p>
     {props.blockedNote && <p className={styles.note} role="status">{props.blockedNote}</p>}
     <div className={styles.chips} role="group" aria-label="빠른 날짜">
-      {chips.map(chip => <button type="button" key={chip.key} data-date-chip={chip.key} disabled={props.disabled || chip.off} onClick={() => props.onPick(chip.date)}>
+      {chips.map(chip => <button type="button" key={chip.key} data-date-chip={chip.key} disabled={props.disabled || chip.off || past(chip.date)} onClick={() => props.onPick(chip.date)}>
         {chip.label}{chip.detail && <small>{chip.detail}</small>}</button>)}
     </div>
     <div className={styles.calendar}>
@@ -29,8 +32,8 @@ export function ProgramDateSheet(props: { title: string; summary: string; today:
       <div className={styles.days} role="group" aria-label={`${programMonthLabel(month)} 날짜`}>
         {weeks.flat().map((cell, index) => cell ? <button type="button" key={cell.date} data-date={cell.date}
           className={[cell.past && styles.past, cell.today && styles.today, cell.current && styles.current].filter(Boolean).join(' ') || undefined}
-          aria-current={cell.today ? 'date' : undefined} disabled={props.disabled || cell.current}
-          aria-label={`${programCalendarDate(cell.date, props.today)}${cell.today ? ' 오늘' : ''}${cell.current ? ' 지금 날짜' : ''}${cell.marked ? ' 할 일 있음' : ''}`}
+          aria-current={cell.today ? 'date' : undefined} disabled={props.disabled || cell.current || past(cell.date)} data-after-anchor={past(cell.date) || undefined}
+          aria-label={`${programCalendarDate(cell.date, props.today)}${cell.today ? ' 오늘' : ''}${cell.current ? ' 지금 날짜' : ''}${cell.marked ? ' 할 일 있음' : ''}${past(cell.date) ? ' 기준일 뒤라 고를 수 없음' : ''}`}
           onClick={() => props.onPick(cell.date)}>{cell.day}{cell.marked && <span className={styles.dot} aria-hidden="true" />}</button>
           : <span key={`pad-${index}`} aria-hidden="true" />)}
       </div>

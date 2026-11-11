@@ -3,7 +3,7 @@ import React from 'react';
 /** F6-B1 (11/9, 방향 B): one icon set on a 24 grid, 2px round strokes in the text color (currentColor), in place of the
  *  letter icons (⋯ × ⌄ ‹ › ↶ ＋ ↻ ☐ ⇤ ⇥ ↳) and the menu's own paths. Decorative: the button around one carries the name. */
 export type ProgramIconName = 'write' | 'today' | 'folder' | 'flow' | 'me' | 'plus' | 'more' | 'close' | 'down' | 'up' | 'right' | 'back' | 'undo'
-  | 'search' | 'check' | 'cal' | 'repeat' | 'inbox' | 'todo' | 'outdent' | 'indent' | 'mail' | 'lock' | 'link' | 'info';
+  | 'search' | 'check' | 'cal' | 'repeat' | 'inbox' | 'todo' | 'outdent' | 'indent' | 'mail' | 'lock' | 'link' | 'info' | 'wait';
 
 /** The 흐름 마크's wave: three dots joined by one line (the app icon, the wordmark and the Flow tab). */
 export const PROGRAM_FLOW_MARK_PATH = 'M5.5 16.5c3.2 0 3.3-9 6.5-9s3.3 9 6.5 9';
@@ -35,6 +35,8 @@ const SHAPES: Record<ProgramIconName, React.ReactNode> = {
   lock: <><rect x="5" y="10.5" width="14" height="9.5" rx="2.5" /><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" /></>,
   link: <><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" /><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" /></>,
   info: <><circle cx="12" cy="12" r="8.5" /><path d="M12 11v5M12 8h.01" /></>,
+  // F12 1차: 기다림 (a checked step waiting on its answer), a clock.
+  wait: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></>,
 };
 
 export function ProgramIcon({ name, size = 24, className }: { name: ProgramIconName; size?: number; className?: string }) {
