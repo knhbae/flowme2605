@@ -8,6 +8,9 @@ import { ALPHA_TASK_DATE_MOVE_LIMIT, isAlphaTaskDateMoves, type AlphaTaskDateMov
 import { resolveAlphaPrivateTaskSchedule } from './alpha-social/private-task-schedule';
 import { detached } from './alpha-persistence/json';
 import { readProgramRepeatMarker } from './repeat-line';
+import { programReferenceExecutionAccess } from './reference-execution-guard';
+import { programLegacyTaskQualityHold } from './legacy-map-review';
+import { programLegacyPlanTaskExcluded } from './program-legacy-plan-target';
 
 /** C6b 날짜 한꺼번에 바꾸기 (C6-C9-I7 2-4~2-6): one task of the list, its date and time when picked, its new date. */
 export type ProgramTaskDateMove = AlphaTaskDateMove;
@@ -124,8 +127,9 @@ export function moveProgramTaskDates(data: ProgramData, input: { actorId: string
       if (patched.reason) return patched;
       // Core3 P3b: a date the line already takes from its day heading needs no 날짜 line. So 되돌리기 (the same
       // command back) leaves the writing exactly as before the move, as ↶ does, and a move onto the heading's day
-      // writes nothing extra either.
-      const inherited = M.restoreTaskDate(space.text, move.taskId);
+      // writes nothing extra either. Codex f12a13 review P1-1 (11/12): a task already on the new date is checked, not moved:
+      // its lines stay as they are (a 날짜 line equal to its heading's date too), as 되돌리기 takes back only the tasks it moved.
+      const inherited = move.date === move.expected.date ? space.text : M.restoreTaskDate(space.text, move.taskId);
       if (inherited !== space.text && M.tasks(inherited).find(task => task.id === move.taskId)?.date === move.date) space.text = inherited;
       if (move.clearOverride && copy) {
         const itemId = Object.keys(copy.itemLines).find(id => copy.itemLines[id] === move.taskId)!;
@@ -181,6 +185,10 @@ export function restoreProgramTaskDates(data: ProgramData, input: { actorId: str
     for (const move of input.moves) {
       if (copyOf(space, move.taskId)) return { result: move.taskId, reason: 'invalid' };
       if (programTaskRepeatMember(space, move.taskId)) return { result: move.taskId, reason: 'unresolved' };
+      // Codex f12a13 review P2-1: the date command's own checks (patchProgramTask): an archived or held document, a reference
+      // not active here, a legacy task on hold or out of the plan is not changed.
+      if (programReferenceExecutionAccess(space, move.taskId).kind !== 'active' || programLegacyTaskQualityHold(space, move.taskId)
+        || programLegacyPlanTaskExcluded(space, move.taskId)) return { result: move.taskId, reason: 'unresolved' };
       const now = tasks.find(task => task.id === move.taskId);
       if (!now) return { result: move.taskId, reason: 'missing' };
       if (now.date !== move.expected.date || (now.time ?? '') !== move.expected.time
@@ -213,8 +221,10 @@ export function programTaskDateUndo(before: ProgramPrivateSpace, after: ProgramP
   return moves.filter(move => move.date !== move.expected.date).map(move => {
     const copy = copyOf(before, move.taskId), itemId = copy && Object.keys(copy.itemLines).find(id => copy.itemLines[id] === move.taskId);
     const hadOverride = !!copy && !!itemId && copy.itemOverrides[itemId]?.date !== undefined;
-    // P2-2: a time set with the move is the time it is expected with (the move left it).
-    return { taskId: move.taskId, expected: { date: move.date, time: moved.get(move.taskId)?.time ?? move.expected.time, state: programTaskDateState(after, move.taskId)! }, date: move.expected.date,
+    // P2-2: a time set with the move is the time it is expected with (the move left it). Codex f12a13 review P1-2: a time
+    // taken away is no time (''), not the time before.
+    const left = moved.get(move.taskId);
+    return { taskId: move.taskId, expected: { date: move.date, time: left ? left.time ?? '' : move.expected.time, state: programTaskDateState(after, move.taskId)! }, date: move.expected.date,
       ...(copy && !hadOverride ? { clearOverride: true as const } : {}) };
   });
 }

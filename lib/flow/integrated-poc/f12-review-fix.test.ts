@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { programClone, type ProgramData, type ProgramTransition } from './contract';
 import { createProgramData, validateProgramData } from './program-data';
-import { createProgramDocument } from './private-space';
+import { archiveProgramDocument, createProgramDocument } from './private-space';
 import { textWorkspaceModel as M } from './text-workspace';
 import { moveProgramTaskDates, programTaskDateState, programTaskDateUndo, programTaskDateUndoLines, restoreProgramTaskDates, type ProgramTaskDateMove } from './task-date-move';
 import { programDayClockRead, programFollowToday, programLaterToday, programNextMinuteDelay, startProgramDayClock, type ProgramDayClock } from './day-clock';
@@ -105,6 +105,46 @@ test('P2-2: a time set with several steps\' dates is saved in the same change, a
   // A time for a task the list does not move is refused.
   const refused = moveProgramTaskDates(data, { actorId: actor(data), requestId: `f12r-${++request}`, moves: [move(data, b, '2026-11-14')], time: { taskId: a, time: '14:00' } });
   assert(!refused.ok && refused.reason === 'invalid');
+});
+
+// Codex re-review of e642fd11 (inbox/f12a13-review-20261112-0805).
+test('re-review P1-1: a task already on the new date keeps its lines (its 날짜 line too), so 되돌리기 leaves the writing exact', () => {
+  const { data, doc, task } = writing();
+  const before = doc(data).lines.map(line => ({ ...line }));
+  const a = task(data, 'A').id, b = task(data, 'B').id;
+  const { moved, undo, restore } = moveAndRestore(data, [move(data, a, '2026-11-11'), move(data, b, '2026-11-11')]);
+  assert(M.raw(doc(moved)).startsWith('[2026-11-11]\n- [ ] A\n  - 날짜: 2026-11-11\n- [ ] B\n- [ ] C'), 'A untouched, B onto its heading\'s day');
+  assert.deepEqual(undo.map(entry => entry.taskId), [b]);
+  assert.deepEqual(doc(ok(restore(moved)).data).lines, before);
+});
+
+test('re-review P1-2 and a mixed list: on the date already, moved with a time kept, taken away or added, moved without one', () => {
+  const raw = '[2026-11-11]\n- [ ] A\n  - 날짜: 2026-11-11\n- [ ] B\n  - 날짜: 2026-11-12\n  - 시간: 09:00\n- [ ] C\n- [ ] D\n  - 시간: 08:30';
+  for (const time of [undefined, '', '14:00']) {
+    const { data, doc, task } = writing(raw);
+    const before = doc(data).lines.map(line => ({ ...line }));
+    const a = task(data, 'A').id, b = task(data, 'B').id, c = task(data, 'C').id, d = task(data, 'D').id;
+    const { moved, undo, restore } = moveAndRestore(data, [move(data, a, '2026-11-11'), move(data, b, '2026-11-14'), move(data, c, '2026-11-14'), move(data, d, '2026-11-15')],
+      time === undefined ? undefined : { taskId: b, time });
+    assert.equal(task(moved, 'B').time ?? '', time ?? '09:00', `B's time ${JSON.stringify(time)}`);
+    assert.equal(task(moved, 'D').time, '08:30');
+    assert.equal(undo.find(entry => entry.taskId === b)!.expected.time, time ?? '09:00', 'expected as the move left it ("" when taken away)');
+    const back = ok(restore(moved)).data;
+    assert.deepEqual(doc(back).lines, before, `byte for byte, IDs too (time ${JSON.stringify(time)})`);
+    assert.equal(M.raw(doc(back)), raw);
+  }
+});
+
+test('re-review P2-1: 되돌리기 of a document archived since is refused as the date command refuses it; nothing changes', () => {
+  const { data, doc, task } = writing();
+  const a = task(data, 'A').id, b = task(data, 'B').id;
+  const { moved, undo, restore } = moveAndRestore(data, [move(data, a, '2026-11-14'), move(data, b, '2026-11-14')]);
+  const archived = ok(archiveProgramDocument(moved, { actorId: actor(moved), requestId: `f12r-${++request}`, expectedSpace: space(moved), documentId: doc(moved).id })).data;
+  const command = moveProgramTaskDates(archived, { actorId: actor(archived), requestId: `f12r-${++request}`, moves: undo });
+  assert(!command.ok && command.reason === 'unresolved', 'the date command refuses it');
+  const refused = restore(archived);
+  assert(!refused.ok && refused.reason === 'unresolved');
+  assert.equal(M.raw(doc(archived)), M.raw(doc(moved)));
 });
 
 test('P2-3 / F4: one clock for the date and the hour, at each minute\'s turn and when the screen comes back', () => {
