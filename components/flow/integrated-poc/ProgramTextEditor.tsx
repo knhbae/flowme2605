@@ -43,6 +43,7 @@ import { folderRefusalStands, indentTouchesLinkedFolder, linkedFolderLinesTextEd
 import { createProgramTextDraft, FOLDER_INDENT_NOTICE, type ProgramTextCommit, type ProgramTextCommitOptions, type ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
 import { programBarDropNotice, programIndentRefusalNotice, programIndentShape, type ProgramBarDrop, type ProgramIndentRefusal } from '@/lib/flow/integrated-poc/bar-indent-notice';
 import {createProgramDocumentInput,type ProgramDocumentInput} from '@/lib/flow/integrated-poc/program-document-input';
+import { programRowPatchEnabled } from '@/lib/flow/integrated-poc/typing-row-patch';
 import type { ProgramReferenceAccess } from '@/lib/flow/integrated-poc/reference-execution-guard';
 import { linkProgramFolder, programFolderLineTitle, programFolderLinkProblem, programFolderLinkProblems } from '@/lib/flow/integrated-poc/folder-link-slot';
 import { programFolderLinkPreview, isProgramFolderLinkPreviewCurrent, type ProgramFolderLinkPreview } from '@/lib/flow/integrated-poc/folder-link-preview';
@@ -2456,14 +2457,23 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       }
       return true;
     };
+    const rowPatch = programRowPatchEnabled();
+    let aligned: { accepted: string; shown: string; rows: unknown; out: TextEditorRowMeta[] } | null = null;
     const instance = nativeEditor.create(host, {
       value: controller.getState().raw, label: '문서 내용', taskSplitEnabled: !!propsRef.current.authorizeTaskSplit,
+      // typelag ② (11/11): typing redraws and measures only the rows it changed; one switch (typing-row-patch.ts).
+      rowPatch,
       getCheckAction: (_index, meta) => programCheckboxAction(meta,
         meta.progressTargetId ? propsRef.current.taskAccess?.(meta.progressTargetId,currentState()) : undefined, today()),
       // 11/10 18:05 (실사용): rows of the text the model took, placed on the text shown; a refused or held line has none.
       getRowMeta: () => { const state = controller.getState(), rows = documentInput.paint(state.working) ?? textEditorRows(state.working, props.docId);
         const accepted = M.raw(M.getDocument(state.working, props.docId)), shown = textArea()?.value ?? state.raw;
-        return accepted === shown ? rows : programAlignRows(accepted, shown, rows) as typeof rows; },
+        if (accepted === shown) return rows;
+        // typelag ②: a composition renders several times over the same texts; the rows placed once serve them all.
+        if (rowPatch && aligned && aligned.accepted === accepted && aligned.shown === shown && aligned.rows === rows) return aligned.out;
+        const out = programAlignRows(accepted, shown, rows, rowPatch) as typeof rows;
+        aligned = { accepted, shown, rows, out };
+        return out; },
       isActionDisabled: actionsDisabled,
       isPaintDisabled: paintDisabled,
       isIndentDisabled: indentDisabled,

@@ -1,6 +1,7 @@
 import { canonicalJson, detached } from './alpha-persistence/json';
 import { textWorkspaceModel as M, type TextWorkspaceState, type TextFolder, type TextScopeBinding, type TextLine } from './text-workspace';
 import { ro } from './folder-notice';
+import { programRowPatchEnabled } from './typing-row-patch';
 
 const same = (a: unknown, b: unknown) => a === b || a !== undefined && b !== undefined && canonicalJson(a) === canonicalJson(b);
 const docs = (state: TextWorkspaceState) => [...state.documents, ...state.flows];
@@ -117,8 +118,25 @@ function regionIds(state: TextWorkspaceState, region: Region): string[] | null {
   return inside;
 }
 
+/** typelag ② (11/11): words typed in a line change no folder, scope binding or scope entry, and such an edit is no
+ *  operation (captureProgramFolderOperation's `!structural && !taskScopes && !itemScopes` return). Known before the two
+ *  whole-workspace checks and the task list, which every key paid for. Anything unexpected leaves it to the full path.
+ *  With the row patch switch only (typing-row-patch.ts); off, every key takes the full path as r3. */
+function quietFolderEdit(before: TextWorkspaceState, after: TextWorkspaceState): boolean {
+  try {
+    if (deltas(before.folders, after.folders, row => row.id).length) return false;
+    const folderIds = new Set([...before.folders, ...after.folders].map(folder => folder.id));
+    const scoped = (state: TextWorkspaceState) => state.bindings.filter((row): row is TextScopeBinding => row.kind === 'scope' && folderIds.has(row.scopeId));
+    return !deltas(scoped(before), scoped(after), scopeKey).length && !dictionary(before.taskScopes, after.taskScopes).length
+      && !dictionary(before.itemScopes, after.itemScopes).length;
+  } catch {
+    return false;
+  }
+}
+
 /** Capture the semantic folder part of a finished edit. Pasted ordinary text/tasks stay pasted on undo. */
 export function captureProgramFolderOperation(before: TextWorkspaceState, after: TextWorkspaceState, extraLineIds: string[] = []): ProgramFolderOperation | null {
+  if (programRowPatchEnabled() && quietFolderEdit(before, after)) return null;
   if (!M.validate(before) || !M.validate(after)) return null;
   const folders = deltas(before.folders, after.folders, row => row.id);
   const folderIds = new Set([...before.folders, ...after.folders].map(folder => folder.id));

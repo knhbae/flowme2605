@@ -35,16 +35,26 @@ export function programRecordedRemoval(model: Model, working: TextWorkspaceState
 /** The rows of the text the model took, placed on the text shown: a line the same in both keeps its row, a changed or
  *  held line has none (the editor draws it as typed). Never a row by its old index on another line (11/10 18:05: a
  *  folder row on a task line drew "/[ ]", a 25% row moved to the task two lines below). Spans are left out. */
-export function programAlignRows<T extends object>(acceptedRaw: string, shownRaw: string, rows: readonly T[]): (T | undefined)[] {
+export function programAlignRows<T extends object>(acceptedRaw: string, shownRaw: string, rows: readonly T[], keepSpans = false): (T | undefined)[] {
   const a = acceptedRaw.split('\n'), b = shownRaw.split('\n');
   if (acceptedRaw === shownRaw) return rows.slice();
+  // typelag ② (11/11, with the row patch switch): spans are kept when only words inside lines changed (see below), so
+  // a composition or a held line does not redraw every folder row without its span and back again.
+  const spans = keepSpans && programSameOutline(a, b);
   const out: (T | undefined)[] = new Array(b.length).fill(undefined);
   let i = 0, j = 0;
   for (const piece of [...programLinePieces(a, b), { a: [a.length, a.length], b: [b.length, b.length] } as Piece]) {
-    while (i < piece.a[0] && j < piece.b[0]) { const row = rows[i]; if (row) { const copy = { ...row } as T & { subtreeEndIndex?: number }; delete copy.subtreeEndIndex; out[j] = copy; } i++; j++; }
+    while (i < piece.a[0] && j < piece.b[0]) { const row = rows[i]; if (row) { const copy = { ...row } as T & { subtreeEndIndex?: number }; if (!spans) delete copy.subtreeEndIndex; out[j] = copy; } i++; j++; }
     i = piece.a[1]; j = piece.b[1];
   }
   return out;
+}
+/** typelag ②: a row's span (text-model parseDocument: subtreeEndIndex) follows only the line count and each line's indent,
+ *  blankness and code fence marks. Two texts with the same lines in those respects have the same spans. */
+export function programSameOutline(a: readonly string[], b: readonly string[]): boolean {
+  const fence = /^ *(`{3,}|~{3,})/, lead = (line: string) => /^[ \t]*/.exec(line)![0];
+  return a.length === b.length && a.every((line, k) => line === b[k] || (lead(line) === lead(b[k]) && !!line.trim() && !!b[k].trim()
+    && !fence.test(line) && !fence.test(b[k])));
 }
 export interface ProgramPartialSave { state: TextWorkspaceState; raw: string; held: ProgramHeldLines }
 

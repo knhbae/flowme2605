@@ -22,6 +22,8 @@ declare namespace editor {
     /** Display the actual full-writer action; the handler rechecks write authority. */
     getCheckAction?: (lineIndex: number, meta: TextEditorRowMeta) => 'toggle' | 'progress-open' | 'reference-open';
     getRowMeta?: () => TextEditorRowMeta[] | Record<number, TextEditorRowMeta>;
+    /** typelag ② (11/11): draw again and measure only the rows a render changed. Off when absent (every row, as r3). */
+    rowPatch?: boolean;
     isActionDisabled?: () => boolean;
     /** W12: show the muted '/ 메뉴' or '/ 폴더' hint on an empty line after a 0.4s pause. Off when absent. */
     lineHints?: () => boolean;

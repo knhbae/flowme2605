@@ -60,7 +60,8 @@ test('an empty document shows a two-line hint, and the writing example is in its
   // S4 N3 W1: the editor masks the textarea to its one empty row once focused and hides it in reading view; while
   // the hint shows, both step aside so its two lines show before and after focus.
   const vendor = readFileSync(new URL('./vendor/text-editor.css', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
-  assert(vendor.includes('.tle-root[data-mode="live"].tle-native-input .tle-textarea,\n') && vendor.includes('mask-image: linear-gradient(to bottom, transparent var(--tle-native-top)'));
+  // typelag ② (11/11): the window's own (non-inherited) values come first; unset, the root's, as before.
+  assert(vendor.includes('.tle-root[data-mode="live"].tle-native-input .tle-textarea,\n') && vendor.includes('mask-image: linear-gradient(to bottom, transparent var(--tle-native-top-own, var(--tle-native-top))'));
   assert(vendor.includes('.tle-root.tle-reading-view .tle-textarea { opacity: 0; pointer-events: none; }'));
   assert(css.includes('.host :global(.tle-root[data-mode="live"].tle-native-input .tle-textarea:placeholder-shown) { -webkit-mask-image: none; mask-image: none; }'));
   assert(css.includes('.host :global(.tle-root[data-mode="live"].tle-reading-view .tle-textarea:placeholder-shown) { opacity: 1; }'));

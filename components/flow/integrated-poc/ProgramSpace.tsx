@@ -55,6 +55,16 @@ import { programErrorMessage, type ProgramMutate, type ProgramNavigate, type Pro
 import { emptyProgramRecurrencePresentation, programNavigationMatchesDocument, type ProgramSpaceNavigation } from '@/lib/flow/integrated-poc/navigation';
 import { ProgramDocumentProvenance } from './ProgramDocumentProvenance';
 import { ProgramPersonalAuthoring } from './ProgramPersonalAuthoring';
+import { programRowPatchEnabled } from '@/lib/flow/integrated-poc/typing-row-patch';
+
+/** typelag ② (11/11): the 반복·Flow sheet stays mounted while closed, so its input survives closing; while it is closed
+ *  (live false) it is not drawn again, so a key typed in the text no longer redraws its row per task. Opening draws it
+ *  with the data of that moment. The row patch switch off keeps it live, as r3. */
+const ProgramPersonalAuthoringSheet = React.memo(function ProgramPersonalAuthoringSheet(props: React.ComponentProps<typeof ProgramPersonalAuthoring> & { live: boolean }) {
+  const { live, ...rest } = props;
+  void live;
+  return <ProgramPersonalAuthoring {...rest} />;
+}, (_previous, next) => !next.live);
 import { documentHasPersonalAuthoring, documentRepeatSeries } from '@/lib/flow/integrated-poc/personal-authoring';
 import type { ProgramPmHostContext } from '@/lib/flow/integrated-poc/rea-pm/app-host';
 import { programTextProgressTransition } from '@/lib/flow/integrated-poc/program-text-progress-transition';
@@ -310,10 +320,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const authoringBox = useRef<HTMLDivElement | null>(null), revealAuthoringBox = useRef(false);
   function requestPersonalAuthoring(id: string) {
     // Under the host tabs the Flow·반복 box is a sheet the toolbar's 반복 opens (R8b); it stays mounted, so its input survives closing.
-    if (props.hostMainTabs) { const sheet = authoringSheet.current; if (sheet && !sheet.open) sheet.showModal(); return; }
+    if (props.hostMainTabs) { const sheet = authoringSheet.current; if (sheet && !sheet.open) { sheet.showModal(); setAuthoringSheetOpen(true); } return; }
     revealAuthoringBox.current = true; setAuthoringRequests(previous => [...previous.filter(value => value !== id), id]);
   }
   const authoringSheet = useRef<HTMLDialogElement | null>(null);
+  // typelag ② (11/11): with the row patch switch on, the closed sheet is not drawn again on each key (see below).
+  const [authoringSheetOpen, setAuthoringSheetOpen] = useState(false), [rowPatch] = useState(() => programRowPatchEnabled());
   /** "반복 2" when the document has live repeats, else "반복". */
   // Asked on every render of the writing view, a key typed among them (11/5 '최근만 쓰기' profile: a whole read of a
   // long document each time), so kept while the text and the repeat plans are the same.
@@ -3186,9 +3198,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         {!headInToolbar && !folderWriting && <><div className={styles.docHeading}>{docTitle}{docActions}</div>{docNotices}</>}
         {props.nativeAuthoringEnabled&&selectedDoc&&!selectedTrashed&&!retentionSource&&(props.hostMainTabs
-          ? <dialog ref={authoringSheet} className={`${styles.findDialog} ${styles.authoringSheet}`} aria-labelledby="program-authoring-title" onCancel={event => { event.preventDefault(); authoringSheet.current?.close(); }}>
+          ? <dialog ref={authoringSheet} className={`${styles.findDialog} ${styles.authoringSheet}`} aria-labelledby="program-authoring-title" onCancel={event => { event.preventDefault(); authoringSheet.current?.close(); }} onClose={() => setAuthoringSheetOpen(false)}>
             <div className={styles.findHeading}><h2 id="program-authoring-title">반복 · Flow</h2><button type="button" onClick={() => authoringSheet.current?.close()}>닫기</button></div>
-            <ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{authoringSheet.current?.close();void openDocument(documentId,taskId);}}/>
+            <ProgramPersonalAuthoringSheet live={!rowPatch || authoringSheetOpen} key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{authoringSheet.current?.close();void openDocument(documentId,taskId);}}/>
           </dialog>
           : !folderWriting&&showsPersonalAuthoring(selectedDoc.id)&&<div ref={authoringBox}><ProgramPersonalAuthoring key={actorId+selectedDoc.id} data={data} documentId={selectedDoc.id} today={today} disabled={preparingDocumentAction} onCommand={personalAuthoringCommand} onOpenSource={(documentId,taskId)=>{void openDocument(documentId,taskId);}}/></div>)}
         {opened.filter(id => docs.some(doc => doc.id === id)).map(id => { const recent = recentViewOf(id), recentTop = recentLine(id, recent, false), views = viewSwitch(id);

@@ -111,7 +111,8 @@ test('toolbar: ↶ ↷ and 반복 N; the Flow·반복 box is a sheet that stays 
   assert(editor.includes('{props.repeatLabel && props.onOpenPersonalAuthoring && <button type="button" className={styles.repeatButton} aria-haspopup="dialog" onClick={() => {'));
   assert(editor.includes('if (!props.repeatContext) { props.onOpenPersonalAuthoring?.(); return; }') && editor.includes('반복·Flow 만들기…<small>여러 할 일과 단계</small>'));
   assert(editor.includes('{!props.authoringMode && (props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" hidden={!!props.folderId}'));
-  assert(space.includes('if (props.hostMainTabs) { const sheet = authoringSheet.current; if (sheet && !sheet.open) sheet.showModal(); return; }'));
+  // typelag ② (11/11): opening it also tells the frozen sheet to draw with the data of that moment.
+  assert(space.includes('if (props.hostMainTabs) { const sheet = authoringSheet.current; if (sheet && !sheet.open) { sheet.showModal(); setAuthoringSheetOpen(true); } return; }'));
   assert(space.includes('className={`${styles.findDialog} ${styles.authoringSheet}`} aria-labelledby="program-authoring-title"'));
   assert(space.includes("repeatLabel={props.hostMainTabs && props.nativeAuthoringEnabled && selected === id ? repeatLabel(id) : undefined}"));
   // (11/5 '최근만 쓰기': the label is kept while the text is the same; its words are as before.)
