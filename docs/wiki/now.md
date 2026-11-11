@@ -209,3 +209,4 @@
 - 11/11 23:51 가벼운 반영 37회차 DEPLOYED: typelag 4차 ab2d8036 / HMo2FPIDgeCEThLLpCrQs. Inspect 통과, CPU 평균 23%, 10경로 기대값, DB 0, 되돌리기 typelag 2차 6fda5f27. 23:40 사용자에게 배포 예고.
 - 11/11 23:41 개발 F12 1차 32232d0b / 7OmU1eW9vegFshnsbf47r(typelag 4차 위, 저장 모양·DB·문법 0): 오늘 탭 진행 줄(공개 사본 + 개인 실행), 18시 마감([내일]·[건너뛰기]·끝낸 일 접기), 겹칠 때만 묻기. 기타 QA 대기.
 - 11/11 22:45 Codex queue는 사용자가 앱에서 대화창을 열어야 처리됨. 사용자 승인(22:48)으로 codex exec resume 백그라운드 경로 추가(전체 권한, memory codex-collaboration-channel).
+- 11/12 02:29~06:11 운영 Alpha 중단 약 3시간 40분: Windows 업데이트(2026-11 보안 업데이트 KB5132061, Intel 드라이버)가 02:29에 재시작을 걸었고 02:33~02:41에 세 번 재부팅했다. 그 뒤 로그온이 없어 자동 시작 작업(FlowMe Alpha AutoStart, 로그온 트리거)이 돌지 않았고, 06:10 사용자 입력으로 로그온한 뒤 06:11에 supervisor·app·tunnel이 다시 떴다. 데이터 손실 0, 운영 빌드 HMo2FPIDgeCEThLLpCrQs 그대로. 개발·기타 진행 작업은 커밋된 상태라 손실 0이고, Codex 읽기 전용 검토 1건은 재실행했다. 막을 방법(사용 시간 설정, 부팅 시 시작)은 사용자 결정.
