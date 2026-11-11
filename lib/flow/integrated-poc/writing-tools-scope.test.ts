@@ -93,8 +93,10 @@ function shows(data: ProgramData, documentId: string, requests: string[] = []) {
   const { tree } = component('ProgramSpace.tsx');
   const [declaration] = find(tree, ts.isFunctionDeclaration).filter(node => node.name?.text === 'showsPersonalAuthoring');
   assert(declaration);
-  const run = new Function('authoringRequests', 'space', 'M', 'documentHasPersonalAuthoring', `${js(declaration.getText(tree))}; return showsPersonalAuthoring;`)(
-    requests, data.spaces[data.activeActorId], M, documentHasPersonalAuthoring);
+  // typelag (11/11): the screen reads the tasks of the saved text once per text (textTasks).
+  const space = data.spaces[data.activeActorId];
+  const run = new Function('authoringRequests', 'space', 'M', 'documentHasPersonalAuthoring', 'textTasks', `${js(declaration.getText(tree))}; return showsPersonalAuthoring;`)(
+    requests, space, M, documentHasPersonalAuthoring, M.tasks(space.text));
   return run(documentId) as boolean;
 }
 

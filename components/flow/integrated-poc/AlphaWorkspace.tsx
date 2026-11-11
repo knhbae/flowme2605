@@ -248,7 +248,21 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   }, [destination]);
   const [reviewAnnouncement, setReviewAnnouncement] = useState<{ isCurrent: () => boolean } | null>(null);
   const reviewAnnouncementGeneration = useRef(0);
-  const [recoveries, setRecoveries] = useState<AlphaUiRecoveryRecord | null>(null), [storageError, setStorageError] = useState(false);
+  const [recoveries, setRecoveriesState] = useState<AlphaUiRecoveryRecord | null>(null), [storageError, setStorageError] = useState(false);
+  // typelag (11/11): the 복구함 is still written at every key (captureInput); only the screen's copy of it follows at
+  // most every 400ms while typing (setRecoveriesSoon), so a key no longer redraws the whole workspace. Every other
+  // change shows at once and drops a copy still waiting, so an older one never comes back over it.
+  const recoveriesSoon = useRef<{ timer: ReturnType<typeof setTimeout>; value: AlphaUiRecoveryRecord | null } | null>(null);
+  function setRecoveries(value: AlphaUiRecoveryRecord | null) {
+    if (recoveriesSoon.current) { clearTimeout(recoveriesSoon.current.timer); recoveriesSoon.current = null; }
+    setRecoveriesState(value);
+  }
+  function setRecoveriesSoon(value: AlphaUiRecoveryRecord | null) {
+    if (recoveriesSoon.current) { recoveriesSoon.current.value = value; return; }
+    const pending = { value, timer: setTimeout(() => { if (recoveriesSoon.current !== pending) return; recoveriesSoon.current = null; setRecoveriesState(pending.value); }, 400) };
+    recoveriesSoon.current = pending;
+  }
+  useEffect(() => () => { if (recoveriesSoon.current) clearTimeout(recoveriesSoon.current.timer); recoveriesSoon.current = null; }, []);
   const [structuralRecoveries, setStructuralRecoveries] = useState<AlphaStructuralRecoveryRecord | null>(null);
   const structuralRecovery = useRef<ReturnType<typeof createAlphaStructuralRecovery> | null>(null);
   const parkedStructural = useRef<AlphaStructuralRecoveryEntry[]>([]), activeStructural = useRef<AlphaStructuralRecoveryEntry[]>([]);
@@ -389,7 +403,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const saved = uiRecovery.current.save(alphaUiRecoveryDocumentDrafts(next));
     if (!saved.ok) { setStorageError(true); return false; }
     recoveryDocuments.current = next;
-    setRecoveries(saved.value); return structuralSaved;
+    setRecoveriesSoon(saved.value); return structuralSaved;
   }
   /** Input captured from editors that are about to go away is left behind: it stays in the tab's
    * recovery and is announced until a save matches it or the user clears it. */

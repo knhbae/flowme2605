@@ -485,7 +485,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const currentChild=()=>panelRef.current?.kind==='child'?panelRef.current.child??null:null;
   const childDrafts=useRef<Record<string,string>>({});
   // Recovery reads panel text as it is; it never marks the document dirty or blocks other actions.
-  const captureChildDrafts=()=>readChildDrafts(childDrafts.current,M.tasks(currentState()));
+  // typelag (11/11): the whole text is read for the tasks only when a child panel has text kept (the 복구함 runs this
+  // at every key).
+  const captureChildDrafts=()=>Object.keys(childDrafts.current).length?readChildDrafts(childDrafts.current,M.tasks(currentState())):[];
   const panelComposingRef=useRef(false),compositionGeneration=useRef(0);
   const slashCommandRef=useRef<{lineId:string;raw:string;workspace:TextWorkspaceState;generation:number}|null>(null);
   // The insert menu's place preview follows the focused or hovered choice; null means the first one.
@@ -2629,12 +2631,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const textarea = host.querySelector<HTMLTextAreaElement>('textarea');
     let lastAuthoringSlash='';
     function requestAuthoringSlash(beforeRaw:string,inputType:string){
-      // Input v2 stage 2: on the phone bar a lone '/' opens the folder chips instead (their [메뉴] opens this menu).
-      if(barShownNow())return;
       if(!propsRef.current.authoringMode||!textarea||composingRef.current
         ||!['insertText','insertReplacementText','insertCompositionText'].includes(inputType))return;
       const raw=textarea.value,caret=textarea.selectionStart;
       if(raw===beforeRaw||textarea.selectionEnd!==caret||raw[caret-1]!=='/')return;
+      // Input v2 stage 2: on the phone bar a lone '/' opens the folder chips instead (their [메뉴] opens this menu).
+      // typelag (11/11): asked only once a '/' was typed — it reads the layout, and every key paid for it.
+      if(barShownNow())return;
       const rowStart=raw.lastIndexOf('\n',caret-1)+1,rowEnd=raw.indexOf('\n',caret);
       if(raw.slice(rowStart,rowEnd<0?raw.length:rowEnd).trim()!=='/')return;
       let start=0,oldEnd=beforeRaw.length,newEnd=raw.length;

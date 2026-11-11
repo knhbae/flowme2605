@@ -82,7 +82,8 @@ test('the editor: phone-bar triggers after one typed character (C1–C6), the fo
   assert.match(trigger, /panelRef\.current \|\| regionPendingRef\.current \|\| checkPendingRef\.current\) return;/);
   for (const kind of ["previous === '' && text === '['", 'openSlashFolders(index)', 'fixDashSlash(index)']) assert.ok(trigger.includes(kind), kind);
   // On the phone bar a lone '/' no longer opens the menu by itself (the PC keeps it).
-  assert.match(editor, /function requestAuthoringSlash\(beforeRaw:string,inputType:string\)\{\n\s+\/\/[^\n]*\n\s+if\(barShownNow\(\)\)return;/);
+  // typelag (11/11): the bar is asked about (a layout read) only once a lone '/' was typed, before anything opens.
+  assert.match(editor, /function requestAuthoringSlash\(beforeRaw:string,inputType:string\)\{[\s\S]{0,600}?raw\[caret-1\]!=='\/'\)return;\n(?:\s+\/\/[^\n]*\n)*\s+if\(barShownNow\(\)\)return;/);
   // The folder chips: folders, ＋ 새 폴더, [메뉴] only for a typed '/', ×.
   assert.match(editor, /barMode === 'folders' && body \? folders : tools/);
   assert.match(editor, /barTriggerRef\.current\?\.kind === 'slash' && <button type="button" className=\{styles\.barMenu\} data-bar-slash-menu/);

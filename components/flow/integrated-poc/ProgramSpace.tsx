@@ -274,6 +274,9 @@ function sameScheduleWorkspace(before: TextWorkspaceState, expected: TextWorkspa
 
 export function ProgramSpace(props: ProgramSpaceProps) {
   const { data, today } = props, actorId = data.activeActorId, space = data.spaces[actorId];
+  // typelag (11/11): the tasks of the saved text, read once per text (the screen draws again at every key; the band
+  // asked them again for each of its rows). Read only.
+  const textTasks = useMemo(() => M.tasks(space.text), [space.text]);
   // 첫인상 (11/7): read here, not inside a branch; empty unless the official list was read (Alpha only).
   const officialActors = useAlphaOfficialActors();
   // C6a review: every save of the space goes through here. Each is counted while it waits (고르기 does not start during
@@ -333,7 +336,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (authoringRequests.includes(id)) return true;
     const taskIds = M.rowMeta(space.text, id).flatMap(row => row.kind === 'task' ? [row.isReference ? row.taskId ?? '' : row.id] : []);
     return documentHasPersonalAuthoring(space.personalAuthoring, id, taskIds)
-      || M.tasks(space.text).some(task => task.docId !== id && taskIds.includes(task.id));
+      || textTasks.some(task => task.docId !== id && taskIds.includes(task.id));
   }
   const [date, setDate] = useState(today), [folderId, setFolderId] = useState(''), [query, setQuery] = useState('');
   /** F4-a (11/9): the 폴더 tab's open folder — its [할 일] (period 'all', the folder as folderId; '' is 모든 할 일) or its
@@ -3001,7 +3004,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           const task = entry.task;
           const origin = readProgramTaskOrigin(data, task);
           // UX C5 (11/6): the row is read as it shows: a repeat line by its title and chip, 직접 작성 not said (as on screen).
-          const repeatRow = programRepeatLine(space, task.id), repeatShown = repeatRow && (!repeatRow.block || repeatRow.block === 'done') ? repeatRow : null;
+          const repeatRow = programRepeatLine(space, task.id, textTasks), repeatShown = repeatRow && (!repeatRow.block || repeatRow.block === 'done') ? repeatRow : null;
           const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
           const meta = programExecutionRowMeta({ date: task.date, done: value === 100, progress: progress?.date ? { date: progress.date, percent: progress.percent } : null, today, dated: item.dated,
             since: task.explicitDate ? task.groupDate : null });
@@ -3035,13 +3038,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const valueOf = (task: TextTask) => taskProgress(task.id).current ?? (task.done ? 100 : 0);
     const list = flowTodayTasks.filter(task => valueOf(task) !== 100 && !bandChecked.has(task.id)).map(task => ({ task, done: false }));
     for (const [, kept] of [...bandChecked].sort((a, b) => a[1].index - b[1].index)) list.splice(Math.min(kept.index, list.length), 0, { task: kept.task, done: true });
-    return list.map(({ task, done }) => { const repeat = programRepeatLine(space, task.id);
+    return list.map(({ task, done }) => { const repeat = programRepeatLine(space, task.id, textTasks);
       return { id: task.id, title: repeat ? programRepeatTitle(task.title) : task.title, flowTitle: flowDocuments.get(task.docId) ?? task.docTitle, flowDocumentId: task.docId,
         done, busy: completingTaskIds.has(task.id), repeat: repeat && !repeat.block ? `↻ ${repeat.marker.label}` : null }; });
   })();
   function checkFromBand(id: string) {
     const kept = bandChecked.get(id), index = bandRows.findIndex(row => row.id === id);
-    const live = M.tasks(space.text).find(task => task.id === id) ?? kept?.task;
+    const live = textTasks.find(task => task.id === id) ?? kept?.task;
     if (!live || index < 0) return;
     setBandFailed(null);
     void checkTaskFromList(live, 'band').then(outcome => {
@@ -3397,7 +3400,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {!executionRows.length && !monthGrid && !folderTab && (noTasks => <div className={styles.empty}><p>{folderId || query ? '현재 조회 조건에 맞는 할 일이 없습니다.' : noTasks ? '아직 할 일이 없습니다.' : '이 보기에 할 일이 없습니다.'}</p>
           {period !== 'all' && period !== 'documents' && (noTasks && !folderId && !query && !selecting
             ? <button type="button" onClick={openQuickAddFromEmpty}>할 일 추가</button>
-            : <button type="button" onClick={() => void showAllTasksFromEmpty()}>전체 할 일에서 찾기</button>)}</div>)(!M.tasks(space.text).length && !programSeriesMetadata(space).length)}
+            : <button type="button" onClick={() => void showAllTasksFromEmpty()}>전체 할 일에서 찾기</button>)}</div>)(!textTasks.length && !programSeriesMetadata(space).length)}
         {/* C5: in the calendar the grid takes the list's place; the chosen day sits beside it when the content is wide. */}
         {/* C6a: the bar of 고르기. Phones cover the bottom tabs with it; wide screens hold it over the list. C6b: its
             [날짜 바꾸기 · n개] opens the date sheet (a sheet on a phone, a menu under the bar on a PC). */}
