@@ -60,7 +60,9 @@ test('date chips: 오늘, 내일 and 이번 주말 from the date sheet defaults;
   assert.deepEqual(labels('2026-11-09').at(-1), '이번 주말 2026-11-14');
   const menu = editor.slice(editor.indexOf('data-task-location-menu'), editor.indexOf('aria-label="이 위치에 추가"'));
   assert(menu.indexOf('programLineDateChips(today())') < menu.indexOf('>진행 기록</button>'), 'the chips come first');
-  assert(menu.includes('>고르기<small>날짜·시간</small>') && menu.includes("openProgress(panel.lineId,'date')"));
+  // F9 W-MENU-24 (11/11): 고르기 is the calendar sheet; the date form (with its time) is 진행's [날짜·시간] for every task.
+  assert(menu.includes('>고르기<small>달력</small>') && menu.includes('openDateSheet(panel.lineId)'));
+  assert(menu.includes("data-progress-date onClick={() => openProgress(panel.lineId, 'date')}>날짜·시간"));
   assert(menu.includes('폴더로 옮기기') && menu.includes('aria-label="옮길 날"'));
   // Canonical tasks relocate; protected exceptions retain date-only semantics with the same time.
   const chip = editor.slice(editor.indexOf('  async function applyDateChip('), editor.indexOf('  function downloadDraft('));

@@ -231,6 +231,8 @@ function sourceFocusHarness(expressions: ReturnType<typeof sourceFocusExpression
     // 11/5 쓰기 '최근만 쓰기': this document is short, so its editor shows it whole.
     recentViewRef: { current: () => null }, shownDocument: (id: string) => text.documents.find(entry => entry.id === id),
     recentPosition: () => { throw Error('no recent view'); },
+    // F10 W-ORDER-02 (11/11): a line asked for marks its document as opened, so opening at today does not take over.
+    PROGRAM_TODAY_SHOWN: new Set<string>(), todayKey: (id: string) => `${data.activeActorId}:${id}`,
     root: { current: { contains: (value: unknown) => value === area } }, libraryDialog: { current: null },
     sourceFocusPorts: { current: { [documentId]: (target: { documentId: string; lineId: string; raw: string }) => {
       assert.deepEqual(target, { documentId, lineId: taskId, raw: M.raw(doc) });

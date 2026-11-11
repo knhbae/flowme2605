@@ -68,7 +68,9 @@ test('오늘 시작 줄: offered when today has no head line and it would go fir
   assert.equal(programTodayStartPlan('[2026-11-05]\n- [ ] 그제 일\n\n[2026-11-06]\n- [ ] 어제 일', today), null);
   assert.equal(programTodayStartPlan('메모만 있는 글', today), null);
   // A note above the first day: the day still goes right before that head line, so it is offered.
-  assert.equal(programTodayStartPlan('메모\n[2026-11-06]\n- [ ] 어제 일', today)?.offset, 3);
+  assert.equal(programTodayStartPlan('메모\n' + newest, today)?.offset, 3);
+  // F10 W-ORDER-01 (11/11): one dated head is a new document, oldest first: today goes under yesterday, so not offered.
+  assert.equal(programTodayStartPlan('메모\n[2026-11-06]\n- [ ] 어제 일', today), null);
 });
 test('the editor: phone-bar triggers after one typed character (C1–C6), the folder chips, ↶ steps, 오늘 시작 줄', async () => {
   const { readFileSync } = await import('node:fs');

@@ -99,8 +99,13 @@ import { ProgramTaskMoveSheet } from './ProgramTaskMoveSheet';
 import { ProgramTaskMoveContext } from './task-move-context';
 import { programCopyHeader } from '@/lib/flow/integrated-poc/program-copy-header';
 import { programImportTargets } from '@/lib/flow/integrated-poc/program-import-links';
+import { programDateSectionDirection } from '@/lib/flow/integrated-poc/date-section-order';
+import { programMoveTraceKey } from '@/lib/flow/integrated-poc/task-move-trace';
 
 export { programMobileWritingKeyboardOpen, useProgramMobileWritingChrome } from './useProgramMobileWritingChrome';
+
+/** F10 W-ORDER-02: the documents (by account) already opened at today in this page visit; not again until a reload. */
+const PROGRAM_TODAY_SHOWN = new Set<string>();
 
 /** The document sheet's selection-only surface: no navigation, creation or editor is mounted here. */
 export function ProgramImportDocumentPicker({ data, actorId, copyDocumentId, pendingDocumentIds, onChoose, onClose }: {
@@ -821,32 +826,65 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const next = { ...recentWholeRef.current }; delete next[id];
     rememberRecentWhole(next); setRecentFound(null);
   }
-  // A document with its old days first opens at today's date line (PROPOSAL 4-2), once per session; one whose today is
-  // already in view (newest on top, or a caret put back there) is left as it is.
-  const recentShown = useRef(new Set<string>());
+  // F10 W-ORDER-02 (11/11): a document opens at today, once per page visit. One written oldest first (위가 과거, a new
+  // one too) gets today's date line near the top and the caret at the end of today's section (on its empty last line
+  // when it has one); a document with its old days folded (PROPOSAL 4-2) is scrolled to today in any order, as before.
+  // Nothing is written or saved, and nothing is focused (a phone keeps its keyboard down; the reading view and its trace
+  // lines stay). A line asked for (원래 줄 보기, 찾기: openDocument) wins; a folder or collection view is left alone;
+  // and back in a document already opened, the editor keeps where it was.
+  const todayKey = (id: string) => `${actorId}:${id}`;
+  // The account may be read after the space is drawn (a first visit): opening at today waits for the document.
+  const selectedPresent = !!selected && space.text.documents.some(doc => doc.id === selected);
+  /** F10 W-ORDER-05: each document editor's '날짜 순서 바꾸기' preview, for the 글 작업 menu. */
+  const sectionOrderOpeners = useRef<Record<string, (() => void) | null>>({});
   useEffect(() => {
-    const id = selected, view = id && period === 'documents' && !recentShown.current.has(id) ? recentViewRef.current(id) : null;
-    if (!view) return;
-    recentShown.current.add(id);
-    const index = M.getDocument(view.workspace, id)?.lines.findIndex(line => line.text.trim() === `[${today}]`) ?? -1;
-    if (index < 0) return;
+    const id = selected;
+    if (!id || period !== 'documents' || PROGRAM_TODAY_SHOWN.has(todayKey(id)) || collectionMode || editorFolderOf(id)) return;
+    if (!space.text.documents.some(doc => doc.id === id)) return;
+    PROGRAM_TODAY_SHOWN.add(todayKey(id));
+    if (pendingSourceFocus.current?.documentId === id) return;
+    const oldestFirst = ['oldest-first', 'none'].includes(programDateSectionDirection(space.text, id));
+    if (!recentViewRef.current(id) && !oldestFirst) return;
+    // Read from the text the editor shows now, each try: opening may write first (a repeat line's first round, say).
+    let known: { text: TextWorkspaceState; index: number; caret: number | null; raw: string } | null = null;
+    const plan = () => {
+      const view = recentViewRef.current(id), text = view ? view.workspace : dataRef.current.spaces[actorId]?.text;
+      if (!text) return null;
+      if (known?.text === text) return known;
+      const rows = M.rowMeta(text, id), head = rows.find(row => row.kind === 'date' && row.date === today), doc = M.getDocument(text, id);
+      if (!head || !doc) return known = { text, index: -1, caret: null, raw: '' };
+      // The end of today's section: its last line that is not blank, or the empty line right under it in the section.
+      let caretLine = [...rows].reverse().find(row => row.dateLineId === head.id && row.id !== head.id && row.kind !== 'blank')?.index ?? head.index;
+      if (rows[caretLine + 1]?.kind === 'blank' && rows[caretLine + 1]?.dateLineId === head.id) caretLine += 1;
+      const caret = oldestFirst ? doc.lines.slice(0, caretLine + 1).reduce((sum, line) => sum + line.text.length + 1, 0) - 1 : null;
+      return known = { text, index: head.index, caret, raw: M.raw(doc) };
+    };
     // QA Q2: not being typed in, the editor shows its text on its reading viewport (the vendor's scroll surface), the
     // textarea only while typed in: today goes in view on the surface shown (and on the textarea, which a switch to
-    // typing carries over). Tried again while the editor is not laid out yet.
+    // typing carries over). Tried again (up to about ten seconds: on a first visit the editor comes after the account
+    // is read) while the editor is not laid out yet or does not show that text yet; given up once the document is left.
     let tries = 0;
     const reveal = () => {
+      if (selectedRef.current !== id) return;
+      const at = plan();
+      if (at && at.index < 0) return;
       const textarea = document.getElementById(`program-text-${encodeURIComponent(id)}`) as HTMLTextAreaElement | null, root = textarea?.closest<HTMLElement>('.tle-root');
-      const row = root?.querySelectorAll<HTMLElement>('.tle-line')[index];
-      if (!textarea || !root || !row || !row.offsetHeight) { if (++tries < 60) requestAnimationFrame(reveal); return; }
+      const row = at ? root?.querySelectorAll<HTMLElement>('.tle-line')[at.index] : undefined;
+      if (!at || !textarea || !root || !row || !row.offsetHeight || textarea.value !== at.raw) { if (++tries < 600) requestAnimationFrame(reveal); return; }
+      // A line asked for meanwhile, or typing begun: left as it is.
+      if (pendingSourceFocus.current?.documentId === id || document.activeElement === textarea) return;
+      // W-ORDER-02: the caret at the end of today's section, with no focus (selection only: no input, no save).
+      if (at.caret !== null && at.caret >= 0 && at.caret <= textarea.value.length) textarea.setSelectionRange(at.caret, at.caret);
       const viewport = root.querySelector<HTMLElement>('.tle-viewport');
       const surface = viewport && (root.classList.contains('tle-reading-view') || root.classList.contains('tle-folded-view')) ? viewport : textarea;
-      if (row.offsetTop >= surface.scrollTop && row.offsetTop + row.offsetHeight <= surface.scrollTop + surface.clientHeight) return;
+      // Today's date line in the upper part of the screen; already there, the screen stays.
+      if (row.offsetTop >= surface.scrollTop && row.offsetTop + row.offsetHeight <= surface.scrollTop + surface.clientHeight * (oldestFirst ? .4 : 1)) return;
       const top = Math.max(0, row.offsetTop - 20);
       textarea.scrollTop = top;
       if (surface !== textarea) surface.scrollTop = top;
     };
     requestAnimationFrame(() => requestAnimationFrame(reveal));
-  }, [selected, period, recentWhole]);
+  }, [selected, selectedPresent, period, recentWhole]);
   const recentDay = (date: string) => `${Number(date.slice(5, 7))}월 ${Number(date.slice(8, 10))}일`;
   /** The lines above (`atEnd` false) or under the editor: [미정]'s folded finished tasks (W-b) and the folded days there. */
   /** 7k stage 2 (11/7): the folders a document writes (its folder lines, in their first order), for the 폴더별 chips. */
@@ -1633,6 +1671,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           const doc = documentsRef.current.find(entry => entry.id === id); if (!doc) continue;
           const lineIndex = M.raw(doc).slice(0, position.start).split('\n').length - 1;
           positions.current[id] = { ...position, documentId: id, lineId: doc.lines[lineIndex]?.id ?? null };
+          PROGRAM_TODAY_SHOWN.add(`${actorId}:${id}`); // W-ORDER-02: back here, the place it had.
         }
         requestAnimationFrame(() => {
           for (const [id, position] of Object.entries(checkpoint.writing ?? {})) {
@@ -1911,7 +1950,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     navigating = true;
     setTaskNotice(null);
     if (targetPosition && recentViewRef.current(id)?.hidden.has(taskId!)) await showRecentWhole(id, true);
-    if (targetPosition) { positions.current[id] = targetPosition; setFolderId(''); }
+    // W-ORDER-02: a line asked for wins over opening at today.
+    if (targetPosition) { positions.current[id] = targetPosition; setFolderId(''); PROGRAM_TODAY_SHOWN.add(todayKey(id)); }
     else setFolderId(programFolderAfterDocumentOpen(dataRef.current.spaces[actorId].text,
       selectedRef.current, id, presentation.current.folderId));
     libraryReturn.current = null;
@@ -2721,6 +2761,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             {period === 'documents' && !collectionMode && !folderId && recentHoldOf(selectedDoc.id) && <button type="button" data-recent-action={recentWhole[selectedDoc.id] ? 'menu-recent' : 'menu-whole'}
               disabled={preparingDocumentAction} onClick={() => { if (documentMenu.current) documentMenu.current.open = false;
                 void (recentWhole[selectedDoc.id] ? showRecentOnly(selectedDoc.id) : showRecentWhole(selectedDoc.id)); }}>{recentWhole[selectedDoc.id] ? '최근만 보기' : '전체 보기'}</button>}
+            {/* F10 W-ORDER-05: the date sections the other way round, previewed in the editor (the whole document only). */}
+            {period === 'documents' && !collectionMode && !folderId && <button type="button" data-section-order-open disabled={preparingDocumentAction} onClick={event => {
+              // The menu closes, with the editor tools it sits in on a phone, before the preview opens.
+              for (let menu = event.currentTarget.closest('details'); menu; menu = menu.parentElement?.closest('details') ?? null) menu.open = false;
+              if (documentMenu.current) documentMenu.current.open = false;
+              if (recentViewOf(selectedDoc.id)) { setMessage('지난 기록을 펼친 뒤(전체 보기) 날짜 순서를 바꿔 주세요.'); return; }
+              sectionOrderOpeners.current[selectedDoc.id]?.();
+            }}>날짜 순서 바꾸기</button>}
             {!collectionMode && <label>보관 위치<select value={selectedDoc.folderId} onChange={event => { const value = event.target.value; void run('폴더 이동', current => setProgramDocumentFolder(current, { ...base(current), documentId: selectedDoc.id, folderId: value })); }}>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>}
             {/* int4 (F5-b 목업 F5 상태): one entry by where this document is — 공개하기 (① 고르기), 공개 이어서 (its draft at ② 다듬기),
                 or 공개 관리 · 버전 n (나's management screen, through the host's navigate, which saves the editors first). */}
@@ -3297,6 +3345,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             }finally{release();}
           }:undefined}
           onUndoTaskLocation={locationNotice?.documentId===id?()=>{if(dirty.current[id])return false;void undoTaskLocation(locationNotice);return true;}:undefined}
+          moveTraceKey={programMoveTraceKey(actorId)} onRegisterSectionOrder={open => { sectionOrderOpeners.current[id] = open; }}
           authorizeTaskLocation={(before,next)=>{
             const wideBefore=recent?recentWide(id,recent,before,false):{ok:true as const,state:before},wideNext=recent?recentWide(id,recent,next):{ok:true as const,state:next};
             return wideBefore.ok&&wideNext.ok&&programTextTransition(dataRef.current,{actorId,documentId:id,expected:wideBefore.state,next:wideNext.state}).ok;
