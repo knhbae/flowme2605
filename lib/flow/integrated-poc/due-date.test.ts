@@ -57,7 +57,7 @@ test('Enter at the end of a 마감 line opens the owner\'s next task, as at a �
 
 test('the screen: the writing view paints 마감 with D-n and marks past and today; the 오늘 list shows D-n', () => {
   const editor = readFileSync(new URL('./vendor/text-editor.cjs', import.meta.url), 'utf8').replace(/\r/g, '');
-  assert(editor.includes("const PROPERTY = /^(?: {2,}|\\t+)-\\s+(?:날짜|메모|시간|마감):/;"));
+  assert(editor.includes("const PROPERTY = /^(?: {2,}|\\t+)-\\s+(?:날짜|메모|시간|마감|기다림):/;"), 'W-TXT-09 adds 기다림 beside it');
   assert(editor.includes("return label && days !== null ? `마감 ${label} · ${dueText(days)}` : null;"));
   assert(editor.includes("if (dueIn !== null) labelSpan.dataset.due = dueIn < 0 ? 'over' : dueIn === 0 ? 'today' : 'ahead';"));
   assert(editor.includes("'repeatLabel', 'repeatAt', 'trace', 'dueDate'];"), 'the plain-row paint fields carry it');
@@ -66,5 +66,5 @@ test('the screen: the writing view paints 마감 with D-n and marks past and tod
   const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r/g, '');
   assert(space.includes("{(due => due && <><span className={due.state === 'over' ? styles.rowLate : undefined} data-row-due={due.state}>{due.label}</span> · </>)(programDueLabel(task.due, today))}"));
   const model = readFileSync(new URL('./vendor/text-model.cjs', import.meta.url), 'utf8').replace(/\r/g, '');
-  assert(model.includes("function propertyParts(text) { return /^ *-\\s+(날짜|메모|시간|마감):\\s*(.*)$/.exec(text); }"));
+  assert(model.includes("function propertyParts(text) { return /^ *-\\s+(날짜|메모|시간|마감|기다림):\\s*(.*)$/.exec(text); }"), 'W-TXT-09 adds 기다림 beside it');
 });

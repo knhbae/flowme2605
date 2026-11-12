@@ -3,6 +3,7 @@ import { programDaysBetween } from './date-label';
 import { programShiftDate } from './execution';
 import { programTaskRepeatMember } from './task-date-move';
 import { textWorkspaceModel as M, type TextTask } from './text-workspace';
+import { programIsWaitTitle, programWaitDays, programWaitParentTitle } from './wait-title';
 
 /** F12 1차 (PRD §20, W-FLOW-02·04·05·07, 11/11): the 오늘 tab's progress lines, one per running Flow execution — a public
  *  Flow's copy I took, or a personal Flow's standalone execution (its repeat rounds are not Flows here, W-FLOW-11). Read
@@ -12,7 +13,8 @@ export type ProgramFlowRunStep = { taskId: string; title: string; date: string |
   /** Redesign 2 (W-TXT-02, with F12): the step's '- 마감:' date (YYYY-MM-DD); none without a readable one. */
   due?: string | null };
 export type ProgramFlowRunWait = { taskId: string; title: string; parentId: string; date: string | null;
-  /** Whole days since the parent was checked (its 100% record); null when it was checked by typing [x] (no record). */
+  /** Whole days since the parent was checked (its 100% record); null when it was checked by typing [x] (no record).
+   *  W-TXT-09: a '답 확인:' line counts from its '- 기다림:' day. */
   days: number | null };
 export type ProgramFlowRun = {
   key: string; kind: 'copy' | 'personal';
@@ -101,18 +103,26 @@ export function programFlowRuns(data: ProgramData, actorId: string, today: strin
   const byId = new Map((tasks ?? M.tasks(space.text)).map(task => [task.id, task] as const));
   const runs: ProgramFlowRun[] = [];
   for (const source of sources(data, space)) {
-    const steps: ProgramFlowRunStep[] = source.taskIds.flatMap(id => { const task = byId.get(id); return task && task.isCanonical ? [{ taskId: id, title: task.title, date: task.date, done: task.done, due: task.due ?? null }] : []; });
+    // W-FLOW-07 · W-TXT-09: a '답 확인:' line is no step (not counted in n/m).
+    const steps: ProgramFlowRunStep[] = source.taskIds.flatMap(id => { const task = byId.get(id); return task && task.isCanonical && !programIsWaitTitle(task.title) ? [{ taskId: id, title: task.title, date: task.date, done: task.done, due: task.due ?? null }] : []; });
     if (!steps.length) continue;
     const doc = M.getDocument(space.text, source.documentId)!;
     const items = M.parseDocumentCached(doc, space.text).items, itemById = new Map(items.map(item => [item.id, item] as const));
+    // W-TXT-09: the run document's open '답 확인: <step>' lines (a wait written in the text).
+    const lines = items.filter(item => item.isCanonical && !item.done && programIsWaitTitle(item.title));
     let wait: ProgramFlowRunWait | null = null;
     for (const step of steps) {
       if (!step.done) continue;
       const open = items.find(item => item.parentItemId === step.taskId && !item.isCanonical && !item.done && item.title);
-      if (!open) continue;
-      const record = M.latestProgress(space.text, step.taskId);
-      wait = { taskId: open.id, title: open.title, parentId: step.taskId, date: itemById.get(open.id)?.date ?? null,
-        days: record && record.percent === 100 && record.date ? Math.max(0, programDaysBetween(record.date, today)) : null };
+      if (open) {
+        const record = M.latestProgress(space.text, step.taskId);
+        wait = { taskId: open.id, title: open.title, parentId: step.taskId, date: itemById.get(open.id)?.date ?? null,
+          days: record && record.percent === 100 && record.date ? Math.max(0, programDaysBetween(record.date, today)) : null };
+        break;
+      }
+      const line = lines.find(item => programWaitParentTitle(item.title) === step.title.trim());
+      if (!line) continue;
+      wait = { taskId: line.id, title: line.title, parentId: step.taskId, date: line.date, days: programWaitDays(line.waitSince, today) };
       break;
     }
     const next = steps.find(step => !step.done) ?? null;
@@ -133,8 +143,10 @@ export const PROGRAM_FLOW_RUN_SHOWN = Object.freeze({ phone: 3, tablet: 5 });
 export const PROGRAM_DAY_CLOSE_HOUR = 18;
 
 /** W-FLOW-07·08: subchecks waiting to be looked at again — the parent checked, the subcheck open, its date (its own, else
- *  the parent's) today or before — in my documents and my Flows, in document order. */
-export type ProgramRecheck = { taskId: string; title: string; parentId: string; parentTitle: string; docId: string; docTitle: string; date: string; days: number | null };
+ *  the parent's) today or before — in my documents and my Flows, in document order.
+ *  W-TXT-09: and the open '답 확인:' lines dated today or before (kind 'line'): parentTitle is the words after '답 확인:',
+ *  parentId the task of that title in the same document (else the line itself), days from its '- 기다림:' day. */
+export type ProgramRecheck = { taskId: string; title: string; parentId: string; parentTitle: string; docId: string; docTitle: string; date: string; days: number | null; kind?: 'line' };
 export function programRechecks(space: ProgramPrivateSpace, today: string): ProgramRecheck[] {
   const live = (documentId: string) => !space.documentTrash?.[documentId] && !space.archivedDocumentIds.includes(documentId);
   const out: ProgramRecheck[] = [];
@@ -142,6 +154,14 @@ export function programRechecks(space: ProgramPrivateSpace, today: string): Prog
     if (!live(doc.id)) continue;
     const items = M.parseDocumentCached(doc, space.text).items, byId = new Map(items.map(item => [item.id, item] as const));
     for (const item of items) {
+      const waitsOn = item.isCanonical ? programWaitParentTitle(item.title) : null;
+      if (waitsOn !== null) {
+        if (item.done || !item.date || item.date > today) continue;
+        const owner = items.find(entry => entry.isCanonical && entry.title.trim() === waitsOn && !programIsWaitTitle(entry.title));
+        out.push({ taskId: item.id, title: item.title, parentId: owner?.id ?? item.id, parentTitle: waitsOn, docId: doc.id, docTitle: doc.title, date: item.date,
+          days: programWaitDays(item.waitSince, today), kind: 'line' });
+        continue;
+      }
       const parent = item.parentItemId ? byId.get(item.parentItemId) : undefined;
       if (item.isCanonical || item.done || !item.title || !parent?.done || !item.date || item.date > today) continue;
       const record = M.latestProgress(space.text, parent.id);
