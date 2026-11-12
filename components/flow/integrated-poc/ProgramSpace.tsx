@@ -103,6 +103,7 @@ import { createPendingProgramSourceNavigation } from '@/lib/flow/integrated-poc/
 import { programCheckpointForWritingTarget } from '@/lib/flow/integrated-poc/writing-navigation';
 import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classification';
 import { commitTaskDateWithUndo, moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
+import { applyProgramProgressText, programProgressTextPlan, type ProgramProgressTextChange } from '@/lib/flow/integrated-poc/progress-text';
 import type { TaskLocationTarget } from '@/lib/flow/integrated-poc/task-location-move';
 import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
 import { programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
@@ -396,6 +397,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const collectionMode = props.documentCollections;
   const [selected, setSelected] = useState(() => initialProgramDocumentId(props, space));
   const [opened, setOpened] = useState<string[]>(selected ? [selected] : []);
+  // Redesign 1 (총괄 11/12, REDESIGN-TECH-1 §1): a document opened in 쓰기 whose box lines' latest progress records say
+  // otherwise asks once to write those values into its text (one save, ↶ and [되돌리기] take it back). [나중에]: asked
+  // again next visit. The records stay.
+  const [progressAsk, setProgressAsk] = useState<{ actorId: string; documentId: string; changes: ProgramProgressTextChange[] } | null>(null);
+  const progressLater = useRef(new Set<string>()), progressDialog = useRef<HTMLDialogElement>(null);
+  const [progressNotice, setProgressNotice] = useState<{ actorId: string; documentId: string; count: number; before: TextWorkspaceState; after: TextWorkspaceState; undone?: boolean; refused?: boolean } | null>(null);
   const [detail, setDetail] = useState<Detail>(null), [message, setMessage] = useState('');
   const [writingNotice, setWritingNotice] = useState<{ actorId: string; documentId: string; text: string } | null>(null);
   const [viewChangeNotice, setViewChangeNotice] = useState<{ actorId: string; reason: 'composition' | 'recurrence' | 'saving' | 'save-failed' | 'pending' } | null>(null);
@@ -793,6 +800,39 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (dirty.current[id] && !await saveRequests.current[id]?.()) return false;
     return !dirty.current[id];
   }
+  // Redesign 1: the ask when a document is opened in 쓰기 (not while writing in it).
+  useEffect(() => {
+    if (period !== 'documents' || !selected || progressLater.current.has(`${actorId}:${selected}`)) { setProgressAsk(null); return; }
+    const changes = programProgressTextPlan(dataRef.current.spaces[actorId], selected);
+    setProgressAsk(changes.length ? { actorId, documentId: selected, changes } : null);
+  }, [period, selected, actorId]);
+  useEffect(() => {
+    const sheet = progressDialog.current;
+    if (!sheet) return;
+    if (progressAsk && !sheet.open) sheet.showModal(); else if (!progressAsk && sheet.open) sheet.close();
+  }, [progressAsk]);
+  function laterProgressText() {
+    if (progressAsk) progressLater.current.add(`${progressAsk.actorId}:${progressAsk.documentId}`);
+    setProgressAsk(null);
+  }
+  async function writeProgressText() {
+    const ask = progressAsk;
+    if (!ask || ask.actorId !== actorId) return;
+    // Pending input in this document is saved first; a composition holds it.
+    if (!await settleRecent(ask.documentId)) { setMessage('입력이 끝나면 다시 눌러 주세요.'); return; }
+    let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
+    const result = await run('진행률 글에 적기', current => { const next = applyProgramProgressText(current, { ...base(current), documentId: ask.documentId, changes: ask.changes });
+      if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
+    progressLater.current.add(`${ask.actorId}:${ask.documentId}`);
+    setProgressAsk(null);
+    if (!result.ok || !before || !after) { if (!result.ok && result.reason === 'conflict') setMessage('그사이 바뀐 줄이 있어 적지 않았습니다. 글을 다시 열면 다시 보여 드립니다.'); return; }
+    setProgressNotice({ actorId, documentId: ask.documentId, count: ask.changes.length, before, after });
+  }
+  async function undoProgressText(notice: NonNullable<typeof progressNotice>) {
+    const result = await run('진행률 적기 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: notice.documentId, before: notice.before, after: notice.after }), true);
+    setProgressNotice(current => current === notice ? result.ok ? { ...notice, undone: true } : { ...notice, refused: true } : current);
+  }
+  const progressMark = (text: string) => /\[[^\]]*\]/.exec(text)?.[0] ?? text;
   function rememberRecentWhole(next: Record<string, true>) {
     try { localStorage.setItem(recentWholeKey, JSON.stringify(next)); } catch { /* this visit only */ }
     setRecentWhole(next);
@@ -3515,6 +3555,22 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           readOnly={programDocumentContentLock(space, id) !== 'active'} disabledReason={space.documentTrash?.[id] ? '휴지통의 문서입니다. 복원하면 삭제 전 상태로 돌아갑니다.' : retainedIds.has(id) ? '저장본으로 되돌리며 보관된 내용 · 읽기 전용' : '보관한 문서입니다. 보관에서 꺼내면 이어서 쓸 수 있습니다.'}
         />{recentLine(id, recent, true)}</div>; })}
         {locationNoticeContent}
+        {progressNotice?.actorId === actorId && progressNotice.documentId === selected && <div className={styles.orderNotice} data-progress-text-notice>
+          <ProgramNoticeRow notice={{ tone: progressNotice.refused ? 'warn' : progressNotice.undone ? 'info' : 'choose', closeLabel: '알림 닫기',
+            text: progressNotice.refused ? '그 뒤 바뀐 줄이 있어 되돌리지 않았습니다' : progressNotice.undone ? '진행률을 적기 전으로 되돌렸습니다' : `진행률 ${progressNotice.count}줄을 글에 적었습니다`,
+            actions: progressNotice.undone || progressNotice.refused ? [] : [{ label: '되돌리기', run: () => void undoProgressText(progressNotice) }] }} onClose={() => setProgressNotice(null)} />
+        </div>}
+        <dialog ref={progressDialog} className={`${styles.findDialog} ${styles.datesSheet}`} aria-labelledby="program-progress-text-title" data-progress-text-sheet
+          onCancel={event => { event.preventDefault(); laterProgressText(); }}>
+          {progressAsk && <>
+            <h2 id="program-progress-text-title">진행률을 글에 적을까요?</h2>
+            <p className={styles.muted}>진행 기록의 가장 최근 값을 할 일 줄에 적습니다. 기록은 그대로 두고, 적은 뒤 되돌릴 수 있습니다.</p>
+            <ul className={styles.progressTextList}>{progressAsk.changes.map(change => <li key={change.lineId}><span>{change.title}</span>
+              <small>{progressMark(change.before)} → {progressMark(change.after)} · {programCalendarDate(change.date, today, false)} 기록</small></li>)}</ul>
+            <button type="button" className={styles.datesChoice} data-progress-text-write onClick={() => void writeProgressText()}>글에 적기</button>
+            <button type="button" className={styles.datesClose} onClick={laterProgressText}>나중에</button>
+          </>}
+        </dialog>
         {/* F4-a (A3 ⑤): the folder's other documents, one folded line each; a press opens that one instead (one editor). */}
         {folderWriting && folderWritingDocuments.length > 1 && <ul className={folderStyles.docFolds} aria-label="이 폴더가 나오는 다른 글">
           {folderWritingDocuments.filter(doc => doc.id !== selected).map(doc => <li key={doc.id}><button type="button" className={folderStyles.docFold} data-folder-document={doc.id}

@@ -684,3 +684,7 @@
 .sameSheet ul { list-style: none; margin: 0; padding: 0; display: grid; }
 .sameSheet li > button { display: grid; gap: 2px; width: 100%; min-height: 56px; padding: 8px 4px; border: 0; border-top: 1px solid var(--flowme-b-hair); border-radius: 0; background: transparent; color: var(--flowme-b-ink); font: inherit; text-align: left; cursor: pointer; }
 .sameSheet li small { color: var(--flowme-b-muted); font-size: 13px; line-height: 18px; }
+/* Redesign 1 (11/12): the progress-to-text sheet's lines. */
+.progressTextList { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 8px; max-height: 40vh; overflow: auto; }
+.progressTextList li { display: grid; gap: 2px; }
+.progressTextList small { color: var(--flowme-b-muted); }
