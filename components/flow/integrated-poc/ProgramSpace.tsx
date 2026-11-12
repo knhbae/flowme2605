@@ -112,6 +112,7 @@ import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classific
 import { commitTaskDateWithUndo, moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
 import { applyProgramProgressText, programProgressTextPlan, type ProgramProgressTextChange } from '@/lib/flow/integrated-poc/progress-text';
 import { programDueLabel } from '@/lib/flow/integrated-poc/due-date';
+import { programIsWaitTitle, programWaitStartable, startProgramWait } from '@/lib/flow/integrated-poc/wait-line';
 import type { TaskLocationTarget } from '@/lib/flow/integrated-poc/task-location-move';
 import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
 import { programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
@@ -1090,7 +1091,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const folder = space.text.folders.find(row => row.id === folderId);
   const executionQuery = { period, date, today, folderId: collectionMode ? '' : folderId, query, includeHeld: includeHeldOccurrences, includeExcluded: includeExcludedOccurrences, page: occurrencePage };
   const occurrenceResult = useMemo(() => period === 'documents' ? { rows: [], issues: [], hasMore: false, pendingStarts: [] } : programOrderedExecutionRows(data, executionQuery), [data, period, date, today, folderId, query, includeHeldOccurrences, includeExcludedOccurrences, occurrencePage]);
-  const executionRows = occurrenceResult.rows;
+  // W-FLOW-07 · W-TXT-09: on today's own 오늘 (as todayHere reads it), an open '답 확인:' line dated by today is in '다시
+  // 확인할 일' above the list, so not a row of the list (nor the day close) too.
+  const rechecksShown = period === 'today' && date === today && !(folderScreen && !collectionMode) && !selecting && !folderId && !query;
+  const executionRows = rechecksShown ? occurrenceResult.rows.filter(row => !(row.kind === 'text-task' && !row.task.done && !!row.task.date && row.task.date <= today
+    && programIsWaitTitle(row.task.title))) : occurrenceResult.rows;
   const [emptyDaysOpen, setEmptyDaysOpen] = useState(false);
   const [addingDate, setAddingDate] = useState<string | null>(null);
   const groupAddField = useRef<HTMLInputElement | null>(null);
@@ -3389,12 +3394,29 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (locationAvailability().blocked) { setMessage('저장을 확인한 뒤 옮겨 주세요.'); return; }
       // Its [되돌리기] puts the text back exactly as it was (a day it inherited is inherited again), only while nothing changed since.
       let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
-      const result = await run('다시 볼 날 바꾸기', current => { const next = updateProgramTask(current, { ...base(current), taskId: row.taskId, patch: { date: tomorrow } });
+      // W-TXT-09: a '답 확인:' line moves to tomorrow's section (its '- 기다림:' goes with it); a subcheck changes its day.
+      const result = await run('다시 볼 날 바꾸기', current => { const next = row.kind === 'line'
+        ? moveProgramTaskLocation(current, { ...base(current), taskId: row.taskId, documentId: row.docId, target: { kind: 'date', date: tomorrow } })
+        : updateProgramTask(current, { ...base(current), taskId: row.taskId, patch: { date: tomorrow } });
         if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
       if (!result.ok || !before || !after) return;
       const was: TextWorkspaceState = before, now: TextWorkspaceState = after;
       setFlowNotice({ text: `${row.title} · 다시 볼 날을 ${programCalendarDate(tomorrow, today, false)}로 바꿨습니다`, undo: async () =>
         (await run('다시 볼 날 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: row.docId, before: was, after: now }), true)).ok });
+    });
+  }
+  // W-FLOW-07 · W-TXT-09: 답 기다리기 — '- [ ] 답 확인: <제목>' with '- 기다림: 오늘' in the section of the day to look again,
+  // one save; its notice's [되돌리기] gives the text back exactly, only while nothing changed since.
+  function startWait(task: TextTask, recheck: string) {
+    void flowBusyWhile(task.id, async () => {
+      let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
+      const result = await run('답 기다리기', current => { const next = startProgramWait(current, { ...base(current), taskId: task.id, date: recheck, today });
+        if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
+      if (!result.ok || !before || !after) { if (!result.ok && result.reason === 'conflict') setMessage('이 일의 답 확인 줄이 이미 있습니다.'); return; }
+      const was: TextWorkspaceState = before, now: TextWorkspaceState = after;
+      close();
+      setFlowNotice({ text: `${task.title} · ${programCalendarDate(recheck, today, false)}에 답 확인 줄을 적었습니다`, undo: async () =>
+        (await run('답 기다리기 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: task.docId, before: was, after: now }), true)).ok });
     });
   }
   async function undoFlowNotice() {
@@ -3952,6 +3974,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           </div>
           {props.capabilities?.taskClassification!==false&&<button type="button" disabled={detailSchedulePending||detailProgressPending||locationAvailability().blocked||readTaskLocationPolicy(space,detailTask.id).kind!=='move'} onClick={()=>setDetailFolderMove(true)}>폴더로 옮기기 · 지금 / {programFolderPath(space.text,detailTask.scopeId)}</button>}
         </section>
+        {/* W-FLOW-07 · W-TXT-09: 답 기다리기 — the day to look again; the text takes '- [ ] 답 확인: 제목' and '- 기다림: 오늘' there. */}
+        {programWaitStartable(space, detailTask.id) && <section data-task-wait aria-label="답 기다리기"><h3>답 기다리기 <small>다시 볼 날에 ‘답 확인’ 줄을 적습니다</small></h3>
+          <div className={styles.deferChips} role="group" aria-label="다시 볼 날">
+            {programLineDateChips(today).filter(chip => chip.date > today).map(chip => <button type="button" key={chip.key} data-wait-date={chip.date}
+              disabled={flowBusy.has(detailTask.id) || locationPending || detailSchedulePending || detailProgressPending} onClick={() => startWait(detailTask, chip.date)}>{chip.label}</button>)}
+          </div></section>}
         <div className={styles.detailOrigin}>
           <p className={styles.muted}>{readProgramTaskOrigin(data, detailTask).label} · {detailTask.docTitle}</p>
           <button disabled={detailSchedulePending || detailProgressPending} onClick={() => openDetailSource(detailTask.docId, detailTask.id)}>원문 열기</button>

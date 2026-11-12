@@ -68,7 +68,8 @@ export function ProgramRechecks(props: { rows: readonly ProgramRecheck[]; today:
           onClick={() => props.onCheck(row)}><span aria-hidden="true" data-check={busy ? 'busy' : 'open'} /></button>
         <button type="button" className={styles.text} onClick={() => props.onOpen(row)} aria-label={`${row.title} · ${row.parentTitle} · 원래 줄 보기`}>
           <span className={styles.name}>{row.title}</span>
-          <span className={styles.next}>{row.parentTitle}{row.days ? ` · 기다림 ${row.days}일째` : ''} · {row.docTitle}</span></button>
+          {/* W-TXT-09: a '답 확인:' line already names what it waits on; a subcheck says its step. */}
+          <span className={styles.next}>{[row.kind === 'line' ? null : row.parentTitle, row.days ? `기다림 ${row.days}일째` : null, row.docTitle].filter(Boolean).join(' · ')}</span></button>
         <button type="button" className={styles.later} disabled={busy} onClick={() => props.onTomorrow(row)}>내일</button>
       </li>; })}</ul>
   </section>;

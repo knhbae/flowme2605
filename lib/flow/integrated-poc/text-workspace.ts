@@ -36,6 +36,8 @@ export interface TextTask {
   inputPercent?: number; inputToken?: string;
   /** Redesign 2 (W-TXT-02): its '- 마감:' date (set only with such a line; null when unreadable). Never its date. */
   due?: string | null;
+  /** W-FLOW-07 · W-TXT-09: its '- 기다림:' date, the day a wait began (set only with such a line; null when unreadable). */
+  waitSince?: string | null;
 }
 export type TextRowKind = 'note' | 'blank' | 'fence' | 'date' | 'scope' | 'task' | 'subcheck' | 'property' | 'heading';
 export interface TextRow {

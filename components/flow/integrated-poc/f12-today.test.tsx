@@ -146,3 +146,18 @@ test('F12 2차: the personal start form has a run name field, filled with the �
   assert(form.includes('startPersonalFlow(data,{flowId,versionId:version.id,anchorDate:newAnchor,runName:(runName??\'\').trim()||defaultRunName})'));
   assert(form.includes('const [runName,setRunName]=useState<string|null>(null),defaultRunName=programDefaultRunName(newAnchor);'));
 });
+// W-FLOW-07 · W-TXT-09 (총괄 11/12): a wait written as a '답 확인:' line — its recheck row, and how ProgramSpace starts,
+// lists and moves it.
+test('a 답 확인 line in 다시 확인할 일 names what it waits on itself; ProgramSpace starts it, lists it once and moves it with [내일]', () => {
+  const html = renderToStaticMarkup(<ProgramRechecks rows={[{ taskId: 'w', title: '답 확인: 견적서 보내기', parentId: 'p', parentTitle: '견적서 보내기', docId: 'd', docTitle: '외주 글', date: '2026-12-16', days: 2, kind: 'line' }]}
+    today="2026-12-16" saving={NO} onCheck={() => {}} onTomorrow={() => {}} onOpen={() => {}} />);
+  assert(html.includes('>답 확인: 견적서 보내기</span>') && html.includes('>기다림 2일째 · 외주 글</span>'), 'not its step twice');
+  const space = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/ProgramSpace.tsx'), 'utf8').replace(/\r\n/g, '\n');
+  assert(space.includes('const result = await run(\'답 기다리기\', current => { const next = startProgramWait(current, { ...base(current), taskId: task.id, date: recheck, today });'));
+  assert(space.includes("(await run('답 기다리기 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: task.docId, before: was, after: now }), true)).ok });"), 'one exact 되돌리기');
+  assert(space.includes('{programWaitStartable(space, detailTask.id) && <section data-task-wait aria-label="답 기다리기">'));
+  assert(space.includes('{programLineDateChips(today).filter(chip => chip.date > today).map(chip => <button type="button" key={chip.key} data-wait-date={chip.date}'));
+  assert(space.includes("const rechecksShown = period === 'today' && date === today && !(folderScreen && !collectionMode) && !selecting && !folderId && !query;"), 'as todayHere reads it');
+  assert(space.includes('&& programIsWaitTitle(row.task.title))) : occurrenceResult.rows;'), 'listed once, in 다시 확인할 일');
+  assert(space.includes("? moveProgramTaskLocation(current, { ...base(current), taskId: row.taskId, documentId: row.docId, target: { kind: 'date', date: tomorrow } })"), 'a line moves to tomorrow\'s section');
+});
