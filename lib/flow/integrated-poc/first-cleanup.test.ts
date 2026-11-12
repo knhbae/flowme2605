@@ -3,7 +3,9 @@ import test from 'node:test';
 import { programClone, type ProgramData, type ProgramTransition } from './contract';
 import { createProgramData } from './program-data';
 import { createProgramDocument } from './private-space';
-import { closeProgramAlreadyContinued, programAlreadyContinuedPlan } from './first-cleanup';
+import { closeProgramAlreadyContinued, programAlreadyContinuedPlan, programFirstCleanupBefore, programFirstCleanupProof, programStalePlan, PROGRAM_TRASH_DOCUMENT_ID, restoreProgramFirstCleanup, sendProgramStaleTasks } from './first-cleanup';
+import { planProgramCarryover } from './carryover';
+import { programExecutionTasks } from './execution';
 import { programCarryoverBefore, programCarryoverProof, restoreProgramCarryover } from './carryover';
 import { programContinuedLines, programLostContinuations } from './continuation';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
@@ -73,4 +75,53 @@ test('W-CARRY-13: left as they are: records, an open subtask, a link, the same w
   space(trashed).documentTrash = { [page.docId]: { trashedAt: '2026-11-12T00:00:00.000Z', wasArchived: false } };
   space(trashed).archivedDocumentIds = [...space(trashed).archivedDocumentIds, page.docId];
   assert.deepEqual(programAlreadyContinuedPlan(space(trashed), TODAY), []);
+});
+
+const OLD = ['[2026-10-20]', '- /EA', '  - [ ] 오래된 일', '    - [ ] 하위', '    - 메모: 언젠가', '  - [ ] 버릴 일', '- [ ] 폴더 없는 일', '', '[2026-11-10]', '- /EA', '  - [ ] 최근 일'].join('\n');
+const NOW = '2026-11-13T09:00:00.000Z';
+
+test('W-CARRY-15·19: 2주 넘은 일 are listed; 날짜 미정 to [미정] under its folder, 휴지통 to the one 버린 할 일 document (its ids, records, owners), one save; ↶ exact', () => {
+  const { data, docId } = writing(OLD);
+  space(data).text = { ...space(data).text, progressRecords: [{ taskId: id(data, '버릴 일'), date: '2026-10-20', percent: 30 }] };
+  const plan = programStalePlan(space(data), TODAY);
+  assert.deepEqual(plan.map(line => [line.title, line.day, line.folder, line.trashable]), [['오래된 일', '2026-10-20', 'EA', true], ['버릴 일', '2026-10-20', 'EA', true], ['폴더 없는 일', '2026-10-20', '', true]]);
+  const before = programFirstCleanupBefore(space(data));
+  const sent = ok(sendProgramStaleTasks(data, { ...base(data), today: TODAY, now: NOW, lines: [
+    { lineId: id(data, '오래된 일'), choice: 'undated' }, { lineId: id(data, '버릴 일'), choice: 'trash' }, { lineId: id(data, '폴더 없는 일'), choice: 'trash' }] })).data;
+  assert.equal(sent.receipts.length, data.receipts.length + 1, 'one save');
+  assert.equal(raw(sent, docId), ['[2026-10-20]', '', '[2026-11-10]', '- /EA', '  - [ ] 최근 일', '', '[미정]', '- /EA', '  - [ ] 오래된 일', '    - [ ] 하위', '    - 메모: 언젠가'].join('\n'));
+  assert.equal(M.raw(M.getDocument(space(sent).text, PROGRAM_TRASH_DOCUMENT_ID)!), ['[2026-10-20]', '- 원래 글: 하루 기록', '- /EA', '  - [ ] 버릴 일', '- [ ] 폴더 없는 일'].join('\n'));
+  assert.equal(M.getDocument(space(sent).text, PROGRAM_TRASH_DOCUMENT_ID)!.lines.find(line => line.text.endsWith('버릴 일'))!.id, id(data, '버릴 일'), 'the same line id');
+  assert.deepEqual(space(sent).text.progressRecords, space(data).text.progressRecords, 'its record follows the id');
+  assert(space(sent).documentTrash?.[PROGRAM_TRASH_DOCUMENT_ID] && space(sent).archivedDocumentIds.includes(PROGRAM_TRASH_DOCUMENT_ID), 'the document is in 휴지통');
+  // Out of every list: 오늘's past rows and the carryover plan.
+  const past = programExecutionTasks(space(sent), { period: 'today', date: TODAY }).map(task => task.title);
+  assert(!past.includes('버릴 일') && !past.includes('폴더 없는 일'), past.join(','));
+  assert(!planProgramCarryover(space(sent), TODAY).lines.some(line => [id(data, '버릴 일'), id(data, '폴더 없는 일')].includes(line.taskId)));
+  assert.deepEqual(programStalePlan(space(sent), TODAY), [], 'nothing left to list');
+  // ↶ exactly, the 휴지통 document and its state with it.
+  const back = ok(restoreProgramFirstCleanup(sent, { ...base(sent), before, after: programFirstCleanupProof(space(sent)) })).data;
+  assert.deepEqual(space(back).text, space(data).text);
+  assert.equal(space(back).documentTrash, undefined); assert.deepEqual(space(back).archivedDocumentIds, space(data).archivedDocumentIds);
+});
+
+test('W-CARRY-15·19: a later send to 휴지통 of the same day and document writes its folder line once; a linked task cannot go there; recent or touched tasks are not listed', () => {
+  const { data, docId } = writing(OLD);
+  const first = ok(sendProgramStaleTasks(data, { ...base(data), today: TODAY, now: NOW, lines: [{ lineId: id(data, '버릴 일'), choice: 'trash' }] })).data;
+  const second = ok(sendProgramStaleTasks(first, { ...base(first), today: TODAY, now: NOW, lines: [{ lineId: id(first, '오래된 일'), choice: 'trash' }] })).data;
+  assert.equal(M.raw(M.getDocument(space(second).text, PROGRAM_TRASH_DOCUMENT_ID)!), ['[2026-10-20]', '- 원래 글: 하루 기록', '- /EA', '  - [ ] 버릴 일', '  - [ ] 오래된 일', '    - [ ] 하위', '    - 메모: 언젠가'].join('\n'));
+  void docId;
+  // A linked task: 날짜 미정 only.
+  let linked = writing(OLD, '연결 글').data;
+  const refs = writing('[2026-11-12]\n- 참조', '참조 글', linked); linked = refs.data;
+  space(linked).text = M.linkTask(space(linked).text, refs.docId, 2, id(linked, '폴더 없는 일'));
+  const entry = programStalePlan(space(linked), TODAY).find(line => line.title === '폴더 없는 일')!;
+  assert.equal(entry.trashable, false);
+  const refused = sendProgramStaleTasks(linked, { ...base(linked), today: TODAY, now: NOW, lines: [{ lineId: entry.lineId, choice: 'trash' }] });
+  assert(!refused.ok && refused.reason === 'conflict');
+  // A record after its day (touched since) keeps it out; so does a day within 14 days.
+  const touched = programClone(data);
+  space(touched).text = { ...space(touched).text, progressRecords: [{ taskId: id(touched, '오래된 일'), date: '2026-11-01', percent: 20 }] };
+  assert(!programStalePlan(space(touched), TODAY).some(line => line.title === '오래된 일'));
+  assert(!programStalePlan(space(data), TODAY).some(line => line.title === '최근 일'));
 });
