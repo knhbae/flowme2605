@@ -2375,7 +2375,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const social = programTaskDateMovesSocial(space, moves);
     datesBusy.current = true; setDatesPending(true); setSelectNotice(null);
     try {
-      const result = await countedMutate('날짜 한꺼번에 바꾸기', current => { const next = moveProgramTaskDates(current, { actorId, requestId, moves }); if (next.ok) { undo = programTaskDateUndo(current.spaces[actorId], next.data.spaces[actorId], moves); undoLines = social ? null : programTaskDateUndoLines(current.spaces[actorId], undo); } return next; },
+      const result = await countedMutate('날짜 한꺼번에 바꾸기', current => { const next = moveProgramTaskDates(current, { actorId, requestId, moves }); if (next.ok) { undo = programTaskDateUndo(current.spaces[actorId], next.data.spaces[actorId], moves); undoLines = social ? null : programTaskDateUndoLines(current.spaces[actorId], next.data.spaces[actorId], undo); } return next; },
         { history: true, awaitAutomaticRead: true, ...(social ? { alphaSocial: { type: 'private-task-dates' as const, moves } } : {}) });
       if (result.ok) {
         if (selectingNow.current) stopSelecting();
@@ -3508,7 +3508,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     datesBusy.current = true; setDatesPending(true);
     try {
       const result = await countedMutate('Flow 단계 함께 옮기기', state => { const next = moveProgramTaskDates(state, { actorId, requestId, moves, ...(timeChange ? { time: timeChange } : {}) });
-        if (next.ok) { undo = programTaskDateUndo(state.spaces[actorId], next.data.spaces[actorId], moves); undoLines = social ? null : programTaskDateUndoLines(state.spaces[actorId], undo); } return next; },
+        if (next.ok) { undo = programTaskDateUndo(state.spaces[actorId], next.data.spaces[actorId], moves); undoLines = social ? null : programTaskDateUndoLines(state.spaces[actorId], next.data.spaces[actorId], undo); } return next; },
         { history: true, awaitAutomaticRead: true, ...(social ? { alphaSocial: { type: 'private-task-dates' as const, moves } } : {}) });
       if (result.ok) {
         setTaskNotice(null); setOrderNotice(null);

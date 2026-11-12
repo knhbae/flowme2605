@@ -1,7 +1,7 @@
 import { programFailure, type ProgramData, type ProgramPrivateSpace, type ProgramTransition } from './contract';
 import { patchProgramTask, transitionProgramPrivateSpace } from './private-space';
 import { programSeriesMetadata } from './recurrence-target';
-import { textWorkspaceModel as M, type TextDocument, type TextRow, type TextTask } from './text-workspace';
+import { textWorkspaceModel as M, type TextRow, type TextTask } from './text-workspace';
 import { programShiftDate, programTaskProgress } from './execution';
 import { programCalendarDate } from './date-label';
 import { ALPHA_TASK_DATE_MOVE_LIMIT, isAlphaTaskDateMoves, type AlphaTaskDateMove } from './alpha-social/contract';
@@ -157,37 +157,38 @@ export function moveProgramTaskDates(data: ProgramData, input: { actorId: string
 /** The time set with a list's dates (P2-2): one moved task's new time. */
 export type ProgramTaskDateTime = { taskId: string; time: string };
 
-/** Codex f12a review P1 (11/12): what 되돌리기 puts back for each task of a list with no copy's task: its lines exactly as
- *  they were before the move: a 날짜 line there or not, with its words, place and line ID, and a time set with the move. */
-export type ProgramTaskDateLines = { taskId: string; lines: { id: string; text: string }[] };
-/** A task's lines (the task and the lines under it, as its state token reads them), in the document holding it. */
-function programTaskBlock(space: ProgramPrivateSpace, taskId: string): { doc: TextDocument; at: number; end: number } | null {
-  for (const doc of [...space.text.documents, ...space.text.flows]) {
-    const at = doc.lines.findIndex(line => line.id === taskId);
-    if (at < 0) continue;
-    const row = M.parseDocument(doc, space.text).rows[at];
-    return { doc, at, end: row?.subtreeEndIndex ?? at + 1 };
-  }
-  return null;
-}
-/** The lines of each task 되돌리기 moves back, read in the space the move applied to (`before`). */
-export function programTaskDateUndoLines(before: ProgramPrivateSpace, undo: readonly ProgramTaskDateMove[]): ProgramTaskDateLines[] | null {
+/** Codex f12a review P1 (11/12): what 되돌리기 puts back for a list with no copy's task — exactly the writing the move found:
+ *  a 날짜 line there or not, with its words, place and line ID, and a time set with the move.
+ *  Merged with Redesign 3 (11/12, integ-redesign4): a move now takes a task's lines under its new day's heading (a new
+ *  heading with a blank line before it), so the lines cannot come back in place. 되돌리기 puts back each document the list
+ *  moved lines in, as the move found it (`before`), only while that document is still exactly as the move left it
+ *  (`after`); a save in another document in between does not block it. Both are read from the save itself. */
+export type ProgramTaskDateLines = { documentId: string; before: { id: string; text: string }[]; after: { id: string; text: string }[] };
+const lineCopy = (lines: readonly { id: string; text: string }[]) => lines.map(line => ({ id: line.id, text: line.text }));
+/** The documents 되돌리기 puts back: those holding the moved tasks, before and after the move (null when one is not found
+ *  in the same document on both sides). */
+export function programTaskDateUndoLines(before: ProgramPrivateSpace, after: ProgramPrivateSpace, undo: readonly ProgramTaskDateMove[]): ProgramTaskDateLines[] | null {
+  const docs = (space: ProgramPrivateSpace) => [...space.text.documents, ...space.text.flows];
   const out: ProgramTaskDateLines[] = [];
   for (const move of undo) {
-    const block = programTaskBlock(before, move.taskId);
-    if (!block) return null;
-    out.push({ taskId: move.taskId, lines: block.doc.lines.slice(block.at, block.end).map(line => ({ id: line.id, text: line.text })) });
+    const was = docs(before).find(doc => doc.lines.some(line => line.id === move.taskId));
+    const now = docs(after).find(doc => doc.lines.some(line => line.id === move.taskId));
+    if (!was || !now || was.id !== now.id) return null;
+    if (!out.some(entry => entry.documentId === was.id)) out.push({ documentId: was.id, before: lineCopy(was.lines), after: lineCopy(now.lines) });
   }
   return out;
 }
-/** 되돌리기 of a list with no copy's task (P1): each task's lines back exactly as before the move. The date command alone
- *  cannot: a 날짜 line equal to its day heading's date is dropped by it (Core3 P3b), also one written before the move.
- *  Each task must still be exactly as the move left it (its date, time and state token, as the date command checks); a
- *  save elsewhere in between does not block it. A task inside another undone task's lines comes back with them. Its
- *  receipt is the date command's (kind and moves). A list with a copy's task keeps the date command (the server runs it). */
+/** 되돌리기 of a list with no copy's task (P1): its documents' writing back exactly as before the move. The date command
+ *  alone cannot: a 날짜 line equal to its day heading's date is dropped by it (Core3 P3b), and a moved line would go to
+ *  the end of its old day. Each task must still be exactly as the move left it (its date, time and state token, as the
+ *  date command checks), and each document exactly as the move left it; a save in another document does not block it.
+ *  Its receipt is the date command's (kind and moves). A list with a copy's task keeps the date command (the server runs
+ *  it). */
 export function restoreProgramTaskDates(data: ProgramData, input: { actorId: string; requestId: string; moves: ProgramTaskDateMove[]; lines: ProgramTaskDateLines[] }): ProgramTransition<string> {
-  if (!isAlphaTaskDateMoves(input.moves) || !Object.hasOwn(data.spaces, input.actorId) || input.lines.length !== input.moves.length
-    || input.moves.some((move, index) => input.lines[index]?.taskId !== move.taskId || !input.lines[index].lines.length || input.lines[index].lines[0].id !== move.taskId)) return programFailure(data, 'invalid');
+  const shaped = (lines: unknown) => Array.isArray(lines) && lines.every(line => !!line && typeof line.id === 'string' && typeof line.text === 'string');
+  if (!isAlphaTaskDateMoves(input.moves) || !Object.hasOwn(data.spaces, input.actorId) || !Array.isArray(input.lines) || !input.lines.length
+    || input.lines.some(entry => typeof entry?.documentId !== 'string' || !shaped(entry.before) || !shaped(entry.after))
+    || input.moves.some(move => !input.lines.some(entry => entry.after.some(line => line.id === move.taskId)))) return programFailure(data, 'invalid');
   const current = data.spaces[input.actorId];
   return transitionProgramPrivateSpace(data, { actorId: input.actorId, requestId: input.requestId, expectedSpace: current }, 'private-task-dates', { moves: input.moves }, space => {
     const tasks = M.tasks(space.text);
@@ -204,20 +205,20 @@ export function restoreProgramTaskDates(data: ProgramData, input: { actorId: str
         || move.expected.state !== undefined && programTaskDateState(space, move.taskId) !== move.expected.state
         || now.done || M.currentProgress(space.text, move.taskId) === 100) return { result: move.taskId, reason: 'conflict' };
     }
-    const blocks = input.moves.map((move, index) => ({ block: programTaskBlock(space, move.taskId)!, lines: input.lines[index].lines }));
-    const inside = (a: { doc: TextDocument; at: number; end: number }, b: { doc: TextDocument; at: number; end: number }) =>
-      a !== b && a.doc === b.doc && b.at <= a.at && a.end <= b.end && (b.at < a.at || a.end < b.end);
-    const outer = blocks.filter(entry => !blocks.some(other => inside(entry.block, other.block)));
-    for (const doc of new Set(outer.map(entry => entry.block.doc))) {
-      const lines = doc.lines.slice();
-      // From the bottom up, so each block's place is still where it was read.
-      for (const entry of outer.filter(item => item.block.doc === doc).sort((a, b) => b.block.at - a.block.at)) {
-        lines.splice(entry.block.at, entry.block.end - entry.block.at, ...entry.lines.map(line => ({ id: line.id, text: line.text })));
-      }
-      space.text = { ...space.text, documents: space.text.documents.map(item => item === doc ? { ...item, lines } : item), flows: space.text.flows.map(item => item === doc ? { ...item, lines } : item) };
+    const docs = [...space.text.documents, ...space.text.flows];
+    for (const entry of input.lines) {
+      const doc = docs.find(item => item.id === entry.documentId);
+      if (!doc) return { result: input.moves[0].taskId, reason: 'missing' };
+      // Anything changed in it since the move (a line edited, added or taken away): nothing comes back.
+      if (doc.lines.length !== entry.after.length || doc.lines.some((line, index) => line.id !== entry.after[index].id || line.text !== entry.after[index].text))
+        return { result: input.moves[0].taskId, reason: 'conflict' };
     }
-    const back = M.tasks(space.text);
-    if (input.moves.some(move => back.find(task => task.id === move.taskId)?.date !== move.date)) return { result: input.moves[0].taskId, reason: 'conflict' };
+    const back = new Map(input.lines.map(entry => [entry.documentId, lineCopy(entry.before)] as const));
+    const next = { ...space.text, documents: space.text.documents.map(item => back.has(item.id) ? { ...item, lines: back.get(item.id)! } : item),
+      flows: space.text.flows.map(item => back.has(item.id) ? { ...item, lines: back.get(item.id)! } : item) };
+    if (!M.validate(next)) return { result: input.moves[0].taskId, reason: 'invalid' };
+    if (input.moves.some(move => M.tasks(next).find(task => task.id === move.taskId)?.date !== move.date)) return { result: input.moves[0].taskId, reason: 'conflict' };
+    space.text = next;
     return { result: input.moves[0].taskId };
   });
 }

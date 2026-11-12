@@ -31,7 +31,7 @@ function move(data: ProgramData, taskId: string, date: string | null): ProgramTa
 /** The move and its 되돌리기 as the screen makes them: the lines (no copy's task) from the very state the move applied to. */
 function moveAndRestore(data: ProgramData, moves: ProgramTaskDateMove[], time?: { taskId: string; time: string }) {
   const moved = ok(moveProgramTaskDates(data, { actorId: actor(data), requestId: `f12r-${++request}`, moves, ...(time ? { time } : {}) }));
-  const undo = programTaskDateUndo(space(data), space(moved.data), moves), lines = programTaskDateUndoLines(space(data), undo)!;
+  const undo = programTaskDateUndo(space(data), space(moved.data), moves), lines = programTaskDateUndoLines(space(data), space(moved.data), undo)!;
   return { moved: moved.data, undo, lines, restore: (from: ProgramData) => restoreProgramTaskDates(from, { actorId: actor(from), requestId: `f12r-${++request}`, moves: undo, lines }) };
 }
 
@@ -56,7 +56,8 @@ test('P1: a task without a 날짜 line still comes back without one (Core3 P3b);
   const { data, doc, task } = writing();
   const c = task(data, 'C').id;
   const first = moveAndRestore(data, [move(data, c, '2026-11-15')]);
-  assert(M.raw(doc(first.moved)).includes('- [ ] C\n  - 날짜: 2026-11-15'));
+  // Redesign 3 (merged 11/12): C goes under its new day's heading, no 날짜 line written; 되돌리기 still gives the writing back.
+  assert(M.raw(doc(first.moved)).endsWith('\n\n[2026-11-15]\n- [ ] C') && !M.raw(doc(first.moved)).includes('날짜: 2026-11-15'));
   assert.equal(M.raw(doc(ok(first.restore(first.moved)).data)), RAW);
   // B (its own 2026-11-12 line) onto the heading's day: the command drops the line; 되돌리기 brings it back with its ID.
   const b = task(data, 'B').id, lineId = doc(data).lines.find(line => line.text === '  - 날짜: 2026-11-12')!.id;
