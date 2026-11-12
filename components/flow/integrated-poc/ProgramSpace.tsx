@@ -104,6 +104,7 @@ import { programCheckpointForWritingTarget } from '@/lib/flow/integrated-poc/wri
 import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classification';
 import { commitTaskDateWithUndo, moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
 import { applyProgramProgressText, programProgressTextPlan, type ProgramProgressTextChange } from '@/lib/flow/integrated-poc/progress-text';
+import { programDueLabel } from '@/lib/flow/integrated-poc/due-date';
 import type { TaskLocationTarget } from '@/lib/flow/integrated-poc/task-location-move';
 import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
 import { programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
@@ -3217,6 +3218,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                   : (scope => scope && <><span className={styles.rowFolder}>/ {scope}</span> · </>)(rowFolderTitle(task)))(rowFlowTitle(task))}
                 {completingTaskIds.has(task.id) &&<><span className={styles.rowBusy}>{value === 100 ? '다시 열기 대기 중' : '완료 대기 중'}</span> · </>}
                 {meta.late && <><em className={styles.rowLate}>{meta.late}</em> · </>}
+                {/* Redesign 2 (W-TXT-02): its '- 마감:' as D-n; past, shown apart. */}
+                {(due => due && <><span className={due.state === 'over' ? styles.rowLate : undefined} data-row-due={due.state}>{due.label}</span> · </>)(programDueLabel(task.due, today))}
                 {[...meta.parts, ...(task.time ? [task.time] : []), ...(carryPlaces.has(task.id) ? [`${carryPlaces.get(task.id)!.place || '분류 없음'} · 분류 ${carryPlaces.get(task.id)!.count}곳`] : [])]
                   .map((part, index) => <React.Fragment key={index}>{part} · </React.Fragment>)}
                 <span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}<span className={styles.taskFolder}>{taskFolderPath(task)} / </span>{task.docTitle} →</span>
