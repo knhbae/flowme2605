@@ -105,9 +105,34 @@ test('Fable review: the conversion moves only 1-99; a [ ] line with a 100% recor
     { taskId: id(data, '하던 일'), date: '2026-11-10', percent: 100 }, { taskId: id(data, '하던 일'), date: '2026-11-11', percent: 45 }] };
   assert(M.validate(valid));
   assert.deepEqual(programProgressTextPlan({ ...space(data), text: valid }, docId).map(change => [change.title, change.after.trim()]), [['하던 일', '- [45%] 하던 일']]);
-  // Typing a closed task open again is refused while its latest record says 100 (the model's own check, unchanged).
+  // Typing a closed task open again (Codex P2-2): the text is the source, so with the edit's day it records 0 for that
+  // day; an edit without a day is still refused as before.
   const reopened = M.editTextResult(valid, docId, `[${TODAY}]\n- [ ] 다시 연 일\n- [ ] 닫은 일\n- [ ] 하던 일`, { progressDate: TODAY });
-  assert.equal(reopened.reason, 'progress-check-conflict');
+  assert.equal(reopened.reason, null);
+  assert.deepEqual(M.progressHistory(reopened.state, id(data, '닫은 일')), [{ date: '2026-11-11', percent: 100 }, { date: TODAY, percent: 0 }]);
+  assert.equal(M.currentProgress(reopened.state, id(data, '닫은 일')), 0);
+  assert.equal(M.editTextResult(valid, docId, `[${TODAY}]\n- [ ] 다시 연 일\n- [ ] 닫은 일\n- [ ] 하던 일`).reason, 'progress-check-conflict');
+});
+
+test("Codex P2-2: a box typed over a number or the other state is that value (0 or 100) on the edit's day, as a number is", () => {
+  const { data, docId, id, doc } = writing(`[${TODAY}]\n- [ ] 보고서\n- [ ] 정리`);
+  // 진행 시트 50% → [50%], then typed [ ]: the task is at 0 now, and the list does not offer [50%] again.
+  let state = ok(recordProgramTaskProgress(data, { ...base(data), taskId: id(data, '보고서'), date: TODAY, percent: 50 })).data;
+  assert.equal(M.raw(doc(state)), `[${TODAY}]\n- [50%] 보고서\n- [ ] 정리`);
+  const cleared = M.editTextResult(space(state).text, docId, `[${TODAY}]\n- [ ] 보고서\n- [ ] 정리`, { progressDate: TODAY });
+  assert.equal(cleared.reason, null);
+  assert.equal(M.currentProgress(cleared.state, id(data, '보고서')), 0);
+  assert.deepEqual(programProgressTextPlan({ ...space(state), text: cleared.state }, docId), [], 'nothing to write back');
+  // 진행 시트 100% → [x], typed [0%] (0, as typed), then [ ]: the same 0, accepted (no conflict).
+  state = ok(recordProgramTaskProgress(state, { ...base(state), taskId: id(state, '정리'), date: TODAY, percent: 100 })).data;
+  assert.equal(M.raw(doc(state)), `[${TODAY}]\n- [50%] 보고서\n- [x] 정리`);
+  const zero = M.editTextResult(space(state).text, docId, `[${TODAY}]\n- [50%] 보고서\n- [0%] 정리`, { progressDate: TODAY });
+  assert.equal(zero.reason, null); assert.equal(M.currentProgress(zero.state, id(data, '정리')), 0);
+  const box = M.editTextResult(zero.state, docId, `[${TODAY}]\n- [50%] 보고서\n- [ ] 정리`, { progressDate: TODAY });
+  assert.equal(box.reason, null); assert.equal(M.currentProgress(box.state, id(data, '정리')), 0);
+  // And [x] typed over [50%] is 100 that day (it was a conflict before).
+  const done = M.editTextResult(space(state).text, docId, `[${TODAY}]\n- [x] 보고서\n- [x] 정리`, { progressDate: TODAY });
+  assert.equal(done.reason, null); assert.equal(M.currentProgress(done.state, id(data, '보고서')), 100);
 });
 
 test('the conversion: one save of that document; the records byte for byte; 되돌리기 gives the text back byte for byte', () => {
