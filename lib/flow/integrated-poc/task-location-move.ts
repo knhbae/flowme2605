@@ -10,7 +10,8 @@ export type TaskLocationFailure = 'missing' | 'protected' | 'mixed-subtree' | 'i
   | 'duplicate-folder' | 'too-deep' | 'unsafe-position' | 'meaning-changed';
 export type TaskLocationMove = { ok: true; next: TextWorkspaceState; documentId: string; taskId: string;
   lineIds: string[]; date: string | null; folderId: string; createdFolder: boolean; declarations: number;
-  changed: boolean } | { ok: false; reason: TaskLocationFailure };
+  changed: boolean; /** Redesign 3: set when a document without date headings took the date as its 마감 (null: none). */
+  due?: string | null } | { ok: false; reason: TaskLocationFailure };
 
 export const TASK_LOCATION_FAILURE_TEXT: Record<TaskLocationFailure, string> = {
   missing: '옮길 할 일을 다시 확인해 주세요. 원문은 유지했습니다.',
@@ -57,6 +58,9 @@ export function moveTaskLocation(state: TextWorkspaceState, input: { documentId:
   const target = input.target;
   if (target.kind === 'date' && (target.date !== null && !programDate(target.date)
     || target.time !== undefined && target.time !== '' && !/^([01]\d|2[0-3]):[0-5]\d$/.test(target.time))) return fail('invalid-date');
+  // Redesign 3 (DECISION-1 끝, W-TXT-03, W-NLDATE-07): in a document without date headings a date given to a task is its
+  // 마감. The line stays where it is and no heading is made.
+  if (target.kind === 'date' && !rows.some(item => item.kind === 'date')) return dueInPlace(state, source, target);
   let folders = state.folders, folderId = target.kind === 'folder' ? target.folderId : task.scopeId, createdFolder = false;
   if (target.kind === 'new-folder') {
     const title = target.title.trim();
@@ -130,10 +134,22 @@ export function moveTaskLocation(state: TextWorkspaceState, input: { documentId:
     if (!line.text.trim() || meta.kind === 'fence' && !/^ *(?:`{3,}|~{3,})/.test(line.text)) return line;
     return { id: line.id, text: '  '.repeat(meta.depth + depth - row.depth) + line.text.trimStart() };
   });
-  const lines = [...remaining.slice(0, at), ...additions, ...moved, ...remaining.slice(at)];
+  let lines = [...remaining.slice(0, at), ...additions, ...moved, ...remaining.slice(at)], kept = bindings;
+  // 총괄 11/12 (redesign 3): a folder line the block leaves with nothing under it in its day goes in the same change
+  // (innermost first; one still holding a line stays, and so do those above it).
+  for (let up = row.parentLineId; up;) {
+    const folderRow = workingRows.find(item => item.id === up);
+    if (!folderRow) break;
+    up = folderRow.parentLineId;
+    if (folderRow.kind !== 'scope' || folderRow.scopeKind !== 'folder') continue;
+    const now = M.parseDocument({ ...workingDoc, lines }, { ...working, folders, bindings: kept, documents: working.documents.map(item => item.id === doc.id ? { ...item, lines } : item) }).rows;
+    const at = now.find(item => item.id === folderRow.id);
+    if (!at || now.slice(at.index + 1, at.subtreeEndIndex).some(item => item.kind !== 'blank')) break;
+    lines = lines.filter(line => line.id !== folderRow.id); kept = kept.filter(binding => binding.lineId !== folderRow.id);
+  }
   const taskScopes = { ...working.taskScopes }, itemScopes = { ...working.itemScopes };
   for (const id of movingIds) { if (Object.hasOwn(taskScopes, id)) taskScopes[id] = folderId; if (Object.hasOwn(itemScopes, id)) itemScopes[id] = folderId; }
-  const next: TextWorkspaceState = { ...working, folders, bindings, taskScopes, itemScopes,
+  const next: TextWorkspaceState = { ...working, folders, bindings: kept, taskScopes, itemScopes,
     documents: working.documents.map(item => item.id === doc.id ? { ...item, lines } : item) };
   if (!M.validate(next)) return fail('unsafe-position');
   const afterRows = M.rowMeta(next, doc.id), after = M.tasks(next), beforeTasks = M.tasks(state), afterById = new Map(after.map(item => [item.id, item]));
@@ -151,4 +167,29 @@ export function moveTaskLocation(state: TextWorkspaceState, input: { documentId:
     || JSON.stringify(state.progressRecords) !== JSON.stringify(next.progressRecords)) return fail('meaning-changed');
   return { ok: true, next, documentId: doc.id, taskId: task.id, lineIds: moved.map(line => line.id), date, folderId,
     createdFolder, declarations: additions.length, changed: JSON.stringify(next) !== JSON.stringify(state) };
+}
+
+/** The headless case of moveTaskLocation: its own '- 날짜:' lines go; its last '- 마감:' says the day (one is made under
+ *  its other property lines when it has none); 날짜 미정 takes the 마감 away. Nothing else changes. */
+function dueInPlace(state: TextWorkspaceState, source: NonNullable<ReturnType<typeof readTaskLocationSource>>, target: { kind: 'date'; date: string | null; time?: string }): TaskLocationMove {
+  const { doc, rows, row, task, selection } = source;
+  const own = rows.filter(item => item.kind === 'property' && item.parentLineId === task.id);
+  const dates = new Set(own.filter(item => /^ *-\s+날짜:/.test(item.text)).map(item => item.id));
+  const dues = own.filter(item => /^ *-\s+마감:/.test(item.text)), last = dues.at(-1);
+  let lines = doc.lines.filter(line => !dates.has(line.id) && !(target.date === null && dues.some(item => item.id === line.id)));
+  if (target.date !== null && last) lines = lines.map(line => line.id === last.id ? { id: line.id, text: line.text.replace(/(마감:\s*).*$/, `$1${target.date}`) } : line);
+  else if (target.date !== null) {
+    const after = [task.id, ...own.filter(item => !dates.has(item.id)).map(item => item.id)].at(-1)!, index = lines.findIndex(line => line.id === after);
+    lines = [...lines.slice(0, index + 1), { id: programId('line'), text: `${'  '.repeat(row.depth + 1)}- 마감: ${target.date}` }, ...lines.slice(index + 1)];
+  }
+  let next: TextWorkspaceState = { ...state, documents: state.documents.map(item => item.id === doc.id ? { ...item, lines } : item) };
+  if (target.time !== undefined && target.time !== (task.time ?? '')) next = M.updateTask(next, task.id, { time: target.time });
+  if (!M.validate(next)) return { ok: false, reason: 'unsafe-position' };
+  const before = new Map(M.tasks(state).map(item => [item.id, item])), after = M.tasks(next), now = after.find(item => item.id === task.id);
+  if (!now || now.date !== null || now.explicitDate || (target.date === null ? now.due !== undefined : now.due !== target.date) || after.length !== before.size
+    || after.some(item => { const was = before.get(item.id); return !was || (['docId', 'title', 'done', 'note', 'scopeId'] as const).some(key => item[key] !== was[key])
+      || item.id !== task.id && (item.date !== was.date || item.time !== was.time); })
+    || JSON.stringify(state.progressRecords) !== JSON.stringify(next.progressRecords)) return { ok: false, reason: 'meaning-changed' };
+  return { ok: true, next, documentId: doc.id, taskId: task.id, lineIds: selection.lineIds, date: null, folderId: task.scopeId,
+    createdFolder: false, declarations: 0, changed: JSON.stringify(next) !== JSON.stringify(state), due: target.date };
 }

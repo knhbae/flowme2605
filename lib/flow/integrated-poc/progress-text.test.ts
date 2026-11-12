@@ -143,14 +143,14 @@ test('changed since it was shown, or a locked document: nothing is written', () 
   assert(!locked.ok);
 });
 
-test('the screen: asked when a document opens in 쓰기, written in one save with history (↶), [되돌리기], [나중에]', () => {
+test('the screen: the account\'s one list when the app opens (W-TXT-01·03), one save with history (↶), [되돌리기], [나중에]', () => {
   const source = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r/g, '');
-  assert(source.includes("if (period !== 'documents' || !selected || progressLater.current.has(`${actorId}:${selected}`)) { setProgressAsk(null); return; }"));
-  assert(source.includes("}, [period, selected, actorId]);"), 'asked on opening, not while writing');
-  assert(source.includes("if (!await settleRecent(ask.documentId)) { setMessage('입력이 끝나면 다시 눌러 주세요.'); return; }"), 'pending input saved first');
-  assert(source.includes("const result = await run('진행률 글에 적기', current => { const next = applyProgramProgressText(current, { ...base(current), documentId: ask.documentId, changes: ask.changes });"));
+  assert(source.includes('if (programTextCleanupAsked.has(actorId)) return;'), 'asked once when the app opens');
+  assert(source.includes("for (const id of programTextCleanupDocuments(ask.plan)) if (!await settleRecent(id)) { setMessage('입력이 끝나면 다시 눌러 주세요.'); return; }"), 'pending input saved first');
+  assert(source.includes("const result = await run('글 정리', current => { const next = applyProgramTextCleanup(current, { ...base(current), plan: ask.plan, choices: ask.choices, now: new Date().toISOString() });"));
   assert(/if \(next\.ok\) \{ before = current\.spaces\[actorId\]\.text; after = next\.data\.spaces\[actorId\]\.text; \} return next; \}, true\);/.test(source), 'one save with history (↶)');
-  assert(source.includes("undoProgramTaskLocation(current, { actorId, documentId: notice.documentId, before: notice.before, after: notice.after }), true)"));
+  assert(source.includes("restoreProgramTextCleanup(current, { ...base(current), before: notice.before, after: programTextCleanupProof(notice.after) }), true)"));
+  assert(source.includes('{ask.plan.progress.length > 0 && <><h3 className={styles.dateLinesHead}>진행률 {ask.plan.progressLines}줄 · 할 일 줄에 적습니다</h3>'));
   const model = readFileSync(new URL('./vendor/text-model.cjs', import.meta.url), 'utf8').replace(/\r/g, '');
   assert(model.includes("var mark = latest.percent > 0 && latest.percent < 100 ? String(latest.percent) + '%'"));
 });

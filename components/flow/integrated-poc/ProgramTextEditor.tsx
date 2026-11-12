@@ -2256,7 +2256,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if(!moved.changed){closePanel();return;}
     if(propsRef.current.authorizeTaskLocation?.(before,moved.next)===false){setMessage('이 묶음의 연결·반복 상태가 바뀌어 옮기지 않았습니다. 원문은 유지했습니다.');return;}
     // F9 (UX ux-carry-order): '11월 13일 (금)으로 옮겼습니다', the particle by ro() (programTaskDatesMovedText).
-    const label=target.kind==='date'?programTaskDatesMovedText(1,moved.date,today()):`/ ${programFolderPath(moved.next,moved.folderId)}로 옮겼습니다`;
+    // Redesign 3: a document without date headings took the date as its 마감 (the line stayed).
+    const label=moved.due!==undefined?(moved.due?`마감을 ${programCalendarDate(moved.due,today(),false)}로 정했습니다`:'마감을 지웠습니다'):target.kind==='date'?programTaskDatesMovedText(1,moved.date,today()):`/ ${programFolderPath(moved.next,moved.folderId)}로 옮겼습니다`;
     closePanel();barDateUndo.current=null;setLocationNotice(null);
     const pending=apply(moved.next,'할 일 옮기기'),state=draftRef.current?.getState();
     if(!state||!programSame(state.working,moved.next))return;

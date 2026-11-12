@@ -19,7 +19,7 @@ export function programProgressTextMark(percent: number): string | null {
 }
 
 /** The box lines of one document whose text the latest record would change, in line order. */
-export function programProgressTextPlan(space: ProgramPrivateSpace, documentId: string): ProgramProgressTextChange[] {
+export function programProgressTextPlan(space: ProgramPrivateSpace, documentId: string, repeats?: ReadonlySet<string>): ProgramProgressTextChange[] {
   const doc = M.getDocument(space.text, documentId);
   if (!doc || programDocumentContentLock(space, documentId) !== 'active') return [];
   const latest = new Map<string, { date: string; percent: number }>();
@@ -32,7 +32,7 @@ export function programProgressTextPlan(space: ProgramPrivateSpace, documentId: 
   for (const line of doc.lines) {
     const record = latest.get(line.id), parts = TASK.exec(line.text);
     if (!record || !parts || !/^[ xX]$/.test(parts[2]) || !targets.has(line.id)) continue;
-    if (programReferenceExecutionAccess(space, line.id).kind !== 'active' || programTaskRepeatMember(space, line.id)) continue;
+    if (programReferenceExecutionAccess(space, line.id).kind !== 'active' || (repeats ? repeats.has(line.id) : programTaskRepeatMember(space, line.id))) continue;
     const mark = programProgressTextMark(record.percent);
     if (mark === null) continue;
     const after = parts[1] + mark + parts[3] + parts[4] + parts[5];

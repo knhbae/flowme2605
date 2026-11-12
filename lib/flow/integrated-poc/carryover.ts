@@ -59,7 +59,8 @@ const dateProperty = (row: TextRow) => row.kind === 'property' && /^ *-\s+날짜
  *  under a task, a progress box, under a line of that kind, tasks or held lines under it, or lines under it (a memo,
  *  say) that the line which stays does not have. */
 export type ProgramCarryoverBlock = 'repeat' | 'locked' | 'progress-complete' | 'recorded' | 'recorded-finished' | 'bound' | `linked:${string}` | `shape:${string}`;
-const own = new Set(['text', 'timelineOrders', 'executionTimelineOrders', 'position']);
+// Redesign 3: saved revisions (저장본, also the cleanup's snapshot) are copies of the past writing, not a hold on its lines.
+const own = new Set(['text', 'timelineOrders', 'executionTimelineOrders', 'position', 'draftRevisions']);
 type Shape = { block: ProgramCarryoverBlock } | { under: string; rows: TextRow[] };
 
 /** Where tasks are written: their documents' rows (each parsed once), and each task's 분류 by name. */
@@ -338,6 +339,30 @@ function filledDays(text: TextWorkspaceState, docId: string): Set<string> {
   for (const row of rows) { if (row.kind === 'date') day = row.id; else if (day && row.kind !== 'blank') filled.add(day); }
   return filled;
 }
+/** 총괄 11/12 (redesign 3): a folder line this save left with nothing under it goes, with its link (one already empty
+ *  stays). Innermost first, so a folder line holding only such lines goes too. */
+function dropEmptiedFolderLines(before: TextWorkspaceState, text: TextWorkspaceState, docIds: Iterable<string>): TextWorkspaceState {
+  for (const docId of docIds) {
+    const was = M.getDocument(before, docId);
+    if (!was) continue;
+    const wasRows = M.parseDocument(was, before).rows;
+    const held = new Set(wasRows.filter(row => row.kind === 'scope' && row.scopeKind === 'folder'
+      && wasRows.slice(row.index + 1, row.subtreeEndIndex).some(item => item.kind !== 'blank')).map(row => row.id));
+    for (let changed = true; changed;) {
+      changed = false;
+      const doc = M.getDocument(text, docId);
+      if (!doc) break;
+      const rows = M.parseDocument(doc, text).rows;
+      const empty = rows.filter(row => held.has(row.id) && row.kind === 'scope' && rows.slice(row.index + 1, row.subtreeEndIndex).every(item => item.kind === 'blank'));
+      if (!empty.length) break;
+      const gone = new Set(empty.map(row => row.id));
+      text = { ...text, bindings: text.bindings.filter(binding => !gone.has(binding.lineId)),
+        documents: text.documents.map(item => item.id === docId ? { ...item, lines: item.lines.filter(line => !gone.has(line.id)) } : item) };
+      changed = true;
+    }
+  }
+  return text;
+}
 /** A day this save emptied loses its heading and blank lines; a day already empty (written ahead, say) stays. */
 function dropEmptiedDays(before: TextWorkspaceState, text: TextWorkspaceState, docIds: Iterable<string>): TextWorkspaceState {
   for (const docId of docIds) {
@@ -386,7 +411,7 @@ export function carryProgramTasksToToday(data: ProgramData, input: ProgramPrivat
       if (next === space.text) return { result: line.taskId, reason: 'unresolved' };
       space.text = next; emptied.add(tasks.get(line.taskId)!.docId);
     }
-    space.text = dropEmptiedDays(start.text, space.text, emptied);
+    space.text = dropEmptiedDays(start.text, dropEmptiedFolderLines(start.text, space.text, emptied), emptied);
     if (!M.validate(space.text) || !programPreservesLockedDocumentContent(start, space.text) || !programPreservesSeriesMetadata(start, space.text)
       || !programPreservesLegacyQualityHold(start, space.text) || !programPreservesLegacyPlanExcluded(start, space.text)) return { result: '', reason: 'unresolved' };
     // As a document's own save does: a day's hand order and the saved place forget the lines taken out.

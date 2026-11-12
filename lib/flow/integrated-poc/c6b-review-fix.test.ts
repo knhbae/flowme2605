@@ -144,9 +144,10 @@ test('rereview P2-2: parser-owned memo beyond a blank is checked for both move a
 test('rereview P2-3: ancestor and independent descendant expectations are checked before either order is applied', () => {
   let { data } = account();
   const created = ok(createProgramDocument(data, { ...base(data), title: '상위와 독립 항목' })); data = created.data;
-  space(data).text = M.editText(space(data).text, created.result, '- [ ] 상위 A\n- [ ] 독립 C');
-  const doc = M.getDocument(space(data).text, created.result)!, [a, c] = doc.lines.map(line => line.id);
-  doc.lines[1].text = '  - [ ] 독립 C';
+  // Redesign 3: under a date heading (in a document without one a date is the task's 마감, W-TXT-03).
+  space(data).text = M.editText(space(data).text, created.result, '[2026-10-29]\n- [ ] 상위 A\n- [ ] 독립 C');
+  const doc = M.getDocument(space(data).text, created.result)!, [, a, c] = doc.lines.map(line => line.id);
+  doc.lines[2].text = '  - [ ] 독립 C';
   assert(validateProgramData(data)); assert(task(data, a)); assert(task(data, c));
   assert.equal(M.rowMeta(space(data).text, created.result).find(row => row.id === c)?.isCanonical, true);
   const moveA = pick(data, a, '2026-11-02'), moveC = pick(data, c, '2026-11-03');
