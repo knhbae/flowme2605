@@ -8,10 +8,11 @@ const editor = read('../../../components/flow/integrated-poc/ProgramTextEditor.t
 const space = read('../../../components/flow/integrated-poc/ProgramSpace.tsx');
 const alpha = read('../../../components/flow/integrated-poc/AlphaWorkspace.tsx');
 
-test('W-NLDATE-07: in a document without date heads the F7 chip only adds the date; elsewhere the ⋮ date path', () => {
+test('W-NLDATE-07 (redesign 3): the F7 chip takes the ⋮ date path in every document', () => {
   const accept = editor.slice(editor.indexOf('async function acceptDateSuggestion('), editor.indexOf('function freshNoticeHolds('));
-  assert(accept.includes("const headless = !M.rowMeta(before.working, p.docId).some(item => item.kind === 'date');"));
-  assert(accept.includes("const done = headless && target && !accessFor(candidate.lineId)?.reason ? applyDateOnly(target, candidate.date, task.time ?? '')\n      : applyDateChip(candidate.lineId, candidate.date), after = controller.getState();"));
+  // Redesign 3 (DECISION-1, 11/12): the ⋮ date path in every document; one without heads gets its day's head, no 날짜 line.
+  assert(!accept.includes('const headless'));
+  assert(accept.includes("const done = applyDateChip(candidate.lineId, candidate.date), after = controller.getState();"));
 });
 
 test('QA-int8 2-3: a repeat round finished from the band says so on the writing notice line with [되돌리기]; the same box undoes too', () => {

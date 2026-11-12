@@ -13,14 +13,14 @@ function ok<T>(result: ProgramTransition<T>) { assert(result.ok, result.ok ? '' 
 const base = (data: ProgramData) => ({ actorId: data.activeActorId, requestId: `r-${Math.random().toString(36).slice(2)}`, expectedSpace: data.spaces[data.activeActorId] });
 const space = (data: ProgramData) => data.spaces[data.activeActorId];
 const STEPS: [string, string, number, string[]][] = [['a', '발표자 선정', -21, ['인사팀 답 확인']], ['b', '발표자 공지', -14, []], ['c', '가이드 전달', -10, []], ['d', '회의실 예약', -5, []], ['e', '발표 진행', 0, []]];
-function presentation(anchor = '2026-12-21') {
+function presentation(anchor = '2026-12-21', steps = STEPS) {
   let data = createProgramData();
   data.public.flows.push({ id: 'flow-p', ownerId: 'creator-minji', currentVersionId: 'version-p', category: '일', situations: [], derivedFrom: null, archived: false });
   data.public.versions.push({ id: 'version-p', flowId: 'flow-p', number: 1, parentVersionId: null, title: '월간 발표', summary: '',
     source: { kind: 'simulated-example', label: '예시', url: null, checkedAt: null }, createdBy: 'creator-minji', createdAt: '2026-10-01T00:00:00.000Z',
-    items: STEPS.map(([id, title, days, subs]) => ({ id, title, description: '', completionCriteria: '', sourceUrl: null, schedule: { kind: 'relative' as const, days },
+    items: steps.map(([id, title, days, subs]) => ({ id, title, description: '', completionCriteria: '', sourceUrl: null, schedule: { kind: 'relative' as const, days },
       subchecks: subs.map((sub, index) => ({ id: `${id}-s${index}`, title: sub })) })) });
-  const imported = ok(importProgramPublicVersion(data, { ...base(data), versionId: 'version-p', itemIds: STEPS.map(step => step[0]), anchor }));
+  const imported = ok(importProgramPublicVersion(data, { ...base(data), versionId: 'version-p', itemIds: steps.map(step => step[0]), anchor }));
   data = programClone(imported.data);
   assert(validateProgramData(data));
   const copy = space(data).copies[0], line = (item: string) => copy.itemLines[item];
@@ -181,4 +181,32 @@ test('starting a personal run with a name: the title is the Flow name and the ru
   assert.equal(programDefaultRunName('2026-12-21'), '12월');
   assert.equal(programDefaultRunName('2027-01-03'), '1월');
   assert.equal(programDefaultRunName(''), '');
+});
+
+// Redesign 2 + F12 (총괄 11/12, W-TXT-02): '- 마감:' on the progress line. A last-day run reads its last step's 마감 as the
+// 기준일 its mark counts to; the stored anchor stays the stop for moves (W-FLOW-10), as before.
+test('마감 on the progress line: the steps carry it; a last-day run\'s mark reads its last step\'s 마감; the anchor and its stop stay', () => {
+  let { data, copy, line } = presentation();
+  const actor = data.activeActorId, raw = M.raw(M.getDocument(space(data).text, copy.documentId)!);
+  const typed = (text: string) => { const edit = M.editTextResult(space(data).text, copy.documentId, text, { folderText: true }); assert.equal(edit.reason, null); data.spaces[actor] = { ...space(data), text: edit.state }; };
+  typed(raw.replace('  - 날짜: 2026-11-30\n', '  - 날짜: 2026-11-30\n  - 마감: 2026-12-02\n').replace('  - 날짜: 2026-12-21\n', '  - 날짜: 2026-12-21\n  - 마감: 2026-12-24\n'));
+  let [run] = programFlowRuns(data, actor, '2026-12-09');
+  assert.deepEqual(run.steps.map(step => step.due), ['2026-12-02', null, null, null, '2026-12-24']);
+  assert.equal(run.next?.due, '2026-12-02');
+  assert.deepEqual([run.anchor, run.markDate, run.mark], ['2026-12-21', '2026-12-24', 'D-15']);
+  assert.deepEqual(programDeferPlan(run, line('d'), '2026-12-22', 'none').blocked?.title, '회의실 예약', 'the stop stays at the stored anchor');
+  assert.deepEqual(programDeferPlan(run, line('d'), '2026-12-21', 'none').blocked, null);
+  // An unreadable 마감 on the last step, or none: the stored anchor, as before.
+  typed(raw.replace('  - 날짜: 2026-12-21\n', '  - 날짜: 2026-12-21\n  - 마감: 다음 주\n'));
+  [run] = programFlowRuns(data, actor, '2026-12-09');
+  assert.deepEqual([run.steps.at(-1)!.due, run.markDate, run.mark], [null, '2026-12-21', 'D-12']);
+  typed(raw);
+  [run] = programFlowRuns(data, actor, '2026-12-09');
+  assert.deepEqual([run.markDate, run.mark], ['2026-12-21', 'D-12']);
+  // A first-day run counts its days from its anchor; its last step's 마감 does not change that.
+  ({ data, copy } = presentation('2026-12-08', [['a', '시작', 0, []], ['b', '중간', 3, []], ['c', '끝', 7, []]]));
+  const first = M.raw(M.getDocument(space(data).text, copy.documentId)!);
+  typed(first.replace('  - 날짜: 2026-12-15\n', '  - 날짜: 2026-12-15\n  - 마감: 2026-12-20\n'));
+  [run] = programFlowRuns(data, actor, '2026-12-10');
+  assert.deepEqual([run.basis, run.steps.at(-1)!.due, run.markDate, run.mark], ['first', '2026-12-20', '2026-12-08', '3일째']);
 });

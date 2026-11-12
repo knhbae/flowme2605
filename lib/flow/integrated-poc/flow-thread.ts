@@ -1,6 +1,7 @@
 import type { ProgramPrivateSpace } from './contract';
 import { programDate } from './program-data';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
+import { programIsWaitTitle } from './wait-title';
 
 /** F6-B2 (11/9, 방향 B): the Flow 실 — a Flow's shape as dots on one line. A dot for each distinct day of its dated items,
  *  placed by the days between them (0 to 1); `done` dots from the start are filled (the line runs to the next one). */
@@ -20,7 +21,8 @@ export function programThreadPoints(days: readonly number[]): number[] {
 /** One Flow document of mine (an imported Flow's copy): its tasks' days as the dots, the leading days whose tasks are all
  *  done filled, and how many of its tasks are done of all (undated ones counted too). */
 export function programDocumentThread(text: TextWorkspaceState, documentId: string): ProgramFlowThreadShape & { doneTasks: number; total: number } {
-  const tasks = M.tasks(text).filter(task => task.docId === documentId);
+  // W-FLOW-07 · W-TXT-09: a '답 확인:' line is no step of the Flow (not in its n/m or its thread).
+  const tasks = M.tasks(text).filter(task => task.docId === documentId && !programIsWaitTitle(task.title));
   const dated = tasks.flatMap(task => { const day = task.date ?? task.groupDate; return day && programDate(day) ? [{ day, done: task.done }] : []; });
   const days = [...new Set(dated.map(row => row.day))].sort();
   let done = 0;

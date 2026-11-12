@@ -462,6 +462,8 @@
 .recoveryToast button:last-child { background: var(--flowme-b-on-ink); color: var(--flowme-b-primary); }
 .recoveryToast button:focus-visible { outline: 2px solid var(--flowme-b-on-ink); outline-offset: 2px; }
 @media (max-width: 700px) { .recoveryToast { right: 16px; left: 16px; width: auto; bottom: calc(68px + env(safe-area-inset-bottom) + 12px); } }
+/* QA 11/12 (390): in the 복구함 sheet the notice is the sheet's first row, in its flow (never over its [닫기]). */
+.recoveryToast.recoveryToastInSheet { position: static; z-index: auto; width: auto; box-shadow: none; }
 .documentRecovery { margin: 2px 0 6px; }
 .documentRecovery > button { min-height: 44px; margin: -6px 0; padding: 0 4px; border: 0; background: transparent; color: var(--flowme-b-warning-ink); font-size: 13px; font-weight: 600; cursor: pointer; }
 /* P1 fix (11/8): the line leaves with the title row while the keyboard is up (the writing focus mode). */

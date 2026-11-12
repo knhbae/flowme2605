@@ -84,7 +84,7 @@ test('N11b: 날짜 미정, 지우기 and taking a finished task up again, in one
   assert.deepEqual(rows(done.data, 'undated'), ['세차 예약']);
   const text = raw(done.data, docId);
   assert(!text.includes('은행 서류'), 'every copy of the deleted task is gone');
-  assert(text.includes('- [ ] 세차 예약\n  - 날짜: 미정'), 'the one kept line says 날짜 미정');
+  assert(text.includes('[미정]\n- [ ] 세차 예약'), 'the one kept line goes under [미정] (redesign 3: no 날짜 line)');
   assert.equal(text.split('\n').filter(line => line === '- [ ] 세차 예약').length, 1);
   assert(validateProgramData(done.data));
   const undone = ok(restoreProgramCarryover(done.data, { ...base(done.data), before: programCarryoverBefore(space(data)), after: programCarryoverProof(space(done.data)) }));
@@ -100,7 +100,8 @@ test('N11b: deleting takes a memo with its line, but never a recorded copy; a fo
   // One of the two lines deleted takes a memo along: the sheet says '메모 1개 함께 지움' before saving.
   assert.deepEqual({ dropped: counted.dropped, droppedUnder: counted.droppedUnder, blocked: counted.blocked }, { dropped: 2, droppedUnder: { memo: 1, check: 0, other: 0 }, blocked: { recorded: 1 } });
   const done = ok(apply(data, new Map([[item.kind, 'delete']])));
-  assert.equal(raw(done.data, start.docId), '[2026-11-03]\n- [ ] 영어', 'the memo went with its line; the recorded copy stays where it was');
+  // Redesign 1 (11/12): its 20% record is in its text ([20%]).
+  assert.equal(raw(done.data, start.docId), '[2026-11-03]\n- [20%] 영어', 'the memo went with its line; the recorded copy stays where it was');
   // One 되돌리기 brings the line and its memo back, byte for byte.
   const undone = ok(restoreProgramCarryover(done.data, { ...base(done.data), before: programCarryoverBefore(space(data)), after: programCarryoverProof(space(done.data)) }));
   assert.equal(raw(undone.data, start.docId), raw(data, start.docId));

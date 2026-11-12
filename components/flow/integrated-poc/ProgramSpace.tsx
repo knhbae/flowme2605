@@ -25,8 +25,8 @@ import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } fr
 import { programFollowToday, programLaterToday, startProgramDayClock, type ProgramDayClock } from '@/lib/flow/integrated-poc/day-clock';
 import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, programTaskDateUndoLines, programTaskRepeatMember, restoreProgramTaskDates, type ProgramTaskDateLines, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
-import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
-import { programCalendarDate, programDaysBetween } from '@/lib/flow/integrated-poc/date-label';
+import { programDayCount, programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
+import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
 import { timeRo } from '@/lib/flow/integrated-poc/number-particle';
 import { programFirstOfficialFlows } from '@/lib/flow/integrated-poc/first-flows';
 import { useAlphaOfficialActors } from './AlphaOfficialActors';
@@ -60,7 +60,7 @@ import { ProgramDocumentProvenance } from './ProgramDocumentProvenance';
 import { ProgramPersonalAuthoring } from './ProgramPersonalAuthoring';
 import { programRowPatchEnabled } from '@/lib/flow/integrated-poc/typing-row-patch';
 import { applyProgramParseCache } from '@/lib/flow/integrated-poc/typing-parse-cache';
-import { PROGRAM_DAY_CLOSE_HOUR, programDeferPlan, programFlowRuns, programRechecks, readProgramDeferChoice, writeProgramDeferChoice,
+import { PROGRAM_DAY_CLOSE_HOUR, programDeferPlan, programFlowRuns, programRechecks, programTaskHasEveningRecord, readProgramDeferChoice, writeProgramDeferChoice,
   type ProgramDeferMode, type ProgramDeferPlan, type ProgramFlowRun, type ProgramRecheck } from '@/lib/flow/integrated-poc/flow-run-progress';
 import { ProgramFlowRuns, ProgramRechecks } from './ProgramFlowRuns';
 import { ProgramDeferAsk } from './ProgramDeferAsk';
@@ -110,6 +110,14 @@ import { createPendingProgramSourceNavigation } from '@/lib/flow/integrated-poc/
 import { programCheckpointForWritingTarget } from '@/lib/flow/integrated-poc/writing-navigation';
 import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classification';
 import { commitTaskDateWithUndo, moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
+import { programDateLineDefaults, programDateLineOutcomes, type ProgramDateLineChoice, type ProgramDateLineChoices } from '@/lib/flow/integrated-poc/date-property-migration';
+import { programContinuationStarts } from '@/lib/flow/integrated-poc/continuation';
+import { applyProgramTextCleanup, programCleanupArchiveDocument, programCleanupArchiveStamp, programCleanupWhen, programTextCleanupDocuments, programTextCleanupPlan, restoreProgramTextCleanup, type ProgramTextCleanupPlan } from '@/lib/flow/integrated-poc/text-cleanup';
+// 총괄 11/12: the words when a restore is refused because a changed document was changed again since.
+const PROGRAM_CLEANUP_CHANGED = "전환 뒤 바뀐 글이 있어 자동으로 되돌릴 수 없습니다. 보관함의 '전환 전 원문'에서 필요한 부분을 옮겨 쓰세요";
+
+import { programDueLabel } from '@/lib/flow/integrated-poc/due-date';
+import { programIsWaitTitle, programWaitStartable, startProgramWait } from '@/lib/flow/integrated-poc/wait-line';
 import type { TaskLocationTarget } from '@/lib/flow/integrated-poc/task-location-move';
 import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
 import { programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
@@ -118,7 +126,7 @@ import { ProgramTaskMoveContext } from './task-move-context';
 import { programCopyHeader } from '@/lib/flow/integrated-poc/program-copy-header';
 import { programImportTargets } from '@/lib/flow/integrated-poc/program-import-links';
 import { programDateHeadIndex } from '@/lib/flow/integrated-poc/input-bar';
-import { keepProgramMoveTraces, programMoveTrace, programMoveTraceKey } from '@/lib/flow/integrated-poc/task-move-trace';
+import { keepProgramMoveTraces, programMoveTraceKey } from '@/lib/flow/integrated-poc/task-move-trace';
 
 export { programMobileWritingKeyboardOpen, useProgramMobileWritingChrome } from './useProgramMobileWritingChrome';
 
@@ -316,12 +324,17 @@ function useProgramDayClock(hostToday: string): { today: string; hour: number } 
   return { today: programLaterToday(hostToday, clock?.date ?? null), hour: clock?.hour ?? new Date().getHours() };
 }
 
+/** Redesign 1 + 3: the accounts asked about their writing cleanup in this page load (an app open asks once). */
+const programTextCleanupAsked = new Set<string>();
+
 export function ProgramSpace(props: ProgramSpaceProps) {
   const dayClock = useProgramDayClock(props.today);
   const { data } = props, today = dayClock.today, actorId = data.activeActorId, space = data.spaces[actorId];
   // typelag (11/11): the tasks of the saved text, read once per text (the screen draws again at every key; the band
   // asked them again for each of its rows). Read only.
   const textTasks = useMemo(() => M.tasks(space.text), [space.text]);
+  // Redesign 4: 'n일째' counts from the day a task's 이어감 chain began (총괄 11/12).
+  const continuationStarts = useMemo(() => programContinuationStarts(space.text), [space.text]);
   // 첫인상 (11/7): read here, not inside a branch; empty unless the official list was read (Alpha only).
   const officialActors = useAlphaOfficialActors();
   // C6a review: every save of the space goes through here. Each is counted while it waits (고르기 does not start during
@@ -425,6 +438,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const collectionMode = props.documentCollections;
   const [selected, setSelected] = useState(() => initialProgramDocumentId(props, space));
   const [opened, setOpened] = useState<string[]>(selected ? [selected] : []);
+  // Redesign 1 + 3 (W-TXT-01·03, 총괄 11/12): the account's writing brought to the new rules once (progress into [n%], the
+  // '- 날짜:' lines), as one list asked when the app opens. [바꾸기]: a snapshot, then one save; [되돌리기]: one save back.
+  // [나중에]: asked again the next time the app opens (a tab change does not ask).
+  const [cleanupAsk, setCleanupAsk] = useState<{ actorId: string; plan: ProgramTextCleanupPlan; choices: ProgramDateLineChoices } | null>(null);
+  const cleanupDialog = useRef<HTMLDialogElement>(null), [cleanupPending, setCleanupPending] = useState(false);
+  const [cleanupNotice, setCleanupNotice] = useState<{ actorId: string; documents: number; stamp: string; undone?: boolean; refused?: string } | null>(null);
   const [detail, setDetail] = useState<Detail>(null), [message, setMessage] = useState('');
   const [writingNotice, setWritingNotice] = useState<{ actorId: string; documentId: string; text: string } | null>(null);
   const [viewChangeNotice, setViewChangeNotice] = useState<{ actorId: string; reason: 'composition' | 'recurrence' | 'saving' | 'save-failed' | 'pending' } | null>(null);
@@ -827,6 +846,62 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (dirty.current[id] && !await saveRequests.current[id]?.()) return false;
     return !dirty.current[id];
   }
+  // Redesign 1 + 3: asked once when the app opens (this page load), for the account as it is then.
+  useEffect(() => {
+    if (programTextCleanupAsked.has(actorId)) return;
+    const current = dataRef.current.spaces[actorId];
+    if (!current) return;
+    programTextCleanupAsked.add(actorId);
+    const plan = programTextCleanupPlan(current);
+    if (plan) setCleanupAsk({ actorId, plan, choices: programDateLineDefaults(plan.dates) });
+  }, [actorId]);
+  useEffect(() => {
+    const sheet = cleanupDialog.current;
+    if (!sheet) return;
+    if (cleanupAsk && !sheet.open) sheet.showModal(); else if (!cleanupAsk && sheet.open) sheet.close();
+  }, [cleanupAsk]);
+  async function writeCleanup() {
+    const ask = cleanupAsk;
+    if (!ask || ask.actorId !== actorId || cleanupPending) return;
+    // Pending input in the documents it changes is saved first; a composition holds it.
+    for (const id of programTextCleanupDocuments(ask.plan)) if (!await settleRecent(id)) { setMessage('입력이 끝나면 다시 눌러 주세요.'); return; }
+    // 총괄 11/12 ①: the originals go to an archived document '전환 전 원문 · when' in the same save; 되돌리기 reads them there.
+    let stamp = '';
+    setCleanupPending(true);
+    try {
+      const result = await run('글 정리', current => { const next = applyProgramTextCleanup(current, { ...base(current), plan: ask.plan, choices: ask.choices, when: programCleanupWhen(new Date()) });
+        if (next.ok) stamp = next.result; return next; }, true);
+      setCleanupAsk(null);
+      if (!result.ok || !stamp) {
+        if (!result.ok && result.reason === 'conflict') setMessage('그사이 바뀐 글이 있어 바꾸지 않았습니다. 앱을 다시 열면 다시 보여 드립니다.');
+        else if (!result.ok && result.reason === 'limit') setMessage('원문을 보관할 자리가 없어 바꾸지 않았습니다(문서는 100개까지). 원문은 그대로입니다.');
+        else if (!result.ok && result.reason !== 'busy') setMessage(result.reason === 'unresolved' ? '옮길 수 없는 줄이 있어 바꾸지 않았습니다. 원문은 그대로입니다.' : `${programErrorMessage(result.reason)} (${result.reason})`);
+        return;
+      }
+      setCleanupNotice({ actorId, documents: programTextCleanupDocuments(ask.plan).length, stamp });
+    } finally { setCleanupPending(false); }
+  }
+  /** 되돌리기, from the notice or from the archived original itself (any visit later). 총괄 11/12: only while every changed
+   *  document is exactly as the cleanup left it; else it says so and opens the archived original to take from. */
+  async function restoreCleanup(stamp: string) {
+    if (cleanupPending) return false;
+    setCleanupPending(true);
+    try {
+      const result = await run('글 정리 되돌리기', current => restoreProgramTextCleanup(current, { ...base(current), stamp }), true);
+      const refused = result.ok ? undefined : result.reason === 'busy' ? '' : result.reason === 'missing' ? '보관 글에서 원문을 찾지 못해 되돌리지 않았습니다'
+        : result.reason === 'conflict' ? PROGRAM_CLEANUP_CHANGED
+        : result.reason === 'unresolved' ? '원문을 다시 쓸 수 없어 되돌리지 않았습니다. 지금 글은 그대로입니다' : `${programErrorMessage(result.reason)} (${result.reason})`;
+      if (refused === '') return false;
+      setCleanupNotice(current => current?.actorId === actorId && current.stamp === stamp ? { ...current, ...(refused ? { refused } : { undone: true }) } : current);
+      setMessage(refused ?? '전환 전 원문으로 되돌렸습니다.');
+      const archive = refused === PROGRAM_CLEANUP_CHANGED ? programCleanupArchiveDocument(dataRef.current.spaces[actorId], stamp) : null;
+      if (archive && archive !== selected) void openDocument(archive);
+      return !refused;
+    } finally { setCleanupPending(false); }
+  }
+  const chooseDateLine = (ownerId: string, choice: ProgramDateLineChoice) => setCleanupAsk(ask => ask && { ...ask, choices: { ...ask.choices, [ownerId]: choice } });
+  const monthDay = (date: string) => `${Number(date.slice(5, 7))}월 ${Number(date.slice(8, 10))}일`;
+  const progressMark = (text: string) => /\[[^\]]*\]/.exec(text)?.[0] ?? text;
   function rememberRecentWhole(next: Record<string, true>) {
     try { localStorage.setItem(recentWholeKey, JSON.stringify(next)); } catch { /* this visit only */ }
     setRecentWhole(next);
@@ -1049,7 +1124,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const folder = space.text.folders.find(row => row.id === folderId);
   const executionQuery = { period, date, today, folderId: collectionMode ? '' : folderId, query, includeHeld: includeHeldOccurrences, includeExcluded: includeExcludedOccurrences, page: occurrencePage };
   const occurrenceResult = useMemo(() => period === 'documents' ? { rows: [], issues: [], hasMore: false, pendingStarts: [] } : programOrderedExecutionRows(data, executionQuery), [data, period, date, today, folderId, query, includeHeldOccurrences, includeExcludedOccurrences, occurrencePage]);
-  const executionRows = occurrenceResult.rows;
+  // W-FLOW-07 · W-TXT-09: on today's own 오늘 (as todayHere reads it), an open '답 확인:' line dated by today is in '다시
+  // 확인할 일' above the list, so not a row of the list (nor the day close) too.
+  const rechecksShown = period === 'today' && date === today && !(folderScreen && !collectionMode) && !selecting && !folderId && !query;
+  const executionRows = rechecksShown ? occurrenceResult.rows.filter(row => !(row.kind === 'text-task' && !row.task.done && !!row.task.date && row.task.date <= today
+    && programIsWaitTitle(row.task.title))) : occurrenceResult.rows;
   const [emptyDaysOpen, setEmptyDaysOpen] = useState(false);
   const [addingDate, setAddingDate] = useState<string | null>(null);
   const groupAddField = useRef<HTMLInputElement | null>(null);
@@ -2296,7 +2375,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const social = programTaskDateMovesSocial(space, moves);
     datesBusy.current = true; setDatesPending(true); setSelectNotice(null);
     try {
-      const result = await countedMutate('날짜 한꺼번에 바꾸기', current => { const next = moveProgramTaskDates(current, { actorId, requestId, moves }); if (next.ok) { undo = programTaskDateUndo(current.spaces[actorId], next.data.spaces[actorId], moves); undoLines = social ? null : programTaskDateUndoLines(current.spaces[actorId], undo); } return next; },
+      const result = await countedMutate('날짜 한꺼번에 바꾸기', current => { const next = moveProgramTaskDates(current, { actorId, requestId, moves }); if (next.ok) { undo = programTaskDateUndo(current.spaces[actorId], next.data.spaces[actorId], moves); undoLines = social ? null : programTaskDateUndoLines(current.spaces[actorId], next.data.spaces[actorId], undo); } return next; },
         { history: true, awaitAutomaticRead: true, ...(social ? { alphaSocial: { type: 'private-task-dates' as const, moves } } : {}) });
       if (result.ok) {
         if (selectingNow.current) stopSelecting();
@@ -2543,13 +2622,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       const after=committed as TextWorkspaceState,changed=M.tasks(after).find(item=>item.id===taskId);
       if(!changed)return false;
       // W-MENU-27: a move to a later day (or 날짜 미정) leaves its trace in the day it left, kept on this device.
-      const trace=target.kind==='date'&&beforeCommit?programMoveTrace(beforeCommit,task.docId,taskId,changed.date??null,Date.now(),programId('trace')):null;
-      if(trace)keepProgramMoveTraces(traceStorage(),programMoveTraceKey(actorId),list=>[...list,trace],today);
+      // W-MENU-26 (총괄 11/12, redesign 3+4): a move leaves no trace on this device any more (an 이어감 line says it in the text).
       const currentView=presentation.current;
       if(dialogOwner===executionDraftOwner.current.dialog&&view.period===currentView.period&&view.date===currentView.date&&view.folderId===currentView.folderId&&view.query===currentView.query){
         if(detail)close();setTaskNotice(null);setOrderNotice(null);setDatesNotice(null);
-        setLocationNotice({actorId,documentId:task.docId,taskId,before:beforeCommit!,after,date:changed.date,folderId:changed.scopeId,kind:target.kind,traceId:trace?.id,
-          text:target.kind==='date'?programTaskDatesMovedText(1,changed.date,today):`/ ${programFolderPath(after,changed.scopeId)}로 옮겼습니다`});
+        setLocationNotice({actorId,documentId:task.docId,taskId,before:beforeCommit!,after,date:changed.date,folderId:changed.scopeId,kind:target.kind,
+          // Redesign 3: in a document without date headings the date became its 마감 (the line stayed).
+          text:target.kind==='date'&&target.date!==null&&changed.date===null&&changed.due===target.date?`마감을 ${programCalendarDate(target.date,today,false)}로 정했습니다`:target.kind==='date'?programTaskDatesMovedText(1,changed.date,today):`/ ${programFolderPath(after,changed.scopeId)}로 옮겼습니다`});
         requestAnimationFrame(()=>highlightTaskLocation(taskId));
       }
       return true;
@@ -2977,7 +3056,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     {carryPlan.first && <p className={styles.carryMeta}>{programCalendarDate(carryPlan.first, today, false)}부터{carryPlan.repeated ? ' · 같은 일이 여러 날에 있음' : ''}</p>}
     <div className={styles.carryActions}>
       {carryPlan.lines.length > 0 && <button type="button" className={styles.carryMove} disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}
-        aria-busy={carryPending || undefined} onClick={() => void carryToToday(carryPlan)}>{carryPending ? '옮기는 중…' : `오늘로 옮기기 · ${carryPlan.toToday}`}</button>}
+        aria-busy={carryPending || undefined} onClick={() => void carryToToday(carryPlan)}>{carryPending ? '이어 쓰는 중…' : `어제 남은 일 이어 쓰기 · ${carryPlan.toToday}`}</button>}
       <button type="button" className={styles.carryOne} aria-haspopup="dialog" disabled={carryPending} onClick={() => openCarrySheet()}>하나씩 정리</button>
     </div>
     {carryWriting && <small className={styles.carryNote} role="status">쓰기를 마치면 정리할 수 있습니다</small>}
@@ -3040,7 +3119,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const carryItemRow = (item: ProgramCarryoverItem, named: boolean) => {
     const choice = carryChoiceOf(item), options: ProgramCarryoverChoice[] = item.finished ? ['delete', 'today'] : ['today', 'undated', 'delete'];
     const meta = item.finished ? `${programCalendarDate(item.finished, today, false)} 끝냄 · 남은 줄 ${item.lines}`
-      : [`${Math.max(1, programDaysBetween(item.since, today))}일째`, item.lines > 1 ? `${item.lines}번 다시 씀` : '', item.today ? '오늘에도 있음' : ''].filter(Boolean).join(' · ');
+      : [`${programDayCount(item.since, today) ?? 1}일째` /* 총괄 11/12 ②, one count (Codex re-review P2-2) */, item.lines > 1 ? `${item.lines}번 다시 씀` : '', item.today ? '오늘에도 있음' : ''].filter(Boolean).join(' · ');
     return <li key={item.kind} className={styles.carryItem} data-carry-item>
       <p><span>{named ? item.place || '분류 없음' : item.title}</span><small>{meta}</small></p>
       <div className={styles.carryChoices} role="radiogroup" aria-label={`${item.title}${named ? ` · ${item.place}` : ''} 정리`}>
@@ -3235,7 +3314,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           const repeatRow = programRepeatLine(space, task.id, textTasks), repeatShown = repeatRow && (!repeatRow.block || repeatRow.block === 'done') ? repeatRow : null;
           const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
           const meta = programExecutionRowMeta({ date: task.date, done: value === 100, progress: progress?.date ? { date: progress.date, percent: progress.percent } : null, today, dated: item.dated,
-            since: task.explicitDate ? task.groupDate : null });
+            since: continuationStarts.get(task.id) ?? null });
           return <li key={entry.key} className={styles.task} data-task-id={task.id} data-done={value === 100 || undefined} data-close-row={closing() && item.kind === 'row' && value < 100 && !moving ? '' : undefined} data-flow-row={rowFlowTitle(task) ? '' : undefined} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
@@ -3251,6 +3330,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                   : (scope => scope && <><span className={styles.rowFolder}>/ {scope}</span> · </>)(rowFolderTitle(task)))(rowFlowTitle(task))}
                 {completingTaskIds.has(task.id) &&<><span className={styles.rowBusy}>{value === 100 ? '다시 열기 대기 중' : '완료 대기 중'}</span> · </>}
                 {meta.late && <><em className={styles.rowLate}>{meta.late}</em> · </>}
+                {/* Redesign 2 (W-TXT-02): its '- 마감:' as D-n; past, shown apart. */}
+                {(due => due && <><span className={due.state === 'over' ? styles.rowLate : undefined} data-row-due={due.state}>{due.label}</span> · </>)(programDueLabel(task.due, today))}
                 {[...meta.parts, ...(task.time ? [task.time] : []), ...(carryPlaces.has(task.id) ? [`${carryPlaces.get(task.id)!.place || '분류 없음'} · 분류 ${carryPlaces.get(task.id)!.count}곳`] : [])]
                   .map((part, index) => <React.Fragment key={index}>{part} · </React.Fragment>)}
                 <span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}<span className={styles.taskFolder}>{taskFolderPath(task)} / </span>{task.docTitle} →</span>
@@ -3259,10 +3340,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                 for the rest (a long press opens the date sheet); a series' occurrence keeps its own controls. */}
             {closing() && item.kind === 'row' && value < 100 && !moving && (readProgramRepeatMarker(task.title) && !repeatRow?.block
               ? <button type="button" className={styles.closeAction} data-close-action="skip" aria-label={`${programRepeatTitle(task.title)} 이번 회차 건너뛰기`} onClick={() => skipRepeatRound(task)}>건너뛰기</button>
-              : !programTaskRepeatMember(space, task.id) && <button type="button" className={styles.closeAction} data-close-action="tomorrow" aria-label={`${task.title} 내일로`}
+              : !programTaskRepeatMember(space, task.id) && (programTaskHasEveningRecord(space.text, task)
+                // W-CARRY-16 (총괄 11/12): a task with a record ([n%], a progress record, a checked subtask) is not moved in the
+                // evening; it is continued tomorrow morning (밀린 일's 이어 쓰기).
+                ? <span className={styles.closeNote} data-close-action="continue">내일 아침 이어 쓰기</span>
+                : <button type="button" className={styles.closeAction} data-close-action="tomorrow" aria-label={`${task.title} 내일로`}
                 onClick={() => { if (closeHold.current?.fired) { closeHold.current = null; return; } deferTask(task, programShiftDate(today, 1)); }}
                 onPointerDown={() => closeHoldStart(task)} onPointerUp={closeHoldCancel} onPointerLeave={closeHoldCancel} onPointerCancel={closeHoldCancel}
-                onContextMenu={event => event.preventDefault()}>내일</button>)}
+                onContextMenu={event => event.preventDefault()}>내일</button>))}
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}><ProgramIcon name="more" size={20} /></button>
@@ -3346,12 +3431,29 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (locationAvailability().blocked) { setMessage('저장을 확인한 뒤 옮겨 주세요.'); return; }
       // Its [되돌리기] puts the text back exactly as it was (a day it inherited is inherited again), only while nothing changed since.
       let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
-      const result = await run('다시 볼 날 바꾸기', current => { const next = updateProgramTask(current, { ...base(current), taskId: row.taskId, patch: { date: tomorrow } });
+      // W-TXT-09: a '답 확인:' line moves to tomorrow's section (its '- 기다림:' goes with it); a subcheck changes its day.
+      const result = await run('다시 볼 날 바꾸기', current => { const next = row.kind === 'line'
+        ? moveProgramTaskLocation(current, { ...base(current), taskId: row.taskId, documentId: row.docId, target: { kind: 'date', date: tomorrow } })
+        : updateProgramTask(current, { ...base(current), taskId: row.taskId, patch: { date: tomorrow } });
         if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
       if (!result.ok || !before || !after) return;
       const was: TextWorkspaceState = before, now: TextWorkspaceState = after;
       setFlowNotice({ text: `${row.title} · 다시 볼 날을 ${programCalendarDate(tomorrow, today, false)}로 바꿨습니다`, undo: async () =>
         (await run('다시 볼 날 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: row.docId, before: was, after: now }), true)).ok });
+    });
+  }
+  // W-FLOW-07 · W-TXT-09: 답 기다리기 — '- [ ] 답 확인: <제목>' with '- 기다림: 오늘' in the section of the day to look again,
+  // one save; its notice's [되돌리기] gives the text back exactly, only while nothing changed since.
+  function startWait(task: TextTask, recheck: string) {
+    void flowBusyWhile(task.id, async () => {
+      let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
+      const result = await run('답 기다리기', current => { const next = startProgramWait(current, { ...base(current), taskId: task.id, date: recheck, today });
+        if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
+      if (!result.ok || !before || !after) { if (!result.ok && result.reason === 'conflict') setMessage('이 일의 답 확인 줄이 이미 있습니다.'); return; }
+      const was: TextWorkspaceState = before, now: TextWorkspaceState = after;
+      close();
+      setFlowNotice({ text: `${task.title} · ${programCalendarDate(recheck, today, false)}에 답 확인 줄을 적었습니다`, undo: async () =>
+        (await run('답 기다리기 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: task.docId, before: was, after: now }), true)).ok });
     });
   }
   async function undoFlowNotice() {
@@ -3406,7 +3508,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     datesBusy.current = true; setDatesPending(true);
     try {
       const result = await countedMutate('Flow 단계 함께 옮기기', state => { const next = moveProgramTaskDates(state, { actorId, requestId, moves, ...(timeChange ? { time: timeChange } : {}) });
-        if (next.ok) { undo = programTaskDateUndo(state.spaces[actorId], next.data.spaces[actorId], moves); undoLines = social ? null : programTaskDateUndoLines(state.spaces[actorId], undo); } return next; },
+        if (next.ok) { undo = programTaskDateUndo(state.spaces[actorId], next.data.spaces[actorId], moves); undoLines = social ? null : programTaskDateUndoLines(state.spaces[actorId], next.data.spaces[actorId], undo); } return next; },
         { history: true, awaitAutomaticRead: true, ...(social ? { alphaSocial: { type: 'private-task-dates' as const, moves } } : {}) });
       if (result.ok) {
         setTaskNotice(null); setOrderNotice(null);
@@ -3455,6 +3557,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     {/* Once the arrival toast closed, its [되돌리기] stays (as long as it could before), on the copy's source line or here. */}
     {arrivalUndoAfterToast && !copyHeader && <p className={styles.importNotice} data-arrival-undo>{importCancel}</p>}
     <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice data-quiet={props.noteNoticeShown ? 'true' : undefined}>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
+    {/* 총괄 11/12 ①: an archived original ('전환 전 원문', '되돌리기 전 원문') is restored from here, any time. */}
+    {selectedDoc && selectedArchived && (stamp => stamp && <div className={styles.importNotice} data-cleanup-archive={stamp}>
+      <span role="status">새 규칙으로 바꾸기 전 원문입니다. 바꾼 직후에만 되돌릴 수 있습니다.</span>
+      <button type="button" data-cleanup-restore disabled={cleanupPending || preparingDocumentAction} aria-busy={cleanupPending || undefined} onClick={() => void restoreCleanup(stamp)}>이 원문으로 되돌리기</button></div>)(programCleanupArchiveStamp(space.text, selectedDoc.id))}
     {!selectedDoc && props.noteStatus}
     {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>
       {/* A new account starts here with no document; the title row keeps only a document's tools, so the
@@ -3490,6 +3596,43 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   return <section ref={root} className={styles.space} data-note-layout={!!props.noteHeader} data-library-open={libraryOpen} aria-label="내 공간"
     onCompositionStartCapture={() => { libraryComposing.current = true; }} onCompositionEndCapture={() => { libraryComposing.current = false; if (findBlocked.current) setTimeout(clearFindBlocked, 0); }}
     onClickCapture={guardOccurrenceDraft} onKeyDownCapture={event => { if (!['Tab', 'Shift', 'Escape'].includes(event.key)) guardOccurrenceDraft(event); }}>
+    {cleanupNotice?.actorId === actorId && <div className={styles.orderNotice} data-cleanup-notice>
+      <ProgramNoticeRow notice={{ tone: cleanupNotice.refused ? 'warn' : cleanupNotice.undone ? 'info' : 'choose', closeLabel: '알림 닫기',
+        text: cleanupNotice.refused ? cleanupNotice.refused : cleanupNotice.undone ? '글을 정리하기 전으로 되돌렸습니다' : `글 ${cleanupNotice.documents}개를 새 규칙으로 정리했습니다 · 원문은 보관함의 '전환 전 원문'에 있습니다`,
+        actions: cleanupNotice.undone || cleanupNotice.refused ? [] : [{ label: '되돌리기', run: () => void restoreCleanup(cleanupNotice.stamp) }] }} onClose={() => setCleanupNotice(null)} />
+    </div>}
+    <dialog ref={cleanupDialog} className={`${styles.findDialog} ${styles.datesSheet} ${styles.dateLinesSheet}`} aria-labelledby="program-cleanup-title" data-cleanup-sheet
+      onCancel={event => { event.preventDefault(); setCleanupAsk(null); }}>
+      {cleanupAsk && (ask => { const day = (date: string | null) => date ? programCalendarDate(date, today, false) : '날짜 미정';
+        return <>
+          <h2 id="program-cleanup-title">글을 새 규칙으로 한 번 정리합니다</h2>
+          <p className={styles.muted}>할 날은 날짜 제목 하나로 정하고, 진행률은 할 일 줄에 적습니다. 바꾸기 전 원문은 보관함의 '전환 전 원문'에 남고, 바꾼 직후에는 되돌릴 수 있습니다.</p>
+          {ask.plan.progress.length > 0 && <><h3 className={styles.dateLinesHead}>진행률 {ask.plan.progressLines}줄 · 할 일 줄에 적습니다</h3>
+            <ul className={styles.progressTextList} data-cleanup-progress>{ask.plan.progress.flatMap(doc => doc.changes.map(change => <li key={change.lineId}><span>{change.title}</span>
+              <small>{doc.title} · {progressMark(change.before)} → {progressMark(change.after)} · {programCalendarDate(change.date, today, false)} 기록</small></li>))}</ul></>}
+          {ask.plan.dates.length > 0 && <><h3 className={styles.dateLinesHead}>날짜 줄 {ask.plan.dateLines}개 · 날짜 제목으로 정리합니다</h3>
+            {ask.plan.dates.map(doc => {
+              // Codex P1-3: a subtask's line follows its parent's day as chosen (gone when it says that day, else its 마감).
+              const outcome = programDateLineOutcomes(space.text, doc, ask.choices);
+              const same = doc.items.filter(item => outcome.get(item.ownerId) === 'delete'), kept = doc.items.filter(item => outcome.get(item.ownerId) === 'keep');
+              const other = doc.items.filter(item => !same.includes(item) && !kept.includes(item));
+              return <section key={doc.documentId} className={styles.cleanupDocument} data-cleanup-document={doc.documentId}>
+                <h4>{doc.title}{doc.headless ? ' · 날짜 제목 없는 글' : ''}</h4>
+                {same.length > 0 && <p className={styles.dateLinesSame} data-date-lines-same>제목과 같은 날 · 줄만 지웁니다: {same.map(item => `${item.title} (${item.value ? monthDay(item.value) : '날짜 미정'})`).join(' · ')}</p>}
+                {kept.length > 0 && <p className={styles.dateLinesSame} data-date-lines-kept>그대로 둡니다: {kept.map(item => `${item.title} (${day(item.value)})`).join(' · ')}</p>}
+                {other.length > 0 && <ul className={styles.progressTextList}>{other.map(item => <li key={item.ownerId} data-date-line={item.ownerId}><span>{item.title}</span>
+                  <small>{doc.headless ? '날짜 제목 없는 글이라 마감으로' : item.section ? `지금 ${monthDay(item.section)} 아래` : '지금 날짜 제목 없음'} · 날짜 줄 {day(item.value)}{item.subtask && !doc.headless ? ' · 하위 할 일은 마감으로만' : ''}</small>
+                  <div className={styles.dateLineChoices} role="group" aria-label={`${item.title} 날짜 줄`}>{(item.choices.length ? item.choices : ['due' as const]).map(choice =>
+                    <button type="button" key={choice} aria-pressed={outcome.get(item.ownerId) === choice} data-date-line-choice={choice} onClick={() => chooseDateLine(item.ownerId, choice)}>
+                      {choice === 'move' ? item.value ? `${monthDay(item.value)}로 옮기기` : '날짜 미정으로 옮기기' : `마감 ${Number(item.value!.slice(5, 7))}/${Number(item.value!.slice(8, 10))}로`}</button>)}</div></li>)}</ul>}
+              </section>; })}</>}
+          <div className={styles.dateLinesButtons}>
+            <button type="button" className={styles.dateLinesLater} onClick={() => setCleanupAsk(null)}>나중에</button>
+            <button type="button" className={styles.dateLinesWrite} data-cleanup-write disabled={cleanupPending} aria-busy={cleanupPending || undefined} onClick={() => void writeCleanup()}>{cleanupPending ? '바꾸는 중…' : '바꾸기'}</button>
+          </div>
+          <p className={styles.muted}>‘나중에’를 고르면 다음에 앱을 열 때 다시 묻습니다.</p>
+        </>; })(cleanupAsk)}
+    </dialog>
     <div className={styles.contextActions}>
       <nav ref={viewMenu} className={styles.periods} aria-label="기본 이동" hidden={!!props.hostMainTabs}>{mainPeriods.map(([key, label]) => <button key={key} data-program-period={key} aria-current={mainTab === key ? 'page' : undefined}
         onClick={() => void chooseMainTab(key as ProgramMainTab)}>{key === 'all' && collectionMode ? '전체 할 일' : label}</button>)}</nav>
@@ -3594,7 +3737,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             }finally{release();}
           }:undefined}
           onUndoTaskLocation={locationNotice?.documentId===id?()=>{if(dirty.current[id])return false;void undoTaskLocation(locationNotice);return true;}:undefined}
-          moveTraceKey={programMoveTraceKey(actorId)} onRegisterSectionOrder={open => { sectionOrderOpeners.current[id] = open; }}
+          onRegisterSectionOrder={open => { sectionOrderOpeners.current[id] = open; }}
           hostNotice={bandRepeatNotice && bandRepeatNotice.actorId === actorId && bandRepeatNotice.documentId === id && selected === id
             ? { text: bandRepeatNotice.text, close: () => setBandRepeatNotice(null), repeat: true,
               action: bandRepeatNotice.check ? { label: '되돌리기', run: () => { const notice = bandRepeatNotice; if (notice.check) void undoBandRepeat(notice.taskId, notice.check); } } : null }
@@ -3893,6 +4036,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           </div>
           {props.capabilities?.taskClassification!==false&&<button type="button" disabled={detailSchedulePending||detailProgressPending||locationAvailability().blocked||readTaskLocationPolicy(space,detailTask.id).kind!=='move'} onClick={()=>setDetailFolderMove(true)}>폴더로 옮기기 · 지금 / {programFolderPath(space.text,detailTask.scopeId)}</button>}
         </section>
+        {/* W-FLOW-07 · W-TXT-09: 답 기다리기 — the day to look again; the text takes '- [ ] 답 확인: 제목' and '- 기다림: 오늘' there. */}
+        {programWaitStartable(space, detailTask.id) && <section data-task-wait aria-label="답 기다리기"><h3>답 기다리기 <small>다시 볼 날에 ‘답 확인’ 줄을 적습니다</small></h3>
+          <div className={styles.deferChips} role="group" aria-label="다시 볼 날">
+            {programLineDateChips(today).filter(chip => chip.date > today).map(chip => <button type="button" key={chip.key} data-wait-date={chip.date}
+              disabled={flowBusy.has(detailTask.id) || locationPending || detailSchedulePending || detailProgressPending} onClick={() => startWait(detailTask, chip.date)}>{chip.label}</button>)}
+          </div></section>}
         <div className={styles.detailOrigin}>
           <p className={styles.muted}>{readProgramTaskOrigin(data, detailTask).label} · {detailTask.docTitle}</p>
           <button disabled={detailSchedulePending || detailProgressPending} onClick={() => openDetailSource(detailTask.docId, detailTask.id)}>원문 열기</button>

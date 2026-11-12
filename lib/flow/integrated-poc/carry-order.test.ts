@@ -89,9 +89,11 @@ test('W-MENU-27: every way to a day keeps its trace (the editor\'s, and the host
   assert.match(editor, /if\(target\.kind==='date'\)record\.trace=rememberMove\(before,policy\.taskId,moved\.date\);/);
   // The folded view's moves are the host's: kept once, there.
   assert.match(editor, /if\(propsRef\.current\.onTaskLocation\)\{closePanel\(\);await propsRef\.current\.onTaskLocation\(policy\.taskId,target,before\);return;\}/);
-  // The host's moveTaskHere (오늘 row detail, the band's 미루기 opens it, the folded view): kept, and taken back by 되돌리기.
-  assert.match(space, /const trace=target\.kind==='date'&&beforeCommit\?programMoveTrace\(beforeCommit,task\.docId,taskId,changed\.date\?\?null,Date\.now\(\),programId\('trace'\)\):null;/);
-  assert.match(space, /if\(notice\.traceId\)keepProgramMoveTraces\(traceStorage\(\),programMoveTraceKey\(actorId\),list=>list\.filter\(entry=>entry\.id!==notice\.traceId\),today\);/);
+  // W-MENU-26 (총괄 11/12, redesign 3+4): the host keeps no trace any more and gives the editors no place to keep one, so
+  // the editor's rememberMove keeps and draws nothing (keepMoveTraces returns without a key); an 이어감 line says it.
+  assert.doesNotMatch(space, /programMoveTrace\(beforeCommit/);
+  assert.doesNotMatch(space, /moveTraceKey=\{/);
+  assert.match(editor, /const key = propsRef\.current\.moveTraceKey;\n    if \(!key\) return;/);
   // This tab's editors hear the host's moves at once.
   assert.match(editor, /window\.addEventListener\(PROGRAM_MOVE_TRACE_EVENT, here\);/);
   // Not the 밀린 일 [오늘로 옮기기] (carryToToday): its day has passed, so there is nothing to draw.
@@ -191,7 +193,8 @@ test('F9/F10 wiring: vendor trace (reading view only, never source), sheet, 진�
   const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
   const vendor = read('./vendor/text-editor.cjs'), editor = read('../../../components/flow/integrated-poc/ProgramTextEditor.tsx');
   const css = read('../../../components/flow/integrated-poc/ProgramTextEditor.module.css'), space = read('../../../components/flow/integrated-poc/ProgramSpace.tsx');
-  assert.match(vendor, /'repeatLabel', 'repeatAt', 'trace'\]/);
+  // Redesign 2 (11/12): dueDate after trace.
+  assert.match(vendor, /'repeatLabel', 'repeatAt', 'trace', 'dueDate'\]/);
   // int9: with typelag ②'s buildRow the trace is the row's last part before it is returned (full render or row patch).
   assert.match(vendor, /appendMoveTrace\(row, index, safeMeta\.trace\);\n\s+return row;/);
   assert.match(vendor, /box\.addEventListener\('click', \(event\) => event\.preventDefault\(\)\)/);

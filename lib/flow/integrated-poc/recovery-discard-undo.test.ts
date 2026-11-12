@@ -50,3 +50,20 @@ test('the 복구함: every discard goes through the undo notice; the words say w
   assert(host.includes("'저장되지 않음 · 입력은 복구함에 있습니다'"));
   assert(!host.includes("setMessage('보관 입력을 지웠습니다. 서버 자료는 그대로입니다.')"), 'one notice, not two');
 });
+
+test("총괄 11/12: a refused save's discarded input goes from the device too; in the sheet the notice is the sheet's own row", () => {
+  const host = readFileSync(new URL('../../../components/flow/integrated-poc/AlphaWorkspace.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  // The tab's refused command (read again into the 복구함 on a reload or in a new tab) is dropped as '최신 내용 열기' drops
+  // it: input kept in the 복구함 first, the saved text opened; then the 복구함's input is discarded (its 되돌리기 as before).
+  assert(host.includes("if (live?.draft?.kind === 'change-private' && !live.pending) {\n      void openLatest(() => { setMessage(''); discardDrafts('저장된 내용을 열었습니다'); })"));
+  // Run once the editors were handed over, in the session that asked; the effect's cleanup (run before the next run) never
+  // clears it (the 18:xx QA: it did, and the discard never ran).
+  assert(host.includes('const after = afterLatest.current; afterLatest.current = null;\n    if (after && after.epoch === sessionEpochRef.current) after.run();'), 'after the editors were handed over');
+  assert(host.includes('return () => { const cleanup = openLatestLock.current; openLatestLock.current = null; cleanup?.(); };'), 'the cleanup leaves it');
+  assert(host.includes('setData(next.envelope.data); openLatestLock.current = release; afterLatest.current = after ? { run: after, epoch } : null; setPresentation(value => value + 1); transferred = true;'));
+  assert(host.includes("discardRecovery({ label: '보관 입력', verb: '버렸습니다', note, port: uiRecovery.current"));
+  // QA 11/12 (390): never the screen's fixed toast over the sheet's [닫기].
+  assert(host.includes('{recoveryOpen && discardNoticeContent(true)}') && host.includes('{!recoveryOpen && discardNoticeContent(false)}'));
+  const css = readFileSync(new URL('../../../components/flow/integrated-poc/AlphaWorkspace.module.css', import.meta.url), 'utf8');
+  assert(css.includes('.recoveryToast.recoveryToastInSheet { position: static;'));
+});

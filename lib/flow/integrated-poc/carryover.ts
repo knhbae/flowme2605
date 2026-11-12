@@ -2,7 +2,9 @@ import { programClone, type ProgramData, type ProgramPrivateSpace, type ProgramT
 import { programDate } from './program-data';
 import { programSameTaskKey } from './continue-band';
 import type { ProgramOrderedExecutionRow } from './recurrence-order';
-import { patchProgramTask, transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
+import { patchProgramTask, programExecutionDocument, transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
+import { continueProgramTask, programContinuationStarts, programLostContinuations, programTaskHasRecord, reviveProgramContinuation } from './continuation';
+import { readTaskLocationPolicy } from './task-location-command';
 import { programExecutionTasks, programTaskProgress } from './execution';
 import { programStateHash, programTaskDateStates, programTaskRepeatMembers } from './task-date-move';
 import { textWorkspaceModel as M, type TextRow, type TextTask, type TextWorkspaceState } from './text-workspace';
@@ -11,15 +13,16 @@ import { programPreservesSeriesMetadata } from './recurrence-target';
 import { programPreservesLegacyQualityHold } from './legacy-map-review';
 import { programPreservesLegacyPlanExcluded } from './program-legacy-plan-target';
 
-/** N11a 밀린 일 정리 (PROPOSAL 5): the past unfinished tasks of 오늘 go to today in one save. A line stays where it was
- *  first written and gets `- 날짜: 오늘` (as C6 does), so the day it was first meant for stays in the text. Copies of one
+/** N11a 밀린 일 정리 (PROPOSAL 5): the past unfinished tasks of 오늘 go to today in one save. Redesign 3 (DECISION-1): a
+ *  line moves under today's heading with what is under it (no `- 날짜: 오늘` line); a day it leaves empty goes. Copies of one
  *  task (same words, same 분류, unfinished, nothing under them) become one line across documents, and the unfinished
  *  copies left over from a task finished later are taken out. Lines anything else points at (progress records,
  *  references, Flow or repeat sources, public copies) are never touched. */
 export const PROGRAM_CARRYOVER_LIMIT = 100;
 /** `date`: today's date; `undated`: 날짜 미정 (N11b); `remove`: a copy that says nothing a staying line does not;
  *  `drop`: a line the person chose to delete in 하나씩 정리, with what is under it (N11b); `hold`: only has to stay so. */
-export type ProgramCarryoverAction = 'date' | 'undated' | 'remove' | 'drop' | 'hold';
+/** gain (redesign 4, W-TXT-08): a `[>]` line nothing receives any more, continued again to today. */
+export type ProgramCarryoverAction = 'date' | 'undated' | 'remove' | 'drop' | 'hold' | 'again';
 /** One line of the plan with its state as the screen saw it (C6b's token). */
 export type ProgramCarryoverLine = { taskId: string; state: string; action: ProgramCarryoverAction };
 /** N11b 하나씩 정리: what the person chose for one task (all its copies) in the sheet. */
@@ -186,6 +189,11 @@ function carryoverRules(space: ProgramPrivateSpace) {
   return { touchable, untouchable, isRecorded, droppable, kindOf, labelOf, placeOf, underOf, takenAlong, takeBlock, repeat, states, rowsOf };
 }
 
+/** Codex 3rd review P2-4 (11/12): a lost `[>]` line counts as remaining work only in a document in use (not archived,
+ *  not in 휴지통); one in a code block is no line at all (programContinuedLines). */
+const programLostWork = (space: ProgramPrivateSpace, today: string) => programLostContinuations(space.text, today)
+  .filter(line => !space.archivedDocumentIds.includes(line.docId) && !space.documentTrash?.[line.docId]);
+
 /** The past unfinished tasks of 오늘 (repeat lines apart), by task (words and 분류), oldest first, and for each the
  *  lines of it up to today in any document: the newest says whether it was finished since; today's, written again. */
 function pastKinds(space: ProgramPrivateSpace, today: string, rules: ReturnType<typeof carryoverRules>) {
@@ -217,9 +225,11 @@ export function programCarryoverPlaces(space: ProgramPrivateSpace, tasks: readon
 /** N11b 하나씩 정리: the tasks of the sheet, oldest first, each with the choice the card's one press makes. */
 export function programCarryoverItems(space: ProgramPrivateSpace, today: string): ProgramCarryoverItem[] {
   if (!programDate(today)) return [];
-  const rules = carryoverRules(space);
+  const rules = carryoverRules(space), starts = programContinuationStarts(space.text);
+  // Codex re-review P2-2: since the day its 이어감 chain began, as 오늘 counts it (programDayCount).
+  const since = (task: TextTask) => { const chain = starts.get(task.id), own = firstDay(task); return chain && chain < own ? chain : own; };
   return pastKinds(space, today, rules).groups.map(({ kind, group, latest, finished, written }) => ({ kind, title: words(group[0]), place: rules.placeOf(group[0]),
-    lines: group.length, since: group.reduce((day, task) => firstDay(task) < day ? firstDay(task) : day, '9999'), finished: finished ? latest : null,
+    lines: group.length, since: group.reduce((day, task) => since(task) < day ? since(task) : day, '9999'), finished: finished ? latest : null,
     today: written.length > 0, choice: finished ? 'delete' : 'today' }));
 }
 
@@ -316,12 +326,20 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
       plan.left += size - changes.length; cut = true;
     }
     changed += taken.length - taken.filter(line => line.action === 'hold').length; plan.lines.push(...taken);
-    const moving = taken.filter(line => line.action === 'date' || line.action === 'undated');
     plan.moved += taken.filter(line => line.action === 'date').length; plan.undated += taken.filter(line => line.action === 'undated').length;
     plan.removed += taken.filter(line => line.action === 'remove').length;
-    plan.newDateLines += moving.filter(line => !group.find(task => task.id === line.taskId)?.explicitDate).length;
+    // Redesign 3: a task moves under the day's heading; no press adds a '- 날짜:' line any more (the field stays 0).
     if (finished) plan.finished++; else if (written.length) plan.today++;
     if (taken.some(line => line.action === 'date') || !finished && written.length) plan.toToday++;
+  }
+  // Redesign 4 (W-TXT-08): a `[>]` line whose receiving line is gone is remaining work again; the card's press continues it.
+  if (!choices) for (const lost of programLostWork(space, today)) {
+    const state = states(lost.lineId);
+    if (!state) continue;
+    if (cut || changed + 1 > limit) { cut = true; plan.left++; continue; }
+    plan.lines.push({ taskId: lost.lineId, state, action: 'again' }); changed++;
+    plan.count++; plan.kinds++; plan.moved++; plan.toToday++;
+    if (lost.day && (!plan.first || lost.day < plan.first)) plan.first = lost.day;
   }
   return plan;
 }
@@ -330,7 +348,7 @@ const validLines = (lines: unknown): lines is ProgramCarryoverLine[] => Array.is
   && lines.filter(line => line?.action !== 'hold').length <= PROGRAM_CARRYOVER_LIMIT
   && new Set(lines.map(line => line?.taskId)).size === lines.length
   && lines.every(line => line && typeof line.taskId === 'string' && typeof line.state === 'string' && /^[0-9a-z]{1,64}$/.test(line.state)
-    && ['date', 'undated', 'remove', 'drop', 'hold'].includes(line.action) && Object.keys(line).length === 3);
+    && ['date', 'undated', 'remove', 'drop', 'hold', 'again'].includes(line.action) && Object.keys(line).length === 3);
 
 /** Date rows of a document whose day has something written under it. */
 function filledDays(text: TextWorkspaceState, docId: string): Set<string> {
@@ -338,6 +356,31 @@ function filledDays(text: TextWorkspaceState, docId: string): Set<string> {
   let day: string | null = null;
   for (const row of rows) { if (row.kind === 'date') day = row.id; else if (day && row.kind !== 'blank') filled.add(day); }
   return filled;
+}
+/** 총괄 11/12 (redesign 3): a folder line this save left with nothing under it goes, with its link (one already empty
+ *  stays). Innermost first, so a folder line holding only such lines goes too. */
+function dropEmptiedFolderLines(before: TextWorkspaceState, text: TextWorkspaceState, docIds: Iterable<string>): TextWorkspaceState {
+  for (const docId of docIds) {
+    const was = M.getDocument(before, docId);
+    if (!was) continue;
+    const wasRows = M.parseDocument(was, before).rows;
+    const held = new Set(wasRows.filter(row => row.kind === 'scope' && row.scopeKind === 'folder'
+      && wasRows.slice(row.index + 1, row.subtreeEndIndex).some(item => item.kind !== 'blank')).map(row => row.id));
+    for (let changed = true; changed;) {
+      changed = false;
+      const doc = M.getDocument(text, docId);
+      if (!doc) break;
+      const rows = M.parseDocument(doc, text).rows;
+      // Codex P1-2 (11/12): only empty lines ('') are nothing; a line of spaces left under it keeps the folder line.
+      const empty = rows.filter(row => held.has(row.id) && row.kind === 'scope' && rows.slice(row.index + 1, row.subtreeEndIndex).every(item => item.kind === 'blank' && item.text === ''));
+      if (!empty.length) break;
+      const gone = new Set(empty.map(row => row.id));
+      text = { ...text, bindings: text.bindings.filter(binding => !gone.has(binding.lineId)),
+        documents: text.documents.map(item => item.id === docId ? { ...item, lines: item.lines.filter(line => !gone.has(line.id)) } : item) };
+      changed = true;
+    }
+  }
+  return text;
 }
 /** A day this save emptied loses its heading and blank lines; a day already empty (written ahead, say) stays. */
 function dropEmptiedDays(before: TextWorkspaceState, text: TextWorkspaceState, docIds: Iterable<string>): TextWorkspaceState {
@@ -370,30 +413,48 @@ export function carryProgramTasksToToday(data: ProgramData, input: ProgramPrivat
     const stay = input.lines.filter(line => line.action !== 'remove' && line.action !== 'drop').flatMap(line => tasks.get(line.taskId) ?? []);
     const goes = (task: TextTask) => untouchable(task) === null && !isRecorded(task) && underOf(task) !== null
       && (underOf(task) === '' || stay.some(other => other !== task && kindOf(other) === kindOf(task) && underOf(other) === underOf(task)));
+    const lost = new Map(programLostWork(start, input.today).map(line => [line.lineId, line]));
     for (const line of input.lines) {
+      if (line.action === 'again') { if (!lost.has(line.taskId)) return { result: line.taskId, reason: 'conflict' }; continue; }
       const task = tasks.get(line.taskId);
       const fits = !!task && (line.action === 'hold' || (line.action === 'remove' ? goes(task) : line.action === 'drop' ? droppable(task)
         : touchable(task) && task.date !== null && task.date < input.today));
       if (!fits) return { result: line.taskId, reason: 'conflict' };
     }
+    for (const line of input.lines.filter(line => line.action === 'again')) {
+      const continued = reviveProgramContinuation(space.text, { documentId: lost.get(line.taskId)!.docId, lineId: line.taskId, today: input.today });
+      if (!continued.ok) return { result: line.taskId, reason: 'unresolved' };
+      space.text = continued.next;
+    }
     for (const line of input.lines.filter(line => line.action === 'date' || line.action === 'undated')) {
+      // Redesign 4 (W-MENU-25, 총괄 11/12): a task with a record is continued to today ([>] and its 이어감 stay on its
+      // day); one without moves under today's heading (W-MENU-07). A copy's, a reference's, a repeat's or a run's
+      // date still changes in place (step 5).
+      const task = tasks.get(line.taskId)!;
+      if (line.action === 'date' && programTaskHasRecord(space.text, task) && readTaskLocationPolicy(space, task.id).kind === 'move' && !programExecutionDocument(space, task.docId)) {
+        const continued = continueProgramTask(space.text, { documentId: task.docId, taskId: task.id, today: input.today });
+        if (!continued.ok) return { result: line.taskId, reason: 'unresolved' };
+        space.text = continued.next;
+        continue;
+      }
       const patched = patchProgramTask(space, line.taskId, { date: line.action === 'date' ? input.today : null });
       if (patched.reason) return patched;
     }
-    const dated = space.text, emptied = new Set<string>();
+    // Redesign 3: a task taken to today moves under today's heading, so a day it leaves empty can go as a removal's does.
+    const emptied = new Set<string>(input.lines.filter(line => line.action === 'date' || line.action === 'undated').map(line => tasks.get(line.taskId)!.docId));
     for (const line of input.lines.filter(line => line.action === 'remove' || line.action === 'drop')) {
       const next = M.removeTask(space.text, line.taskId);
       if (next === space.text) return { result: line.taskId, reason: 'unresolved' };
       space.text = next; emptied.add(tasks.get(line.taskId)!.docId);
     }
-    space.text = dropEmptiedDays(dated, space.text, emptied);
+    space.text = dropEmptiedDays(start.text, dropEmptiedFolderLines(start.text, space.text, emptied), emptied);
     if (!M.validate(space.text) || !programPreservesLockedDocumentContent(start, space.text) || !programPreservesSeriesMetadata(start, space.text)
       || !programPreservesLegacyQualityHold(start, space.text) || !programPreservesLegacyPlanExcluded(start, space.text)) return { result: '', reason: 'unresolved' };
     // As a document's own save does: a day's hand order and the saved place forget the lines taken out.
     const ids = new Set([...space.text.documents, ...space.text.flows].flatMap(doc => doc.lines.map(line => line.id)));
     space.timelineOrders = Object.fromEntries(Object.entries(space.timelineOrders).map(([day, order]) => [day, order.filter(id => ids.has(id))]));
     if (space.position.lineId && !ids.has(space.position.lineId)) space.position = { documentId: space.position.documentId, lineId: null, start: 0, end: 0, scrollTop: 0 };
-    const counts = input.lines.reduce((sum, line) => ({ ...sum, [line.action]: sum[line.action] + 1 }), { date: 0, undated: 0, remove: 0, drop: 0, hold: 0 });
+    const counts = input.lines.reduce((sum, line) => ({ ...sum, [line.action]: sum[line.action] + 1 }), { date: 0, undated: 0, remove: 0, drop: 0, hold: 0, again: 0 });
     return { result: `${counts.date}:${counts.remove}:${counts.undated}:${counts.drop}` };
   });
 }

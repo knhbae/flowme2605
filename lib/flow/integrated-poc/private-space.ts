@@ -9,6 +9,8 @@ import { textWorkspaceModel as M, type TextDocument, type TextLine, type TextWor
 import { programLegacyTaskQualityHold } from './legacy-map-review';
 import { programLegacyPlanTaskExcluded } from './program-legacy-plan-target';
 import { programDocumentContentLock, programReferenceExecutionAccess } from './reference-execution-guard';
+import { readTaskLocationPolicy } from './task-location-command';
+import { moveTaskLocation, programSubtaskDue } from './task-location-move';
 import { programRecurringScheduleLabel, programRecurringScheduleStart } from './public-recurrence-contract';
 import { programPublicCopyItemStart } from './public-copy-recurrence';
 import { programOrdinaryScheduleLabel } from './public-ordinary-time';
@@ -155,6 +157,13 @@ export function setProgramDocumentFolder(data: ProgramData, input: ProgramPrivat
   });
 }
 
+/** A personal Flow's run document (a start or a repeat's round): its dates stay '- 날짜:' lines until redesign step 5. */
+export function programExecutionDocument(space: ProgramPrivateSpace, documentId: string): boolean {
+  const owner = space.personalAuthoring;
+  return !!owner && ((owner.executions ?? []).some(run => run.executionDocumentId === documentId)
+    || owner.series.some(series => series.rounds.some(round => round.executionDocumentId === documentId)));
+}
+
 export function updateProgramTask(data: ProgramData, input: ProgramPrivateMutationBase & { taskId: string; patch: { title?: string; date?: string | null; note?: string; time?: string } }): ProgramTransition<string> {
   return mutate(data, input, 'private-task-update', { taskId: input.taskId, patch: input.patch }, space => patchProgramTask(space, input.taskId, input.patch));
 }
@@ -169,7 +178,35 @@ export function patchProgramTask(space: ProgramPrivateSpace, taskId: string, pat
   const unchanged = Object.entries(patch).every(([key, value]) => key === 'date' ? before.date === value
     : typeof value === 'string' && (key === 'time' ? before.time ?? '' : before[key as 'title' | 'note']) === value.trim());
   if (unchanged) return { result: taskId };
-  const next = M.updateTask(space.text, taskId, patch);
+  // Redesign 3 (DECISION-1, 총괄 11/12): a task's day is the date section it sits in. A task free to move goes under that
+  // day's heading with its subtasks and memo (as 위치 옮기기 does), its own '- 날짜:' line dropped; a copy's, a
+  // reference's or a repeat's date stays a '- 날짜:' line until step 5. A time alone never moves the line.
+  let text = space.text, rest: typeof patch = patch;
+  // Codex P2-3 (11/12): a subtask (not an independent task under another, which keeps its own day, rereview P2-3) of an
+  // ordinary task cannot leave its parent; a day other than its parent's is its 마감.
+  const parentPolicy = patch.date !== undefined && !before.isCanonical && (before.parentItemId ?? before.parentTaskId) ? readTaskLocationPolicy(space, before.parentTaskId ?? before.parentItemId!) : null;
+  if (patch.date !== undefined && parentPolicy?.kind === 'move' && parentPolicy.documentId === before.docId && !programExecutionDocument(space, before.docId)) {
+    const { date, ...others } = patch;
+    const due = programSubtaskDue(text, before.docId, taskId, date);
+    if (!due) return { result: taskId, reason: 'unresolved' };
+    text = due; rest = others;
+  } else if (patch.date !== undefined) {
+    const policy = readTaskLocationPolicy(space, taskId);
+    if (policy.kind === 'move' && policy.documentId && !programExecutionDocument(space, policy.documentId)) {
+      const { date, time, ...others } = patch;
+      rest = others;
+      if (before.explicitDate && before.groupDate === date) {
+        // Its own heading already says that day: only its '- 날짜:' line goes; the line stays where it is.
+        text = M.restoreTaskDate(text, taskId);
+        if (time !== undefined) rest = { ...others, time };
+      } else if (before.date !== date || before.explicitDate) {
+        const moved = moveTaskLocation(text, { documentId: policy.documentId, taskId, target: { kind: 'date', date, ...(time !== undefined ? { time: time.trim() } : {}) } });
+        if (!moved.ok) return { result: taskId, reason: 'unresolved' };
+        text = moved.next;
+      } else if (time !== undefined) rest = { ...others, time };
+    }
+  }
+  const next = Object.keys(rest).length ? M.updateTask(text, taskId, rest) : text;
   if (next === space.text && Object.entries(patch).some(([key, value]) => before[key as keyof typeof before] !== value)) return { result: taskId, reason: 'invalid' };
   space.text = next;
   const copy = space.copies.find(copy => Object.values(copy.itemLines).includes(taskId));

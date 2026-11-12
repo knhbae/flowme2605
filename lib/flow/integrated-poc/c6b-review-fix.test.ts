@@ -78,7 +78,7 @@ test('P2-3: 되돌리기 comes from the state the move applied to, so an overrid
   // The space makes it inside the save, from the very state the command gets.
   const source = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   // F12 review P1 (11/12): with it, the lines of a list with no copy's task, from the same state.
-  assert.match(source, /current => \{ const next = moveProgramTaskDates\(current, \{ actorId, requestId, moves \}\); if \(next\.ok\) \{ undo = programTaskDateUndo\(current\.spaces\[actorId\], next\.data\.spaces\[actorId\], moves\); undoLines = social \? null : programTaskDateUndoLines\(current\.spaces\[actorId\], undo\); \} return next; \}/);
+  assert.match(source, /current => \{ const next = moveProgramTaskDates\(current, \{ actorId, requestId, moves \}\); if \(next\.ok\) \{ undo = programTaskDateUndo\(current\.spaces\[actorId\], next\.data\.spaces\[actorId\], moves\); undoLines = social \? null : programTaskDateUndoLines\(current\.spaces\[actorId\], next\.data\.spaces\[actorId\], undo\); \} return next; \}/);
 });
 
 test('P2-4: 되돌리기 expects each task as the move left it: a title changed since, or the override taken away, refuses it all', () => {
@@ -145,9 +145,10 @@ test('rereview P2-2: parser-owned memo beyond a blank is checked for both move a
 test('rereview P2-3: ancestor and independent descendant expectations are checked before either order is applied', () => {
   let { data } = account();
   const created = ok(createProgramDocument(data, { ...base(data), title: '상위와 독립 항목' })); data = created.data;
-  space(data).text = M.editText(space(data).text, created.result, '- [ ] 상위 A\n- [ ] 독립 C');
-  const doc = M.getDocument(space(data).text, created.result)!, [a, c] = doc.lines.map(line => line.id);
-  doc.lines[1].text = '  - [ ] 독립 C';
+  // Redesign 3: under a date heading (in a document without one a date is the task's 마감, W-TXT-03).
+  space(data).text = M.editText(space(data).text, created.result, '[2026-10-29]\n- [ ] 상위 A\n- [ ] 독립 C');
+  const doc = M.getDocument(space(data).text, created.result)!, [, a, c] = doc.lines.map(line => line.id);
+  doc.lines[2].text = '  - [ ] 독립 C';
   assert(validateProgramData(data)); assert(task(data, a)); assert(task(data, c));
   assert.equal(M.rowMeta(space(data).text, created.result).find(row => row.id === c)?.isCanonical, true);
   const moveA = pick(data, a, '2026-11-02'), moveC = pick(data, c, '2026-11-03');
