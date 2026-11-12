@@ -65,6 +65,11 @@ test('the screen: the writing view paints 마감 with D-n and marks past and tod
   assert(css.includes('.tle-property-date-label[data-due="over"] { color: #8a4b1f; font-weight: 600; }'));
   const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r/g, '');
   assert(space.includes("{(due => due && <><span className={due.state === 'over' ? styles.rowLate : undefined} data-row-due={due.state}>{due.label}</span> · </>)(programDueLabel(task.due, today))}"));
-  const model = readFileSync(new URL('./vendor/text-model.cjs', import.meta.url), 'utf8').replace(/\r/g, '');
-  assert(model.includes("function propertyParts(text) { return /^ *-\\s+(날짜|메모|시간|마감|기다림):\\s*(.*)$/.exec(text); }"), 'W-TXT-09 adds 기다림 beside it');
+  const raw = '[2026-11-12]\n- [ ] 답 확인\n  - 마감: 11/20\n  - 기다림: 2026-11-10';
+  const { state, id, task } = doc(raw);
+  assert.equal(task('답 확인').due, '2026-11-20');
+  assert.equal(task('답 확인').waitSince, '2026-11-10');
+  const wait = M.rowMeta(state, id).find(row => row.text.trim() === '- 기다림: 2026-11-10')!;
+  assert.equal(wait.kind, 'property'); assert.equal(wait.taskId, task('답 확인').id);
+  assert.equal(M.raw(M.getDocument(state, id)!), raw, 'property recognition preserves RAW');
 });
