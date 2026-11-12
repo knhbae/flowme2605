@@ -1,4 +1,4 @@
-import { programClone, programId, type ProgramData, type ProgramPrivateSpace, type ProgramTransition } from './contract';
+import { programClone, programId, type ProgramData, type ProgramPrivateSpace, type ProgramTransition, type ProgramWritingPosition } from './contract';
 import { programSame } from './controller';
 import { programDate } from './program-data';
 import { programExecutionDocument, transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
@@ -7,8 +7,9 @@ import { programContinuedLines, programFolderPath } from './continuation';
 import { programStateHash, programTaskRepeatMembers } from './task-date-move';
 import { programDaysBetween } from './date-label';
 import { moveTaskLocation } from './task-location-move';
+import { programDateHeadIndex } from './input-bar';
 import { PROGRAM_MERGE_ARCHIVE_TITLE, programArchiveOriginals, programDocumentStateHash } from './text-cleanup';
-import { textWorkspaceModel as M, type TextBinding, type TextLine, type TextTask, type TextWorkspaceState } from './text-workspace';
+import { textWorkspaceModel as M, type TextBinding, type TextLine, type TextRow, type TextTask, type TextWorkspaceState } from './text-workspace';
 
 /** 오늘 탭 처음 정리 ② (W-CARRY-13, 총괄 11/12; mockup ②): a past open task already written again on a later day is
  *  closed as a day's record: `[>]` and `- 이어감: <that day>` (with its % when its line has one). Asked once, listed
@@ -23,9 +24,12 @@ import { textWorkspaceModel as M, type TextBinding, type TextLine, type TextTask
 export type ProgramContinuedClose = { documentId: string; lineId: string; title: string; day: string; to: string; percent: number | null };
 
 const TASK_MARK = /^( *-\s+\[)([^\]\r\n]*)(\](?:\s+|$))(.*?)(\s*)$/;
+export const PROGRAM_TRASH_DOCUMENT_ID = 'doc-flowme-trash', PROGRAM_TRASH_TITLE = '버린 할 일', PROGRAM_STALE_DAYS = 14;
 
+/** Codex P2-5 (11/12): '버린 할 일' is never a document to tidy, even with its 휴지통 marks gone (a send to 휴지통 puts
+ *  them back). */
 function usableDocument(space: ProgramPrivateSpace, documentId: string): boolean {
-  return space.text.documents.some(doc => doc.id === documentId) && !space.archivedDocumentIds.includes(documentId) && !space.documentTrash?.[documentId]
+  return documentId !== PROGRAM_TRASH_DOCUMENT_ID && space.text.documents.some(doc => doc.id === documentId) && !space.archivedDocumentIds.includes(documentId) && !space.documentTrash?.[documentId]
     && !space.copies.some(copy => copy.documentId === documentId) && !space.savedBindings.some(binding => binding.documentId === documentId)
     && !programExecutionDocument(space, documentId);
 }
@@ -37,7 +41,8 @@ export function programAlreadyContinuedPlan(space: ProgramPrivateSpace, today: s
   const usable = new Map(text.documents.map(doc => [doc.id, usableDocument(space, doc.id)]));
   const recorded = new Set(text.progressRecords.map(record => record.taskId));
   const linked = new Set(text.bindings.flatMap(binding => binding.kind === 'task' ? [binding.taskId, binding.lineId] : []));
-  const tasks = M.tasks(text).filter(task => usable.get(task.docId) && task.scopeKind === 'folder' && task.date && task.date <= today);
+  // Codex P1-1 (11/12, W-CARRY-02): words that leave no key ('...', '???') are never the same task as anything.
+  const tasks = M.tasks(text).filter(task => usable.get(task.docId) && task.scopeKind === 'folder' && task.date && task.date <= today && programSameTaskKey(task.title));
   const place = (task: TextTask) => `${programSameTaskKey(task.title)}|${programFolderPath(text, task.scopeId)}`;
   const byPlace = new Map<string, TextTask[]>();
   for (const task of tasks) byPlace.set(place(task), [...byPlace.get(place(task)) ?? [], task]);
@@ -134,7 +139,6 @@ function keepsEverythingElse(before: TextWorkspaceState, after: TextWorkspaceSta
  *  with its line ids (records and owners follow) under `[원래 날짜]` → `- 원래 글: 이름` → its folder lines (written once
  *  per day and document there). Not to 휴지통: a linked task. Not listed: a block holding a folder line, a reference or
  *  a repeat line, and tasks in copies, Flow runs, archived or deleted documents. One save; ↶ is restoreProgramFirstCleanup. */
-export const PROGRAM_TRASH_DOCUMENT_ID = 'doc-flowme-trash', PROGRAM_TRASH_TITLE = '버린 할 일', PROGRAM_STALE_DAYS = 14;
 export type ProgramStaleLine = { documentId: string; lineId: string; title: string; day: string; folder: string; trashable: boolean };
 export type ProgramStaleChoice = 'undated' | 'trash';
 
@@ -156,24 +160,82 @@ export function programStalePlan(space: ProgramPrivateSpace, today: string): Pro
   return out.sort((a, b) => a.day.localeCompare(b.day));
 }
 
-/** The task block moved whole into '버린 할 일' (made when missing). Null when anything would read otherwise. */
-function moveToTrash(text: TextWorkspaceState, documentId: string, taskId: string): TextWorkspaceState | null {
-  const source = M.getDocument(text, documentId);
-  if (!source || documentId === PROGRAM_TRASH_DOCUMENT_ID) return null;
-  const rows = M.parseDocument(source, text).rows, row = rows.find(entry => entry.id === taskId);
-  if (!row || !row.groupDate) return null;
+const FENCE_MARK = /^ *(?:`{3,}|~{3,})/, ORIGIN = '- 원래 글: ';
+type Chain = { title: string; scopeId: string }[];
+/** Codex P2-4 (11/12): '- 원래 글:' shows the document's name; its line id carries the document's id (`origin-…~<id>`),
+ *  so two documents of one name stay apart and [되살리기] finds the document by id, whatever its name is now. */
+export const programTrashOrigin = (lineId: string) => /^origin-[^~]+~(.+)$/.exec(lineId)?.[1] ?? null;
+/** Codex P1-2 (11/12): a block moved whole keeps every byte inside it; only its outer indent changes (`from`, its first
+ *  line's leading spaces, becomes `to`). A code block's inner lines stay byte for byte, as 위치 옮기기 keeps them. Null
+ *  when a line does not start with that indent (it could not move without changing). */
+function rebaseBlock(lines: readonly TextLine[], kinds: ReadonlyMap<string, string>, from: string, to: string): TextLine[] | null {
+  const out: TextLine[] = [];
+  for (const line of lines) {
+    if (from === to || !line.text.trim() || kinds.get(line.id) === 'fence' && !FENCE_MARK.test(line.text)) out.push({ id: line.id, text: line.text });
+    else if (line.text.startsWith(from)) out.push({ id: line.id, text: to + line.text.slice(from.length) });
+    else return null;
+  }
+  return out;
+}
+const indentOf = (text: string) => /^[ \t]*/.exec(text)![0];
+/** The block reads in `doc` exactly as `moved`: its lines one after another, every byte as written. */
+function placed(doc: { lines: readonly TextLine[] } | null | undefined, moved: readonly TextLine[]): boolean {
+  const at = doc && moved.length ? doc.lines.findIndex(line => line.id === moved[0].id) : -1;
+  return at >= 0 && moved.every((line, index) => doc!.lines[at + index]?.id === line.id && doc!.lines[at + index].text === line.text);
+}
+/** A task block (its trailing blank lines left out) and its folder lines, outermost first, with the folders they are
+ *  linked to. Null when one cannot be told. */
+function readBlock(text: TextWorkspaceState, doc: { lines: readonly TextLine[] }, rows: readonly TextRow[], row: TextRow): { block: TextLine[]; chain: Chain; kinds: Map<string, string> } | null {
   let end = row.subtreeEndIndex;
-  while (end > row.index + 1 && !source.lines[end - 1].text.trim()) end -= 1;
-  const block = source.lines.slice(row.index, end), blockIds = new Set(block.map(line => line.id));
-  // Its folder lines, outermost first, with the folders they are linked to.
-  const chain: { title: string; scopeId: string }[] = [];
+  while (end > row.index + 1 && !doc.lines[end - 1].text.trim()) end -= 1;
+  const chain: Chain = [];
   for (let up = row.parentLineId; up;) {
     const folder = rows.find(entry => entry.id === up);
     if (!folder) return null;
     if (folder.kind === 'scope' && folder.scopeKind === 'folder' && folder.scopeId) chain.unshift({ title: text.folders.find(entry => entry.id === folder.scopeId)?.title ?? '', scopeId: folder.scopeId });
     up = folder.parentLineId;
   }
-  if (chain.some(entry => !entry.title)) return null;
+  return chain.some(entry => !entry.title) ? null : { block: doc.lines.slice(row.index, end).map(line => ({ id: line.id, text: line.text })), chain, kinds: new Map(rows.map(entry => [entry.id, entry.kind])) };
+}
+/** A folder line the block left with nothing under it in its day goes with its link (as a move does). */
+function dropEmptyFolders(next: TextWorkspaceState, documentId: string, rows: readonly TextRow[], from: string | null): void {
+  const doc = next.documents.find(entry => entry.id === documentId)!;
+  for (let up = from; up;) {
+    const folder = rows.find(entry => entry.id === up);
+    if (!folder) return;
+    up = folder.parentLineId;
+    if (folder.kind !== 'scope') continue;
+    const now = M.parseDocument(doc, next).rows, there = now.find(entry => entry.id === folder.id);
+    if (!there || now.slice(there.index + 1, there.subtreeEndIndex).some(entry => entry.kind !== 'blank' || entry.text !== '')) return;
+    doc.lines = doc.lines.filter(line => line.id !== folder.id);
+    next.bindings = next.bindings.filter(binding => binding.lineId !== folder.id);
+  }
+}
+/** Codex P2-3 (11/12): the writing position stays on a line of its document. When its line left, it follows the line
+ *  to a document still open to the person (a merge's kept one), else it goes to the nearest line above that stayed. */
+function keepPosition(position: ProgramWritingPosition, before: TextWorkspaceState, after: TextWorkspaceState, hidden: ReadonlySet<string>): ProgramWritingPosition {
+  const doc = position.documentId ? M.getDocument(after, position.documentId) : undefined;
+  if (!position.lineId || !doc || doc.lines.some(line => line.id === position.lineId)) return position;
+  const at = (target: { id: string; lines: readonly TextLine[] }, lineId: string): ProgramWritingPosition => {
+    const start = target.lines.slice(0, target.lines.findIndex(line => line.id === lineId)).reduce((sum, line) => sum + line.text.length + 1, 0);
+    return { documentId: target.id, lineId, start, end: start, scrollTop: target.id === doc.id ? position.scrollTop : 0 };
+  };
+  const followed = after.documents.find(entry => !hidden.has(entry.id) && entry.lines.some(line => line.id === position.lineId));
+  if (followed) return at(followed, position.lineId);
+  const was = M.getDocument(before, doc.id)?.lines ?? [], stays = new Set(doc.lines.map(line => line.id));
+  const above = was.slice(0, Math.max(0, was.findIndex(line => line.id === position.lineId))).reverse().find(line => stays.has(line.id));
+  return above ? at(doc, above.id) : { documentId: doc.id, lineId: null, start: 0, end: 0, scrollTop: position.scrollTop };
+}
+
+/** The task block moved whole into '버린 할 일' (made when missing). Null when anything would read otherwise. */
+function moveToTrash(text: TextWorkspaceState, documentId: string, taskId: string): TextWorkspaceState | null {
+  const source = M.getDocument(text, documentId);
+  if (!source || documentId === PROGRAM_TRASH_DOCUMENT_ID) return null;
+  const rows = M.parseDocument(source, text).rows, row = rows.find(entry => entry.id === taskId);
+  if (!row || !row.groupDate) return null;
+  const read = readBlock(text, source, rows, row);
+  if (!read) return null;
+  const { block, chain } = read, blockIds = new Set(block.map(line => line.id));
   const next = programClone(text), bindings: TextBinding[] = next.bindings;
   let bin = M.getDocument(next, PROGRAM_TRASH_DOCUMENT_ID);
   if (!bin) {
@@ -182,12 +244,15 @@ function moveToTrash(text: TextWorkspaceState, documentId: string, taskId: strin
     next.documents.push(bin);
   }
   const target = next.documents.find(doc => doc.id === PROGRAM_TRASH_DOCUMENT_ID)!;
-  // The group of that day and document, if the last one is it; else a new one at the end.
-  const head = `[${row.groupDate}]`, from = `- 원래 글: ${source.title || '새 문서'}`;
+  // The group of that day and document (told by the id its 원래 글 line carries), if the last one is it; else a new one
+  // at the end.
+  const head = `[${row.groupDate}]`, origin = { id: `${programId('origin')}~${documentId}`, text: `${ORIGIN}${source.title || '새 문서'}` };
+  if (origin.id.length > 160) return null;
   const lines = target.lines, at = lines.map(line => line.text).lastIndexOf(head);
-  const group = at >= 0 && lines[at + 1]?.text === from && !lines.slice(at + 2).some(line => /^\[[^\]]*\]$/.test(line.text.trim())) ? at : -1;
+  const group = at >= 0 && !!lines[at + 1]?.text.startsWith(ORIGIN) && programTrashOrigin(lines[at + 1].id) === documentId && !lines.slice(at + 2).some(line => /^\[[^\]]*\]$/.test(line.text.trim())) ? at : -1;
   const fresh = (text: string) => ({ id: programId('line'), text });
-  const depth = chain.length, moved = block.map(line => ({ id: line.id, text: line.text.trim() ? '  '.repeat(depth + Math.max(0, (rows.find(entry => entry.id === line.id)?.depth ?? 0) - row.depth)) + line.text.trimStart() : line.text }));
+  const depth = chain.length, moved = rebaseBlock(block, read.kinds, indentOf(block[0].text), '  '.repeat(depth));
+  if (!moved) return null;
   const declare = (index: number) => { const line = fresh(`${'  '.repeat(index)}- /${chain[index].title}`); bindings.push({ kind: 'scope', docId: PROGRAM_TRASH_DOCUMENT_ID, lineId: line.id, scopeId: chain[index].scopeId }); return line; };
   let reuse = -1;
   if (group >= 0 && depth) {
@@ -197,20 +262,12 @@ function moveToTrash(text: TextWorkspaceState, documentId: string, taskId: strin
     if (innermost) reuse = innermost.subtreeEndIndex;
   } else if (group >= 0 && !depth) reuse = lines.length;
   if (reuse >= 0) { while (reuse > 0 && !lines[reuse - 1].text.trim()) reuse -= 1; lines.splice(reuse, 0, ...moved); }
-  else lines.push(...(lines.length && lines.at(-1)!.text.trim() ? [fresh('')] : []), fresh(head), fresh(from), ...chain.map((_, index) => declare(index)), ...moved);
+  else lines.push(...(lines.length && lines.at(-1)!.text.trim() ? [fresh('')] : []), fresh(head), origin, ...chain.map((_, index) => declare(index)), ...moved);
   // Out of its document; a folder line left with nothing under it in its day goes with its link (as a move does).
   const doc = next.documents.find(entry => entry.id === documentId)!;
   doc.lines = doc.lines.filter(line => !blockIds.has(line.id));
-  for (let up = row.parentLineId; up;) {
-    const folder = rows.find(entry => entry.id === up)!;
-    up = folder.parentLineId;
-    if (folder.kind !== 'scope') continue;
-    const now = M.parseDocument(doc, next).rows, there = now.find(entry => entry.id === folder.id);
-    if (!there || now.slice(there.index + 1, there.subtreeEndIndex).some(entry => entry.kind !== 'blank' || entry.text !== '')) break;
-    doc.lines = doc.lines.filter(line => line.id !== folder.id);
-    next.bindings = next.bindings.filter(binding => binding.lineId !== folder.id);
-  }
-  return M.validate(next) ? next : null;
+  dropEmptyFolders(next, documentId, rows, row.parentLineId);
+  return M.validate(next) && placed(M.getDocument(next, PROGRAM_TRASH_DOCUMENT_ID), moved) ? next : null;
 }
 
 /** [적용]: the chosen lines, each still listed as it was shown, to 날짜 미정 or 휴지통; one save. */
@@ -248,8 +305,122 @@ export function sendProgramStaleTasks(data: ProgramData, input: ProgramPrivateMu
       if (!space.documentTrash[PROGRAM_TRASH_DOCUMENT_ID]) space.documentTrash[PROGRAM_TRASH_DOCUMENT_ID] = { trashedAt: input.now, wasArchived: false };
       if (!space.archivedDocumentIds.includes(PROGRAM_TRASH_DOCUMENT_ID)) space.archivedDocumentIds = [...space.archivedDocumentIds, PROGRAM_TRASH_DOCUMENT_ID];
     }
+    space.position = keepPosition(space.position, before, text, new Set([PROGRAM_TRASH_DOCUMENT_ID]));
     space.text = text;
     return { result: String(input.lines.length) };
+  });
+}
+
+/** 휴지통 [되살리기] (W-CARRY-19, Codex P2-6 11/12): one bundle of '버린 할 일' (a task block under its `[원래 날짜]`,
+ *  `- 원래 글:` and folder lines) goes back, any time, to the section of its day in the document it came from (found by
+ *  the id its 원래 글 line carries, whatever its name is now), under the same folders: the last declaration of the
+ *  innermost one there, else new folder lines linked to them; the section is made where the date chip would make it
+ *  when it is gone. When that document is gone (deleted, in 휴지통 or 보관), the bundle goes to `[미정]` of a new
+ *  document of the name it had. The block keeps its ids and every byte inside it (records and owners follow); in '버린
+ *  할 일' a folder line left empty goes, and a day left with nothing goes with its lines. One save; the result is the
+ *  document it went to. */
+export type ProgramTrashBundle = { lineId: string; title: string; day: string; documentId: string | null; documentTitle: string; folder: string; back: 'origin' | 'undated' };
+type ReadBundle = ProgramTrashBundle & { head: TextRow; block: TextLine[]; chain: Chain; kinds: Map<string, string> };
+function readBundle(space: ProgramPrivateSpace, rows: readonly TextRow[], row: TextRow): ReadBundle | null {
+  const bin = M.getDocument(space.text, PROGRAM_TRASH_DOCUMENT_ID);
+  if (!bin || row.kind !== 'task' || !row.groupDate || !row.dateLineId || !row.title) return null;
+  for (let up = row.parentLineId; up;) { const parent = rows.find(entry => entry.id === up); if (parent?.kind !== 'scope') return null; up = parent.parentLineId; }
+  const head = rows.find(entry => entry.id === row.dateLineId), origin = head && bin.lines[head.index + 1];
+  if (!head || !origin?.text.startsWith(ORIGIN)) return null;
+  const read = readBlock(space.text, bin, rows, row);
+  if (!read) return null;
+  const documentId = programTrashOrigin(origin.id), back = documentId && usableDocument(space, documentId) ? 'origin' : 'undated';
+  return { lineId: row.id, title: row.title, day: row.groupDate, documentId, documentTitle: origin.text.slice(ORIGIN.length).trim(),
+    folder: read.chain.length ? programFolderPath(space.text, read.chain.at(-1)!.scopeId) : '', back, head, ...read };
+}
+export function programTrashBundles(space: ProgramPrivateSpace): ProgramTrashBundle[] {
+  const bin = M.getDocument(space.text, PROGRAM_TRASH_DOCUMENT_ID);
+  if (!bin) return [];
+  const rows = M.parseDocument(bin, space.text).rows;
+  return rows.flatMap(row => {
+    const bundle = readBundle(space, rows, row);
+    return bundle ? [{ lineId: bundle.lineId, title: bundle.title, day: bundle.day, documentId: bundle.documentId, documentTitle: bundle.documentTitle, folder: bundle.folder, back: bundle.back }] : [];
+  });
+}
+export function reviveProgramTrashBundle(data: ProgramData, input: ProgramPrivateMutationBase & { lineId: string }): ProgramTransition<string> {
+  return transitionProgramPrivateSpace(data, input, 'private-trash-bundle-revive', { lineId: input.lineId }, space => {
+    const fail = (reason: 'missing' | 'limit' | 'unresolved') => ({ result: '', reason });
+    const before = space.text, bin = M.getDocument(before, PROGRAM_TRASH_DOCUMENT_ID);
+    if (!bin) return fail('missing');
+    const binRows = M.parseDocument(bin, before).rows, row = binRows.find(entry => entry.id === input.lineId), bundle = row && readBundle(space, binRows, row);
+    if (!row || !bundle) return fail('missing');
+    let next = programClone(before), targetId = bundle.documentId!;
+    if (bundle.back === 'undated') {
+      if (next.documents.length >= 100) return fail('limit');
+      const added = M.addDocument(next, { title: bundle.documentTitle || '새 문서', folderId: 'folder-unfiled' });
+      if (added === next) return fail('unresolved');
+      next = programClone(added); targetId = next.documents.at(-1)!.id;
+    }
+    const doc = next.documents.find(entry => entry.id === targetId)!, day = bundle.back === 'origin' ? bundle.day : null, chain = bundle.chain;
+    const fresh = (text: string): TextLine => ({ id: programId('line'), text });
+    if (doc.lines.every(line => !line.text.trim())) doc.lines = [];
+    // Its day's section: the one already declaring its innermost folder first; made where the date chip would make it.
+    let rows = M.parseDocument(doc, next).rows;
+    const sectionEnd = (head: TextRow) => rows.find(entry => entry.index > head.index && entry.kind === 'date')?.index ?? doc.lines.length;
+    const declares = (head: TextRow) => !!chain.length && rows.some(entry => entry.index > head.index && entry.index < sectionEnd(head) && entry.kind === 'scope' && entry.scopeId === chain.at(-1)!.scopeId);
+    const heads = rows.filter(entry => entry.kind === 'date' && entry.date === day);
+    let head: TextRow | undefined = heads.find(declares) ?? heads[0];
+    if (!head) {
+      const line = fresh(`[${day ?? '미정'}]`), index = day ? programDateHeadIndex(doc.lines.map(entry => entry.text), day) : doc.lines.length;
+      const apart = index > 0 && doc.lines[index - 1].text.trim() ? [fresh('')] : [], after = index < doc.lines.length && doc.lines[index].text.trim() ? [fresh('')] : [];
+      doc.lines = [...doc.lines.slice(0, index), ...apart, line, ...after, ...doc.lines.slice(index)];
+      rows = M.parseDocument(doc, next).rows;
+      head = rows.find(entry => entry.id === line.id);
+      if (head?.kind !== 'date') return fail('unresolved');
+    }
+    const end = sectionEnd(head), part = rows.filter(entry => entry.index > head!.index && entry.index < end);
+    let at = end, depth = 0, missingFrom = 0, floor = head.index + 1;
+    for (let index = chain.length - 1; index >= 0; index--) {
+      const own = [...part].reverse().find(entry => entry.kind === 'scope' && entry.scopeKind === 'folder' && entry.scopeId === chain[index].scopeId);
+      if (!own) continue;
+      at = Math.min(own.subtreeEndIndex, end); depth = own.depth + 1; missingFrom = index + 1; floor = own.index + 1; break;
+    }
+    while (at > floor && !doc.lines[at - 1].text.trim()) at -= 1;
+    const additions: TextLine[] = [];
+    for (let index = missingFrom; index < chain.length; index++) {
+      const line = fresh(`${'  '.repeat(depth)}- /${chain[index].title}`);
+      additions.push(line); next.bindings.push({ kind: 'scope', docId: targetId, lineId: line.id, scopeId: chain[index].scopeId }); depth++;
+    }
+    const blockRows = binRows.slice(row.index, row.index + bundle.block.length);
+    if (depth + Math.max(...blockRows.map(entry => entry.depth - row.depth)) > M.MAX_DEPTH) return fail('unresolved');
+    const moved = rebaseBlock(bundle.block, bundle.kinds, indentOf(bundle.block[0].text), '  '.repeat(depth)), blockIds = new Set(bundle.block.map(line => line.id));
+    if (!moved) return fail('unresolved');
+    doc.lines = [...doc.lines.slice(0, at), ...additions, ...moved, ...doc.lines.slice(at)];
+    next.bindings = next.bindings.map(binding => binding.docId === PROGRAM_TRASH_DOCUMENT_ID && blockIds.has(binding.lineId) ? { ...binding, docId: targetId } : binding);
+    // Out of '버린 할 일': a folder line left empty goes; a day left with nothing but its 원래 글 line goes whole.
+    const trash = next.documents.find(entry => entry.id === PROGRAM_TRASH_DOCUMENT_ID)!;
+    trash.lines = trash.lines.filter(line => !blockIds.has(line.id));
+    dropEmptyFolders(next, PROGRAM_TRASH_DOCUMENT_ID, binRows, row.parentLineId);
+    const left = M.parseDocument(trash, next).rows, groupHead = left.find(entry => entry.id === bundle.head.id);
+    if (groupHead) {
+      const groupEnd = left.find(entry => entry.index > groupHead.index && entry.kind === 'date')?.index ?? trash.lines.length;
+      if (trash.lines.slice(groupHead.index + 2, groupEnd).every(line => !line.text.trim())) {
+        let from = groupHead.index;
+        if (groupEnd === trash.lines.length) while (from > 0 && !trash.lines[from - 1].text.trim()) from -= 1;
+        trash.lines = [...trash.lines.slice(0, from), ...trash.lines.slice(groupEnd)];
+      }
+    }
+    if (!M.validate(next) || !placed(M.getDocument(next, targetId), moved)) return fail('unresolved');
+    // Nothing reads otherwise but where the bundle is: its words, state, memo, folder and day, every record and owner.
+    const items = (state: TextWorkspaceState) => new Map(state.documents.flatMap(entry => M.parseDocument(entry, state).items.map(item => [item.id, item] as const)));
+    const scopes = (state: TextWorkspaceState) => new Map(M.tasks(state).map(task => [task.id, task.scopeId]));
+    const old = items(before), now = items(next), scoped = scopes(before), scopedNow = scopes(next);
+    if (!programSame(before.progressRecords, next.progressRecords) || !programSame(before.taskScopes, next.taskScopes) || !programSame(before.itemScopes, next.itemScopes)
+      || old.size !== now.size || scoped.size !== scopedNow.size || [...scoped].some(([id, scope]) => scopedNow.get(id) !== scope)) return fail('unresolved');
+    for (const [id, item] of old) {
+      const current = now.get(id);
+      if (!current || (['title', 'done', 'note', 'time'] as const).some(key => current[key] !== item[key])) return fail('unresolved');
+      if (!blockIds.has(id) ? current.date !== item.date || current.docId !== item.docId
+        : current.docId !== targetId || current.date !== (day === null && !item.explicitDate ? null : item.date)) return fail('unresolved');
+    }
+    space.position = keepPosition(space.position, before, next, new Set([PROGRAM_TRASH_DOCUMENT_ID]));
+    space.text = next;
+    return { result: targetId };
   });
 }
 
@@ -344,6 +515,7 @@ export function mergeProgramTwinDocuments(data: ProgramData, input: ProgramPriva
     next = { ...next, documents: [...next.documents, ...archived.text.documents.filter(doc => archived.ids.includes(doc.id))] };
     if (!M.validate(next)) return { result: input.keep, reason: 'unresolved' };
     const wasArchived = space.archivedDocumentIds.includes(drop.id);
+    space.position = keepPosition(space.position, before, next, new Set([drop.id]));
     space.text = next;
     space.archivedDocumentIds = [...space.archivedDocumentIds, ...archived.ids, ...(wasArchived ? [] : [drop.id])];
     space.documentTrash = { ...space.documentTrash ?? {}, [drop.id]: { trashedAt: input.now, wasArchived } };
