@@ -9,9 +9,9 @@
 | 공개 주소 | `https://alpha.wikiplans.com/alpha` |
 | 내부 앱 | `127.0.0.1:3105` (`next start`) |
 | 상태 확인 | `http://127.0.0.1:13105/status` (supervisor, 이 PC에서만) |
-| 운영 빌드 | 복구함 수정 `gc1RlUnD0sbMl5CpRxI-M`, 커밋 `8d1c88e6` (11/12 17:51 KST, 가벼운 반영 40회차, F12 1차 위 [보관 입력 버리기] 10초 되돌리기·문구) |
-| appRoot | `D:/flowme-work/etc/trashfix-qa-20261112/product` |
-| 되돌리기 대상 | F12 1차 `eLidGO-35oIg__NlXdonQ` / `45d1faec` (`D:/flowme-work/etc/f12a14-qa-20261112/` 아래 product). 그 전 typelag 5차 `71de6647` product도 보존 |
+| 운영 빌드 | F12 2차 `PhVfdfBFHe5j51I5GKNTn`, 커밋 `b918b5c5` (11/12 20:06 KST, 가벼운 반영 41회차, 실행 이름 + W-CARRY-10 + 복구함 수정) |
+| appRoot | `D:/flowme-work/etc/f12bt-qa-20261112/product` |
+| 되돌리기 대상 | 복구함 수정 `gc1RlUnD0sbMl5CpRxI-M` / `8d1c88e6` (`D:/flowme-work/etc/trashfix-qa-20261112/` 아래 product). 그 전 F12 1차 `45d1faec` product도 보존 |
 | 쓰기 UI 설정 | `nativeAuthoringUi: enabled` |
 
 기준은 supervisor의 `manifest.json`이다. 회차별 기록은 [지금 FlowMe](now.md) 기록 절에 남는다.
