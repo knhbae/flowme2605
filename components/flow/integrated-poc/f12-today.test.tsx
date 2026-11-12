@@ -14,7 +14,7 @@ import type { ProgramDeferPlan, ProgramFlowRun } from '@/lib/flow/integrated-poc
 // the once-per-run question and the date sheet's last-day stop; and how ProgramSpace wires them.
 const step = (taskId: string, title: string, date: string | null, done = false) => ({ taskId, title, date, done });
 const run = (key: string, title: string, extra: Partial<ProgramFlowRun> = {}): ProgramFlowRun => ({ key, kind: 'copy', documentId: `doc-${key}`, title, flow: title, run: null, done: 2, total: 7, basis: 'last',
-  anchor: '2026-12-21', mark: 'D-12', steps: [step('a', '발표자 선정', '2026-11-30', true), step('b', '발표자 공지', '2026-12-09')], next: step('b', '발표자 공지', '2026-12-09'), wait: null, ...extra });
+  anchor: '2026-12-21', markDate: '2026-12-21', mark: 'D-12', steps: [step('a', '발표자 선정', '2026-11-30', true), step('b', '발표자 공지', '2026-12-09')], next: step('b', '발표자 공지', '2026-12-09'), wait: null, ...extra });
 const NO = new Set<string>();
 const lines = (runs: ProgramFlowRun[], tablet = false, saving = NO) => renderToStaticMarkup(<ProgramFlowRuns runs={runs} today="2026-12-09" tablet={tablet} saving={saving} onCheck={() => {}} onOpen={() => {}} />);
 
@@ -43,6 +43,19 @@ test('folding: a phone shows 3 and folds the rest into \'Flow n개 더\' with th
   assert.equal((lines(many, true).match(/data-flow-run=/g) ?? []).length, 5);
   assert.equal(programFlowRunNextLabel('2026-12-10', '2026-12-09'), '내일');
   assert.equal(programFlowRunNextLabel(null, '2026-12-09'), '날짜 미정');
+});
+
+// Redesign 2 + F12 (총괄 11/12, W-TXT-02): the next step's '- 마감:' as D-n on the progress line.
+test('the next step\'s 마감 on its line: D-n, 오늘 마감, past apart; once when a last-day run\'s mark reads it; none while waiting', () => {
+  const due = (date: string, extra: Partial<ProgramFlowRun> = {}) => run('p', '월간 발표', { next: { ...step('b', '발표자 공지', '2026-12-09'), due: date }, ...extra });
+  assert(lines([due('2026-12-12')]).includes('다음: 발표자 공지 · 오늘 · <span data-run-due="ahead">D-3</span>'));
+  assert(lines([due('2026-12-12')]).includes('aria-label="월간 발표 · 2/7 · D-12 · 다음 발표자 공지 · D-3 · 글 열기"'));
+  assert(lines([due('2026-12-09')]).includes('<span class="dueToday" data-run-due="today">오늘 마감</span>'));
+  assert(lines([due('2026-12-07')]).includes('<span class="dueOver" data-run-due="over">마감 2일 지남</span>'), 'past, shown apart');
+  assert(!lines([due('2026-12-21')]).includes('data-run-due'), 'a last-day run whose mark already reads that 마감: once, in the mark');
+  assert(lines([due('2026-12-21', { basis: 'first', mark: '3일째' })]).includes('data-run-due="ahead">D-12</span>'), 'a first-day run shows it');
+  assert(!lines([due('2026-12-12', { wait: { taskId: 's', title: '답', parentId: 'a', date: null, days: 1 } })]).includes('data-run-due'), 'waiting: no 다음, no 마감');
+  assert(!lines([run('p', '월간 발표')]).includes('data-run-due'), 'no 마감: nothing added');
 });
 
 test('다시 확인할 일: a dashed box, the step it waits under, and [내일] that moves only the day to look again (W-FLOW-08)', () => {
@@ -132,4 +145,19 @@ test('F12 2차: the personal start form has a run name field, filled with the �
   assert(form.includes('<label>실행 이름<input aria-label="실행 이름" data-run-name-input value={runName??defaultRunName} placeholder={defaultRunName} maxLength={80}'));
   assert(form.includes('startPersonalFlow(data,{flowId,versionId:version.id,anchorDate:newAnchor,runName:(runName??\'\').trim()||defaultRunName})'));
   assert(form.includes('const [runName,setRunName]=useState<string|null>(null),defaultRunName=programDefaultRunName(newAnchor);'));
+});
+// W-FLOW-07 · W-TXT-09 (총괄 11/12): a wait written as a '답 확인:' line — its recheck row, and how ProgramSpace starts,
+// lists and moves it.
+test('a 답 확인 line in 다시 확인할 일 names what it waits on itself; ProgramSpace starts it, lists it once and moves it with [내일]', () => {
+  const html = renderToStaticMarkup(<ProgramRechecks rows={[{ taskId: 'w', title: '답 확인: 견적서 보내기', parentId: 'p', parentTitle: '견적서 보내기', docId: 'd', docTitle: '외주 글', date: '2026-12-16', days: 2, kind: 'line' }]}
+    today="2026-12-16" saving={NO} onCheck={() => {}} onTomorrow={() => {}} onOpen={() => {}} />);
+  assert(html.includes('>답 확인: 견적서 보내기</span>') && html.includes('>기다림 2일째 · 외주 글</span>'), 'not its step twice');
+  const space = readFileSync(join(process.cwd(), 'components/flow/integrated-poc/ProgramSpace.tsx'), 'utf8').replace(/\r\n/g, '\n');
+  assert(space.includes('const result = await run(\'답 기다리기\', current => { const next = startProgramWait(current, { ...base(current), taskId: task.id, date: recheck, today });'));
+  assert(space.includes("(await run('답 기다리기 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: task.docId, before: was, after: now }), true)).ok });"), 'one exact 되돌리기');
+  assert(space.includes('{programWaitStartable(space, detailTask.id) && <section data-task-wait aria-label="답 기다리기">'));
+  assert(space.includes('{programLineDateChips(today).filter(chip => chip.date > today).map(chip => <button type="button" key={chip.key} data-wait-date={chip.date}'));
+  assert(space.includes("const rechecksShown = period === 'today' && date === today && !(folderScreen && !collectionMode) && !selecting && !folderId && !query;"), 'as todayHere reads it');
+  assert(space.includes('&& programIsWaitTitle(row.task.title))) : occurrenceResult.rows;'), 'listed once, in 다시 확인할 일');
+  assert(space.includes("? moveProgramTaskLocation(current, { ...base(current), taskId: row.taskId, documentId: row.docId, target: { kind: 'date', date: tomorrow } })"), 'a line moves to tomorrow\'s section');
 });

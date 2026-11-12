@@ -60,7 +60,7 @@ import { ProgramDocumentProvenance } from './ProgramDocumentProvenance';
 import { ProgramPersonalAuthoring } from './ProgramPersonalAuthoring';
 import { programRowPatchEnabled } from '@/lib/flow/integrated-poc/typing-row-patch';
 import { applyProgramParseCache } from '@/lib/flow/integrated-poc/typing-parse-cache';
-import { PROGRAM_DAY_CLOSE_HOUR, programDeferPlan, programFlowRuns, programRechecks, readProgramDeferChoice, writeProgramDeferChoice,
+import { PROGRAM_DAY_CLOSE_HOUR, programDeferPlan, programFlowRuns, programRechecks, programTaskHasEveningRecord, readProgramDeferChoice, writeProgramDeferChoice,
   type ProgramDeferMode, type ProgramDeferPlan, type ProgramFlowRun, type ProgramRecheck } from '@/lib/flow/integrated-poc/flow-run-progress';
 import { ProgramFlowRuns, ProgramRechecks } from './ProgramFlowRuns';
 import { ProgramDeferAsk } from './ProgramDeferAsk';
@@ -110,6 +110,9 @@ import { createPendingProgramSourceNavigation } from '@/lib/flow/integrated-poc/
 import { programCheckpointForWritingTarget } from '@/lib/flow/integrated-poc/writing-navigation';
 import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classification';
 import { commitTaskDateWithUndo, moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
+import { applyProgramProgressText, programProgressTextPlan, type ProgramProgressTextChange } from '@/lib/flow/integrated-poc/progress-text';
+import { programDueLabel } from '@/lib/flow/integrated-poc/due-date';
+import { programIsWaitTitle, programWaitStartable, startProgramWait } from '@/lib/flow/integrated-poc/wait-line';
 import type { TaskLocationTarget } from '@/lib/flow/integrated-poc/task-location-move';
 import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
 import { programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
@@ -425,6 +428,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const collectionMode = props.documentCollections;
   const [selected, setSelected] = useState(() => initialProgramDocumentId(props, space));
   const [opened, setOpened] = useState<string[]>(selected ? [selected] : []);
+  // Redesign 1 (총괄 11/12, REDESIGN-TECH-1 §1): a document opened in 쓰기 whose box lines' latest progress records say
+  // otherwise asks once to write those values into its text (one save, ↶ and [되돌리기] take it back). [나중에]: asked
+  // again next visit. The records stay.
+  const [progressAsk, setProgressAsk] = useState<{ actorId: string; documentId: string; changes: ProgramProgressTextChange[] } | null>(null);
+  const progressLater = useRef(new Set<string>()), progressDialog = useRef<HTMLDialogElement>(null);
+  const [progressNotice, setProgressNotice] = useState<{ actorId: string; documentId: string; count: number; before: TextWorkspaceState; after: TextWorkspaceState; undone?: boolean; refused?: boolean } | null>(null);
   const [detail, setDetail] = useState<Detail>(null), [message, setMessage] = useState('');
   const [writingNotice, setWritingNotice] = useState<{ actorId: string; documentId: string; text: string } | null>(null);
   const [viewChangeNotice, setViewChangeNotice] = useState<{ actorId: string; reason: 'composition' | 'recurrence' | 'saving' | 'save-failed' | 'pending' } | null>(null);
@@ -827,6 +836,39 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (dirty.current[id] && !await saveRequests.current[id]?.()) return false;
     return !dirty.current[id];
   }
+  // Redesign 1: the ask when a document is opened in 쓰기 (not while writing in it).
+  useEffect(() => {
+    if (period !== 'documents' || !selected || progressLater.current.has(`${actorId}:${selected}`)) { setProgressAsk(null); return; }
+    const changes = programProgressTextPlan(dataRef.current.spaces[actorId], selected);
+    setProgressAsk(changes.length ? { actorId, documentId: selected, changes } : null);
+  }, [period, selected, actorId]);
+  useEffect(() => {
+    const sheet = progressDialog.current;
+    if (!sheet) return;
+    if (progressAsk && !sheet.open) sheet.showModal(); else if (!progressAsk && sheet.open) sheet.close();
+  }, [progressAsk]);
+  function laterProgressText() {
+    if (progressAsk) progressLater.current.add(`${progressAsk.actorId}:${progressAsk.documentId}`);
+    setProgressAsk(null);
+  }
+  async function writeProgressText() {
+    const ask = progressAsk;
+    if (!ask || ask.actorId !== actorId) return;
+    // Pending input in this document is saved first; a composition holds it.
+    if (!await settleRecent(ask.documentId)) { setMessage('입력이 끝나면 다시 눌러 주세요.'); return; }
+    let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
+    const result = await run('진행률 글에 적기', current => { const next = applyProgramProgressText(current, { ...base(current), documentId: ask.documentId, changes: ask.changes });
+      if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
+    progressLater.current.add(`${ask.actorId}:${ask.documentId}`);
+    setProgressAsk(null);
+    if (!result.ok || !before || !after) { if (!result.ok && result.reason === 'conflict') setMessage('그사이 바뀐 줄이 있어 적지 않았습니다. 글을 다시 열면 다시 보여 드립니다.'); return; }
+    setProgressNotice({ actorId, documentId: ask.documentId, count: ask.changes.length, before, after });
+  }
+  async function undoProgressText(notice: NonNullable<typeof progressNotice>) {
+    const result = await run('진행률 적기 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: notice.documentId, before: notice.before, after: notice.after }), true);
+    setProgressNotice(current => current === notice ? result.ok ? { ...notice, undone: true } : { ...notice, refused: true } : current);
+  }
+  const progressMark = (text: string) => /\[[^\]]*\]/.exec(text)?.[0] ?? text;
   function rememberRecentWhole(next: Record<string, true>) {
     try { localStorage.setItem(recentWholeKey, JSON.stringify(next)); } catch { /* this visit only */ }
     setRecentWhole(next);
@@ -1049,7 +1091,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const folder = space.text.folders.find(row => row.id === folderId);
   const executionQuery = { period, date, today, folderId: collectionMode ? '' : folderId, query, includeHeld: includeHeldOccurrences, includeExcluded: includeExcludedOccurrences, page: occurrencePage };
   const occurrenceResult = useMemo(() => period === 'documents' ? { rows: [], issues: [], hasMore: false, pendingStarts: [] } : programOrderedExecutionRows(data, executionQuery), [data, period, date, today, folderId, query, includeHeldOccurrences, includeExcludedOccurrences, occurrencePage]);
-  const executionRows = occurrenceResult.rows;
+  // W-FLOW-07 · W-TXT-09: on today's own 오늘 (as todayHere reads it), an open '답 확인:' line dated by today is in '다시
+  // 확인할 일' above the list, so not a row of the list (nor the day close) too.
+  const rechecksShown = period === 'today' && date === today && !(folderScreen && !collectionMode) && !selecting && !folderId && !query;
+  const executionRows = rechecksShown ? occurrenceResult.rows.filter(row => !(row.kind === 'text-task' && !row.task.done && !!row.task.date && row.task.date <= today
+    && programIsWaitTitle(row.task.title))) : occurrenceResult.rows;
   const [emptyDaysOpen, setEmptyDaysOpen] = useState(false);
   const [addingDate, setAddingDate] = useState<string | null>(null);
   const groupAddField = useRef<HTMLInputElement | null>(null);
@@ -3251,6 +3297,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                   : (scope => scope && <><span className={styles.rowFolder}>/ {scope}</span> · </>)(rowFolderTitle(task)))(rowFlowTitle(task))}
                 {completingTaskIds.has(task.id) &&<><span className={styles.rowBusy}>{value === 100 ? '다시 열기 대기 중' : '완료 대기 중'}</span> · </>}
                 {meta.late && <><em className={styles.rowLate}>{meta.late}</em> · </>}
+                {/* Redesign 2 (W-TXT-02): its '- 마감:' as D-n; past, shown apart. */}
+                {(due => due && <><span className={due.state === 'over' ? styles.rowLate : undefined} data-row-due={due.state}>{due.label}</span> · </>)(programDueLabel(task.due, today))}
                 {[...meta.parts, ...(task.time ? [task.time] : []), ...(carryPlaces.has(task.id) ? [`${carryPlaces.get(task.id)!.place || '분류 없음'} · 분류 ${carryPlaces.get(task.id)!.count}곳`] : [])]
                   .map((part, index) => <React.Fragment key={index}>{part} · </React.Fragment>)}
                 <span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}<span className={styles.taskFolder}>{taskFolderPath(task)} / </span>{task.docTitle} →</span>
@@ -3259,10 +3307,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                 for the rest (a long press opens the date sheet); a series' occurrence keeps its own controls. */}
             {closing() && item.kind === 'row' && value < 100 && !moving && (readProgramRepeatMarker(task.title) && !repeatRow?.block
               ? <button type="button" className={styles.closeAction} data-close-action="skip" aria-label={`${programRepeatTitle(task.title)} 이번 회차 건너뛰기`} onClick={() => skipRepeatRound(task)}>건너뛰기</button>
-              : !programTaskRepeatMember(space, task.id) && <button type="button" className={styles.closeAction} data-close-action="tomorrow" aria-label={`${task.title} 내일로`}
+              : !programTaskRepeatMember(space, task.id) && (programTaskHasEveningRecord(space.text, task)
+                // W-CARRY-16 (총괄 11/12): a task with a record ([n%], a progress record, a checked subtask) is not moved in the
+                // evening; it is continued tomorrow morning (밀린 일's 이어 쓰기).
+                ? <span className={styles.closeNote} data-close-action="continue">내일 아침 이어 쓰기</span>
+                : <button type="button" className={styles.closeAction} data-close-action="tomorrow" aria-label={`${task.title} 내일로`}
                 onClick={() => { if (closeHold.current?.fired) { closeHold.current = null; return; } deferTask(task, programShiftDate(today, 1)); }}
                 onPointerDown={() => closeHoldStart(task)} onPointerUp={closeHoldCancel} onPointerLeave={closeHoldCancel} onPointerCancel={closeHoldCancel}
-                onContextMenu={event => event.preventDefault()}>내일</button>)}
+                onContextMenu={event => event.preventDefault()}>내일</button>))}
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}><ProgramIcon name="more" size={20} /></button>
@@ -3346,12 +3398,29 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (locationAvailability().blocked) { setMessage('저장을 확인한 뒤 옮겨 주세요.'); return; }
       // Its [되돌리기] puts the text back exactly as it was (a day it inherited is inherited again), only while nothing changed since.
       let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
-      const result = await run('다시 볼 날 바꾸기', current => { const next = updateProgramTask(current, { ...base(current), taskId: row.taskId, patch: { date: tomorrow } });
+      // W-TXT-09: a '답 확인:' line moves to tomorrow's section (its '- 기다림:' goes with it); a subcheck changes its day.
+      const result = await run('다시 볼 날 바꾸기', current => { const next = row.kind === 'line'
+        ? moveProgramTaskLocation(current, { ...base(current), taskId: row.taskId, documentId: row.docId, target: { kind: 'date', date: tomorrow } })
+        : updateProgramTask(current, { ...base(current), taskId: row.taskId, patch: { date: tomorrow } });
         if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
       if (!result.ok || !before || !after) return;
       const was: TextWorkspaceState = before, now: TextWorkspaceState = after;
       setFlowNotice({ text: `${row.title} · 다시 볼 날을 ${programCalendarDate(tomorrow, today, false)}로 바꿨습니다`, undo: async () =>
         (await run('다시 볼 날 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: row.docId, before: was, after: now }), true)).ok });
+    });
+  }
+  // W-FLOW-07 · W-TXT-09: 답 기다리기 — '- [ ] 답 확인: <제목>' with '- 기다림: 오늘' in the section of the day to look again,
+  // one save; its notice's [되돌리기] gives the text back exactly, only while nothing changed since.
+  function startWait(task: TextTask, recheck: string) {
+    void flowBusyWhile(task.id, async () => {
+      let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
+      const result = await run('답 기다리기', current => { const next = startProgramWait(current, { ...base(current), taskId: task.id, date: recheck, today });
+        if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
+      if (!result.ok || !before || !after) { if (!result.ok && result.reason === 'conflict') setMessage('이 일의 답 확인 줄이 이미 있습니다.'); return; }
+      const was: TextWorkspaceState = before, now: TextWorkspaceState = after;
+      close();
+      setFlowNotice({ text: `${task.title} · ${programCalendarDate(recheck, today, false)}에 답 확인 줄을 적었습니다`, undo: async () =>
+        (await run('답 기다리기 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: task.docId, before: was, after: now }), true)).ok });
     });
   }
   async function undoFlowNotice() {
@@ -3708,6 +3777,22 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           readOnly={programDocumentContentLock(space, id) !== 'active'} disabledReason={space.documentTrash?.[id] ? '휴지통의 문서입니다. 복원하면 삭제 전 상태로 돌아갑니다.' : retainedIds.has(id) ? '저장본으로 되돌리며 보관된 내용 · 읽기 전용' : '보관한 문서입니다. 보관에서 꺼내면 이어서 쓸 수 있습니다.'}
         />{recentLine(id, recent, true)}</div>; })}
         {locationNoticeContent}
+        {progressNotice?.actorId === actorId && progressNotice.documentId === selected && <div className={styles.orderNotice} data-progress-text-notice>
+          <ProgramNoticeRow notice={{ tone: progressNotice.refused ? 'warn' : progressNotice.undone ? 'info' : 'choose', closeLabel: '알림 닫기',
+            text: progressNotice.refused ? '그 뒤 바뀐 줄이 있어 되돌리지 않았습니다' : progressNotice.undone ? '진행률을 적기 전으로 되돌렸습니다' : `진행률 ${progressNotice.count}줄을 글에 적었습니다`,
+            actions: progressNotice.undone || progressNotice.refused ? [] : [{ label: '되돌리기', run: () => void undoProgressText(progressNotice) }] }} onClose={() => setProgressNotice(null)} />
+        </div>}
+        <dialog ref={progressDialog} className={`${styles.findDialog} ${styles.datesSheet}`} aria-labelledby="program-progress-text-title" data-progress-text-sheet
+          onCancel={event => { event.preventDefault(); laterProgressText(); }}>
+          {progressAsk && <>
+            <h2 id="program-progress-text-title">진행률을 글에 적을까요?</h2>
+            <p className={styles.muted}>진행 기록의 가장 최근 값을 할 일 줄에 적습니다. 기록은 그대로 두고, 적은 뒤 되돌릴 수 있습니다.</p>
+            <ul className={styles.progressTextList}>{progressAsk.changes.map(change => <li key={change.lineId}><span>{change.title}</span>
+              <small>{progressMark(change.before)} → {progressMark(change.after)} · {programCalendarDate(change.date, today, false)} 기록</small></li>)}</ul>
+            <button type="button" className={styles.datesChoice} data-progress-text-write onClick={() => void writeProgressText()}>글에 적기</button>
+            <button type="button" className={styles.datesClose} onClick={laterProgressText}>나중에</button>
+          </>}
+        </dialog>
         {/* F4-a (A3 ⑤): the folder's other documents, one folded line each; a press opens that one instead (one editor). */}
         {folderWriting && folderWritingDocuments.length > 1 && <ul className={folderStyles.docFolds} aria-label="이 폴더가 나오는 다른 글">
           {folderWritingDocuments.filter(doc => doc.id !== selected).map(doc => <li key={doc.id}><button type="button" className={folderStyles.docFold} data-folder-document={doc.id}
@@ -3893,6 +3978,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           </div>
           {props.capabilities?.taskClassification!==false&&<button type="button" disabled={detailSchedulePending||detailProgressPending||locationAvailability().blocked||readTaskLocationPolicy(space,detailTask.id).kind!=='move'} onClick={()=>setDetailFolderMove(true)}>폴더로 옮기기 · 지금 / {programFolderPath(space.text,detailTask.scopeId)}</button>}
         </section>
+        {/* W-FLOW-07 · W-TXT-09: 답 기다리기 — the day to look again; the text takes '- [ ] 답 확인: 제목' and '- 기다림: 오늘' there. */}
+        {programWaitStartable(space, detailTask.id) && <section data-task-wait aria-label="답 기다리기"><h3>답 기다리기 <small>다시 볼 날에 ‘답 확인’ 줄을 적습니다</small></h3>
+          <div className={styles.deferChips} role="group" aria-label="다시 볼 날">
+            {programLineDateChips(today).filter(chip => chip.date > today).map(chip => <button type="button" key={chip.key} data-wait-date={chip.date}
+              disabled={flowBusy.has(detailTask.id) || locationPending || detailSchedulePending || detailProgressPending} onClick={() => startWait(detailTask, chip.date)}>{chip.label}</button>)}
+          </div></section>}
         <div className={styles.detailOrigin}>
           <p className={styles.muted}>{readProgramTaskOrigin(data, detailTask).label} · {detailTask.docTitle}</p>
           <button disabled={detailSchedulePending || detailProgressPending} onClick={() => openDetailSource(detailTask.docId, detailTask.id)}>원문 열기</button>
