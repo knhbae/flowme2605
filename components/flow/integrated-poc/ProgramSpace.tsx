@@ -111,6 +111,7 @@ import { programCheckpointForWritingTarget } from '@/lib/flow/integrated-poc/wri
 import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classification';
 import { commitTaskDateWithUndo, moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
 import { programDateLineDefaults, type ProgramDateLineChoice, type ProgramDateLineChoices } from '@/lib/flow/integrated-poc/date-property-migration';
+import { programContinuationStarts } from '@/lib/flow/integrated-poc/continuation';
 import { applyProgramTextCleanup, programTextCleanupDocuments, programTextCleanupPlan, programTextCleanupProof, restoreProgramTextCleanup, type ProgramTextCleanupPlan } from '@/lib/flow/integrated-poc/text-cleanup';
 
 import { programDueLabel } from '@/lib/flow/integrated-poc/due-date';
@@ -330,6 +331,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // typelag (11/11): the tasks of the saved text, read once per text (the screen draws again at every key; the band
   // asked them again for each of its rows). Read only.
   const textTasks = useMemo(() => M.tasks(space.text), [space.text]);
+  // Redesign 4: 'n일째' counts from the day a task's 이어감 chain began (총괄 11/12).
+  const continuationStarts = useMemo(() => programContinuationStarts(space.text), [space.text]);
   // 첫인상 (11/7): read here, not inside a branch; empty unless the official list was read (Alpha only).
   const officialActors = useAlphaOfficialActors();
   // C6a review: every save of the space goes through here. Each is counted while it waits (고르기 does not start during
@@ -3035,7 +3038,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     {carryPlan.first && <p className={styles.carryMeta}>{programCalendarDate(carryPlan.first, today, false)}부터{carryPlan.repeated ? ' · 같은 일이 여러 날에 있음' : ''}</p>}
     <div className={styles.carryActions}>
       {carryPlan.lines.length > 0 && <button type="button" className={styles.carryMove} disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}
-        aria-busy={carryPending || undefined} onClick={() => void carryToToday(carryPlan)}>{carryPending ? '옮기는 중…' : `오늘로 옮기기 · ${carryPlan.toToday}`}</button>}
+        aria-busy={carryPending || undefined} onClick={() => void carryToToday(carryPlan)}>{carryPending ? '이어 쓰는 중…' : `어제 남은 일 이어 쓰기 · ${carryPlan.toToday}`}</button>}
       <button type="button" className={styles.carryOne} aria-haspopup="dialog" disabled={carryPending} onClick={() => openCarrySheet()}>하나씩 정리</button>
     </div>
     {carryWriting && <small className={styles.carryNote} role="status">쓰기를 마치면 정리할 수 있습니다</small>}
@@ -3293,7 +3296,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           const repeatRow = programRepeatLine(space, task.id, textTasks), repeatShown = repeatRow && (!repeatRow.block || repeatRow.block === 'done') ? repeatRow : null;
           const { latest: progress, current } = taskProgress(task.id), value = current ?? (task.done ? 100 : 0);
           const meta = programExecutionRowMeta({ date: task.date, done: value === 100, progress: progress?.date ? { date: progress.date, percent: progress.percent } : null, today, dated: item.dated,
-            since: task.explicitDate ? task.groupDate : null });
+            since: continuationStarts.get(task.id) ?? null });
           return <li key={entry.key} className={styles.task} data-task-id={task.id} data-done={value === 100 || undefined} data-close-row={closing() && item.kind === 'row' && value < 100 && !moving ? '' : undefined} data-flow-row={rowFlowTitle(task) ? '' : undefined} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>

@@ -2,7 +2,9 @@ import { programClone, type ProgramData, type ProgramPrivateSpace, type ProgramT
 import { programDate } from './program-data';
 import { programSameTaskKey } from './continue-band';
 import type { ProgramOrderedExecutionRow } from './recurrence-order';
-import { patchProgramTask, transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
+import { patchProgramTask, programExecutionDocument, transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
+import { continueProgramTask, programLostContinuations, programTaskHasRecord, reviveProgramContinuation } from './continuation';
+import { readTaskLocationPolicy } from './task-location-command';
 import { programExecutionTasks, programTaskProgress } from './execution';
 import { programStateHash, programTaskDateStates, programTaskRepeatMembers } from './task-date-move';
 import { textWorkspaceModel as M, type TextRow, type TextTask, type TextWorkspaceState } from './text-workspace';
@@ -19,7 +21,8 @@ import { programPreservesLegacyPlanExcluded } from './program-legacy-plan-target
 export const PROGRAM_CARRYOVER_LIMIT = 100;
 /** `date`: today's date; `undated`: 날짜 미정 (N11b); `remove`: a copy that says nothing a staying line does not;
  *  `drop`: a line the person chose to delete in 하나씩 정리, with what is under it (N11b); `hold`: only has to stay so. */
-export type ProgramCarryoverAction = 'date' | 'undated' | 'remove' | 'drop' | 'hold';
+/** gain (redesign 4, W-TXT-08): a `[>]` line nothing receives any more, continued again to today. */
+export type ProgramCarryoverAction = 'date' | 'undated' | 'remove' | 'drop' | 'hold' | 'again';
 /** One line of the plan with its state as the screen saw it (C6b's token). */
 export type ProgramCarryoverLine = { taskId: string; state: string; action: ProgramCarryoverAction };
 /** N11b 하나씩 정리: what the person chose for one task (all its copies) in the sheet. */
@@ -323,6 +326,15 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
     if (finished) plan.finished++; else if (written.length) plan.today++;
     if (taken.some(line => line.action === 'date') || !finished && written.length) plan.toToday++;
   }
+  // Redesign 4 (W-TXT-08): a `[>]` line whose receiving line is gone is remaining work again; the card's press continues it.
+  if (!choices) for (const lost of programLostContinuations(space.text, today)) {
+    const state = states(lost.lineId);
+    if (!state) continue;
+    if (cut || changed + 1 > limit) { cut = true; plan.left++; continue; }
+    plan.lines.push({ taskId: lost.lineId, state, action: 'again' }); changed++;
+    plan.count++; plan.kinds++; plan.moved++; plan.toToday++;
+    if (lost.day && (!plan.first || lost.day < plan.first)) plan.first = lost.day;
+  }
   return plan;
 }
 
@@ -330,7 +342,7 @@ const validLines = (lines: unknown): lines is ProgramCarryoverLine[] => Array.is
   && lines.filter(line => line?.action !== 'hold').length <= PROGRAM_CARRYOVER_LIMIT
   && new Set(lines.map(line => line?.taskId)).size === lines.length
   && lines.every(line => line && typeof line.taskId === 'string' && typeof line.state === 'string' && /^[0-9a-z]{1,64}$/.test(line.state)
-    && ['date', 'undated', 'remove', 'drop', 'hold'].includes(line.action) && Object.keys(line).length === 3);
+    && ['date', 'undated', 'remove', 'drop', 'hold', 'again'].includes(line.action) && Object.keys(line).length === 3);
 
 /** Date rows of a document whose day has something written under it. */
 function filledDays(text: TextWorkspaceState, docId: string): Set<string> {
@@ -394,13 +406,30 @@ export function carryProgramTasksToToday(data: ProgramData, input: ProgramPrivat
     const stay = input.lines.filter(line => line.action !== 'remove' && line.action !== 'drop').flatMap(line => tasks.get(line.taskId) ?? []);
     const goes = (task: TextTask) => untouchable(task) === null && !isRecorded(task) && underOf(task) !== null
       && (underOf(task) === '' || stay.some(other => other !== task && kindOf(other) === kindOf(task) && underOf(other) === underOf(task)));
+    const lost = new Map(programLostContinuations(start.text, input.today).map(line => [line.lineId, line]));
     for (const line of input.lines) {
+      if (line.action === 'again') { if (!lost.has(line.taskId)) return { result: line.taskId, reason: 'conflict' }; continue; }
       const task = tasks.get(line.taskId);
       const fits = !!task && (line.action === 'hold' || (line.action === 'remove' ? goes(task) : line.action === 'drop' ? droppable(task)
         : touchable(task) && task.date !== null && task.date < input.today));
       if (!fits) return { result: line.taskId, reason: 'conflict' };
     }
+    for (const line of input.lines.filter(line => line.action === 'again')) {
+      const continued = reviveProgramContinuation(space.text, { documentId: lost.get(line.taskId)!.docId, lineId: line.taskId, today: input.today });
+      if (!continued.ok) return { result: line.taskId, reason: 'unresolved' };
+      space.text = continued.next;
+    }
     for (const line of input.lines.filter(line => line.action === 'date' || line.action === 'undated')) {
+      // Redesign 4 (W-MENU-25, 총괄 11/12): a task with a record is continued to today ([>] and its 이어감 stay on its
+      // day); one without moves under today's heading (W-MENU-07). A copy's, a reference's, a repeat's or a run's
+      // date still changes in place (step 5).
+      const task = tasks.get(line.taskId)!;
+      if (line.action === 'date' && programTaskHasRecord(space.text, task) && readTaskLocationPolicy(space, task.id).kind === 'move' && !programExecutionDocument(space, task.docId)) {
+        const continued = continueProgramTask(space.text, { documentId: task.docId, taskId: task.id, today: input.today });
+        if (!continued.ok) return { result: line.taskId, reason: 'unresolved' };
+        space.text = continued.next;
+        continue;
+      }
       const patched = patchProgramTask(space, line.taskId, { date: line.action === 'date' ? input.today : null });
       if (patched.reason) return patched;
     }
@@ -418,7 +447,7 @@ export function carryProgramTasksToToday(data: ProgramData, input: ProgramPrivat
     const ids = new Set([...space.text.documents, ...space.text.flows].flatMap(doc => doc.lines.map(line => line.id)));
     space.timelineOrders = Object.fromEntries(Object.entries(space.timelineOrders).map(([day, order]) => [day, order.filter(id => ids.has(id))]));
     if (space.position.lineId && !ids.has(space.position.lineId)) space.position = { documentId: space.position.documentId, lineId: null, start: 0, end: 0, scrollTop: 0 };
-    const counts = input.lines.reduce((sum, line) => ({ ...sum, [line.action]: sum[line.action] + 1 }), { date: 0, undated: 0, remove: 0, drop: 0, hold: 0 });
+    const counts = input.lines.reduce((sum, line) => ({ ...sum, [line.action]: sum[line.action] + 1 }), { date: 0, undated: 0, remove: 0, drop: 0, hold: 0, again: 0 });
     return { result: `${counts.date}:${counts.remove}:${counts.undated}:${counts.drop}` };
   });
 }
