@@ -1,18 +1,20 @@
-import type { ProgramData, ProgramPrivateSpace, ProgramTransition } from './contract';
+import type { ProgramPrivateSpace } from './contract';
 import { programSame } from './controller';
-import { programExecutionDocument, transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
+import { programExecutionDocument } from './private-space';
 import { programDocumentContentLock, programReferenceExecutionAccess } from './reference-execution-guard';
 import { programTaskRepeatMembers } from './task-date-move';
 import { moveTaskLocation } from './task-location-move';
 import { readProgramRepeatMarker } from './repeat-line';
 import { textWorkspaceModel as M, type TextRow, type TextTask, type TextWorkspaceState } from './text-workspace';
 
-/** Redesign 3 (DECISION-1, 총괄 11/12, mockup ③): the day of a task is the date section it sits in, so a document's
- *  '- 날짜:' lines go, once, on the person's word. A line saying the day the task reads without it is only deleted; one
- *  saying another day either takes the task to that day's section (그날로 옮기기, as 위치 옮기기 does: the default) or
- *  becomes its '- 마감:' (마감으로 바꾸기). A subtask cannot leave its parent, so it only takes 마감. A copy's document,
- *  a Flow run's, a Flow's own, a reference line, a repeat line and a line whose value cannot be read stay as they are
- *  (redesign step 5). One document at a time, in one save; 되돌리기 is the writing back as it was. */
+/** Redesign 3 (DECISION-1, W-TXT-03, mockup ③; 총괄 11/12: the whole account at once). The day of a task is the date
+ *  section it sits in, so the '- 날짜:' lines go, once, on the person's word. A line saying the day the task reads
+ *  without it is only deleted; one saying another day either takes the task to that day's section (그날로 옮기기, as
+ *  위치 옮기기 does: the default) or becomes its '- 마감:' (마감으로 바꾸기). In a document without date headings a task's
+ *  date is its 마감 (decision 11/12 12:4x): only 마감, no heading is made. A subtask cannot leave its parent, so it only
+ *  takes 마감. A copy's document, a Flow run's, a Flow's own, a reference line, a repeat line and a line whose value
+ *  cannot be read stay as they are (redesign step 5). The account's plan is one list; text-cleanup.ts applies it in one
+ *  save after a snapshot, and 되돌리기 is the writing back as it was. */
 export type ProgramDateLineChoice = 'move' | 'due';
 export type ProgramDateLineItem = {
   /** The task (or subtask) line the '- 날짜:' lines are under, and those lines in order (the last one counts). */
@@ -23,7 +25,7 @@ export type ProgramDateLineItem = {
   /** For 'other': what this line can take, the default first (empty for 'same'). */
   choices: ProgramDateLineChoice[];
 };
-export type ProgramDateLinePlan = { documentId: string; items: ProgramDateLineItem[]; lines: number };
+export type ProgramDateLinePlan = { documentId: string; title: string; headless: boolean; items: ProgramDateLineItem[]; lines: number };
 export type ProgramDateLineChoices = Record<string, ProgramDateLineChoice>;
 
 const DATE_LINE = /^( *-\s+)날짜:\s*(.*)$/;
@@ -36,8 +38,15 @@ function excludedDocument(space: ProgramPrivateSpace, documentId: string): boole
     || programExecutionDocument(space, documentId);
 }
 
+type Shared = { canonical: Map<string, TextTask>; repeats: Set<string>; external: Set<string> };
+function shared(space: ProgramPrivateSpace): Shared {
+  return { canonical: new Map(M.tasks(space.text).map(task => [task.id, task])), repeats: programTaskRepeatMembers(space),
+    external: new Set([...space.copies.flatMap(copy => [...Object.values(copy.itemLines), ...Object.values(copy.subcheckLines).flatMap(lines => Object.values(lines))]),
+      ...space.savedBindings.flatMap(binding => Object.values(binding.itemLines))]) };
+}
+
 /** The document's date lines, grouped by the line they are under, in line order. Null when the document is not offered. */
-export function programDateLinePlan(space: ProgramPrivateSpace, documentId: string): ProgramDateLinePlan | null {
+export function programDateLinePlan(space: ProgramPrivateSpace, documentId: string, given?: Shared): ProgramDateLinePlan | null {
   if (excludedDocument(space, documentId)) return null;
   const doc = M.getDocument(space.text, documentId)!, parsed = M.parseDocument(doc, space.text);
   const owners = new Map<string, string[]>();
@@ -46,12 +55,11 @@ export function programDateLinePlan(space: ProgramPrivateSpace, documentId: stri
     owners.set(row.taskId, [...owners.get(row.taskId) ?? [], row.id]);
   }
   if (!owners.size) return null;
+  const { canonical, repeats, external } = given ?? shared(space);
+  const headless = !parsed.rows.some(row => row.kind === 'date');
   const items = new Map(parsed.items.map(item => [item.id, item])), rows = new Map(parsed.rows.map(row => [row.id, row]));
-  const canonical = new Map(M.tasks(space.text).map(task => [task.id, task])), repeats = programTaskRepeatMembers(space);
   const invalid = new Set(parsed.issues.filter(issue => issue.code === 'invalid-date-property').map(issue => issue.lineId));
   const references = new Set(space.text.bindings.filter(binding => binding.kind === 'task' && binding.docId === documentId).map(binding => binding.lineId));
-  const external = new Set([...space.copies.flatMap(copy => [...Object.values(copy.itemLines), ...Object.values(copy.subcheckLines).flatMap(lines => Object.values(lines))]),
-    ...space.savedBindings.flatMap(binding => Object.values(binding.itemLines))]);
   const out: ProgramDateLineItem[] = [];
   for (const [ownerId, lineIds] of owners) {
     const item = items.get(ownerId), row = rows.get(ownerId);
@@ -64,7 +72,7 @@ export function programDateLinePlan(space: ProgramPrivateSpace, documentId: stri
     const value = item.date, base = { ownerId, lineIds, title: item.title, subtask: !item.isCanonical, value, section };
     if (value === section) { out.push({ ...base, kind: 'same', choices: [] }); continue; }
     const choices: ProgramDateLineChoice[] = [];
-    if (item.isCanonical && movable(parsed.rows, row, task, references)) choices.push('move');
+    if (!headless && item.isCanonical && movable(parsed.rows, row, task, references)) choices.push('move');
     if (value !== null && !parsed.rows.some(entry => entry.kind === 'property' && entry.parentLineId === ownerId && DUE_LINE.test(entry.text))) choices.push('due');
     if (choices.length) out.push({ ...base, kind: 'other', choices });
   }
@@ -74,7 +82,13 @@ export function programDateLinePlan(space: ProgramPrivateSpace, documentId: stri
     if (parsed.rows.slice(row.index + 1, row.subtreeEndIndex).some(entry => owners.has(entry.id) && items.get(entry.id)?.isCanonical)) item.choices = item.choices.slice(1);
   }
   const offered = out.filter(item => item.kind === 'same' || item.choices.length);
-  return offered.length ? { documentId, items: offered, lines: offered.reduce((sum, item) => sum + item.lineIds.length, 0) } : null;
+  return offered.length ? { documentId, title: doc.title || '새 문서', headless, items: offered, lines: offered.reduce((sum, item) => sum + item.lineIds.length, 0) } : null;
+}
+
+/** Every document's plan, in document order (the account's one list). */
+export function programDateLineAccountPlan(space: ProgramPrivateSpace): ProgramDateLinePlan[] {
+  const given = shared(space);
+  return space.text.documents.flatMap(doc => { const plan = programDateLinePlan(space, doc.id, given); return plan ? [plan] : []; });
 }
 
 /** What 위치 옮기기 takes (task-location-move's own refusals, read without moving): a folder task with nothing linked,
@@ -85,13 +99,13 @@ function movable(rows: TextRow[], row: TextRow, task: TextTask, references: Set<
     || /^ *- \//.test(entry.text) || (entry.kind === 'task' || entry.kind === 'subcheck') && !!entry.title && !!readProgramRepeatMarker(entry.title));
 }
 
-/** The default of mockup ③ (decision 11/12): every other day moves (마감 where it cannot). */
-export function programDateLineDefaults(plan: ProgramDateLinePlan): ProgramDateLineChoices {
-  return Object.fromEntries(plan.items.filter(item => item.kind === 'other').map(item => [item.ownerId, item.choices[0]]));
+/** The defaults (mockup ③; W-TXT-03): every other day moves; in a document without date headings it is 마감. */
+export function programDateLineDefaults(plans: readonly ProgramDateLinePlan[]): ProgramDateLineChoices {
+  return Object.fromEntries(plans.flatMap(plan => plan.items).filter(item => item.kind === 'other').map(item => [item.ownerId, item.choices[0]]));
 }
 
-/** The plan with these choices, on the text: its lines deleted, made 마감, or the task moved. Every other task, every
- *  record, link and folder stays as it was; null when something would change that should not. */
+/** One document's plan with these choices, on the text: its lines deleted, made 마감, or the task moved. Every other
+ *  task, every record, link and folder stays as it was; null when something would change that should not. */
 export function applyProgramDateLineChoices(text: TextWorkspaceState, plan: ProgramDateLinePlan, choices: ProgramDateLineChoices): TextWorkspaceState | null {
   const doc = M.getDocument(text, plan.documentId);
   if (!doc) return null;
@@ -111,17 +125,40 @@ export function applyProgramDateLineChoices(text: TextWorkspaceState, plan: Prog
   }
   const lines = doc.lines.filter(line => !drop.has(line.id)).map(line => due.has(line.id) ? { id: line.id, text: due.get(line.id)! } : line);
   let next: TextWorkspaceState = { ...text, documents: text.documents.map(item => item.id === doc.id ? { ...item, lines } : item) };
-  for (const item of others.filter(item => choices[item.ownerId] === 'move')) {
-    const moved = moveTaskLocation(next, { documentId: plan.documentId, taskId: item.ownerId, target: { kind: 'date', date: item.value } });
-    if (!moved.ok) return null;
-    next = moved.next;
+  const moves = others.filter(item => choices[item.ownerId] === 'move');
+  if (moves.length) {
+    // The moves read this document (and those its links reach) alone: 위치 옮기기 checks the whole state it is given, and
+    // a whole account read again for each move took seconds. The account is checked once after (merge + validate).
+    const small = slice(next, plan.documentId), whole = !M.validate(small);
+    let work = whole ? next : small;
+    for (const item of moves) {
+      const moved = moveTaskLocation(work, { documentId: plan.documentId, taskId: item.ownerId, target: { kind: 'date', date: item.value } });
+      if (!moved.ok || moved.due !== undefined) return null;
+      work = moved.next;
+    }
+    next = whole ? work : { ...next, documents: next.documents.map(item => item.id === plan.documentId ? M.getDocument(work, plan.documentId)! : item),
+      bindings: [...next.bindings.filter(binding => binding.docId !== plan.documentId), ...work.bindings.filter(binding => binding.docId === plan.documentId)] };
   }
-  if (!M.validate(next) || !programSame(text.progressRecords, next.progressRecords) || !programSame(text.taskScopes, next.taskScopes)
+  // This document's part is checked here; the caller checks the whole account once (text-cleanup.ts).
+  if (!M.validate(slice(next, plan.documentId)) || !programSame(text.progressRecords, next.progressRecords) || !programSame(text.taskScopes, next.taskScopes)
     || !programSame(text.itemScopes, next.itemScopes) || !programSame(text.folders, next.folders)) return null;
-  // Every link there was is there as it was (위치 옮기기 may add a folder line's own).
-  const links = new Set(next.bindings.map(binding => JSON.stringify(binding)));
-  if (text.bindings.some(binding => !links.has(JSON.stringify(binding)))) return null;
+  // Every link there was is there as it was; a folder line a move left empty went with its own link (총괄 11/12).
+  const links = new Set(next.bindings.map(binding => JSON.stringify(binding))), lineIds = new Set(next.documents.flatMap(item => item.lines.map(line => line.id)));
+  if (text.bindings.some(binding => !links.has(JSON.stringify(binding)) && !(binding.kind === 'scope' && !lineIds.has(binding.lineId)))) return null;
   return keepsMeaning(text, next, plan, choices) ? next : null;
+}
+
+/** The part of the account one document's moves read: that document, the documents its reference lines point into, and
+ *  the links, owners and records of their lines. The folders stay whole. */
+function slice(text: TextWorkspaceState, documentId: string): TextWorkspaceState {
+  const all = [...text.documents, ...text.flows];
+  const owner = new Map(all.flatMap(item => item.lines.map(line => [line.id, item.id] as const)));
+  const docs = new Set([documentId, ...text.bindings.flatMap(binding => binding.kind === 'task' && binding.docId === documentId ? [owner.get(binding.taskId) ?? ''] : [])]);
+  const ids = new Set(all.filter(item => docs.has(item.id)).flatMap(item => item.lines.map(line => line.id)));
+  const pick = (source: Record<string, string>) => Object.fromEntries(Object.entries(source).filter(([id]) => ids.has(id)));
+  return { ...text, documents: text.documents.filter(item => docs.has(item.id)), flows: text.flows.filter(item => docs.has(item.id)),
+    bindings: text.bindings.filter(binding => docs.has(binding.docId) && (binding.kind === 'scope' || ids.has(binding.taskId))),
+    taskScopes: pick(text.taskScopes), itemScopes: pick(text.itemScopes), progressRecords: text.progressRecords.filter(record => ids.has(record.taskId)) };
 }
 
 /** Every task and subtask keeps its words, state, memo and time. A task's day is the planned one: what its line said
@@ -151,16 +188,19 @@ function keepsMeaning(before: TextWorkspaceState, after: TextWorkspaceState, pla
   return true;
 }
 
-/** 이대로 바꾸기: the plan as shown, applied in one save, only while the document still reads the same plan. */
-export function applyProgramDateLines(data: ProgramData, input: ProgramPrivateMutationBase & { plan: ProgramDateLinePlan; choices: ProgramDateLineChoices }): ProgramTransition<string> {
-  const fields = { documentId: input.plan.documentId, items: input.plan.items.map(item => ({ ownerId: item.ownerId, lineIds: item.lineIds, value: item.value, kind: item.kind })), choices: input.choices };
-  return transitionProgramPrivateSpace(data, input, 'private-date-lines', fields, space => {
-    const now = programDateLinePlan(space, input.plan.documentId);
-    if (!now) return { result: input.plan.documentId, reason: 'conflict' };
-    if (!programSame(now, input.plan)) return { result: input.plan.documentId, reason: 'conflict' };
-    const next = applyProgramDateLineChoices(space.text, now, input.choices);
-    if (!next) return { result: input.plan.documentId, reason: 'unresolved' };
-    space.text = next;
-    return { result: input.plan.documentId };
-  });
+/** W-TXT-03's machine check of the whole account: leaving out the '- 날짜:' lines (one may stay as a '- 마감:' line, the
+ *  same line), every line is still there with its words (its indentation may change), and every new line is a date
+ *  heading, a blank or a folder line; a folder line may go only when a move left it empty. */
+export function programDateLinesKeepLines(before: TextWorkspaceState, after: TextWorkspaceState): boolean {
+  const docs = (text: TextWorkspaceState) => [...text.documents, ...text.flows];
+  if (!programSame(docs(before).map(doc => doc.id), docs(after).map(doc => doc.id))) return false;
+  const now = new Map(docs(after).flatMap(doc => doc.lines.map(line => [line.id, line.text] as const))), was = new Set(docs(before).flatMap(doc => doc.lines.map(line => line.id)));
+  for (const line of docs(before).flatMap(doc => doc.lines)) {
+    const text = now.get(line.id);
+    // A date line left as it is (a repeat's, an unreadable one) stays; one taken on is gone or became that '- 마감:' line.
+    if (DATE_LINE.test(line.text)) { if (text !== undefined && text !== line.text && !/^ *-\s+마감:/.test(text)) return false; continue; }
+    if (text === undefined) { if (!/^ *- \//.test(line.text)) return false; continue; }
+    if (text.trim() !== line.text.trim()) return false;
+  }
+  return [...now].every(([id, text]) => was.has(id) || !text.trim() || /^\[[^\]]*\]$/.test(text.trim()) || /^ *- \//.test(text));
 }

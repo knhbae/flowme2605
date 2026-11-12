@@ -110,8 +110,9 @@ import { createPendingProgramSourceNavigation } from '@/lib/flow/integrated-poc/
 import { programCheckpointForWritingTarget } from '@/lib/flow/integrated-poc/writing-navigation';
 import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classification';
 import { commitTaskDateWithUndo, moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
-import { applyProgramProgressText, programProgressTextPlan, type ProgramProgressTextChange } from '@/lib/flow/integrated-poc/progress-text';
-import { applyProgramDateLines, programDateLineDefaults, programDateLinePlan, type ProgramDateLineChoice, type ProgramDateLineChoices, type ProgramDateLinePlan } from '@/lib/flow/integrated-poc/date-property-migration';
+import { programDateLineDefaults, type ProgramDateLineChoice, type ProgramDateLineChoices } from '@/lib/flow/integrated-poc/date-property-migration';
+import { applyProgramTextCleanup, programTextCleanupDocuments, programTextCleanupPlan, programTextCleanupProof, restoreProgramTextCleanup, type ProgramTextCleanupPlan } from '@/lib/flow/integrated-poc/text-cleanup';
+
 import { programDueLabel } from '@/lib/flow/integrated-poc/due-date';
 import { programIsWaitTitle, programWaitStartable, startProgramWait } from '@/lib/flow/integrated-poc/wait-line';
 import type { TaskLocationTarget } from '@/lib/flow/integrated-poc/task-location-move';
@@ -320,6 +321,9 @@ function useProgramDayClock(hostToday: string): { today: string; hour: number } 
   return { today: programLaterToday(hostToday, clock?.date ?? null), hour: clock?.hour ?? new Date().getHours() };
 }
 
+/** Redesign 1 + 3: the accounts asked about their writing cleanup in this page load (an app open asks once). */
+const programTextCleanupAsked = new Set<string>();
+
 export function ProgramSpace(props: ProgramSpaceProps) {
   const dayClock = useProgramDayClock(props.today);
   const { data } = props, today = dayClock.today, actorId = data.activeActorId, space = data.spaces[actorId];
@@ -429,16 +433,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const collectionMode = props.documentCollections;
   const [selected, setSelected] = useState(() => initialProgramDocumentId(props, space));
   const [opened, setOpened] = useState<string[]>(selected ? [selected] : []);
-  // Redesign 1 (총괄 11/12, REDESIGN-TECH-1 §1): a document opened in 쓰기 whose box lines' latest progress records say
-  // otherwise asks once to write those values into its text (one save, ↶ and [되돌리기] take it back). [나중에]: asked
-  // again next visit. The records stay.
-  const [progressAsk, setProgressAsk] = useState<{ actorId: string; documentId: string; changes: ProgramProgressTextChange[] } | null>(null);
-  const progressLater = useRef(new Set<string>()), progressDialog = useRef<HTMLDialogElement>(null);
-  const [progressNotice, setProgressNotice] = useState<{ actorId: string; documentId: string; count: number; before: TextWorkspaceState; after: TextWorkspaceState; undone?: boolean; refused?: boolean } | null>(null);
-  // Redesign 3 (mockup ③): a document's '- 날짜:' lines, asked once when it is opened (after the progress ask).
-  const [dateLineAsk, setDateLineAsk] = useState<{ actorId: string; plan: ProgramDateLinePlan; choices: ProgramDateLineChoices } | null>(null);
-  const dateLineLater = useRef<string | null>(null), dateLineDialog = useRef<HTMLDialogElement>(null);
-  const [dateLineNotice, setDateLineNotice] = useState<{ actorId: string; documentId: string; count: number; before: TextWorkspaceState; after: TextWorkspaceState; undone?: boolean; refused?: boolean } | null>(null);
+  // Redesign 1 + 3 (W-TXT-01·03, 총괄 11/12): the account's writing brought to the new rules once (progress into [n%], the
+  // '- 날짜:' lines), as one list asked when the app opens. [바꾸기]: a snapshot, then one save; [되돌리기]: one save back.
+  // [나중에]: asked again the next time the app opens (a tab change does not ask).
+  const [cleanupAsk, setCleanupAsk] = useState<{ actorId: string; plan: ProgramTextCleanupPlan; choices: ProgramDateLineChoices } | null>(null);
+  const cleanupDialog = useRef<HTMLDialogElement>(null), [cleanupPending, setCleanupPending] = useState(false);
+  const [cleanupNotice, setCleanupNotice] = useState<{ actorId: string; documents: number; before: TextWorkspaceState; after: TextWorkspaceState; undone?: boolean; refused?: boolean } | null>(null);
   const [detail, setDetail] = useState<Detail>(null), [message, setMessage] = useState('');
   const [writingNotice, setWritingNotice] = useState<{ actorId: string; documentId: string; text: string } | null>(null);
   const [viewChangeNotice, setViewChangeNotice] = useState<{ actorId: string; reason: 'composition' | 'recurrence' | 'saving' | 'save-failed' | 'pending' } | null>(null);
@@ -841,76 +841,44 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (dirty.current[id] && !await saveRequests.current[id]?.()) return false;
     return !dirty.current[id];
   }
-  // Redesign 1: the ask when a document is opened in 쓰기 (not while writing in it).
+  // Redesign 1 + 3: asked once when the app opens (this page load), for the account as it is then.
   useEffect(() => {
-    if (period !== 'documents' || !selected || progressLater.current.has(`${actorId}:${selected}`)) { setProgressAsk(null); return; }
-    const changes = programProgressTextPlan(dataRef.current.spaces[actorId], selected);
-    setProgressAsk(changes.length ? { actorId, documentId: selected, changes } : null);
-  }, [period, selected, actorId]);
+    if (programTextCleanupAsked.has(actorId)) return;
+    const current = dataRef.current.spaces[actorId];
+    if (!current) return;
+    programTextCleanupAsked.add(actorId);
+    const plan = programTextCleanupPlan(current);
+    if (plan) setCleanupAsk({ actorId, plan, choices: programDateLineDefaults(plan.dates) });
+  }, [actorId]);
   useEffect(() => {
-    const sheet = progressDialog.current;
+    const sheet = cleanupDialog.current;
     if (!sheet) return;
-    if (progressAsk && !sheet.open) sheet.showModal(); else if (!progressAsk && sheet.open) sheet.close();
-  }, [progressAsk]);
-  function laterProgressText() {
-    if (progressAsk) progressLater.current.add(`${progressAsk.actorId}:${progressAsk.documentId}`);
-    setProgressAsk(null);
-  }
-  async function writeProgressText() {
-    const ask = progressAsk;
-    if (!ask || ask.actorId !== actorId) return;
-    // Pending input in this document is saved first; a composition holds it.
-    if (!await settleRecent(ask.documentId)) { setMessage('입력이 끝나면 다시 눌러 주세요.'); return; }
+    if (cleanupAsk && !sheet.open) sheet.showModal(); else if (!cleanupAsk && sheet.open) sheet.close();
+  }, [cleanupAsk]);
+  async function writeCleanup() {
+    const ask = cleanupAsk;
+    if (!ask || ask.actorId !== actorId || cleanupPending) return;
+    // Pending input in the documents it changes is saved first; a composition holds it.
+    for (const id of programTextCleanupDocuments(ask.plan)) if (!await settleRecent(id)) { setMessage('입력이 끝나면 다시 눌러 주세요.'); return; }
     let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
-    const result = await run('진행률 글에 적기', current => { const next = applyProgramProgressText(current, { ...base(current), documentId: ask.documentId, changes: ask.changes });
-      if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
-    progressLater.current.add(`${ask.actorId}:${ask.documentId}`);
-    setProgressAsk(null);
-    if (!result.ok || !before || !after) { if (!result.ok && result.reason === 'conflict') setMessage('그사이 바뀐 줄이 있어 적지 않았습니다. 글을 다시 열면 다시 보여 드립니다.'); return; }
-    setProgressNotice({ actorId, documentId: ask.documentId, count: ask.changes.length, before, after });
+    setCleanupPending(true);
+    try {
+      const result = await run('글 정리', current => { const next = applyProgramTextCleanup(current, { ...base(current), plan: ask.plan, choices: ask.choices, now: new Date().toISOString() });
+        if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
+      setCleanupAsk(null);
+      if (!result.ok || !before || !after) {
+        if (!result.ok && result.reason === 'conflict') setMessage('그사이 바뀐 글이 있어 바꾸지 않았습니다. 앱을 다시 열면 다시 보여 드립니다.');
+        else if (!result.ok && result.reason !== 'busy') setMessage('옮길 수 없는 줄이 있어 바꾸지 않았습니다. 원문은 그대로입니다.');
+        return;
+      }
+      setCleanupNotice({ actorId, documents: programTextCleanupDocuments(ask.plan).length, before, after });
+    } finally { setCleanupPending(false); }
   }
-  async function undoProgressText(notice: NonNullable<typeof progressNotice>) {
-    const result = await run('진행률 적기 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: notice.documentId, before: notice.before, after: notice.after }), true);
-    setProgressNotice(current => current === notice ? result.ok ? { ...notice, undone: true } : { ...notice, refused: true } : current);
+  async function undoCleanup(notice: NonNullable<typeof cleanupNotice>) {
+    const result = await run('글 정리 되돌리기', current => restoreProgramTextCleanup(current, { ...base(current), before: notice.before, after: programTextCleanupProof(notice.after) }), true);
+    setCleanupNotice(current => current === notice ? result.ok ? { ...notice, undone: true } : { ...notice, refused: true } : current);
   }
-  // Redesign 3: '나중에' holds the ask while this document stays open; opened again, it asks again (mockup ③).
-  useEffect(() => {
-    const key = `${actorId}:${selected}`;
-    if (dateLineLater.current !== key) dateLineLater.current = null;
-    if (period !== 'documents' || !selected || progressAsk || dateLineLater.current === key) { setDateLineAsk(null); return; }
-    const plan = programDateLinePlan(dataRef.current.spaces[actorId], selected);
-    setDateLineAsk(plan ? { actorId, plan, choices: programDateLineDefaults(plan) } : null);
-  }, [period, selected, actorId, progressAsk]);
-  useEffect(() => {
-    const sheet = dateLineDialog.current;
-    if (!sheet) return;
-    if (dateLineAsk && !sheet.open) sheet.showModal(); else if (!dateLineAsk && sheet.open) sheet.close();
-  }, [dateLineAsk]);
-  function laterDateLines() {
-    if (dateLineAsk) dateLineLater.current = `${dateLineAsk.actorId}:${dateLineAsk.plan.documentId}`;
-    setDateLineAsk(null);
-  }
-  async function writeDateLines() {
-    const ask = dateLineAsk;
-    if (!ask || ask.actorId !== actorId) return;
-    if (!await settleRecent(ask.plan.documentId)) { setMessage('입력이 끝나면 다시 눌러 주세요.'); return; }
-    let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
-    const result = await run('날짜 줄 정리', current => { const next = applyProgramDateLines(current, { ...base(current), plan: ask.plan, choices: ask.choices });
-      if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
-    dateLineLater.current = `${ask.actorId}:${ask.plan.documentId}`;
-    setDateLineAsk(null);
-    if (!result.ok || !before || !after) {
-      if (!result.ok && result.reason === 'conflict') setMessage('그사이 바뀐 줄이 있어 바꾸지 않았습니다. 글을 다시 열면 다시 보여 드립니다.');
-      else if (!result.ok && result.reason === 'unresolved') setMessage('옮길 수 없는 줄이 있어 바꾸지 않았습니다. 원문은 그대로입니다.');
-      return;
-    }
-    setDateLineNotice({ actorId, documentId: ask.plan.documentId, count: ask.plan.lines, before, after });
-  }
-  async function undoDateLines(notice: NonNullable<typeof dateLineNotice>) {
-    const result = await run('날짜 줄 정리 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: notice.documentId, before: notice.before, after: notice.after }), true);
-    setDateLineNotice(current => current === notice ? result.ok ? { ...notice, undone: true } : { ...notice, refused: true } : current);
-  }
-  const chooseDateLine = (ownerId: string, choice: ProgramDateLineChoice) => setDateLineAsk(ask => ask && { ...ask, choices: { ...ask.choices, [ownerId]: choice } });
+  const chooseDateLine = (ownerId: string, choice: ProgramDateLineChoice) => setCleanupAsk(ask => ask && { ...ask, choices: { ...ask.choices, [ownerId]: choice } });
   const monthDay = (date: string) => `${Number(date.slice(5, 7))}월 ${Number(date.slice(8, 10))}일`;
   const progressMark = (text: string) => /\[[^\]]*\]/.exec(text)?.[0] ?? text;
   function rememberRecentWhole(next: Record<string, true>) {
@@ -2639,7 +2607,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if(dialogOwner===executionDraftOwner.current.dialog&&view.period===currentView.period&&view.date===currentView.date&&view.folderId===currentView.folderId&&view.query===currentView.query){
         if(detail)close();setTaskNotice(null);setOrderNotice(null);setDatesNotice(null);
         setLocationNotice({actorId,documentId:task.docId,taskId,before:beforeCommit!,after,date:changed.date,folderId:changed.scopeId,kind:target.kind,traceId:trace?.id,
-          text:target.kind==='date'?programTaskDatesMovedText(1,changed.date,today):`/ ${programFolderPath(after,changed.scopeId)}로 옮겼습니다`});
+          // Redesign 3: in a document without date headings the date became its 마감 (the line stayed).
+          text:target.kind==='date'&&target.date!==null&&changed.date===null&&changed.due===target.date?`마감을 ${programCalendarDate(target.date,today,false)}로 정했습니다`:target.kind==='date'?programTaskDatesMovedText(1,changed.date,today):`/ ${programFolderPath(after,changed.scopeId)}로 옮겼습니다`});
         requestAnimationFrame(()=>highlightTaskLocation(taskId));
       }
       return true;
@@ -3603,6 +3572,38 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   return <section ref={root} className={styles.space} data-note-layout={!!props.noteHeader} data-library-open={libraryOpen} aria-label="내 공간"
     onCompositionStartCapture={() => { libraryComposing.current = true; }} onCompositionEndCapture={() => { libraryComposing.current = false; if (findBlocked.current) setTimeout(clearFindBlocked, 0); }}
     onClickCapture={guardOccurrenceDraft} onKeyDownCapture={event => { if (!['Tab', 'Shift', 'Escape'].includes(event.key)) guardOccurrenceDraft(event); }}>
+    {cleanupNotice?.actorId === actorId && <div className={styles.orderNotice} data-cleanup-notice>
+      <ProgramNoticeRow notice={{ tone: cleanupNotice.refused ? 'warn' : cleanupNotice.undone ? 'info' : 'choose', closeLabel: '알림 닫기',
+        text: cleanupNotice.refused ? '그 뒤 바뀐 글이 있어 되돌리지 않았습니다' : cleanupNotice.undone ? '글을 정리하기 전으로 되돌렸습니다' : `글 ${cleanupNotice.documents}개를 새 규칙으로 정리했습니다`,
+        actions: cleanupNotice.undone || cleanupNotice.refused ? [] : [{ label: '되돌리기', run: () => void undoCleanup(cleanupNotice) }] }} onClose={() => setCleanupNotice(null)} />
+    </div>}
+    <dialog ref={cleanupDialog} className={`${styles.findDialog} ${styles.datesSheet} ${styles.dateLinesSheet}`} aria-labelledby="program-cleanup-title" data-cleanup-sheet
+      onCancel={event => { event.preventDefault(); setCleanupAsk(null); }}>
+      {cleanupAsk && (ask => { const day = (date: string | null) => date ? programCalendarDate(date, today, false) : '날짜 미정';
+        return <>
+          <h2 id="program-cleanup-title">글을 새 규칙으로 한 번 정리합니다</h2>
+          <p className={styles.muted}>할 날은 날짜 제목 하나로 정하고, 진행률은 할 일 줄에 적습니다. 바꾸기 전에 바뀌는 글마다 저장본을 남깁니다.</p>
+          {ask.plan.progress.length > 0 && <><h3 className={styles.dateLinesHead}>진행률 {ask.plan.progressLines}줄 · 할 일 줄에 적습니다</h3>
+            <ul className={styles.progressTextList} data-cleanup-progress>{ask.plan.progress.flatMap(doc => doc.changes.map(change => <li key={change.lineId}><span>{change.title}</span>
+              <small>{doc.title} · {progressMark(change.before)} → {progressMark(change.after)} · {programCalendarDate(change.date, today, false)} 기록</small></li>))}</ul></>}
+          {ask.plan.dates.length > 0 && <><h3 className={styles.dateLinesHead}>날짜 줄 {ask.plan.dateLines}개 · 날짜 제목으로 정리합니다</h3>
+            {ask.plan.dates.map(doc => { const same = doc.items.filter(item => item.kind === 'same'), other = doc.items.filter(item => item.kind === 'other');
+              return <section key={doc.documentId} className={styles.cleanupDocument} data-cleanup-document={doc.documentId}>
+                <h4>{doc.title}{doc.headless ? ' · 날짜 제목 없는 글' : ''}</h4>
+                {same.length > 0 && <p className={styles.dateLinesSame} data-date-lines-same>제목과 같은 날 · 줄만 지웁니다: {same.map(item => `${item.title} (${item.value ? monthDay(item.value) : '날짜 미정'})`).join(' · ')}</p>}
+                {other.length > 0 && <ul className={styles.progressTextList}>{other.map(item => <li key={item.ownerId} data-date-line={item.ownerId}><span>{item.title}</span>
+                  <small>{doc.headless ? '날짜 제목 없는 글이라 마감으로' : item.section ? `지금 ${monthDay(item.section)} 아래` : '지금 날짜 제목 없음'} · 날짜 줄 {day(item.value)}{item.subtask && !doc.headless ? ' · 하위 할 일은 마감으로만' : ''}</small>
+                  <div className={styles.dateLineChoices} role="group" aria-label={`${item.title} 날짜 줄`}>{item.choices.map(choice =>
+                    <button type="button" key={choice} aria-pressed={ask.choices[item.ownerId] === choice} data-date-line-choice={choice} onClick={() => chooseDateLine(item.ownerId, choice)}>
+                      {choice === 'move' ? item.value ? `${monthDay(item.value)}로 옮기기` : '날짜 미정으로 옮기기' : `마감 ${Number(item.value!.slice(5, 7))}/${Number(item.value!.slice(8, 10))}로`}</button>)}</div></li>)}</ul>}
+              </section>; })}</>}
+          <div className={styles.dateLinesButtons}>
+            <button type="button" className={styles.dateLinesLater} onClick={() => setCleanupAsk(null)}>나중에</button>
+            <button type="button" className={styles.dateLinesWrite} data-cleanup-write disabled={cleanupPending} aria-busy={cleanupPending || undefined} onClick={() => void writeCleanup()}>{cleanupPending ? '바꾸는 중…' : '바꾸기'}</button>
+          </div>
+          <p className={styles.muted}>바꾼 뒤 [되돌리기] 한 번이면 계정 전체가 원래대로 돌아갑니다. ‘나중에’를 고르면 다음에 앱을 열 때 다시 묻습니다.</p>
+        </>; })(cleanupAsk)}
+    </dialog>
     <div className={styles.contextActions}>
       <nav ref={viewMenu} className={styles.periods} aria-label="기본 이동" hidden={!!props.hostMainTabs}>{mainPeriods.map(([key, label]) => <button key={key} data-program-period={key} aria-current={mainTab === key ? 'page' : undefined}
         onClick={() => void chooseMainTab(key as ProgramMainTab)}>{key === 'all' && collectionMode ? '전체 할 일' : label}</button>)}</nav>
@@ -3821,49 +3822,6 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           readOnly={programDocumentContentLock(space, id) !== 'active'} disabledReason={space.documentTrash?.[id] ? '휴지통의 문서입니다. 복원하면 삭제 전 상태로 돌아갑니다.' : retainedIds.has(id) ? '저장본으로 되돌리며 보관된 내용 · 읽기 전용' : '보관한 문서입니다. 보관에서 꺼내면 이어서 쓸 수 있습니다.'}
         />{recentLine(id, recent, true)}</div>; })}
         {locationNoticeContent}
-        {progressNotice?.actorId === actorId && progressNotice.documentId === selected && <div className={styles.orderNotice} data-progress-text-notice>
-          <ProgramNoticeRow notice={{ tone: progressNotice.refused ? 'warn' : progressNotice.undone ? 'info' : 'choose', closeLabel: '알림 닫기',
-            text: progressNotice.refused ? '그 뒤 바뀐 줄이 있어 되돌리지 않았습니다' : progressNotice.undone ? '진행률을 적기 전으로 되돌렸습니다' : `진행률 ${progressNotice.count}줄을 글에 적었습니다`,
-            actions: progressNotice.undone || progressNotice.refused ? [] : [{ label: '되돌리기', run: () => void undoProgressText(progressNotice) }] }} onClose={() => setProgressNotice(null)} />
-        </div>}
-        <dialog ref={progressDialog} className={`${styles.findDialog} ${styles.datesSheet}`} aria-labelledby="program-progress-text-title" data-progress-text-sheet
-          onCancel={event => { event.preventDefault(); laterProgressText(); }}>
-          {progressAsk && <>
-            <h2 id="program-progress-text-title">진행률을 글에 적을까요?</h2>
-            <p className={styles.muted}>진행 기록의 가장 최근 값을 할 일 줄에 적습니다. 기록은 그대로 두고, 적은 뒤 되돌릴 수 있습니다.</p>
-            <ul className={styles.progressTextList}>{progressAsk.changes.map(change => <li key={change.lineId}><span>{change.title}</span>
-              <small>{progressMark(change.before)} → {progressMark(change.after)} · {programCalendarDate(change.date, today, false)} 기록</small></li>)}</ul>
-            <button type="button" className={styles.datesChoice} data-progress-text-write onClick={() => void writeProgressText()}>글에 적기</button>
-            <button type="button" className={styles.datesClose} onClick={laterProgressText}>나중에</button>
-          </>}
-        </dialog>
-        {dateLineNotice?.actorId === actorId && dateLineNotice.documentId === selected && <div className={styles.orderNotice} data-date-lines-notice>
-          <ProgramNoticeRow notice={{ tone: dateLineNotice.refused ? 'warn' : dateLineNotice.undone ? 'info' : 'choose', closeLabel: '알림 닫기',
-            text: dateLineNotice.refused ? '그 뒤 바뀐 줄이 있어 되돌리지 않았습니다' : dateLineNotice.undone ? '날짜 줄을 정리하기 전으로 되돌렸습니다' : `날짜 줄 ${dateLineNotice.count}개를 정리했습니다`,
-            actions: dateLineNotice.undone || dateLineNotice.refused ? [] : [{ label: '되돌리기', run: () => void undoDateLines(dateLineNotice) }] }} onClose={() => setDateLineNotice(null)} />
-        </div>}
-        <dialog ref={dateLineDialog} className={`${styles.findDialog} ${styles.datesSheet} ${styles.dateLinesSheet}`} aria-labelledby="program-date-lines-title" data-date-lines-sheet
-          onCancel={event => { event.preventDefault(); laterDateLines(); }}>
-          {dateLineAsk && (ask => { const same = ask.plan.items.filter(item => item.kind === 'same'), other = ask.plan.items.filter(item => item.kind === 'other');
-            const day = (date: string | null) => date ? programCalendarDate(date, today, false) : '날짜 미정';
-            return <>
-              <h2 id="program-date-lines-title">이 글의 날짜 줄 {ask.plan.lines}개를 정리합니다</h2>
-              <p className={styles.muted}>이제 할 날은 날짜 제목 하나로 정합니다. 할 일 아래 ‘- 날짜:’ 줄을 이렇게 바꿉니다. 마감이 필요한 일만 ‘마감으로’를 고르세요.</p>
-              {same.length > 0 && <><h3 className={styles.dateLinesHead}>제목과 같은 날 {same.length} · 줄만 지웁니다</h3>
-                <p className={styles.dateLinesSame} data-date-lines-same>{same.map(item => `${item.title} (${item.value ? monthDay(item.value) : '날짜 미정'})`).join(' · ')}</p></>}
-              {other.length > 0 && <><h3 className={styles.dateLinesHead}>제목과 다른 날 {other.length} · 하나씩 고릅니다</h3>
-                <ul className={styles.progressTextList}>{other.map(item => <li key={item.ownerId} data-date-line={item.ownerId}><span>{item.title}</span>
-                  <small>{item.section ? `지금 ${monthDay(item.section)} 아래` : '지금 날짜 제목 없음'} · 날짜 줄 {day(item.value)}{item.subtask ? ' · 하위 할 일은 마감으로만' : ''}</small>
-                  <div className={styles.dateLineChoices} role="group" aria-label={`${item.title} 날짜 줄`}>{item.choices.map(choice =>
-                    <button type="button" key={choice} aria-pressed={ask.choices[item.ownerId] === choice} data-date-line-choice={choice} onClick={() => chooseDateLine(item.ownerId, choice)}>
-                      {choice === 'move' ? item.value ? `${monthDay(item.value)}로 옮기기` : '날짜 미정으로 옮기기' : `마감 ${Number(item.value!.slice(5, 7))}/${Number(item.value!.slice(8, 10))}로`}</button>)}</div></li>)}</ul></>}
-              <div className={styles.dateLinesButtons}>
-                <button type="button" className={styles.dateLinesLater} onClick={laterDateLines}>나중에</button>
-                <button type="button" className={styles.dateLinesWrite} data-date-lines-write onClick={() => void writeDateLines()}>이대로 바꾸기</button>
-              </div>
-              <p className={styles.muted}>바꾼 뒤 [되돌리기] 한 번이면 이 글 전체가 원래대로 돌아갑니다. ‘나중에’를 고르면 이 글은 지금처럼 읽고, 다음에 열 때 다시 묻습니다.</p>
-            </>; })(dateLineAsk)}
-        </dialog>
         {/* F4-a (A3 ⑤): the folder's other documents, one folded line each; a press opens that one instead (one editor). */}
         {folderWriting && folderWritingDocuments.length > 1 && <ul className={folderStyles.docFolds} aria-label="이 폴더가 나오는 다른 글">
           {folderWritingDocuments.filter(doc => doc.id !== selected).map(doc => <li key={doc.id}><button type="button" className={folderStyles.docFold} data-folder-document={doc.id}

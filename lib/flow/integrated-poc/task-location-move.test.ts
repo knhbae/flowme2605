@@ -96,9 +96,10 @@ test('two destination date heads: a date choice reuses the later existing same-f
   const f=fixture('[2026-11-10]\n- /합성 A\n  - [ ] 합성 부모\n[2026-11-12]\n- /합성 B\n  - [ ] 합성 첫 구획\n[2026-11-12]\n- /합성 A\n  - [ ] 합성 기존 목적');
   const beforeIds=f.state.documents[0].lines.map(line=>line.id),result=apply(f,{kind:'date',date:'2026-11-12'}),after=M.raw(result.next.documents[0]);
   assert.equal(result.declarations,0);
-  assert.equal(after,'[2026-11-10]\n- /합성 A\n[2026-11-12]\n- /합성 B\n  - [ ] 합성 첫 구획\n[2026-11-12]\n- /합성 A\n  - [ ] 합성 기존 목적\n  - [ ] 합성 부모');
-  assert.deepEqual(new Set(result.next.documents[0].lines.map(line=>line.id)),new Set(beforeIds));
-  assert.equal(result.next.bindings.filter(binding=>binding.kind==='scope').length,f.state.bindings.filter(binding=>binding.kind==='scope').length);
+  // Redesign 3 (총괄 11/12): the 11/10 '- /합성 A' left with nothing under it goes in the same change, with its link.
+  assert.equal(after,'[2026-11-10]\n[2026-11-12]\n- /합성 B\n  - [ ] 합성 첫 구획\n[2026-11-12]\n- /합성 A\n  - [ ] 합성 기존 목적\n  - [ ] 합성 부모');
+  assert.deepEqual(new Set(result.next.documents[0].lines.map(line=>line.id)),new Set(beforeIds.filter((_,index)=>index!==1)));
+  assert.equal(result.next.bindings.filter(binding=>binding.kind==='scope').length,f.state.bindings.filter(binding=>binding.kind==='scope').length-1);
 });
 
 test('invalid destination and mixed folder subtree fail without mutating source', () => {

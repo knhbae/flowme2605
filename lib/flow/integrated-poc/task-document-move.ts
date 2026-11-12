@@ -46,14 +46,22 @@ export function moveProgramPersonalTaskText(text: TextWorkspaceState, taskId: st
   // the end with a '- 날짜:' line. A document without headings takes an undated task at its end.
   const heads = M.parseDocument(targetNext, next).rows.filter(row => row.kind === 'date');
   const day = heads.filter(row => row.date === task.date).at(-1);
-  let at = targetNext.lines.length;
+  let at = targetNext.lines.length, dueFrom: string | null = null;
   if (day) {
     at = heads.find(row => row.index > day.index)?.index ?? targetNext.lines.length;
     while (at > day.index + 1 && !targetNext.lines[at - 1].text.trim()) at -= 1;
     targetNext.lines.splice(at, 0, ...moved);
-  } else if (task.date === null && !heads.length) {
+  } else if (!heads.length) {
+    // A document without date headings: its tasks' dates are 마감 (W-TXT-03). A dated task takes its day as its
+    // '- 마감:' (one it already has stays); no heading is made.
     if (targetNext.lines.length && targetNext.lines.at(-1)!.text.trim()) targetNext.lines.push({ id: programId('move-separator'), text: '' });
     targetNext.lines.push(...moved);
+    const own = beforeMeta.filter(row => row.kind === 'property' && row.parentLineId === task.id);
+    if (task.date !== null && !task.explicitDate && !own.some(row => /^ *-\s+마감:/.test(row.text))) {
+      const after = [task.id, ...own.map(row => row.id)].at(-1)!, index = targetNext.lines.findIndex(line => line.id === after);
+      targetNext.lines.splice(index + 1, 0, { id: programId('move-due'), text: `  - 마감: ${task.date}` });
+    }
+    if (!task.explicitDate) dueFrom = task.date;
   } else {
     at = task.date ? programDateHeadIndex(targetNext.lines.map(line => line.text), task.date) : targetNext.lines.length;
     const apart = at > 0 && targetNext.lines[at - 1].text.trim() ? [{ id: programId('move-separator'), text: '' }] : [];
@@ -63,7 +71,9 @@ export function moveProgramPersonalTaskText(text: TextWorkspaceState, taskId: st
   const afterItems = new Map(items(next).map(item => [item.id, item]));
   if (beforeItems.length !== afterItems.size || !beforeItems.every(before => {
     const after = afterItems.get(before.id);
-    return after && fields.every(key => before[key] === after[key]) && (movedIds.has(before.id) ? after.docId === target.id : before.docId === after.docId);
+    // In a document without headings a moved block's day became its 마감 (dueFrom): the task reads no day, its 마감 that one.
+    const dated = dueFrom !== null && movedIds.has(before.id) && !before.explicitDate ? after?.date === null && (before.id !== task.id || after.due !== undefined) : after?.date === before.date;
+    return after && dated && fields.every(key => key === 'date' || before[key] === after[key]) && (movedIds.has(before.id) ? after.docId === target.id : before.docId === after.docId);
   })) return null;
   if (!programSame(text.taskScopes, next.taskScopes) || !programSame(text.itemScopes, next.itemScopes) || !programSame(text.progressRecords, next.progressRecords)) return null;
   return next;

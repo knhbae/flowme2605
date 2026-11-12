@@ -142,14 +142,16 @@ test('N11a 3: lines with something under them, folder lines, repeat lines, progr
   // rev2: the copy with a check, a memo or a time under it is the one that stays, so its plain copies go; 스트레칭's
   // copy under the second '- /운동' goes too (rev1). rev3: the recorded 일기 stays and moves to today; its plain copy
   // goes. The lines under a kept task and the progress boxes stay.
-  assert.deepEqual(lost, ['- [ ] 일기', '- [ ] 세차 예약', '- [ ] 은행 서류', '- [ ] 치과 예약', '  - [ ] 스트레칭']);
+  // Redesign 3 (총괄 11/12): both '- /운동' lines left with nothing under them go too (the 11/2 day with them).
+  assert.deepEqual(lost, ['- /운동', '- [ ] 일기', '[2026-11-02]', '- [ ] 세차 예약', '- [ ] 은행 서류', '- [ ] 치과 예약', '- /운동', '  - [ ] 스트레칭']);
   assert.deepEqual(space(done.data).text.progressRecords, space(data).text.progressRecords, 'the record itself is untouched');
   assert.equal(onToday(done.data, '2026-11-05').find(task => task.title === '일기')?.id, diary.id);
   const result = raw(done.data, made.docId);
   // Redesign 3: the kept lines move under today's heading with what is under them; '- /운동' is declared there too.
   assert(result.includes('[2026-11-05]\n- /운동\n  - [ ] 스트레칭\n') && result.includes('- [ ] 세차 예약\n  - [ ] 세제 사기\n') && result.includes('  - 메모: 통장 사본') && result.includes('  - 시간: 10:00'));
   assert(!/- 날짜:/.test(result));
-  assert.equal(result.split('\n').filter(line => line.startsWith('- /')).length, 3, 'folder lines as before, also the ones left empty, and today\'s');
+  assert.equal(result.split('\n').filter(line => line.startsWith('- /')).length, 1, 'today\'s; those left empty went');
+  assert.equal(result, '[2026-11-01]\n- [ ] 영어 @매일\n\n[2026-11-05]\n- /운동\n  - [ ] 스트레칭\n- [30%] 독서\n- [30%] 독서\n- [ ] 세차 예약\n  - [ ] 세제 사기\n- [ ] 은행 서류\n  - 메모: 통장 사본\n- [20%] 일기\n- [ ] 치과 예약\n  - 시간: 10:00');
   assert(result.includes('- [ ] 영어 @매일\n'), 'the repeat line is untouched');
   assert.equal(onToday(done.data, '2026-11-05').length, 7);
 });
@@ -175,10 +177,9 @@ test('N11a rev1: an account shaped as the real one (every task under a folder li
     copies: counted.copies, blocked: counted.blocked }, { count: 84, kinds: 8, moved: 5, removed: 76, finished: 3, split: 1, copies: 79, blocked: { 'linked:legacyQuickItemLines': 3 } });
   const done = ok(carry(data, '2026-11-05', counted));
   assert.equal(M.tasks(space(done.data).text).length, 30, '106 task lines become 30');
-  // Every folder line stays, also those left with nothing under them; redesign 3: today's heading declares its own.
-  const folderIds = (value: ProgramData) => new Set(space(value).text.documents.flatMap(doc => doc.lines.filter(line => line.text.startsWith('- /')).map(line => line.id)));
-  assert([...folderIds(data)].every(id => folderIds(done.data).has(id)), 'every folder line stays');
-  assert.deepEqual(folderLines(done.data), [20, 19, 18]);
+  // Redesign 3 (총괄 11/12): a folder line the press left with nothing under it goes; today's heading declares its own.
+  assert.deepEqual(folderLines(done.data), [12, 6, 11]);
+  for (const docId of docs) { const rows = M.rowMeta(space(done.data).text, docId); assert(rows.every(row => row.kind !== 'scope' || rows.slice(row.index + 1, row.subtreeEndIndex).some(item => item.kind !== 'blank')), 'no folder line left empty'); }
   const folder = (scopeId: string) => space(done.data).text.folders.find(item => item.id === scopeId)?.title;
   const rows = programExecutionTasks(space(done.data), { period: 'today', date: '2026-11-05' }).filter(task => !task.done)
     .map(task => `${task.date === '2026-11-05' ? '오늘' : '지난'}:${folder(task.scopeId)}:${task.title}:${task.groupDate}`).sort();
@@ -222,7 +223,7 @@ test('N11a rev2: the production shape (5 documents, 60 days, "- /" lines still t
   // the five recorded copies of 러닝, left where they are since 러닝 was finished after them; seven date lines; every
   // '- /' line and folder stays.
   // Redesign 3: no date lines; the seven sit under today's heading, which declares three folders of its own.
-  assert.deepEqual(shapeOf(twice), { tasks: 52, slash: 123, folders: 63, dates: 0, past: 5, today: 7 });
+  assert.deepEqual(shapeOf(twice), { tasks: 52, slash: 88, folders: 28, dates: 0, past: 5, today: 7 });
   const label = (task: { id: string; docId: string }) => { const doc = M.getDocument(space(twice).text, task.docId)!, rows = M.parseDocument(doc, space(twice).text).rows;
     let row = rows.find(item => item.id === task.id); while (row?.parentLineId) { row = rows.find(item => item.id === row!.parentLineId); if (row?.text.startsWith('- /')) return row.text.slice(3); } return ''; };
   assert.deepEqual(onToday(twice, '2026-11-05').map(task => `${label(task)}:${task.title}`).sort(),
