@@ -189,6 +189,11 @@ function carryoverRules(space: ProgramPrivateSpace) {
   return { touchable, untouchable, isRecorded, droppable, kindOf, labelOf, placeOf, underOf, takenAlong, takeBlock, repeat, states, rowsOf };
 }
 
+/** Codex 3rd review P2-4 (11/12): a lost `[>]` line counts as remaining work only in a document in use (not archived,
+ *  not in 휴지통); one in a code block is no line at all (programContinuedLines). */
+const programLostWork = (space: ProgramPrivateSpace, today: string) => programLostContinuations(space.text, today)
+  .filter(line => !space.archivedDocumentIds.includes(line.docId) && !space.documentTrash?.[line.docId]);
+
 /** The past unfinished tasks of 오늘 (repeat lines apart), by task (words and 분류), oldest first, and for each the
  *  lines of it up to today in any document: the newest says whether it was finished since; today's, written again. */
 function pastKinds(space: ProgramPrivateSpace, today: string, rules: ReturnType<typeof carryoverRules>) {
@@ -328,7 +333,7 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
     if (taken.some(line => line.action === 'date') || !finished && written.length) plan.toToday++;
   }
   // Redesign 4 (W-TXT-08): a `[>]` line whose receiving line is gone is remaining work again; the card's press continues it.
-  if (!choices) for (const lost of programLostContinuations(space.text, today)) {
+  if (!choices) for (const lost of programLostWork(space, today)) {
     const state = states(lost.lineId);
     if (!state) continue;
     if (cut || changed + 1 > limit) { cut = true; plan.left++; continue; }
@@ -408,7 +413,7 @@ export function carryProgramTasksToToday(data: ProgramData, input: ProgramPrivat
     const stay = input.lines.filter(line => line.action !== 'remove' && line.action !== 'drop').flatMap(line => tasks.get(line.taskId) ?? []);
     const goes = (task: TextTask) => untouchable(task) === null && !isRecorded(task) && underOf(task) !== null
       && (underOf(task) === '' || stay.some(other => other !== task && kindOf(other) === kindOf(task) && underOf(other) === underOf(task)));
-    const lost = new Map(programLostContinuations(start.text, input.today).map(line => [line.lineId, line]));
+    const lost = new Map(programLostWork(start, input.today).map(line => [line.lineId, line]));
     for (const line of input.lines) {
       if (line.action === 'again') { if (!lost.has(line.taskId)) return { result: line.taskId, reason: 'conflict' }; continue; }
       const task = tasks.get(line.taskId);

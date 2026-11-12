@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { programClone, type ProgramData, type ProgramTransition } from './contract';
 import { createProgramData, validateProgramData } from './program-data';
-import { createProgramDocument } from './private-space';
+import { archiveProgramDocument, createProgramDocument, createProgramFolder } from './private-space';
 import { continueProgramTask, programContinuationStarts, programContinuedLines, programLostContinuations, programTaskHasRecord } from './continuation';
 import { carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverItems, programCarryoverProof, restoreProgramCarryover } from './carryover';
 import { programDayCount, programExecutionRowMeta } from './execution-presentation';
@@ -142,4 +142,75 @@ test("Codex re-review P2-2: 'n일째' is one count, 오늘's row and the 밀린 
   assert.equal(item.since, '2026-11-04');
   assert.equal(programDayCount(item.since, '2026-11-12'), 9, 'the sheet counts the same');
   assert.deepEqual([programDayCount('2026-11-12', '2026-11-12'), programDayCount('2026-11-11', '2026-11-12'), programDayCount(null, '2026-11-12')], [null, 2, null]);
+});
+
+// Codex 3rd review (11/12): which line received a continuation, told without guessing.
+const continued = (text: TextWorkspaceState, docId: string, title: string, today: string, pick?: (rows: ReturnType<typeof M.tasks>) => ReturnType<typeof M.tasks>[number]) => {
+  const tasks = M.tasks(text).filter(entry => entry.title === title && entry.docId === docId), target = pick ? pick(tasks) : tasks[0];
+  const done = continueProgramTask(text, { documentId: docId, taskId: target.id, today });
+  assert(done.ok, done.ok ? '' : done.reason);
+  return done;
+};
+const dropLine = (text: TextWorkspaceState, docId: string, lineId: string): TextWorkspaceState => {
+  const rows = M.parseDocument(M.getDocument(text, docId)!, text).rows, row = rows.find(entry => entry.id === lineId)!;
+  const gone = new Set(rows.slice(row.index, row.subtreeEndIndex).map(entry => entry.id)), keep = (owners: Record<string, string>) => Object.fromEntries(Object.entries(owners).filter(([id]) => !gone.has(id)));
+  return { ...text, taskScopes: keep(text.taskScopes), itemScopes: keep(text.itemScopes), progressRecords: text.progressRecords.filter(record => !gone.has(record.taskId)),
+    documents: text.documents.map(item => item.id === docId ? { ...item, lines: item.lines.filter(line => !gone.has(line.id)) } : item) };
+};
+
+test("Codex 3rd review P2-1: a task in its document's own folder (no '- /folder' line) is received right after it is continued", () => {
+  let data = createProgramData();
+  const folder = ok(createProgramFolder(data, { ...base(data), title: '회사', parentId: null })); data = folder.data;
+  const made = ok(createProgramDocument(data, { ...base(data), title: '회사 글', folderId: folder.result })); data = programClone(made.data);
+  space(data).text = M.editTextResult(space(data).text, made.result, '[2026-11-10]\n- [40%] 보고서', { folderText: true }).state;
+  const report = task(space(data).text, '보고서');
+  space(data).text = { ...space(data).text, progressRecords: [{ taskId: report.id, date: '2026-11-10', percent: 40 }] };
+  const done = continued(space(data).text, made.result, '보고서', '2026-11-12');
+  const [line] = programContinuedLines(done.next);
+  assert.equal(line.received, done.newId);
+  assert.equal(programLostContinuations(done.next, '2026-11-12').length, 0, 'not remaining work again');
+  const after = programClone(data); space(after).text = done.next;
+  assert.equal(planProgramCarryover(space(after), '2026-11-12').lines.filter(entry => entry.action === 'again').length, 0);
+  assert.equal(programContinuationStarts(done.next).get(done.newId), '2026-11-10');
+});
+
+test('Codex 3rd review P2-2: two past lines left on one receiving line (the other deleted) are not guessed: no chain through either', () => {
+  const { data, docId } = writing(['[2026-11-04]', '- [40%] 보고서', '  - 메모: A', '', '[2026-11-10]', '- [60%] 보고서', '  - 메모: B'].join('\n'), '보고 글');
+  let text = space(data).text;
+  const [first, second] = M.tasks(text).filter(entry => entry.title === '보고서');
+  text = { ...text, progressRecords: [{ taskId: first.id, date: '2026-11-04', percent: 40 }, { taskId: second.id, date: '2026-11-10', percent: 60 }] };
+  const one = continued(text, docId, '보고서', '2026-11-12', rows => rows.find(entry => entry.id === first.id)!);
+  const two = continued(one.next, docId, '보고서', '2026-11-12', rows => rows.find(entry => entry.id === second.id)!);
+  // Same words on the same day in the same folder: which took up which is not told, while both are there either.
+  assert.deepEqual(programContinuedLines(two.next).map(line => [line.received, line.ambiguous]), [[null, true], [null, true]]);
+  const left = dropLine(two.next, docId, two.newId);
+  assert(M.validate(left));
+  assert.deepEqual(programContinuedLines(left).map(line => [line.received, line.ambiguous]), [[null, true], [null, true]]);
+  assert.equal(programContinuationStarts(left).has(one.newId), false, 'no start day taken from either');
+});
+
+test('Codex 3rd review P2-3: the same last folder name under another parent is another folder: its task never receives', () => {
+  const company = writing(['[2026-11-04]', '- /회사', '  - /진행', '    - [40%] 보고서'].join('\n'), '회사 글');
+  const personal = writing(['[2026-11-12]', '- /개인', '  - /진행', '    - [80%] 보고서'].join('\n'), '개인 글', company.data);
+  let text = space(personal.data).text;
+  const ours = M.tasks(text).find(entry => entry.title === '보고서' && entry.docId === company.docId)!, theirs = M.tasks(text).find(entry => entry.docId === personal.docId)!;
+  assert.notEqual(ours.scopeId, theirs.scopeId);
+  text = { ...text, progressRecords: [{ taskId: ours.id, date: '2026-11-04', percent: 40 }, { taskId: theirs.id, date: '2026-11-12', percent: 80 }] };
+  const done = continued(text, company.docId, '보고서', '2026-11-12');
+  const left = dropLine(done.next, company.docId, done.newId);
+  const line = programContinuedLines(left).find(entry => entry.docId === company.docId)!;
+  assert.equal(line.received, null);
+  assert.equal(programLostContinuations(left, '2026-11-12').length, 1, "회사's comes back as remaining work");
+  assert.equal(programContinuationStarts(left).has(theirs.id), false, "개인's gets no start day");
+});
+
+test("Codex 3rd review P2-4: a '[>]' in a code block, or in an archived document, is no remaining work", () => {
+  const { data, docId } = writing(['[2026-11-10]', '- [ ] 할 일', '~~~', '- [>] 샘플', '  - 이어감: 2026-11-11 · 40%', '~~~'].join('\n'), '예시 글');
+  assert.deepEqual(programContinuedLines(space(data).text), [], 'the code block holds no line of work');
+  const kept = writing(['[2026-11-10]', '- [>] 남은 줄', '  - 이어감: 2026-11-11 · 30%'].join('\n'), '보관할 글', data);
+  assert.equal(programLostContinuations(space(kept.data).text, '2026-11-12').length, 1, 'a lost line in a document in use');
+  assert.equal(planProgramCarryover(space(kept.data), '2026-11-12').lines.filter(entry => entry.action === 'again').length, 1);
+  const archived = ok(archiveProgramDocument(kept.data, { ...base(kept.data), documentId: kept.docId, archived: true })).data;
+  assert.equal(planProgramCarryover(space(archived), '2026-11-12').lines.filter(entry => entry.action === 'again').length, 0, 'not from an archived one');
+  void docId;
 });
