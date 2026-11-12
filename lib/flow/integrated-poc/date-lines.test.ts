@@ -13,6 +13,7 @@ import { moveProgramTaskDocument } from './task-document-move';
 import { copyProgramFolderOccurrence, readProgramFolderCopyPreview } from './folder-copy';
 import { prepareWritingChild } from './writing-child-command';
 import { createPersonalFlow, startPersonalFlow } from './personal-authoring-commands';
+import { continueProgramTask } from './continuation';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 
 // Redesign 3 (DECISION-1, W-TXT-03, mockup ③; 총괄 11/12: the whole account at once). The '- 날짜:' lines go once, on the
@@ -308,6 +309,29 @@ test("되돌리기 later (총괄 11/12 ①): from the archived original alone, a
   for (const doc of space(gone).text.documents) if (doc.title.startsWith('전환 전 원문')) doc.lines = doc.lines.slice(0, 2);
   const missing = restoreProgramTextCleanup(gone, { ...base(gone), stamp: stampOf(after), when: '2026-11-13 09:00' });
   assert(!missing.ok && missing.reason === 'missing');
+});
+
+test("되돌리기 after '어제 남은 일 이어 쓰기': the original line takes its records back; a task recorded since refuses it", () => {
+  const ORIGINAL = ['[2026-11-10]', '- [40%] 이어 쓸 일', '- [ ] 치과', '  - 날짜: 2026-11-14'].join('\n');
+  const { data, docId } = writing(ORIGINAL);
+  const kept = id(data, '이어 쓸 일');
+  space(data).text = { ...space(data).text, progressRecords: [{ taskId: kept, date: '2026-11-10', percent: 40 }] };
+  const after = cleanup(data);
+  // The next day it is continued: [>] stays, the records go to the new line (continuation.ts).
+  const continued = continueProgramTask(space(after).text, { documentId: docId, taskId: kept, today: '2026-11-11' });
+  assert(continued.ok);
+  const later = programClone(after); space(later).text = continued.next;
+  assert.deepEqual(space(later).text.progressRecords.map(record => record.taskId), [continued.newId]);
+  const back = ok(restoreProgramTextCleanup(later, { ...base(later), stamp: stampOf(later), when: '2026-11-11 09:00' })).data;
+  assert.equal(raw(back, docId), ORIGINAL);
+  assert.deepEqual(space(back).text.progressRecords, space(data).text.progressRecords, 'the original line holds its records again');
+  assert.deepEqual(lines(back, docId).map(([lineId]) => lineId), lines(data, docId).map(([lineId]) => lineId));
+  // A task written after the conversion with progress recorded on it would go: refused (records are never dropped).
+  const recorded = programClone(after);
+  space(recorded).text = M.editTextResult(space(recorded).text, docId, `${raw(recorded, docId)}\n- [ ] 새 일`, { folderText: true }).state;
+  space(recorded).text = M.recordProgress(space(recorded).text, id(recorded, '새 일'), '2026-11-11', 30);
+  const refused = restoreProgramTextCleanup(recorded, { ...base(recorded), stamp: stampOf(recorded), when: '2026-11-11 09:00' });
+  assert(!refused.ok && refused.reason === 'forbidden');
 });
 
 test('an account with Flow runs (personal authoring) and a document past an archive document\'s size: split, kept, restored whole', () => {
