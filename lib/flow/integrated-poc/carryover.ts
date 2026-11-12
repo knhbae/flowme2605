@@ -364,7 +364,8 @@ function dropEmptiedFolderLines(before: TextWorkspaceState, text: TextWorkspaceS
       const doc = M.getDocument(text, docId);
       if (!doc) break;
       const rows = M.parseDocument(doc, text).rows;
-      const empty = rows.filter(row => held.has(row.id) && row.kind === 'scope' && rows.slice(row.index + 1, row.subtreeEndIndex).every(item => item.kind === 'blank'));
+      // Codex P1-2 (11/12): only empty lines ('') are nothing; a line of spaces left under it keeps the folder line.
+      const empty = rows.filter(row => held.has(row.id) && row.kind === 'scope' && rows.slice(row.index + 1, row.subtreeEndIndex).every(item => item.kind === 'blank' && item.text === ''));
       if (!empty.length) break;
       const gone = new Set(empty.map(row => row.id));
       text = { ...text, bindings: text.bindings.filter(binding => !gone.has(binding.lineId)),

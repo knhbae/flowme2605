@@ -136,7 +136,8 @@ export function moveTaskLocation(state: TextWorkspaceState, input: { documentId:
   });
   let lines = [...remaining.slice(0, at), ...additions, ...moved, ...remaining.slice(at)], kept = bindings;
   // 총괄 11/12 (redesign 3): a folder line the block leaves with nothing under it in its day goes in the same change
-  // (innermost first; one still holding a line stays, and so do those above it).
+  // (innermost first; one still holding a line stays, and so do those above it). Codex P1-2 (11/12): only empty lines
+  // ('') are nothing; a line of spaces the person left under it is something (it stays, and the folder line with it).
   for (let up = row.parentLineId; up;) {
     const folderRow = workingRows.find(item => item.id === up);
     if (!folderRow) break;
@@ -144,7 +145,7 @@ export function moveTaskLocation(state: TextWorkspaceState, input: { documentId:
     if (folderRow.kind !== 'scope' || folderRow.scopeKind !== 'folder') continue;
     const now = M.parseDocument({ ...workingDoc, lines }, { ...working, folders, bindings: kept, documents: working.documents.map(item => item.id === doc.id ? { ...item, lines } : item) }).rows;
     const at = now.find(item => item.id === folderRow.id);
-    if (!at || now.slice(at.index + 1, at.subtreeEndIndex).some(item => item.kind !== 'blank')) break;
+    if (!at || now.slice(at.index + 1, at.subtreeEndIndex).some(item => item.kind !== 'blank' || item.text !== '')) break;
     lines = lines.filter(line => line.id !== folderRow.id); kept = kept.filter(binding => binding.lineId !== folderRow.id);
   }
   const taskScopes = { ...working.taskScopes }, itemScopes = { ...working.itemScopes };

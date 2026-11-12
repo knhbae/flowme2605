@@ -169,6 +169,34 @@ test('a folder line a move leaves with nothing under it in its day goes in the s
   assert(move.ok); assert(!raw(move.next, docId).startsWith('[2026-11-09]\n- /집'), raw(move.next, docId));
 });
 
+test("Codex P1-2: a folder line with a line of spaces left under it stays (conversion, 위치 옮기기, 오늘로); the check catches one that goes", () => {
+  const CODEX = ['[2026-11-09]', '- /회사', '  - [ ] 이동', '    - 날짜: 2026-11-12', '  ', '[2026-11-12]', '- /회사', '  - [ ] 유지'].join('\n');
+  const { data, docId } = writing(CODEX);
+  const folderLine = lines(data, docId)[1][0];
+  const after = cleanup(data);
+  assert.deepEqual(raw(after, docId).split('\n').slice(0, 3), ['[2026-11-09]', '- /회사', '  '], raw(after, docId));
+  assert.equal(lines(after, docId)[1][0], folderLine, 'the same folder line, still linked');
+  assert(space(after).text.bindings.some(binding => binding.kind === 'scope' && binding.lineId === folderLine));
+  assert.equal(item(after, '이동').date, '2026-11-12');
+  assert(programDateLinesKeepLines(space(data).text, own(after, data)));
+  // The check itself: the same result with that folder line taken away (what the old rule did) is refused.
+  const dropped = { ...own(after, data), bindings: own(after, data).bindings.filter(binding => binding.lineId !== folderLine),
+    documents: own(after, data).documents.map(doc => doc.id === docId ? { ...doc, lines: doc.lines.filter(line => line.id !== folderLine) } : doc) };
+  assert(M.validate(dropped));
+  assert.equal(programDateLinesKeepLines(space(data).text, dropped), false, 'a folder line may not go while a line is left under it');
+  // 위치 옮기기 (the date chip, the row's 날짜) and 밀린 일 '오늘로' keep it the same way.
+  const plain = writing(CODEX.replace('    - 날짜: 2026-11-12\n', ''), '다른 기록');
+  const chip = moveTaskLocation(space(plain.data).text, { documentId: plain.docId, taskId: id(plain.data, '이동'), target: { kind: 'date', date: '2026-11-12' } });
+  assert(chip.ok); assert(raw(chip.next, plain.docId).startsWith('[2026-11-09]\n- /회사\n  \n'), raw(chip.next, plain.docId));
+  const carryPlan = planProgramCarryover(space(plain.data), '2026-11-12');
+  const carried = ok(carryProgramTasksToToday(plain.data, { ...base(plain.data), today: '2026-11-12', lines: carryPlan.lines })).data;
+  assert.equal(item(carried, '이동').date, '2026-11-12');
+  assert(raw(carried, plain.docId).startsWith('[2026-11-09]\n- /회사\n  \n'), raw(carried, plain.docId));
+  // With nothing left under it but the empty line between days, it goes as before.
+  const bare = writing(CODEX.replace('\n  \n', '\n\n'), '빈 줄 기록');
+  assert(raw(cleanup(bare.data), bare.docId).startsWith('[2026-11-09]\n\n[2026-11-12]\n- /회사'), raw(cleanup(bare.data), bare.docId));
+});
+
 test('left alone: a copy or run document, a reference line, a repeat line, an unreadable value; a changed account refuses the old list', () => {
   const { data, docId } = writing(['[2026-11-09]', '- [ ] 매일 물 마시기 @매일', '  - 날짜: 2026-11-12', '- [ ] 언젠가 할 일', '  - 날짜: 다음 달',
     '- [ ] 보통 할 일', '  - 날짜: 2026-11-13'].join('\n'));

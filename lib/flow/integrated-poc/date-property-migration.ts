@@ -190,7 +190,8 @@ function keepsMeaning(before: TextWorkspaceState, after: TextWorkspaceState, pla
 
 /** W-TXT-03's machine check of the whole account: leaving out the '- 날짜:' lines (one may stay as a '- 마감:' line, the
  *  same line), every line is still there with its words (its indentation may change), and every new line is a date
- *  heading, a blank or a folder line; a folder line may go only when a move left it empty. */
+ *  heading, a blank or a folder line; a folder line may go only when a move left it empty: it was linked to its folder,
+ *  and everything that was under it (empty lines aside) went with the move, under that folder (Codex P1-2, 11/12). */
 export function programDateLinesKeepLines(before: TextWorkspaceState, after: TextWorkspaceState): boolean {
   const docs = (text: TextWorkspaceState) => [...text.documents, ...text.flows];
   if (!programSame(docs(before).map(doc => doc.id), docs(after).map(doc => doc.id))) return false;
@@ -202,5 +203,31 @@ export function programDateLinesKeepLines(before: TextWorkspaceState, after: Tex
     if (text === undefined) { if (!/^ *- \//.test(line.text)) return false; continue; }
     if (text.trim() !== line.text.trim()) return false;
   }
+  if (!docs(before).every(doc => emptiedFoldersOnly(before, after, doc.id))) return false;
   return [...now].every(([id, text]) => was.has(id) || !text.trim() || /^\[[^\]]*\]$/.test(text.trim()) || /^ *- \//.test(text));
+}
+/** Each folder line gone from this document was linked to a folder, and each line that was under it (empty lines and
+ *  date lines aside) is now under that folder (or a folder inside it), or is itself such a gone folder line. */
+function emptiedFoldersOnly(before: TextWorkspaceState, after: TextWorkspaceState, docId: string): boolean {
+  const was = M.getDocument(before, docId), is = M.getDocument(after, docId);
+  if (!was || !is) return true;
+  const present = new Set(is.lines.map(line => line.id));
+  const goneFolders = was.lines.filter(line => !present.has(line.id) && /^ *- \//.test(line.text));
+  if (!goneFolders.length) return true;
+  const rows = M.parseDocument(was, before).rows, nowRows = new Map(after.documents.concat(after.flows).flatMap(doc => M.parseDocument(doc, after).rows.map(row => [row.id, row] as const)));
+  const gone = new Set(goneFolders.map(line => line.id));
+  const within = (scopeId: string | null | undefined, folderId: string) => {
+    for (let at = scopeId ? after.folders.find(folder => folder.id === scopeId) : undefined, steps = 0; at && steps < 20; at = after.folders.find(folder => folder.id === at!.parentId), steps++) if (at.id === folderId) return true;
+    return false;
+  };
+  return goneFolders.every(line => {
+    const binding = before.bindings.find(entry => entry.kind === 'scope' && entry.docId === docId && entry.lineId === line.id);
+    const row = rows.find(entry => entry.id === line.id);
+    if (!binding || binding.kind !== 'scope' || !row) return false;
+    return rows.slice(row.index + 1, row.subtreeEndIndex).every(entry => {
+      if (entry.text === '' || gone.has(entry.id) || DATE_LINE.test(entry.text) && !present.has(entry.id)) return true;
+      const moved = nowRows.get(entry.id);
+      return !!moved && moved.kind !== 'blank' && (within(moved.ancestorScopeId, binding.scopeId) || (moved.ancestorScopeIds ?? []).some(id => within(id, binding.scopeId)));
+    });
+  });
 }
