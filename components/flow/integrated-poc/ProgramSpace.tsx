@@ -115,7 +115,7 @@ import { ProgramTaskMoveContext } from './task-move-context';
 import { programCopyHeader } from '@/lib/flow/integrated-poc/program-copy-header';
 import { programImportTargets } from '@/lib/flow/integrated-poc/program-import-links';
 import { programDateHeadIndex } from '@/lib/flow/integrated-poc/input-bar';
-import { keepProgramMoveTraces, programMoveTrace, programMoveTraceKey } from '@/lib/flow/integrated-poc/task-move-trace';
+import { keepProgramMoveTraces, programMoveTraceKey } from '@/lib/flow/integrated-poc/task-move-trace';
 
 export { programMobileWritingKeyboardOpen, useProgramMobileWritingChrome } from './useProgramMobileWritingChrome';
 
@@ -2540,12 +2540,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       const after=committed as TextWorkspaceState,changed=M.tasks(after).find(item=>item.id===taskId);
       if(!changed)return false;
       // W-MENU-27: a move to a later day (or 날짜 미정) leaves its trace in the day it left, kept on this device.
-      const trace=target.kind==='date'&&beforeCommit?programMoveTrace(beforeCommit,task.docId,taskId,changed.date??null,Date.now(),programId('trace')):null;
-      if(trace)keepProgramMoveTraces(traceStorage(),programMoveTraceKey(actorId),list=>[...list,trace],today);
+      // W-MENU-26 (총괄 11/12, redesign 3+4): a move leaves no trace on this device any more (an 이어감 line says it in the text).
       const currentView=presentation.current;
       if(dialogOwner===executionDraftOwner.current.dialog&&view.period===currentView.period&&view.date===currentView.date&&view.folderId===currentView.folderId&&view.query===currentView.query){
         if(detail)close();setTaskNotice(null);setOrderNotice(null);setDatesNotice(null);
-        setLocationNotice({actorId,documentId:task.docId,taskId,before:beforeCommit!,after,date:changed.date,folderId:changed.scopeId,kind:target.kind,traceId:trace?.id,
+        setLocationNotice({actorId,documentId:task.docId,taskId,before:beforeCommit!,after,date:changed.date,folderId:changed.scopeId,kind:target.kind,
           // Redesign 3: in a document without date headings the date became its 마감 (the line stayed).
           text:target.kind==='date'&&target.date!==null&&changed.date===null&&changed.due===target.date?`마감을 ${programCalendarDate(target.date,today,false)}로 정했습니다`:target.kind==='date'?programTaskDatesMovedText(1,changed.date,today):`/ ${programFolderPath(after,changed.scopeId)}로 옮겼습니다`});
         requestAnimationFrame(()=>highlightTaskLocation(taskId));
@@ -3496,7 +3495,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             }finally{release();}
           }:undefined}
           onUndoTaskLocation={locationNotice?.documentId===id?()=>{if(dirty.current[id])return false;void undoTaskLocation(locationNotice);return true;}:undefined}
-          moveTraceKey={programMoveTraceKey(actorId)} onRegisterSectionOrder={open => { sectionOrderOpeners.current[id] = open; }}
+          onRegisterSectionOrder={open => { sectionOrderOpeners.current[id] = open; }}
           hostNotice={bandRepeatNotice && bandRepeatNotice.actorId === actorId && bandRepeatNotice.documentId === id && selected === id
             ? { text: bandRepeatNotice.text, close: () => setBandRepeatNotice(null), repeat: true,
               action: bandRepeatNotice.check ? { label: '되돌리기', run: () => { const notice = bandRepeatNotice; if (notice.check) void undoBandRepeat(notice.taskId, notice.check); } } : null }
