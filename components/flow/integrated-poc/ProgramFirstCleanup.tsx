@@ -3,7 +3,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ProgramPrivateSpace } from '@/lib/flow/integrated-poc/contract';
 import { programId } from '@/lib/flow/integrated-poc/contract';
 import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
-import { closeProgramAlreadyContinued, programAlreadyContinuedPlan, programFirstCleanupBefore, programFirstCleanupProof, programStalePlan, restoreProgramFirstCleanup,
+import { programCleanupWhen } from '@/lib/flow/integrated-poc/text-cleanup';
+import { closeProgramAlreadyContinued, mergeProgramTwinDocuments, programTwinDocuments, programAlreadyContinuedPlan, programFirstCleanupBefore, programFirstCleanupProof, programStalePlan, restoreProgramFirstCleanup,
   sendProgramStaleTasks, type ProgramContinuedClose, type ProgramFirstCleanupBefore, type ProgramStaleChoice } from '@/lib/flow/integrated-poc/first-cleanup';
 import { programErrorMessage, type ProgramMutate } from '@/lib/flow/integrated-poc/ui-contract';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
@@ -14,7 +15,7 @@ import styles from './ProgramSpace.module.css';
  *  to 날짜 미정 or 휴지통. Each step is its own save with its own 되돌리기, kept under the list for this visit.
  *  (① merging same-content documents waits for 기획's rule.) */
 export const PROGRAM_FIRST_CLEANUP_KEY = (actorId: string) => `flow:first-cleanup:v1:${actorId}`;
-type Step = 'close' | 'stale';
+type Step = 'merge' | 'close' | 'stale';
 type Done = { step: Step; text: string; before: ProgramFirstCleanupBefore | null; after: string; state: 'done' | 'undone' | 'refused' };
 
 export function ProgramFirstCleanup(props: { actorId: string; space: ProgramPrivateSpace; today: string; disabled: boolean; mutate: ProgramMutate; onMessage(text: string): void }) {
@@ -22,6 +23,8 @@ export function ProgramFirstCleanup(props: { actorId: string; space: ProgramPriv
   const sheet = useRef<HTMLDialogElement | null>(null);
   const closePlan = useMemo(() => programAlreadyContinuedPlan(space, today), [space, today]);
   const stalePlan = useMemo(() => programStalePlan(space, today), [space, today]);
+  const twins = useMemo(() => programTwinDocuments(space), [space]);
+  const [comparing, setComparing] = useState<string | null>(null);
   const [left, setLeft] = useState<ReadonlySet<string>>(new Set()); // ② lines the person unticked
   const [choices, setChoices] = useState<ReadonlyMap<string, ProgramStaleChoice>>(new Map());
   const [pending, setPending] = useState(false);
@@ -31,7 +34,7 @@ export function ProgramFirstCleanup(props: { actorId: string; space: ProgramPriv
     let storage: Storage | null = null;
     try { storage = window.localStorage; } catch { return; }
     const key = PROGRAM_FIRST_CLEANUP_KEY(actorId);
-    if (!storage || storage.getItem(key) || (!closePlan.length && !stalePlan.length)) return;
+    if (!storage || storage.getItem(key) || (!twins.length && !closePlan.length && !stalePlan.length)) return;
     try { storage.setItem(key, today); } catch { return; }
     if (!sheet.current?.open) sheet.current?.showModal();
     // Asked when the 오늘 tab opens with something to list, not again on every change of it.
@@ -55,6 +58,8 @@ export function ProgramFirstCleanup(props: { actorId: string; space: ProgramPriv
       else if (!result.ok && result.reason !== 'busy') props.onMessage(`${programErrorMessage(result.reason)} (${result.reason})`);
     } finally { setPending(false); }
   }
+  const merge = (keep: string, drop: string) => save('merge', '같은 글 합치기', current => mergeProgramTwinDocuments(current, { actorId, requestId: programId('first-cleanup'), expectedSpace: current.spaces[actorId],
+    keep, drop, now: new Date().toISOString(), when: programCleanupWhen(new Date()) }), () => '같은 내용의 글 2개를 하나로 합침 · 다른 하나는 휴지통에');
   const closeLines = () => save('close', '다시 쓴 일 정리', current => closeProgramAlreadyContinued(current, { actorId, requestId: programId('first-cleanup'), expectedSpace: current.spaces[actorId], today, lines: chosenClose }),
     count => `다시 쓴 일 ${count}줄 정리함`);
   const sendStale = () => save('stale', '2주 넘은 일 정리', current => sendProgramStaleTasks(current, { actorId, requestId: programId('first-cleanup'), expectedSpace: current.spaces[actorId], today, now: new Date().toISOString(),
@@ -82,6 +87,20 @@ export function ProgramFirstCleanup(props: { actorId: string; space: ProgramPriv
     <dialog ref={sheet} className={`${styles.findDialog} ${styles.carrySheet}`} aria-labelledby="program-first-cleanup-title" data-first-cleanup
       onCancel={event => { event.preventDefault(); sheet.current?.close(); }}>
       <div className={styles.findHeading}><h2 id="program-first-cleanup-title">처음 한 번 정리</h2><button type="button" onClick={() => sheet.current?.close()}>닫기</button></div>
+      {twins.length > 0 && <section className={styles.carrySection} aria-label="같은 내용의 글" data-first-cleanup-merge>
+        <h3>1. 같은 내용의 글 {twins.length * 2}개를 먼저 합칩니다</h3>
+        {twins.map(twin => <div key={twin.drop} className={styles.carryItem} data-first-cleanup-twin={twin.keep}>
+          <p><span>‘{twin.title}’ 두 글이 {twin.common}줄까지 같습니다</span>
+            <small>{twin.blocked ? '한쪽에만 있는 기록·체크·연결이 있어 합치지 않습니다. 비교해 보고 직접 옮겨 주세요.' : '합치지 않으면 같은 일이 아래 목록에 두 번씩 나옵니다.'}</small></p>
+          <div className={styles.carryActions}>
+            {!twin.blocked && <button type="button" className={styles.carryMove} data-first-cleanup-merge-apply disabled={pending || props.disabled} aria-busy={pending || undefined}
+              onClick={() => void merge(twin.keep, twin.drop)}>하나로 합치기</button>}
+            <button type="button" aria-expanded={comparing === twin.drop} onClick={() => setComparing(current => current === twin.drop ? null : twin.drop)}>비교해 보기</button>
+          </div>
+          {comparing === twin.drop && <ul className={styles.firstCleanupLines} data-first-cleanup-compare>{twin.only.map((line, index) => <li key={index}>
+            <small>{line.mine ? '남기는 글에만' : '다른 글에만'}</small> {line.text.trim() || '(빈 줄)'}</li>)}</ul>}
+        </div>)}
+      </section>}
       {closePlan.length > 0 && <section className={styles.carrySection} aria-label="다시 쓴 일" data-first-cleanup-close>
         <h3>다시 쓴 일 {closePlan.length}줄</h3>
         <p className={styles.muted}>같은 제목을 그 뒤 날짜에 다시 썼습니다. 정리하면 지난 줄에 [&gt;]와 - 이어감: 다시 쓴 날이 붙고 밀린 일에서 빠집니다.</p>
@@ -108,7 +127,7 @@ export function ProgramFirstCleanup(props: { actorId: string; space: ProgramPriv
         <div className={styles.carryActions}><button type="button" className={styles.carryMove} data-first-cleanup-stale-apply disabled={pending || props.disabled}
           aria-busy={pending || undefined} onClick={() => void sendStale()}>적용 · 날짜 미정 {counts.undated} · 휴지통 {counts.trash}</button></div>
       </section>}
-      {!closePlan.length && !stalePlan.length && <p className={styles.muted}>정리할 줄이 없습니다.</p>}
+      {!twins.length && !closePlan.length && !stalePlan.length && <p className={styles.muted}>정리할 줄이 없습니다.</p>}
     </dialog>
   </>;
 }

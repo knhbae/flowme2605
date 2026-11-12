@@ -131,9 +131,11 @@ test('the sheet: on 오늘, asked once on this device; each step its own save an
   const sheet = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramFirstCleanup.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   const host = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   assert(host.includes("{period === 'today' && !monthGrid && <ProgramFirstCleanup actorId={actorId} space={space} today={today}"));
-  assert(sheet.includes('if (!storage || storage.getItem(key) || (!closePlan.length && !stalePlan.length)) return;'), 'asked once, only with something to list');
+  assert(sheet.includes('if (!storage || storage.getItem(key) || (!twins.length && !closePlan.length && !stalePlan.length)) return;'), 'asked once, only with something to list');
   assert(sheet.includes("closeProgramAlreadyContinued(current, {") && sheet.includes("sendProgramStaleTasks(current, {") && sheet.includes('restoreProgramFirstCleanup(current, {'));
   assert(sheet.includes("disabled={choice === 'trash' && !line.trashable}"));
+  // ① first (W-CARRY-20): [하나로 합치기] only when not blocked; [비교해 보기] always.
+  assert(sheet.indexOf('data-first-cleanup-merge') < sheet.indexOf('data-first-cleanup-close') && sheet.includes('{!twin.blocked && <button') && sheet.includes('mergeProgramTwinDocuments(current, {'));
   assert(sheet.includes("<h2 id=\"program-first-cleanup-title\">처음 한 번 정리</h2>"));
   for (const word of ['남은 일', '놓친 일', '보관']) assert(!sheet.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').includes(`>${word}`), word);
 });
