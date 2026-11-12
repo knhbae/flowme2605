@@ -10,7 +10,7 @@ import { programLegacyTaskQualityHold } from './legacy-map-review';
 import { programLegacyPlanTaskExcluded } from './program-legacy-plan-target';
 import { programDocumentContentLock, programReferenceExecutionAccess } from './reference-execution-guard';
 import { readTaskLocationPolicy } from './task-location-command';
-import { moveTaskLocation } from './task-location-move';
+import { moveTaskLocation, programSubtaskDue } from './task-location-move';
 import { programRecurringScheduleLabel, programRecurringScheduleStart } from './public-recurrence-contract';
 import { programPublicCopyItemStart } from './public-copy-recurrence';
 import { programOrdinaryScheduleLabel } from './public-ordinary-time';
@@ -182,7 +182,15 @@ export function patchProgramTask(space: ProgramPrivateSpace, taskId: string, pat
   // day's heading with its subtasks and memo (as 위치 옮기기 does), its own '- 날짜:' line dropped; a copy's, a
   // reference's or a repeat's date stays a '- 날짜:' line until step 5. A time alone never moves the line.
   let text = space.text, rest: typeof patch = patch;
-  if (patch.date !== undefined) {
+  // Codex P2-3 (11/12): a subtask (not an independent task under another, which keeps its own day, rereview P2-3) of an
+  // ordinary task cannot leave its parent; a day other than its parent's is its 마감.
+  const parentPolicy = patch.date !== undefined && !before.isCanonical && (before.parentItemId ?? before.parentTaskId) ? readTaskLocationPolicy(space, before.parentTaskId ?? before.parentItemId!) : null;
+  if (patch.date !== undefined && parentPolicy?.kind === 'move' && parentPolicy.documentId === before.docId && !programExecutionDocument(space, before.docId)) {
+    const { date, ...others } = patch;
+    const due = programSubtaskDue(text, before.docId, taskId, date);
+    if (!due) return { result: taskId, reason: 'unresolved' };
+    text = due; rest = others;
+  } else if (patch.date !== undefined) {
     const policy = readTaskLocationPolicy(space, taskId);
     if (policy.kind === 'move' && policy.documentId && !programExecutionDocument(space, policy.documentId)) {
       const { date, time, ...others } = patch;

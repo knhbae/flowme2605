@@ -244,6 +244,28 @@ test("Codex P2-1: a move to another year keeps a 마감 written without its year
   assert.equal(item(toList, '연말 정리').due, '2026-01-05');
 });
 
+test("Codex P2-3: a subtask's date in an ordinary document is its 마감 (it stays under its parent); no '- 날짜:' is written", () => {
+  const { data, docId } = writing(['[2026-11-09]', '- [ ] 부모', '  - [ ] 자식', '  - [ ] 둘째', '    - 날짜: 2026-11-15'].join('\n'));
+  // The row detail's date on 자식: its 마감, the line stays where it is, 자식 reads its parent's day.
+  const patched = ok(updateProgramTask(data, { ...base(data), taskId: id(data, '자식'), patch: { date: '2026-11-20' } })).data;
+  assert.equal(raw(patched, docId), ['[2026-11-09]', '- [ ] 부모', '  - [ ] 자식', '    - 마감: 2026-11-20', '  - [ ] 둘째', '    - 날짜: 2026-11-15'].join('\n'));
+  assert.deepEqual([item(patched, '자식').date, item(patched, '자식').due, item(patched, '자식').parentItemId], ['2026-11-09', '2026-11-20', id(data, '부모')]);
+  // Again: the same 마감 line takes the new day.
+  const again = ok(updateProgramTask(patched, { ...base(patched), taskId: id(patched, '자식'), patch: { date: '2026-11-21' } })).data;
+  assert(raw(again, docId).includes('  - [ ] 자식\n    - 마감: 2026-11-21\n  - [ ] 둘째'), raw(again, docId));
+  // 둘째's old '- 날짜:' line: its parent's day only drops it; another day drops it and writes its 마감.
+  const same = ok(updateProgramTask(data, { ...base(data), taskId: id(data, '둘째'), patch: { date: '2026-11-09' } })).data;
+  assert(raw(same, docId).endsWith('  - [ ] 둘째'), raw(same, docId));
+  const other = ok(updateProgramTask(data, { ...base(data), taskId: id(data, '둘째'), patch: { date: '2026-11-25' } })).data;
+  assert(raw(other, docId).endsWith('  - [ ] 둘째\n    - 마감: 2026-11-25'), raw(other, docId));
+  assert.equal(raw(patched, docId).split('\n').filter(line => DATE_LINE.test(line)).length, 1, "only 둘째's old line"); noDateLine(same, 'same day'); noDateLine(other, 'other day');
+  // A new subtask given another day (the writing child command): its 마감.
+  const child = prepareWritingChild(space(data).text, { docId, parentId: id(data, '부모'), kind: 'task', text: '새 자식', expectedRaw: raw(data, docId), date: '2026-11-20' });
+  assert(child.ok, child.ok ? '' : child.reason);
+  assert(raw(child.workspace, docId).includes('  - [ ] 새 자식\n    - 마감: 2026-11-20'), raw(child.workspace, docId));
+  assert.deepEqual([M.tasks(child.workspace).find(task => task.title === '새 자식')!.date, M.tasks(child.workspace).find(task => task.title === '새 자식')!.due], ['2026-11-09', '2026-11-20']);
+});
+
 test('left alone: a copy or run document, a reference line, a repeat line, an unreadable value; a changed account refuses the old list', () => {
   const { data, docId } = writing(['[2026-11-09]', '- [ ] 매일 물 마시기 @매일', '  - 날짜: 2026-11-12', '- [ ] 언젠가 할 일', '  - 날짜: 다음 달',
     '- [ ] 보통 할 일', '  - 날짜: 2026-11-13'].join('\n'));

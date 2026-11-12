@@ -187,6 +187,42 @@ export function moveTaskLocation(state: TextWorkspaceState, input: { documentId:
 
 /** The headless case of moveTaskLocation: its own '- 날짜:' lines go; its last '- 마감:' says the day (one is made under
  *  its other property lines when it has none); 날짜 미정 takes the 마감 away. Nothing else changes. */
+/** Codex P2-3 (11/12): a date given to a subtask in an ordinary document. A subtask cannot leave its parent (redesign
+ *  3), so it reads its parent's day: its own '- 날짜:' lines go, and a day other than the one it reads then becomes its
+ *  '- 마감:' (its last 마감 line takes it, else a new line after its own properties). The same day, or none, leaves its
+ *  마감 as it was. Null when anything else would change. */
+export function programSubtaskDue(state: TextWorkspaceState, documentId: string, itemId: string, date: string | null): TextWorkspaceState | null {
+  if (date !== null && !programDate(date)) return null;
+  const doc = M.getDocument(state, documentId);
+  if (!doc) return null;
+  const parsed = M.parseDocument(doc, state), row = parsed.rows.find(item => item.id === itemId), was = parsed.items.find(item => item.id === itemId);
+  if (!row || !was || !['task', 'subcheck'].includes(row.kind) || !(was.parentItemId ?? was.parentTaskId)) return null;
+  const own = parsed.rows.filter(item => item.kind === 'property' && item.parentLineId === itemId);
+  const dates = new Set(own.filter(item => /^ *-\s+날짜:/.test(item.text)).map(item => item.id));
+  const put = (lines: TextLine[]): TextWorkspaceState => ({ ...state, documents: state.documents.map(item => item.id === doc.id ? { ...item, lines } : item) });
+  let lines = doc.lines.filter(line => !dates.has(line.id));
+  const reads = M.parseDocument({ ...doc, lines }, put(lines)).items.find(item => item.id === itemId)?.date ?? null;
+  if (date !== null && date !== reads) {
+    const last = own.filter(item => /^ *-\s+마감:/.test(item.text)).at(-1);
+    if (last) lines = lines.map(line => line.id === last.id ? { id: line.id, text: line.text.replace(/(마감:\s*).*$/, `$1${date}`) } : line);
+    else {
+      const after = [itemId, ...own.filter(item => !dates.has(item.id)).map(item => item.id)].at(-1)!, index = lines.findIndex(line => line.id === after);
+      lines = [...lines.slice(0, index + 1), { id: programId('line'), text: `${'  '.repeat(row.depth + 1)}- 마감: ${date}` }, ...lines.slice(index + 1)];
+    }
+  }
+  const next = put(lines);
+  if (!M.validate(next) || JSON.stringify(state.progressRecords) !== JSON.stringify(next.progressRecords)) return null;
+  const before = new Map(parsed.items.map(item => [item.id, item])), after = M.parseDocument(M.getDocument(next, doc.id)!, next).items;
+  const inside = new Set(parsed.rows.slice(row.index + 1, row.subtreeEndIndex).map(item => item.id));
+  if (after.length !== before.size || after.some(item => {
+    const prior = before.get(item.id);
+    if (!prior || (['title', 'done', 'note', 'time', 'isCanonical', 'parentItemId'] as const).some(key => item[key] !== prior[key])) return true;
+    // Its own subtasks without a date of their own follow it to the day it reads.
+    if (item.id !== itemId) return item.date !== (inside.has(item.id) && !prior.explicitDate ? reads : prior.date) || (item.due ?? null) !== (prior.due ?? null) || item.explicitDate !== prior.explicitDate;
+    return item.explicitDate || item.date !== reads || (item.due ?? null) !== (date !== null && date !== reads ? date : prior.due ?? null);
+  })) return null;
+  return next;
+}
 function dueInPlace(state: TextWorkspaceState, source: NonNullable<ReturnType<typeof readTaskLocationSource>>, target: { kind: 'date'; date: string | null; time?: string }): TaskLocationMove {
   const { doc, rows, row, task, selection } = source;
   const own = rows.filter(item => item.kind === 'property' && item.parentLineId === task.id);

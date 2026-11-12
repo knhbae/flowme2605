@@ -1,4 +1,5 @@
 import {textWorkspaceModel as M,type TextWorkspaceState} from './text-workspace';
+import {programSubtaskDue} from './task-location-move';
 
 export type WritingChildInput={docId:string;parentId:string;kind:'memo'|'task';text:string;expectedRaw:string;date?:string|null;scopeId?:string};
 export type WritingChildResult={ok:true;workspace:TextWorkspaceState;lineId:string;parentId:string;offset:number}|{ok:false;reason:string};
@@ -34,8 +35,12 @@ export function prepareWritingChild(before:TextWorkspaceState,input:WritingChild
  // section's day, not its parent's — so under a parent of its own section no '- 날짜:' is added, while under a moved
  // parent or in an undated part it keeps the parent's day.
  const sectionDate=M.tasks(next).find(t=>t.id===id)?.date??null;
- next=M.updateTask(next,id,{...(sectionDate!==date?{date}:{}),note:input.text.split('\n').slice(1).join('\n')});
- const child=M.tasks(next).find(t=>t.id===id);if(!child||child.parentTaskId!==parent.id||child.date!==date||!M.validate(next))return fail('하위 할 일의 날짜·소속을 적용하지 못했습니다.');
+ // Codex P2-3 (11/12): only a parent's own legacy '- 날짜:' day is kept that way; another day given is the child's 마감
+ // (a subtask cannot leave its parent), so no command writes a new '- 날짜:' in an ordinary document.
+ const legacy=task.explicitDate&&task.date===date||before.flows.some(d=>d.id===doc.id),asDue=sectionDate!==date&&date!==null&&!legacy;
+ next=M.updateTask(next,id,{...(sectionDate!==date&&!asDue?{date}:{}),note:input.text.split('\n').slice(1).join('\n')});
+ if(asDue){const due=programSubtaskDue(next,doc.id,id,date);if(!due)return fail('하위 할 일의 마감을 적용하지 못했습니다.');next=due;}
+ const child=M.tasks(next).find(t=>t.id===id);if(!child||child.parentTaskId!==parent.id||child.date!==(asDue?sectionDate:date)||asDue&&child.due!==date||!M.validate(next))return fail('하위 할 일의 날짜·소속을 적용하지 못했습니다.');
  if(next.progressRecords.some(r=>r.taskId===id))return fail('새 하위 항목에 기존 기록을 연결하지 않았습니다.');
  const after=M.getDocument(next,doc.id)!,index=after.lines.findIndex(l=>l.id===id),offset=after.lines.slice(0,index).reduce((n,l)=>n+l.text.length+1,0)+after.lines[index].text.length;
  return{ok:true,workspace:next,lineId:id,parentId:task.id,offset};
