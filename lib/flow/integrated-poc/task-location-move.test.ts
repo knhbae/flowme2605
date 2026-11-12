@@ -33,7 +33,7 @@ test('folder: the complete bundle goes to the existing declaration end; IDs, dat
   const childId = f.state.documents[0].lines.find(line => line.text.includes('합성 하위'))!.id;
   f.state = M.recordProgress(f.state, childId, '2026-11-10', 50);
   const result = apply(f, { kind: 'folder', folderId }), nextRaw = M.raw(result.next.documents[0]);
-  assert.equal(nextRaw, '[2026-11-10]\n- /합성 A\n  - [ ] 합성 다음\n- /합성 B\n  - [ ] 합성 기존\n  - [ ] 합성 부모\n    - 날짜: 2026-11-11\n    - 시간: 09:30\n    - 메모: 합성 메모\n    - [ ] 합성 하위\n[2026-11-12]\n- /합성 A\n  - [ ] 합성 목적');
+  assert.equal(nextRaw, '[2026-11-10]\n- /합성 A\n  - [ ] 합성 다음\n- /합성 B\n  - [ ] 합성 기존\n  - [ ] 합성 부모\n    - 날짜: 2026-11-11\n    - 시간: 09:30\n    - 메모: 합성 메모\n    - [50%] 합성 하위\n[2026-11-12]\n- /합성 A\n  - [ ] 합성 목적');
   assert.equal(result.declarations, 0);
   assert.deepEqual(new Set(result.next.documents[0].lines.map(line => line.id)), new Set(f.state.documents[0].lines.map(line => line.id)));
   assert.equal(result.next.itemScopes[childId], folderId);

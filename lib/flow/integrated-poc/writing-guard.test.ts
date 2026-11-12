@@ -172,7 +172,8 @@ test('held words and fixes: [맞추기] one step under the line above, [맨 앞�
 });
 
 test('11/10 18:05 (실사용): a checked task taken away is held with its reason and [되돌리기]; rows follow the text shown', async () => {
-  const raw = ['[2026-11-10]', '- /미분류', '  - [x] 벤처투자정리 후 공유', '', '- /벤처투자', '  - [ ] 벤처투자정리 후 공유', '- /EA', '  - [ ] 파트역량평가 정리 확인', '    - 메모: 1. 기여도', '  - [ ] 10minit! 선정 및 공지'].join('\n');
+  // Redesign 1 (11/12): the 25% recorded below is in the text ([25%]).
+  const raw = ['[2026-11-10]', '- /미분류', '  - [x] 벤처투자정리 후 공유', '', '- /벤처투자', '  - [ ] 벤처투자정리 후 공유', '- /EA', '  - [25%] 파트역량평가 정리 확인', '    - 메모: 1. 기여도', '  - [ ] 10minit! 선정 및 공지'].join('\n');
   let { state, id } = workspace(raw);
   const checked = lines(state, id)[2].id, part = lines(state, id)[7].id;
   state = M.recordProgress(M.recordProgress(state, checked, '2026-11-10', 100), part, '2026-11-10', 25);
@@ -189,7 +190,7 @@ test('11/10 18:05 (실사용): a checked task taken away is held with its reason
   assert.equal(gone.slice(0, fix.start) + fix.text + gone.slice(fix.end), raw, 'the lines go back where they were');
   // The editor's rows: the model's rows placed on the text shown, never by old index (no folder row on the 25% task).
   const rows = M.rowMeta(state, id), aligned = programAlignRows(raw, gone, rows) as (typeof rows[number] | undefined)[];
-  const at = gone.split('\n').indexOf('  - [ ] 파트역량평가 정리 확인');
+  const at = gone.split('\n').indexOf('  - [25%] 파트역량평가 정리 확인');
   assert.equal(aligned[at]?.kind, 'task'); assert.equal(aligned[at]?.id, part);
   assert.equal(aligned[gone.split('\n').indexOf('  - [ ] 10minit! 선정 및 공지')]?.id, lines(state, id)[9].id);
   assert(aligned.every((row, index) => !row || M.getDocument(state, id)!.lines.find(line => line.id === row.id)?.text === gone.split('\n')[index]), 'every row on its own text');
