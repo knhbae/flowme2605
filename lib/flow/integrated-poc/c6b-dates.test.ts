@@ -45,7 +45,7 @@ const moveOf = (data: ProgramData, taskId: string, date: string | null): Program
 };
 const nonDateLines = (data: ProgramData) => space(data).text.documents.map(doc => doc.lines.filter(line => !/^\s*- 날짜: /.test(line.text)).map(line => [line.id, line.text]));
 
-test('one change moves tasks of several documents and a copy\'s task: ids, progress, time, text and line places stay', () => {
+test('one change moves tasks of several documents and a copy\'s task: ids, progress and time stay; a task moves to its day (redesign 3)', () => {
   const { data, ids } = account();
   const moves = [moveOf(data, ids['하나'], '2026-11-02'), moveOf(data, ids['둘'], '2026-11-02'), moveOf(data, ids.copy, '2026-11-02')];
   const moved = ok(moveProgramTaskDates(data, { actorId: actor(data), requestId: 'c6b-move', moves }));
@@ -58,7 +58,14 @@ test('one change moves tasks of several documents and a copy\'s task: ids, progr
   assert.deepEqual(M.tasks(space(moved.data).text).map(row => [row.id, row.title, row.time ?? '']), M.tasks(space(data).text).map(row => [row.id, row.title, row.time ?? '']));
   assert.equal(task(moved.data, ids['둘']).time, '09:30');
   assert.deepEqual(space(moved.data).text.progressRecords, space(data).text.progressRecords);
-  assert.deepEqual(nonDateLines(moved.data), nonDateLines(data));
+  // Redesign 3 (DECISION-1): an ordinary task moves under its new day's heading (no '- 날짜:' line); a copy's stays in place.
+  const copyDoc = space(data).copies[0].documentId, docOf = (state: ProgramData, docId: string) => nonDateLines(state)[space(state).text.documents.findIndex(doc => doc.id === docId)];
+  assert.deepEqual(docOf(moved.data, copyDoc), docOf(data, copyDoc));
+  for (const id of [ids['하나'], ids['둘']]) {
+    const doc = M.getDocument(space(moved.data).text, task(moved.data, id).docId)!;
+    assert(M.raw(doc).includes(`[2026-11-02]\n- [ ] ${task(moved.data, id).title}`), M.raw(doc));
+    assert(!doc.lines.some(line => /^\s*- 날짜:/.test(line.text)));
+  }
   assert.deepEqual(moved.data.public, data.public);
   // The copy keeps its date as the task's own (override), the rest of the copy as it was.
   const before = space(data).copies[0], after = space(moved.data).copies[0];

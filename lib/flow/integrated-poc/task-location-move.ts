@@ -102,7 +102,9 @@ export function moveTaskLocation(state: TextWorkspaceState, input: { documentId:
     // 11/11 dateslot: a dated head goes where the writing bar's date chip would make it (R1, the document's date order),
     // not after the oldest day of a newest-first document; `[미정]` stays at the end.
     const line = addLine(`[${date ?? '미정'}]`), index = date ? programDateHeadIndex(remaining.map(item => item.text), date) : remaining.length;
-    remaining = [...remaining.slice(0, index), line, ...remaining.slice(index)];
+    // Redesign 3 (mockup ③): a blank line keeps the new day apart from the lines before it, as the writing bar's date chip does.
+    const apart = index > 0 && remaining[index - 1].text.trim() ? [addLine('')] : [];
+    remaining = [...remaining.slice(0, index), ...apart, line, ...remaining.slice(index)];
     restRows = M.parseDocument({ ...remainder, lines: remaining }, remainderState).rows;
     head = restRows.find(item => item.id === line.id);
     if (head?.kind !== 'date') return fail('unsafe-position');

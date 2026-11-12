@@ -26,7 +26,8 @@ test('the bar opens the sheet; a choice is one save of the list, pressed once, w
   assert.match(apply, /if \(!selecting \|\| datesBusy\.current\) return;/);
   // One save: the one command, the whole list; with a copy in it, as one social intent.
   assert.equal(apply.match(/countedMutate\(/g)?.length, 1);
-  assert.match(apply, /countedMutate\('날짜 한꺼번에 바꾸기', current => \{ const next = moveProgramTaskDates\(current, \{ actorId, requestId, moves \}\);[^\n]*return next; \},\s*\{ history: true, awaitAutomaticRead: true, \.\.\.\(programTaskDateMovesSocial\(space, moves\) \? \{ alphaSocial: \{ type: 'private-task-dates' as const, moves \} \} : \{\}\) \}\);/);
+  assert.match(apply, /const social = programTaskDateMovesSocial\(space, moves\);/);
+  assert.match(apply, /countedMutate\('날짜 한꺼번에 바꾸기', current => \{ const next = moveProgramTaskDates\(current, \{ actorId, requestId, moves \}\);[\s\S]*?return next; \},\s*\{ history: true, awaitAutomaticRead: true, \.\.\.\(social \? \{ alphaSocial: \{ type: 'private-task-dates' as const, moves \} \} : \{\}\) \}\);/);
   assert(!/for \([^)]*moves[^)]*\)[\s\S]{0,80}(run|mutate)\(/.test(apply), 'never a save per task');
   // Changed since: nothing moved, 고르기 and the picks stay.
   assert.match(apply, /else if \(result\.reason === 'conflict'\) setSelectNotice\('그사이 바뀐 할 일이 있어 옮기지 않았습니다\. 다시 확인해 주세요\.'\);/);
@@ -35,9 +36,11 @@ test('the bar opens the sheet; a choice is one save of the list, pressed once, w
 test('after it: 고르기 ends, the notice offers 되돌리기 (one save back) and 그날 보기 when the rows left the view', () => {
   const apply = body('applySelectDates');
   assert.match(apply, /if \(selectingNow\.current\) stopSelecting\(\);/);
-  assert.match(apply, /setDatesNotice\(\{ actorId, count: picks\.length, date: target, undo, taskIds: undo\.map\(move => move\.taskId\), shownAt: Date\.now\(\) \}\);/);
+  assert.match(apply, /setDatesNotice\(\{ actorId, count: picks\.length, date: target, undo, taskIds: undo\.map\(move => move\.taskId\), shownAt: Date\.now\(\), \.\.\.\(texts \? \{ texts \} : \{\}\) \}\);/);
   const undo = body('restoreSelectDates');
-  assert.equal(undo.match(/countedMutate\(/g)?.length, 1);
+  // Redesign 3: a list without a copy moved lines; its 되돌리기 is the writing back (one save), else the old dates back.
+  assert.equal(undo.match(/countedMutate\(/g)?.length, 2);
+  assert.match(undo, /const result = texts \? await countedMutate\('날짜 되돌리기', current => programTextTransition\(current, \{ actorId, documentId: texts\.documentId, expected: texts\.after, next: texts\.before \}\), \{ history: true, awaitAutomaticRead: true \}\)/);
   assert.match(undo, /moveProgramTaskDates\(current, \{ actorId, requestId, moves: notice\.undo \}\)/);
   assert.match(undo, /refused: '그 뒤 바뀐 할 일이 있어 되돌리지 않았습니다'/);
   assert.match(space, /actions: datesNotice\.refused \|\| datesNotice\.undone \|\| datesPending \? \[\] : \[\{ label: '되돌리기', run: \(\) => void restoreSelectDates\(datesNotice\) \}, \.\.\.\(datesLeft \? \[\{ label: '그날 보기', run: \(\) => void showMovedDay\(datesNotice\.date\) \}\] : \[\]\)\]/);

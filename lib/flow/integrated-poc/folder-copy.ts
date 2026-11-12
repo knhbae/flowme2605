@@ -92,14 +92,18 @@ export function copyProgramFolderOccurrence(state: TextWorkspaceState, preview: 
     const current = currentValues.get(item.id);
     return item.inputPercent === undefined && current != null && current !== (item.done ? 100 : 0);
   }).map(item => [item.id, currentValues.get(item.id)!]));
-  newDoc.lines = preview.lines.map(line => {
+  // Redesign 3 (DECISION-1): the copy keeps its days by its date heading, not by '- 날짜:' lines: the block sits under a
+  // copy of the heading it sits under now (a folder block never spans two headings).
+  const sourceRow = M.rowMeta(state, preview.docId).find(row => row.id === preview.lineId);
+  const head = sourceRow?.dateLineId ? M.getDocument(state, preview.docId)?.lines.find(line => line.id === sourceRow.dateLineId) : undefined;
+  newDoc.lines = [...(head ? [{ id: programId('line'), text: head.text }] : []), ...preview.lines.map(line => {
     let text = line.id === preview.lineId ? '- ' + (folderText ? '/' : '') + title : line.text.slice(indent);
     const current = materializedValues.get(line.id);
     // A fresh copy has no dated records. Carry history-backed current in its own
     // token, including subchecks, without changing the original RAW or history.
     if (current != null) text = text.replace(/^( *-\s+\[)[ xX](\](?:\s+|$))/, (_match, prefix: string, suffix: string) => `${prefix}${current}%${suffix}`);
     return { id: lineIds[line.id], text };
-  });
+  })];
   newDoc.folderId = root.scopeId; newDoc.folder = title;
   for (const binding of preview.bindings) if (binding.lineId !== preview.lineId && binding.kind === 'scope') next.bindings.push({
     kind: 'scope', docId: documentId, lineId: lineIds[binding.lineId], scopeId: folderIds[binding.scopeId],
@@ -114,7 +118,6 @@ export function copyProgramFolderOccurrence(state: TextWorkspaceState, preview: 
   for (const item of preview.items.filter(item => item.isCanonical)) {
     const id = lineIds[item.id], copied = M.tasks(next).find(task => task.id === id);
     if (!copied) return fail('복사한 항목의 소속을 확인하지 못했습니다.');
-    if (copied.date !== item.date) next = M.updateTask(next, id, { date: item.date });
   }
   const copiedItems = M.parseDocument(M.getDocument(next, documentId)!, next).items;
   if (!M.validate(next) || preview.items.some(item => {

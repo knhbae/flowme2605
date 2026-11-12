@@ -104,6 +104,7 @@ import { programCheckpointForWritingTarget } from '@/lib/flow/integrated-poc/wri
 import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classification';
 import { commitTaskDateWithUndo, moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
 import { applyProgramProgressText, programProgressTextPlan, type ProgramProgressTextChange } from '@/lib/flow/integrated-poc/progress-text';
+import { applyProgramDateLines, programDateLineDefaults, programDateLinePlan, type ProgramDateLineChoice, type ProgramDateLineChoices, type ProgramDateLinePlan } from '@/lib/flow/integrated-poc/date-property-migration';
 import { programDueLabel } from '@/lib/flow/integrated-poc/due-date';
 import type { TaskLocationTarget } from '@/lib/flow/integrated-poc/task-location-move';
 import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
@@ -404,6 +405,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [progressAsk, setProgressAsk] = useState<{ actorId: string; documentId: string; changes: ProgramProgressTextChange[] } | null>(null);
   const progressLater = useRef(new Set<string>()), progressDialog = useRef<HTMLDialogElement>(null);
   const [progressNotice, setProgressNotice] = useState<{ actorId: string; documentId: string; count: number; before: TextWorkspaceState; after: TextWorkspaceState; undone?: boolean; refused?: boolean } | null>(null);
+  // Redesign 3 (mockup ③): a document's '- 날짜:' lines, asked once when it is opened (after the progress ask).
+  const [dateLineAsk, setDateLineAsk] = useState<{ actorId: string; plan: ProgramDateLinePlan; choices: ProgramDateLineChoices } | null>(null);
+  const dateLineLater = useRef<string | null>(null), dateLineDialog = useRef<HTMLDialogElement>(null);
+  const [dateLineNotice, setDateLineNotice] = useState<{ actorId: string; documentId: string; count: number; before: TextWorkspaceState; after: TextWorkspaceState; undone?: boolean; refused?: boolean } | null>(null);
   const [detail, setDetail] = useState<Detail>(null), [message, setMessage] = useState('');
   const [writingNotice, setWritingNotice] = useState<{ actorId: string; documentId: string; text: string } | null>(null);
   const [viewChangeNotice, setViewChangeNotice] = useState<{ actorId: string; reason: 'composition' | 'recurrence' | 'saving' | 'save-failed' | 'pending' } | null>(null);
@@ -427,7 +432,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [selecting, setSelecting] = useState<Selecting | null>(null), [selectNotice, setSelectNotice] = useState<string | null>(null);
   const selectScrollBack = useRef<number | null>(null);
   // C6b: the date sheet, the one save it makes (pressed once), and its notice with 되돌리기.
-  type DatesNotice = { actorId: string; count: number; date: string | null; undo: ProgramTaskDateMove[]; taskIds: string[]; shownAt: number; refused?: string; undone?: boolean };
+  type DatesNotice = { actorId: string; count: number; date: string | null; undo: ProgramTaskDateMove[]; taskIds: string[]; shownAt: number; refused?: string; undone?: boolean;
+    /** Redesign 3: a list without a copy moved its lines; 되돌리기 puts the writing back as it was (merged as a save is). */
+    texts?: { documentId: string; before: TextWorkspaceState; after: TextWorkspaceState } };
   const datesSheet = useRef<HTMLDialogElement>(null), datesBusy = useRef(false), [datesPending, setDatesPending] = useState(false);
   // N10: a repeat round finished from 오늘 ('다음은 …' with 되돌리기), and the old one-task repeat's card.
   const [repeatNotice, setRepeatNotice] = useState<{ actorId: string; text: string; check: ProgramRepeatCheck | null; refused?: boolean } | null>(null);
@@ -833,6 +840,45 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const result = await run('진행률 적기 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: notice.documentId, before: notice.before, after: notice.after }), true);
     setProgressNotice(current => current === notice ? result.ok ? { ...notice, undone: true } : { ...notice, refused: true } : current);
   }
+  // Redesign 3: '나중에' holds the ask while this document stays open; opened again, it asks again (mockup ③).
+  useEffect(() => {
+    const key = `${actorId}:${selected}`;
+    if (dateLineLater.current !== key) dateLineLater.current = null;
+    if (period !== 'documents' || !selected || progressAsk || dateLineLater.current === key) { setDateLineAsk(null); return; }
+    const plan = programDateLinePlan(dataRef.current.spaces[actorId], selected);
+    setDateLineAsk(plan ? { actorId, plan, choices: programDateLineDefaults(plan) } : null);
+  }, [period, selected, actorId, progressAsk]);
+  useEffect(() => {
+    const sheet = dateLineDialog.current;
+    if (!sheet) return;
+    if (dateLineAsk && !sheet.open) sheet.showModal(); else if (!dateLineAsk && sheet.open) sheet.close();
+  }, [dateLineAsk]);
+  function laterDateLines() {
+    if (dateLineAsk) dateLineLater.current = `${dateLineAsk.actorId}:${dateLineAsk.plan.documentId}`;
+    setDateLineAsk(null);
+  }
+  async function writeDateLines() {
+    const ask = dateLineAsk;
+    if (!ask || ask.actorId !== actorId) return;
+    if (!await settleRecent(ask.plan.documentId)) { setMessage('입력이 끝나면 다시 눌러 주세요.'); return; }
+    let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
+    const result = await run('날짜 줄 정리', current => { const next = applyProgramDateLines(current, { ...base(current), plan: ask.plan, choices: ask.choices });
+      if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
+    dateLineLater.current = `${ask.actorId}:${ask.plan.documentId}`;
+    setDateLineAsk(null);
+    if (!result.ok || !before || !after) {
+      if (!result.ok && result.reason === 'conflict') setMessage('그사이 바뀐 줄이 있어 바꾸지 않았습니다. 글을 다시 열면 다시 보여 드립니다.');
+      else if (!result.ok && result.reason === 'unresolved') setMessage('옮길 수 없는 줄이 있어 바꾸지 않았습니다. 원문은 그대로입니다.');
+      return;
+    }
+    setDateLineNotice({ actorId, documentId: ask.plan.documentId, count: ask.plan.lines, before, after });
+  }
+  async function undoDateLines(notice: NonNullable<typeof dateLineNotice>) {
+    const result = await run('날짜 줄 정리 되돌리기', current => undoProgramTaskLocation(current, { actorId, documentId: notice.documentId, before: notice.before, after: notice.after }), true);
+    setDateLineNotice(current => current === notice ? result.ok ? { ...notice, undone: true } : { ...notice, refused: true } : current);
+  }
+  const chooseDateLine = (ownerId: string, choice: ProgramDateLineChoice) => setDateLineAsk(ask => ask && { ...ask, choices: { ...ask.choices, [ownerId]: choice } });
+  const monthDay = (date: string) => `${Number(date.slice(5, 7))}월 ${Number(date.slice(8, 10))}일`;
   const progressMark = (text: string) => /\[[^\]]*\]/.exec(text)?.[0] ?? text;
   function rememberRecentWhole(next: Record<string, true>) {
     try { localStorage.setItem(recentWholeKey, JSON.stringify(next)); } catch { /* this visit only */ }
@@ -2281,15 +2327,18 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (moves.every(move => move.date === move.expected.date)) return;
     const requestId = programId('dates');
     // 되돌리기 is made inside the save, from the very state the move applies to (not the one shown before a read).
-    let undo: ProgramTaskDateMove[] = [];
+    let undo: ProgramTaskDateMove[] = [], texts: DatesNotice['texts'];
+    const social = programTaskDateMovesSocial(space, moves);
     datesBusy.current = true; setDatesPending(true); setSelectNotice(null);
     try {
-      const result = await countedMutate('날짜 한꺼번에 바꾸기', current => { const next = moveProgramTaskDates(current, { actorId, requestId, moves }); if (next.ok) undo = programTaskDateUndo(current.spaces[actorId], next.data.spaces[actorId], moves); return next; },
-        { history: true, awaitAutomaticRead: true, ...(programTaskDateMovesSocial(space, moves) ? { alphaSocial: { type: 'private-task-dates' as const, moves } } : {}) });
+      const result = await countedMutate('날짜 한꺼번에 바꾸기', current => { const next = moveProgramTaskDates(current, { actorId, requestId, moves }); if (next.ok) undo = programTaskDateUndo(current.spaces[actorId], next.data.spaces[actorId], moves);
+        const documentId = next.ok ? M.tasks(current.spaces[actorId].text).find(task => task.id === moves[0].taskId)?.docId : undefined;
+        texts = next.ok && !social && documentId ? { documentId, before: current.spaces[actorId].text, after: next.data.spaces[actorId].text } : undefined; return next; },
+        { history: true, awaitAutomaticRead: true, ...(social ? { alphaSocial: { type: 'private-task-dates' as const, moves } } : {}) });
       if (result.ok) {
         if (selectingNow.current) stopSelecting();
         setTaskNotice(null); setOrderNotice(null);
-        setDatesNotice({ actorId, count: picks.length, date: target, undo, taskIds: undo.map(move => move.taskId), shownAt: Date.now() });
+        setDatesNotice({ actorId, count: picks.length, date: target, undo, taskIds: undo.map(move => move.taskId), shownAt: Date.now(), ...(texts ? { texts } : {}) });
       }
       else if (result.reason === 'conflict') setSelectNotice('그사이 바뀐 할 일이 있어 옮기지 않았습니다. 다시 확인해 주세요.');
       else if (result.reason !== 'busy') setSelectNotice(programErrorMessage(result.reason));
@@ -2301,7 +2350,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const requestId = programId('dates');
     datesBusy.current = true; setDatesPending(true);
     try {
-      const result = await countedMutate('날짜 되돌리기', current => moveProgramTaskDates(current, { actorId, requestId, moves: notice.undo }),
+      const texts = notice.texts;
+      const result = texts ? await countedMutate('날짜 되돌리기', current => programTextTransition(current, { actorId, documentId: texts.documentId, expected: texts.after, next: texts.before }), { history: true, awaitAutomaticRead: true })
+        : await countedMutate('날짜 되돌리기', current => moveProgramTaskDates(current, { actorId, requestId, moves: notice.undo }),
         { history: true, awaitAutomaticRead: true, ...(programTaskDateMovesSocial(space, notice.undo) ? { alphaSocial: { type: 'private-task-dates' as const, moves: notice.undo } } : {}) });
       if (result.ok) setDatesNotice({ ...notice, undone: true, shownAt: Date.now() });
       else if (result.reason === 'conflict') setDatesNotice({ ...notice, refused: '그 뒤 바뀐 할 일이 있어 되돌리지 않았습니다', shownAt: Date.now() });
@@ -3573,6 +3624,31 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <button type="button" className={styles.datesChoice} data-progress-text-write onClick={() => void writeProgressText()}>글에 적기</button>
             <button type="button" className={styles.datesClose} onClick={laterProgressText}>나중에</button>
           </>}
+        </dialog>
+        {dateLineNotice?.actorId === actorId && dateLineNotice.documentId === selected && <div className={styles.orderNotice} data-date-lines-notice>
+          <ProgramNoticeRow notice={{ tone: dateLineNotice.refused ? 'warn' : dateLineNotice.undone ? 'info' : 'choose', closeLabel: '알림 닫기',
+            text: dateLineNotice.refused ? '그 뒤 바뀐 줄이 있어 되돌리지 않았습니다' : dateLineNotice.undone ? '날짜 줄을 정리하기 전으로 되돌렸습니다' : `날짜 줄 ${dateLineNotice.count}개를 정리했습니다`,
+            actions: dateLineNotice.undone || dateLineNotice.refused ? [] : [{ label: '되돌리기', run: () => void undoDateLines(dateLineNotice) }] }} onClose={() => setDateLineNotice(null)} />
+        </div>}
+        <dialog ref={dateLineDialog} className={`${styles.findDialog} ${styles.datesSheet} ${styles.dateLinesSheet}`} aria-labelledby="program-date-lines-title" data-date-lines-sheet
+          onCancel={event => { event.preventDefault(); laterDateLines(); }}>
+          {dateLineAsk && (ask => { const same = ask.plan.items.filter(item => item.kind === 'same'), other = ask.plan.items.filter(item => item.kind === 'other');
+            const day = (date: string | null) => date ? programCalendarDate(date, today, false) : '날짜 미정';
+            return <>
+              <h2 id="program-date-lines-title">이 글의 날짜 줄 {ask.plan.lines}개를 정리합니다</h2>
+              <p className={styles.muted}>이제 할 날은 날짜 제목 하나로 정합니다. 할 일 아래 ‘- 날짜:’ 줄을 이렇게 바꿉니다. 마감이 필요한 일만 ‘마감으로’를 고르세요.</p>
+              {same.length > 0 && <><h3 className={styles.dateLinesHead}>제목과 같은 날 {same.length} · 줄만 지웁니다</h3>
+                <p className={styles.dateLinesSame} data-date-lines-same>{same.map(item => `${item.title} (${item.value ? monthDay(item.value) : '날짜 미정'})`).join(' · ')}</p></>}
+              {other.length > 0 && <><h3 className={styles.dateLinesHead}>제목과 다른 날 {other.length} · 하나씩 고릅니다</h3>
+                <ul className={styles.progressTextList}>{other.map(item => <li key={item.ownerId} data-date-line={item.ownerId}><span>{item.title}</span>
+                  <small>{item.section ? `지금 ${monthDay(item.section)} 아래` : '지금 날짜 제목 없음'} · 날짜 줄 {day(item.value)}{item.subtask ? ' · 하위 할 일은 마감으로만' : ''}</small>
+                  <div className={styles.dateLineChoices} role="group" aria-label={`${item.title} 날짜 줄`}>{item.choices.map(choice =>
+                    <button type="button" key={choice} aria-pressed={ask.choices[item.ownerId] === choice} data-date-line-choice={choice} onClick={() => chooseDateLine(item.ownerId, choice)}>
+                      {choice === 'move' ? item.value ? `${monthDay(item.value)}로 옮기기` : '날짜 미정으로 옮기기' : `마감 ${Number(item.value!.slice(5, 7))}/${Number(item.value!.slice(8, 10))}로`}</button>)}</div></li>)}</ul></>}
+              <button type="button" className={styles.datesChoice} data-date-lines-write onClick={() => void writeDateLines()}>이대로 바꾸기</button>
+              <button type="button" className={styles.datesClose} onClick={laterDateLines}>나중에</button>
+              <p className={styles.muted}>바꾼 뒤 [되돌리기] 한 번이면 이 글 전체가 원래대로 돌아갑니다. ‘나중에’를 고르면 이 글은 지금처럼 읽고, 다음에 열 때 다시 묻습니다.</p>
+            </>; })(dateLineAsk)}
         </dialog>
         {/* F4-a (A3 ⑤): the folder's other documents, one folded line each; a press opens that one instead (one editor). */}
         {folderWriting && folderWritingDocuments.length > 1 && <ul className={folderStyles.docFolds} aria-label="이 폴더가 나오는 다른 글">

@@ -84,7 +84,7 @@ test('N11b: 날짜 미정, 지우기 and taking a finished task up again, in one
   assert.deepEqual(rows(done.data, 'undated'), ['세차 예약']);
   const text = raw(done.data, docId);
   assert(!text.includes('은행 서류'), 'every copy of the deleted task is gone');
-  assert(text.includes('- [ ] 세차 예약\n  - 날짜: 미정'), 'the one kept line says 날짜 미정');
+  assert(text.includes('[미정]\n- [ ] 세차 예약'), 'the one kept line goes under [미정] (redesign 3: no 날짜 line)');
   assert.equal(text.split('\n').filter(line => line === '- [ ] 세차 예약').length, 1);
   assert(validateProgramData(done.data));
   const undone = ok(restoreProgramCarryover(done.data, { ...base(done.data), before: programCarryoverBefore(space(data)), after: programCarryoverProof(space(done.data)) }));

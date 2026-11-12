@@ -52,30 +52,33 @@ const plan: Record<string, string[]> = {
 const finished: Record<string, string[]> = { '2026-10-29': ['운동 30분'], '2026-10-30': ['보고서 초안'], '2026-10-31': ['책 반납', '영어 단어 20개'], '2026-11-02': ['장보기', '운동 30분'], '2026-11-04': ['운동 30분'] };
 const week = days.flatMap(day => [`[${day}]`, ...plan[day].map(title => `- [${(finished[day] ?? []).includes(title) ? 'x' : ' '}] ${title}`), '']).join('\n');
 
-test('N11a 1: a week of copied lines becomes four, each where it was first written; the next day still has four date lines', () => {
+test('N11a 1: a week of copied lines becomes four, under today\'s heading (redesign 3: no date lines); the next day moves them on', () => {
   const { data, docId } = write(empty(), '할 일', week);
   const counted = planProgramCarryover(space(data), '2026-11-05');
   assert.deepEqual({ count: counted.count, kinds: counted.kinds, first: counted.first, repeated: counted.repeated, moved: counted.moved, removed: counted.removed, finished: counted.finished },
     { count: 27, kinds: 7, first: '2026-10-29', repeated: true, moved: 4, removed: 23, finished: 3 });
   const done = ok(carry(data, '2026-11-05', counted));
   assert.deepEqual(onToday(done.data, '2026-11-05').map(task => task.title).sort(), ['세차 예약', '영어 단어 20개', '은행 서류', '치과 예약'].sort());
+  // Redesign 3 (DECISION-1): the kept lines move under today's heading (no '- 날짜:' line); a day left empty goes.
   assert.equal(raw(done.data, docId), [
-    '[2026-10-29]', '- [x] 운동 30분', '- [ ] 영어 단어 20개', '  - 날짜: 2026-11-05', '- [ ] 세차 예약', '  - 날짜: 2026-11-05', '- [ ] 은행 서류', '  - 날짜: 2026-11-05', '',
+    '[2026-10-29]', '- [x] 운동 30분', '',
     '[2026-10-30]', '- [x] 보고서 초안', '',
     '[2026-10-31]', '- [x] 영어 단어 20개', '- [x] 책 반납', '',
     '[2026-11-02]', '- [x] 운동 30분', '- [x] 장보기', '',
-    '[2026-11-04]', '- [x] 운동 30분', '- [ ] 치과 예약', '  - 날짜: 2026-11-05', ''].join('\n'));
-  // '7일째' counts from the day each line was first written; 치과 예약 (11/4) is too new to say it.
+    '[2026-11-04]', '- [x] 운동 30분', '',
+    '[2026-11-05]', '- [ ] 세차 예약', '- [ ] 영어 단어 20개', '- [ ] 은행 서류', '- [ ] 치과 예약'].join('\n'));
+  // '7일째' counted from the day a dated line was first written; a moved line has no such day (redesign step 4 brings
+  // the count back with 이어 쓰기).
   const since = (title: string) => onToday(done.data, '2026-11-05').find(task => task.title === title)!;
-  for (const [title, words] of [['세차 예약', '7일째'], ['영어 단어 20개', '7일째'], ['치과 예약', null]] as const) {
+  for (const [title, words] of [['세차 예약', null], ['영어 단어 20개', null], ['치과 예약', null]] as const) {
     const task = since(title), meta = programExecutionRowMeta({ date: task.date, done: false, progress: null, today: '2026-11-05', dated: true, since: task.explicitDate ? task.groupDate : null });
     assert.equal(meta.parts.includes('7일째'), words !== null, title);
   }
-  // 11/6: the card counts the four, and moving them again changes their date lines in place.
+  // 11/6: the card counts the four, and moving them again takes them under 11/6's heading (11/5's goes, emptied).
   const next = planProgramCarryover(space(done.data), '2026-11-06');
-  assert.deepEqual({ count: next.count, kinds: next.kinds, first: next.first, moved: next.moved, removed: next.removed }, { count: 4, kinds: 4, first: '2026-10-29', moved: 4, removed: 0 });
+  assert.deepEqual({ count: next.count, kinds: next.kinds, first: next.first, moved: next.moved, removed: next.removed }, { count: 4, kinds: 4, first: '2026-11-05', moved: 4, removed: 0 });
   const again = raw(ok(carry(done.data, '2026-11-06', next)).data, docId);
-  assert.equal(again.split('\n').filter(line => line.includes('- 날짜:')).length, 4);
+  assert.equal(again.split('\n').filter(line => line.includes('- 날짜:')).length, 0);
   assert.equal(again, raw(done.data, docId).replaceAll('2026-11-05', '2026-11-06'));
   // 되돌리기: the writing exactly as before, byte for byte.
   const before = programCarryoverBefore(space(data));
@@ -96,7 +99,7 @@ test('N11a 2: copies across three documents become one line each, in the documen
     { count: 9, kinds: 3, moved: 1, removed: 8, today: 1, finished: 1 });
   const done = ok(carry(data, '2026-11-05', counted));
   assert.deepEqual(onToday(done.data, '2026-11-05').map(task => `${task.docTitle}:${task.title}`).sort(), ['11월 둘째 주:세차 예약', '11월 둘째 주:은행 서류']);
-  assert.equal(raw(done.data, second.docId), '[2026-11-04]\n- [ ] 은행 서류\n  - 날짜: 2026-11-05\n\n[2026-11-05]\n- [ ] 세차 예약', 'today\'s own line is kept');
+  assert.equal(raw(done.data, second.docId), '[2026-11-05]\n- [ ] 세차 예약\n- [ ] 은행 서류', 'today\'s own line is kept; the other moves under it (redesign 3)');
   assert.equal(raw(done.data, first.docId), '[2026-11-03]\n- [x] 운동 30분');
   assert.equal(raw(done.data, october.docId), '', 'every day of it emptied');
   assert(validateProgramData(done.data));
@@ -143,8 +146,10 @@ test('N11a 3: lines with something under them, folder lines, repeat lines, progr
   assert.deepEqual(space(done.data).text.progressRecords, space(data).text.progressRecords, 'the record itself is untouched');
   assert.equal(onToday(done.data, '2026-11-05').find(task => task.title === '일기')?.id, diary.id);
   const result = raw(done.data, made.docId);
-  assert(result.includes('- [ ] 세차 예약\n  - 날짜: 2026-11-05\n  - [ ] 세제 사기\n') && result.includes('  - 메모: 통장 사본') && result.includes('  - 시간: 10:00'));
-  assert.equal(result.split('\n').filter(line => line.startsWith('- /')).length, 2, 'folder lines as before, also the one left empty');
+  // Redesign 3: the kept lines move under today's heading with what is under them; '- /운동' is declared there too.
+  assert(result.includes('[2026-11-05]\n- /운동\n  - [ ] 스트레칭\n') && result.includes('- [ ] 세차 예약\n  - [ ] 세제 사기\n') && result.includes('  - 메모: 통장 사본') && result.includes('  - 시간: 10:00'));
+  assert(!/- 날짜:/.test(result));
+  assert.equal(result.split('\n').filter(line => line.startsWith('- /')).length, 3, 'folder lines as before, also the ones left empty, and today\'s');
   assert(result.includes('- [ ] 영어 @매일\n'), 'the repeat line is untouched');
   assert.equal(onToday(done.data, '2026-11-05').length, 7);
 });
@@ -170,14 +175,17 @@ test('N11a rev1: an account shaped as the real one (every task under a folder li
     copies: counted.copies, blocked: counted.blocked }, { count: 84, kinds: 8, moved: 5, removed: 76, finished: 3, split: 1, copies: 79, blocked: { 'linked:legacyQuickItemLines': 3 } });
   const done = ok(carry(data, '2026-11-05', counted));
   assert.equal(M.tasks(space(done.data).text).length, 30, '106 task lines become 30');
-  assert.deepEqual(folderLines(done.data), folders, 'every folder line stays, also those left with nothing under them');
+  // Every folder line stays, also those left with nothing under them; redesign 3: today's heading declares its own.
+  const folderIds = (value: ProgramData) => new Set(space(value).text.documents.flatMap(doc => doc.lines.filter(line => line.text.startsWith('- /')).map(line => line.id)));
+  assert([...folderIds(data)].every(id => folderIds(done.data).has(id)), 'every folder line stays');
+  assert.deepEqual(folderLines(done.data), [20, 19, 18]);
   const folder = (scopeId: string) => space(done.data).text.folders.find(item => item.id === scopeId)?.title;
   const rows = programExecutionTasks(space(done.data), { period: 'today', date: '2026-11-05' }).filter(task => !task.done)
     .map(task => `${task.date === '2026-11-05' ? '오늘' : '지난'}:${folder(task.scopeId)}:${task.title}:${task.groupDate}`).sort();
   // One line per task in its 분류 (정리 apart in 집안일 and 공부; 집안일's was finished); the copy with a check or a
   // memo under it is the one kept (rev2); the three legacy-held lines are left where they are.
-  assert.deepEqual(rows, ['오늘:공부:영어 단어:2026-10-30', '오늘:공부:정리:2026-10-31', '오늘:업무:보고서 쓰기:2026-10-20',
-    '오늘:운동:스트레칭:2026-10-30', '오늘:집안일:빨래:2026-10-23',
+  assert.deepEqual(rows, ['오늘:공부:영어 단어:2026-11-05', '오늘:공부:정리:2026-11-05', '오늘:업무:보고서 쓰기:2026-11-05',
+    '오늘:운동:스트레칭:2026-11-05', '오늘:집안일:빨래:2026-11-05',
     '지난:공부:영어 단어:2026-10-18', '지난:공부:영어 단어:2026-10-19', '지난:공부:영어 단어:2026-10-22']);
   assert.deepEqual(legacy.map(task => lineIds(done.data).includes(task.id)), [true, true, true]);
   const undone = ok(restoreProgramCarryover(done.data, { ...base(done.data), before: programCarryoverBefore(space(data)), after: programCarryoverProof(space(done.data)) }));
@@ -206,18 +214,20 @@ test('N11a rev2: the production shape (5 documents, 60 days, "- /" lines still t
   // Two presses (a hundred changed lines each at most).
   const first = planProgramCarryover(space(data), '2026-11-05');
   assert.deepEqual({ kinds: first.kinds, moved: first.moved, removed: first.removed, newDateLines: first.newDateLines, left: first.left, split: first.split, copies: first.copies, blocked: first.blocked },
-    { kinds: 8, moved: 3, removed: 92, newDateLines: 3, left: 100, split: 1, copies: 194, blocked: { 'shape:different-under': 1, 'recorded-finished': 5 } });
+    { kinds: 8, moved: 3, removed: 92, newDateLines: 0, left: 100, split: 1, copies: 194, blocked: { 'shape:different-under': 1, 'recorded-finished': 5 } });
   const once = ok(carry(data, '2026-11-05', first));
   const twice = ok(carry(once.data, '2026-11-05')).data;
   // 200 past lines become seven today (one per task and 분류, 책 읽기 twice for its two memos; 정리 apart under '- /회사
   // 일' and '- /집안 일', both still text; 러닝 and 빨래 were finished last, so only their left-over copies went) and
   // the five recorded copies of 러닝, left where they are since 러닝 was finished after them; seven date lines; every
   // '- /' line and folder stays.
-  assert.deepEqual(shapeOf(twice), { tasks: 52, slash: 120, folders: 60, dates: 7, past: 5, today: 7 });
+  // Redesign 3: no date lines; the seven sit under today's heading, which declares three folders of its own.
+  assert.deepEqual(shapeOf(twice), { tasks: 52, slash: 123, folders: 63, dates: 0, past: 5, today: 7 });
   const label = (task: { id: string; docId: string }) => { const doc = M.getDocument(space(twice).text, task.docId)!, rows = M.parseDocument(doc, space(twice).text).rows;
     let row = rows.find(item => item.id === task.id); while (row?.parentLineId) { row = rows.find(item => item.id === row!.parentLineId); if (row?.text.startsWith('- /')) return row.text.slice(3); } return ''; };
   assert.deepEqual(onToday(twice, '2026-11-05').map(task => `${label(task)}:${task.title}`).sort(),
-    ['공부:영어 단어', '공부:책 읽기', '공부:책 읽기', '운동:스트레칭', '집안 일:정리', '회사 일:보고서', '회사 일:정리'].sort());
+    // Redesign 3: a line under a '- /' line still text (not a folder) leaves it for today's heading; its 분류 stays.
+    [':보고서', ':정리', ':정리', '공부:영어 단어', '공부:책 읽기', '공부:책 읽기', '운동:스트레칭'].sort());
   assert.deepEqual(new Set(lines(twice).filter(line => /^ {4}- (장소|메모):/.test(line))), carried, 'every memo written is still there');
   // 되돌리기 of the first press brings back all five documents byte for byte.
   const undone = ok(restoreProgramCarryover(once.data, { ...base(once.data), before: programCarryoverBefore(space(data)), after: programCarryoverProof(space(once.data)) }));

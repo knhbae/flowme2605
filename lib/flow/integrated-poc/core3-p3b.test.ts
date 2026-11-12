@@ -6,6 +6,7 @@ import { createProgramData, validateProgramData } from './program-data';
 import { createProgramDocument } from './private-space';
 import { textWorkspaceModel as M } from './text-workspace';
 import { moveProgramTaskDates, programDeferChips, programTaskDateState, programTaskDateUndo, programTaskDatesMovedText, type ProgramTaskDateMove } from './task-date-move';
+import { programTextTransition } from './program-text-transition';
 
 // Core3 P3b (11/8): 되돌리기 after 미루기 (and after 고르기's date sheet, the same C6b command) leaves the writing exactly
 // as before the move — the same text and SHA as ↶ — because a date the line takes from its day heading needs no 날짜
@@ -30,11 +31,16 @@ function move(data: ProgramData, taskId: string, date: string | null): ProgramTa
   const row = M.tasks(space(data).text).find(entry => entry.id === taskId)!;
   return { taskId, expected: { date: row.date, time: row.time ?? '', state: programTaskDateState(space(data), taskId) ?? undefined }, date };
 }
-/** The move and its 되돌리기, as the space makes them (the undo from the very state the move applied to). */
+/** The move and its 되돌리기, as the space makes them. Redesign 3: a list without a copy moved its lines, so the screen's
+ *  되돌리기 is the writing as it was (restoreSelectDates: one save of the text back); the command back (a list with a copy)
+ *  gives the dates back, a moved line at the end of its old day. */
 function moveAndUndo(data: ProgramData, moves: ProgramTaskDateMove[]) {
   const moved = ok(moveProgramTaskDates(data, { actorId: actor(data), requestId: `p3b-${++request}`, moves }));
+  const documentId = M.tasks(space(data).text).find(row => row.id === moves[0].taskId)!.docId;
+  const back = ok(programTextTransition(moved.data, { actorId: actor(moved.data), documentId, expected: space(moved.data).text, next: space(data).text }));
   const undo = programTaskDateUndo(space(data), space(moved.data), moves);
-  const back = ok(moveProgramTaskDates(moved.data, { actorId: actor(moved.data), requestId: `p3b-${++request}`, moves: undo }));
+  const dated = ok(moveProgramTaskDates(moved.data, { actorId: actor(moved.data), requestId: `p3b-${++request}`, moves: undo }));
+  for (const entry of moves) assert.equal(M.tasks(space(dated.data).text).find(row => row.id === entry.taskId)!.date, entry.expected.date, 'the command back gives the date back');
   return { moved: moved.data, back: back.data };
 }
 
@@ -44,8 +50,9 @@ test('미루기 → 되돌리기: the writing is exactly as before (same SHA), o
   const id = task(data, '보고서 검토').id;
   for (const target of ['2026-11-09', '2026-11-15', '2026-11-20']) {
     const { moved, back } = moveAndUndo(data, [move(data, id, target)]);
-    // The move writes the new date under the task, nothing else.
-    assert.equal(raw(moved), RAW.replace('- [ ] 보고서 검토', `- [ ] 보고서 검토\n  - 날짜: ${target}`), target);
+    // Redesign 3: the move takes the line under the new day's heading (no 날짜 line); nothing else moves.
+    assert(raw(moved).includes(`[${target}]\n- [ ] 보고서 검토`) && !/- 날짜:/.test(raw(moved)), raw(moved));
+    assert(raw(moved).startsWith('[2026-11-08]\n- [ ] 회의 일정 잡기\n'), raw(moved));
     assert.equal(task(moved, '보고서 검토').date, target);
     // 되돌리기: the old day again, from the heading; the text and its SHA as before.
     assert.equal(raw(back), RAW, target);
@@ -72,12 +79,12 @@ test('a move onto the day the line already takes writes no 날짜 line; a 날짜
   const onto = ok(moveProgramTaskDates(data, { actorId: actor(data), requestId: `p3b-${++request}`, moves: [move(data, id, '2026-11-08')] }));
   assert.equal(raw(onto.data), '[2026-11-08]\n- [ ] 보고서 검토\n- [ ] 회의 일정 잡기');
   // ...and its 되돌리기 writes the typed day back as it was.
-  const undo = programTaskDateUndo(space(data), space(onto.data), [move(data, id, '2026-11-08')]);
-  const back = ok(moveProgramTaskDates(onto.data, { actorId: actor(onto.data), requestId: `p3b-${++request}`, moves: undo }));
+  const documentId = task(data, '보고서 검토').docId;
+  const back = ok(programTextTransition(onto.data, { actorId: actor(onto.data), documentId, expected: space(onto.data).text, next: space(data).text }));
   assert.equal(raw(back.data), typed);
-  // To 날짜 미정 the line still says 미정 (no heading day to take).
+  // Redesign 3: to 날짜 미정 the line goes under a [미정] heading (no 날짜 line).
   const undated = ok(moveProgramTaskDates(data, { actorId: actor(data), requestId: `p3b-${++request}`, moves: [move(data, id, null)] }));
-  assert.match(raw(undated.data), /- 날짜: 미정/);
+  assert.equal(raw(undated.data), '[2026-11-08]\n- [ ] 회의 일정 잡기\n\n[미정]\n- [ ] 보고서 검토');
 });
 
 test('one chip per day: a chip on the same day as one before it is off; the notice says one task by its day', () => {
