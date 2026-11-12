@@ -3707,7 +3707,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       <div className={styles.listHeading}><h2>{showArchived ? '보관한 문서' : '문서'}</h2><button aria-pressed={showArchived} onClick={() => setShowArchived(value => !value)}>{showArchived ? '사용 중 보기' : '보관함'}</button></div>
       <ul className={styles.documents}>{documentList.map(doc => <li key={doc.id}><button aria-current={selected === doc.id && period === 'documents' ? 'page' : undefined} onClick={() => void openDocument(doc.id)}>{doc.title}<small>{(M.raw(doc).split('\n').find(line => line.trim()) ?? '').slice(0, 120)}</small><small>{space.text.flows.some(flow => flow.id === doc.id) ? '개인 Flow' : collectionMode ? '문서' : doc.folder}</small></button></li>)}</ul>
       {!documentList.length && <p className={styles.muted}>{query ? '검색 결과가 없습니다.' : showArchived ? '보관한 문서가 없습니다.' : '아직 글이 없습니다. ＋ 새 글로 시작하세요.'}</p>}
-      <ProgramDocumentTrash space={space} onOpen={id => void openDocument(id)} />
+      <ProgramDocumentTrash space={space} actorId={actorId} mutate={countedMutate} disabled={saving || !!props.hostBusy?.()} onOpen={id => void openDocument(id)} />
     </dialog>
     <div className={styles.content}>
       {/* C6a review: hidden while picking (it saves), kept mounted with what it holds. */}

@@ -81,6 +81,24 @@ test('W-CARRY-12: the last day written more than 14 days back is stale (the firs
   assert.equal(programMorningCarry(space(writing('[2026-11-13]\n- [ ] 오늘 일').data), TODAY), null);
 });
 
+test('integ5 W-TXT-09 / W-CARRY-12: a continued parent keeps its waiting start and deadline while a partial subtask gets its own continuation; undo restores the complete workspace', () => {
+  const { data, docId } = writing(['[2026-11-12]', '- /EA', '  - [25%] 답 확인: 합성 검토',
+    '    - 기다림: 2026-11-05', '    - 마감: 2026-11-20', '    - [50%] 하위 준비', '      - 메모: 합성 메모',
+    '[2026-11-13]', '- [ ] 오늘 그대로'].join('\n'));
+  const before = programCarryoverBefore(space(data));
+  const morning = programMorningCarry(space(data), TODAY)!;
+  const carried = ok(carryProgramTasksToToday(data, { ...base(data), today: TODAY, lines: morning.plan.lines })).data;
+  const text = raw(carried, docId);
+  assert.equal(text.match(/- 기다림: 2026-11-05/g)?.length, 2);
+  assert.equal(text.match(/- 마감: 2026-11-20/g)?.length, 2);
+  assert(text.includes('    - [>] 하위 준비\n      - 메모: 합성 메모\n      - 이어감: 2026-11-13 · 50%'), text);
+  assert(text.includes('    - [50%] 하위 준비'), text);
+  assert.equal(text.match(/- 메모: 합성 메모/g)?.length, 1, 'the old note stays with its recorded day');
+  assert.equal(text.match(/- \[ \] 오늘 그대로/g)?.length, 1);
+  const restored = ok(restoreProgramCarryover(carried, { ...base(carried), before, after: programCarryoverProof(space(carried)) })).data;
+  assert.deepEqual(space(restored).text, space(data).text);
+});
+
 test('W-CARRY-12: the card names the day and counts lines; the note after the press stays while the writing is as that save left it', async () => {
   const { readFileSync } = await import('node:fs');
   const host = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
