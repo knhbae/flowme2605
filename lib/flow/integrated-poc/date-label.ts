@@ -16,6 +16,12 @@ export function programCalendarDate(date: string, today: string, weekday = true)
   return weekday ? `${month}월 ${dayOfMonth}일 (${WEEKDAYS[new Date(day(date)).getUTCDay()]})` : `${month}월 ${dayOfMonth}일`;
 }
 
+/** "11/9(월)" (오늘 탭 ②'s button, W-CARRY-12). Never an ISO date. */
+export function programShortDate(date: string): string {
+  if (!programDate(date)) return date;
+  return `${Number(date.slice(5, 7))}/${Number(date.slice(8, 10))}(${WEEKDAYS[new Date(day(date)).getUTCDay()]})`;
+}
+
 /** A stored time (ISO, UTC) as its Seoul calendar day, YYYY-MM-DD (Seoul keeps +9 all year); null when it is not a time. */
 export function programSeoulDate(instant: string): string | null {
   const time = Date.parse(instant);
