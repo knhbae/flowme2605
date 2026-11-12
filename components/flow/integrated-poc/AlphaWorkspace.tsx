@@ -21,6 +21,7 @@ import { isSyntheticAlphaWorkspaceInput, type SyntheticAlphaWorkspaceRuntime } f
 import { newProgramReviewDraft, programReviewOriginReason, type ProgramReviewEntry, type ProgramReviewOrigin, type ProgramReviewSpacePort } from '@/lib/flow/integrated-poc/review-return';
 import { createAlphaTabRecovery } from '@/lib/flow/integrated-poc/alpha-sync/recovery';
 import { createAlphaUiRecovery, type AlphaUiDraft, type AlphaUiRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-ui-recovery';
+import { discardProgramRecovery, restoreProgramRecovery, type ProgramRecoveryPort } from '@/lib/flow/integrated-poc/recovery-discard-undo';
 import { alphaUiRecoveryDocumentDrafts, captureAlphaUiRecoveryDocuments, clearConfirmedAlphaUiRecoveryDocuments, createAlphaUiRecoveryDocuments, groupAlphaUiRecoveryDocuments, keepAlphaUiRecoveryDocument, loadAlphaUiRecoveryDocuments, parkAlphaUiRecoveryDocuments, parkedAlphaUiRecoveryDocuments, recoveryToastDraftsForHeldInput } from '@/lib/flow/integrated-poc/alpha-ui-recovery-document';
 import { createAlphaUiRecoveryKeep, keepAlphaUiRecovery, type AlphaUiRecoveryKeep } from '@/lib/flow/integrated-poc/alpha-ui-recovery-keep';
 import { createAlphaStructuralRecovery, resolveAlphaStructuralRecovery, type AlphaStructuralEditorPort, type AlphaStructuralRecoveryEntry, type AlphaStructuralRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-structural-recovery';
@@ -179,6 +180,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const [mainTab, setMainTab] = useState<ProgramMainTab>('documents');
   // Core3 P1 (X5, 11/8): a new 복구함 entry is said once by a bottom toast (10 s, or 닫기); the 나 badge keeps counting.
   const [recoveryToast, setRecoveryToast] = useState<{ count: number; at: number; tags: string[] } | null>(null);
+  // UX review 11/12 P1-a: a 복구함 discard is said with [되돌리기] for 10 s (as the bottom notices are), byte for byte back.
+  type DiscardNotice = { id: number; text: string; port: ProgramRecoveryPort<unknown, unknown>; entriesOf: (value: unknown) => readonly unknown[]; kept: unknown[]; reload: () => void; outcome?: 'restored' | 'changed' | 'failed' };
+  const [discardNotice, setDiscardNotice] = useState<DiscardNotice | null>(null);
   const recoverySeen = useRef<{ owner: string; tags: Set<string> } | null>(null), meTab = useRef<HTMLButtonElement>(null);
   // The last mutation failed; captured input counts as saved input until one succeeds.
   const [saveFailed, setSaveFailed] = useState(false);
@@ -1264,14 +1268,42 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     // Missing locks or failed shared storage retain the source for the next page.
     void found.take(ui);
   }, [data, session.userId]);
+  /** UX review 11/12 P1-a: every 복구함 discard keeps what it removed for [되돌리기] (recovery-discard-undo.ts): the store's
+   *  record is read first, cleared as before, and saved back through the store on 되돌리기 (only while it is still empty). */
+  function discardRecovery<Value, Entry>(input: { label: string; verb: string; port: ProgramRecoveryPort<Value, Entry> | null | undefined;
+    entriesOf: (value: Value) => readonly Entry[]; clear: () => boolean; reload: () => void }) {
+    const port = input.port;
+    if (!port) return;
+    const result = discardProgramRecovery(port, input.entriesOf, input.clear);
+    if (!result.ok) { setStorageError(true); return; }
+    if (!result.kept.length) return;
+    setDiscardNotice({ id: Date.now(), text: `${input.label} ${result.kept.length}개를 ${input.verb}`, kept: result.kept, reload: input.reload,
+      port: port as unknown as ProgramRecoveryPort<unknown, unknown>, entriesOf: input.entriesOf as (value: unknown) => readonly unknown[] });
+  }
+  function undoDiscard(notice: DiscardNotice) {
+    const outcome = restoreProgramRecovery(notice.port, notice.entriesOf, notice.kept);
+    if (outcome === 'restored') notice.reload();
+    setDiscardNotice(current => current?.id === notice.id ? { ...notice, outcome } : current);
+  }
   function clearStructuralDrafts() {
-    if (structuralRecovery.current?.clear().ok) { parkedStructural.current = []; activeStructural.current = []; setStructuralRecoveries(null); }
-    else setStorageError(true);
+    discardRecovery({ label: '보관한 복사 작업', verb: '지웠습니다', port: structuralRecovery.current, entriesOf: (value: AlphaStructuralRecoveryRecord) => value.entries,
+      clear: () => { if (!structuralRecovery.current?.clear().ok) return false; parkedStructural.current = []; activeStructural.current = []; setStructuralRecoveries(null); return true; },
+      reload: () => { const loaded = structuralRecovery.current?.read(); if (loaded?.ok) { parkedStructural.current = loaded.value?.entries ?? []; setStructuralRecoveries(loaded.value); } else setStorageError(true); } });
   }
   function clearDrafts() {
-    const cleared = uiRecovery.current?.clear();
-    if (cleared?.ok) { recoveryDocuments.current = createAlphaUiRecoveryDocuments(); setRecoveries(null); setMessage('보관 입력을 지웠습니다. 서버 자료는 그대로입니다.'); }
-    else setStorageError(true);
+    discardRecovery({ label: '보관 입력', verb: '버렸습니다', port: uiRecovery.current, entriesOf: (value: AlphaUiRecoveryRecord) => value.drafts,
+      clear: () => { if (!uiRecovery.current?.clear().ok) return false; recoveryDocuments.current = createAlphaUiRecoveryDocuments(); setRecoveries(null); return true; },
+      reload: () => { const loaded = uiRecovery.current?.read(); if (loaded?.ok) { recoveryDocuments.current = createAlphaUiRecoveryDocuments(loaded.value?.drafts); setRecoveries(loaded.value); } else setStorageError(true); } });
+  }
+  function clearCreatorDrafts() {
+    discardRecovery({ label: '보관 제작 입력', verb: '버렸습니다', port: creatorRecovery.current, entriesOf: (value: AlphaCreatorRecoveryRecord) => value.entries,
+      clear: () => { if (!creatorRecovery.current?.clear().ok) return false; parkedCreator.current = []; activeCreator.current = null; setCreatorRecoveries(null); return true; },
+      reload: () => { const loaded = creatorRecovery.current?.read(); if (loaded?.ok) { parkedCreator.current = loaded.value?.entries ?? []; setCreatorRecoveries(loaded.value); } else setStorageError(true); } });
+  }
+  function clearSocialDrafts() {
+    discardRecovery({ label: '보관 공개·참여 입력', verb: '버렸습니다', port: socialRecovery.current, entriesOf: (value: AlphaSocialRecoveryRecord) => value.entries,
+      clear: () => { if (!socialRecovery.current?.clear().ok) return false; parkedSocial.current = []; activeSocial.current = []; setSocialRecoveries(null); return true; },
+      reload: () => { const loaded = socialRecovery.current?.read(); if (loaded?.ok) { parkedSocial.current = loaded.value?.entries ?? []; setSocialRecoveries(loaded.value); } else setStorageError(true); } });
   }
   async function restoreCreator(index: number) {
     const entry = creatorRecoveries?.entries[index]; if (!entry) return;
@@ -1666,16 +1698,19 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   }, [announcedSignature, session.userId]);
   // 10 s after it was shown or last touched, waiting while it is held (useToastLife, shared with a Flow's arrival).
   const recoveryToastLife = useToastLife(recoveryToast, shown => setRecoveryToast(current => current === shown ? null : current));
-  useEffect(() => { setRecoveryToast(null); }, [session.userId]);
+  useEffect(() => { setRecoveryToast(null); setDiscardNotice(null); }, [session.userId]);
+  const discardNoticeLife = useToastLife(discardNotice, shown => setDiscardNotice(current => current === shown ? null : current));
   // `announce` is off where the note editor's one status slot already announces this state.
   const inputProtectionFor = (announce: boolean) => <>
     {storageError && <p className={styles.problem} role={announce ? 'alert' : undefined}>브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
     {pendingUnknown && !localParticipationRecovery && <section className={styles.problem} aria-label="저장 결과 복구"><p>서버에 저장됐는지 아직 확인하지 못했습니다. 같은 요청으로 확인합니다.</p>
       <button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>{snapshot?.busy ? '확인 중…' : '다시 확인'}</button></section>}
-    {(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending && !localParticipationRecovery && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>{snapshot?.status==='not-sent'?programErrorMessage('not-sent'):snapshot?.retryableNativeHandoff
+    {(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending && !localParticipationRecovery && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>{snapshot?.status==='not-sent'?(storedTotal?programErrorMessage('not-sent').replace('입력은 남아 있습니다','입력은 복구함에 있습니다'):'서버로 보내지 못했습니다. 이 기기에 보관한 입력은 없습니다. 연결을 확인한 뒤 다시 저장해 주세요.'):snapshot?.retryableNativeHandoff
       ? '저장되지 않았습니다. 비교와 선택은 유지했습니다. 같은 선택으로 다시 적용해 주세요.'
       : snapshot?.retryableRejectedSocialDraft ? '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'
-      : '저장되지 않았습니다. 입력은 남아 있습니다. 문서에서 내용을 수정한 뒤 ‘다시 저장’을 눌러 주세요.'}</p></section>}
+      // UX review 11/12 P1-b: where the input is (the 복구함, or nowhere once its kept input was discarded).
+      : storedTotal ? '저장되지 않았습니다. 입력은 복구함에 있습니다. 문서에서 내용을 수정한 뒤 ‘다시 저장’을 눌러 주세요.'
+      : '저장되지 않았습니다. 이 기기에 보관한 입력은 없습니다. 문서에서 내용을 수정한 뒤 ‘다시 저장’을 눌러 주세요.'}</p></section>}
     {(external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft) && !localParticipationRecovery && <section className={styles.problem} aria-label="다른 기기 변경과 입력 보호">
       <h2>다른 곳에서 먼저 바뀐 내용이 있습니다</h2><p>지금 쓴 내용은 이 기기에 남겨 두었습니다. 최신 내용을 연 뒤 필요하면 다시 붙여 넣으세요.</p>
       {snapshot?.busy && <p role={announce ? 'status' : undefined}>서버 확인 중… 입력은 그대로 보관합니다.</p>}
@@ -1720,7 +1755,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         <details><summary>제작 구조·비교 입력 보관본</summary><p>개인 문서로 만들지 않습니다. 비교 선택은 최신 제작본과 다시 확인해 적용하세요.</p>
           <textarea aria-label={`제작 문맥 보관본 ${index + 1}`} readOnly value={JSON.stringify(entry, null, 2)} rows={6} /></details>
       </section>)}
-      <button onClick={() => { const cleared = creatorRecovery.current?.clear(); if (cleared?.ok) { parkedCreator.current = []; activeCreator.current = null; setCreatorRecoveries(null); } else setStorageError(true); }}>보관 제작 입력 버리기</button>
+      <button type="button" onClick={clearCreatorDrafts}>보관 제작 입력 버리기</button>
     </details>}
   </>;
   const socialRecoveryPanel = <>
@@ -1730,7 +1765,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       {socialRecoveries.entries.map((entry, index) => <section key={index}><h2>{entry.kind === 'publication' ? '공개 초안' : entry.kind === 'participation' ? '참여 초안' : '제안 검토 초안'}</h2>
         <textarea aria-label={`공개·참여 보관본 ${index + 1}`} readOnly rows={5} value={JSON.stringify(entry.value, null, 2)} />
         <button disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreSocial(index)}>비공개 초안으로 복구</button></section>)}
-      <button onClick={() => { if (socialRecovery.current?.clear().ok) { parkedSocial.current = []; activeSocial.current = []; setSocialRecoveries(null); } else setStorageError(true); }}>보관 공개·참여 입력 버리기</button>
+      <button type="button" onClick={clearSocialDrafts}>보관 공개·참여 입력 버리기</button>
     </details>}
   </>;
   async function chooseMainTab(tab: ProgramMainTab) {
@@ -1800,6 +1835,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     + announcedStructural.filter(entry => entry.documentId === openDocumentId).length : 0;
   const documentRecovery = documentRecoveries > 0 && <p className={styles.documentRecovery} data-document-recovery>
     <button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>이 문서에 복구할 입력 {documentRecoveries}개 ›</button></p>;
+  const discardNoticeContent = discardNotice && <div className={styles.recoveryToast} role="status" data-discard-notice {...discardNoticeLife.hold}>
+    <p>{discardNotice.outcome === 'restored' ? '되돌렸습니다. 보관한 입력을 다시 두었습니다.' : discardNotice.outcome === 'changed' ? '그 뒤 새 입력이 보관되어 되돌리지 않았습니다.'
+      : discardNotice.outcome === 'failed' ? '되돌리지 못했습니다. 브라우저 저장소를 확인해 주세요.' : discardNotice.text}</p>
+    <div><button type="button" onClick={() => setDiscardNotice(null)}>닫기</button>
+      {!discardNotice.outcome && <button type="button" data-discard-undo onClick={() => undoDiscard(discardNotice)}>되돌리기</button>}</div>
+  </div>;
   const recoveryToastCount = recoveryToast?.tags.filter(tag => announcedTags.includes(tag)).length ?? 0;
   const recoveryToastContent = recoveryToast && recoveryToastCount > 0 && <div className={styles.recoveryToast} role="status" data-recovery-toast {...recoveryToastLife.hold}>
     <p>{programRecoveryToastText(recoveryToastCount)}</p>
@@ -1828,7 +1869,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const alertLine: ProgramAlertLine | null = !writingTab || localParticipationRecovery ? null
     : needsInputProtection ? { tone: 'warn',
       text: storageError ? '입력 보관 실패 · 작성 중인 내용을 파일로 보관해 주세요' : pendingUnknown ? '저장 확인 필요 · 입력은 남아 있습니다'
-        : rejectedInput ? '저장되지 않음 · 입력은 남아 있습니다' : conflictInput ? '다른 곳에서 먼저 바뀜 · 입력은 이 기기에 있습니다' : '입력 보호 · 입력은 남아 있습니다',
+        : rejectedInput ? (storedTotal ? '저장되지 않음 · 입력은 복구함에 있습니다' : '저장되지 않음 · 서버에 보내지 못했습니다') : conflictInput ? '다른 곳에서 먼저 바뀜 · 입력은 이 기기에 있습니다' : '입력 보호 · 입력은 남아 있습니다',
       action: pendingUnknown ? { label: snapshot?.busy ? '확인 중…' : '다시 확인', run: () => { void resolvePendingResult(); }, disabled: !!snapshot?.busy }
         : conflictInput ? { label: '최신 내용 열기', run: () => { void openLatest(); }, disabled: !!snapshot?.busy } : null,
       recoveries: documentRecoveries, openRecovery: opener => openRecoveryBox(opener),
@@ -2015,7 +2056,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         Its content is the 복구함's as it was, drawn here only. */}
     <dialog ref={recoveryDialog} className={styles.recoverySheet} aria-labelledby="alpha-recovery-heading" onCancel={event => { event.preventDefault(); setRecoveryOpen(false); }}>
       <div className={styles.recoverySheetHead}><h2 id="alpha-recovery-heading">복구함{storedTotal ? ` (${storedTotal})` : ''}</h2><button type="button" onClick={() => setRecoveryOpen(false)}>닫기</button></div>
-      <div className={styles.recoverySheetBody}>{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>보관한 입력이 없습니다.</p>
+      <div className={styles.recoverySheetBody}>{recoveryOpen && discardNoticeContent}{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>보관한 입력이 없습니다.</p>
         {archivedCount > 0 && <button type="button" onClick={() => void openArchiveFromMenu()}>보관한 문서 {archivedCount}개 → 보관함에서 보기</button>}</>}</div>
     </dialog>
     {moveWait && <section className={styles.moveNotice} aria-label="이동 전 저장" data-move-wait={moveWait.phase}>
@@ -2142,5 +2183,6 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     </>}
     </div>
     {recoveryToastContent}
+    {!recoveryOpen && discardNoticeContent}
   </main>;
 }
