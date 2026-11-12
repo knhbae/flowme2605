@@ -4,7 +4,7 @@ import test from 'node:test';
 import { programClone, type ProgramData, type ProgramTransition } from './contract';
 import { createProgramData } from './program-data';
 import { archiveProgramDocument, createProgramDocument, recordProgramTaskProgress } from './private-space';
-import { applyProgramProgressText, programProgressTextPlan } from './progress-text';
+import { applyProgramProgressText, programProgressTextMark, programProgressTextPlan } from './progress-text';
 import { undoProgramTaskLocation } from './task-location-command';
 import { textWorkspaceModel as M } from './text-workspace';
 
@@ -89,6 +89,25 @@ test('the conversion plan: a box line takes its latest record; a numeric line, a
     ['가', '- [ ] 가', '- [60%] 가', 60, '2026-11-11'],
     ['사', '- [ ] 사', '- [20%] 사', 20, '2026-11-09'],
   ]);
+});
+
+test('Fable review: the conversion moves only 1-99; a [ ] line with a 100% record (opened again by hand) and 0 stay as written', () => {
+  assert.deepEqual([0, 1, 50, 99, 100].map(programProgressTextMark), [null, '1%', '50%', '99%', null]);
+  // [ ] with a 100 record and [x] with a 0 record: the model itself refuses that data (an older app or a typed reopen
+  // cannot leave it: typing it back to [ ] is a progress-check-conflict), and the plan would not touch either line.
+  const { data, docId, id } = writing(`[${TODAY}]\n- [ ] 다시 연 일\n- [x] 닫은 일\n- [ ] 하던 일`);
+  const text = space(data).text;
+  const odd = { ...text, progressRecords: [{ taskId: id(data, '다시 연 일'), date: '2026-11-11', percent: 100 }, { taskId: id(data, '닫은 일'), date: '2026-11-11', percent: 0 }] };
+  assert.equal(M.validate(odd), false, 'not valid data in the model');
+  assert.deepEqual(programProgressTextPlan({ ...space(data), text: odd }, docId), []);
+  // A [x] line whose latest record is 100 and a [ ] line whose latest is 0 stay too; only 1-99 is written.
+  const valid = { ...text, progressRecords: [{ taskId: id(data, '닫은 일'), date: '2026-11-11', percent: 100 }, { taskId: id(data, '다시 연 일'), date: '2026-11-11', percent: 0 },
+    { taskId: id(data, '하던 일'), date: '2026-11-10', percent: 100 }, { taskId: id(data, '하던 일'), date: '2026-11-11', percent: 45 }] };
+  assert(M.validate(valid));
+  assert.deepEqual(programProgressTextPlan({ ...space(data), text: valid }, docId).map(change => [change.title, change.after.trim()]), [['하던 일', '- [45%] 하던 일']]);
+  // Typing a closed task open again is refused while its latest record says 100 (the model's own check, unchanged).
+  const reopened = M.editTextResult(valid, docId, `[${TODAY}]\n- [ ] 다시 연 일\n- [ ] 닫은 일\n- [ ] 하던 일`, { progressDate: TODAY });
+  assert.equal(reopened.reason, 'progress-check-conflict');
 });
 
 test('the conversion: one save of that document; the records byte for byte; 되돌리기 gives the text back byte for byte', () => {

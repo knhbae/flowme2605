@@ -5,12 +5,18 @@ import { programTaskRepeatMember } from './task-date-move';
 import { textWorkspaceModel as M } from './text-workspace';
 
 /** Redesign 1 (총괄 11/12, REDESIGN-TECH-1 §1): progress lives in the text. A box line (`[ ]`, `[x]`) whose latest progress
- *  record says otherwise takes that value into its text, as a progress entry now writes it: 1-99 as `[n%]`, 100 as `[x]`,
- *  0 as `[ ]`. The records stay as they are (they are the history). A numeric line already is the source; a reference
- *  line follows its task; a repeat line, a task not active here and a locked document are left alone. */
+ *  record is in progress (1-99) takes that value into its text as `[n%]`; a 100 or 0 record leaves the box as it is
+ *  (Fable review). The records stay as they are (they are the history). A numeric line already is the source; a
+ *  reference line follows its task; a repeat line, a task not active here and a locked document are left alone. */
 export type ProgramProgressTextChange = { lineId: string; title: string; before: string; after: string; percent: number; date: string };
 
 const TASK = /^( *-\s+\[)([^\]\r\n]*)(\](?:\s+|$))(.*?)(\s*)$/;
+
+/** Fable review (총괄 11/12): the conversion moves only a value in progress, 1-99, as `[n%]`. A 100 or a 0 record never
+ *  rewrites a box (a task the person opened again by hand stays open); a progress entry made now still writes [x] at 100. */
+export function programProgressTextMark(percent: number): string | null {
+  return Number.isInteger(percent) && percent > 0 && percent < 100 ? `${percent}%` : null;
+}
 
 /** The box lines of one document whose text the latest record would change, in line order. */
 export function programProgressTextPlan(space: ProgramPrivateSpace, documentId: string): ProgramProgressTextChange[] {
@@ -27,8 +33,8 @@ export function programProgressTextPlan(space: ProgramPrivateSpace, documentId: 
     const record = latest.get(line.id), parts = TASK.exec(line.text);
     if (!record || !parts || !/^[ xX]$/.test(parts[2]) || !targets.has(line.id)) continue;
     if (programReferenceExecutionAccess(space, line.id).kind !== 'active' || programTaskRepeatMember(space, line.id)) continue;
-    const mark = record.percent > 0 && record.percent < 100 ? `${record.percent}%`
-      : /^[xX]$/.test(parts[2]) === (record.percent === 100) ? parts[2] : record.percent === 100 ? 'x' : ' ';
+    const mark = programProgressTextMark(record.percent);
+    if (mark === null) continue;
     const after = parts[1] + mark + parts[3] + parts[4] + parts[5];
     if (after !== line.text) out.push({ lineId: line.id, title: parts[4], before: line.text, after, percent: record.percent, date: record.date });
   }
