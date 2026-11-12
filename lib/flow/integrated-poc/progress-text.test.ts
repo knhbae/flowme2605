@@ -147,9 +147,9 @@ test('the screen: the account\'s one list when the app opens (W-TXT-01·03), one
   const source = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r/g, '');
   assert(source.includes('if (programTextCleanupAsked.has(actorId)) return;'), 'asked once when the app opens');
   assert(source.includes("for (const id of programTextCleanupDocuments(ask.plan)) if (!await settleRecent(id)) { setMessage('입력이 끝나면 다시 눌러 주세요.'); return; }"), 'pending input saved first');
-  assert(source.includes("const result = await run('글 정리', current => { const next = applyProgramTextCleanup(current, { ...base(current), plan: ask.plan, choices: ask.choices });"));
-  assert(/if \(next\.ok\) \{ before = current\.spaces\[actorId\]\.text; after = next\.data\.spaces\[actorId\]\.text; \} return next; \}, true\);/.test(source), 'one save with history (↶)');
-  assert(source.includes("restoreProgramTextCleanup(current, { ...base(current), before: notice.before, after: programTextCleanupProof(notice.after) }), true)"));
+  assert(source.includes("const result = await run('글 정리', current => { const next = applyProgramTextCleanup(current, { ...base(current), plan: ask.plan, choices: ask.choices, when: programCleanupWhen(new Date()) });"));
+  assert(/if \(next\.ok\) stamp = next\.result; return next; \}, true\);/.test(source), 'one save with history (↶)');
+  assert(source.includes("restoreProgramTextCleanup(current, { ...base(current), stamp, when: programCleanupWhen(new Date()) }), true)"), '되돌리기 from the archived original (총괄 11/12 ①)');
   assert(source.includes('{ask.plan.progress.length > 0 && <><h3 className={styles.dateLinesHead}>진행률 {ask.plan.progressLines}줄 · 할 일 줄에 적습니다</h3>'));
   const model = readFileSync(new URL('./vendor/text-model.cjs', import.meta.url), 'utf8').replace(/\r/g, '');
   assert(model.includes("var mark = latest.percent > 0 && latest.percent < 100 ? String(latest.percent) + '%'"));

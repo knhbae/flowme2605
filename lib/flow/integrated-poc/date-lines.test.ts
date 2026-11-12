@@ -5,13 +5,14 @@ import { programClone, type ProgramData, type ProgramTransition } from './contra
 import { createProgramData } from './program-data';
 import { createProgramDocument, updateProgramTask } from './private-space';
 import { applyProgramDateLineChoices, programDateLineDefaults, programDateLinePlan, programDateLinesKeepLines } from './date-property-migration';
-import { applyProgramTextCleanup, programTextCleanupDocuments, programTextCleanupPlan, programTextCleanupProof, restoreProgramTextCleanup } from './text-cleanup';
+import { applyProgramTextCleanup, programCleanupArchive, programCleanupArchiveStamp, programTextCleanupDocuments, programTextCleanupPlan, restoreProgramTextCleanup } from './text-cleanup';
 import { moveProgramTaskDates } from './task-date-move';
 import { moveTaskLocation } from './task-location-move';
 import { carryProgramTasksToToday, planProgramCarryover } from './carryover';
 import { moveProgramTaskDocument } from './task-document-move';
 import { copyProgramFolderOccurrence, readProgramFolderCopyPreview } from './folder-copy';
 import { prepareWritingChild } from './writing-child-command';
+import { createPersonalFlow, startPersonalFlow } from './personal-authoring-commands';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 
 // Redesign 3 (DECISION-1, W-TXT-03, mockup ③; 총괄 11/12: the whole account at once). The '- 날짜:' lines go once, on the
@@ -28,9 +29,15 @@ const raw = (data: ProgramData | TextWorkspaceState, docId: string) => M.raw(M.g
 const lines = (data: ProgramData, docId: string) => M.getDocument(space(data).text, docId)!.lines.map(line => [line.id, line.text]);
 const cleanup = (data: ProgramData, choose?: (choices: Record<string, 'move' | 'due'>) => Record<string, 'move' | 'due'>) => {
   const plan = programTextCleanupPlan(space(data))!, defaults = programDateLineDefaults(plan.dates);
-  return ok(applyProgramTextCleanup(data, { ...base(data), plan, choices: choose ? choose(defaults) : defaults })).data;
+  return ok(applyProgramTextCleanup(data, { ...base(data), plan, choices: choose ? choose(defaults) : defaults, when: '2026-11-12 16:20' })).data;
 };
-const undo = (before: ProgramData, after: ProgramData) => ok(restoreProgramTextCleanup(after, { ...base(after), before: space(before).text, after: programTextCleanupProof(space(after).text) })).data;
+// 총괄 11/12 ①: 되돌리기 reads the archived original ('전환 전 원문 · when'), with nothing kept in memory.
+const stampOf = (data: ProgramData) => programCleanupArchiveStamp(space(data).text, space(data).archivedDocumentIds.find(id => M.getDocument(space(data).text, id)?.title.startsWith('전환 전 원문'))!)!;
+const undo = (_before: ProgramData, after: ProgramData) => ok(restoreProgramTextCleanup(after, { ...base(after), stamp: stampOf(after), when: '2026-11-12 16:25' })).data;
+/** The writing without the archived originals (the documents `like` has); links in any order (a restore re-links a
+ *  folder line the conversion had removed). */
+const sorted = (text: TextWorkspaceState) => ({ ...text, bindings: [...text.bindings].sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))) });
+const own = (data: ProgramData, like: ProgramData) => sorted({ ...space(data).text, documents: space(data).text.documents.filter(doc => space(like).text.documents.some(old => old.id === doc.id)) });
 
 function writing(text: string, title = '하루 기록', data = createProgramData()) {
   const created = ok(createProgramDocument(data, { ...base(data), title }));
@@ -58,15 +65,21 @@ test("mockup ③ in the account's list: same days deleted, other days moved; onl
     '', '[2026-11-27]', '- [ ] 분기 보고 제출'].join('\n'));
   assert.deepEqual(['보고서 초안', '치과 예약 전화', '영수증 정리', '분기 보고 제출'].map(title => [item(moved, title).date, item(moved, title).explicitDate]),
     [['2026-11-09', false], ['2026-11-12', false], ['2026-11-10', false], ['2026-11-27', false]], 'each task reads the day its line said');
-  // Only the writing changes (an Alpha client command may change it, not saved revisions): its save's own record is the
-  // snapshot (↶), and [되돌리기] puts it back.
-  const { text: _was, ...restBefore } = space(data), { text: _now, ...restAfter } = space(moved);
+  // Only the writing changes (an Alpha client command may change it, not saved revisions), and in the same save the
+  // original goes to an archived document '전환 전 원문 · when' (총괄 11/12 ①).
+  const { text: _was, archivedDocumentIds: archivedBefore, ...restBefore } = space(data), { text: _now, archivedDocumentIds: archivedAfter, ...restAfter } = space(moved);
   assert.deepEqual(restAfter, restBefore);
   assert.equal(moved.receipts.length, data.receipts.length + 1, 'one save');
-  // 되돌리기: the writing exactly as before, ids and bytes (the snapshot stays).
+  assert.equal(archivedAfter.length, archivedBefore.length + 1);
+  const archive = M.getDocument(space(moved).text, archivedAfter.at(-1)!)!;
+  assert.equal(archive.title, '전환 전 원문 · 2026-11-12 16:20');
+  assert.deepEqual(programCleanupArchive(space(moved).text, stampOf(moved)).map(block => [block.documentId, block.raw]), [[docId, MOCKUP]], 'the whole original');
+  assert.deepEqual(M.parseDocument(archive, space(moved).text).items, [], 'an archived original holds no task');
+  // 되돌리기: the writing exactly as before, ids and bytes; what it said is archived too ('되돌리기 전 원문').
   const back = undo(data, moved);
-  assert.deepEqual(space(back).text, space(data).text);
+  assert.deepEqual(own(back, data), sorted(space(data).text));
   assert.equal(raw(back, docId), MOCKUP);
+  assert.deepEqual(space(back).archivedDocumentIds.slice(-2).map(id => M.getDocument(space(back).text, id)!.title), ['전환 전 원문 · 2026-11-12 16:20', '되돌리기 전 원문 · 2026-11-12 16:25']);
   assert.equal(programTextCleanupPlan(space(moved)), null, 'nothing left to ask');
 });
 
@@ -116,7 +129,7 @@ test('subtasks, memos, times, progress records and links go with the task and st
   const reference = M.rowMeta(space(after).text, other.docId).find(row => row.isReference)!;
   assert.equal(reference.progressTargetId, task);
   assert.deepEqual(lines(after, other.docId), lines(data, other.docId), 'the other document is untouched');
-  assert.deepEqual(space(undo(data, after)).text, space(data).text, 'the whole writing as before');
+  assert.deepEqual(own(undo(data, after), data), sorted(space(data).text), 'the whole writing as before');
 });
 
 test('a document without date headings: its date lines become 마감 (no heading is made); 미정 goes; a date chip there writes 마감', () => {
@@ -128,7 +141,7 @@ test('a document without date headings: its date lines become 마감 (no heading
   const after = cleanup(data);
   assert.equal(raw(after, docId), ['- [ ] 책 사기', '  - 마감: 2026-11-20', '- [ ] 우산 챙기기', '- [ ] 전화하기', '  - [ ] 번호 찾기', '    - 마감: 2026-11-14'].join('\n'));
   assert.deepEqual([item(after, '책 사기').date, item(after, '책 사기').due], [null, '2026-11-20']);
-  assert.deepEqual(space(undo(data, after)).text, space(data).text);
+  assert.deepEqual(own(undo(data, after), data), sorted(space(data).text));
   // After it, a date for a task there (date chip, row detail, F7) is its 마감: the line stays, no heading.
   const chip = moveTaskLocation(space(after).text, { documentId: docId, taskId: id(after, '책 사기'), target: { kind: 'date', date: '2026-11-25' } });
   assert(chip.ok && chip.due === '2026-11-25');
@@ -149,8 +162,8 @@ test('a folder line a move leaves with nothing under it in its day goes in the s
   const after = cleanup(data);
   assert.equal(raw(after, docId), ['[2026-11-09]', '- /집', '  - [ ] 장보기', '', '[2026-11-12]', '- /회사', '  - [ ] 보고서', '- /집', '  - [ ] 빨래'].join('\n'));
   assert.equal(space(after).text.bindings.filter(binding => binding.kind === 'scope').length, links + 1, "회사's old line and its link went; two lines declare the day");
-  assert(programDateLinesKeepLines(space(data).text, space(after).text), 'the machine check passes');
-  assert.deepEqual(space(undo(data, after)).text, space(data).text);
+  assert(programDateLinesKeepLines(space(data).text, own(after, data)), 'the machine check passes');
+  assert.deepEqual(own(undo(data, after), data), sorted(space(data).text));
   // The same for any move (위치 옮기기): 집's line stays while 장보기 is under it.
   const move = moveTaskLocation(space(after).text, { documentId: docId, taskId: id(after, '장보기'), target: { kind: 'date', date: '2026-11-12' } });
   assert(move.ok); assert(!raw(move.next, docId).startsWith('[2026-11-09]\n- /집'), raw(move.next, docId));
@@ -168,13 +181,56 @@ test('left alone: a copy or run document, a reference line, a repeat line, an un
   // Changed since the list showed: the save refuses (nothing applied).
   const shown = programTextCleanupPlan(space(data))!, changed = programClone(data);
   space(changed).text = M.editText(space(changed).text, docId, raw(data, docId) + '\n- [ ] 새 일\n  - 날짜: 2026-11-20');
-  const refused = applyProgramTextCleanup(changed, { ...base(changed), plan: shown, choices: programDateLineDefaults(shown.dates) });
+  const refused = applyProgramTextCleanup(changed, { ...base(changed), plan: shown, choices: programDateLineDefaults(shown.dates), when: '2026-11-12 16:20' });
   assert(!refused.ok && refused.reason === 'conflict');
-  // 되돌리기 after a later change is refused too.
-  const after = cleanup(data), later = programClone(after);
-  space(later).text = M.editText(space(later).text, docId, raw(after, docId) + '\n- [ ] 그 뒤 쓴 일');
-  const late = restoreProgramTextCleanup(later, { ...base(later), before: space(data).text, after: programTextCleanupProof(space(after).text) });
-  assert(!late.ok && late.reason === 'conflict');
+});
+
+test("되돌리기 later (총괄 11/12 ①): from the archived original alone, after edits; what was written since goes to '되돌리기 전 원문', a check made since stays", () => {
+  const { data, docId } = writing(MOCKUP);
+  const after = cleanup(data);
+  // Later, another visit (nothing in memory): 보고서 초안 is checked, 분기 보고 제출 reaches 100% today, a line is added.
+  let later = programClone(after);
+  space(later).text = M.updateTask(space(later).text, id(later, '보고서 초안'), { done: true });
+  space(later).text = M.recordProgress(space(later).text, id(later, '분기 보고 제출'), '2026-11-12', 100);
+  space(later).text = M.editTextResult(space(later).text, docId, `${raw(later, docId)}\n- [ ] 그 뒤 쓴 일`, { folderText: true }).state;
+  const written = raw(later, docId);
+  // A plain rewrite of the original would not know which line is which: the model refuses it.
+  assert.notEqual(M.editTextResult(space(later).text, docId, MOCKUP, { folderText: true }).reason, null);
+  const back = ok(restoreProgramTextCleanup(later, { ...base(later), stamp: stampOf(later), when: '2026-11-13 09:00' })).data;
+  assert.equal(raw(back, docId), MOCKUP.replace('- [ ] 보고서 초안', '- [x] 보고서 초안').replace('- [ ] 분기 보고 제출', '- [x] 분기 보고 제출'), 'the original, with the checks made since');
+  assert.deepEqual(lines(back, docId).map(([lineId]) => lineId), lines(data, docId).map(([lineId]) => lineId), 'every line its own identity again');
+  assert.deepEqual(space(back).text.progressRecords, space(later).text.progressRecords, 'no record lost or added');
+  const kept = M.getDocument(space(back).text, space(back).archivedDocumentIds.at(-1)!)!;
+  assert.equal(kept.title, '되돌리기 전 원문 · 2026-11-13 09:00');
+  assert.deepEqual(programCleanupArchive(space(back).text, programCleanupArchiveStamp(space(back).text, kept.id)!).map(block => block.raw), [written], 'what was written since is kept');
+  // That one restores in turn (a redo), and the first again: each a save of its own.
+  const redo = ok(restoreProgramTextCleanup(back, { ...base(back), stamp: programCleanupArchiveStamp(space(back).text, kept.id)!, when: '2026-11-13 09:05' })).data;
+  assert.equal(raw(redo, docId), written);
+  // An archive whose original is gone (deleted) says so; nothing changes.
+  const gone = programClone(after);
+  for (const doc of space(gone).text.documents) if (doc.title.startsWith('전환 전 원문')) doc.lines = doc.lines.slice(0, 2);
+  const missing = restoreProgramTextCleanup(gone, { ...base(gone), stamp: stampOf(after), when: '2026-11-13 09:00' });
+  assert(!missing.ok && missing.reason === 'missing');
+});
+
+test('an account with Flow runs (personal authoring) and a document past an archive document\'s size: split, kept, restored whole', () => {
+  const many = Array.from({ length: 590 }, (_, index) => [`- [ ] 일 ${index}`, `  - 날짜: 2026-11-${String(10 + index % 9).padStart(2, '0')}`]).flat();
+  const { data, docId } = writing(['[2026-11-10]', ...many].join('\n'), '긴 글');
+  // A personal Flow and its run (개인 실행), made by the commands themselves.
+  const source = writing('[2026-11-10]\n- [ ] 반복 할 일\n  - [ ] 준비물 챙기기', '반복 원문', data);
+  const created = ok(createPersonalFlow(source.data, { title: '내 구성', documentId: source.docId, taskIds: [id(source.data, '반복 할 일')] }));
+  const versionId = space(created.data).personalAuthoring!.flows[0].currentVersionId;
+  const withRuns = ok(startPersonalFlow(created.data, { flowId: created.result, versionId, anchorDate: '2026-11-10' })).data;
+  const runDoc = space(withRuns).personalAuthoring!.executions![0].executionDocumentId;
+  const after = cleanup(withRuns);
+  const archives = space(after).archivedDocumentIds.map(id => M.getDocument(space(after).text, id)!).filter(doc => doc.title.startsWith('전환 전 원문'));
+  assert(archives.length >= 2, `split over ${archives.length} documents`);
+  assert(archives.every(doc => doc.lines.length <= 1200 && M.raw(doc).length <= 100_000));
+  assert.equal(raw(after, runDoc), raw(withRuns, runDoc), "a Flow run's document is not converted");
+  assert.deepEqual(space(after).personalAuthoring, space(withRuns).personalAuthoring, 'the personal Flow and its run as they were');
+  const back = undo(withRuns, after);
+  assert.equal(raw(back, docId), raw(withRuns, docId));
+  assert.deepEqual(lines(back, docId).map(([lineId]) => lineId), lines(withRuns, docId).map(([lineId]) => lineId));
 });
 
 /** A synthetic account of the production shape (USAGE 11/12: 96 date heads, 121 date lines, 294 subtasks, 154 records,
@@ -257,7 +313,7 @@ test('production shape (96 date heads, 121 date lines, lists without headings, s
     const choices = variant === 'defaults' ? programDateLineDefaults(plan.dates)
       : Object.fromEntries(plan.dates.flatMap(doc => doc.items).filter(row => row.kind === 'other').map(row => [row.ownerId, row.choices.at(-1)!]));
     clock = performance.now();
-    const after = ok(applyProgramTextCleanup(data, { ...base(data), plan, choices })).data;
+    const after = ok(applyProgramTextCleanup(data, { ...base(data), plan, choices, when: '2026-11-12 16:20' })).data;
     timing.push(`${variant} apply ${Math.round(performance.now() - clock)}ms`);
     const now = space(after).text;
     assert.equal(after.receipts.length, data.receipts.length + 1, 'one save');
@@ -268,10 +324,10 @@ test('production shape (96 date heads, 121 date lines, lists without headings, s
     const ids = new Set(now.documents.flatMap(doc => doc.lines.map(line => line.id)));
     for (const binding of before.bindings) assert(now.bindings.some(entry => JSON.stringify(entry) === JSON.stringify(binding)) || binding.kind === 'scope' && !ids.has(binding.lineId), 'links');
     for (const ref of M.rowMeta(now, shape.refs).filter(row => row.isReference)) assert(M.tasks(now).some(task => task.id === ref.progressTargetId), 'a reference still finds its task');
-    assert.equal(now.documents.flatMap(doc => doc.lines).filter(line => DATE_LINE.test(line.text)).length, 0, `${variant}: none left`);
+    assert.equal(own(after, data).documents.flatMap(doc => doc.lines).filter(line => DATE_LINE.test(line.text)).length, 0, `${variant}: none left`);
     for (const docId of shape.docs.slice(12)) assert.equal(M.rowMeta(now, docId).filter(row => row.kind === 'date').length, 0, 'no heading made in a list');
     const back = undo(data, after);
-    assert.deepEqual(space(back).text, before, `${variant}: back to every byte`);
+    assert.deepEqual(own(back, data), sorted(before), `${variant}: back to every byte`);
   }
   t.diagnostic(timing.join(', '));
 });
@@ -283,7 +339,8 @@ function converted() {
 }
 const noDateLine = (data: ProgramData | TextWorkspaceState, label: string) => {
   const text = 'spaces' in data ? space(data).text : data;
-  assert.deepEqual(text.documents.flatMap(doc => doc.lines).filter(line => DATE_LINE.test(line.text)).map(line => line.text), [], label);
+  // An archived original ('전환 전 원문') keeps the lines as they were, inside its fence.
+  assert.deepEqual(text.documents.filter(doc => !doc.title.startsWith('전환 전 원문')).flatMap(doc => doc.lines).filter(line => DATE_LINE.test(line.text)).map(line => line.text), [], label);
 };
 
 test("after the conversion no command writes a '- 날짜:' line in an ordinary document: each moves the line to its day", () => {
@@ -339,8 +396,13 @@ test('the list: asked once when the app opens (not on a tab change), one save wi
   assert.match(host, /if \(programTextCleanupAsked\.has\(actorId\)\) return;/);
   assert.match(host, /\}, \[actorId\]\);/);
   assert.match(host, /<h2 id="program-cleanup-title">글을 새 규칙으로 한 번 정리합니다<\/h2>/);
-  assert.match(host, /run\('글 정리', current => \{ const next = applyProgramTextCleanup\(current, \{ \.\.\.base\(current\), plan: ask\.plan, choices: ask\.choices \}\);/);
-  assert.match(host, /run\('글 정리 되돌리기', current => restoreProgramTextCleanup\(current, \{ \.\.\.base\(current\), before: notice\.before, after: programTextCleanupProof\(notice\.after\) \}\), true\)/);
+  assert.match(host, /run\('글 정리', current => \{ const next = applyProgramTextCleanup\(current, \{ \.\.\.base\(current\), plan: ask\.plan, choices: ask\.choices, when: programCleanupWhen\(new Date\(\)\) \}\);/);
+  assert.match(host, /run\('글 정리 되돌리기', current => restoreProgramTextCleanup\(current, \{ \.\.\.base\(current\), stamp, when: programCleanupWhen\(new Date\(\)\) \}\), true\)/);
+  // 총괄 11/12 ①: the words, and 되돌리기 from the archived original itself.
+  assert(host.includes("보관함의 '전환 전 원문'에서 언제든 되돌릴 수 있습니다."));
+  assert(!host.includes('바꾸기 전 글은 그대로 남아'));
+  assert.match(host, /data-cleanup-restore disabled=\{cleanupPending \|\| preparingDocumentAction\}[^>]*onClick=\{\(\) => void restoreCleanup\(stamp\)\}>이 원문으로 되돌리기<\/button>/);
+  assert.match(host, /actions: cleanupNotice\.undone \|\| cleanupNotice\.refused \? \[\] : \[\{ label: '되돌리기', run: \(\) => void restoreCleanup\(cleanupNotice\.stamp\) \}\]/);
   assert(!host.includes('data-progress-text-sheet') && !host.includes('data-date-lines-sheet'), 'no per-document sheet');
   const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
   assert.match(editor, /const done = applyDateChip\(candidate\.lineId, candidate\.date\), after = controller\.getState\(\);/, 'a date said in words takes the ⋮ date path (마감 in a list)');
