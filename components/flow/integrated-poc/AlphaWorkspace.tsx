@@ -283,9 +283,14 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   const devNoticeTabStorage = () => { try { return syntheticRuntime?.tabStorage ?? sessionStorage; } catch { return undefined; } };
   useEffect(() => { setDevNoticeSeen(readDevNoticeSeen(devNoticeStorage(), session.userId, DEV_NOTICE_VERSION, devNoticeTabStorage())); }, [session.userId]);
   const openLatestLock = useRef<(() => void) | null>(null);
+  // 총괄 11/12: what a discard of a refused save's input does once the saved text is open (clearDrafts), for the session
+  // that asked it only. The effect's cleanup runs before the next run, so it never clears this.
+  const afterLatest = useRef<{ run: () => void; epoch: unknown } | null>(null);
   // Release the old owner only after the replacement presentation commits, or on unmount.
   useEffect(() => {
     const release = openLatestLock.current; openLatestLock.current = null; release?.();
+    const after = afterLatest.current; afterLatest.current = null;
+    if (after && after.epoch === sessionEpochRef.current) after.run();
     return () => { const cleanup = openLatestLock.current; openLatestLock.current = null; cleanup?.(); };
   }, [presentation, sessionEpoch]);
   const controller = useRef<Controller | null>(null), uiRecovery = useRef<UiRecovery | null>(null);
@@ -1162,11 +1167,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     if (result && !result.ok) setMessage(programErrorMessage(result.reason));
     else if (result?.ok) historyOrigin.current = programHistoryAfterStep(historyOrigin.current, kind, before, controller.current?.snapshot().account?.revision);
   }
-  async function openLatest() {
+  /** True once the editors were handed over to the saved text (`after` then runs when they have, clearDrafts); else why not. */
+  async function openLatest(after?: () => void): Promise<true | string> {
     const store = controller.current, owner = currentOwnerRef.current, epoch = sessionEpochRef.current, visit = destinationRef.current;
-    if (!store || disposed.current || openLatestLock.current || owner !== session.userId) return;
-    if (store.snapshot().busy) { setMessage('서버 확인 중입니다. 확인이 끝나면 다시 열어 주세요. 입력은 보관했습니다.'); return; }
-    if (store.snapshot().pending) { setMessage('먼저 저장 결과를 확인해 주세요.'); return; }
+    if (!store || disposed.current || openLatestLock.current || owner !== session.userId) return 'owner';
+    if (store.snapshot().busy) { setMessage('서버 확인 중입니다. 확인이 끝나면 다시 열어 주세요. 입력은 보관했습니다.'); return 'busy'; }
+    if (store.snapshot().pending) { setMessage('먼저 저장 결과를 확인해 주세요.'); return 'pending'; }
     const mounted = allEditors(), releases: (() => void)[] = [];
     let released = false, transferred = false;
     const release = () => { if (released) return; released = true; releases.forEach(unlock => { try { unlock(); } catch { /* Continue releasing the other owners. */ } }); };
@@ -1174,29 +1180,30 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       && sessionEpochRef.current === epoch && destinationRef.current === visit && owner === session.userId;
     try {
       for (const port of mounted) if (port) releases.push(port.lockInput());
-      if (!captureInput() || !canReleaseInput() || !sameOwner()) return;
+      if (!captureInput() || !canReleaseInput() || !sameOwner()) return 'capture';
       const input = readProgramInputBoundary(mounted), discovery = canonicalJson(discoveryStateRef.current);
-      if (!input) { setMessage('입력 상태를 확인하지 못했습니다. 현재 편집기를 유지합니다.'); return; }
+      if (!input) { setMessage('입력 상태를 확인하지 못했습니다. 현재 편집기를 유지합니다.'); return 'boundary'; }
       const before = store.snapshot();
-      if (before.busy || before.pending) return;
+      if (before.busy || before.pending) return 'state';
       parkEditorInput();
       const refreshed = before.draft ? await store.discardConflict() : await store.refresh();
-      if (!sameOwner()) return;
+      if (!sameOwner()) return 'owner-after';
       // Composition may defer the lock. Re-capture and compare every current owner,
       // including clean input that changed and returned to its original text.
       if (!captureInput() || !canReleaseInput() || !programInputBoundaryCurrent(input, allEditors())
         || discovery !== canonicalJson(discoveryStateRef.current)) {
-        setMessage('확인하는 동안 입력 상태가 바뀌었습니다. 현재 입력과 편집기를 유지합니다.'); return;
+        setMessage('확인하는 동안 입력 상태가 바뀌었습니다. 현재 입력과 편집기를 유지합니다.'); return 'changed';
       }
-      if (!refreshed) { setMessage('최신 내용을 확인하지 못했습니다. 입력은 보관했습니다. 다시 시도해 주세요.'); return; }
+      if (!refreshed) { setMessage('최신 내용을 확인하지 못했습니다. 입력은 보관했습니다. 다시 시도해 주세요.'); return 'refresh'; }
       const next = store.snapshot();
       if (!sameOwner() || !next.envelope || !next.account || next.busy || next.pending || next.draft
         || next.ownerId !== owner || next.account.ownerId !== owner || next.account.source.actorId !== owner
-        || next.envelope.data.activeActorId !== owner || !['ready','saved','same-location','cancelled'].includes(next.status)) return;
+        || next.envelope.data.activeActorId !== owner || !['ready','saved','same-location','cancelled'].includes(next.status)) return `next:${next.status}${next.draft ? ':draft' : ''}`;
       externalRef.current = false; setExternal(false); currentData.current = next.envelope.data; currentRevision.current = next.account.revision;
       currentPublicRevision.current = next.publicRevision ?? null; setPublisher(null); setInspector(null);
-      setData(next.envelope.data); openLatestLock.current = release; setPresentation(value => value + 1); transferred = true;
-      setMessage('내 입력을 보관하고 최신 내용을 열었습니다.');
+      setData(next.envelope.data); openLatestLock.current = release; afterLatest.current = after ? { run: after, epoch } : null; setPresentation(value => value + 1); transferred = true;
+      if (!after) setMessage('내 입력을 보관하고 최신 내용을 열었습니다.');
+      return true;
     } finally { if (!transferred) release(); }
   }
   async function restoreDraft(index: number) {
@@ -1270,14 +1277,14 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   }, [data, session.userId]);
   /** UX review 11/12 P1-a: every 복구함 discard keeps what it removed for [되돌리기] (recovery-discard-undo.ts): the store's
    *  record is read first, cleared as before, and saved back through the store on 되돌리기 (only while it is still empty). */
-  function discardRecovery<Value, Entry>(input: { label: string; verb: string; port: ProgramRecoveryPort<Value, Entry> | null | undefined;
+  function discardRecovery<Value, Entry>(input: { label: string; verb: string; note?: string; port: ProgramRecoveryPort<Value, Entry> | null | undefined;
     entriesOf: (value: Value) => readonly Entry[]; clear: () => boolean; reload: () => void }) {
     const port = input.port;
     if (!port) return;
     const result = discardProgramRecovery(port, input.entriesOf, input.clear);
     if (!result.ok) { setStorageError(true); return; }
     if (!result.kept.length) return;
-    setDiscardNotice({ id: Date.now(), text: `${input.label} ${result.kept.length}개를 ${input.verb}`, kept: result.kept, reload: input.reload,
+    setDiscardNotice({ id: Date.now(), text: `${input.label} ${result.kept.length}개를 ${input.verb}${input.note ? ` · ${input.note}` : ''}`, kept: result.kept, reload: input.reload,
       port: port as unknown as ProgramRecoveryPort<unknown, unknown>, entriesOf: input.entriesOf as (value: unknown) => readonly unknown[] });
   }
   function undoDiscard(notice: DiscardNotice) {
@@ -1290,8 +1297,22 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       clear: () => { if (!structuralRecovery.current?.clear().ok) return false; parkedStructural.current = []; activeStructural.current = []; setStructuralRecoveries(null); return true; },
       reload: () => { const loaded = structuralRecovery.current?.read(); if (loaded?.ok) { parkedStructural.current = loaded.value?.entries ?? []; setStructuralRecoveries(loaded.value); } else setStorageError(true); } });
   }
+  /** 총괄 11/12: a refused save's input is held twice on this device, in the 복구함 and as the tab's refused command, which
+   *  a reload or a new tab read again into the 복구함. Discarded, it goes from both: as '최신 내용 열기' does, the editors'
+   *  input is kept in the 복구함 first, the command is dropped and the editors open the saved text; then the 복구함's
+   *  input (now all of it) is discarded as before, its [되돌리기] putting it back for 10 s. */
   function clearDrafts() {
-    discardRecovery({ label: '보관 입력', verb: '버렸습니다', port: uiRecovery.current, entriesOf: (value: AlphaUiRecoveryRecord) => value.drafts,
+    const live = controller.current?.snapshot();
+    if (live?.draft?.kind === 'change-private' && !live.pending) {
+      void openLatest(() => { setMessage(''); discardDrafts('저장된 내용을 열었습니다'); }).then(done => {
+        if (done !== true) setMessage(`저장된 내용을 열지 못해 보관 입력을 버리지 않았습니다. 다시 눌러 주세요. (${done})`);
+      });
+      return;
+    }
+    discardDrafts();
+  }
+  function discardDrafts(note?: string) {
+    discardRecovery({ label: '보관 입력', verb: '버렸습니다', note, port: uiRecovery.current, entriesOf: (value: AlphaUiRecoveryRecord) => value.drafts,
       clear: () => { if (!uiRecovery.current?.clear().ok) return false; recoveryDocuments.current = createAlphaUiRecoveryDocuments(); setRecoveries(null); return true; },
       reload: () => { const loaded = uiRecovery.current?.read(); if (loaded?.ok) { recoveryDocuments.current = createAlphaUiRecoveryDocuments(loaded.value?.drafts); setRecoveries(loaded.value); } else setStorageError(true); } });
   }
@@ -1835,7 +1856,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     + announcedStructural.filter(entry => entry.documentId === openDocumentId).length : 0;
   const documentRecovery = documentRecoveries > 0 && <p className={styles.documentRecovery} data-document-recovery>
     <button type="button" onClick={event => openRecoveryBox(event.currentTarget)}>이 문서에 복구할 입력 {documentRecoveries}개 ›</button></p>;
-  const discardNoticeContent = discardNotice && <div className={styles.recoveryToast} role="status" data-discard-notice {...discardNoticeLife.hold}>
+  // QA 11/12 (390): inside the 복구함 sheet the notice is part of the sheet (its first row), not the screen's bottom toast:
+  // a short sheet (one kind discarded) had the fixed toast over its [닫기].
+  const discardNoticeContent = (inSheet: boolean) => discardNotice && <div className={inSheet ? `${styles.recoveryToast} ${styles.recoveryToastInSheet}` : styles.recoveryToast} role="status" data-discard-notice={inSheet ? 'sheet' : 'screen'} {...discardNoticeLife.hold}>
     <p>{discardNotice.outcome === 'restored' ? '되돌렸습니다. 보관한 입력을 다시 두었습니다.' : discardNotice.outcome === 'changed' ? '그 뒤 새 입력이 보관되어 되돌리지 않았습니다.'
       : discardNotice.outcome === 'failed' ? '되돌리지 못했습니다. 브라우저 저장소를 확인해 주세요.' : discardNotice.text}</p>
     <div><button type="button" onClick={() => setDiscardNotice(null)}>닫기</button>
@@ -2056,7 +2079,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         Its content is the 복구함's as it was, drawn here only. */}
     <dialog ref={recoveryDialog} className={styles.recoverySheet} aria-labelledby="alpha-recovery-heading" onCancel={event => { event.preventDefault(); setRecoveryOpen(false); }}>
       <div className={styles.recoverySheetHead}><h2 id="alpha-recovery-heading">복구함{storedTotal ? ` (${storedTotal})` : ''}</h2><button type="button" onClick={() => setRecoveryOpen(false)}>닫기</button></div>
-      <div className={styles.recoverySheetBody}>{recoveryOpen && discardNoticeContent}{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>보관한 입력이 없습니다.</p>
+      <div className={styles.recoverySheetBody}>{recoveryOpen && discardNoticeContent(true)}{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>보관한 입력이 없습니다.</p>
         {archivedCount > 0 && <button type="button" onClick={() => void openArchiveFromMenu()}>보관한 문서 {archivedCount}개 → 보관함에서 보기</button>}</>}</div>
     </dialog>
     {moveWait && <section className={styles.moveNotice} aria-label="이동 전 저장" data-move-wait={moveWait.phase}>
@@ -2183,6 +2206,6 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     </>}
     </div>
     {recoveryToastContent}
-    {!recoveryOpen && discardNoticeContent}
+    {!recoveryOpen && discardNoticeContent(false)}
   </main>;
 }
