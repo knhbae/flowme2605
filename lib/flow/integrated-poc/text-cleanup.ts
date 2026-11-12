@@ -3,8 +3,7 @@ import { programSame } from './controller';
 import { transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
 import { programProgressTextPlan, type ProgramProgressTextChange } from './progress-text';
 import { applyProgramDateLineChoices, programDateLineAccountPlan, programDateLinesKeepLines, type ProgramDateLineChoices, type ProgramDateLinePlan } from './date-property-migration';
-import { programTaskRepeatMembers } from './task-date-move';
-import { programContinuedLines } from './continuation';
+import { programStateHash, programTaskRepeatMembers } from './task-date-move';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 
 /** Redesign 1 + 3 (W-TXT-01·03, 총괄 11/12): the account's writing is brought to the new rules once, as one list asked
@@ -54,23 +53,40 @@ export function applyProgramTextCleanupText(text: TextWorkspaceState, plan: Prog
 }
 
 /** 총괄 11/12 ①: the snapshot is kept in the writing itself, so it outlives this visit and any history: archived documents
- *  titled '전환 전 원문 · <when>', made in the same save. Each changed document's whole text sits in fenced blocks (the
- *  model reads them as plain text, never as tasks, headings or folders), tagged with the cleanup's stamp, the
- *  document's id and the part's number; split over several documents when one would pass a document's limits. Each
- *  kept line's id carries its original's (stamp~id), so a restore gives the lines their identities back (records,
- *  folders and links stay theirs) without guessing from the words. */
-export const PROGRAM_CLEANUP_ARCHIVE_TITLE = '전환 전 원문', PROGRAM_CLEANUP_RESTORE_TITLE = '되돌리기 전 원문';
+ *  titled '전환 전 원문 · <when>', made in the same save and kept for good. Each changed document's whole text sits in
+ *  fenced blocks (the model reads them as plain text, never as tasks, headings or folders), tagged with the cleanup's
+ *  stamp, the document's id and the part's number, the first part also with the document's state hashes before and
+ *  after the cleanup; split over several documents when one would pass a document's limits. Each kept line's id carries
+ *  its original's (stamp~id), so a restore gives every line its own identity back. */
+export const PROGRAM_CLEANUP_ARCHIVE_TITLE = '전환 전 원문';
 const ARCHIVE_INFO = 'flowme-original';
 const ARCHIVE_LIMITS = { lines: 1000, chars: 90_000 };
-const ARCHIVE_INTRO = ['이 글은 보관용 원문입니다. [이 원문으로 되돌리기]를 누르면 아래 원문을 원래 글에 다시 써 넣습니다. 이 글은 고치지 마세요.', ''];
-const archiveOpen = (line: string) => new RegExp(`^(~{4,}) ${ARCHIVE_INFO} (\\S+) (\\S+) ([1-9][0-9]{0,3})$`).exec(line);
+const ARCHIVE_INTRO = ['이 글은 보관용 원문입니다. 글을 바꾼 직후라면 [이 원문으로 되돌리기]로 원래대로 돌릴 수 있습니다. 그 뒤라면 필요한 부분을 옮겨 쓰세요. 이 글은 고치지 마세요.', ''];
+const archiveOpen = (line: string) => new RegExp(`^(~{4,}) ${ARCHIVE_INFO} (\\S+) (\\S+) ([1-9][0-9]{0,3})(?: ([0-9a-z]{1,16}) ([0-9a-z]{1,16}))?$`).exec(line);
 const chars = (lines: readonly { text: string }[]) => lines.reduce((sum, line) => sum + line.text.length + 1, 0);
+const sortedKeys = (_: string, value: unknown) => value && typeof value === 'object' && !Array.isArray(value)
+  ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)) : value;
+/** 총괄 11/12 (Codex re-review): a document's whole state, as a hash: its lines (words and ids), the links from or to
+ *  them, the progress records of its lines and their owners. A restore runs only from the state the cleanup left. */
+export function programDocumentStateHash(text: TextWorkspaceState, documentId: string): string | null {
+  const doc = M.getDocument(text, documentId);
+  if (!doc) return null;
+  const ids = new Set(doc.lines.map(line => line.id)), by = (value: unknown) => JSON.stringify(value, sortedKeys);
+  const pick = (scopes: Record<string, string>) => Object.fromEntries(Object.entries(scopes).filter(([id]) => ids.has(id)));
+  return programStateHash(by({
+    lines: doc.lines.map(line => [line.id, line.text]),
+    bindings: text.bindings.filter(binding => binding.docId === documentId || binding.kind === 'task' && ids.has(binding.taskId)).map(by).sort(),
+    records: text.progressRecords.filter(record => ids.has(record.taskId)).map(by).sort(),
+    taskScopes: pick(text.taskScopes), itemScopes: pick(text.itemScopes),
+  }));
+}
 type ArchiveLine = { id: string; text: string };
-function archiveBlocks(text: TextWorkspaceState, documentIds: readonly string[], stamp: string): ArchiveLine[][] | null {
+type ArchiveHashes = ReadonlyMap<string, { before: string; after: string }>;
+function archiveBlocks(text: TextWorkspaceState, documentIds: readonly string[], stamp: string, hashes: ArchiveHashes): ArchiveLine[][] | null {
   const blocks: ArchiveLine[][] = [];
   for (const id of documentIds) {
-    const doc = M.getDocument(text, id);
-    if (!doc) continue;
+    const doc = M.getDocument(text, id), hash = hashes.get(id);
+    if (!doc || !hash) return null;
     const longest = Math.max(3, ...doc.lines.map(line => /^ *(~+)/.exec(line.text)?.[1].length ?? 0)), fence = '~'.repeat(longest + 1);
     const kept = doc.lines.map(line => ({ id: `${stamp}~${line.id}`.length <= 160 ? `${stamp}~${line.id}` : programId('line'), text: line.text }));
     let part = 0;
@@ -81,15 +97,15 @@ function archiveBlocks(text: TextWorkspaceState, documentIds: readonly string[],
       part += 1;
       blocks.push([
         { id: programId('line'), text: `## ${doc.title || '새 문서'}${part > 1 ? ` (${part})` : ''}` },
-        { id: programId('line'), text: `${fence} ${ARCHIVE_INFO} ${stamp} ${doc.id} ${part}` },
+        { id: programId('line'), text: `${fence} ${ARCHIVE_INFO} ${stamp} ${doc.id} ${part}${part === 1 ? ` ${hash.before} ${hash.after}` : ''}` },
         ...chunk, { id: programId('line'), text: fence }, { id: programId('line'), text: '' }]);
     }
   }
   return blocks;
 }
 /** Adds the archived documents holding `documentIds` as they are in `text`. Null when the account cannot take them. */
-export function programArchiveOriginals(text: TextWorkspaceState, documentIds: readonly string[], stamp: string, title: string): { text: TextWorkspaceState; ids: string[] } | null {
-  const blocks = archiveBlocks(text, documentIds, stamp);
+function programArchiveOriginals(text: TextWorkspaceState, documentIds: readonly string[], stamp: string, title: string, hashes: ArchiveHashes): { text: TextWorkspaceState; ids: string[] } | null {
+  const blocks = archiveBlocks(text, documentIds, stamp, hashes);
   if (!blocks) return null;
   const intro = () => ARCHIVE_INTRO.map(line => ({ id: programId('line'), text: line }));
   const parts: ArchiveLine[][] = [];
@@ -110,10 +126,11 @@ export function programArchiveOriginals(text: TextWorkspaceState, documentIds: r
   }
   return M.validate(next) ? { text: next, ids } : null;
 }
-/** The originals a stamp kept, one per document in the order kept: the words, and each line's original id (null when
- *  the archive no longer knows it). */
-export function programCleanupArchive(text: TextWorkspaceState, stamp: string): { documentId: string; raw: string; ids: (string | null)[] }[] {
-  const parts = new Map<string, Map<number, { id: string; text: string }[]>>();
+export type ProgramCleanupOriginal = { documentId: string; raw: string; ids: (string | null)[]; before: string | null; after: string | null };
+/** The originals a stamp kept, one per document in the order kept: the words, each line's original id (null when the
+ *  archive no longer knows it), and the document's state hashes before and after the cleanup. */
+export function programCleanupArchive(text: TextWorkspaceState, stamp: string): ProgramCleanupOriginal[] {
+  const parts = new Map<string, Map<number, { lines: { id: string; text: string }[]; before: string | null; after: string | null }>>();
   for (const doc of text.documents) {
     for (let index = 0; index < doc.lines.length; index++) {
       const open = archiveOpen(doc.lines[index].text);
@@ -121,23 +138,28 @@ export function programCleanupArchive(text: TextWorkspaceState, stamp: string): 
       const end = doc.lines.findIndex((line, at) => at > index && new RegExp(`^~{${open[1].length},}\\s*$`).test(line.text));
       if (end < 0) continue;
       if (!parts.has(open[3])) parts.set(open[3], new Map());
-      parts.get(open[3])!.set(Number(open[4]), doc.lines.slice(index + 1, end));
+      parts.get(open[3])!.set(Number(open[4]), { lines: doc.lines.slice(index + 1, end), before: open[5] ?? null, after: open[6] ?? null });
       index = end;
     }
   }
   return [...parts].flatMap(([documentId, chunks]) => {
     const numbers = [...chunks.keys()].sort((a, b) => a - b);
     if (numbers.some((number, at) => number !== at + 1)) return []; // a part is missing: never write half a document back
-    const lines = numbers.flatMap(number => chunks.get(number)!);
-    return [{ documentId, raw: lines.map(line => line.text).join('\n'), ids: lines.map(line => line.id.startsWith(`${stamp}~`) ? line.id.slice(stamp.length + 1) : null) }];
+    const lines = numbers.flatMap(number => chunks.get(number)!.lines), first = chunks.get(1)!;
+    return [{ documentId, raw: lines.map(line => line.text).join('\n'), ids: lines.map(line => line.id.startsWith(`${stamp}~`) ? line.id.slice(stamp.length + 1) : null),
+      before: first.before, after: first.after }];
   });
 }
 /** The stamp an archived original holds (null for any other document). */
 export function programCleanupArchiveStamp(text: TextWorkspaceState, documentId: string): string | null {
   const doc = M.getDocument(text, documentId);
-  if (!doc || ![PROGRAM_CLEANUP_ARCHIVE_TITLE, PROGRAM_CLEANUP_RESTORE_TITLE].some(title => doc.title.startsWith(title))) return null;
+  if (!doc || !doc.title.startsWith(PROGRAM_CLEANUP_ARCHIVE_TITLE)) return null;
   for (const line of doc.lines) { const open = archiveOpen(line.text); if (open) return open[2]; }
   return null;
+}
+/** The archived document that holds a stamp's first part (the one to open). */
+export function programCleanupArchiveDocument(space: ProgramPrivateSpace, stamp: string): string | null {
+  return space.archivedDocumentIds.find(id => programCleanupArchiveStamp(space.text, id) === stamp) ?? null;
 }
 
 /** [바꾸기]: only while the account reads the same list; one save, the originals archived in it ('전환 전 원문 · when'). The
@@ -155,8 +177,9 @@ export function applyProgramTextCleanup(data: ProgramData, input: ProgramPrivate
     const documents = programTextCleanupDocuments(plan), stamp = programId('cleanup');
     const next = applyProgramTextCleanupText(space.text, plan, input.choices);
     if (!next) return { result: stamp, reason: 'unresolved' };
+    const hashes = new Map(documents.map(id => [id, { before: programDocumentStateHash(space.text, id)!, after: programDocumentStateHash(next, id)! }]));
     // The originals as they were before this save, archived in it.
-    const archived = programArchiveOriginals(space.text, documents, stamp, `${PROGRAM_CLEANUP_ARCHIVE_TITLE} · ${input.when}`);
+    const archived = programArchiveOriginals(space.text, documents, stamp, `${PROGRAM_CLEANUP_ARCHIVE_TITLE} · ${input.when}`, hashes);
     if (!archived) return { result: stamp, reason: 'limit' };
     const added = archived.text.documents.filter(doc => archived.ids.includes(doc.id));
     space.text = { ...next, documents: [...next.documents, ...added] };
@@ -172,73 +195,26 @@ export const programCleanupWhen = (now: Date) => {
   return `${now.getFullYear()}-${two(now.getMonth() + 1)}-${two(now.getDate())} ${two(now.getHours())}:${two(now.getMinutes())}`;
 };
 
-/** A check the person made since (a box's done state, or 100%) stays: only the words the cleanup changed go back. */
-function keepLaterChecks(text: TextWorkspaceState, documentId: string, lines: string[], ids: (string | null)[]): string[] {
-  const now = new Map(M.getDocument(text, documentId)!.lines.map(line => [line.id, line.text]));
-  return lines.map((line, index) => {
-    const box = /^( *-\s+\[)([ xX])(\](?:\s+|$))/.exec(line), current = ids[index] ? now.get(ids[index]!) : undefined;
-    const token = current === undefined ? undefined : /^ *-\s+\[([^\]\r\n]*)\](?:\s+|$)/.exec(current)?.[1];
-    if (!box || token === undefined) return line;
-    const numeric = M.parseProgressToken(token), done = /^[ xX]$/.test(token) ? token.toLowerCase() === 'x' : numeric.ok ? numeric.percent === 100 : null;
-    if (done === null || done === (box[2].toLowerCase() === 'x')) return line;
-    return box[1] + (done ? 'x' : ' ') + line.slice(box[1].length + 1);
-  });
-}
-
-/** 이어 쓰기 since (continuation.ts) passed a line's records, owner and links to its new line, which the original does
- *  not have. Before the original is written back, its line takes them again from the line holding them now (followed
- *  along the 이어감 chain), so nothing recorded is lost and the new line can go. One that cannot is left as it is. */
-function giveBackContinued(text: TextWorkspaceState, block: { documentId: string; raw: string; ids: (string | null)[] }): TextWorkspaceState {
-  const lines = block.raw.split('\n'), kept = new Set(block.ids.filter((id): id is string => !!id));
-  const chain = programContinuedLines(text), byLine = new Map(chain.map(line => [line.lineId, line]));
-  let next = text;
-  for (const line of chain) {
-    const original = lines[block.ids.indexOf(line.lineId)];
-    if (line.docId !== block.documentId || !kept.has(line.lineId) || !original || !/^ *-\s+\[([ xX]|\d+(?:\.\d+)?%?)\](?:\s|$)/.test(original)) continue;
-    let holder = line.received;
-    for (const seen = new Set([line.lineId]); holder && byLine.get(holder)?.received && !seen.has(holder);) { seen.add(holder); holder = byLine.get(holder)!.received; }
-    if (!holder || kept.has(holder) || !M.tasks(next).some(task => task.id === holder)) continue;
-    const from = holder, to = line.lineId, taskScopes = { ...next.taskScopes }, itemScopes = { ...next.itemScopes };
-    if (Object.hasOwn(taskScopes, from)) taskScopes[to] = taskScopes[from];
-    if (Object.hasOwn(itemScopes, from)) itemScopes[to] = itemScopes[from];
-    const staged: TextWorkspaceState = { ...next, taskScopes, itemScopes,
-      documents: next.documents.map(doc => doc.id === block.documentId ? { ...doc, lines: doc.lines.map(entry => entry.id === to ? { id: to, text: original } : entry) } : doc),
-      progressRecords: next.progressRecords.map(record => record.taskId === from ? { ...record, taskId: to } : record),
-      bindings: next.bindings.map(binding => binding.kind === 'task' && binding.taskId === from ? { ...binding, taskId: to } : binding) };
-    if (M.validate(staged)) next = staged;
-  }
-  return next;
-}
-
-/** 되돌리기 (총괄 11/12 ①): the originals an archive holds are written back into their documents, from any visit (no
- *  history or memory needed), each line with its own identity. What those documents say now is archived first
- *  ('되돌리기 전 원문 · when', which can itself be restored), in the same save, so nothing written since is lost. A
- *  document no longer there is left out; a check made since stays. */
-export function restoreProgramTextCleanup(data: ProgramData, input: ProgramPrivateMutationBase & { stamp: string; when: string }): ProgramTransition<string> {
-  return transitionProgramPrivateSpace(data, input, 'private-text-cleanup-restore', { stamp: input.stamp, when: input.when }, space => {
-    if (!PROGRAM_WHEN.test(input.when)) return { result: input.stamp, reason: 'invalid' };
-    const blocks = programCleanupArchive(space.text, input.stamp)
-      .filter(block => space.text.documents.some(doc => doc.id === block.documentId && !space.archivedDocumentIds.includes(doc.id)))
-      .map(block => ({ ...block, raw: keepLaterChecks(space.text, block.documentId, block.raw.split('\n'), block.ids).join('\n') }));
-    if (!blocks.length) return { result: input.stamp, reason: 'missing' };
-    const changed = blocks.filter(block => M.raw(M.getDocument(space.text, block.documentId)!) !== block.raw);
-    if (!changed.length) return { result: input.stamp };
-    const archived = programArchiveOriginals(space.text, changed.map(block => block.documentId), programId('cleanup'), `${PROGRAM_CLEANUP_RESTORE_TITLE} · ${input.when}`);
-    if (!archived) return { result: input.stamp, reason: 'limit' };
-    let text = archived.text;
-    for (const block of changed) {
-      text = giveBackContinued(text, block);
+/** 되돌리기 (총괄 11/12, after Codex's re-review: simple and safe, no merging). The originals are written back only while
+ *  every document the cleanup changed is exactly as it left it (its state hash: words, line ids, links, records,
+ *  owners); then each one is exactly as before it, which is checked the same way. Anything changed since (a check, a
+ *  continuation, a move, a line) refuses it ('conflict'): the archived original stays, to take what is needed from. */
+export function restoreProgramTextCleanup(data: ProgramData, input: ProgramPrivateMutationBase & { stamp: string }): ProgramTransition<string> {
+  return transitionProgramPrivateSpace(data, input, 'private-text-cleanup-restore', { stamp: input.stamp }, space => {
+    const blocks = programCleanupArchive(space.text, input.stamp);
+    if (!blocks.length || blocks.some(block => !block.before || !block.after || block.ids.some(id => id === null)
+      || !space.text.documents.some(doc => doc.id === block.documentId) || space.archivedDocumentIds.includes(block.documentId))) return { result: input.stamp, reason: 'missing' };
+    const now = blocks.map(block => programDocumentStateHash(space.text, block.documentId));
+    if (blocks.every((block, index) => now[index] === block.before)) return { result: input.stamp }; // already back
+    if (blocks.some((block, index) => now[index] !== block.after)) return { result: input.stamp, reason: 'conflict' };
+    let text = space.text;
+    for (const block of blocks) {
       const edited = M.editTextResult(text, block.documentId, block.raw, { folderText: true, lineIds: block.ids });
-      if (edited.reason !== null || M.raw(M.getDocument(edited.state, block.documentId)!) !== block.raw) {
-        // A task written since with progress recorded on it would go: records are never dropped, so it is refused.
-        const kept = new Set(block.ids), gone = M.getDocument(text, block.documentId)!.lines.filter(line => !kept.has(line.id)).map(line => line.id);
-        return { result: input.stamp, reason: text.progressRecords.some(record => gone.includes(record.taskId)) ? 'forbidden' : 'unresolved' };
-      }
+      if (edited.reason !== null) return { result: input.stamp, reason: 'unresolved' };
       text = edited.state;
     }
-    if (!M.validate(text)) return { result: input.stamp, reason: 'unresolved' };
+    if (!M.validate(text) || blocks.some(block => programDocumentStateHash(text, block.documentId) !== block.before)) return { result: input.stamp, reason: 'unresolved' };
     space.text = text;
-    space.archivedDocumentIds = [...space.archivedDocumentIds, ...archived.ids];
     return { result: input.stamp };
   });
 }

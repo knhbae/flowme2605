@@ -25,8 +25,8 @@ import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } fr
 import { programFollowToday, programLaterToday, startProgramDayClock, type ProgramDayClock } from '@/lib/flow/integrated-poc/day-clock';
 import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, programTaskDateUndoLines, programTaskRepeatMember, restoreProgramTaskDates, type ProgramTaskDateLines, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
-import { programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
-import { programCalendarDate, programDaysBetween } from '@/lib/flow/integrated-poc/date-label';
+import { programDayCount, programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
+import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
 import { timeRo } from '@/lib/flow/integrated-poc/number-particle';
 import { programFirstOfficialFlows } from '@/lib/flow/integrated-poc/first-flows';
 import { useAlphaOfficialActors } from './AlphaOfficialActors';
@@ -112,7 +112,9 @@ import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classific
 import { commitTaskDateWithUndo, moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
 import { programDateLineDefaults, programDateLineOutcomes, type ProgramDateLineChoice, type ProgramDateLineChoices } from '@/lib/flow/integrated-poc/date-property-migration';
 import { programContinuationStarts } from '@/lib/flow/integrated-poc/continuation';
-import { applyProgramTextCleanup, PROGRAM_CLEANUP_RESTORE_TITLE, programCleanupArchiveStamp, programCleanupWhen, programTextCleanupDocuments, programTextCleanupPlan, restoreProgramTextCleanup, type ProgramTextCleanupPlan } from '@/lib/flow/integrated-poc/text-cleanup';
+import { applyProgramTextCleanup, programCleanupArchiveDocument, programCleanupArchiveStamp, programCleanupWhen, programTextCleanupDocuments, programTextCleanupPlan, restoreProgramTextCleanup, type ProgramTextCleanupPlan } from '@/lib/flow/integrated-poc/text-cleanup';
+// 총괄 11/12: the words when a restore is refused because a changed document was changed again since.
+const PROGRAM_CLEANUP_CHANGED = "전환 뒤 바뀐 글이 있어 자동으로 되돌릴 수 없습니다. 보관함의 '전환 전 원문'에서 필요한 부분을 옮겨 쓰세요";
 
 import { programDueLabel } from '@/lib/flow/integrated-poc/due-date';
 import { programIsWaitTitle, programWaitStartable, startProgramWait } from '@/lib/flow/integrated-poc/wait-line';
@@ -879,20 +881,21 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       setCleanupNotice({ actorId, documents: programTextCleanupDocuments(ask.plan).length, stamp });
     } finally { setCleanupPending(false); }
   }
-  /** 되돌리기, from the notice or from the archived original itself (any visit later): the originals written back. */
+  /** 되돌리기, from the notice or from the archived original itself (any visit later). 총괄 11/12: only while every changed
+   *  document is exactly as the cleanup left it; else it says so and opens the archived original to take from. */
   async function restoreCleanup(stamp: string) {
     if (cleanupPending) return false;
     setCleanupPending(true);
     try {
-      const result = await run('글 정리 되돌리기', current => restoreProgramTextCleanup(current, { ...base(current), stamp, when: programCleanupWhen(new Date()) }), true);
+      const result = await run('글 정리 되돌리기', current => restoreProgramTextCleanup(current, { ...base(current), stamp }), true);
       const refused = result.ok ? undefined : result.reason === 'busy' ? '' : result.reason === 'missing' ? '보관 글에서 원문을 찾지 못해 되돌리지 않았습니다'
-        : result.reason === 'limit' ? '지금 글을 보관할 자리가 없어 되돌리지 않았습니다(문서는 100개까지)'
-        : result.reason === 'forbidden' ? "그 뒤 진행을 기록한 할 일이 있어 되돌리지 않았습니다. 원문은 보관함의 '전환 전 원문'에 그대로 있습니다"
+        : result.reason === 'conflict' ? PROGRAM_CLEANUP_CHANGED
         : result.reason === 'unresolved' ? '원문을 다시 쓸 수 없어 되돌리지 않았습니다. 지금 글은 그대로입니다' : `${programErrorMessage(result.reason)} (${result.reason})`;
       if (refused === '') return false;
       setCleanupNotice(current => current?.actorId === actorId && current.stamp === stamp ? { ...current, ...(refused ? { refused } : { undone: true }) } : current);
-      if (refused) setMessage(refused);
-      else setMessage("원문으로 되돌렸습니다. 되돌리기 전 글은 보관함의 '되돌리기 전 원문'에 있습니다.");
+      setMessage(refused ?? '전환 전 원문으로 되돌렸습니다.');
+      const archive = refused === PROGRAM_CLEANUP_CHANGED ? programCleanupArchiveDocument(dataRef.current.spaces[actorId], stamp) : null;
+      if (archive && archive !== selected) void openDocument(archive);
       return !refused;
     } finally { setCleanupPending(false); }
   }
@@ -3116,7 +3119,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const carryItemRow = (item: ProgramCarryoverItem, named: boolean) => {
     const choice = carryChoiceOf(item), options: ProgramCarryoverChoice[] = item.finished ? ['delete', 'today'] : ['today', 'undated', 'delete'];
     const meta = item.finished ? `${programCalendarDate(item.finished, today, false)} 끝냄 · 남은 줄 ${item.lines}`
-      : [`${programDaysBetween(item.since, today) + 1}일째` /* 총괄 11/12 ②: the first day is 1일째 */, item.lines > 1 ? `${item.lines}번 다시 씀` : '', item.today ? '오늘에도 있음' : ''].filter(Boolean).join(' · ');
+      : [`${programDayCount(item.since, today) ?? 1}일째` /* 총괄 11/12 ②, one count (Codex re-review P2-2) */, item.lines > 1 ? `${item.lines}번 다시 씀` : '', item.today ? '오늘에도 있음' : ''].filter(Boolean).join(' · ');
     return <li key={item.kind} className={styles.carryItem} data-carry-item>
       <p><span>{named ? item.place || '분류 없음' : item.title}</span><small>{meta}</small></p>
       <div className={styles.carryChoices} role="radiogroup" aria-label={`${item.title}${named ? ` · ${item.place}` : ''} 정리`}>
@@ -3556,7 +3559,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice data-quiet={props.noteNoticeShown ? 'true' : undefined}>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
     {/* 총괄 11/12 ①: an archived original ('전환 전 원문', '되돌리기 전 원문') is restored from here, any time. */}
     {selectedDoc && selectedArchived && (stamp => stamp && <div className={styles.importNotice} data-cleanup-archive={stamp}>
-      <span role="status">{selectedDoc.title.startsWith(PROGRAM_CLEANUP_RESTORE_TITLE) ? '되돌리기 전에 있던 글입니다.' : '새 규칙으로 바꾸기 전 원문입니다.'}</span>
+      <span role="status">새 규칙으로 바꾸기 전 원문입니다. 바꾼 직후에만 되돌릴 수 있습니다.</span>
       <button type="button" data-cleanup-restore disabled={cleanupPending || preparingDocumentAction} aria-busy={cleanupPending || undefined} onClick={() => void restoreCleanup(stamp)}>이 원문으로 되돌리기</button></div>)(programCleanupArchiveStamp(space.text, selectedDoc.id))}
     {!selectedDoc && props.noteStatus}
     {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>
@@ -3603,7 +3606,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {cleanupAsk && (ask => { const day = (date: string | null) => date ? programCalendarDate(date, today, false) : '날짜 미정';
         return <>
           <h2 id="program-cleanup-title">글을 새 규칙으로 한 번 정리합니다</h2>
-          <p className={styles.muted}>할 날은 날짜 제목 하나로 정하고, 진행률은 할 일 줄에 적습니다. 보관함의 '전환 전 원문'에서 언제든 되돌릴 수 있습니다.</p>
+          <p className={styles.muted}>할 날은 날짜 제목 하나로 정하고, 진행률은 할 일 줄에 적습니다. 바꾸기 전 원문은 보관함의 '전환 전 원문'에 남고, 바꾼 직후에는 되돌릴 수 있습니다.</p>
           {ask.plan.progress.length > 0 && <><h3 className={styles.dateLinesHead}>진행률 {ask.plan.progressLines}줄 · 할 일 줄에 적습니다</h3>
             <ul className={styles.progressTextList} data-cleanup-progress>{ask.plan.progress.flatMap(doc => doc.changes.map(change => <li key={change.lineId}><span>{change.title}</span>
               <small>{doc.title} · {progressMark(change.before)} → {progressMark(change.after)} · {programCalendarDate(change.date, today, false)} 기록</small></li>))}</ul></>}

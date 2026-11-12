@@ -34,7 +34,7 @@ const cleanup = (data: ProgramData, choose?: (choices: Record<string, 'move' | '
 };
 // 총괄 11/12 ①: 되돌리기 reads the archived original ('전환 전 원문 · when'), with nothing kept in memory.
 const stampOf = (data: ProgramData) => programCleanupArchiveStamp(space(data).text, space(data).archivedDocumentIds.find(id => M.getDocument(space(data).text, id)?.title.startsWith('전환 전 원문'))!)!;
-const undo = (_before: ProgramData, after: ProgramData) => ok(restoreProgramTextCleanup(after, { ...base(after), stamp: stampOf(after), when: '2026-11-12 16:25' })).data;
+const undo = (_before: ProgramData, after: ProgramData) => ok(restoreProgramTextCleanup(after, { ...base(after), stamp: stampOf(after) })).data;
 /** The writing without the archived originals (the documents `like` has); links in any order (a restore re-links a
  *  folder line the conversion had removed). */
 const sorted = (text: TextWorkspaceState) => ({ ...text, bindings: [...text.bindings].sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))) });
@@ -76,11 +76,11 @@ test("mockup ③ in the account's list: same days deleted, other days moved; onl
   assert.equal(archive.title, '전환 전 원문 · 2026-11-12 16:20');
   assert.deepEqual(programCleanupArchive(space(moved).text, stampOf(moved)).map(block => [block.documentId, block.raw]), [[docId, MOCKUP]], 'the whole original');
   assert.deepEqual(M.parseDocument(archive, space(moved).text).items, [], 'an archived original holds no task');
-  // 되돌리기: the writing exactly as before, ids and bytes; what it said is archived too ('되돌리기 전 원문').
+  // 되돌리기 right after: the writing exactly as before, ids and bytes; the archived original stays.
   const back = undo(data, moved);
   assert.deepEqual(own(back, data), sorted(space(data).text));
   assert.equal(raw(back, docId), MOCKUP);
-  assert.deepEqual(space(back).archivedDocumentIds.slice(-2).map(id => M.getDocument(space(back).text, id)!.title), ['전환 전 원문 · 2026-11-12 16:20', '되돌리기 전 원문 · 2026-11-12 16:25']);
+  assert.deepEqual(space(back).archivedDocumentIds.map(id => M.getDocument(space(back).text, id)!.title), ['전환 전 원문 · 2026-11-12 16:20']);
   assert.equal(programTextCleanupPlan(space(moved)), null, 'nothing left to ask');
 });
 
@@ -283,57 +283,78 @@ test('left alone: a copy or run document, a reference line, a repeat line, an un
   assert(!refused.ok && refused.reason === 'conflict');
 });
 
-test("되돌리기 later (총괄 11/12 ①): from the archived original alone, after edits; what was written since goes to '되돌리기 전 원문', a check made since stays", () => {
+test("되돌리기 only right after (총괄 11/12, Codex re-review): anything changed since refuses it, and nothing changes; the original stays", () => {
   const { data, docId } = writing(MOCKUP);
   const after = cleanup(data);
-  // Later, another visit (nothing in memory): 보고서 초안 is checked, 분기 보고 제출 reaches 100% today, a line is added.
-  let later = programClone(after);
-  space(later).text = M.updateTask(space(later).text, id(later, '보고서 초안'), { done: true });
-  space(later).text = M.recordProgress(space(later).text, id(later, '분기 보고 제출'), '2026-11-12', 100);
-  space(later).text = M.editTextResult(space(later).text, docId, `${raw(later, docId)}\n- [ ] 그 뒤 쓴 일`, { folderText: true }).state;
-  const written = raw(later, docId);
-  // A plain rewrite of the original would not know which line is which: the model refuses it.
-  assert.notEqual(M.editTextResult(space(later).text, docId, MOCKUP, { folderText: true }).reason, null);
-  const back = ok(restoreProgramTextCleanup(later, { ...base(later), stamp: stampOf(later), when: '2026-11-13 09:00' })).data;
-  assert.equal(raw(back, docId), MOCKUP.replace('- [ ] 보고서 초안', '- [x] 보고서 초안').replace('- [ ] 분기 보고 제출', '- [x] 분기 보고 제출'), 'the original, with the checks made since');
-  assert.deepEqual(lines(back, docId).map(([lineId]) => lineId), lines(data, docId).map(([lineId]) => lineId), 'every line its own identity again');
-  assert.deepEqual(space(back).text.progressRecords, space(later).text.progressRecords, 'no record lost or added');
-  const kept = M.getDocument(space(back).text, space(back).archivedDocumentIds.at(-1)!)!;
-  assert.equal(kept.title, '되돌리기 전 원문 · 2026-11-13 09:00');
-  assert.deepEqual(programCleanupArchive(space(back).text, programCleanupArchiveStamp(space(back).text, kept.id)!).map(block => block.raw), [written], 'what was written since is kept');
-  // That one restores in turn (a redo), and the first again: each a save of its own.
-  const redo = ok(restoreProgramTextCleanup(back, { ...base(back), stamp: programCleanupArchiveStamp(space(back).text, kept.id)!, when: '2026-11-13 09:05' })).data;
-  assert.equal(raw(redo, docId), written);
-  // An archive whose original is gone (deleted) says so; nothing changes.
+  const refusedOn = (changed: ProgramData) => {
+    const result = restoreProgramTextCleanup(changed, { ...base(changed), stamp: stampOf(changed) });
+    assert(!result.ok && result.reason === 'conflict', result.ok ? 'restored' : result.reason);
+    assert.equal(result.data, changed, 'nothing changes');
+    assert(M.getDocument(space(changed).text, space(changed).archivedDocumentIds.at(-1)!)!.title.startsWith('전환 전 원문'), 'the archived original stays');
+  };
+  // A check made since (another visit, nothing in memory).
+  const checked = programClone(after);
+  space(checked).text = M.updateTask(space(checked).text, id(checked, '보고서 초안'), { done: true });
+  refusedOn(checked);
+  // A line written since; a record made since.
+  const written = programClone(after);
+  space(written).text = M.editTextResult(space(written).text, docId, `${raw(written, docId)}\n- [ ] 그 뒤 쓴 일`, { folderText: true }).state;
+  refusedOn(written);
+  const recorded = programClone(after);
+  space(recorded).text = M.recordProgress(space(recorded).text, id(recorded, '분기 보고 제출'), '2026-11-12', 30);
+  refusedOn(recorded);
+  // Right after it, it goes back; pressed again, nothing more to do.
+  const back = ok(restoreProgramTextCleanup(after, { ...base(after), stamp: stampOf(after) })).data;
+  assert.equal(raw(back, docId), MOCKUP);
+  const again = ok(restoreProgramTextCleanup(back, { ...base(back), stamp: stampOf(back) }));
+  assert.equal(raw(again.data, docId), MOCKUP);
+  // An archive whose original is gone says so.
   const gone = programClone(after);
   for (const doc of space(gone).text.documents) if (doc.title.startsWith('전환 전 원문')) doc.lines = doc.lines.slice(0, 2);
-  const missing = restoreProgramTextCleanup(gone, { ...base(gone), stamp: stampOf(after), when: '2026-11-13 09:00' });
+  const missing = restoreProgramTextCleanup(gone, { ...base(gone), stamp: stampOf(after) });
   assert(!missing.ok && missing.reason === 'missing');
 });
 
-test("되돌리기 after '어제 남은 일 이어 쓰기': the original line takes its records back; a task recorded since refuses it", () => {
-  const ORIGINAL = ['[2026-11-10]', '- [40%] 이어 쓸 일', '- [ ] 치과', '  - 날짜: 2026-11-14'].join('\n');
-  const { data, docId } = writing(ORIGINAL);
-  const kept = id(data, '이어 쓸 일');
-  space(data).text = { ...space(data).text, progressRecords: [{ taskId: kept, date: '2026-11-10', percent: 40 }] };
-  const after = cleanup(data);
-  // The next day it is continued: [>] stays, the records go to the new line (continuation.ts).
-  const continued = continueProgramTask(space(after).text, { documentId: docId, taskId: kept, today: '2026-11-11' });
+test("Codex re-review P1-1·P1-2·P1-3·P2-1: a continuation, a 100% since, a move to another document refuse 되돌리기 (records and links stay theirs)", () => {
+  // P1-1: the same title in another folder of another document, with an 80% record and a link; 회사's 보고서 continued.
+  const base1 = writing(['[2026-11-12]', '- /개인', '  - [80%] 보고서'].join('\n'), '다른 글');
+  const restoreDoc = writing(['[2026-11-10]', '- /회사', '  - [40%] 보고서', '- [ ] 전환 대상', '  - 날짜: 2026-11-14'].join('\n'), '복원할 글', base1.data);
+  let data = restoreDoc.data;
+  const personal = M.tasks(space(data).text).find(task => task.title === '보고서' && task.docId === base1.docId)!.id;
+  const company = M.tasks(space(data).text).find(task => task.title === '보고서' && task.docId === restoreDoc.docId)!.id;
+  space(data).text = { ...space(data).text, progressRecords: [{ taskId: personal, date: '2026-11-12', percent: 80 }, { taskId: company, date: '2026-11-10', percent: 40 }] };
+  const refs = writing('[2026-11-12]\n- 참조', '참조 글', data); data = refs.data;
+  space(data).text = M.linkTask(space(data).text, refs.docId, 2, personal);
+  const converted = cleanup(data);
+  const continued = continueProgramTask(space(converted).text, { documentId: restoreDoc.docId, taskId: company, today: '2026-11-12' });
   assert(continued.ok);
-  const later = programClone(after); space(later).text = continued.next;
-  assert.deepEqual(space(later).text.progressRecords.map(record => record.taskId), [continued.newId]);
-  const back = ok(restoreProgramTextCleanup(later, { ...base(later), stamp: stampOf(later), when: '2026-11-11 09:00' })).data;
-  assert.equal(raw(back, docId), ORIGINAL);
-  assert.deepEqual(space(back).text.progressRecords, space(data).text.progressRecords, 'the original line holds its records again');
-  assert.deepEqual(lines(back, docId).map(([lineId]) => lineId), lines(data, docId).map(([lineId]) => lineId));
-  // A task written after the conversion with progress recorded on it would go: refused (records are never dropped).
-  const recorded = programClone(after);
-  space(recorded).text = M.editTextResult(space(recorded).text, docId, `${raw(recorded, docId)}\n- [ ] 새 일`, { folderText: true }).state;
-  space(recorded).text = M.recordProgress(space(recorded).text, id(recorded, '새 일'), '2026-11-11', 30);
-  const refused = restoreProgramTextCleanup(recorded, { ...base(recorded), stamp: stampOf(recorded), when: '2026-11-11 09:00' });
-  assert(!refused.ok && refused.reason === 'forbidden');
+  const later = programClone(converted); space(later).text = continued.next;
+  const p11 = restoreProgramTextCleanup(later, { ...base(later), stamp: stampOf(later) });
+  assert(!p11.ok && p11.reason === 'conflict');
+  assert.deepEqual(space(p11.data).text.progressRecords.filter(record => record.taskId === personal), [{ taskId: personal, date: '2026-11-12', percent: 80 }], "개인 보고서's record stays its own");
+  assert(space(p11.data).text.bindings.some(binding => binding.kind === 'task' && binding.taskId === personal), 'and its link');
+  // P1-2: a [40%] task finished (100%) after the conversion of its document.
+  const p12 = writing(['[2026-11-10]', '- [40%] 원래 할 일', '- [ ] 전환 대상', '  - 날짜: 2026-11-14'].join('\n'), 'P1-2 글');
+  const task = id(p12.data, '원래 할 일');
+  space(p12.data).text = { ...space(p12.data).text, progressRecords: [{ taskId: task, date: '2026-11-10', percent: 40 }] };
+  const p12after = cleanup(p12.data);
+  space(p12after).text = M.recordProgress(space(p12after).text, task, '2026-11-12', 100);
+  const p12result = restoreProgramTextCleanup(p12after, { ...base(p12after), stamp: stampOf(p12after) });
+  assert(!p12result.ok && p12result.reason === 'conflict');
+  assert.equal(M.currentProgress(space(p12result.data).text, task), 100, 'the finish stays');
+  // P1-3: two documents converted together, a task moved from A to B after it.
+  const a = writing(['[2026-11-10]', '- [ ] 옮길 할 일', '- [ ] 전환 A', '  - 날짜: 2026-11-14'].join('\n'), 'A');
+  const b = writing(['[2026-11-10]', '- [ ] 전환 B', '  - 날짜: 2026-11-15'].join('\n'), 'B', a.data);
+  const both = cleanup(b.data);
+  const moved = ok(moveProgramTaskDocument(both, { ...base(both), taskId: id(both, '옮길 할 일'), destinationId: b.docId })).data;
+  const p13 = restoreProgramTextCleanup(moved, { ...base(moved), stamp: stampOf(moved) });
+  assert(!p13.ok && p13.reason === 'conflict');
+  assert.equal(M.tasks(space(p13.data).text).filter(entry => entry.title === '옮길 할 일').length, 1, 'no second copy');
+  // P2-1: no '되돌리기 전 원문' is made any more (a restore runs only from the state the conversion left).
+  const exact = ok(restoreProgramTextCleanup(both, { ...base(both), stamp: stampOf(both) })).data;
+  assert.deepEqual(own(exact, b.data), sorted(space(b.data).text));
+  assert(!space(exact).text.documents.some(doc => doc.title.startsWith('되돌리기 전 원문')));
 });
-
 test('an account with Flow runs (personal authoring) and a document past an archive document\'s size: split, kept, restored whole', () => {
   const many = Array.from({ length: 590 }, (_, index) => [`- [ ] 일 ${index}`, `  - 날짜: 2026-11-${String(10 + index % 9).padStart(2, '0')}`]).flat();
   const { data, docId } = writing(['[2026-11-10]', ...many].join('\n'), '긴 글');
@@ -518,9 +539,9 @@ test('the list: asked once when the app opens (not on a tab change), one save wi
   assert.match(host, /\}, \[actorId\]\);/);
   assert.match(host, /<h2 id="program-cleanup-title">글을 새 규칙으로 한 번 정리합니다<\/h2>/);
   assert.match(host, /run\('글 정리', current => \{ const next = applyProgramTextCleanup\(current, \{ \.\.\.base\(current\), plan: ask\.plan, choices: ask\.choices, when: programCleanupWhen\(new Date\(\)\) \}\);/);
-  assert.match(host, /run\('글 정리 되돌리기', current => restoreProgramTextCleanup\(current, \{ \.\.\.base\(current\), stamp, when: programCleanupWhen\(new Date\(\)\) \}\), true\)/);
+  assert.match(host, /run\('글 정리 되돌리기', current => restoreProgramTextCleanup\(current, \{ \.\.\.base\(current\), stamp \}\), true\)/);
   // 총괄 11/12 ①: the words, and 되돌리기 from the archived original itself.
-  assert(host.includes("보관함의 '전환 전 원문'에서 언제든 되돌릴 수 있습니다."));
+  assert(host.includes("바꾸기 전 원문은 보관함의 '전환 전 원문'에 남고, 바꾼 직후에는 되돌릴 수 있습니다."));
   assert(!host.includes('바꾸기 전 글은 그대로 남아'));
   assert.match(host, /data-cleanup-restore disabled=\{cleanupPending \|\| preparingDocumentAction\}[^>]*onClick=\{\(\) => void restoreCleanup\(stamp\)\}>이 원문으로 되돌리기<\/button>/);
   assert.match(host, /actions: cleanupNotice\.undone \|\| cleanupNotice\.refused \? \[\] : \[\{ label: '되돌리기', run: \(\) => void restoreCleanup\(cleanupNotice\.stamp\) \}\]/);
