@@ -355,6 +355,26 @@ test("Codex re-review P1-1·P1-2·P1-3·P2-1: a continuation, a 100% since, a mo
   assert.deepEqual(own(exact, b.data), sorted(space(b.data).text));
   assert(!space(exact).text.documents.some(doc => doc.title.startsWith('되돌리기 전 원문')));
 });
+test("Codex 3rd review P1-1: an archive missing a document's whole block (or one part of it) restores nothing", () => {
+  const a = writing(['[2026-11-10]', '- [ ] A 할 일', '  - 날짜: 2026-11-14'].join('\n'), 'A');
+  const b = writing(['[2026-11-10]', '- [ ] B 할 일', '  - 날짜: 2026-11-15'].join('\n'), 'B', a.data);
+  const both = cleanup(b.data);
+  const archiveId = space(both).archivedDocumentIds.at(-1)!;
+  // B's block taken out of the archived document whole (its heading, fence and lines).
+  const cut = programClone(both), archive = M.getDocument(space(cut).text, archiveId)!;
+  const start = archive.lines.findIndex(line => line.text === '## B'), end = archive.lines.findIndex((line, index) => index > start + 1 && /^~{4,}$/.test(line.text));
+  assert(start > 0 && end > start);
+  archive.lines = [...archive.lines.slice(0, start), ...archive.lines.slice(end + 2)];
+  assert(M.validate(space(cut).text));
+  assert.deepEqual(programCleanupArchive(space(cut).text, stampOf(cut)).map(block => block.documentId), [a.docId], "only A's block is left");
+  const refused = restoreProgramTextCleanup(cut, { ...base(cut), stamp: stampOf(cut) });
+  assert(!refused.ok && refused.reason === 'missing');
+  assert.equal(refused.data, cut, 'neither A nor B is restored');
+  // The untouched archive restores both.
+  const back = ok(restoreProgramTextCleanup(both, { ...base(both), stamp: stampOf(both) })).data;
+  assert.equal(raw(back, a.docId), raw(b.data, a.docId)); assert.equal(raw(back, b.docId), raw(b.data, b.docId));
+});
+
 test('an account with Flow runs (personal authoring) and a document past an archive document\'s size: split, kept, restored whole', () => {
   const many = Array.from({ length: 590 }, (_, index) => [`- [ ] 일 ${index}`, `  - 날짜: 2026-11-${String(10 + index % 9).padStart(2, '0')}`]).flat();
   const { data, docId } = writing(['[2026-11-10]', ...many].join('\n'), '긴 글');
