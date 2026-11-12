@@ -12,6 +12,7 @@ import { programPreservesLockedDocumentContent, programReferenceExecutionAccess 
 import { programPreservesSeriesMetadata } from './recurrence-target';
 import { programPreservesLegacyQualityHold } from './legacy-map-review';
 import { programPreservesLegacyPlanExcluded } from './program-legacy-plan-target';
+import { programDaysBetween } from './date-label';
 
 /** N11a 밀린 일 정리 (PROPOSAL 5): the past unfinished tasks of 오늘 go to today in one save. Redesign 3 (DECISION-1): a
  *  line moves under today's heading with what is under it (no `- 날짜: 오늘` line); a day it leaves empty goes. Copies of one
@@ -196,9 +197,10 @@ const programLostWork = (space: ProgramPrivateSpace, today: string) => programLo
 
 /** The past unfinished tasks of 오늘 (repeat lines apart), by task (words and 분류), oldest first, and for each the
  *  lines of it up to today in any document: the newest says whether it was finished since; today's, written again. */
-function pastKinds(space: ProgramPrivateSpace, today: string, rules: ReturnType<typeof carryoverRules>) {
+function pastKinds(space: ProgramPrivateSpace, today: string, rules: ReturnType<typeof carryoverRules>, day?: string) {
   const { kindOf, repeat } = rules;
-  const past = programExecutionTasks(space, { period: 'today', date: today }).filter(task => task.date! < today && !task.done);
+  // W-CARRY-12: the morning press takes one day's open tasks only (the last day tasks were written).
+  const past = programExecutionTasks(space, { period: 'today', date: today }).filter(task => task.date! < today && !task.done && (!day || task.date === day));
   const plain = past.filter(task => !repeat.has(task.id)), kinds = new Map<string, TextTask[]>();
   for (const task of plain) kinds.set(kindOf(task), [...kinds.get(kindOf(task)) ?? [], task]);
   const archived = new Set(space.archivedDocumentIds);
@@ -237,12 +239,12 @@ export function programCarryoverItems(space: ProgramPrivateSpace, today: string)
  *  `limit` lines changed; a task's copies always go together. N11b: `choices` (from 하나씩 정리) says, task by task,
  *  where its line goes: today, 날짜 미정, or deleted (with all its copies). A task left out of it gets the card's. */
 export function planProgramCarryover(space: ProgramPrivateSpace, today: string, limit = PROGRAM_CARRYOVER_LIMIT,
-  choices?: ReadonlyMap<string, ProgramCarryoverChoice>): ProgramCarryoverPlan {
+  choices?: ReadonlyMap<string, ProgramCarryoverChoice>, day?: string): ProgramCarryoverPlan {
   const plan: ProgramCarryoverPlan = { lines: [], count: 0, kinds: 0, first: null, repeated: false, moved: 0, removed: 0, today: 0, finished: 0, undated: 0, dropped: 0, toToday: 0, droppedUnder: { memo: 0, check: 0, other: 0 },
     repeats: 0, left: 0, split: 0, copies: 0, blocked: {}, newDateLines: 0 };
   if (!programDate(today)) return plan;
   const rules = carryoverRules(space), { touchable, isRecorded, droppable, labelOf, underOf, takenAlong, takeBlock, states } = rules;
-  const { past, plain, groups } = pastKinds(space, today, rules);
+  const { past, plain, groups } = pastKinds(space, today, rules, day);
   plan.repeats = past.length - plain.length; plan.count = plain.length;
   plan.kinds = groups.length; plan.repeated = groups.some(({ group }) => group.length > 1);
   // Since the day the oldest of them was first written (its date section), as '7일째' counts.
@@ -334,6 +336,7 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
   }
   // Redesign 4 (W-TXT-08): a `[>]` line whose receiving line is gone is remaining work again; the card's press continues it.
   if (!choices) for (const lost of programLostWork(space, today)) {
+    if (day && lost.day !== day) continue;
     const state = states(lost.lineId);
     if (!state) continue;
     if (cut || changed + 1 > limit) { cut = true; plan.left++; continue; }
@@ -342,6 +345,47 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
     if (lost.day && (!plan.first || lost.day < plan.first)) plan.first = lost.day;
   }
   return plan;
+}
+
+/** W-MENU-25: a task taken to today is continued (its line stays on its day as that day's record) when it has a record
+ *  and may move; otherwise it moves. */
+export const programCarryContinues = (space: ProgramPrivateSpace, task: TextTask) =>
+  programTaskHasRecord(space.text, task) && readTaskLocationPolicy(space, task.id).kind === 'move' && !programExecutionDocument(space, task.docId);
+
+/** 오늘 탭 ② (W-CARRY-12, 총괄 11/12, mockup ③): the last day tasks were written, the nearest date section before today
+ *  holding a task line (done or not) in a document in use, repeat lines apart. Not the calendar's yesterday. */
+export function programLastWrittenDay(space: ProgramPrivateSpace, today: string): string | null {
+  if (!programDate(today)) return null;
+  const repeat = programTaskRepeatMembers(space), archived = new Set(space.archivedDocumentIds);
+  let day: string | null = null;
+  for (const task of M.tasks(space.text, { to: today })) {
+    const at = task.groupDate;
+    if (!at || at >= today || (day && at <= day) || archived.has(task.docId) || space.documentTrash?.[task.docId] || repeat.has(task.id)) continue;
+    day = at;
+  }
+  return day;
+}
+/** The morning button: that day's open tasks in one press (the card's plan on that day alone), counted in task lines as
+ *  the screen counts them (a task and its open subtasks; W-CARRY-16): how many move and how many are continued; the open
+ *  lines of the days before it ('밀린 일 n개'); and whether that day is more than 14 days ago (the first cleanup then
+ *  asks instead of the button). Null when no day before today has a task line. */
+export type ProgramMorningCarry = { day: string; plan: ProgramCarryoverPlan; lines: number; moved: number; continued: number; older: number; stale: boolean };
+export function programMorningCarry(space: ProgramPrivateSpace, today: string): ProgramMorningCarry | null {
+  const day = programLastWrittenDay(space, today);
+  if (!day) return null;
+  const plan = planProgramCarryover(space, today, PROGRAM_CARRYOVER_LIMIT, undefined, day);
+  const tasks = new Map(M.tasks(space.text).map(task => [task.id, task])), repeat = programTaskRepeatMembers(space);
+  const size = (task: TextTask | undefined) => task ? 1 + task.subchecks.filter(sub => !sub.done).length : 1;
+  let moved = 0, continued = 0;
+  for (const line of plan.lines) {
+    if (line.action === 'again') { continued += 1; continue; }
+    if (line.action !== 'date') continue;
+    const task = tasks.get(line.taskId);
+    if (task && programCarryContinues(space, task)) continued += size(task); else moved += size(task);
+  }
+  const older = programExecutionTasks(space, { period: 'today', date: today }).filter(task => task.date! < day && !task.done && !repeat.has(task.id)).reduce((sum, task) => sum + size(task), 0)
+    + programLostWork(space, today).filter(line => !!line.day && line.day < day).length;
+  return { day, plan, lines: moved + continued, moved, continued, older, stale: programDaysBetween(day, today) > 14 };
 }
 
 const validLines = (lines: unknown): lines is ProgramCarryoverLine[] => Array.isArray(lines) && lines.length > 0 && lines.length <= PROGRAM_CARRYOVER_LIMIT * 4
@@ -431,7 +475,7 @@ export function carryProgramTasksToToday(data: ProgramData, input: ProgramPrivat
       // day); one without moves under today's heading (W-MENU-07). A copy's, a reference's, a repeat's or a run's
       // date still changes in place (step 5).
       const task = tasks.get(line.taskId)!;
-      if (line.action === 'date' && programTaskHasRecord(space.text, task) && readTaskLocationPolicy(space, task.id).kind === 'move' && !programExecutionDocument(space, task.docId)) {
+      if (line.action === 'date' && programCarryContinues(space, task)) {
         const continued = continueProgramTask(space.text, { documentId: task.docId, taskId: task.id, today: input.today });
         if (!continued.ok) return { result: line.taskId, reason: 'unresolved' };
         space.text = continued.next;

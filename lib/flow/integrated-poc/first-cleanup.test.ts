@@ -133,7 +133,8 @@ test('the sheet: on 오늘, asked once on this device; each step its own save an
   const sheet = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramFirstCleanup.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   const host = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   assert(host.includes("{period === 'today' && !monthGrid && <ProgramFirstCleanup actorId={actorId} space={space} today={today}"));
-  assert(sheet.includes('if (!storage || storage.getItem(key) || (!twins.length && !closePlan.length && !stalePlan.length)) return;'), 'asked once, only with something to list');
+  assert(sheet.includes('if (!storage || asked && !(props.stale && asked < today) || (!twins.length && !closePlan.length && !stalePlan.length)) return;'), 'asked once (again once a day while stale), only with something to list');
+  assert(host.includes('today={today} stale={!!morning?.stale}'), '오늘 탭 ② (W-CARRY-12): more than 14 days back, the first cleanup asks instead of the morning button');
   assert(sheet.includes("closeProgramAlreadyContinued(current, {") && sheet.includes("sendProgramStaleTasks(current, {") && sheet.includes('restoreProgramFirstCleanup(current, {'));
   assert(sheet.includes("disabled={choice === 'trash' && !line.trashable}"));
   // ① first (W-CARRY-20): [하나로 합치기] only when not blocked; [비교해 보기] always.

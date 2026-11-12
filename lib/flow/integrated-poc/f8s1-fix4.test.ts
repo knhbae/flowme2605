@@ -89,6 +89,7 @@ test('FIX4 the late-only band is one today-navigation button, and its late text 
   assert(!lateOnly.includes('aria-expanded') && !lateOnly.includes('remember(') && !lateOnly.includes('props.open'));
   assert(band.includes("<span><span className={styles.late}>밀린 일 {props.late}가지</span>{' · 오늘 탭에서 정리'}</span>"));
   const host = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
-  assert(host.includes('late={carrySummary.count}') && host.includes('밀린 일 ${carrySummary.count}가지'));
+  // 오늘 탭 ② (W-CARRY-12): the 오늘 card's own line is '밀린 일 n개' (task lines of the days before the last written day).
+  assert(host.includes('late={carrySummary.count}') && host.includes('밀린 일 {morning.older > 0 ? morning.older : carrySummary.lines}개'));
   assert(!host.includes("bandDocumentId ? planProgramCarryover"), 'typing does not create a write plan');
 });
