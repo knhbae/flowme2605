@@ -711,6 +711,11 @@
 .dateLineChoices { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
 .dateLineChoices button { min-height: 40px; padding: 0 12px; border: 1px solid var(--flowme-b-line); border-radius: 8px; background: #ffffff; color: inherit; font-size: 14px; }
 .dateLineChoices button[aria-pressed="true"] { border-color: var(--flowme-b-ink); background: var(--flowme-b-ink); color: #ffffff; font-weight: 600; }
+/* 나중에 and 이대로 바꾸기 side by side, the second the primary one (mockup ③). */
+.space .dateLinesButtons { display: flex; gap: 8px; margin-top: 12px; }
+.space .dateLinesButtons button { flex: 1 1 0; min-height: 48px; padding: 0 12px; border-radius: 10px; font-size: 16px; }
+.space .dateLinesLater { border: 1px solid var(--flowme-b-line); background: #ffffff; color: inherit; }
+.space .dateLinesWrite { border: 1px solid var(--flowme-b-ink); background: var(--flowme-b-ink); color: #ffffff; font-weight: 600; }
 @media (min-width: 701px) {
   .space .dateLinesSheet { position: fixed; inset: 0; width: min(480px, calc(100vw - 32px)); max-height: calc(100dvh - 64px); margin: auto; overflow-y: auto; }
 }

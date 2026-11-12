@@ -3857,8 +3857,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                   <div className={styles.dateLineChoices} role="group" aria-label={`${item.title} 날짜 줄`}>{item.choices.map(choice =>
                     <button type="button" key={choice} aria-pressed={ask.choices[item.ownerId] === choice} data-date-line-choice={choice} onClick={() => chooseDateLine(item.ownerId, choice)}>
                       {choice === 'move' ? item.value ? `${monthDay(item.value)}로 옮기기` : '날짜 미정으로 옮기기' : `마감 ${Number(item.value!.slice(5, 7))}/${Number(item.value!.slice(8, 10))}로`}</button>)}</div></li>)}</ul></>}
-              <button type="button" className={styles.datesChoice} data-date-lines-write onClick={() => void writeDateLines()}>이대로 바꾸기</button>
-              <button type="button" className={styles.datesClose} onClick={laterDateLines}>나중에</button>
+              <div className={styles.dateLinesButtons}>
+                <button type="button" className={styles.dateLinesLater} onClick={laterDateLines}>나중에</button>
+                <button type="button" className={styles.dateLinesWrite} data-date-lines-write onClick={() => void writeDateLines()}>이대로 바꾸기</button>
+              </div>
               <p className={styles.muted}>바꾼 뒤 [되돌리기] 한 번이면 이 글 전체가 원래대로 돌아갑니다. ‘나중에’를 고르면 이 글은 지금처럼 읽고, 다음에 열 때 다시 묻습니다.</p>
             </>; })(dateLineAsk)}
         </dialog>
