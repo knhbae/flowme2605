@@ -3,7 +3,7 @@ import { programDate } from './program-data';
 import { programSameTaskKey } from './continue-band';
 import type { ProgramOrderedExecutionRow } from './recurrence-order';
 import { patchProgramTask, programExecutionDocument, transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
-import { continueProgramTask, programLostContinuations, programTaskHasRecord, reviveProgramContinuation } from './continuation';
+import { continueProgramTask, programContinuationStarts, programLostContinuations, programTaskHasRecord, reviveProgramContinuation } from './continuation';
 import { readTaskLocationPolicy } from './task-location-command';
 import { programExecutionTasks, programTaskProgress } from './execution';
 import { programStateHash, programTaskDateStates, programTaskRepeatMembers } from './task-date-move';
@@ -220,9 +220,11 @@ export function programCarryoverPlaces(space: ProgramPrivateSpace, tasks: readon
 /** N11b 하나씩 정리: the tasks of the sheet, oldest first, each with the choice the card's one press makes. */
 export function programCarryoverItems(space: ProgramPrivateSpace, today: string): ProgramCarryoverItem[] {
   if (!programDate(today)) return [];
-  const rules = carryoverRules(space);
+  const rules = carryoverRules(space), starts = programContinuationStarts(space.text);
+  // Codex re-review P2-2: since the day its 이어감 chain began, as 오늘 counts it (programDayCount).
+  const since = (task: TextTask) => { const chain = starts.get(task.id), own = firstDay(task); return chain && chain < own ? chain : own; };
   return pastKinds(space, today, rules).groups.map(({ kind, group, latest, finished, written }) => ({ kind, title: words(group[0]), place: rules.placeOf(group[0]),
-    lines: group.length, since: group.reduce((day, task) => firstDay(task) < day ? firstDay(task) : day, '9999'), finished: finished ? latest : null,
+    lines: group.length, since: group.reduce((day, task) => since(task) < day ? since(task) : day, '9999'), finished: finished ? latest : null,
     today: written.length > 0, choice: finished ? 'delete' : 'today' }));
 }
 

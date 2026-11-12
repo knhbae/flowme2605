@@ -4,8 +4,8 @@ import { programClone, type ProgramData, type ProgramTransition } from './contra
 import { createProgramData, validateProgramData } from './program-data';
 import { createProgramDocument } from './private-space';
 import { continueProgramTask, programContinuationStarts, programContinuedLines, programLostContinuations, programTaskHasRecord } from './continuation';
-import { carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverProof, restoreProgramCarryover } from './carryover';
-import { programExecutionRowMeta } from './execution-presentation';
+import { carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverItems, programCarryoverProof, restoreProgramCarryover } from './carryover';
+import { programDayCount, programExecutionRowMeta } from './execution-presentation';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 
 // Redesign 4 (W-MENU-25, W-TXT-04·05·08; 총괄 11/12: the text alone, in the same release as redesign 3). A task with a
@@ -69,9 +69,13 @@ test('W-TXT-05·08: the receiving line is read from the text (any document, same
     documents: done.next.documents.map(item => item.id === docId ? { ...item, lines: item.lines.filter(line => !gone.has(line.id)) } : item) };
   assert(M.validate(removed));
   assert.equal(programContinuedLines(removed)[0].received, null);
-  // The same task written under that day in another document receives it (W-TXT-05: the text, not an ID).
+  // The same task written under that day in another document, in its folder, receives it (W-TXT-05: the text, not an
+  // ID). Codex re-review P1-1: the same words in another folder are another task: not received, the old line stays lost.
   const other = M.addDocument(removed, { title: '다른 글' }), otherId = other.documents.at(-1)!.id;
-  const again = M.editText(other, otherId, '[2026-11-12]\n- [ ] 발표 자료 정리');
+  const elsewhere = M.editTextResult(other, otherId, '[2026-11-12]\n- /개인\n  - [ ] 발표 자료 정리', { folderText: true }).state;
+  assert.equal(programContinuedLines(elsewhere)[0].received, null);
+  assert.equal(programLostContinuations(elsewhere, '2026-11-12').length, 1);
+  const again = M.editTextResult(other, otherId, '[2026-11-12]\n- /월간 발표\n  - [ ] 발표 자료 정리', { folderText: true }).state;
   assert.equal(programContinuedLines(again)[0].received, task(again, '발표 자료 정리').id);
 });
 
@@ -121,4 +125,21 @@ test('W-TXT-08: a [>] line whose today line was deleted comes back with 어제 �
   assert(validateProgramData(done));
   const back = ok(restoreProgramCarryover(done, { ...base(done), before: programCarryoverBefore(space(data)), after: programCarryoverProof(space(done)) })).data;
   assert.deepEqual(space(back).text, space(data).text);
+});
+
+test("Codex re-review P2-2: 'n일째' is one count, 오늘's row and the 밀린 일 sheet both from the chain's first day", () => {
+  const { data, docId } = writing(['[2026-11-04]', '- [40%] 보고서'].join('\n'), '보고 기록');
+  let text = space(data).text;
+  const old = task(text, '보고서');
+  text = { ...text, progressRecords: [{ taskId: old.id, date: '2026-11-04', percent: 40 }] };
+  const moved = continueProgramTask(text, { documentId: docId, taskId: old.id, today: '2026-11-11' });
+  assert(moved.ok, moved.ok ? '' : moved.reason);
+  const next = programClone(data); space(next).text = moved.next;
+  const starts = programContinuationStarts(moved.next);
+  const row = programExecutionRowMeta({ date: '2026-11-11', done: false, progress: null, today: '2026-11-12', dated: true, since: starts.get(moved.newId) });
+  const item = programCarryoverItems(space(next), '2026-11-12').find(entry => entry.title === '보고서')!;
+  assert(row.parts.includes('9일째'), row.parts.join(' '));
+  assert.equal(item.since, '2026-11-04');
+  assert.equal(programDayCount(item.since, '2026-11-12'), 9, 'the sheet counts the same');
+  assert.deepEqual([programDayCount('2026-11-12', '2026-11-12'), programDayCount('2026-11-11', '2026-11-12'), programDayCount(null, '2026-11-12')], [null, 2, null]);
 });
