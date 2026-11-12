@@ -110,7 +110,7 @@ import { createPendingProgramSourceNavigation } from '@/lib/flow/integrated-poc/
 import { programCheckpointForWritingTarget } from '@/lib/flow/integrated-poc/writing-navigation';
 import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classification';
 import { commitTaskDateWithUndo, moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
-import { programDateLineDefaults, type ProgramDateLineChoice, type ProgramDateLineChoices } from '@/lib/flow/integrated-poc/date-property-migration';
+import { programDateLineDefaults, programDateLineOutcomes, type ProgramDateLineChoice, type ProgramDateLineChoices } from '@/lib/flow/integrated-poc/date-property-migration';
 import { programContinuationStarts } from '@/lib/flow/integrated-poc/continuation';
 import { applyProgramTextCleanup, PROGRAM_CLEANUP_RESTORE_TITLE, programCleanupArchiveStamp, programCleanupWhen, programTextCleanupDocuments, programTextCleanupPlan, restoreProgramTextCleanup, type ProgramTextCleanupPlan } from '@/lib/flow/integrated-poc/text-cleanup';
 
@@ -3607,14 +3607,19 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <ul className={styles.progressTextList} data-cleanup-progress>{ask.plan.progress.flatMap(doc => doc.changes.map(change => <li key={change.lineId}><span>{change.title}</span>
               <small>{doc.title} · {progressMark(change.before)} → {progressMark(change.after)} · {programCalendarDate(change.date, today, false)} 기록</small></li>))}</ul></>}
           {ask.plan.dates.length > 0 && <><h3 className={styles.dateLinesHead}>날짜 줄 {ask.plan.dateLines}개 · 날짜 제목으로 정리합니다</h3>
-            {ask.plan.dates.map(doc => { const same = doc.items.filter(item => item.kind === 'same'), other = doc.items.filter(item => item.kind === 'other');
+            {ask.plan.dates.map(doc => {
+              // Codex P1-3: a subtask's line follows its parent's day as chosen (gone when it says that day, else its 마감).
+              const outcome = programDateLineOutcomes(space.text, doc, ask.choices);
+              const same = doc.items.filter(item => outcome.get(item.ownerId) === 'delete'), kept = doc.items.filter(item => outcome.get(item.ownerId) === 'keep');
+              const other = doc.items.filter(item => !same.includes(item) && !kept.includes(item));
               return <section key={doc.documentId} className={styles.cleanupDocument} data-cleanup-document={doc.documentId}>
                 <h4>{doc.title}{doc.headless ? ' · 날짜 제목 없는 글' : ''}</h4>
                 {same.length > 0 && <p className={styles.dateLinesSame} data-date-lines-same>제목과 같은 날 · 줄만 지웁니다: {same.map(item => `${item.title} (${item.value ? monthDay(item.value) : '날짜 미정'})`).join(' · ')}</p>}
+                {kept.length > 0 && <p className={styles.dateLinesSame} data-date-lines-kept>그대로 둡니다: {kept.map(item => `${item.title} (${day(item.value)})`).join(' · ')}</p>}
                 {other.length > 0 && <ul className={styles.progressTextList}>{other.map(item => <li key={item.ownerId} data-date-line={item.ownerId}><span>{item.title}</span>
                   <small>{doc.headless ? '날짜 제목 없는 글이라 마감으로' : item.section ? `지금 ${monthDay(item.section)} 아래` : '지금 날짜 제목 없음'} · 날짜 줄 {day(item.value)}{item.subtask && !doc.headless ? ' · 하위 할 일은 마감으로만' : ''}</small>
-                  <div className={styles.dateLineChoices} role="group" aria-label={`${item.title} 날짜 줄`}>{item.choices.map(choice =>
-                    <button type="button" key={choice} aria-pressed={ask.choices[item.ownerId] === choice} data-date-line-choice={choice} onClick={() => chooseDateLine(item.ownerId, choice)}>
+                  <div className={styles.dateLineChoices} role="group" aria-label={`${item.title} 날짜 줄`}>{(item.choices.length ? item.choices : ['due' as const]).map(choice =>
+                    <button type="button" key={choice} aria-pressed={outcome.get(item.ownerId) === choice} data-date-line-choice={choice} onClick={() => chooseDateLine(item.ownerId, choice)}>
                       {choice === 'move' ? item.value ? `${monthDay(item.value)}로 옮기기` : '날짜 미정으로 옮기기' : `마감 ${Number(item.value!.slice(5, 7))}/${Number(item.value!.slice(8, 10))}로`}</button>)}</div></li>)}</ul>}
               </section>; })}</>}
           <div className={styles.dateLinesButtons}>

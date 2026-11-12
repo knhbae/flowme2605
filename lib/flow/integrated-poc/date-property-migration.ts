@@ -104,6 +104,33 @@ export function programDateLineDefaults(plans: readonly ProgramDateLinePlan[]): 
   return Object.fromEntries(plans.flatMap(plan => plan.items).filter(item => item.kind === 'other').map(item => [item.ownerId, item.choices[0]]));
 }
 
+export type ProgramDateLineOutcome = 'delete' | 'move' | 'due' | 'keep';
+/** What each listed line does with these choices (Codex P1-3, 11/12). A task's is its own: deleted when it says its
+ *  section's day, else the choice. A subtask follows its parent's day as it will be (a parent made 마감 reads its
+ *  section's day, one moved the day it moved to): its line goes when it says that day, else it becomes its 마감 (a
+ *  subtask cannot leave its parent); one saying 미정, or under which a 마감 already is, stays as it is. */
+export function programDateLineOutcomes(text: TextWorkspaceState, plan: ProgramDateLinePlan, choices: ProgramDateLineChoices): Map<string, ProgramDateLineOutcome> {
+  const out = new Map<string, ProgramDateLineOutcome>(), doc = M.getDocument(text, plan.documentId);
+  if (!doc) return out;
+  const parsed = M.parseDocument(doc, text), planned = new Map(plan.items.map(item => [item.ownerId, item])), day = new Map<string, string | null>();
+  for (const item of parsed.items) { // in line order: a parent before its subtasks
+    const own = planned.get(item.id);
+    if (item.isCanonical) {
+      const outcome: ProgramDateLineOutcome | undefined = own && (own.kind === 'same' ? 'delete' : choices[own.ownerId]);
+      if (own && outcome) out.set(item.id, outcome);
+      day.set(item.id, !own ? item.date : outcome === 'due' ? own.section : own.value);
+      continue;
+    }
+    const parent = item.parentItemId && day.has(item.parentItemId) ? day.get(item.parentItemId)! : item.date;
+    if (!own) { day.set(item.id, item.explicitDate ? item.date : parent); continue; }
+    const hasDue = parsed.rows.some(row => row.kind === 'property' && row.parentLineId === item.id && DUE_LINE.test(row.text));
+    const outcome: ProgramDateLineOutcome = own.value === parent ? 'delete' : own.value !== null && !hasDue ? 'due' : 'keep';
+    out.set(item.id, outcome);
+    day.set(item.id, outcome === 'keep' ? own.value : parent);
+  }
+  return out;
+}
+
 /** One document's plan with these choices, on the text: its lines deleted, made 마감, or the task moved. Every other
  *  task, every record, link and folder stays as it was; null when something would change that should not. */
 export function applyProgramDateLineChoices(text: TextWorkspaceState, plan: ProgramDateLinePlan, choices: ProgramDateLineChoices): TextWorkspaceState | null {
@@ -111,10 +138,12 @@ export function applyProgramDateLineChoices(text: TextWorkspaceState, plan: Prog
   if (!doc) return null;
   const others = plan.items.filter(item => item.kind === 'other');
   if (others.some(item => !item.choices.includes(choices[item.ownerId]))) return null;
+  const outcomes = programDateLineOutcomes(text, plan, choices);
   const drop = new Set<string>(), due = new Map<string, string>();
   for (const item of plan.items) {
-    const choice = item.kind === 'same' ? 'delete' : choices[item.ownerId];
-    if (choice === 'move') continue; // 위치 옮기기 drops the task's own date lines itself.
+    const choice = outcomes.get(item.ownerId);
+    if (!choice) return null;
+    if (choice === 'move' || choice === 'keep') continue; // 위치 옮기기 drops the task's own date lines itself.
     const last = item.lineIds.at(-1)!;
     for (const id of item.lineIds) if (choice === 'delete' || id !== last) drop.add(id);
     if (choice === 'due') {
@@ -125,7 +154,7 @@ export function applyProgramDateLineChoices(text: TextWorkspaceState, plan: Prog
   }
   const lines = doc.lines.filter(line => !drop.has(line.id)).map(line => due.has(line.id) ? { id: line.id, text: due.get(line.id)! } : line);
   let next: TextWorkspaceState = { ...text, documents: text.documents.map(item => item.id === doc.id ? { ...item, lines } : item) };
-  const moves = others.filter(item => choices[item.ownerId] === 'move');
+  const moves = plan.items.filter(item => outcomes.get(item.ownerId) === 'move');
   if (moves.length) {
     // The moves read this document (and those its links reach) alone: 위치 옮기기 checks the whole state it is given, and
     // a whole account read again for each move took seconds. The account is checked once after (merge + validate).
@@ -145,7 +174,7 @@ export function applyProgramDateLineChoices(text: TextWorkspaceState, plan: Prog
   // Every link there was is there as it was; a folder line a move left empty went with its own link (총괄 11/12).
   const links = new Set(next.bindings.map(binding => JSON.stringify(binding))), lineIds = new Set(next.documents.flatMap(item => item.lines.map(line => line.id)));
   if (text.bindings.some(binding => !links.has(JSON.stringify(binding)) && !(binding.kind === 'scope' && !lineIds.has(binding.lineId)))) return null;
-  return keepsMeaning(text, next, plan, choices) ? next : null;
+  return keepsMeaning(text, next, plan, outcomes) ? next : null;
 }
 
 /** The part of the account one document's moves read: that document, the documents its reference lines point into, and
@@ -163,25 +192,33 @@ function slice(text: TextWorkspaceState, documentId: string): TextWorkspaceState
 
 /** Every task and subtask keeps its words, state, memo and time. A task's day is the planned one: what its line said
  *  (deleted, moved) or its section's (마감, with that 마감); one carried in a moved block takes the day it moved to; a
- *  subtask without its own date follows its parent, as ever. Other documents do not change. */
-function keepsMeaning(before: TextWorkspaceState, after: TextWorkspaceState, plan: ProgramDateLinePlan, choices: ProgramDateLineChoices): boolean {
+ *  subtask without its own date follows its parent, as ever; a listed subtask follows it too, its line gone only when
+ *  it said that day, else its 마감 (Codex P1-3). Other documents do not change. */
+function keepsMeaning(before: TextWorkspaceState, after: TextWorkspaceState, plan: ProgramDateLinePlan, outcomes: Map<string, ProgramDateLineOutcome>): boolean {
   if (before.documents.length !== after.documents.length || before.documents.some((doc, index) => doc.id !== after.documents[index].id
     || doc.id !== plan.documentId && doc !== after.documents[index] && !programSame(doc, after.documents[index])) || !programSame(before.flows, after.flows)) return false;
   const parsed = M.parseDocument(M.getDocument(before, plan.documentId)!, before), rows = new Map(parsed.rows.map(row => [row.id, row]));
   const now = new Map(M.parseDocument(M.getDocument(after, plan.documentId)!, after).items.map(item => [item.id, item]));
   if (parsed.items.length !== now.size) return false;
   const planned = new Map(plan.items.map(item => [item.ownerId, item])), carried = new Map<string, string | null>();
-  for (const item of plan.items) if (item.kind === 'other' && choices[item.ownerId] === 'move') {
+  for (const item of plan.items) if (outcomes.get(item.ownerId) === 'move') {
     const row = rows.get(item.ownerId)!;
     for (const entry of parsed.rows.slice(row.index + 1, row.subtreeEndIndex)) carried.set(entry.id, item.value);
   }
   for (const item of parsed.items) {
     const current = now.get(item.id);
     if (!current || (['title', 'done', 'note', 'time', 'isCanonical', 'parentItemId'] as const).some(key => current[key] !== item[key])) return false;
-    const own = planned.get(item.id), choice = own && (own.kind === 'same' ? 'delete' : choices[own.ownerId]);
+    const own = planned.get(item.id), choice = own && outcomes.get(item.id);
+    if (own && !choice) return false;
+    if (choice === 'keep') { if (!current.explicitDate || current.date !== item.date || current.due !== item.due) return false; continue; }
     if (own ? current.explicitDate : current.explicitDate !== item.explicitDate) return false;
     if (choice === 'due' && current.due !== own!.value) return false;
-    if (!item.isCanonical) { if (item.explicitDate && !own && current.date !== item.date) return false; continue; }
+    if (!item.isCanonical) {
+      if (!own) { if (item.explicitDate && current.date !== item.date) return false; continue; }
+      const parent = current.parentItemId ? now.get(current.parentItemId) : undefined;
+      if (!parent || current.date !== parent.date || choice === 'delete' && own.value !== parent.date) return false;
+      continue;
+    }
     const expected = choice === 'due' ? own!.section : own ? own.value : carried.has(item.id) ? carried.get(item.id)! : item.date;
     if (current.date !== expected) return false;
   }
