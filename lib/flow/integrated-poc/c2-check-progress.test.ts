@@ -87,7 +87,8 @@ test('editor criteria 1-2 on the model: tap, 진행률로 50 shows 50% with one 
   assert.equal(M.raw(M.getDocument(done, DOC)), '- [x] 장보기');
   const fifty = M.recordProgress(done, target, TODAY, 50);
   assert.deepEqual(M.progressHistory(fifty, target), [{ date: TODAY, percent: 50 }]);
-  assert.equal(M.raw(M.getDocument(fifty, DOC)), '- [ ] 장보기', 'the line keeps its plain mark; the format does not change');
+  // Redesign 1 (총괄 11/12): the progress is in the text: the line takes [50%], as if typed.
+  assert.equal(M.raw(M.getDocument(fifty, DOC)), '- [50%] 장보기', 'the text carries the value');
   assert.equal(textEditorRows(fifty, DOC)[0].progressPercent, 50, 'the check box shows 50%');
   // 되돌리기 right after the tap: the value from before it (0%), unchecked.
   const undone = M.recordProgress(done, target, TODAY, 0);

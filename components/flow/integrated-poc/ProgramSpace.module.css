@@ -699,3 +699,7 @@
 .closeDoneToggle span { margin-left: auto; color: var(--flowme-b-primary); font-size: 14px; }
 /* F12 2차 (W-FLOW-01): under a run document's name field — its title is the run name. */
 .runNameHint { display: block; margin-top: 4px; color: var(--flowme-b-muted); font-size: 13px; line-height: 18px; }
+/* Redesign 1 (11/12): the progress-to-text sheet's lines. */
+.progressTextList { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 8px; max-height: 40vh; overflow: auto; }
+.progressTextList li { display: grid; gap: 2px; }
+.progressTextList small { color: var(--flowme-b-muted); }
