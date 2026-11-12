@@ -15,6 +15,7 @@ import { programExecutionRowMeta } from './execution-presentation';
 import { programTaskDateState, programTaskDateStates, programTaskRepeatMember, programTaskRepeatMembers } from './task-date-move';
 import { programOpening, PROGRAM_OPENED_KEY } from './carryover-opening';
 import { CARRYOVER_DOCUMENTS, CARRYOVER_PRODUCTION_DOCUMENTS } from './n11a-carryover-fixture';
+import { programContinuedLines } from './continuation';
 import { carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverProof, restoreProgramCarryover, type ProgramCarryoverPlan } from './carryover';
 
 // N11a 밀린 일 정리 (PROPOSAL 8, 완료 기준 1–3): one press moves the past unfinished tasks to today, one line per task.
@@ -142,16 +143,18 @@ test('N11a 3: lines with something under them, folder lines, repeat lines, progr
   // rev2: the copy with a check, a memo or a time under it is the one that stays, so its plain copies go; 스트레칭's
   // copy under the second '- /운동' goes too (rev1). rev3: the recorded 일기 stays and moves to today; its plain copy
   // goes. The lines under a kept task and the progress boxes stay.
-  // Redesign 3 (총괄 11/12): both '- /운동' lines left with nothing under them go too (the 11/2 day with them).
-  assert.deepEqual(lost, ['- /운동', '- [ ] 일기', '[2026-11-02]', '- [ ] 세차 예약', '- [ ] 은행 서류', '- [ ] 치과 예약', '- /운동', '  - [ ] 스트레칭']);
-  assert.deepEqual(space(done.data).text.progressRecords, space(data).text.progressRecords, 'the record itself is untouched');
-  assert.equal(onToday(done.data, '2026-11-05').find(task => task.title === '일기')?.id, diary.id);
+  // Redesign 3 (총괄 11/12): both '- /운동' lines left with nothing under them go too. Redesign 4 (W-MENU-25): a task
+  // with a record (the two 독서 at 30%, 일기 at 20%, 은행 서류's memo) is continued: its line stays on its day as [>]
+  // with its 이어감 (the memo with it) and a new line takes it up today; one without (세차 with an open subtask, 치과
+  // with a time) moves.
+  assert.deepEqual(lost, ['- /운동', '- [ ] 일기', '- [ ] 세차 예약', '- [ ] 은행 서류', '- [ ] 치과 예약', '- /운동', '  - [ ] 스트레칭']);
+  assert.deepEqual(space(done.data).text.progressRecords.map(record => [record.date, record.percent]), space(data).text.progressRecords.map(record => [record.date, record.percent]), 'the records go with the line taking up the task');
+  assert.equal(space(done.data).text.progressRecords.find(record => record.percent === 20)!.taskId, onToday(done.data, '2026-11-05').find(task => task.title === '일기')!.id);
   const result = raw(done.data, made.docId);
-  // Redesign 3: the kept lines move under today's heading with what is under them; '- /운동' is declared there too.
-  assert(result.includes('[2026-11-05]\n- /운동\n  - [ ] 스트레칭\n') && result.includes('- [ ] 세차 예약\n  - [ ] 세제 사기\n') && result.includes('  - 메모: 통장 사본') && result.includes('  - 시간: 10:00'));
   assert(!/- 날짜:/.test(result));
-  assert.equal(result.split('\n').filter(line => line.startsWith('- /')).length, 1, 'today\'s; those left empty went');
-  assert.equal(result, '[2026-11-01]\n- [ ] 영어 @매일\n\n[2026-11-05]\n- /운동\n  - [ ] 스트레칭\n- [30%] 독서\n- [30%] 독서\n- [ ] 세차 예약\n  - [ ] 세제 사기\n- [ ] 은행 서류\n  - 메모: 통장 사본\n- [20%] 일기\n- [ ] 치과 예약\n  - 시간: 10:00');
+  assert.equal(result, ['[2026-11-01]', '- [>] 은행 서류', '  - 메모: 통장 사본', '  - 이어감: 2026-11-05 · 0%', '- [ ] 영어 @매일', '- [>] 독서', '  - 이어감: 2026-11-05 · 30%', '',
+    '[2026-11-02]', '- [>] 독서', '  - 이어감: 2026-11-05 · 30%', '- [>] 일기', '  - 이어감: 2026-11-05 · 20%', '',
+    '[2026-11-05]', '- /운동', '  - [ ] 스트레칭', '- [30%] 독서', '- [30%] 독서', '- [ ] 세차 예약', '  - [ ] 세제 사기', '- [ ] 은행 서류', '- [20%] 일기', '- [ ] 치과 예약', '  - 시간: 10:00'].join('\n'));
   assert(result.includes('- [ ] 영어 @매일\n'), 'the repeat line is untouched');
   assert.equal(onToday(done.data, '2026-11-05').length, 7);
 });
@@ -178,7 +181,7 @@ test('N11a rev1: an account shaped as the real one (every task under a folder li
   const done = ok(carry(data, '2026-11-05', counted));
   assert.equal(M.tasks(space(done.data).text).length, 30, '106 task lines become 30');
   // Redesign 3 (총괄 11/12): a folder line the press left with nothing under it goes; today's heading declares its own.
-  assert.deepEqual(folderLines(done.data), [12, 6, 11]);
+  assert.deepEqual(folderLines(done.data), [12, 7, 11]);
   for (const docId of docs) { const rows = M.rowMeta(space(done.data).text, docId); assert(rows.every(row => row.kind !== 'scope' || rows.slice(row.index + 1, row.subtreeEndIndex).some(item => item.kind !== 'blank')), 'no folder line left empty'); }
   const folder = (scopeId: string) => space(done.data).text.folders.find(item => item.id === scopeId)?.title;
   const rows = programExecutionTasks(space(done.data), { period: 'today', date: '2026-11-05' }).filter(task => !task.done)
@@ -246,10 +249,12 @@ test('N11a rev3: recorded copies never go; while the task goes on each stays dat
   // plain left-over goes, its recorded one stays where it is.
   assert.deepEqual({ moved: counted.moved, removed: counted.removed, blocked: counted.blocked }, { moved: 2, removed: 3, blocked: { recorded: 1, 'recorded-finished': 1 } });
   const done = ok(carry(next, '2026-11-05', counted));
-  assert.deepEqual(onToday(done.data, '2026-11-05').map(task => task.id).sort(), [read1.id, read2.id].sort());
+  // Redesign 4: each recorded 독서 is continued (its line stays as [>]; a new line takes it up today).
+  assert.deepEqual(onToday(done.data, '2026-11-05').map(task => task.title), ['독서', '독서']);
+  assert(programContinuedLines(space(done.data).text).filter(line => [read1.id, read2.id].includes(line.lineId)).every(line => line.to === '2026-11-05' && line.received));
   assert.deepEqual(programExecutionTasks(space(done.data), { period: 'today', date: '2026-11-05' }).filter(task => task.date! < '2026-11-05' && !task.done).map(task => task.id), [walk1.id]);
   assert(!lineIds(done.data).includes(read3.id));
-  assert.deepEqual(space(done.data).text.progressRecords, space(next).text.progressRecords);
+  assert.deepEqual(space(done.data).text.progressRecords.map(record => [record.date, record.percent]), space(next).text.progressRecords.map(record => [record.date, record.percent]));
   assert.equal(raw(ok(restoreProgramCarryover(done.data, { ...base(done.data), before: programCarryoverBefore(space(next)), after: programCarryoverProof(space(done.data)) })).data, docId), raw(next, docId));
 });
 
@@ -334,7 +339,8 @@ test('N11a: the card folds only 오늘\'s past rows, is off while Korean is comp
   assert(host.includes('const carryWriting = composingShown || Object.values(dirty.current).some(Boolean);'));
   assert(host.includes('disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}'));
   assert(host.includes("if (!plan.lines.length || carryBusy.current || pageComposing.current) return null;"));
-  assert(host.includes('since: task.explicitDate ? task.groupDate : null });'));
+  // Redesign 4: 'n일째' counts from the day a task's 이어감 chain began.
+  assert(host.includes('since: continuationStarts.get(task.id) ?? null });'));
 });
 
 test('N11a: the batch state tokens and repeat members are the one-by-one ones', () => {

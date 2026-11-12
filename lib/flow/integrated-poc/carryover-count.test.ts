@@ -50,7 +50,8 @@ test('P3: a task found today already counts once, with or without a copy dated t
 
 test('P3: the card\'s button and the notice read toToday', () => {
   const source = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
-  assert(source.includes("`오늘로 옮기기 · ${carryPlan.toToday}`"));
+  // Redesign 4 (총괄 11/12): the press continues (기록 있는 일) or moves; its words say so.
+  assert(source.includes("`어제 남은 일 이어 쓰기 · ${carryPlan.toToday}`"));
   assert(source.includes('const kinds = plan.toToday;'));
   assert(!source.includes('carryPlan.moved'));
 });
