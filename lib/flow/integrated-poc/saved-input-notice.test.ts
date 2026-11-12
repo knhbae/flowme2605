@@ -174,7 +174,8 @@ test('input an editor refused stays stored and announced after the editors are r
   const openLatest = functionText('openLatest');
   assert(openLatest.indexOf('parkEditorInput();') > 0 && openLatest.indexOf('parkEditorInput();') < openLatest.indexOf('setPresentation('));
   // A5: each exact confirmed document/raw leaves individually; another document's input stays.
-  assert.match(functionText('clearDrafts'), /recoveryDocuments\.current = createAlphaUiRecoveryDocuments\(\)/);
+  // 총괄 11/12: clearDrafts discards through discardDrafts (after '최신 내용 열기' when a refused command is held).
+  assert.match(functionText('discardDrafts'), /recoveryDocuments\.current = createAlphaUiRecoveryDocuments\(\)/);
   assert(source.includes('if (confirmed) clearConfirmedDocumentInput(confirmed.space.text);'));
   refs.recoveryDocuments.current = next;
   let stored = { drafts: [refused, other] };
