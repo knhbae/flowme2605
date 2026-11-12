@@ -8,7 +8,9 @@ import { textWorkspaceModel as M, type TextTask } from './text-workspace';
  *  Flow's copy I took, or a personal Flow's standalone execution (its repeat rounds are not Flows here, W-FLOW-11). Read
  *  in memory from my own space at each render (W-FLOW-06, 1차: nothing is stored). A view only (W-FLOW-17): its check
  *  is the 오늘 list's own check on the same line. */
-export type ProgramFlowRunStep = { taskId: string; title: string; date: string | null; done: boolean };
+export type ProgramFlowRunStep = { taskId: string; title: string; date: string | null; done: boolean;
+  /** Redesign 2 (W-TXT-02, with F12): the step's '- 마감:' date (YYYY-MM-DD); none without a readable one. */
+  due?: string | null };
 export type ProgramFlowRunWait = { taskId: string; title: string; parentId: string; date: string | null;
   /** Whole days since the parent was checked (its 100% record); null when it was checked by typing [x] (no record). */
   days: number | null };
@@ -22,7 +24,12 @@ export type ProgramFlowRun = {
   done: number; total: number;
   /** W-FLOW-02 1차: read from the steps' day offsets — all ≤ 0 and one < 0 is the last day; anything else the first. */
   basis: 'last' | 'first';
+  /** The run's stored 기준일. A move past it is refused for a last-day run (programDeferPlan, the date sheets); a
+   *  '- 마감:' line does not change it. */
   anchor: string | null;
+  /** Redesign 2 + F12 (총괄 11/12): the date the mark reads. A last-day run reads its last step's '- 마감:' when it has a
+   *  readable one; otherwise (and for a first-day run) the stored anchor. */
+  markDate: string | null;
   /** 'D-12', 'D-day', 'D+4' (the last day), '3일째' (the first day is 1일째), '시작 전', 'D-?' (no date). */
   mark: string;
   steps: ProgramFlowRunStep[];
@@ -94,7 +101,7 @@ export function programFlowRuns(data: ProgramData, actorId: string, today: strin
   const byId = new Map((tasks ?? M.tasks(space.text)).map(task => [task.id, task] as const));
   const runs: ProgramFlowRun[] = [];
   for (const source of sources(data, space)) {
-    const steps: ProgramFlowRunStep[] = source.taskIds.flatMap(id => { const task = byId.get(id); return task && task.isCanonical ? [{ taskId: id, title: task.title, date: task.date, done: task.done }] : []; });
+    const steps: ProgramFlowRunStep[] = source.taskIds.flatMap(id => { const task = byId.get(id); return task && task.isCanonical ? [{ taskId: id, title: task.title, date: task.date, done: task.done, due: task.due ?? null }] : []; });
     if (!steps.length) continue;
     const doc = M.getDocument(space.text, source.documentId)!;
     const items = M.parseDocumentCached(doc, space.text).items, itemById = new Map(items.map(item => [item.id, item] as const));
@@ -111,8 +118,10 @@ export function programFlowRuns(data: ProgramData, actorId: string, today: strin
     const next = steps.find(step => !step.done) ?? null;
     if (!next && !wait) continue;
     const basis = programFlowRunBasis(source.offsets);
+    // Redesign 2 + F12 (총괄 11/12): a last-day run's mark reads its last step's '- 마감:'; the stored anchor otherwise.
+    const markDate = (basis === 'last' ? steps[steps.length - 1].due : null) || source.anchor;
     runs.push({ key: source.key, kind: source.kind, documentId: source.documentId, title: source.run ? `${source.flow} ${source.run}` : source.flow, flow: source.flow, run: source.run, done: steps.filter(step => step.done).length, total: steps.length,
-      basis, anchor: source.anchor, mark: programFlowRunMark(basis, source.anchor, today), steps, next, wait });
+      basis, anchor: source.anchor, markDate, mark: programFlowRunMark(basis, markDate, today), steps, next, wait });
   }
   const group = (run: ProgramFlowRun) => run.wait ? 1 : run.next?.date ? 0 : 2;
   return runs.sort((a, b) => group(a) - group(b) || (a.next?.date ?? '').localeCompare(b.next?.date ?? '') || a.title.localeCompare(b.title, 'ko'));
