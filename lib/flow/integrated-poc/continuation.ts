@@ -73,26 +73,33 @@ export function continueProgramTask(text: TextWorkspaceState, input: { documentI
  *  there (W-TXT-05: the same task key in that day's section, in any document), or null when none does (W-TXT-08).
  *  Codex re-review P1-1: the receiver is in the same folder as the `[>]` line (a task of the same words in another
  *  folder is another task), the one in the same document first; when two or more remain it is not guessed
- *  (`ambiguous`: not lost either, and no chain is counted through it). */
+ *  (`ambiguous`: not lost either, and no chain is counted through it). Codex 3rd review (11/12): a folder is its whole
+ *  path, a line outside any '- /folder' line is in its document's folder (the `[>]` line and the task alike); two or
+ *  more past lines on one receiving line are ambiguous too; a `[>]` in a code block is no line of work. */
 export type ProgramContinuedLine = { docId: string; lineId: string; title: string; key: string; day: string | null; to: string | null; percent: number | null; received: string | null;
   scope: string; ambiguous: boolean };
 export function programContinuedLines(text: TextWorkspaceState): ProgramContinuedLine[] {
   type Candidate = { id: string; docId: string; scope: string };
   const byDay = new Map<string, Candidate[]>(), add = (at: string, entry: Candidate) => byDay.set(at, [...byDay.get(at) ?? [], entry]);
-  // A folder is told by its name (the same '- /name' in another document may be its own folder of that name).
-  const named = (id: string | null | undefined) => !id || id === 'folder-unfiled' ? '' : text.folders.find(folder => folder.id === id)?.title ?? id;
+  // A folder is told by its whole path of names (the same '- /name' in another document may be its own folder of that
+  // name; the same last name under another parent is another folder).
+  const named = (id: string | null | undefined) => {
+    const names: string[] = [];
+    for (let at = id && id !== 'folder-unfiled' ? text.folders.find(folder => folder.id === id) : undefined, steps = 0; at && steps < 20; at = at.parentId ? text.folders.find(folder => folder.id === at!.parentId) : undefined, steps++) names.unshift(at.title);
+    return names.join('/');
+  };
   for (const task of M.tasks(text)) if (task.date) add(`${programSameTaskKey(task.title)}|${task.date}`, { id: task.id, docId: task.docId, scope: named(task.scopeId) });
   const out: ProgramContinuedLine[] = [];
   for (const doc of text.documents) {
     if (!doc.lines.some(line => line.text.includes('[>]'))) continue;
     const rows = M.parseDocument(doc, text).rows;
     for (const row of rows) {
-      const parts = PROGRAM_CONTINUED.exec(row.text);
+      const parts = row.kind === 'fence' ? null : PROGRAM_CONTINUED.exec(row.text);
       if (!parts || !parts[3].trim()) continue;
       const note = rows.slice(row.index + 1, row.subtreeEndIndex).map(entry => entry.parentLineId === row.id ? PROGRAM_CONTINUE_LINE.exec(entry.text) : null).find(Boolean);
       const title = parts[3].trim(), key = programSameTaskKey(title), to = note ? note[2] : null;
       out.push({ docId: doc.id, lineId: row.id, title, key, day: row.groupDate, to, percent: note?.[3] ? Number(note[3]) : null, received: null,
-        scope: named(row.ancestorScopeKind === 'folder' ? row.ancestorScopeId : null), ambiguous: false });
+        scope: named(row.ancestorScopeKind === 'folder' && row.ancestorScopeId ? row.ancestorScopeId : doc.folderId), ambiguous: false });
     }
   }
   // A line continued again is received too (its own [>] line is that day's line of the task).
@@ -103,6 +110,10 @@ export function programContinuedLines(text: TextWorkspaceState): ProgramContinue
     const here = same.filter(entry => entry.docId === line.docId), pick = here.length ? here : same;
     if (pick.length === 1) line.received = pick[0].id; else if (pick.length > 1) line.ambiguous = true;
   }
+  // Two or more past lines on one receiving line: which one it took up is not known (Codex 3rd review P2-2).
+  const taken = new Map<string, number>();
+  for (const line of out) if (line.received) taken.set(line.received, (taken.get(line.received) ?? 0) + 1);
+  for (const line of out) if (line.received && taken.get(line.received)! > 1) { line.received = null; line.ambiguous = true; }
   return out;
 }
 
