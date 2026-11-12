@@ -14,6 +14,7 @@ import { programManualOrderDays, programOrderedExecutionRows, programTextExecuti
   restoreProgramExecutionDayOrder, type ProgramDayOrder, type ProgramOrderedExecutionRow } from '@/lib/flow/integrated-poc/recurrence-order';
 import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
+import { ProgramFirstCleanup } from './ProgramFirstCleanup';
 import type { ToastHold } from './use-toast-life';
 import { carryProgramHead, restoreProgramHead, type ProgramHeadCarry } from '@/lib/flow/integrated-poc/tablet-head-carry';
 import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeLive, programCheckNoticeView, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
@@ -3957,6 +3958,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {closing() && (open => open > 0 && <h2 className={styles.closeHead} data-day-close>오늘 남은 일
           <small>{open}</small><span>저녁 6시부터 · [내일]을 길게 누르면 다른 날</span></h2>)(shownItems.filter(item => item.kind === 'row' && item.entry.kind !== 'occurrence' && !item.entry.task.done).length)}
         {/* N11a: the 밀린 일 card, over 오늘's list (never with the calendar). */}
+        {/* 오늘 탭 처음 정리 (W-CARRY-13·15·18·19, 총괄 11/12): asked once on this device; its 되돌리기 stays for this visit. */}
+        {period === 'today' && !monthGrid && <ProgramFirstCleanup actorId={actorId} space={space} today={today} disabled={saving || carryPending || !!props.hostBusy?.()} mutate={countedMutate} onMessage={setMessage} />}
         {!monthGrid && carryCardContent}{carrySheetContent}{sameSheetContent}
         {/* Flow pipeline S3: the Flow taken just now, its days marked; × lets it go (nothing saved). */}
         {monthGrid && shownHighlight && <div className={styles.flowHighlight} data-flow-highlight={shownHighlight.documentId}>

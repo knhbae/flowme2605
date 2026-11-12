@@ -725,3 +725,8 @@
 .cleanupDocument h4 { margin: 8px 0 4px; font-size: 15px; line-height: 22px; }
 .space .dateLinesSheet .progressTextList { max-height: none; overflow: visible; }
 .space .dateLinesSheet .dateLinesButtons { position: sticky; bottom: 0; padding: 8px 0; background: #ffffff; }
+/* 오늘 탭 처음 정리 ② (11/12): one line per row, a small check before its words and the day it was written again. */
+.firstCleanupLines { margin: 4px 0 0; padding: 0; list-style: none; }
+.firstCleanupLines label { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+.firstCleanupLines input[type=checkbox] { flex: none; width: 20px; height: 20px; margin: 0; }
+.firstCleanupLines small { margin-left: auto; color: var(--flowme-b-muted, #6b6b6b); white-space: nowrap; }
