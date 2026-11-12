@@ -3,7 +3,7 @@ import test from 'node:test';
 import { programClone, type ProgramData, type ProgramTransition } from './contract';
 import { createProgramData } from './program-data';
 import { createProgramDocument } from './private-space';
-import { closeProgramAlreadyContinued, programAlreadyContinuedPlan, programFirstCleanupBefore, programFirstCleanupProof, programStalePlan, PROGRAM_TRASH_DOCUMENT_ID, restoreProgramFirstCleanup, sendProgramStaleTasks } from './first-cleanup';
+import { closeProgramAlreadyContinued, mergeProgramTwinDocuments, programTwinDocuments, programAlreadyContinuedPlan, programFirstCleanupBefore, programFirstCleanupProof, programStalePlan, PROGRAM_TRASH_DOCUMENT_ID, restoreProgramFirstCleanup, sendProgramStaleTasks } from './first-cleanup';
 import { planProgramCarryover } from './carryover';
 import { programExecutionTasks } from './execution';
 import { programCarryoverBefore, programCarryoverProof, restoreProgramCarryover } from './carryover';
@@ -136,4 +136,38 @@ test('the sheet: on 오늘, asked once on this device; each step its own save an
   assert(sheet.includes("disabled={choice === 'trash' && !line.trashable}"));
   assert(sheet.includes("<h2 id=\"program-first-cleanup-title\">처음 한 번 정리</h2>"));
   for (const word of ['남은 일', '놓친 일', '보관']) assert(!sheet.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').includes(`>${word}`), word);
+});
+
+const A = ['[2026-11-10]', '- /EA', '  - [ ] 공통 1', '  - [ ] 공통 2', '  - [ ] 공통 4', '  - [ ] A에만', '', '[2026-11-11]', '- [ ] 공통 3', '- [ ] 공통 5'].join('\n');
+const B = ['[2026-11-10]', '- /EA', '  - [ ] 공통 1', '  - [ ] 공통 2', '  - [ ] 공통 4', '', '[2026-11-11]', '- [ ] 공통 3', '- [ ] 공통 5', '- [ ] B에만 1', '- [ ] B에만 2'].join('\n');
+
+test('W-CARRY-20: two documents of one title, 90% the same: the longer kept, the other\'s own lines written in where they stood (ids follow), the other to [지운 글]; snapshot; ↶ exact', () => {
+  const a = writing(A, '업무 기록'), b = writing(B, '업무 기록', a.data);
+  const data = b.data, mine = M.getDocument(space(data).text, a.docId)!.lines.find(line => line.text.endsWith('A에만'))!.id;
+  const [twin] = programTwinDocuments(space(data));
+  assert.deepEqual([twin.keep, twin.drop, twin.common, twin.blocked, twin.only.map(line => [line.text.trim(), line.mine])], [b.docId, a.docId, 9, false,
+    [['- [ ] A에만', false], ['- [ ] B에만 1', true], ['- [ ] B에만 2', true]]]);
+  const before = programFirstCleanupBefore(space(data));
+  const merged = ok(mergeProgramTwinDocuments(data, { ...base(data), keep: b.docId, drop: a.docId, now: NOW, when: '2026-11-13 09:00' })).data;
+  assert.equal(merged.receipts.length, data.receipts.length + 1, 'one save');
+  assert.equal(raw(merged, b.docId), ['[2026-11-10]', '- /EA', '  - [ ] 공통 1', '  - [ ] 공통 2', '  - [ ] 공통 4', '  - [ ] A에만', '', '[2026-11-11]', '- [ ] 공통 3', '- [ ] 공통 5', '- [ ] B에만 1', '- [ ] B에만 2'].join('\n'));
+  assert.equal(M.getDocument(space(merged).text, b.docId)!.lines.find(line => line.text.endsWith('A에만'))!.id, mine, 'its id moved with it');
+  assert(space(merged).documentTrash?.[a.docId], 'the other in 휴지통 [지운 글]');
+  const archive = space(merged).archivedDocumentIds.map(id => M.getDocument(space(merged).text, id)!).find(doc => doc.title.startsWith('합치기 전 원문'))!;
+  assert(archive && M.raw(archive).includes(B.split('\n')[9]), 'the kept text before it is archived');
+  assert.deepEqual(programTwinDocuments(space(merged)), [], 'nothing to merge any more');
+  const back = ok(restoreProgramFirstCleanup(merged, { ...base(merged), before, after: programFirstCleanupProof(space(merged)) })).data;
+  assert.deepEqual(space(back).text, space(data).text);
+  assert.equal(space(back).documentTrash, undefined);
+});
+
+test('W-CARRY-20: a common line of the other with its own record or link is not merged (only 비교해 보기); different titles are not twins', () => {
+  const a = writing(A, '업무 기록'), b = writing(B, '업무 기록', a.data);
+  const data = b.data, common = M.getDocument(space(data).text, a.docId)!.lines.find(line => line.text.endsWith('공통 1'))!.id;
+  space(data).text = { ...space(data).text, progressRecords: [{ taskId: common, date: '2026-11-10', percent: 30 }] };
+  assert.equal(programTwinDocuments(space(data))[0].blocked, true);
+  const refused = mergeProgramTwinDocuments(data, { ...base(data), keep: b.docId, drop: a.docId, now: NOW, when: '2026-11-13 09:00' });
+  assert(!refused.ok && refused.reason === 'forbidden');
+  const other = writing(B, '다른 제목', writing(A, '업무 기록').data);
+  assert.deepEqual(programTwinDocuments(space(other.data)), []);
 });

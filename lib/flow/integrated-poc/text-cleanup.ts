@@ -59,6 +59,8 @@ export function applyProgramTextCleanupText(text: TextWorkspaceState, plan: Prog
  *  after the cleanup; split over several documents when one would pass a document's limits. Each kept line's id carries
  *  its original's (stamp~id), so a restore gives every line its own identity back. */
 export const PROGRAM_CLEANUP_ARCHIVE_TITLE = '전환 전 원문';
+/** 오늘 탭 처음 정리 ① (W-CARRY-20): the kept document's text before a merge, kept the same way. */
+export const PROGRAM_MERGE_ARCHIVE_TITLE = '합치기 전 원문';
 const ARCHIVE_INFO = 'flowme-original';
 const ARCHIVE_LIMITS = { lines: 1000, chars: 90_000 };
 const ARCHIVE_INTRO = ['이 글은 보관용 원문입니다. 글을 바꾼 직후라면 [이 원문으로 되돌리기]로 원래대로 돌릴 수 있습니다. 그 뒤라면 필요한 부분을 옮겨 쓰세요. 이 글은 고치지 마세요.', ''];
@@ -85,7 +87,7 @@ export function programDocumentStateHash(text: TextWorkspaceState, documentId: s
   }));
 }
 type ArchiveLine = { id: string; text: string };
-type ArchiveHashes = ReadonlyMap<string, { before: string; after: string }>;
+export type ArchiveHashes = ReadonlyMap<string, { before: string; after: string }>;
 function archiveBlocks(text: TextWorkspaceState, documentIds: readonly string[], stamp: string, hashes: ArchiveHashes, sets: { documentId: string; parts: number }[]): ArchiveLine[][] | null {
   const blocks: ArchiveLine[][] = [];
   for (const id of documentIds) {
@@ -112,7 +114,7 @@ function archiveBlocks(text: TextWorkspaceState, documentIds: readonly string[],
   return blocks;
 }
 /** Adds the archived documents holding `documentIds` as they are in `text`. Null when the account cannot take them. */
-function programArchiveOriginals(text: TextWorkspaceState, documentIds: readonly string[], stamp: string, title: string, hashes: ArchiveHashes): { text: TextWorkspaceState; ids: string[] } | null {
+export function programArchiveOriginals(text: TextWorkspaceState, documentIds: readonly string[], stamp: string, title: string, hashes: ArchiveHashes): { text: TextWorkspaceState; ids: string[] } | null {
   const sets: { documentId: string; parts: number }[] = [], blocks = archiveBlocks(text, documentIds, stamp, hashes, sets);
   if (!blocks) return null;
   const set = `~~~~ flowme-set ${stamp} ${sets.length} ${archiveSetHash(sets)}`;
@@ -168,6 +170,8 @@ export function programCleanupArchiveIntact(text: TextWorkspaceState, stamp: str
 /** The stamp an archived original holds (null for any other document). */
 export function programCleanupArchiveStamp(text: TextWorkspaceState, documentId: string): string | null {
   const doc = M.getDocument(text, documentId);
+  // A merge's archive ('합치기 전 원문') is to read and take from only: written back alone it would leave the lines
+  // moved in from the other document nowhere (that one is in 휴지통). Its ↶ is the exact one of the save.
   if (!doc || !doc.title.startsWith(PROGRAM_CLEANUP_ARCHIVE_TITLE)) return null;
   for (const line of doc.lines) { const open = archiveOpen(line.text); if (open) return open[2]; }
   return null;
