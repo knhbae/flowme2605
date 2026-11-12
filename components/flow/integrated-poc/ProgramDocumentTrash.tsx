@@ -1,16 +1,44 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import type { ProgramPrivateSpace } from '@/lib/flow/integrated-poc/contract';
-import type { ProgramMutationResult } from '@/lib/flow/integrated-poc/ui-contract';
+import { programId } from '@/lib/flow/integrated-poc/contract';
+import { PROGRAM_TRASH_DOCUMENT_ID, programTrashBundles, reviveProgramTrashBundle } from '@/lib/flow/integrated-poc/first-cleanup';
+import type { ProgramMutationResult, ProgramMutate } from '@/lib/flow/integrated-poc/ui-contract';
 import { programErrorMessage } from '@/lib/flow/integrated-poc/ui-contract';
 import styles from './ProgramDocumentLifecycle.module.css';
 
-export function ProgramDocumentTrash({ space, onOpen }: { space: ProgramPrivateSpace; onOpen: (id: string) => void }) {
-  const docs = [...space.text.documents, ...space.text.flows].filter(doc => space.documentTrash?.[doc.id]);
+export function ProgramDocumentTrash({ space, onOpen, actorId, mutate, disabled }: {
+  space: ProgramPrivateSpace; onOpen: (id: string) => void; actorId: string; mutate: ProgramMutate; disabled?: boolean;
+}) {
+  const docs = [...space.text.documents, ...space.text.flows].filter(doc => doc.id !== PROGRAM_TRASH_DOCUMENT_ID && space.documentTrash?.[doc.id]);
+  const bundles = useMemo(() => programTrashBundles(space), [space]);
+  const [busy, setBusy] = useState(false), [message, setMessage] = useState(''), [failed, setFailed] = useState(false);
+  const pending = useRef(false);
+  async function revive(lineId: string) {
+    if (pending.current || disabled) return;
+    pending.current = true; setBusy(true); setMessage('');
+    try {
+      const result = await mutate('버린 할 일 되살리기', current => reviveProgramTrashBundle(current, {
+        actorId, requestId: programId('trash-revive'), expectedSpace: current.spaces[actorId], lineId,
+      }), { history: true, awaitAutomaticRead: true });
+      setFailed(!result.ok);
+      setMessage(result.ok ? '할 일 묶음을 되살렸습니다. 원래 글이 없으면 날짜 미정으로 돌아갑니다.' : programErrorMessage(result.reason));
+    } catch { setFailed(true); setMessage(programErrorMessage('storage-unavailable')); }
+    finally { pending.current = false; setBusy(false); }
+  }
   return <details className={styles.tools}>
-    <summary>휴지통{docs.length ? ` · ${docs.length}` : ''}</summary>
-    {docs.length ? <ul className={styles.list}>{docs.map(doc => <li key={doc.id}><button type="button" onClick={() => onOpen(doc.id)}>{doc.title}<small>내용 확인·복원</small></button></li>)}</ul> : <p className={styles.hint}>휴지통이 비어 있습니다.</p>}
+    <summary>휴지통{docs.length + bundles.length ? ` · ${docs.length + bundles.length}` : ''}</summary>
+    <section aria-label="버린 할 일"><h3>버린 할 일{bundles.length ? ` · ${bundles.length}` : ''}</h3>
+      {bundles.length ? <ul className={styles.list}>{bundles.map(bundle => <li key={bundle.lineId} data-trash-bundle={bundle.lineId}>
+        <span>{bundle.title}<small>{bundle.day} · {bundle.documentTitle}{bundle.folder ? ` · /${bundle.folder}` : ''}</small></span>
+        <button type="button" disabled={disabled || busy} onClick={() => void revive(bundle.lineId)}>되살리기</button>
+      </li>)}</ul> : <p className={styles.hint}>버린 할 일이 없습니다.</p>}
+    </section>
+    <section aria-label="지운 글"><h3>지운 글{docs.length ? ` · ${docs.length}` : ''}</h3>
+      {docs.length ? <ul className={styles.list}>{docs.map(doc => <li key={doc.id}><button type="button" onClick={() => onOpen(doc.id)}>{doc.title}<small>내용 확인·복원</small></button></li>)}</ul> : <p className={styles.hint}>지운 글이 없습니다.</p>}
+    </section>
+    {message && <p role={failed ? 'alert' : 'status'}>{message}</p>}
   </details>;
 }
 
@@ -20,6 +48,8 @@ export function ProgramDocumentTrashAction({ space, documentId, disabled, onChan
   const trashed = !!space.documentTrash?.[documentId];
   const [confirming, setConfirming] = useState(false), [busy, setBusy] = useState(false), [message, setMessage] = useState(''), [failed, setFailed] = useState(false);
   const pending = useRef(false);
+  // The fixed container is never restored as an ordinary document: each bundle has its own origin and records.
+  if (documentId === PROGRAM_TRASH_DOCUMENT_ID) return <p className={styles.hint}>버린 할 일은 휴지통에서 묶음별로 되살릴 수 있습니다.</p>;
   async function change(next: boolean) {
     if (pending.current || disabled) return;
     pending.current = true; setBusy(true); setMessage('');
