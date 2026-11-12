@@ -73,6 +73,12 @@ export function programExecutionDay(rows: readonly ProgramOrderedExecutionRow[],
 
 /** One row's date words: "20일 지남" stays apart so it can carry the warning colour. `since`: the day a line moved on
  *  by its date property was first written (its date section), or its 이어감 chain began. 총괄 11/12 ②: that first day is\n *  '1일째', so the third day is '3일째'; it shows from '2일째'. */
+/** 'n일째' (총괄 11/12 ②; Codex re-review P2-2: one count wherever it shows, 오늘 and the 밀린 일 sheet alike). `since` is
+ *  the day the task's 이어감 chain began (programContinuationStarts), else its own first day; that day is 1일째, so the
+ *  third day is 3일째. Null on that first day (nothing to show) or for no day. */
+export function programDayCount(since: string | null | undefined, today: string): number | null {
+  return since && programDate(since) && programDate(today) && since < today ? programDaysBetween(since, today) + 1 : null;
+}
 export function programExecutionRowMeta(input: { date: string | null; done: boolean; progress: { date: string; percent: number } | null;
   today: string; dated: boolean; since?: string | null }): { late: string | null; parts: string[] } {
   const { date, today } = input;
@@ -80,7 +86,7 @@ export function programExecutionRowMeta(input: { date: string | null; done: bool
   const dateText = input.dated ? null : late ? programCalendarDate(date!, today, false) : programDateLabel(date, today);
   const progress = input.progress && programDate(input.progress.date) && !(input.dated && input.progress.date === date)
     ? `${input.progress.percent}% 기록` : null;
-  const days = !late && !input.done && input.since && programDate(input.since) && programDate(date) && input.since < date! && programDate(today) ? programDaysBetween(input.since, today) + 1 : 0;
+  const days = !late && !input.done && input.since && programDate(input.since) && programDate(date) && input.since < date! && programDate(today) ? programDayCount(input.since, today) ?? 0 : 0;
   const since = days >= 2 ? [`${days}일째`] : [];
   if (progress && input.progress!.date === date) return { late, parts: [progress, dateText ?? programDateLabel(date, today, false), ...since] };
   return { late, parts: [...(dateText ? [dateText] : []), ...(progress ? [`${progress} · ${programDateLabel(input.progress!.date, today, false)}`] : []), ...since] };

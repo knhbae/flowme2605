@@ -68,11 +68,18 @@ export function continueProgramTask(text: TextWorkspaceState, input: { documentI
 }
 
 /** A `[>]` line of the writing: the day it is in, where it says it went (its 이어감), and the line that received it
- *  there (W-TXT-05: the same task key in that day's section, in any document), or null when none does (W-TXT-08). */
-export type ProgramContinuedLine = { docId: string; lineId: string; title: string; key: string; day: string | null; to: string | null; percent: number | null; received: string | null };
+ *  there (W-TXT-05: the same task key in that day's section, in any document), or null when none does (W-TXT-08).
+ *  Codex re-review P1-1: the receiver is in the same folder as the `[>]` line (a task of the same words in another
+ *  folder is another task), the one in the same document first; when two or more remain it is not guessed
+ *  (`ambiguous`: not lost either, and no chain is counted through it). */
+export type ProgramContinuedLine = { docId: string; lineId: string; title: string; key: string; day: string | null; to: string | null; percent: number | null; received: string | null;
+  scope: string; ambiguous: boolean };
 export function programContinuedLines(text: TextWorkspaceState): ProgramContinuedLine[] {
-  const byDay = new Map<string, string>();
-  for (const task of M.tasks(text)) if (task.date) { const at = `${programSameTaskKey(task.title)}|${task.date}`; if (!byDay.has(at)) byDay.set(at, task.id); }
+  type Candidate = { id: string; docId: string; scope: string };
+  const byDay = new Map<string, Candidate[]>(), add = (at: string, entry: Candidate) => byDay.set(at, [...byDay.get(at) ?? [], entry]);
+  // A folder is told by its name (the same '- /name' in another document may be its own folder of that name).
+  const named = (id: string | null | undefined) => !id || id === 'folder-unfiled' ? '' : text.folders.find(folder => folder.id === id)?.title ?? id;
+  for (const task of M.tasks(text)) if (task.date) add(`${programSameTaskKey(task.title)}|${task.date}`, { id: task.id, docId: task.docId, scope: named(task.scopeId) });
   const out: ProgramContinuedLine[] = [];
   for (const doc of text.documents) {
     if (!doc.lines.some(line => line.text.includes('[>]'))) continue;
@@ -82,37 +89,42 @@ export function programContinuedLines(text: TextWorkspaceState): ProgramContinue
       if (!parts || !parts[3].trim()) continue;
       const note = rows.slice(row.index + 1, row.subtreeEndIndex).map(entry => entry.parentLineId === row.id ? PROGRAM_CONTINUE_LINE.exec(entry.text) : null).find(Boolean);
       const title = parts[3].trim(), key = programSameTaskKey(title), to = note ? note[2] : null;
-      out.push({ docId: doc.id, lineId: row.id, title, key, day: row.groupDate, to, percent: note?.[3] ? Number(note[3]) : null, received: null });
+      out.push({ docId: doc.id, lineId: row.id, title, key, day: row.groupDate, to, percent: note?.[3] ? Number(note[3]) : null, received: null,
+        scope: named(row.ancestorScopeKind === 'folder' ? row.ancestorScopeId : null), ambiguous: false });
     }
   }
   // A line continued again is received too (its own [>] line is that day's line of the task).
-  for (const line of out) if (line.day) { const at = `${line.key}|${line.day}`; if (!byDay.has(at)) byDay.set(at, line.lineId); }
-  for (const line of out) line.received = line.to ? byDay.get(`${line.key}|${line.to}`) ?? null : null;
+  for (const line of out) if (line.day) add(`${line.key}|${line.day}`, { id: line.lineId, docId: line.docId, scope: line.scope });
+  for (const line of out) {
+    if (!line.to) continue;
+    const same = (byDay.get(`${line.key}|${line.to}`) ?? []).filter(entry => entry.scope === line.scope && entry.id !== line.lineId);
+    const here = same.filter(entry => entry.docId === line.docId), pick = here.length ? here : same;
+    if (pick.length === 1) line.received = pick[0].id; else if (pick.length > 1) line.ambiguous = true;
+  }
   return out;
 }
 
-/** '7일째' (총괄 11/12): for each task a continued line reached, the day its chain began (following 이어감 back). */
+/** '7일째' (총괄 11/12): for each task a continued line reached, the day its chain began (following 이어감 back, line by
+ *  line as received: never through a guess). */
 export function programContinuationStarts(text: TextWorkspaceState): Map<string, string> {
-  const lines = programContinuedLines(text), into = new Map<string, ProgramContinuedLine[]>();
-  for (const line of lines) if (line.to) { const at = `${line.key}|${line.to}`; into.set(at, [...into.get(at) ?? [], line]); }
+  const lines = programContinuedLines(text), into = new Map(lines.filter(line => line.received).map(line => [line.received!, line]));
   const starts = new Map<string, string>();
   for (const task of M.tasks(text)) {
     if (!task.date) continue;
-    let key = programSameTaskKey(task.title), day = task.date, start: string | null = null;
+    let at = task.id, start: string | null = null;
     for (let guard = 0; guard < 400; guard++) {
-      const from = (into.get(`${key}|${day}`) ?? []).map(line => line.day).filter((value): value is string => !!value && value < day).sort()[0];
-      if (!from) break;
-      start = from; day = from;
+      const from = into.get(at);
+      if (!from || !from.day || (start ?? task.date) <= from.day) break;
+      start = from.day; at = from.lineId;
     }
     if (start) starts.set(task.id, start);
   }
   return starts;
 }
-
 /** W-TXT-08: the `[>]` lines of a past day nothing receives any more (today's line deleted or moved off its day, or a
  *  hand-typed `[>]`): the remaining work they stand for, shown again with 어제 남은 일. */
 export function programLostContinuations(text: TextWorkspaceState, today: string): ProgramContinuedLine[] {
-  return programContinuedLines(text).filter(line => line.received === null && line.day !== null && line.day < today);
+  return programContinuedLines(text).filter(line => line.received === null && !line.ambiguous && line.day !== null && line.day < today);
 }
 
 /** [오늘로] on a lost `[>]` line (W-TXT-08): it is continued again. Its 이어감 says today (with the % it said), and a new

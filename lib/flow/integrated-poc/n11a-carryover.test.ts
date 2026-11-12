@@ -251,7 +251,8 @@ test('N11a rev3: recorded copies never go; while the task goes on each stays dat
   const done = ok(carry(next, '2026-11-05', counted));
   // Redesign 4: each recorded 독서 is continued (its line stays as [>]; a new line takes it up today).
   assert.deepEqual(onToday(done.data, '2026-11-05').map(task => task.title), ['독서', '독서']);
-  assert(programContinuedLines(space(done.data).text).filter(line => [read1.id, read2.id].includes(line.lineId)).every(line => line.to === '2026-11-05' && line.received));
+  // Two copies of the same words continued into the same day of the same folder: received, though not told apart (Codex re-review P1-1: never guessed).
+  assert(programContinuedLines(space(done.data).text).filter(line => [read1.id, read2.id].includes(line.lineId)).every(line => line.to === '2026-11-05' && (line.received || line.ambiguous)));
   assert.deepEqual(programExecutionTasks(space(done.data), { period: 'today', date: '2026-11-05' }).filter(task => task.date! < '2026-11-05' && !task.done).map(task => task.id), [walk1.id]);
   assert(!lineIds(done.data).includes(read3.id));
   assert.deepEqual(space(done.data).text.progressRecords.map(record => [record.date, record.percent]), space(next).text.progressRecords.map(record => [record.date, record.percent]));
