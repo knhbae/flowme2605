@@ -103,7 +103,8 @@ export interface TextWorkspaceModel {
    * folderDeclare: finished lines are judged even though their text did not change since.
    * folderLink: like folderDeclare, but only a folder of exactly that name is linked; nothing is made.
    * folderMove: a finished linked line with a new name moves to that folder (D3 B). */
-  editTextResult(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice; folderText?: boolean; taskSplit?: TextTaskSplitIntent; folderHold?: number[]; folderDeclare?: number[]; folderLink?: number[]; folderMove?: number[] }): {
+  /** lineIds (총괄 11/12 ①, a restore from an archived original): each line's identity, given; one in use elsewhere gets a new one. */
+  editTextResult(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice; folderText?: boolean; taskSplit?: TextTaskSplitIntent; folderHold?: number[]; folderDeclare?: number[]; folderLink?: number[]; folderMove?: number[]; lineIds?: (string | null)[] }): {
     state: TextWorkspaceState; reason: 'identity-ambiguous' | 'invalid-format' | 'progress-check-conflict' | 'blocked' | null;
     progressConflict?: TextProgressCheckConflict;
     normalizedText?: string;

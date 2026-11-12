@@ -105,7 +105,7 @@ import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classific
 import { commitTaskDateWithUndo, moveProgramTaskLocation, readTaskLocationPolicy, undoProgramTaskLocation } from '@/lib/flow/integrated-poc/task-location-command';
 import { programDateLineDefaults, type ProgramDateLineChoice, type ProgramDateLineChoices } from '@/lib/flow/integrated-poc/date-property-migration';
 import { programContinuationStarts } from '@/lib/flow/integrated-poc/continuation';
-import { applyProgramTextCleanup, programTextCleanupDocuments, programTextCleanupPlan, programTextCleanupProof, restoreProgramTextCleanup, type ProgramTextCleanupPlan } from '@/lib/flow/integrated-poc/text-cleanup';
+import { applyProgramTextCleanup, PROGRAM_CLEANUP_RESTORE_TITLE, programCleanupArchiveStamp, programCleanupWhen, programTextCleanupDocuments, programTextCleanupPlan, restoreProgramTextCleanup, type ProgramTextCleanupPlan } from '@/lib/flow/integrated-poc/text-cleanup';
 
 import { programDueLabel } from '@/lib/flow/integrated-poc/due-date';
 import type { TaskLocationTarget } from '@/lib/flow/integrated-poc/task-location-move';
@@ -411,7 +411,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // [나중에]: asked again the next time the app opens (a tab change does not ask).
   const [cleanupAsk, setCleanupAsk] = useState<{ actorId: string; plan: ProgramTextCleanupPlan; choices: ProgramDateLineChoices } | null>(null);
   const cleanupDialog = useRef<HTMLDialogElement>(null), [cleanupPending, setCleanupPending] = useState(false);
-  const [cleanupNotice, setCleanupNotice] = useState<{ actorId: string; documents: number; before: TextWorkspaceState; after: TextWorkspaceState; undone?: boolean; refused?: boolean } | null>(null);
+  const [cleanupNotice, setCleanupNotice] = useState<{ actorId: string; documents: number; stamp: string; undone?: boolean; refused?: string } | null>(null);
   const [detail, setDetail] = useState<Detail>(null), [message, setMessage] = useState('');
   const [writingNotice, setWritingNotice] = useState<{ actorId: string; documentId: string; text: string } | null>(null);
   const [viewChangeNotice, setViewChangeNotice] = useState<{ actorId: string; reason: 'composition' | 'recurrence' | 'saving' | 'save-failed' | 'pending' } | null>(null);
@@ -830,23 +830,37 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (!ask || ask.actorId !== actorId || cleanupPending) return;
     // Pending input in the documents it changes is saved first; a composition holds it.
     for (const id of programTextCleanupDocuments(ask.plan)) if (!await settleRecent(id)) { setMessage('입력이 끝나면 다시 눌러 주세요.'); return; }
-    let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
+    // 총괄 11/12 ①: the originals go to an archived document '전환 전 원문 · when' in the same save; 되돌리기 reads them there.
+    let stamp = '';
     setCleanupPending(true);
     try {
-      const result = await run('글 정리', current => { const next = applyProgramTextCleanup(current, { ...base(current), plan: ask.plan, choices: ask.choices });
-        if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
+      const result = await run('글 정리', current => { const next = applyProgramTextCleanup(current, { ...base(current), plan: ask.plan, choices: ask.choices, when: programCleanupWhen(new Date()) });
+        if (next.ok) stamp = next.result; return next; }, true);
       setCleanupAsk(null);
-      if (!result.ok || !before || !after) {
+      if (!result.ok || !stamp) {
         if (!result.ok && result.reason === 'conflict') setMessage('그사이 바뀐 글이 있어 바꾸지 않았습니다. 앱을 다시 열면 다시 보여 드립니다.');
+        else if (!result.ok && result.reason === 'limit') setMessage('원문을 보관할 자리가 없어 바꾸지 않았습니다(문서는 100개까지). 원문은 그대로입니다.');
         else if (!result.ok && result.reason !== 'busy') setMessage(result.reason === 'unresolved' ? '옮길 수 없는 줄이 있어 바꾸지 않았습니다. 원문은 그대로입니다.' : `${programErrorMessage(result.reason)} (${result.reason})`);
         return;
       }
-      setCleanupNotice({ actorId, documents: programTextCleanupDocuments(ask.plan).length, before, after });
+      setCleanupNotice({ actorId, documents: programTextCleanupDocuments(ask.plan).length, stamp });
     } finally { setCleanupPending(false); }
   }
-  async function undoCleanup(notice: NonNullable<typeof cleanupNotice>) {
-    const result = await run('글 정리 되돌리기', current => restoreProgramTextCleanup(current, { ...base(current), before: notice.before, after: programTextCleanupProof(notice.after) }), true);
-    setCleanupNotice(current => current === notice ? result.ok ? { ...notice, undone: true } : { ...notice, refused: true } : current);
+  /** 되돌리기, from the notice or from the archived original itself (any visit later): the originals written back. */
+  async function restoreCleanup(stamp: string) {
+    if (cleanupPending) return false;
+    setCleanupPending(true);
+    try {
+      const result = await run('글 정리 되돌리기', current => restoreProgramTextCleanup(current, { ...base(current), stamp, when: programCleanupWhen(new Date()) }), true);
+      const refused = result.ok ? undefined : result.reason === 'busy' ? '' : result.reason === 'missing' ? '보관 글에서 원문을 찾지 못해 되돌리지 않았습니다'
+        : result.reason === 'limit' ? '지금 글을 보관할 자리가 없어 되돌리지 않았습니다(문서는 100개까지)'
+        : result.reason === 'unresolved' ? '원문을 다시 쓸 수 없어 되돌리지 않았습니다. 지금 글은 그대로입니다' : `${programErrorMessage(result.reason)} (${result.reason})`;
+      if (refused === '') return false;
+      setCleanupNotice(current => current?.actorId === actorId && current.stamp === stamp ? { ...current, ...(refused ? { refused } : { undone: true }) } : current);
+      if (refused) setMessage(refused);
+      else setMessage("원문으로 되돌렸습니다. 되돌리기 전 글은 보관함의 '되돌리기 전 원문'에 있습니다.");
+      return !refused;
+    } finally { setCleanupPending(false); }
   }
   const chooseDateLine = (ownerId: string, choice: ProgramDateLineChoice) => setCleanupAsk(ask => ask && { ...ask, choices: { ...ask.choices, [ownerId]: choice } });
   const monthDay = (date: string) => `${Number(date.slice(5, 7))}월 ${Number(date.slice(8, 10))}일`;
@@ -3327,6 +3341,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     {/* Once the arrival toast closed, its [되돌리기] stays (as long as it could before), on the copy's source line or here. */}
     {arrivalUndoAfterToast && !copyHeader && <p className={styles.importNotice} data-arrival-undo>{importCancel}</p>}
     <p role="status" aria-live="polite" aria-atomic="true" className={styles.writingEntryNotice} data-writing-entry-notice data-quiet={props.noteNoticeShown ? 'true' : undefined}>{writingNotice?.actorId === actorId && writingNotice.documentId === selected ? writingNotice.text : ''}</p>
+    {/* 총괄 11/12 ①: an archived original ('전환 전 원문', '되돌리기 전 원문') is restored from here, any time. */}
+    {selectedDoc && selectedArchived && (stamp => stamp && <div className={styles.importNotice} data-cleanup-archive={stamp}>
+      <span role="status">{selectedDoc.title.startsWith(PROGRAM_CLEANUP_RESTORE_TITLE) ? '되돌리기 전에 있던 글입니다.' : '새 규칙으로 바꾸기 전 원문입니다.'}</span>
+      <button type="button" data-cleanup-restore disabled={cleanupPending || preparingDocumentAction} aria-busy={cleanupPending || undefined} onClick={() => void restoreCleanup(stamp)}>이 원문으로 되돌리기</button></div>)(programCleanupArchiveStamp(space.text, selectedDoc.id))}
     {!selectedDoc && props.noteStatus}
     {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>
       {/* A new account starts here with no document; the title row keeps only a document's tools, so the
@@ -3364,15 +3382,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     onClickCapture={guardOccurrenceDraft} onKeyDownCapture={event => { if (!['Tab', 'Shift', 'Escape'].includes(event.key)) guardOccurrenceDraft(event); }}>
     {cleanupNotice?.actorId === actorId && <div className={styles.orderNotice} data-cleanup-notice>
       <ProgramNoticeRow notice={{ tone: cleanupNotice.refused ? 'warn' : cleanupNotice.undone ? 'info' : 'choose', closeLabel: '알림 닫기',
-        text: cleanupNotice.refused ? '그 뒤 바뀐 글이 있어 되돌리지 않았습니다' : cleanupNotice.undone ? '글을 정리하기 전으로 되돌렸습니다' : `글 ${cleanupNotice.documents}개를 새 규칙으로 정리했습니다`,
-        actions: cleanupNotice.undone || cleanupNotice.refused ? [] : [{ label: '되돌리기', run: () => void undoCleanup(cleanupNotice) }] }} onClose={() => setCleanupNotice(null)} />
+        text: cleanupNotice.refused ? cleanupNotice.refused : cleanupNotice.undone ? '글을 정리하기 전으로 되돌렸습니다' : `글 ${cleanupNotice.documents}개를 새 규칙으로 정리했습니다 · 원문은 보관함의 '전환 전 원문'에 있습니다`,
+        actions: cleanupNotice.undone || cleanupNotice.refused ? [] : [{ label: '되돌리기', run: () => void restoreCleanup(cleanupNotice.stamp) }] }} onClose={() => setCleanupNotice(null)} />
     </div>}
     <dialog ref={cleanupDialog} className={`${styles.findDialog} ${styles.datesSheet} ${styles.dateLinesSheet}`} aria-labelledby="program-cleanup-title" data-cleanup-sheet
       onCancel={event => { event.preventDefault(); setCleanupAsk(null); }}>
       {cleanupAsk && (ask => { const day = (date: string | null) => date ? programCalendarDate(date, today, false) : '날짜 미정';
         return <>
           <h2 id="program-cleanup-title">글을 새 규칙으로 한 번 정리합니다</h2>
-          <p className={styles.muted}>할 날은 날짜 제목 하나로 정하고, 진행률은 할 일 줄에 적습니다. 바꾸기 전 글은 그대로 남아 [되돌리기]나 ↶로 돌아갈 수 있습니다.</p>
+          <p className={styles.muted}>할 날은 날짜 제목 하나로 정하고, 진행률은 할 일 줄에 적습니다. 보관함의 '전환 전 원문'에서 언제든 되돌릴 수 있습니다.</p>
           {ask.plan.progress.length > 0 && <><h3 className={styles.dateLinesHead}>진행률 {ask.plan.progressLines}줄 · 할 일 줄에 적습니다</h3>
             <ul className={styles.progressTextList} data-cleanup-progress>{ask.plan.progress.flatMap(doc => doc.changes.map(change => <li key={change.lineId}><span>{change.title}</span>
               <small>{doc.title} · {progressMark(change.before)} → {progressMark(change.after)} · {programCalendarDate(change.date, today, false)} 기록</small></li>))}</ul></>}
@@ -3391,7 +3409,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <button type="button" className={styles.dateLinesLater} onClick={() => setCleanupAsk(null)}>나중에</button>
             <button type="button" className={styles.dateLinesWrite} data-cleanup-write disabled={cleanupPending} aria-busy={cleanupPending || undefined} onClick={() => void writeCleanup()}>{cleanupPending ? '바꾸는 중…' : '바꾸기'}</button>
           </div>
-          <p className={styles.muted}>바꾼 뒤 [되돌리기] 한 번이면 계정 전체가 원래대로 돌아갑니다. ‘나중에’를 고르면 다음에 앱을 열 때 다시 묻습니다.</p>
+          <p className={styles.muted}>‘나중에’를 고르면 다음에 앱을 열 때 다시 묻습니다.</p>
         </>; })(cleanupAsk)}
     </dialog>
     <div className={styles.contextActions}>
