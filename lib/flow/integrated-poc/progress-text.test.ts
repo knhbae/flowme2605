@@ -114,6 +114,15 @@ test('Fable review: the conversion moves only 1-99; a [ ] line with a 100% recor
   assert.equal(M.editTextResult(valid, docId, `[${TODAY}]\n- [ ] 다시 연 일\n- [ ] 닫은 일\n- [ ] 하던 일`).reason, 'progress-check-conflict');
 });
 
+test("Codex review: a copy's, a saved plan's and a Flow run's document wait for step 5 (their progress as their dates)", () => {
+  const { data, docId, id } = writing(`[${TODAY}]\n- [ ] 사본 할 일`);
+  const text = { ...space(data).text, progressRecords: [{ taskId: id(data, '사본 할 일'), date: TODAY, percent: 40 }] };
+  assert.equal(programProgressTextPlan({ ...space(data), text }, docId).length, 1, 'an ordinary document is offered');
+  assert.deepEqual(programProgressTextPlan({ ...space(data), text, copies: [{ documentId: docId, itemLines: {}, subcheckLines: {} } as never] }, docId), [], 'a copy');
+  assert.deepEqual(programProgressTextPlan({ ...space(data), text, savedBindings: [{ documentId: docId, itemLines: {} } as never] }, docId), [], 'a saved plan');
+  assert.deepEqual(programProgressTextPlan({ ...space(data), text, personalAuthoring: { series: [], executions: [{ executionDocumentId: docId }] } as never }, docId), [], 'a Flow run');
+});
+
 test("Codex P2-2: a box typed over a number or the other state is that value (0 or 100) on the edit's day, as a number is", () => {
   const { data, docId, id, doc } = writing(`[${TODAY}]\n- [ ] 보고서\n- [ ] 정리`);
   // 진행 시트 50% → [50%], then typed [ ]: the task is at 0 now, and the list does not offer [50%] again.

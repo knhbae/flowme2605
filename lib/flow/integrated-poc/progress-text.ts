@@ -1,5 +1,5 @@
 import type { ProgramData, ProgramPrivateSpace, ProgramTransition } from './contract';
-import { transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
+import { programExecutionDocument, transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
 import { programDocumentContentLock, programReferenceExecutionAccess } from './reference-execution-guard';
 import { programTaskRepeatMember } from './task-date-move';
 import { textWorkspaceModel as M } from './text-workspace';
@@ -21,7 +21,9 @@ export function programProgressTextMark(percent: number): string | null {
 /** The box lines of one document whose text the latest record would change, in line order. */
 export function programProgressTextPlan(space: ProgramPrivateSpace, documentId: string, repeats?: ReadonlySet<string>): ProgramProgressTextChange[] {
   const doc = M.getDocument(space.text, documentId);
-  if (!doc || programDocumentContentLock(space, documentId) !== 'active') return [];
+  // Codex review 11/12: a copy's document, a saved plan's and a Flow run's wait for step 5, as their date lines do.
+  if (!doc || programDocumentContentLock(space, documentId) !== 'active' || space.copies.some(copy => copy.documentId === documentId)
+    || space.savedBindings.some(binding => binding.documentId === documentId) || programExecutionDocument(space, documentId)) return [];
   const latest = new Map<string, { date: string; percent: number }>();
   for (const record of space.text.progressRecords) {
     const was = latest.get(record.taskId);
