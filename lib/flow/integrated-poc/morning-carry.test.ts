@@ -5,6 +5,7 @@ import { createProgramData } from './program-data';
 import { createProgramDocument } from './private-space';
 import { carryProgramTasksToToday, programCarryoverBefore, programCarryoverProof, programLastWrittenDay, programMorningCarry, restoreProgramCarryover } from './carryover';
 import { programShortDate } from './date-label';
+import { programContinuedLines, programLostContinuations } from './continuation';
 import { textWorkspaceModel as M } from './text-workspace';
 
 // 오늘 탭 ② (W-CARRY-12, 총괄 11/12, mockup ③): the morning button takes the last day tasks were written.
@@ -51,6 +52,26 @@ test('W-CARRY-12: the button takes that day\'s open tasks only, in task lines (m
   assert.equal(programMorningCarry(space(carried), TODAY)!.lines, 0, 'nothing left to take from that day');
   const back = ok(restoreProgramCarryover(carried, { ...base(carried), before, after: programCarryoverProof(space(carried)) })).data;
   assert.deepEqual(space(back).text, space(data).text);
+});
+
+test('오늘 탭 ② (mockup ③, Fable): a block with a subtask at 50% is copied; the subtask keeps its own [>] and 이어감 · 50%, its copy goes on with its record; both read back as received', () => {
+  const { data, docId } = writing(['[2026-11-12]', '- /EA', '  - [ ] 10 Min 잇', '    - [50%] 시간 조율', '- /지식 허브', '  - [ ] 전체적인 내용 보기'].join('\n'));
+  const sub = M.parseDocument(M.getDocument(space(data).text, docId)!, space(data).text).items.find(item => item.title === '시간 조율')!.id;
+  space(data).text = { ...space(data).text, progressRecords: [{ taskId: sub, date: '2026-11-12', percent: 50 }] };
+  const morning = programMorningCarry(space(data), TODAY)!;
+  assert.deepEqual([morning.day, morning.lines, morning.moved, morning.continued], ['2026-11-12', 3, 1, 2], '3개 이어 씀 (1개 옮김 · 2개 복사)');
+  const carried = ok(carryProgramTasksToToday(data, { ...base(data), today: TODAY, lines: morning.plan.lines })).data;
+  const text = raw(carried, docId);
+  assert(text.startsWith(['[2026-11-12]', '- /EA', '  - [>] 10 Min 잇', '    - 이어감: 2026-11-13 · 0%', '    - [>] 시간 조율', '      - 이어감: 2026-11-13 · 50%', ''].join('\n')), text);
+  assert(text.includes(['- /EA', '  - [ ] 10 Min 잇', '    - [50%] 시간 조율'].join('\n')) && text.includes(['- /지식 허브', '  - [ ] 전체적인 내용 보기'].join('\n')), text);
+  assert(!/\[2026-11-12\][\s\S]*지식 허브[\s\S]*\[2026-11-13\]/.test(text), 'the moved block left nothing on its day');
+  const copy = M.tasks(space(carried).text).find(task => task.title === '10 Min 잇' && task.date === TODAY)!.subchecks.find(item => item.title === '시간 조율')!;
+  assert.notEqual(copy.id, sub);
+  assert.deepEqual(space(carried).text.progressRecords, [{ taskId: copy.id, date: '2026-11-12', percent: 50 }], 'the record follows the copy');
+  const lines = programContinuedLines(space(carried).text);
+  assert.deepEqual(lines.map(line => [line.title, line.to, line.percent, !!line.received, line.ambiguous]), [['10 Min 잇', TODAY, 0, true, false], ['시간 조율', TODAY, 50, true, false]]);
+  assert.equal(lines[1].received, copy.id);
+  assert.deepEqual(programLostContinuations(space(carried).text, TODAY), []);
 });
 
 test('W-CARRY-12: the last day written more than 14 days back is stale (the first cleanup asks instead); no day, no button', () => {
