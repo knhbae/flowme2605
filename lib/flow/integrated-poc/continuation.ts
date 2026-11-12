@@ -67,6 +67,14 @@ export function continueProgramTask(text: TextWorkspaceState, input: { documentI
   return { ok: true, next: moved.next, oldId: task.id, newId, percent };
 }
 
+/** A folder told by its whole path of names from the top ('' for none or 미분류): the same '- /name' in another document
+ *  is the same folder by name; the same last name under another parent is another folder (Codex 3rd review P2-3). */
+export function programFolderPath(text: TextWorkspaceState, id: string | null | undefined): string {
+  const names: string[] = [];
+  for (let at = id && id !== 'folder-unfiled' ? text.folders.find(folder => folder.id === id) : undefined, steps = 0; at && steps < 20; at = at.parentId ? text.folders.find(folder => folder.id === at!.parentId) : undefined, steps++) names.unshift(at.title);
+  return names.join('/');
+}
+
 /** A `[>]` line of the writing: the day it is in, where it says it went (its 이어감), and the line that received it
  *  there (W-TXT-05: the same task key in that day's section, in any document), or null when none does (W-TXT-08).
  *  Codex re-review P1-1: the receiver is in the same folder as the `[>]` line (a task of the same words in another
@@ -81,11 +89,7 @@ export function programContinuedLines(text: TextWorkspaceState): ProgramContinue
   const byDay = new Map<string, Candidate[]>(), add = (at: string, entry: Candidate) => byDay.set(at, [...byDay.get(at) ?? [], entry]);
   // A folder is told by its whole path of names (the same '- /name' in another document may be its own folder of that
   // name; the same last name under another parent is another folder).
-  const named = (id: string | null | undefined) => {
-    const names: string[] = [];
-    for (let at = id && id !== 'folder-unfiled' ? text.folders.find(folder => folder.id === id) : undefined, steps = 0; at && steps < 20; at = at.parentId ? text.folders.find(folder => folder.id === at!.parentId) : undefined, steps++) names.unshift(at.title);
-    return names.join('/');
-  };
+  const named = (id: string | null | undefined) => programFolderPath(text, id);
   for (const task of M.tasks(text)) if (task.date) add(`${programSameTaskKey(task.title)}|${task.date}`, { id: task.id, docId: task.docId, scope: named(task.scopeId) });
   const out: ProgramContinuedLine[] = [];
   for (const doc of text.documents) {
