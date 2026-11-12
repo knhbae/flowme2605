@@ -3,7 +3,9 @@ import test from 'node:test';
 import { programClone, type ProgramData, type ProgramTransition } from './contract';
 import { createProgramData } from './program-data';
 import { createProgramDocument } from './private-space';
-import { closeProgramAlreadyContinued, mergeProgramTwinDocuments, programTwinDocuments, programAlreadyContinuedPlan, programFirstCleanupBefore, programFirstCleanupProof, programStalePlan, PROGRAM_TRASH_DOCUMENT_ID, restoreProgramFirstCleanup, sendProgramStaleTasks } from './first-cleanup';
+import { closeProgramAlreadyContinued, mergeProgramTwinDocuments, programTwinDocuments, programAlreadyContinuedPlan, programFirstCleanupBefore, programFirstCleanupProof, programStalePlan, PROGRAM_TRASH_DOCUMENT_ID, restoreProgramFirstCleanup, sendProgramStaleTasks,
+  programTrashBundles, programTrashOrigin, reviveProgramTrashBundle } from './first-cleanup';
+import { validateProgramData } from './program-data';
 import { planProgramCarryover } from './carryover';
 import { programExecutionTasks } from './execution';
 import { programCarryoverBefore, programCarryoverProof, restoreProgramCarryover } from './carryover';
@@ -172,4 +174,106 @@ test('W-CARRY-20: a common line of the other with its own record or link is not 
   assert(!refused.ok && refused.reason === 'forbidden');
   const other = writing(B, '다른 제목', writing(A, '업무 기록').data);
   assert.deepEqual(programTwinDocuments(space(other.data)), []);
+});
+
+// Codex first-cleanup review (11/12): its repros.
+const bin = (data: ProgramData) => M.raw(M.getDocument(space(data).text, PROGRAM_TRASH_DOCUMENT_ID)!);
+const trash = (data: ProgramData, ...titles: string[]) => ok(sendProgramStaleTasks(data, { ...base(data), today: TODAY, now: NOW, lines: titles.map(title => ({ lineId: id(data, title), choice: 'trash' as const })) })).data;
+
+test('Codex P1-1: words that leave no key are never the same task (W-CARRY-02): 11/9 "..." is not closed by 11/12 "???"', () => {
+  const { data } = writing(['[2026-11-09]', '- /EA', '  - [ ] ...', '  - [ ] 발표 준비', '', '[2026-11-12]', '- /EA', '  - [ ] ???', '  - [ ] 발표 준비'].join('\n'));
+  assert.deepEqual(programAlreadyContinuedPlan(space(data), TODAY).map(entry => entry.title), ['발표 준비']);
+});
+
+test('Codex P1-2: a block goes to 휴지통 with every byte inside it; only its outer indent changes, a code block\'s lines stay byte for byte', () => {
+  const CODE = ['[2026-10-20]', '- /EA', '  - [ ] 코드 있는 일', '    ```', '      abc', '        def', '    ```', '- 메모 줄', '  - [ ] 들여쓴 일', '    ~~~', '      ghi', '    ~~~'].join('\n');
+  const { data } = writing(CODE);
+  assert.deepEqual(programStalePlan(space(data), TODAY).map(line => line.title), ['코드 있는 일', '들여쓴 일']);
+  const sent = trash(data, '코드 있는 일', '들여쓴 일');
+  assert.equal(bin(sent), ['[2026-10-20]', '- 원래 글: 하루 기록', '- /EA', '  - [ ] 코드 있는 일', '    ```', '      abc', '        def', '    ```', '- [ ] 들여쓴 일', '  ~~~', '      ghi', '  ~~~'].join('\n'));
+});
+
+test('Codex P2-3: the writing position on a line sent to 휴지통 goes to the nearest line above that stayed; ↶ puts it back', () => {
+  const { data, docId } = writing(OLD);
+  const lines = M.getDocument(space(data).text, docId)!.lines, at = lines.findIndex(line => line.text.endsWith('버릴 일'));
+  space(data).position = { documentId: docId, lineId: lines[at].id, start: 70, end: 72, scrollTop: 40 };
+  assert(validateProgramData(data));
+  const before = programFirstCleanupBefore(space(data));
+  const sent = trash(data, '버릴 일');
+  const start = lines.slice(0, at - 1).reduce((sum, line) => sum + line.text.length + 1, 0);
+  assert.deepEqual(space(sent).position, { documentId: docId, lineId: lines[at - 1].id, start, end: start, scrollTop: 40 });
+  const back = ok(restoreProgramFirstCleanup(sent, { ...base(sent), before, after: programFirstCleanupProof(space(sent)) })).data;
+  assert.deepEqual(space(back).position, space(data).position);
+  // A merge: on a line of the other document that moves, it follows the line into the kept one.
+  const a = writing(A, '업무 기록'), b = writing(B, '업무 기록', a.data), twins = b.data;
+  const mine = M.getDocument(space(twins).text, a.docId)!.lines.find(line => line.text.endsWith('A에만'))!.id;
+  space(twins).position = { documentId: a.docId, lineId: mine, start: 0, end: 0, scrollTop: 0 };
+  const merged = ok(mergeProgramTwinDocuments(twins, { ...base(twins), keep: b.docId, drop: a.docId, now: NOW, when: '2026-11-13 09:00' })).data;
+  assert.equal(space(merged).position.documentId, b.docId); assert.equal(space(merged).position.lineId, mine);
+});
+
+test('Codex P2-4: two documents of one name keep their own 원래 글 (the id it carries); each bundle goes back to its own', () => {
+  const one = writing('[2026-10-20]\n- /EA\n  - [ ] A', '같은 제목'), two = writing('[2026-10-20]\n- /EA\n  - [ ] B', '같은 제목', one.data);
+  const sent = trash(two.data, 'A', 'B');
+  assert.equal(bin(sent), ['[2026-10-20]', '- 원래 글: 같은 제목', '- /EA', '  - [ ] A', '', '[2026-10-20]', '- 원래 글: 같은 제목', '- /EA', '  - [ ] B'].join('\n'));
+  const origins = M.getDocument(space(sent).text, PROGRAM_TRASH_DOCUMENT_ID)!.lines.filter(line => line.text.startsWith('- 원래 글:')).map(line => programTrashOrigin(line.id));
+  assert.deepEqual(origins, [one.docId, two.docId]);
+  assert.deepEqual(programTrashBundles(space(sent)).map(entry => [entry.title, entry.documentId, entry.documentTitle, entry.folder, entry.back]),
+    [['A', one.docId, '같은 제목', 'EA', 'origin'], ['B', two.docId, '같은 제목', 'EA', 'origin']]);
+  const back = ok(reviveProgramTrashBundle(sent, { ...base(sent), lineId: id(sent, 'B') }));
+  assert.equal(back.result, two.docId);
+  assert.equal(raw(back.data, two.docId), '[2026-10-20]\n- /EA\n  - [ ] B');
+  assert.equal(raw(back.data, one.docId), '[2026-10-20]');
+  assert.equal(bin(back.data), ['[2026-10-20]', '- 원래 글: 같은 제목', '- /EA', '  - [ ] A'].join('\n'));
+});
+
+test('Codex P2-5: with its 휴지통 marks gone, 버린 할 일 is still never a document to tidy; the next send puts the marks back', () => {
+  const { data } = writing(OLD);
+  const sent = trash(data, '버릴 일'), bare = programClone(sent);
+  delete space(bare).documentTrash;
+  space(bare).archivedDocumentIds = space(bare).archivedDocumentIds.filter(entry => entry !== PROGRAM_TRASH_DOCUMENT_ID);
+  assert(validateProgramData(bare));
+  assert(!programStalePlan(space(bare), TODAY).some(line => line.documentId === PROGRAM_TRASH_DOCUMENT_ID));
+  assert(!programAlreadyContinuedPlan(space(bare), TODAY).some(line => line.documentId === PROGRAM_TRASH_DOCUMENT_ID));
+  assert(!programTwinDocuments(space(bare)).some(twin => [twin.keep, twin.drop].includes(PROGRAM_TRASH_DOCUMENT_ID)));
+  const again = trash(bare, '오래된 일');
+  assert(space(again).documentTrash?.[PROGRAM_TRASH_DOCUMENT_ID] && space(again).archivedDocumentIds.includes(PROGRAM_TRASH_DOCUMENT_ID));
+});
+
+test('Codex P2-6: [되살리기] puts one bundle back in its day\'s section of its document (ids, records, folder); a section gone is made in date order; a document gone → [미정] of a new one', () => {
+  const { data, docId } = writing(OLD);
+  space(data).text = { ...space(data).text, progressRecords: [{ taskId: id(data, '버릴 일'), date: '2026-10-20', percent: 30 }] };
+  const sent = trash(data, '버릴 일', '폴더 없는 일');
+  assert.deepEqual(programTrashBundles(space(sent)).map(entry => [entry.title, entry.day, entry.folder, entry.back]), [['버릴 일', '2026-10-20', 'EA', 'origin'], ['폴더 없는 일', '2026-10-20', '', 'origin']]);
+  // Later edits elsewhere do not stand in its way (not an exact ↶).
+  const edited = programClone(sent);
+  space(edited).text = M.updateTask(space(edited).text, id(edited, '최근 일'), { title: '최근 일 고침' });
+  const back = ok(reviveProgramTrashBundle(edited, { ...base(edited), lineId: id(edited, '버릴 일') })).data;
+  assert.equal(back.receipts.length, edited.receipts.length + 1, 'one save');
+  assert.equal(raw(back, docId), ['[2026-10-20]', '- /EA', '  - [ ] 오래된 일', '    - [ ] 하위', '    - 메모: 언젠가', '  - [ ] 버릴 일', '', '[2026-11-10]', '- /EA', '  - [ ] 최근 일 고침'].join('\n'));
+  assert.equal(M.tasks(space(back).text).find(task => task.title === '버릴 일')!.id, id(data, '버릴 일'), 'its id');
+  assert.deepEqual(space(back).text.progressRecords, space(data).text.progressRecords, 'its record');
+  assert.equal(bin(back), ['[2026-10-20]', '- 원래 글: 하루 기록', '- [ ] 폴더 없는 일'].join('\n'), 'its empty folder line went');
+  const both = ok(reviveProgramTrashBundle(back, { ...base(back), lineId: id(back, '폴더 없는 일') })).data;
+  assert.equal(bin(both), '', 'a day left with nothing goes whole');
+  assert(raw(both, docId).includes('  - [ ] 버릴 일\n- [ ] 폴더 없는 일\n'));
+  // Its day's section gone: made where the date chip would make it (before 11/10), with its folder line.
+  const gone = programClone(sent);
+  space(gone).text = M.editTextResult(space(gone).text, docId, '[2026-11-10]\n- /EA\n  - [ ] 최근 일', { folderText: true }).state;
+  const made = ok(reviveProgramTrashBundle(gone, { ...base(gone), lineId: id(gone, '버릴 일') })).data;
+  assert.equal(raw(made, docId), ['[2026-10-20]', '- /EA', '  - [ ] 버릴 일', '', '[2026-11-10]', '- /EA', '  - [ ] 최근 일'].join('\n'));
+  assert.equal(M.tasks(space(made).text).find(task => task.title === '버릴 일')!.date, '2026-10-20');
+  // Its document gone (in 휴지통): [미정] of a new document of its name.
+  const deleted = programClone(sent);
+  space(deleted).documentTrash = { ...space(deleted).documentTrash, [docId]: { trashedAt: NOW, wasArchived: false } };
+  space(deleted).archivedDocumentIds = [...space(deleted).archivedDocumentIds, docId];
+  assert.equal(programTrashBundles(space(deleted))[0].back, 'undated');
+  const elsewhere = ok(reviveProgramTrashBundle(deleted, { ...base(deleted), lineId: id(deleted, '버릴 일') }));
+  assert.notEqual(elsewhere.result, docId);
+  assert.equal(M.getDocument(space(elsewhere.data).text, elsewhere.result)!.title, '하루 기록');
+  assert.equal(raw(elsewhere.data, elsewhere.result), '[미정]\n- /EA\n  - [ ] 버릴 일');
+  assert.equal(M.tasks(space(elsewhere.data).text).find(task => task.title === '버릴 일')!.date, null);
+  // A line that is not a bundle is refused, nothing changed.
+  const refused = reviveProgramTrashBundle(sent, { ...base(sent), lineId: 'line-none' });
+  assert(!refused.ok && refused.reason === 'missing' && refused.data === sent);
 });
