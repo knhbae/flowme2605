@@ -18,7 +18,9 @@ export const PROGRAM_FIRST_CLEANUP_KEY = (actorId: string) => `flow:first-cleanu
 type Step = 'merge' | 'close' | 'stale';
 type Done = { step: Step; text: string; before: ProgramFirstCleanupBefore | null; after: string; state: 'done' | 'undone' | 'refused' };
 
-export function ProgramFirstCleanup(props: { actorId: string; space: ProgramPrivateSpace; today: string; disabled: boolean; mutate: ProgramMutate; onMessage(text: string): void }) {
+export function ProgramFirstCleanup(props: { actorId: string; space: ProgramPrivateSpace; today: string; disabled: boolean; mutate: ProgramMutate; onMessage(text: string): void;
+  /** 오늘 탭 ② (W-CARRY-12): the last day tasks were written is more than 14 days back; asked again (once a day) instead of the morning button. */
+  stale?: boolean }) {
   const { actorId, space, today } = props;
   const sheet = useRef<HTMLDialogElement | null>(null);
   const closePlan = useMemo(() => programAlreadyContinuedPlan(space, today), [space, today]);
@@ -33,8 +35,8 @@ export function ProgramFirstCleanup(props: { actorId: string; space: ProgramPriv
   useEffect(() => {
     let storage: Storage | null = null;
     try { storage = window.localStorage; } catch { return; }
-    const key = PROGRAM_FIRST_CLEANUP_KEY(actorId);
-    if (!storage || storage.getItem(key) || (!twins.length && !closePlan.length && !stalePlan.length)) return;
+    const key = PROGRAM_FIRST_CLEANUP_KEY(actorId), asked = storage?.getItem(key);
+    if (!storage || asked && !(props.stale && asked < today) || (!twins.length && !closePlan.length && !stalePlan.length)) return;
     try { storage.setItem(key, today); } catch { return; }
     if (!sheet.current?.open) sheet.current?.showModal();
     // Asked when the 오늘 tab opens with something to list, not again on every change of it.

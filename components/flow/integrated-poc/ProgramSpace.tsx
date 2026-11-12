@@ -26,12 +26,12 @@ import { programDayDialogStep, programMonthTitle, type ProgramDayDialogMode } fr
 import { moveProgramTaskDates, programTaskDateChoices, programTaskDateMovesSocial, programTaskDatesMovedText, programTaskDateState, programTaskDateUndo, type ProgramTaskDateMove } from '@/lib/flow/integrated-poc/task-date-move';
 import { PROGRAM_SELECT_REASON, programDayPicked, programSelectBlock, programSelectDay, programSelectRange, programToggleSelection, type ProgramSelectBlock } from '@/lib/flow/integrated-poc/select-mode';
 import { programDayCount, programExecutionDay, programExecutionList, programExecutionRowMeta, readProgramTaskDatePresentation, type ProgramExecutionListItem } from '@/lib/flow/integrated-poc/execution-presentation';
-import { programCalendarDate } from '@/lib/flow/integrated-poc/date-label';
+import { programCalendarDate, programDaysBetween, programShortDate } from '@/lib/flow/integrated-poc/date-label';
 import { timeRo } from '@/lib/flow/integrated-poc/number-particle';
 import { programFirstOfficialFlows } from '@/lib/flow/integrated-poc/first-flows';
 import { useAlphaOfficialActors } from './AlphaOfficialActors';
 import { programCarryoverSummary, programCarryoverGroupScope, carryProgramTasksToToday, planProgramCarryover, programCarryoverBefore, programCarryoverItems, programCarryoverPlaces, programCarryoverProof, restoreProgramCarryover,
-  PROGRAM_CARRYOVER_LIMIT, type ProgramCarryoverBefore, type ProgramCarryoverChoice, type ProgramCarryoverItem, type ProgramCarryoverPlan } from '@/lib/flow/integrated-poc/carryover';
+  PROGRAM_CARRYOVER_LIMIT, programMorningCarry, type ProgramCarryoverBefore, type ProgramCarryoverChoice, type ProgramCarryoverItem, type ProgramCarryoverPlan, type ProgramMorningCarry } from '@/lib/flow/integrated-poc/carryover';
 import { programOpening } from '@/lib/flow/integrated-poc/carryover-opening';
 import { completeProgramRepeat, convertProgramLegacyRepeat, programLegacyRepeatSeries, programRepeatLine, programRepeatSeen, readProgramRepeatCheck, settleProgramRepeatLines, undoProgramRepeat,
   PROGRAM_LEGACY_REPEAT_CARD, PROGRAM_LEGACY_REPEAT_DONE, PROGRAM_LEGACY_REPEAT_REFUSED, PROGRAM_REPEAT_UNDO_REFUSED, type ProgramRepeatCheck } from '@/lib/flow/integrated-poc/repeat-commands';
@@ -471,6 +471,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const carrySeen = useRef<ProgramPrivateSpace | null>(null);
   const [carryNotice, setCarryNotice] = useState<CarryNotice | null>(null), [carryNoticeHeld, setCarryNoticeHeld] = useState(false);
   const carryBusy = useRef(false), [carryPending, setCarryPending] = useState(false);
+  // 오늘 탭 ② (W-CARRY-12, mockup ③): after the morning press, 'n개 이어 씀 (… 옮김 · … 복사) · 되돌리기' stays under the
+  // head while the writing is as that save left it (its 되돌리기 is exact).
+  const [morningDone, setMorningDone] = useState<{ actorId: string; text: string; before: ProgramCarryoverBefore; after: string } | null>(null);
   const [carryOpen, setCarryOpenState] = useState(false);
   useEffect(() => { try { if (localStorage.getItem(CARRY_OPEN_KEY) === 'open') setCarryOpenState(true); } catch { /* folded, then */ } }, []);
   const setCarryOpen = (open: boolean) => { setCarryOpenState(open); try { localStorage.setItem(CARRY_OPEN_KEY, open ? 'open' : 'folded'); } catch { /* kept for this visit */ } };
@@ -1112,8 +1115,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const sameGroupScope = useMemo(() => programCarryoverGroupScope(space), [space]);
   const carryPast = carryShown ? executionList.filter(item => item.kind === 'row' && item.group === 'past-incomplete') : [];
   // F8 1단계 (CO-3): the late card from one late line (it was more than three), so 지난 미완료 is always folded under it.
-  const carryPlan = useMemo(() => carryShown && carryPast.length > 0 ? planProgramCarryover(space, today) : null, [carryShown, carryPast.length > 0, space, today]);
-  const carryCard = !!carryPlan && carrySummary.count > 0;
+  // 오늘 탭 ② (W-CARRY-12, mockup ③): the morning button takes the last day tasks were written (not the calendar's
+  // yesterday); the open lines of the days before fold to '밀린 일 n개 · 보기'. More than 14 days back, the first cleanup
+  // asks instead of the button.
+  const morning = useMemo(() => carryShown && carryPast.length > 0 ? programMorningCarry(space, today) : null, [carryShown, carryPast.length > 0, space, today]);
+  const carryCard = !!morning && carrySummary.count > 0;
+  const morningHolds = useMemo(() => !!morningDone && morningDone.actorId === actorId && programCarryoverProof(space) === morningDone.after, [morningDone, actorId, space]);
   // N11b: what the sheet's choices would do now (its save button says how many memos a deletion takes along).
   const carrySheetPlan = useMemo(() => carryItems && carrySheetSpace && period === 'today' ? planProgramCarryover(carrySheetSpace, today, undefined,
     new Map(carryItems.map(item => [item.kind, carryChoices.get(item.kind) ?? item.choice]))) : null, [carryItems, carryChoices, carrySheetSpace, period, today]);
@@ -2934,7 +2941,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   </div>;
   /** N11a [오늘로 옮기기]: the card's plan in one save, all or none (it waits out an automatic read). A line changed since
    *  the card showed it moves nothing. What 되돌리기 puts back is taken inside the save, from the very space it changed. */
-  async function carryToToday(plan: ProgramCarryoverPlan, sheet?: { text: string; undated: boolean }): Promise<'saved' | 'conflict' | null> {
+  async function carryToToday(plan: ProgramCarryoverPlan, sheet?: { text: string; undated: boolean }, early?: ProgramMorningCarry): Promise<'saved' | 'conflict' | null> {
     if (!plan.lines.length || carryBusy.current || pageComposing.current) return null;
     const requestId = programId('carryover');
     let before: ProgramCarryoverBefore | null = null, after = '';
@@ -2953,6 +2960,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           : [kinds ? `${kinds}가지를 오늘로 옮겼습니다.` : '', plan.removed ? kinds ? `겹친 줄과 끝낸 일의 남은 줄 ${plan.removed}개는 지웠습니다.` : `끝낸 일의 남은 줄 ${plan.removed}개를 지웠습니다.` : '',
             plan.left ? `남은 ${plan.left}줄은 한 번 더 누르면 정리됩니다.` : ''].filter(Boolean).join(' ');
         if (sheet) carrySheet.current?.close();
+        if (early && before) {
+          const parts = [early.moved ? `${early.moved}개 옮김` : '', early.continued ? `${early.continued}개 복사` : ''].filter(Boolean).join(' · ');
+          setMorningDone({ actorId, text: `${early.lines}개 이어 씀${parts ? ` (${parts})` : ''}`, before, after });
+          setCarryNotice({ actorId, text: `${early.lines}개 이어 썼습니다`, before, after, shownAt: Date.now() });
+          return 'saved';
+        }
         setCarryNotice({ actorId, text, before, after, ...(sheet?.undated ? { undatedView: true } : {}), shownAt: Date.now() });
         return 'saved';
       }
@@ -2972,28 +2985,42 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     try {
       const result = await countedMutate('밀린 일 되돌리기', current => restoreProgramCarryover(current, { actorId, requestId, expectedSpace: current.spaces[actorId], before, after: notice.after }),
         { history: true, awaitAutomaticRead: true });
-      if (result.ok) setCarryNotice({ ...notice, text: '정리 전으로 되돌렸습니다', before: null, undone: true, shownAt: Date.now() });
+      if (result.ok) { setCarryNotice({ ...notice, text: '정리 전으로 되돌렸습니다', before: null, undone: true, shownAt: Date.now() }); setMorningDone(current => current?.after === notice.after ? null : current); }
       else if (result.reason === 'conflict') setCarryNotice({ ...notice, text: '그 뒤 바뀐 할 일이 있어 되돌리지 않았습니다', before: null, refused: true, shownAt: Date.now() });
       else if (result.reason !== 'busy') setMessage(programErrorMessage(result.reason));
     } finally { carryBusy.current = false; setCarryPending(false); }
   }
   const carryWriting = composingShown || Object.values(dirty.current).some(Boolean);
-  const carryRepeats = (carryPlan?.repeats ?? 0) + carryPast.filter(item => item.kind === 'row' && item.entry.kind === 'occurrence').length;
-  const carryCardContent = carryCard && carryPlan && <section className={styles.carryCard} aria-label="밀린 일" data-carryover>
-    <p className={styles.carryTitle}>{opening.since ? `${programCalendarDate(opening.since, today, false)} 이후 처음 열었습니다 · 밀린 일 ${carrySummary.count}가지`
-      : `밀린 일 ${carrySummary.count}가지 · ${carrySummary.lines}줄`}</p>
-    {carryPlan.first && <p className={styles.carryMeta}>{programCalendarDate(carryPlan.first, today, false)}부터{carryPlan.repeated ? ' · 같은 일이 여러 날에 있음' : ''}</p>}
-    <div className={styles.carryActions}>
-      {carryPlan.lines.length > 0 && <button type="button" className={styles.carryMove} disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}
-        aria-busy={carryPending || undefined} onClick={() => void carryToToday(carryPlan)}>{carryPending ? '이어 쓰는 중…' : `어제 남은 일 이어 쓰기 · ${carryPlan.toToday}`}</button>}
+  const carryRepeats = (morning?.plan.repeats ?? 0) + carryPast.filter(item => item.kind === 'row' && item.entry.kind === 'occurrence').length;
+  // 오늘 탭 ② (W-CARRY-12, mockup ③): '이어 쓸 일 n개 · 어제 11월 12일 (목)' and [어제 일 n개 이어 쓰기] ('11/9(월) 일 n개' when
+  // the last day tasks were written is not yesterday); hidden with nothing to take or that day more than 14 days back (the
+  // first cleanup asks then). The days before: '밀린 일 n개' with 보기 (the rows) and 하나씩 정리. All counted in task lines.
+  const morningYesterday = !!morning && programDaysBetween(morning.day, today) === 1;
+  const morningButton = !!morning && morning.lines > 0 && !morning.stale && !morningHolds;
+  const carryCardContent = carryCard && morning && <section className={styles.carryCard} aria-label="밀린 일" data-carryover>
+    {morningHolds && morningDone && <div className={styles.carryDone} data-morning-done>
+      <p><span>{morningDone.text}</span>{!carryPending && <button type="button" className={styles.carryUndo}
+        onClick={() => void undoCarry({ actorId, text: morningDone.text, before: morningDone.before, after: morningDone.after, shownAt: Date.now() })}>되돌리기</button>}</p>
+      <small className={styles.carryNote}>오늘 구획을 고치기 전까지 이 자리에 남습니다.</small>
+    </div>}
+    {morningButton && <>
+      <p className={styles.carryTitle} data-morning-head>{`이어 쓸 일 ${morning.lines}개 · ${morningYesterday ? '어제 ' : ''}${programCalendarDate(morning.day, today)}`}</p>
+      <div className={styles.carryActions}>
+        <button type="button" className={styles.carryMove} data-morning-carry disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}
+          aria-busy={carryPending || undefined} onClick={() => void carryToToday(morning.plan, undefined, morning)}>
+          {carryPending ? '이어 쓰는 중…' : `${morningYesterday ? '어제' : programShortDate(morning.day)} 일 ${morning.lines}개 이어 쓰기`}</button>
+      </div>
+      <small className={styles.carryNote}>기록이 없는 일은 오늘로 옮기고, 진행률·체크·메모가 있는 일은 복사해 지난 줄에 이어감을 남깁니다.</small>
+      {carryWriting && <small className={styles.carryNote} role="status">쓰기를 마치면 이어 쓸 수 있습니다</small>}
+      {morning.plan.finished > 0 && <small className={styles.carryNote}>그 뒤에 끝낸 일의 남은 줄 {morning.plan.finished}가지는 지웁니다</small>}
+      {morning.plan.left > 0 && <small className={styles.carryNote}>한 번에 {PROGRAM_CARRYOVER_LIMIT}줄까지 이어 씁니다 · 남은 {morning.plan.left}줄은 한 번 더 누르면 됩니다</small>}
+    </>}
+    {(morning.older > 0 || !morningButton && !morningHolds) && <div className={styles.carryLate} data-late-line>
+      <b>{opening.since ? `${programCalendarDate(opening.since, today, false)} 이후 처음 열었습니다 · ` : ''}밀린 일 {morning.older > 0 ? morning.older : carrySummary.lines}개</b>
+      <button type="button" className={styles.carryFold} aria-expanded={carryOpen} onClick={() => setCarryOpen(!carryOpen)}>{carryOpen ? '접기' : '보기'}</button>
       <button type="button" className={styles.carryOne} aria-haspopup="dialog" disabled={carryPending} onClick={() => openCarrySheet()}>하나씩 정리</button>
-    </div>
-    {carryWriting && <small className={styles.carryNote} role="status">쓰기를 마치면 정리할 수 있습니다</small>}
-    {carryPlan.finished > 0 && <small className={styles.carryNote}>끝낸 일의 남은 줄 {carryPlan.finished}가지는 지웁니다</small>}
+    </div>}
     {carryRepeats > 0 && <small className={styles.carryNote}>반복 {carryRepeats}개는 체크하면 다음 회차로 넘어갑니다</small>}
-    {carryPlan.split > 0 && <small className={styles.carryNote}>분류가 다른 같은 글 {carryPlan.split}가지는 합치지 않고 따로 옮깁니다</small>}
-    {carryPlan.left > 0 && <small className={styles.carryNote}>한 번에 {PROGRAM_CARRYOVER_LIMIT}줄까지 정리합니다 · 남은 {carryPlan.left}줄은 한 번 더 누르면 정리됩니다</small>}
-    <button type="button" className={styles.carryFold} aria-expanded={carryOpen} onClick={() => setCarryOpen(!carryOpen)}>{carryOpen ? '접기' : `펼쳐 보기 · ${carryPast.length}줄`}</button>
   </section>;
   const releaseCarryNotice = () => { if (!carryNoticeHeld) return; setCarryNoticeHeld(false); setCarryNotice(current => current && { ...current, shownAt: Date.now() }); };
   const carryNoticeContent = carryNotice?.actorId === actorId && <div className={styles.orderNotice} data-carry-notice onPointerDown={() => setCarryNoticeHeld(true)}
@@ -3735,7 +3762,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           </dialog></div>}
         {/* N11a: the 밀린 일 card, over 오늘's list (never with the calendar). */}
         {/* 오늘 탭 처음 정리 (W-CARRY-13·15·18·19, 총괄 11/12): asked once on this device; its 되돌리기 stays for this visit. */}
-        {period === 'today' && !monthGrid && <ProgramFirstCleanup actorId={actorId} space={space} today={today} disabled={saving || carryPending || !!props.hostBusy?.()} mutate={countedMutate} onMessage={setMessage} />}
+        {period === 'today' && !monthGrid && <ProgramFirstCleanup actorId={actorId} space={space} today={today} stale={!!morning?.stale} disabled={saving || carryPending || !!props.hostBusy?.()} mutate={countedMutate} onMessage={setMessage} />}
         {!monthGrid && carryCardContent}{carrySheetContent}{sameSheetContent}
         {/* Flow pipeline S3: the Flow taken just now, its days marked; × lets it go (nothing saved). */}
         {monthGrid && shownHighlight && <div className={styles.flowHighlight} data-flow-highlight={shownHighlight.documentId}>

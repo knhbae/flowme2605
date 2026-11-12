@@ -435,6 +435,12 @@
 .space .carryActions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 4px; }
 .space .carryActions .carryMove { margin-top: 0; }
 .space .carryOne { min-height: 44px; padding: 0 14px; border: 1px solid var(--flowme-b-line); border-radius: 10px; background: var(--flowme-b-surface); color: var(--flowme-b-primary); font-size: 15px; }
+/* 오늘 탭 ② (W-CARRY-12, mockup ③): 'n개 이어 씀 · 되돌리기' under the head, and the one '밀린 일 n개 · 보기' line. */
+.space .carryDone { display: grid; gap: 2px; width: 100%; }
+.space .carryDone p { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin: 0; font-size: 15px; line-height: 22px; font-weight: 700; color: var(--flowme-b-ink); }
+.space .carryUndo { min-height: 44px; padding: 0 4px; border: 0; background: transparent; color: var(--flowme-b-primary); font-size: 15px; font-weight: 700; }
+.space .carryLate { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; width: 100%; }
+.space .carryLate b { font-size: 15px; line-height: 22px; color: #7a4f08; margin-right: auto; }
 .carrySheet { padding-bottom: 0; }
 .carrySheetHead { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .carrySheetHead h2 { margin: 0; font-size: 18px; line-height: 26px; }
