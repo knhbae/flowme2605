@@ -54,21 +54,6 @@ export function saveProgramDocumentRevision(data: ProgramData, input: ProgramPri
   return finish(data, next, input, 'document-revision-save', fields, id);
 }
 
-/** Redesign 3 (W-TXT-03): the snapshot taken before the account's text cleanup, inside that same save: one saved
- *  revision (저장본) of each document it changes, as [저장] makes. A document whose last revision says the same gets none.
- *  False when the revisions would pass their limit (nothing is changed then). */
-export function snapshotProgramDocumentRevisions(space: ProgramPrivateSpace, documentIds: readonly string[], now: string): boolean {
-  if (!instant(now)) return false;
-  const docs = documentIds.flatMap(id => { const doc = M.getDocument(space.text, id); return doc && !isRetention(space, doc.id) ? [doc] : []; });
-  const fresh = docs.filter(doc => {
-    const previous = space.draftRevisions.filter(revision => revision.documentId === doc.id).at(-1);
-    return !(previous?.title === doc.title && programSame(previous.identity, capture(space, doc)));
-  });
-  if (space.draftRevisions.length + fresh.length > 1000) return false;
-  for (const doc of fresh) space.draftRevisions.push({ id: programId('document-revision'), documentId: doc.id, title: doc.title, raw: M.raw(doc), createdAt: now, identity: capture(space, doc) });
-  return true;
-}
-
 function rewriteCheck(line: TextLine, done: boolean, title?: string): TextLine {
   const parts = /^( *-\s+\[)([^\]\r\n]*)(\](?:\s+|$))(.*?)(\s*)$/.exec(line.text);
   if (!parts) return line;

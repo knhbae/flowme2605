@@ -1,7 +1,6 @@
 import { programClone, type ProgramData, type ProgramPrivateSpace, type ProgramTransition } from './contract';
 import { programSame } from './controller';
 import { transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
-import { snapshotProgramDocumentRevisions } from './document-revisions';
 import { programProgressTextPlan, type ProgramProgressTextChange } from './progress-text';
 import { applyProgramDateLineChoices, programDateLineAccountPlan, programDateLinesKeepLines, type ProgramDateLineChoices, type ProgramDateLinePlan } from './date-property-migration';
 import { programStateHash, programTaskRepeatMembers } from './task-date-move';
@@ -9,8 +8,10 @@ import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspa
 
 /** Redesign 1 + 3 (W-TXT-01·03, 총괄 11/12): the account's writing is brought to the new rules once, as one list asked
  *  when the app opens: a box line's progress (latest record 1-99) into its text as [n%], and the '- 날짜:' lines
- *  (date-property-migration.ts). [바꾸기] takes a snapshot of every document it changes (a saved revision each, in the
- *  same save), applies all of it in one save, and 되돌리기 puts the whole writing back in one save. */
+ *  (date-property-migration.ts). [바꾸기] applies all of it in one save, and 되돌리기 puts the whole writing back in one save.
+ *  The snapshot is that save's own record: Alpha keeps every private save with its inverse (↶ takes the whole text back),
+ *  and the screen holds the writing before it for [되돌리기]. Saved revisions (저장본) are not written: an Alpha client
+ *  command may not change them (ALPHA_M3_FIELDS). */
 export type ProgramTextCleanupPlan = {
   progress: { documentId: string; title: string; changes: ProgramProgressTextChange[] }[];
   dates: ProgramDateLinePlan[];
@@ -51,12 +52,12 @@ export function applyProgramTextCleanupText(text: TextWorkspaceState, plan: Prog
   return programDateLinesKeepLines(progressed, next) && M.validate(next) ? next : null;
 }
 
-/** [바꾸기]: only while the account reads the same list; the snapshot and the change are one save. */
-export function applyProgramTextCleanup(data: ProgramData, input: ProgramPrivateMutationBase & { plan: ProgramTextCleanupPlan; choices: ProgramDateLineChoices; now: string }): ProgramTransition<string> {
+/** [바꾸기]: only while the account reads the same list; one save. */
+export function applyProgramTextCleanup(data: ProgramData, input: ProgramPrivateMutationBase & { plan: ProgramTextCleanupPlan; choices: ProgramDateLineChoices }): ProgramTransition<string> {
   const fields = {
     progress: input.plan.progress.map(doc => ({ documentId: doc.documentId, changes: doc.changes.map(change => ({ lineId: change.lineId, before: change.before, after: change.after })) })),
     dates: input.plan.dates.map(doc => ({ documentId: doc.documentId, items: doc.items.map(item => ({ ownerId: item.ownerId, lineIds: item.lineIds, value: item.value, kind: item.kind })) })),
-    choices: input.choices, now: input.now,
+    choices: input.choices,
   };
   return transitionProgramPrivateSpace(data, input, 'private-text-cleanup', fields, space => {
     const plan = programTextCleanupPlan(space);
@@ -64,7 +65,6 @@ export function applyProgramTextCleanup(data: ProgramData, input: ProgramPrivate
     const documents = programTextCleanupDocuments(plan);
     const next = applyProgramTextCleanupText(space.text, plan, input.choices);
     if (!next) return { result: documents[0], reason: 'unresolved' };
-    if (!snapshotProgramDocumentRevisions(space, documents, input.now)) return { result: documents[0], reason: 'limit' };
     space.text = next;
     return { result: documents[0] };
   });

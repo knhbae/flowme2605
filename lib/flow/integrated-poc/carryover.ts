@@ -62,8 +62,7 @@ const dateProperty = (row: TextRow) => row.kind === 'property' && /^ *-\s+날짜
  *  under a task, a progress box, under a line of that kind, tasks or held lines under it, or lines under it (a memo,
  *  say) that the line which stays does not have. */
 export type ProgramCarryoverBlock = 'repeat' | 'locked' | 'progress-complete' | 'recorded' | 'recorded-finished' | 'bound' | `linked:${string}` | `shape:${string}`;
-// Redesign 3: saved revisions (저장본, also the cleanup's snapshot) are copies of the past writing, not a hold on its lines.
-const own = new Set(['text', 'timelineOrders', 'executionTimelineOrders', 'position', 'draftRevisions']);
+const own = new Set(['text', 'timelineOrders', 'executionTimelineOrders', 'position']);
 type Shape = { block: ProgramCarryoverBlock } | { under: string; rows: TextRow[] };
 
 /** Where tasks are written: their documents' rows (each parsed once), and each task's 분류 by name. */
