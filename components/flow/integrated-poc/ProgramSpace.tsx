@@ -60,7 +60,7 @@ import { ProgramDocumentProvenance } from './ProgramDocumentProvenance';
 import { ProgramPersonalAuthoring } from './ProgramPersonalAuthoring';
 import { programRowPatchEnabled } from '@/lib/flow/integrated-poc/typing-row-patch';
 import { applyProgramParseCache } from '@/lib/flow/integrated-poc/typing-parse-cache';
-import { PROGRAM_DAY_CLOSE_HOUR, programDeferPlan, programFlowRuns, programRechecks, readProgramDeferChoice, writeProgramDeferChoice,
+import { PROGRAM_DAY_CLOSE_HOUR, programDeferPlan, programFlowRuns, programRechecks, programTaskHasEveningRecord, readProgramDeferChoice, writeProgramDeferChoice,
   type ProgramDeferMode, type ProgramDeferPlan, type ProgramFlowRun, type ProgramRecheck } from '@/lib/flow/integrated-poc/flow-run-progress';
 import { ProgramFlowRuns, ProgramRechecks } from './ProgramFlowRuns';
 import { ProgramDeferAsk } from './ProgramDeferAsk';
@@ -3307,10 +3307,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                 for the rest (a long press opens the date sheet); a series' occurrence keeps its own controls. */}
             {closing() && item.kind === 'row' && value < 100 && !moving && (readProgramRepeatMarker(task.title) && !repeatRow?.block
               ? <button type="button" className={styles.closeAction} data-close-action="skip" aria-label={`${programRepeatTitle(task.title)} 이번 회차 건너뛰기`} onClick={() => skipRepeatRound(task)}>건너뛰기</button>
-              : !programTaskRepeatMember(space, task.id) && <button type="button" className={styles.closeAction} data-close-action="tomorrow" aria-label={`${task.title} 내일로`}
+              : !programTaskRepeatMember(space, task.id) && (programTaskHasEveningRecord(space.text, task)
+                // W-CARRY-16 (총괄 11/12): a task with a record ([n%], a progress record, a checked subtask) is not moved in the
+                // evening; it is continued tomorrow morning (밀린 일's 이어 쓰기).
+                ? <span className={styles.closeNote} data-close-action="continue">내일 아침 이어 쓰기</span>
+                : <button type="button" className={styles.closeAction} data-close-action="tomorrow" aria-label={`${task.title} 내일로`}
                 onClick={() => { if (closeHold.current?.fired) { closeHold.current = null; return; } deferTask(task, programShiftDate(today, 1)); }}
                 onPointerDown={() => closeHoldStart(task)} onPointerUp={closeHoldCancel} onPointerLeave={closeHoldCancel} onPointerCancel={closeHoldCancel}
-                onContextMenu={event => event.preventDefault()}>내일</button>)}
+                onContextMenu={event => event.preventDefault()}>내일</button>))}
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}><ProgramIcon name="more" size={20} /></button>

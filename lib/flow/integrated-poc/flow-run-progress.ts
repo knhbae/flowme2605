@@ -2,7 +2,7 @@ import type { ProgramData, ProgramPrivateSpace } from './contract';
 import { programDaysBetween } from './date-label';
 import { programShiftDate } from './execution';
 import { programTaskRepeatMember } from './task-date-move';
-import { textWorkspaceModel as M, type TextTask } from './text-workspace';
+import { textWorkspaceModel as M, type TextTask, type TextWorkspaceState } from './text-workspace';
 import { programIsWaitTitle, programWaitDays, programWaitParentTitle } from './wait-title';
 
 /** F12 1차 (PRD §20, W-FLOW-02·04·05·07, 11/11): the 오늘 tab's progress lines, one per running Flow execution — a public
@@ -170,6 +170,15 @@ export function programRechecks(space: ProgramPrivateSpace, today: string): Prog
     }
   }
   return out;
+}
+
+/** W-CARRY-16 (총괄 11/12): whether a task has a record — progress 1-99 in its text ([n%]) or as its current value, a
+ *  progress record above 0 on any day, or a checked subtask. The evening's [내일] moves only tasks without one; a task
+ *  with one is continued the next morning ('내일 아침 이어 쓰기'). */
+export function programTaskHasEveningRecord(text: TextWorkspaceState, task: TextTask): boolean {
+  const current = M.currentProgress(text, task.id) ?? 0, typed = task.inputPercent ?? 0;
+  return current > 0 && current < 100 || typed > 0 && typed < 100
+    || M.progressHistory(text, task.id).some(record => record.percent > 0) || task.subchecks.some(sub => sub.done);
 }
 
 /** W-FLOW-08·11: today's open tasks for the day close, each with its action: [건너뛰기] for a repeat round, else [내일]. */
