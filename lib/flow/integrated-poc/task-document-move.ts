@@ -2,6 +2,7 @@ import { programClone, programFailure, programId, type ProgramData, type Program
 import { programSame } from './controller';
 import { transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
+import { programDateHeadIndex } from './input-bar';
 
 const documents = (text: TextWorkspaceState) => [...text.documents, ...text.flows];
 const items = (text: TextWorkspaceState) => documents(text).flatMap(doc => M.parseDocument(doc, text).items);
@@ -39,17 +40,24 @@ export function moveProgramPersonalTaskText(text: TextWorkspaceState, taskId: st
     return { id: line.id, text: '  '.repeat(Math.max(0, row.depth - selection.depth)) + line.text.trimStart() };
   });
   sourceNext.lines = sourceNext.lines.filter(line => !movedIds.has(line.id));
-  if (targetNext.lines.length && targetNext.lines.at(-1)!.text.trim()) targetNext.lines.push({ id: programId('move-separator'), text: '' });
-  targetNext.lines.push(...moved);
   for (const binding of next.bindings) if (binding.docId === source.id && movedIds.has(binding.lineId)) binding.docId = target.id;
-  // Moving out of a date section must not reschedule the work. Pin only changed inheritance.
-  const incoming = new Map(items(next).map(item => [item.id, item]));
-  for (const before of movedItems) {
-    if (incoming.get(before.id)?.date === before.date) continue;
-    if (before.explicitDate) return null;
-    const index = targetNext.lines.findIndex(line => line.id === before.id);
-    if (index < 0) return null;
-    targetNext.lines.splice(index + 1, 0, { id: programId('move-date'), text: `${'  '.repeat(before.depth - selection.depth + 1)}- 날짜: ${before.date ?? '미정'}` });
+  // Moving to another document must not reschedule the work. Redesign 3 (DECISION-1): the day is the date section, so
+  // the block goes to the end of its day's section there (a heading made where the writing bar would make it), not to
+  // the end with a '- 날짜:' line. A document without headings takes an undated task at its end.
+  const heads = M.parseDocument(targetNext, next).rows.filter(row => row.kind === 'date');
+  const day = heads.filter(row => row.date === task.date).at(-1);
+  let at = targetNext.lines.length;
+  if (day) {
+    at = heads.find(row => row.index > day.index)?.index ?? targetNext.lines.length;
+    while (at > day.index + 1 && !targetNext.lines[at - 1].text.trim()) at -= 1;
+    targetNext.lines.splice(at, 0, ...moved);
+  } else if (task.date === null && !heads.length) {
+    if (targetNext.lines.length && targetNext.lines.at(-1)!.text.trim()) targetNext.lines.push({ id: programId('move-separator'), text: '' });
+    targetNext.lines.push(...moved);
+  } else {
+    at = task.date ? programDateHeadIndex(targetNext.lines.map(line => line.text), task.date) : targetNext.lines.length;
+    const apart = at > 0 && targetNext.lines[at - 1].text.trim() ? [{ id: programId('move-separator'), text: '' }] : [];
+    targetNext.lines.splice(at, 0, ...apart, { id: programId('move-date'), text: `[${task.date ?? '미정'}]` }, ...moved);
   }
   if (!M.validate(next)) return null;
   const afterItems = new Map(items(next).map(item => [item.id, item]));

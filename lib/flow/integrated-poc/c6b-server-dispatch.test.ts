@@ -168,13 +168,14 @@ function commandFor(seed: ReturnType<typeof fixture>, ids: string[], requestId: 
     intent: { type: 'private-task-dates', moves: movesFor(seed.account, ids) } };
 }
 const nonDateLines = (space: ProgramPrivateSpace) => [...space.text.documents, ...space.text.flows]
-  .map(doc => [doc.id, doc.lines.filter(line => !/^\s*- 날짜: /.test(line.text)).map(line => [line.id, line.text])]);
+  // Redesign 3: an ordinary task moves under its day's heading, so the lines are compared without date lines, headings and blanks, in any order.
+  .map(doc => [doc.id, doc.lines.filter(line => !/^\s*- 날짜: /.test(line.text) && !/^(\[\d{4}-\d{2}-\d{2}\])?$/.test(line.text.trim())).map(line => [line.id, line.text]).sort()]);
 function withoutDates(space: ProgramPrivateSpace) {
   const copy = detached(space);
   for (const doc of [...copy.text.documents, ...copy.text.flows]) {
     // A task formerly inheriting its document date gains a date property line.
     // Those lines alone may be inserted/changed; every other RAW line and ID stays.
-    doc.lines = doc.lines.filter(line => !/^\s*- 날짜: /.test(line.text));
+    doc.lines = doc.lines.filter(line => !/^\s*- 날짜: /.test(line.text) && !/^(\[\d{4}-\d{2}-\d{2}\])?$/.test(line.text.trim())).sort((a, b) => a.id < b.id ? -1 : 1);
   }
   for (const imported of copy.copies) {
     for (const [id, override] of Object.entries(imported.itemOverrides)) {
@@ -208,7 +209,7 @@ test('C6b actual server handler dispatches a fresh mixed batch into exactly one 
   assert.deepEqual(nonDateLines(after.account.space), nonDateLines(before.account.space));
   const oldIds = new Set([...before.account.space.text.documents, ...before.account.space.text.flows].flatMap(doc => doc.lines.map(line => line.id)));
   const newLines = [...after.account.space.text.documents, ...after.account.space.text.flows].flatMap(doc => doc.lines).filter(line => !oldIds.has(line.id));
-  assert(newLines.every(line => /^\s*- 날짜: /.test(line.text)), 'only newly explicit date properties may gain IDs');
+  assert(newLines.every(line => /^\s*- 날짜: /.test(line.text) || /^(\[2026-11-02\])?$/.test(line.text)), 'only a copy\'s date property, a new day heading and its blank gain IDs');
   assert.deepEqual(withoutDates(after.account.space), withoutDates(before.account.space), 'only date properties and copy date override differ');
   assert.deepEqual(after.account.space.text.progressRecords, before.account.space.text.progressRecords);
   assert.deepEqual(M.tasks(after.account.space.text).map(row => [row.id, row.title, row.time ?? '']),

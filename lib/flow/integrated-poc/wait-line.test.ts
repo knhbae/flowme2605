@@ -90,7 +90,8 @@ test('[내일] moves the line to tomorrow\'s section with its 기다림, which k
   const raw = `[${TODAY}]\n- [x] 견적서 보내기\n- [ ] 답 확인: 견적서 보내기\n  - 기다림: 2026-11-10`;
   const { data, id, doc, docId } = writing(raw);
   const moved = ok(moveProgramTaskLocation(data, { ...base(data), taskId: id('답 확인: 견적서 보내기'), documentId: docId, target: { kind: 'date', date: TOMORROW } }));
-  assert.equal(doc(moved.data), `[${TODAY}]\n- [x] 견적서 보내기\n[${TOMORROW}]\n- [ ] 답 확인: 견적서 보내기\n  - 기다림: 2026-11-10`);
+  // Redesign 3: a new day heading gets a blank line before it.
+  assert.equal(doc(moved.data), `[${TODAY}]\n- [x] 견적서 보내기\n\n[${TOMORROW}]\n- [ ] 답 확인: 견적서 보내기\n  - 기다림: 2026-11-10`);
   const line = M.tasks(space(moved.data).text).find(task => task.title === '답 확인: 견적서 보내기')!;
   assert.deepEqual([line.id, line.date, line.waitSince], [id('답 확인: 견적서 보내기'), TOMORROW, '2026-11-10']);
   const back = ok(undoProgramTaskLocation(moved.data, { actorId: actor(data), documentId: docId, before: space(data).text, after: space(moved.data).text }));

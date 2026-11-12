@@ -11,8 +11,8 @@ import { programPreservesSeriesMetadata } from './recurrence-target';
 import { programPreservesLegacyQualityHold } from './legacy-map-review';
 import { programPreservesLegacyPlanExcluded } from './program-legacy-plan-target';
 
-/** N11a 밀린 일 정리 (PROPOSAL 5): the past unfinished tasks of 오늘 go to today in one save. A line stays where it was
- *  first written and gets `- 날짜: 오늘` (as C6 does), so the day it was first meant for stays in the text. Copies of one
+/** N11a 밀린 일 정리 (PROPOSAL 5): the past unfinished tasks of 오늘 go to today in one save. Redesign 3 (DECISION-1): a
+ *  line moves under today's heading with what is under it (no `- 날짜: 오늘` line); a day it leaves empty goes. Copies of one
  *  task (same words, same 분류, unfinished, nothing under them) become one line across documents, and the unfinished
  *  copies left over from a task finished later are taken out. Lines anything else points at (progress records,
  *  references, Flow or repeat sources, public copies) are never touched. */
@@ -316,10 +316,9 @@ export function planProgramCarryover(space: ProgramPrivateSpace, today: string, 
       plan.left += size - changes.length; cut = true;
     }
     changed += taken.length - taken.filter(line => line.action === 'hold').length; plan.lines.push(...taken);
-    const moving = taken.filter(line => line.action === 'date' || line.action === 'undated');
     plan.moved += taken.filter(line => line.action === 'date').length; plan.undated += taken.filter(line => line.action === 'undated').length;
     plan.removed += taken.filter(line => line.action === 'remove').length;
-    plan.newDateLines += moving.filter(line => !group.find(task => task.id === line.taskId)?.explicitDate).length;
+    // Redesign 3: a task moves under the day's heading; no press adds a '- 날짜:' line any more (the field stays 0).
     if (finished) plan.finished++; else if (written.length) plan.today++;
     if (taken.some(line => line.action === 'date') || !finished && written.length) plan.toToday++;
   }
@@ -380,13 +379,14 @@ export function carryProgramTasksToToday(data: ProgramData, input: ProgramPrivat
       const patched = patchProgramTask(space, line.taskId, { date: line.action === 'date' ? input.today : null });
       if (patched.reason) return patched;
     }
-    const dated = space.text, emptied = new Set<string>();
+    // Redesign 3: a task taken to today moves under today's heading, so a day it leaves empty can go as a removal's does.
+    const emptied = new Set<string>(input.lines.filter(line => line.action === 'date' || line.action === 'undated').map(line => tasks.get(line.taskId)!.docId));
     for (const line of input.lines.filter(line => line.action === 'remove' || line.action === 'drop')) {
       const next = M.removeTask(space.text, line.taskId);
       if (next === space.text) return { result: line.taskId, reason: 'unresolved' };
       space.text = next; emptied.add(tasks.get(line.taskId)!.docId);
     }
-    space.text = dropEmptiedDays(dated, space.text, emptied);
+    space.text = dropEmptiedDays(start.text, space.text, emptied);
     if (!M.validate(space.text) || !programPreservesLockedDocumentContent(start, space.text) || !programPreservesSeriesMetadata(start, space.text)
       || !programPreservesLegacyQualityHold(start, space.text) || !programPreservesLegacyPlanExcluded(start, space.text)) return { result: '', reason: 'unresolved' };
     // As a document's own save does: a day's hand order and the saved place forget the lines taken out.

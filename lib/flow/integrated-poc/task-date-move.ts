@@ -92,10 +92,12 @@ export const programTaskDateMovesSocial = (space: ProgramPrivateSpace, moves: re
 
 /** Moves the listed tasks, all or none, in one change. Each must still be as it was when picked (its date, time and
  *  whole state) and be open, active and outside a repeat, also one already on the new date (it is checked, not moved);
- *  a copy's task must resolve to exactly its copy (as for one task). Only the
- *  date (with a copy's date override) changes: ids, progress, time, text and the lines' places stay, the day orders
- *  too. The whole space is not compared, only these tasks, so an unrelated save in between does not block it.
- *  되돌리기 is the same command (programTaskDateUndo). A retry of the request changes nothing again. */
+ *  a copy's task must resolve to exactly its copy (as for one task). Redesign 3 (DECISION-1): a task free to move goes
+ *  under its new day's heading with what is under it (patchProgramTask); a copy's, a reference's or a repeat's date
+ *  (with a copy's override) changes in place. Ids, progress and time stay. The whole space is not compared, only these
+ *  tasks, so an unrelated save in between does not block it. 되돌리기 is the same command (programTaskDateUndo), or for a
+ *  list with no copy's task F12's exact restore of its lines (restoreProgramTaskDates). A retry of the request changes
+ *  nothing again. */
 export function moveProgramTaskDates(data: ProgramData, input: { actorId: string; requestId: string; moves: ProgramTaskDateMove[]; time?: ProgramTaskDateTime }): ProgramTransition<string> {
   if (!isAlphaTaskDateMoves(input.moves) || !Object.hasOwn(data.spaces, input.actorId)) return programFailure(data, 'invalid');
   // Codex f12a review P2-2 (11/12): a time picked with the date of a Flow step whose plan moves several steps is saved in
@@ -120,7 +122,14 @@ export function moveProgramTaskDates(data: ProgramData, input: { actorId: string
         || move.expected.state !== undefined && programTaskDateState(space, move.taskId) !== move.expected.state
         || before.done || M.currentProgress(space.text, move.taskId) === 100) return { result: move.taskId, reason: 'conflict' };
     }
-    for (const move of input.moves) {
+    // Redesign 3: moved lines go in the order they are written (documents, then lines), so a list gives the same
+    // writing whatever order it was picked in.
+    const docs = [...space.text.documents, ...space.text.flows], place = (taskId: string) => {
+      const doc = docs.findIndex(row => row.lines.some(line => line.id === taskId));
+      return [doc, doc < 0 ? -1 : docs[doc].lines.findIndex(line => line.id === taskId)];
+    };
+    const ordered = input.moves.map(move => ({ move, at: place(move.taskId) })).sort((a, b) => a.at[0] - b.at[0] || a.at[1] - b.at[1]).map(entry => entry.move);
+    for (const move of ordered) {
       const copy = copyOf(space, move.taskId);
       // The row detail's checks run for every task, also one already on the new date (it then does not change).
       const patched = patchProgramTask(space, move.taskId, { date: move.date });

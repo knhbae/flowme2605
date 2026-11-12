@@ -1051,11 +1051,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const row = currentRow(candidate.lineId), target = row?.progressTargetId, task = target ? M.tasks(before.working).find(item => item.id === target) : undefined;
     if (!task) return;
     setSuggestion(null);
-    // int9 r2 (W-NLDATE-07, 기타 int9 QA P2): a document without date heads only gets the date ('- 날짜:' under the task, in
-    // place); no date head is made and nothing moves. Otherwise the ⋮ date's own path (W-MENU-07).
-    const headless = !M.rowMeta(before.working, p.docId).some(item => item.kind === 'date');
-    const done = headless && target && !accessFor(candidate.lineId)?.reason ? applyDateOnly(target, candidate.date, task.time ?? '')
-      : applyDateChip(candidate.lineId, candidate.date), after = controller.getState();
+    // Redesign 3 (DECISION-1, 총괄 11/12): the ⋮ date's own path (W-MENU-07) in every document; one without date heads gets
+    // the day's head (where the writing bar would make it) and the task under it, no '- 날짜:' line (int9 r2's in-place
+    // date line is gone with the date lines).
+    const done = applyDateChip(candidate.lineId, candidate.date), after = controller.getState();
     if (after.raw === before.raw) return;
     const history = { docId: p.docId, taskId: task.id, before: before.working, after: after.working,
       date: candidate.date, time: task.time ?? '', raw: after.raw, redo: false, suggestion: true as const };
