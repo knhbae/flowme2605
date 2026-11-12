@@ -4,7 +4,7 @@ import test from 'node:test';
 import { programClone, type ProgramData, type ProgramTransition } from './contract';
 import { createProgramData } from './program-data';
 import { createProgramDocument, updateProgramTask } from './private-space';
-import { applyProgramDateLineChoices, programDateLineDefaults, programDateLinePlan, programDateLinesKeepLines } from './date-property-migration';
+import { applyProgramDateLineChoices, programDateLineDefaults, programDateLineOutcomes, programDateLinePlan, programDateLinesKeepLines } from './date-property-migration';
 import { applyProgramTextCleanup, programCleanupArchive, programCleanupArchiveStamp, programTextCleanupDocuments, programTextCleanupPlan, restoreProgramTextCleanup } from './text-cleanup';
 import { moveProgramTaskDates } from './task-date-move';
 import { moveTaskLocation } from './task-location-move';
@@ -195,6 +195,32 @@ test("Codex P1-2: a folder line with a line of spaces left under it stays (conve
   // With nothing left under it but the empty line between days, it goes as before.
   const bare = writing(CODEX.replace('\n  \n', '\n\n'), '빈 줄 기록');
   assert(raw(cleanup(bare.data), bare.docId).startsWith('[2026-11-09]\n\n[2026-11-12]\n- /회사'), raw(cleanup(bare.data), bare.docId));
+});
+
+test("Codex P1-3: a subtask's line follows its parent's day as chosen — gone when it says that day, else its 마감", () => {
+  const CODEX = ['[2026-11-09]', '- [ ] 부모', '  - 날짜: 2026-11-12', '  - [ ] 자식', '    - 날짜: 2026-11-12'].join('\n');
+  const { data, docId } = writing(CODEX);
+  const plan = programTextCleanupPlan(space(data))!, parent = plan.dates[0].items.find(row => row.title === '부모')!;
+  const asDue = (choices: Record<string, 'move' | 'due'>) => ({ ...choices, [parent.ownerId]: 'due' as const });
+  // 부모 → 마감: 부모 reads 11/9 (its section); 자식's 11/12 is not that day, so it becomes 자식's 마감 (not lost).
+  assert.deepEqual([...programDateLineOutcomes(space(data).text, plan.dates[0], asDue(programDateLineDefaults(plan.dates)))], [[parent.ownerId, 'due'], [id(data, '자식'), 'due']]);
+  const due = cleanup(data, asDue);
+  assert.equal(raw(due, docId), ['[2026-11-09]', '- [ ] 부모', '  - 마감: 2026-11-12', '  - [ ] 자식', '    - 마감: 2026-11-12'].join('\n'));
+  assert.deepEqual([item(due, '자식').date, item(due, '자식').due, item(due, '자식').explicitDate], ['2026-11-09', '2026-11-12', false]);
+  // 부모 → 옮기기 (the default): 자식 goes with it and says that day: its line only goes.
+  const moved = cleanup(data);
+  assert(raw(moved, docId).endsWith(['[2026-11-12]', '- [ ] 부모', '  - [ ] 자식'].join('\n')), raw(moved, docId));
+  assert.deepEqual([item(moved, '자식').date, item(moved, '자식').due ?? null], ['2026-11-12', null]);
+  // The other way round: 자식 says the section's day. 부모 → 마감 keeps 부모 there, so 자식's line only goes (no 마감 made);
+  // 부모 → 옮기기 takes 자식 to 11/12 and its 11/9 becomes its 마감.
+  const other = writing(['[2026-11-09]', '- [ ] 부모', '  - 날짜: 2026-11-12', '  - [ ] 자식', '    - 날짜: 2026-11-09'].join('\n'), '반대 기록');
+  const otherParent = programTextCleanupPlan(space(other.data))!.dates[0].items.find(row => row.title === '부모')!.ownerId;
+  const otherDue = cleanup(other.data, choices => ({ ...choices, [otherParent]: 'due' }));
+  assert.equal(raw(otherDue, other.docId), ['[2026-11-09]', '- [ ] 부모', '  - 마감: 2026-11-12', '  - [ ] 자식'].join('\n'));
+  const otherMoved = cleanup(other.data);
+  assert(raw(otherMoved, other.docId).endsWith(['[2026-11-12]', '- [ ] 부모', '  - [ ] 자식', '    - 마감: 2026-11-09'].join('\n')), raw(otherMoved, other.docId));
+  // 되돌리기 brings each back.
+  assert.equal(raw(undo(data, due), docId), CODEX);
 });
 
 test('left alone: a copy or run document, a reference line, a repeat line, an unreadable value; a changed account refuses the old list', () => {
