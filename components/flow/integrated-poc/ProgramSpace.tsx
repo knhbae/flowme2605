@@ -887,6 +887,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       const result = await run('글 정리 되돌리기', current => restoreProgramTextCleanup(current, { ...base(current), stamp, when: programCleanupWhen(new Date()) }), true);
       const refused = result.ok ? undefined : result.reason === 'busy' ? '' : result.reason === 'missing' ? '보관 글에서 원문을 찾지 못해 되돌리지 않았습니다'
         : result.reason === 'limit' ? '지금 글을 보관할 자리가 없어 되돌리지 않았습니다(문서는 100개까지)'
+        : result.reason === 'forbidden' ? "그 뒤 진행을 기록한 할 일이 있어 되돌리지 않았습니다. 원문은 보관함의 '전환 전 원문'에 그대로 있습니다"
         : result.reason === 'unresolved' ? '원문을 다시 쓸 수 없어 되돌리지 않았습니다. 지금 글은 그대로입니다' : `${programErrorMessage(result.reason)} (${result.reason})`;
       if (refused === '') return false;
       setCleanupNotice(current => current?.actorId === actorId && current.stamp === stamp ? { ...current, ...(refused ? { refused } : { undone: true }) } : current);

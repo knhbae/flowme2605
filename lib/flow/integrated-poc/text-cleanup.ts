@@ -4,6 +4,7 @@ import { transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from '
 import { programProgressTextPlan, type ProgramProgressTextChange } from './progress-text';
 import { applyProgramDateLineChoices, programDateLineAccountPlan, programDateLinesKeepLines, type ProgramDateLineChoices, type ProgramDateLinePlan } from './date-property-migration';
 import { programTaskRepeatMembers } from './task-date-move';
+import { programContinuedLines } from './continuation';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 
 /** Redesign 1 + 3 (W-TXT-01·03, 총괄 11/12): the account's writing is brought to the new rules once, as one list asked
@@ -184,6 +185,31 @@ function keepLaterChecks(text: TextWorkspaceState, documentId: string, lines: st
   });
 }
 
+/** 이어 쓰기 since (continuation.ts) passed a line's records, owner and links to its new line, which the original does
+ *  not have. Before the original is written back, its line takes them again from the line holding them now (followed
+ *  along the 이어감 chain), so nothing recorded is lost and the new line can go. One that cannot is left as it is. */
+function giveBackContinued(text: TextWorkspaceState, block: { documentId: string; raw: string; ids: (string | null)[] }): TextWorkspaceState {
+  const lines = block.raw.split('\n'), kept = new Set(block.ids.filter((id): id is string => !!id));
+  const chain = programContinuedLines(text), byLine = new Map(chain.map(line => [line.lineId, line]));
+  let next = text;
+  for (const line of chain) {
+    const original = lines[block.ids.indexOf(line.lineId)];
+    if (line.docId !== block.documentId || !kept.has(line.lineId) || !original || !/^ *-\s+\[([ xX]|\d+(?:\.\d+)?%?)\](?:\s|$)/.test(original)) continue;
+    let holder = line.received;
+    for (const seen = new Set([line.lineId]); holder && byLine.get(holder)?.received && !seen.has(holder);) { seen.add(holder); holder = byLine.get(holder)!.received; }
+    if (!holder || kept.has(holder) || !M.tasks(next).some(task => task.id === holder)) continue;
+    const from = holder, to = line.lineId, taskScopes = { ...next.taskScopes }, itemScopes = { ...next.itemScopes };
+    if (Object.hasOwn(taskScopes, from)) taskScopes[to] = taskScopes[from];
+    if (Object.hasOwn(itemScopes, from)) itemScopes[to] = itemScopes[from];
+    const staged: TextWorkspaceState = { ...next, taskScopes, itemScopes,
+      documents: next.documents.map(doc => doc.id === block.documentId ? { ...doc, lines: doc.lines.map(entry => entry.id === to ? { id: to, text: original } : entry) } : doc),
+      progressRecords: next.progressRecords.map(record => record.taskId === from ? { ...record, taskId: to } : record),
+      bindings: next.bindings.map(binding => binding.kind === 'task' && binding.taskId === from ? { ...binding, taskId: to } : binding) };
+    if (M.validate(staged)) next = staged;
+  }
+  return next;
+}
+
 /** 되돌리기 (총괄 11/12 ①): the originals an archive holds are written back into their documents, from any visit (no
  *  history or memory needed), each line with its own identity. What those documents say now is archived first
  *  ('되돌리기 전 원문 · when', which can itself be restored), in the same save, so nothing written since is lost. A
@@ -201,8 +227,13 @@ export function restoreProgramTextCleanup(data: ProgramData, input: ProgramPriva
     if (!archived) return { result: input.stamp, reason: 'limit' };
     let text = archived.text;
     for (const block of changed) {
+      text = giveBackContinued(text, block);
       const edited = M.editTextResult(text, block.documentId, block.raw, { folderText: true, lineIds: block.ids });
-      if (edited.reason !== null || M.raw(M.getDocument(edited.state, block.documentId)!) !== block.raw) return { result: input.stamp, reason: 'unresolved' };
+      if (edited.reason !== null || M.raw(M.getDocument(edited.state, block.documentId)!) !== block.raw) {
+        // A task written since with progress recorded on it would go: records are never dropped, so it is refused.
+        const kept = new Set(block.ids), gone = M.getDocument(text, block.documentId)!.lines.filter(line => !kept.has(line.id)).map(line => line.id);
+        return { result: input.stamp, reason: text.progressRecords.some(record => gone.includes(record.taskId)) ? 'forbidden' : 'unresolved' };
+      }
       text = edited.state;
     }
     if (!M.validate(text)) return { result: input.stamp, reason: 'unresolved' };
