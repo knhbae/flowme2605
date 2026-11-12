@@ -7,6 +7,7 @@ import { programContinuedLines, programFolderPath } from './continuation';
 import { programStateHash, programTaskRepeatMembers } from './task-date-move';
 import { programDaysBetween } from './date-label';
 import { moveTaskLocation } from './task-location-move';
+import { PROGRAM_MERGE_ARCHIVE_TITLE, programArchiveOriginals, programDocumentStateHash } from './text-cleanup';
 import { textWorkspaceModel as M, type TextBinding, type TextLine, type TextTask, type TextWorkspaceState } from './text-workspace';
 
 /** 오늘 탭 처음 정리 ② (W-CARRY-13, 총괄 11/12; mockup ②): a past open task already written again on a later day is
@@ -269,5 +270,83 @@ export function restoreProgramFirstCleanup(data: ProgramData, input: ProgramPriv
     space.text = before.text; space.timelineOrders = before.timelineOrders; space.position = before.position; space.archivedDocumentIds = before.archivedDocumentIds;
     if (before.documentTrash) space.documentTrash = before.documentTrash; else delete space.documentTrash;
     return { result: input.after };
+  });
+}
+
+/** 오늘 탭 처음 정리 ① (W-CARRY-20, 총괄 11/12): two documents of the same title whose shorter one is 90% or more the same
+ *  lines word for word. [하나로 합치기] keeps the one with more lines (equal: the later one) and writes into it the
+ *  lines only the other has, each where it stood among the common lines (so in the same date section, under the same
+ *  task or folder), with their ids (records and owners follow); the other goes to 휴지통's [지운 글]. One save, ↶ once,
+ *  and the kept document's text before it is archived ('합치기 전 원문 · when'). Not merged (only [비교해 보기]) when a
+ *  common line of the other has a record or a link of its own, or one of its own lines is linked. */
+export type ProgramTwinDocuments = { keep: string; drop: string; title: string; keepLines: number; dropLines: number; common: number; only: { text: string; mine: boolean }[]; blocked: boolean };
+type Aligned = { keep: number | null; drop: number | null };
+function align(a: readonly string[], b: readonly string[]): Aligned[] {
+  const grid = Array.from({ length: a.length + 1 }, () => new Uint16Array(b.length + 1));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--) grid[i][j] = a[i] === b[j] ? grid[i + 1][j + 1] + 1 : Math.max(grid[i + 1][j], grid[i][j + 1]);
+  const out: Aligned[] = [];
+  let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { out.push({ keep: i++, drop: j++ }); continue; }
+    if (grid[i + 1][j] >= grid[i][j + 1]) out.push({ keep: i++, drop: null }); else out.push({ keep: null, drop: j++ });
+  }
+  while (i < a.length) out.push({ keep: i++, drop: null });
+  while (j < b.length) out.push({ keep: null, drop: j++ });
+  return out;
+}
+export function programTwinDocuments(space: ProgramPrivateSpace): ProgramTwinDocuments[] {
+  const text = space.text, docs = text.documents.filter(doc => usableDocument(space, doc.id) && doc.title.trim() && doc.lines.length && doc.lines.length <= 1200);
+  const linked = new Set(text.bindings.flatMap(binding => binding.kind === 'task' ? [binding.taskId, binding.lineId] : []));
+  const recorded = new Set(text.progressRecords.map(record => record.taskId));
+  const out: ProgramTwinDocuments[] = [], used = new Set<string>();
+  docs.forEach((one, index) => docs.slice(index + 1).forEach(two => {
+    if (one.title.trim() !== two.title.trim() || used.has(one.id) || used.has(two.id)) return;
+    const [keep, drop] = two.lines.length > one.lines.length || two.lines.length === one.lines.length ? [two, one] : [one, two];
+    const aligned = align(keep.lines.map(line => line.text), drop.lines.map(line => line.text)), common = aligned.filter(pair => pair.keep !== null && pair.drop !== null);
+    if (common.length < Math.ceil(Math.min(keep.lines.length, drop.lines.length) * 0.9)) return;
+    used.add(keep.id); used.add(drop.id);
+    const blocked = common.some(pair => { const id = drop.lines[pair.drop!].id; return recorded.has(id) || linked.has(id); })
+      || aligned.some(pair => pair.drop !== null && pair.keep === null && linked.has(drop.lines[pair.drop].id));
+    out.push({ keep: keep.id, drop: drop.id, title: keep.title, keepLines: keep.lines.length, dropLines: drop.lines.length, common: common.length,
+      only: aligned.filter(pair => pair.keep === null || pair.drop === null).map(pair => pair.keep !== null ? { text: keep.lines[pair.keep].text, mine: true } : { text: drop.lines[pair.drop!].text, mine: false }), blocked });
+  }));
+  return out;
+}
+/** [하나로 합치기]: only while the two read as they were shown. */
+export function mergeProgramTwinDocuments(data: ProgramData, input: ProgramPrivateMutationBase & { keep: string; drop: string; now: string; when: string }): ProgramTransition<string> {
+  return transitionProgramPrivateSpace(data, input, 'private-first-cleanup-merge', { keep: input.keep, drop: input.drop, now: input.now, when: input.when }, space => {
+    if (!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{3})?Z$/.test(input.now) || !/^[0-9][0-9 :.-]{0,39}$/.test(input.when)) return { result: input.keep, reason: 'invalid' };
+    const twin = programTwinDocuments(space).find(entry => entry.keep === input.keep && entry.drop === input.drop);
+    if (!twin) return { result: input.keep, reason: 'conflict' };
+    if (twin.blocked) return { result: input.keep, reason: 'forbidden' };
+    const before = space.text, keep = M.getDocument(before, input.keep)!, drop = M.getDocument(before, input.drop)!;
+    const aligned = align(keep.lines.map(line => line.text), drop.lines.map(line => line.text));
+    const moved = new Set(aligned.filter(pair => pair.keep === null).map(pair => drop.lines[pair.drop!].id));
+    const merged = aligned.map(pair => pair.keep !== null ? keep.lines[pair.keep] : drop.lines[pair.drop!]);
+    let next: TextWorkspaceState = { ...before,
+      documents: before.documents.map(doc => doc.id === keep.id ? { ...doc, lines: merged } : doc.id === drop.id ? { ...doc, lines: doc.lines.filter(line => !moved.has(line.id)) } : doc),
+      bindings: before.bindings.map(binding => binding.docId === drop.id && moved.has(binding.lineId) ? { ...binding, docId: keep.id } : binding) };
+    if (!M.validate(next)) return { result: input.keep, reason: 'unresolved' };
+    // Every task reads as before (its words, state, memo, day), the moved ones now in the kept document; every record too.
+    const items = (state: TextWorkspaceState) => new Map(state.documents.flatMap(doc => M.parseDocument(doc, state).items.map(item => [item.id, item] as const)));
+    const old = items(before), now = items(next);
+    if (!programSame(before.progressRecords, next.progressRecords) || !programSame(before.taskScopes, next.taskScopes) || old.size !== now.size) return { result: input.keep, reason: 'unresolved' };
+    for (const [id, item] of old) {
+      const current = now.get(id);
+      if (!current || (['title', 'done', 'note', 'time', 'date'] as const).some(key => current[key] !== item[key])
+        || current.docId !== (moved.has(id) ? keep.id : item.docId)) return { result: input.keep, reason: 'unresolved' };
+    }
+    // The kept document's text before it, archived in the same save; the other to 휴지통 [지운 글] (never deleted).
+    const stamp = programId('cleanup');
+    const archived = programArchiveOriginals(before, [keep.id], stamp, `${PROGRAM_MERGE_ARCHIVE_TITLE} · ${input.when}`,
+      new Map([[keep.id, { before: programDocumentStateHash(before, keep.id)!, after: programDocumentStateHash(next, keep.id)! }]]));
+    if (!archived) return { result: input.keep, reason: 'limit' };
+    next = { ...next, documents: [...next.documents, ...archived.text.documents.filter(doc => archived.ids.includes(doc.id))] };
+    if (!M.validate(next)) return { result: input.keep, reason: 'unresolved' };
+    const wasArchived = space.archivedDocumentIds.includes(drop.id);
+    space.text = next;
+    space.archivedDocumentIds = [...space.archivedDocumentIds, ...archived.ids, ...(wasArchived ? [] : [drop.id])];
+    space.documentTrash = { ...space.documentTrash ?? {}, [drop.id]: { trashedAt: input.now, wasArchived } };
+    return { result: input.keep };
   });
 }
