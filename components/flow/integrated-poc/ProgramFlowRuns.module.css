@@ -21,6 +21,9 @@
 .checking { flex: none; color: var(--flowme-b-muted); font-size: 13px; font-weight: 600; }
 .next { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; line-height: 18px; color: var(--flowme-b-muted); }
 .list > li[data-waiting] .next { color: var(--flowme-b-ink); }
+/* Redesign 2 + F12 (W-TXT-02): the next step's 마감 — past in the late ink, today bold, as on the 오늘 list's rows. */
+.dueOver { font-weight: 700; color: var(--flowme-b-late-ink); }
+.dueToday { font-weight: 700; color: var(--flowme-b-ink); }
 .runs .fold { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 48px; margin: 0; padding: 0 12px; border: 0; border-top: 1px solid var(--flowme-b-hair); border-radius: 0; background: transparent; color: var(--flowme-b-primary); font-size: 14px; font-weight: 700; text-align: left; cursor: pointer; }
 .fold span { margin-left: auto; color: var(--flowme-b-muted); font-weight: 600; }
 .groupHead { display: flex; align-items: baseline; gap: 6px; margin: 0; padding: 12px 8px 4px 12px; font-size: 15px; line-height: 20px; font-weight: 800; }

@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { programCalendarDate, programDaysBetween } from '@/lib/flow/integrated-poc/date-label';
+import { programDueLabel, type ProgramDueLabel } from '@/lib/flow/integrated-poc/due-date';
 import { PROGRAM_FLOW_RUN_SHOWN, type ProgramFlowRun, type ProgramRecheck } from '@/lib/flow/integrated-poc/flow-run-progress';
 import { ProgramFlowMark, ProgramIcon } from './icons';
 import styles from './ProgramFlowRuns.module.css';
@@ -13,6 +14,13 @@ export function programFlowRunNextLabel(date: string | null, today: string): str
   if (!date) return '날짜 미정';
   const days = programDaysBetween(today, date);
   return days === 0 ? '오늘' : days === 1 ? '내일' : days < 0 ? `${programCalendarDate(date, today, false)} 지남` : programCalendarDate(date, today, false);
+}
+/** Redesign 2 + F12 (총괄 11/12, W-TXT-02): the next step's '- 마감:' as D-n on its line ('D-3', '오늘 마감', '마감 2일 지남').
+ *  None when a last-day run's mark already reads that same date (its last step's 마감 is its 기준일). */
+export function programFlowRunNextDue(run: ProgramFlowRun, today: string): ProgramDueLabel | null {
+  const due = run.next?.due;
+  if (!due || (run.basis === 'last' && due === run.markDate)) return null;
+  return programDueLabel(due, today);
 }
 export function ProgramFlowRuns(props: { runs: readonly ProgramFlowRun[]; today: string; tablet: boolean;
   /** Steps being saved (their check pressed, not confirmed yet): '확인 중' beside the numbers (W-FLOW-05). */
@@ -27,17 +35,18 @@ export function ProgramFlowRuns(props: { runs: readonly ProgramFlowRun[]; today:
   const restWaiting = rest.filter(run => run.wait).length, restUndated = rest.filter(run => !run.wait && !run.next?.date).length;
   return <section className={styles.runs} aria-label="진행 중인 Flow" data-flow-runs>
     <ul className={styles.list}>{shown.map(run => {
-      const busy = run.steps.some(step => props.saving.has(step.taskId));
+      const busy = run.steps.some(step => props.saving.has(step.taskId)), due = run.wait ? null : programFlowRunNextDue(run, props.today);
       return <li key={run.key} data-flow-run={run.key} data-waiting={run.wait ? '' : undefined}>
         {run.wait ? <span className={styles.waitMark} aria-hidden="true"><ProgramIcon name="wait" size={18} /></span>
           : run.next && <button type="button" className={styles.check} aria-label={`${run.next.title} 완료`} aria-pressed={false} aria-busy={busy || undefined} disabled={busy}
             onClick={() => props.onCheck(run, run.next!.taskId)}><span aria-hidden="true" data-check={busy ? 'busy' : 'open'} /></button>}
         <button type="button" className={styles.text} onClick={() => props.onOpen(run)}
-          aria-label={`${run.title} · ${run.done}/${run.total} · ${run.mark}${busy ? ' · 확인 중' : ''} · ${run.wait ? `기다림 ${run.wait.title}` : `다음 ${run.next?.title ?? ''}`} · 글 열기`}>
+          aria-label={`${run.title} · ${run.done}/${run.total} · ${run.mark}${busy ? ' · 확인 중' : ''} · ${run.wait ? `기다림 ${run.wait.title}` : `다음 ${run.next?.title ?? ''}`}${due ? ` · ${due.label}` : ''} · 글 열기`}>
           <span className={styles.head}><ProgramFlowMark size={16} /><span className={styles.name}>{run.flow}{run.run && <span className={styles.runName} data-run-name> {run.run}</span>}</span>
             <span className={styles.count}>{run.done}/{run.total}</span>{busy && <span className={styles.checking}>확인 중</span>}<span className={styles.mark}>{run.mark}</span></span>
           <span className={styles.next}>{run.wait ? <>기다림: {run.wait.title}{run.wait.days ? ` (${run.wait.days}일째)` : ''}</>
-            : run.next && <>다음: {run.next.title} · {programFlowRunNextLabel(run.next.date, props.today)}</>}</span>
+            : run.next && <>다음: {run.next.title} · {programFlowRunNextLabel(run.next.date, props.today)}
+              {due && <> · <span className={due.state === 'over' ? styles.dueOver : due.state === 'today' ? styles.dueToday : undefined} data-run-due={due.state}>{due.label}</span></>}</>}</span>
         </button>
       </li>; })}</ul>
     {props.runs.length > limit && <button type="button" className={styles.fold} aria-expanded={!folded} onClick={() => remember(folded)}>
