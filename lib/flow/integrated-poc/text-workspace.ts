@@ -34,6 +34,8 @@ export interface TextTask {
   parentTaskId: string | null; explicitDate: boolean;
   scopeId: string; scopeKind: 'folder' | 'flow'; scopeTitle: string;
   inputPercent?: number; inputToken?: string;
+  /** Redesign 2 (W-TXT-02): its '- 마감:' date (set only with such a line; null when unreadable). Never its date. */
+  due?: string | null;
 }
 export type TextRowKind = 'note' | 'blank' | 'fence' | 'date' | 'scope' | 'task' | 'subcheck' | 'property' | 'heading';
 export interface TextRow {
@@ -80,6 +82,8 @@ export interface TextEditorRowMeta {
   folderPending?: boolean;
   /** N10: a repeat line's chip ('↻ 매주 월·목', or '반복 멈춤' once [x]) and where its marker starts in the title. */
   repeatLabel?: string; repeatAt?: number;
+  /** Redesign 2 (W-TXT-02): on a '- 마감:' line, its task's due date (YYYY-MM-DD), for the D-n label. */
+  dueDate?: string;
 }
 export interface TextWorkspaceModel {
   MAX_DEPTH: number;
@@ -157,6 +161,8 @@ export function projectTextEditorRows(state: TextWorkspaceState, rows: TextRow[]
   // Only this synchronous projection shares the validated scope catalog.
   // The next call must still observe same-object changes to titles/ownership.
   let scopes: TextScope[] | undefined;
+  // Redesign 2 (W-TXT-02): each task's due date, for its '- 마감:' line.
+  const dues = new Map(rows.flatMap(row => row.task?.due ? [[row.id, row.task.due] as const] : []));
   return rows.map(row => {
     const targetId = row.progressTargetId;
     const progress = targetId ? latest.get(targetId) ?? null : null;
@@ -191,6 +197,7 @@ export function projectTextEditorRows(state: TextWorkspaceState, rows: TextRow[]
       && !rows.some(child => child.parentTaskId === row.id && ['task', 'subcheck'].includes(child.kind)) ? readProgramRepeatMarker(row.title) : null;
     if (marker) Object.assign(meta, { repeatLabel: row.done ? '반복 멈춤' : `↻ ${marker.label}`, repeatAt: marker.start });
     if (targetId && !marker && row.date !== row.groupDate) meta.dateMismatch = row.date?.slice(5).replace('-', '.') ?? '미정';
+    if (row.kind === 'property' && row.taskId && /^ *-\s+마감:/.test(row.text) && dues.has(row.taskId)) meta.dueDate = dues.get(row.taskId)!;
     return meta;
   });
 }

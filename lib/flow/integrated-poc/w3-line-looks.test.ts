@@ -25,7 +25,8 @@ test('a time property under a task reads "시간 오전 9:00"; anything else sta
   assert.equal(timeLabel('23:59'), '시간 오후 11:59');
   for (const literal of ['9:00', '24:00', '09:60', '오전 9시', '']) assert.equal(timeLabel(literal), null);
   // Same owner rule as the date label: only a property under a real checkbox.
-  assert.match(vendor, /const property = \/\^ \*-\\s\+\(날짜\|시간\):\\s\*\(\.\*\)\$\/\.exec\(line\);/);
+  // Redesign 2 (11/12): '- 마감:' is painted too (with its D-n).
+  assert.match(vendor, /const property = \/\^ \*-\\s\+\(날짜\|시간\|마감\):\\s\*\(\.\*\)\$\/\.exec\(line\);/);
   assert.match(vendor, /if \(property\[1\] === '시간'\) return timeLabel\(property\[2\]\.trim\(\)\);/);
 });
 

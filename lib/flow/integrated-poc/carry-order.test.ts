@@ -191,7 +191,8 @@ test('F9/F10 wiring: vendor trace (reading view only, never source), sheet, 진�
   const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
   const vendor = read('./vendor/text-editor.cjs'), editor = read('../../../components/flow/integrated-poc/ProgramTextEditor.tsx');
   const css = read('../../../components/flow/integrated-poc/ProgramTextEditor.module.css'), space = read('../../../components/flow/integrated-poc/ProgramSpace.tsx');
-  assert.match(vendor, /'repeatLabel', 'repeatAt', 'trace'\]/);
+  // Redesign 2 (11/12): dueDate after trace.
+  assert.match(vendor, /'repeatLabel', 'repeatAt', 'trace', 'dueDate'\]/);
   // int9: with typelag ②'s buildRow the trace is the row's last part before it is returned (full render or row patch).
   assert.match(vendor, /appendMoveTrace\(row, index, safeMeta\.trace\);\n\s+return row;/);
   assert.match(vendor, /box\.addEventListener\('click', \(event\) => event\.preventDefault\(\)\)/);
