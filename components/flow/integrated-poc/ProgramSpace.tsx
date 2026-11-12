@@ -3115,7 +3115,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const carryItemRow = (item: ProgramCarryoverItem, named: boolean) => {
     const choice = carryChoiceOf(item), options: ProgramCarryoverChoice[] = item.finished ? ['delete', 'today'] : ['today', 'undated', 'delete'];
     const meta = item.finished ? `${programCalendarDate(item.finished, today, false)} 끝냄 · 남은 줄 ${item.lines}`
-      : [`${Math.max(1, programDaysBetween(item.since, today))}일째`, item.lines > 1 ? `${item.lines}번 다시 씀` : '', item.today ? '오늘에도 있음' : ''].filter(Boolean).join(' · ');
+      : [`${programDaysBetween(item.since, today) + 1}일째` /* 총괄 11/12 ②: the first day is 1일째 */, item.lines > 1 ? `${item.lines}번 다시 씀` : '', item.today ? '오늘에도 있음' : ''].filter(Boolean).join(' · ');
     return <li key={item.kind} className={styles.carryItem} data-carry-item>
       <p><span>{named ? item.place || '분류 없음' : item.title}</span><small>{meta}</small></p>
       <div className={styles.carryChoices} role="radiogroup" aria-label={`${item.title}${named ? ` · ${item.place}` : ''} 정리`}>
