@@ -31,11 +31,12 @@ export function programOpenWaitFor(space: ProgramPrivateSpace, task: Pick<TextTa
   return M.tasks(space.text).find(entry => entry.docId === task.docId && !entry.done && programWaitParentTitle(entry.title) === task.title.trim()) ?? null;
 }
 
-/** Where a wait line may be written: a writing document, or a run's document (a Flow copy's, a personal run's) — never a
- *  personal Flow's own document, which is its definition. */
+/** Where a wait line may be written: a writing document, or a Flow copy's document. Never a personal Flow's own document
+ *  (its definition), nor a personal run's (integ-redesign4: it holds exactly its Flow's steps, so the account would not
+ *  validate with another task in it; its steps wait as before, by an open subcheck). */
 function programWaitHome(space: ProgramPrivateSpace, documentId: string): boolean {
-  return space.text.documents.some(doc => doc.id === documentId) || space.copies.some(copy => copy.documentId === documentId)
-    || (space.personalAuthoring?.executions ?? []).some(execution => execution.executionDocumentId === documentId);
+  if ((space.personalAuthoring?.executions ?? []).some(execution => execution.executionDocumentId === documentId)) return false;
+  return space.text.documents.some(doc => doc.id === documentId) || space.copies.some(copy => copy.documentId === documentId);
 }
 
 /** Whether a wait can start on this task now: a task (not a reference) in a document a wait line may go to and open to

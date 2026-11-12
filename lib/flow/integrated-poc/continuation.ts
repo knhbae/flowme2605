@@ -39,7 +39,9 @@ export function continueProgramTask(text: TextWorkspaceState, input: { documentI
   const own = subtree.filter(entry => entry.kind === 'property' && entry.parentLineId === task.id);
   const newId = input.newId ?? programId('line');
   const fresh: TextLine[] = [{ id: newId, text: `${'  '.repeat(row.depth)}- [${percent > 0 && percent < 100 ? `${percent}%` : ' '}] ${task.title}` },
-    ...own.filter(entry => /^ *-\s+마감:/.test(entry.text)).map(entry => ({ id: programId('line'), text: pad + entry.text.trimStart() })),
+    // W-TXT-09 (integ-redesign4, 총괄 11/12): a '답 확인:' line's '- 기다림:' goes on with it as its 마감 does (and stays on
+    // the old line too), so '기다림 n일째' still counts from the day the wait began.
+    ...own.filter(entry => /^ *-\s+(?:마감|기다림):/.test(entry.text)).map(entry => ({ id: programId('line'), text: pad + entry.text.trimStart() })),
     ...doc.lines.filter(entry => carried.has(entry.id))];
   const note = { id: programId('line'), text: `${pad}- 이어감: ${input.today} · ${percent}%` };
   const after = own.at(-1)?.id ?? task.id;
