@@ -833,12 +833,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     let before: TextWorkspaceState | null = null, after: TextWorkspaceState | null = null;
     setCleanupPending(true);
     try {
-      const result = await run('글 정리', current => { const next = applyProgramTextCleanup(current, { ...base(current), plan: ask.plan, choices: ask.choices, now: new Date().toISOString() });
+      const result = await run('글 정리', current => { const next = applyProgramTextCleanup(current, { ...base(current), plan: ask.plan, choices: ask.choices });
         if (next.ok) { before = current.spaces[actorId].text; after = next.data.spaces[actorId].text; } return next; }, true);
       setCleanupAsk(null);
       if (!result.ok || !before || !after) {
         if (!result.ok && result.reason === 'conflict') setMessage('그사이 바뀐 글이 있어 바꾸지 않았습니다. 앱을 다시 열면 다시 보여 드립니다.');
-        else if (!result.ok && result.reason !== 'busy') setMessage('옮길 수 없는 줄이 있어 바꾸지 않았습니다. 원문은 그대로입니다.');
+        else if (!result.ok && result.reason !== 'busy') setMessage(result.reason === 'unresolved' ? '옮길 수 없는 줄이 있어 바꾸지 않았습니다. 원문은 그대로입니다.' : `${programErrorMessage(result.reason)} (${result.reason})`);
         return;
       }
       setCleanupNotice({ actorId, documents: programTextCleanupDocuments(ask.plan).length, before, after });
@@ -3372,7 +3372,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {cleanupAsk && (ask => { const day = (date: string | null) => date ? programCalendarDate(date, today, false) : '날짜 미정';
         return <>
           <h2 id="program-cleanup-title">글을 새 규칙으로 한 번 정리합니다</h2>
-          <p className={styles.muted}>할 날은 날짜 제목 하나로 정하고, 진행률은 할 일 줄에 적습니다. 바꾸기 전에 바뀌는 글마다 저장본을 남깁니다.</p>
+          <p className={styles.muted}>할 날은 날짜 제목 하나로 정하고, 진행률은 할 일 줄에 적습니다. 바꾸기 전 글은 그대로 남아 [되돌리기]나 ↶로 돌아갈 수 있습니다.</p>
           {ask.plan.progress.length > 0 && <><h3 className={styles.dateLinesHead}>진행률 {ask.plan.progressLines}줄 · 할 일 줄에 적습니다</h3>
             <ul className={styles.progressTextList} data-cleanup-progress>{ask.plan.progress.flatMap(doc => doc.changes.map(change => <li key={change.lineId}><span>{change.title}</span>
               <small>{doc.title} · {progressMark(change.before)} → {progressMark(change.after)} · {programCalendarDate(change.date, today, false)} 기록</small></li>))}</ul></>}

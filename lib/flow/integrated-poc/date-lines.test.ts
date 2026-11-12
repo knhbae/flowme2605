@@ -15,11 +15,10 @@ import { prepareWritingChild } from './writing-child-command';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 
 // Redesign 3 (DECISION-1, W-TXT-03, mockup ③; 총괄 11/12: the whole account at once). The '- 날짜:' lines go once, on the
-// person's word, from one list for the account; a snapshot (a saved revision of each document changed) and the change
-// are one save, 되돌리기 is one save back. After that nothing writes one again in an ordinary document. In a document
+// person's word, from one list for the account, in one save (Alpha keeps it with its inverse: the snapshot ↶ restores);
+// 되돌리기 is one save back. After that nothing writes one again in an ordinary document. In a document
 // without date headings a task's date is its 마감. A copy's, a Flow run's, a reference's and a repeat's stay (step 5).
 let request = 0;
-const NOW = '2026-11-12T03:00:00.000Z';
 const actor = (data: ProgramData) => data.activeActorId;
 const space = (data: ProgramData) => data.spaces[actor(data)];
 const ok = <T,>(result: ProgramTransition<T>) => { assert(result.ok, result.ok ? '' : result.reason); return result; };
@@ -29,7 +28,7 @@ const raw = (data: ProgramData | TextWorkspaceState, docId: string) => M.raw(M.g
 const lines = (data: ProgramData, docId: string) => M.getDocument(space(data).text, docId)!.lines.map(line => [line.id, line.text]);
 const cleanup = (data: ProgramData, choose?: (choices: Record<string, 'move' | 'due'>) => Record<string, 'move' | 'due'>) => {
   const plan = programTextCleanupPlan(space(data))!, defaults = programDateLineDefaults(plan.dates);
-  return ok(applyProgramTextCleanup(data, { ...base(data), plan, choices: choose ? choose(defaults) : defaults, now: NOW })).data;
+  return ok(applyProgramTextCleanup(data, { ...base(data), plan, choices: choose ? choose(defaults) : defaults })).data;
 };
 const undo = (before: ProgramData, after: ProgramData) => ok(restoreProgramTextCleanup(after, { ...base(after), before: space(before).text, after: programTextCleanupProof(space(after).text) })).data;
 
@@ -46,7 +45,7 @@ const item = (data: ProgramData, title: string) => space(data).text.documents.fl
 const MOCKUP = ['[2026-11-09]', '- [ ] 보고서 초안', '  - 날짜: 2026-11-09', '- [ ] 치과 예약 전화', '  - 날짜: 2026-11-12', '',
   '[2026-11-10]', '- [x] 영수증 정리', '  - 날짜: 2026-11-10', '- [ ] 분기 보고 제출', '  - 날짜: 2026-11-27'].join('\n');
 
-test("mockup ③ in the account's list: same days deleted, other days moved; a snapshot first; 되돌리기 gives the whole writing back", () => {
+test("mockup ③ in the account's list: same days deleted, other days moved; only the writing changes; 되돌리기 gives it all back", () => {
   const { data, docId } = writing(MOCKUP);
   const plan = programTextCleanupPlan(space(data))!;
   assert.deepEqual([plan.progressLines, plan.dateLines, plan.dates.length], [0, 4, 1]);
@@ -59,9 +58,10 @@ test("mockup ③ in the account's list: same days deleted, other days moved; a s
     '', '[2026-11-27]', '- [ ] 분기 보고 제출'].join('\n'));
   assert.deepEqual(['보고서 초안', '치과 예약 전화', '영수증 정리', '분기 보고 제출'].map(title => [item(moved, title).date, item(moved, title).explicitDate]),
     [['2026-11-09', false], ['2026-11-12', false], ['2026-11-10', false], ['2026-11-27', false]], 'each task reads the day its line said');
-  // The snapshot: one saved revision of the document as it was, in the same save.
-  assert.equal(space(moved).draftRevisions.length, space(data).draftRevisions.length + 1);
-  assert.deepEqual([space(moved).draftRevisions.at(-1)!.documentId, space(moved).draftRevisions.at(-1)!.raw, space(moved).draftRevisions.at(-1)!.createdAt], [docId, MOCKUP, NOW]);
+  // Only the writing changes (an Alpha client command may change it, not saved revisions): its save's own record is the
+  // snapshot (↶), and [되돌리기] puts it back.
+  const { text: _was, ...restBefore } = space(data), { text: _now, ...restAfter } = space(moved);
+  assert.deepEqual(restAfter, restBefore);
   assert.equal(moved.receipts.length, data.receipts.length + 1, 'one save');
   // 되돌리기: the writing exactly as before, ids and bytes (the snapshot stays).
   const back = undo(data, moved);
@@ -168,7 +168,7 @@ test('left alone: a copy or run document, a reference line, a repeat line, an un
   // Changed since the list showed: the save refuses (nothing applied).
   const shown = programTextCleanupPlan(space(data))!, changed = programClone(data);
   space(changed).text = M.editText(space(changed).text, docId, raw(data, docId) + '\n- [ ] 새 일\n  - 날짜: 2026-11-20');
-  const refused = applyProgramTextCleanup(changed, { ...base(changed), plan: shown, choices: programDateLineDefaults(shown.dates), now: NOW });
+  const refused = applyProgramTextCleanup(changed, { ...base(changed), plan: shown, choices: programDateLineDefaults(shown.dates) });
   assert(!refused.ok && refused.reason === 'conflict');
   // 되돌리기 after a later change is refused too.
   const after = cleanup(data), later = programClone(after);
@@ -257,11 +257,12 @@ test('production shape (96 date heads, 121 date lines, lists without headings, s
     const choices = variant === 'defaults' ? programDateLineDefaults(plan.dates)
       : Object.fromEntries(plan.dates.flatMap(doc => doc.items).filter(row => row.kind === 'other').map(row => [row.ownerId, row.choices.at(-1)!]));
     clock = performance.now();
-    const after = ok(applyProgramTextCleanup(data, { ...base(data), plan, choices, now: NOW })).data;
+    const after = ok(applyProgramTextCleanup(data, { ...base(data), plan, choices })).data;
     timing.push(`${variant} apply ${Math.round(performance.now() - clock)}ms`);
     const now = space(after).text;
     assert.equal(after.receipts.length, data.receipts.length + 1, 'one save');
-    assert.equal(space(after).draftRevisions.length, space(data).draftRevisions.length + programTextCleanupDocuments(plan).length, 'a snapshot of each document changed');
+    assert(programTextCleanupDocuments(plan).length >= 3, 'several documents change in the one save');
+    assert.deepEqual(space(after).draftRevisions, space(data).draftRevisions, 'only the writing changes');
     assert.deepEqual(now.progressRecords, before.progressRecords, 'records');
     assert.deepEqual(now.taskScopes, before.taskScopes, 'task owners');
     const ids = new Set(now.documents.flatMap(doc => doc.lines.map(line => line.id)));
@@ -338,7 +339,7 @@ test('the list: asked once when the app opens (not on a tab change), one save wi
   assert.match(host, /if \(programTextCleanupAsked\.has\(actorId\)\) return;/);
   assert.match(host, /\}, \[actorId\]\);/);
   assert.match(host, /<h2 id="program-cleanup-title">글을 새 규칙으로 한 번 정리합니다<\/h2>/);
-  assert.match(host, /run\('글 정리', current => \{ const next = applyProgramTextCleanup\(current, \{ \.\.\.base\(current\), plan: ask\.plan, choices: ask\.choices, now: new Date\(\)\.toISOString\(\) \}\);/);
+  assert.match(host, /run\('글 정리', current => \{ const next = applyProgramTextCleanup\(current, \{ \.\.\.base\(current\), plan: ask\.plan, choices: ask\.choices \}\);/);
   assert.match(host, /run\('글 정리 되돌리기', current => restoreProgramTextCleanup\(current, \{ \.\.\.base\(current\), before: notice\.before, after: programTextCleanupProof\(notice\.after\) \}\), true\)/);
   assert(!host.includes('data-progress-text-sheet') && !host.includes('data-date-lines-sheet'), 'no per-document sheet');
   const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
