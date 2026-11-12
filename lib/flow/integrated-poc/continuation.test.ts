@@ -75,7 +75,7 @@ test('W-TXT-05·08: the receiving line is read from the text (any document, same
   assert.equal(programContinuedLines(again)[0].received, task(again, '발표 자료 정리').id);
 });
 
-test("'n일째' follows the 이어감 chain back to its first day (shown from 7 days, as before); a fresh task has none", () => {
+test("'n일째' follows the 이어감 chain back to its first day, that day being 1일째 (총괄 11/12 ②); a fresh task has none", () => {
   const { data, docId } = writing(DAY.replace('2026-11-11', '2026-11-04'));
   let text = space(data).text;
   text = { ...text, progressRecords: [{ taskId: task(text, '발표 자료 정리').id, date: '2026-11-04', percent: 60 }] };
@@ -87,7 +87,11 @@ test("'n일째' follows the 이어감 chain back to its first day (shown from 7 
   assert.equal(starts.get(second.newId), '2026-11-04');
   assert.equal(starts.has(task(second.next, '회의실 찾기').id), false);
   const meta = programExecutionRowMeta({ date: '2026-11-13', done: false, progress: null, today: '2026-11-13', dated: true, since: starts.get(second.newId)! });
-  assert(meta.parts.includes('9일째'), meta.parts.join(' '));
+  assert(meta.parts.includes('10일째'), meta.parts.join(' '));
+  // ②: the chain's first line's day is 1일째, so the third day is 3일째; it shows from 2일째 (the second day).
+  const on = (since: string) => programExecutionRowMeta({ date: '2026-11-13', done: false, progress: null, today: '2026-11-13', dated: true, since }).parts;
+  assert.deepEqual([on('2026-11-11'), on('2026-11-12')], [['3일째'], ['2일째']]);
+  assert.deepEqual(programExecutionRowMeta({ date: '2026-11-13', done: false, progress: null, today: '2026-11-13', dated: true, since: '2026-11-13' }).parts, [], 'its first day: nothing');
   assert.equal(programContinuedLines(second.next).length, 2);
   assert(programContinuedLines(second.next).every(line => line.received));
 });

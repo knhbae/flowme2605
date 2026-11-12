@@ -72,7 +72,7 @@ export function programExecutionDay(rows: readonly ProgramOrderedExecutionRow[],
 }
 
 /** One row's date words: "20일 지남" stays apart so it can carry the warning colour. `since`: the day a line moved on
- *  by its date property was first written (its date section); from a week on it says how long ago (N11a, "7일째"). */
+ *  by its date property was first written (its date section), or its 이어감 chain began. 총괄 11/12 ②: that first day is\n *  '1일째', so the third day is '3일째'; it shows from '2일째'. */
 export function programExecutionRowMeta(input: { date: string | null; done: boolean; progress: { date: string; percent: number } | null;
   today: string; dated: boolean; since?: string | null }): { late: string | null; parts: string[] } {
   const { date, today } = input;
@@ -80,8 +80,8 @@ export function programExecutionRowMeta(input: { date: string | null; done: bool
   const dateText = input.dated ? null : late ? programCalendarDate(date!, today, false) : programDateLabel(date, today);
   const progress = input.progress && programDate(input.progress.date) && !(input.dated && input.progress.date === date)
     ? `${input.progress.percent}% 기록` : null;
-  const days = !late && !input.done && input.since && programDate(input.since) && programDate(date) && input.since < date! && programDate(today) ? programDaysBetween(input.since, today) : 0;
-  const since = days >= 7 ? [`${days}일째`] : [];
+  const days = !late && !input.done && input.since && programDate(input.since) && programDate(date) && input.since < date! && programDate(today) ? programDaysBetween(input.since, today) + 1 : 0;
+  const since = days >= 2 ? [`${days}일째`] : [];
   if (progress && input.progress!.date === date) return { late, parts: [progress, dateText ?? programDateLabel(date, today, false), ...since] };
   return { late, parts: [...(dateText ? [dateText] : []), ...(progress ? [`${progress} · ${programDateLabel(input.progress!.date, today, false)}`] : []), ...since] };
 }
