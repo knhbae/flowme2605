@@ -213,6 +213,8 @@ function keepsMeaning(before: TextWorkspaceState, after: TextWorkspaceState, pla
     if (choice === 'keep') { if (!current.explicitDate || current.date !== item.date || current.due !== item.due) return false; continue; }
     if (own ? current.explicitDate : current.explicitDate !== item.explicitDate) return false;
     if (choice === 'due' && current.due !== own!.value) return false;
+    // Every 마감 already there means the day it meant (Codex P2-1: a move to another year keeps a short one's year).
+    if (choice !== 'due' && (current.due ?? null) !== (item.due ?? null)) return false;
     if (!item.isCanonical) {
       if (!own) { if (item.explicitDate && current.date !== item.date) return false; continue; }
       const parent = current.parentItemId ? now.get(current.parentItemId) : undefined;
@@ -238,10 +240,16 @@ export function programDateLinesKeepLines(before: TextWorkspaceState, after: Tex
     // A date line left as it is (a repeat's, an unreadable one) stays; one taken on is gone or became that '- 마감:' line.
     if (DATE_LINE.test(line.text)) { if (text !== undefined && text !== line.text && !/^ *-\s+마감:/.test(text)) return false; continue; }
     if (text === undefined) { if (!/^ *- \//.test(line.text)) return false; continue; }
-    if (text.trim() !== line.text.trim()) return false;
+    if (text.trim() !== line.text.trim() && !yearWritten(line.text, text)) return false;
   }
   if (!docs(before).every(doc => emptiedFoldersOnly(before, after, doc.id))) return false;
   return [...now].every(([id, text]) => was.has(id) || !text.trim() || /^\[[^\]]*\]$/.test(text.trim()) || /^ *- \//.test(text));
+}
+/** A '- 마감: M/D' line given its year (moved to a section of another year, Codex P2-1); the day itself is checked by
+ *  keepsMeaning. */
+function yearWritten(was: string, now: string): boolean {
+  const short = /^ *-\s+마감:\s*(\d{1,2})[/.-](\d{1,2})\s*$/.exec(was), full = /^ *-\s+마감:\s*\d{4}-(\d{2})-(\d{2})$/.exec(now);
+  return !!short && !!full && Number(short[1]) === Number(full[1]) && Number(short[2]) === Number(full[2]);
 }
 /** Each folder line gone from this document was linked to a folder, and each line that was under it (empty lines and
  *  date lines aside) is now under that folder (or a folder inside it), or is itself such a gone folder line. */

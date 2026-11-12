@@ -223,6 +223,27 @@ test("Codex P1-3: a subtask's line follows its parent's day as chosen — gone w
   assert.equal(raw(undo(data, due), docId), CODEX);
 });
 
+test("Codex P2-1: a move to another year keeps a 마감 written without its year (M/D) on the day it meant", () => {
+  const CODEX = ['[2026-11-09]', '- [ ] 이동', '  - 날짜: 2027-01-01', '  - 마감: 11/20'].join('\n');
+  const { data, docId } = writing(CODEX);
+  assert.equal(item(data, '이동').due, '2026-11-20');
+  const after = cleanup(data);
+  assert(raw(after, docId).endsWith(['[2027-01-01]', '- [ ] 이동', '  - 마감: 2026-11-20'].join('\n')), raw(after, docId));
+  assert.deepEqual([item(after, '이동').date, item(after, '이동').due], ['2027-01-01', '2026-11-20']);
+  // The same for 위치 옮기기 (the date chip), and in the same year the words stay as written.
+  const plain = writing('[2026-12-30]\n- [ ] 연말 정리\n  - 마감: 1/5\n- [ ] 남는 일', '연말');
+  assert.equal(item(plain.data, '연말 정리').due, '2026-01-05');
+  const chip = moveTaskLocation(space(plain.data).text, { documentId: plain.docId, taskId: id(plain.data, '연말 정리'), target: { kind: 'date', date: '2027-01-02' } });
+  assert(chip.ok); assert(raw(chip.next, plain.docId).includes('- [ ] 연말 정리\n  - 마감: 2026-01-05'), raw(chip.next, plain.docId));
+  const same = moveTaskLocation(space(plain.data).text, { documentId: plain.docId, taskId: id(plain.data, '연말 정리'), target: { kind: 'date', date: '2026-12-31' } });
+  assert(same.ok); assert(raw(same.next, plain.docId).includes('- [ ] 연말 정리\n  - 마감: 1/5'), raw(same.next, plain.docId));
+  // To a list without date headings (another document): no section to read a year from, so the year is written.
+  const list = writing('메모만 있는 글', '목록 글', plain.data);
+  const toList = ok(moveProgramTaskDocument(list.data, { ...base(list.data), taskId: id(list.data, '연말 정리'), destinationId: list.docId })).data;
+  assert(raw(toList, list.docId).includes('- [ ] 연말 정리\n  - 마감: 2026-01-05'), raw(toList, list.docId));
+  assert.equal(item(toList, '연말 정리').due, '2026-01-05');
+});
+
 test('left alone: a copy or run document, a reference line, a repeat line, an unreadable value; a changed account refuses the old list', () => {
   const { data, docId } = writing(['[2026-11-09]', '- [ ] 매일 물 마시기 @매일', '  - 날짜: 2026-11-12', '- [ ] 언젠가 할 일', '  - 날짜: 다음 달',
     '- [ ] 보통 할 일', '  - 날짜: 2026-11-13'].join('\n'));

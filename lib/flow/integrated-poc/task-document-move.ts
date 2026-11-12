@@ -3,6 +3,7 @@ import { programSame } from './controller';
 import { transitionProgramPrivateSpace, type ProgramPrivateMutationBase } from './private-space';
 import { textWorkspaceModel as M, type TextWorkspaceState } from './text-workspace';
 import { programDateHeadIndex } from './input-bar';
+import { programKeepDueYears } from './task-location-move';
 
 const documents = (text: TextWorkspaceState) => [...text.documents, ...text.flows];
 const items = (text: TextWorkspaceState) => documents(text).flatMap(doc => M.parseDocument(doc, text).items);
@@ -46,6 +47,8 @@ export function moveProgramPersonalTaskText(text: TextWorkspaceState, taskId: st
   // the end with a '- 날짜:' line. A document without headings takes an undated task at its end.
   const heads = M.parseDocument(targetNext, next).rows.filter(row => row.kind === 'date');
   const day = heads.filter(row => row.date === task.date).at(-1);
+  // Codex P2-1: a 마감 without its year keeps the year it had in a section of another year (or in a list without any).
+  moved.splice(0, moved.length, ...programKeepDueYears(moved, new Map(beforeMeta.map(row => [row.id, row])), heads.length ? task.date?.slice(0, 4) ?? null : null));
   let at = targetNext.lines.length, dueFrom: string | null = null;
   if (day) {
     at = heads.find(row => row.index > day.index)?.index ?? targetNext.lines.length;
@@ -73,7 +76,8 @@ export function moveProgramPersonalTaskText(text: TextWorkspaceState, taskId: st
     const after = afterItems.get(before.id);
     // In a document without headings a moved block's day became its 마감 (dueFrom): the task reads no day, its 마감 that one.
     const dated = dueFrom !== null && movedIds.has(before.id) && !before.explicitDate ? after?.date === null && (before.id !== task.id || after.due !== undefined) : after?.date === before.date;
-    return after && dated && fields.every(key => key === 'date' || before[key] === after[key]) && (movedIds.has(before.id) ? after.docId === target.id : before.docId === after.docId);
+    const due = (before.due ?? null) === (after?.due ?? null) || dueFrom !== null && before.id === task.id && before.due === undefined;
+    return after && dated && due && fields.every(key => key === 'date' || before[key] === after[key]) && (movedIds.has(before.id) ? after.docId === target.id : before.docId === after.docId);
   })) return null;
   if (!programSame(text.taskScopes, next.taskScopes) || !programSame(text.itemScopes, next.itemScopes) || !programSame(text.progressRecords, next.progressRecords)) return null;
   return next;

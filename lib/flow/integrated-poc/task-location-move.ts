@@ -46,6 +46,18 @@ export function readTaskLocationFolder(state: TextWorkspaceState, documentId: st
     date: source.row.groupDate, hasDateHead: source.row.dateLineId !== null };
 }
 
+/** Codex P2-1 (11/12): a '- 마감:' written without its year (M/D) reads the year of the date section it sits in. A move
+ *  into a section of another year (or none) writes the year it had, so the day it meant stays. */
+export function programKeepDueYears(lines: TextLine[], rows: ReadonlyMap<string, TextRow>, toYear: string | null): TextLine[] {
+  return lines.map(line => {
+    const row = rows.get(line.id), short = /^( *-\s+마감:\s*)(\d{1,2})[/.-](\d{1,2})\s*$/.exec(line.text);
+    if (!row || !short || row.kind !== 'property' || !row.groupDate || row.groupDate.slice(0, 4) === toYear) return line;
+    const full = `${row.groupDate.slice(0, 4)}-${short[2].padStart(2, '0')}-${short[3].padStart(2, '0')}`;
+    return programDate(full) ? { id: line.id, text: short[1] + full } : line;
+  });
+}
+const dueOf = (state: TextWorkspaceState, documentId: string) => new Map(M.parseDocument(M.getDocument(state, documentId)!, state).items.map(item => [item.id, item.due ?? null]));
+
 /** One same-document source transition. Existing lines are never reparsed to assign identities. */
 export function moveTaskLocation(state: TextWorkspaceState, input: { documentId: string; taskId: string; target: TaskLocationTarget }): TaskLocationMove {
   const fail = (reason: TaskLocationFailure): TaskLocationMove => ({ ok: false, reason });
@@ -129,7 +141,7 @@ export function moveTaskLocation(state: TextWorkspaceState, input: { documentId:
   }
   if (depth + Math.max(...workingRows.filter(item => movingIds.has(item.id)).map(item => item.depth - row.depth)) > M.MAX_DEPTH) return fail('too-deep');
   const byId = new Map(workingRows.map(item => [item.id, item]));
-  moved = moved.map(line => {
+  moved = programKeepDueYears(moved, byId, date?.slice(0, 4) ?? null).map(line => {
     const meta = byId.get(line.id)!;
     if (!line.text.trim() || meta.kind === 'fence' && !/^ *(?:`{3,}|~{3,})/.test(line.text)) return line;
     return { id: line.id, text: '  '.repeat(meta.depth + depth - row.depth) + line.text.trimStart() };
@@ -166,6 +178,9 @@ export function moveTaskLocation(state: TextWorkspaceState, input: { documentId:
     return false;
   }) || selectedRows.some(item => !removed.has(item.id) && !editedTime.has(item.id) && !afterRows.some(now => now.id === item.id))
     || JSON.stringify(state.progressRecords) !== JSON.stringify(next.progressRecords)) return fail('meaning-changed');
+  // Every 마감 means the day it meant (Codex P2-1).
+  const duesBefore = dueOf(state, doc.id), duesAfter = dueOf(next, doc.id);
+  if ([...duesBefore].some(([id, due]) => duesAfter.has(id) && duesAfter.get(id) !== due)) return fail('meaning-changed');
   return { ok: true, next, documentId: doc.id, taskId: task.id, lineIds: moved.map(line => line.id), date, folderId,
     createdFolder, declarations: additions.length, changed: JSON.stringify(next) !== JSON.stringify(state) };
 }
