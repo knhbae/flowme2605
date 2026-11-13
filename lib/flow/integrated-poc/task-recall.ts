@@ -59,6 +59,7 @@ export function createProgramRecallIndex(space: ProgramPrivateSpace, today: stri
       const row = byId.get(task.id), key = programSameTaskKey(task.title.normalize('NFC'));
       const scope = text.itemScopes[task.id];
       if (!row || linked.has(task.id) || !text.folders.some(folder => folder.id === scope) || !key || repeats.has(task.id) || repeatRoots.has(task.id)) continue;
+      if (row.ancestorScopeKind === 'flow' || (row.ancestorScopeId ?? doc.folderId) !== scope) continue;
       let parent = row.parentLineId, excluded = false;
       for (let guard = 0; parent && guard < 40; guard++) { if (repeatRoots.has(parent)) { excluded = true; break; } parent = byId.get(parent)?.parentLineId ?? null; }
       if (excluded || /^(?: *-\s+\[>\])/u.test(row.text) || task.groupDate && task.groupDate > today) continue;
@@ -101,6 +102,7 @@ export function readProgramRecallLine(text: TextWorkspaceState, docId: string, r
   if (!match || start <= from + match[1].length || !programRecallQueryReady(match[2]) || readProgramRepeatMarker(match[2])) return null;
   const index = raw.slice(0, from).split('\n').length - 1, row = M.parseDocumentCached(doc, text).rows[index];
   if (!row || !['task', 'subcheck'].includes(row.kind) || row.groupDate !== today || !text.folders.some(folder => folder.id === text.itemScopes[row.id])
+    || row.ancestorScopeKind === 'flow' || (row.ancestorScopeId ?? doc.folderId) !== text.itemScopes[row.id]
     || M.parseDocumentCached(doc, text).rows.slice(index + 1, row.subtreeEndIndex).some(entry => entry.kind !== 'blank')
     || text.progressRecords.some(record => record.taskId === row.id)
     || text.bindings.some(binding => binding.kind === 'task' && (binding.lineId === row.id || binding.taskId === row.id))) return null;

@@ -2676,8 +2676,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       }
       const planned = recallProgramTask(owner, { candidate, documentId, lineId: line.lineId, expectedLine: line.text, today });
       if (!planned.ok) {
-        setMessage(planned.reason === 'receiver-contract' ? '이 자리에 안전하게 이어 쓸 수 없어 불러오지 않았습니다. 입력은 그대로 있습니다.'
-          : planned.reason === 'ambiguous' ? '같은 날 같은 제목의 일이 여러 개라 불러오지 않았습니다. 입력은 그대로 있습니다.'
+        setMessage(planned.reason === 'ambiguous' ? '같은 날 같은 제목의 일이 여러 개라 불러오지 않았습니다. 입력은 그대로 있습니다.'
           : '지난 일이나 입력 줄이 바뀌어 불러오지 않았습니다. 원문은 그대로 있습니다.'); return false;
       }
       const result = await run('지난 할 일 불러오기', latest => programTextTransition(latest, { actorId, documentId, expected: owner.text, next: planned.next }));

@@ -6,10 +6,10 @@ import { textWorkspaceModel as M, type TextLine, type TextRow, type TextWorkspac
 
 const TASK = /^( *-\s+\[)([^\]\r\n]*)(\](?:\s+|$))(.*?)(\s*)$/;
 export type ProgramTaskRecallInput = { candidate: ProgramRecallCandidate; documentId: string; lineId: string; expectedLine: string; today: string };
-export type ProgramTaskRecallResult = { ok: true; next: TextWorkspaceState; lineId: string; message: string } | { ok: false; reason: 'stale' | 'protected' | 'receiver-contract' | 'ambiguous' | 'unsafe' };
+export type ProgramTaskRecallResult = { ok: true; next: TextWorkspaceState; lineId: string; message: string } | { ok: false; reason: 'stale' | 'protected' | 'ambiguous' | 'unsafe' };
 
 /** Explicit choice, never a fuzzy/title-driven mutation. Both source and receiver belong to this one immutable input.
- * The existing reader's strict receiver contract stays enforced (cross-folder format is a separate pending decision). */
+ * Other-folder receivers are explicit in the approved human-readable note; old text retains its strict contract. */
 export function recallProgramTask(space: ProgramPrivateSpace, input: ProgramTaskRecallInput): ProgramTaskRecallResult {
   const fail = (reason: Extract<ProgramTaskRecallResult, { ok: false }>['reason']): ProgramTaskRecallResult => ({ ok: false, reason });
   const before = space.text;
@@ -23,6 +23,7 @@ export function recallProgramTask(space: ProgramPrivateSpace, input: ProgramTask
   const scope = before.itemScopes[input.lineId], original = destination.lines.find(line => line.id === input.lineId), typed = original && TASK.exec(original.text);
   if (!row || !target || !original || original.text !== input.expectedLine || !typed || typed[2] !== ' ' || target.groupDate !== input.today
     || !['task', 'subcheck'].includes(target.kind) || !before.folders.some(folder => folder.id === scope)
+    || target.ancestorScopeKind === 'flow' || (target.ancestorScopeId ?? destination.folderId) !== scope
     || destinationRows.slice(target.index + 1, target.subtreeEndIndex).some(entry => entry.kind !== 'blank')
     || before.progressRecords.some(record => record.taskId === target.id)
     || before.bindings.some(binding => binding.lineId === target.id || binding.kind === 'task' && binding.taskId === target.id)
@@ -40,7 +41,7 @@ export function recallProgramTask(space: ProgramPrivateSpace, input: ProgramTask
   const available = new Set(createProgramRecallIndex(space, input.today).map(entry => entry.lineId));
   if (block.some(entry => entry.kind === 'scope' || entry.isReference || ['task', 'subcheck'].includes(entry.kind) && !available.has(entry.id))
     || before.bindings.some(binding => ids.has(binding.lineId) || binding.kind === 'task' && ids.has(binding.taskId))) return fail('protected');
-  if (chosen.day !== null && (chosen.folder !== targetCandidate.folder || target.kind === 'subcheck')) return fail('receiver-contract');
+  const folderHint = chosen.folder !== targetCandidate.folder ? ` · /${targetCandidate.folder}` : '';
   const moved = new Set<string>(), replacements = new Map<string, TextLine>(), insertions = new Map<string, TextLine[]>(), renamed = new Map<string, string>();
   const rowMap = new Map(sourceRows.map(entry => [entry.id, entry]));
   const fenceBodies = new Set<string>();
@@ -89,7 +90,7 @@ export function recallProgramTask(space: ProgramPrivateSpace, input: ProgramTask
         receiver.push(line);
       }
     }
-    const note = (depth: number, percent: number): TextLine => ({ id: programId('line'), text: `${pad(depth + 1)}- 이어감: ${input.today} · ${percent}%` });
+    const note = (depth: number, percent: number): TextLine => ({ id: programId('line'), text: `${pad(depth + 1)}- 이어감: ${input.today} · ${percent}%${folderHint}` });
     replacements.set(row.id, mark(row)); insertions.set(own.at(-1)?.id ?? row.id, [note(row.depth, chosen.percent)]); renamed.set(row.id, target.id);
     for (const [id, share] of parted) { const child = rowMap.get(id)!; replacements.set(id, mark(child)); insertions.set(share.own.at(-1)?.id ?? id, [note(child.depth, share.percent)]); renamed.set(id, share.id); }
     receiverId = target.id;
@@ -107,6 +108,9 @@ export function recallProgramTask(space: ProgramPrivateSpace, input: ProgramTask
   });
   const taskScopes = { ...before.taskScopes }, itemScopes = { ...before.itemScopes };
   for (const [from, to] of renamed) { delete taskScopes[from]; delete itemScopes[from]; if (before.taskScopes[from] !== undefined) taskScopes[to] = scope; itemScopes[to] = scope; }
+  // A dated recall creates one independently planned receiving task, even at a subordinate written position.
+  // This existing registry gives it its own progress/continuation identity without changing parent RAW or old parsing.
+  if (chosen.day !== null) taskScopes[receiverId] = scope;
   if (receiverId !== target.id) { delete taskScopes[target.id]; delete itemScopes[target.id]; }
   for (const line of receiver) {
     if (Object.hasOwn(taskScopes, line.id)) taskScopes[line.id] = scope;
@@ -116,5 +120,7 @@ export function recallProgramTask(space: ProgramPrivateSpace, input: ProgramTask
     progressRecords: before.progressRecords.map(record => renamed.has(record.taskId) ? { ...record, taskId: renamed.get(record.taskId)! } : record) };
   if (!M.validate(next) || next.progressRecords.length !== before.progressRecords.length || M.currentProgress(next, receiverId) !== M.currentProgress(before, row.id)) return fail('unsafe');
   if (chosen.day !== null && programContinuedLines(next).find(line => line.lineId === row.id)?.received !== receiverId) return fail('ambiguous');
-  return { ok: true, next, lineId: receiverId, message: chosen.day === null ? '날짜 미정의 일을 이 자리로 옮겼습니다' : `${chosen.day.slice(5).replace('-', '/')} 줄에 이어감을 남겼습니다` };
+  return { ok: true, next, lineId: receiverId, message: chosen.day === null ? '날짜 미정의 일을 이 자리로 옮겼습니다'
+    : folderHint ? `/${targetCandidate.folder || '미분류'}로 이어 썼습니다 · ${chosen.day.slice(5).replace('-', '/')} 줄에 이어감을 남겼습니다`
+    : `${chosen.day.slice(5).replace('-', '/')} 줄에 이어감을 남겼습니다` };
 }

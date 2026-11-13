@@ -10,7 +10,7 @@ import { textWorkspaceModel as M, type TextLine, type TextRow, type TextTask, ty
  *  line's owner, progress records and links pass to the new line (the old one is no task any more), and the two lines
  *  are found again by the same task key in the 이어감 day's section. */
 export const PROGRAM_CONTINUED = /^( *-\s+\[)>(\](?:\s+|$))(.*?)(\s*)$/;
-export const PROGRAM_CONTINUE_LINE = /^( *-\s+)이어감:\s*(\d{4}-\d{2}-\d{2})(?:\s*·\s*(\d{1,3})%)?\s*$/;
+export const PROGRAM_CONTINUE_LINE = /^( *-\s+)이어감:\s*(\d{4}-\d{2}-\d{2})(?:\s*·\s*(\d{1,3})%(?:\s*·\s*\/([^\r\n]*?))?)?\s*$/;
 const TASK = /^( *-\s+\[)([^\]\r\n]*)(\](?:\s+|$))(.*?)(\s*)$/;
 
 const partial = (text: TextWorkspaceState, id: string) => { const percent = M.currentProgress(text, id) ?? 0; return percent > 0 && percent < 100 ? percent : 0; };
@@ -107,15 +107,16 @@ export function programFolderPath(text: TextWorkspaceState, id: string | null | 
  *  path, a line outside any '- /folder' line is in its document's folder (the `[>]` line and the task alike); two or
  *  more past lines on one receiving line are ambiguous too; a `[>]` in a code block is no line of work. */
 export type ProgramContinuedLine = { docId: string; lineId: string; title: string; key: string; day: string | null; to: string | null; percent: number | null; received: string | null;
-  scope: string; ambiguous: boolean };
+  scope: string; ambiguous: boolean; receiverScope?: string };
 export function programContinuedLines(text: TextWorkspaceState): ProgramContinuedLine[] {
-  type Candidate = { id: string; docId: string; scope: string };
+  type Candidate = { id: string; docId: string; scope: string; folder: boolean };
   const byDay = new Map<string, Candidate[]>(), add = (at: string, entry: Candidate) => byDay.set(at, [...byDay.get(at) ?? [], entry]);
   // A folder is told by its whole path of names (the same '- /name' in another document may be its own folder of that
   // name; the same last name under another parent is another folder).
   const named = (id: string | null | undefined) => programFolderPath(text, id);
-  for (const task of M.tasks(text)) if (task.date) add(`${programSameTaskKey(task.title)}|${task.date}`, { id: task.id, docId: task.docId, scope: named(task.scopeId) });
+  for (const task of M.tasks(text)) if (task.date) add(`${programSameTaskKey(task.title)}|${task.date}`, { id: task.id, docId: task.docId, scope: named(task.scopeId), folder: task.scopeKind === 'folder' });
   const out: ProgramContinuedLine[] = [];
+  const folderRecords = new Set<string>();
   // 오늘 탭 ② (mockup ③): a `[>]` subtask under a `[>]` line is received under its parent's receiving line only.
   const under = new Map<string, string>();
   for (const doc of text.documents) {
@@ -128,16 +129,36 @@ export function programContinuedLines(text: TextWorkspaceState): ProgramContinue
       continuedHere.add(row.id);
       const note = rows.slice(row.index + 1, row.subtreeEndIndex).map(entry => entry.parentLineId === row.id ? PROGRAM_CONTINUE_LINE.exec(entry.text) : null).find(Boolean);
       const title = parts[3].trim(), key = programSameTaskKey(title), to = note ? note[2] : null;
+      if (row.ancestorScopeKind !== 'flow') folderRecords.add(row.id);
       out.push({ docId: doc.id, lineId: row.id, title, key, day: row.groupDate, to, percent: note?.[3] ? Number(note[3]) : null, received: null,
-        scope: named(row.ancestorScopeKind === 'folder' && row.ancestorScopeId ? row.ancestorScopeId : doc.folderId), ambiguous: false });
+        scope: named(row.ancestorScopeKind === 'folder' && row.ancestorScopeId ? row.ancestorScopeId : doc.folderId), ambiguous: false,
+        ...(note?.[4] !== undefined ? { receiverScope: note[4].trim() } : {}) });
     }
   }
   // A line continued again is received too (its own [>] line is that day's line of the task).
-  for (const line of out) if (line.day && !under.has(line.lineId)) add(`${line.key}|${line.day}`, { id: line.lineId, docId: line.docId, scope: line.scope });
+  for (const line of out) if (line.day && !under.has(line.lineId)) add(`${line.key}|${line.day}`, { id: line.lineId, docId: line.docId, scope: line.scope, folder: folderRecords.has(line.lineId) });
+  // 11/13 approved explicit receiver folder. Only these new records may search another folder (and a subordinate
+  // receiving row); the old byDay pool and same-folder/parent/ambiguity rules remain unchanged for old text.
+  const explicit = out.some(line => line.receiverScope !== undefined), allByDay = explicit ? new Map([...byDay].map(([key, rows]) => [key, rows.filter(row => row.folder)])) : byDay;
+  const subordinate = new Map<string, { id: string; key: string; scope: string }[]>();
+  if (explicit) for (const doc of text.documents) {
+    const parsed = M.parseDocumentCached(doc, text), rows = new Map(parsed.rows.map(row => [row.id, row]));
+    for (const item of parsed.items) {
+      const row = rows.get(item.id)!;
+      if (!text.folders.some(folder => folder.id === text.itemScopes[item.id]) || text.bindings.some(binding => binding.kind === 'task' && binding.lineId === item.id)) continue;
+      const entry = { id: item.id, docId: doc.id, scope: named(text.itemScopes[item.id]), folder: true }, key = programSameTaskKey(item.title);
+      if (item.date) { const at = `${key}|${item.date}`, list = allByDay.get(at) ?? []; if (!list.some(candidate => candidate.id === item.id)) allByDay.set(at, [...list, entry]); }
+      if (row.parentLineId) subordinate.set(row.parentLineId, [...subordinate.get(row.parentLineId) ?? [], { id: item.id, key, scope: entry.scope }]);
+    }
+  }
+  if (explicit) for (const line of out) if (line.day && under.has(line.lineId) && folderRecords.has(line.lineId)) {
+    const at = `${line.key}|${line.day}`; allByDay.set(at, [...allByDay.get(at) ?? [], { id: line.lineId, docId: line.docId, scope: line.scope, folder: true }]);
+  }
   for (const line of out) {
     if (!line.to || under.has(line.lineId)) continue;
-    const same = (byDay.get(`${line.key}|${line.to}`) ?? []).filter(entry => entry.scope === line.scope && entry.id !== line.lineId);
-    const here = same.filter(entry => entry.docId === line.docId), pick = here.length ? here : same;
+    const pool = line.receiverScope !== undefined ? allByDay : byDay, scope = line.receiverScope ?? line.scope;
+    const same = (pool.get(`${line.key}|${line.to}`) ?? []).filter(entry => entry.scope === scope && entry.id !== line.lineId);
+    const here = same.filter(entry => entry.docId === line.docId), pick = line.receiverScope !== undefined ? same : here.length ? here : same;
     if (pick.length === 1) line.received = pick[0].id; else if (pick.length > 1) line.ambiguous = true;
   }
   // The subtask lines, parents first: the one subtask (or `[>]` subtask) of the same key under the parent's receiving
@@ -149,7 +170,8 @@ export function programContinuedLines(text: TextWorkspaceState): ProgramContinue
     for (const line of out) {
       const parent = byId.get(under.get(line.lineId) ?? '');
       if (!parent || !line.to || !line.key || !parent.received || parent.to !== line.to) continue;
-      const pool = [...(subs.get(parent.received) ?? []).map(sub => ({ id: sub.id, key: programSameTaskKey(sub.title) })),
+      if (line.receiverScope !== undefined && line.receiverScope !== (parent.receiverScope ?? parent.scope)) continue;
+      const pool = [...(line.receiverScope !== undefined ? subordinate.get(parent.received) ?? [] : (subs.get(parent.received) ?? []).map(sub => ({ id: sub.id, key: programSameTaskKey(sub.title) }))),
         ...(children.get(parent.received) ?? []).map(child => ({ id: child.lineId, key: child.key }))].filter(entry => entry.key === line.key);
       if (pool.length === 1) line.received = pool[0].id; else if (pool.length > 1) line.ambiguous = true;
     }
@@ -166,7 +188,14 @@ export function programContinuedLines(text: TextWorkspaceState): ProgramContinue
 export function programContinuationStarts(text: TextWorkspaceState): Map<string, string> {
   const lines = programContinuedLines(text), into = new Map(lines.filter(line => line.received).map(line => [line.received!, line]));
   const starts = new Map<string, string>();
-  for (const task of M.tasks(text)) {
+  const tasks = M.tasks(text);
+  if (lines.some(line => line.receiverScope !== undefined)) {
+    const present = new Set(tasks.map(task => task.id));
+    for (const doc of text.documents) for (const item of M.parseDocumentCached(doc, text).items) {
+      if (!present.has(item.id) && into.get(item.id)?.receiverScope !== undefined) { tasks.push(item); present.add(item.id); }
+    }
+  }
+  for (const task of tasks) {
     if (!task.date) continue;
     let at = task.id, start: string | null = null;
     for (let guard = 0; guard < 400; guard++) {
@@ -196,7 +225,7 @@ export function reviveProgramContinuation(text: TextWorkspaceState, input: { doc
   const note = under.find(entry => PROGRAM_CONTINUE_LINE.test(entry.text)), percent = lost.percent ?? 0, pad = '  '.repeat(row.depth + 1);
   const newId = input.newId ?? programId('line');
   const fresh: TextLine[] = [{ id: newId, text: `${'  '.repeat(row.depth)}- [${percent > 0 && percent < 100 ? `${percent}%` : ' '}] ${lost.title}` },
-    ...under.filter(entry => /^ *-\s+마감:/.test(entry.text)).map(entry => ({ id: programId('line'), text: pad + entry.text.trimStart() }))];
+    ...under.filter(entry => /^ *-\s+(?:마감|기다림):/.test(entry.text)).map(entry => ({ id: programId('line'), text: pad + entry.text.trimStart() }))];
   const said = { id: note?.id ?? programId('line'), text: `${pad}- 이어감: ${input.today} · ${percent}%` };
   let end = row.subtreeEndIndex;
   while (end > row.index + 1 && !doc.lines[end - 1].text.trim()) end -= 1;
