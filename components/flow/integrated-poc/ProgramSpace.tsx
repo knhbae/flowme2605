@@ -106,7 +106,7 @@ import { programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-contex
 import { restoreProgramDialogFocus, type ProgramWritingReturn } from '@/lib/flow/integrated-poc/dialog-return-focus';
 import { readProgramTaskOrigin } from '@/lib/flow/integrated-poc/task-origin-presentation';
 import { addDocumentCollection, collectionDocumentIds, setDocumentCollectionLink, type DocumentCollections } from '@/lib/flow/integrated-poc/document-collections';
-import { createProgramWritingEntry } from '@/lib/flow/integrated-poc/writing-entry';
+import { createProgramWritingEntry, programNewWritingRaw } from '@/lib/flow/integrated-poc/writing-entry';
 import { createPendingProgramSourceNavigation } from '@/lib/flow/integrated-poc/pending-source-navigation';
 import { programCheckpointForWritingTarget } from '@/lib/flow/integrated-poc/writing-navigation';
 import { canClassifyProgramTask } from '@/lib/flow/integrated-poc/task-classification';
@@ -2201,7 +2201,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (authority.conflict) { setMessage('현재 글이 바뀌었습니다. 내용을 확인한 뒤 다시 시도해 주세요.'); return; }
       writingRequest.current ??= programId('writing');
       const requestId = writingRequest.current;
-      const result = await run('바로 쓰기', current => createProgramWritingEntry(current, { actorId, requestId,
+      const result = await run('바로 쓰기', current => createProgramWritingEntry(current, { actorId, requestId, today,
         expectedSpace: authority.expected, reuseDocumentId: selectedRef.current || undefined }));
       if (!result.ok) return;
       const reused = result.result === selectedRef.current;
@@ -2222,7 +2222,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (!await flushAllEditors()) { setMessage('작성 중인 입력을 저장하거나 취소한 뒤 새 문서를 만들어 주세요.'); return; }
       if (authority.conflict) { setMessage('문서가 바뀌어 새 문서를 만들지 않았습니다. 현재 내용을 확인한 뒤 다시 시도해 주세요.'); return; }
       const result = await run('문서 만들기', current => current.activeActorId !== actorId ? programFailure(current, 'conflict') : createProgramDocument(current, {
-        actorId, requestId: programId('request'), expectedSpace: authority.expected, title, folderId: collectionMode ? 'folder-unfiled' : folderId || 'folder-unfiled' }));
+        actorId, requestId: programId('request'), expectedSpace: authority.expected, title, raw: programNewWritingRaw(today), folderId: collectionMode ? 'folder-unfiled' : folderId || 'folder-unfiled' }));
       if (result.ok) { form.reset(); setLibraryOpen(false); setSelected(result.result); setOpened(previous => [...previous, result.result]); setFolderId(''); setPeriod('documents'); props.navigate({ view: 'space', id: result.result }); }
     } finally { if (moveFlush.current === authority) moveFlush.current = null; preparing.current = false; setPreparingDocumentAction(false); release(); }
   }
