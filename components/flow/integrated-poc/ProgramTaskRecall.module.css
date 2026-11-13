@@ -1,0 +1,11 @@
+.panel { position: fixed; z-index: 72; box-sizing: border-box; overflow: hidden; border: 1px solid var(--flowme-b-line); border-radius: 12px; background: var(--flowme-b-surface, #fff); color: var(--flowme-b-ink); box-shadow: 0 5px 22px #0002; font-family: inherit; font-size: 14px; line-height: 1.35; }
+.panel header { display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding-left: 12px; font-size: 13px; color: var(--flowme-b-muted); }
+.panel header button { width: 44px; min-height: 44px; flex: none; border: 0; background: transparent; color: var(--flowme-b-ink); font-size: 24px; cursor: pointer; }
+.row { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 48px; padding: 4px 12px; text-align: left; border: 0; border-radius: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.row[aria-selected='true'] { background: var(--flowme-b-selected); outline: 2px solid var(--flowme-b-primary-strong); outline-offset: -2px; }
+.mark { flex: none; min-width: 32px; font-size: 13px; color: var(--flowme-b-primary-strong); }
+.words { flex: 1; min-width: 0; }
+.words strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 500; }
+.words small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: var(--flowme-b-muted); }
+.verb { flex: none; font-size: 13px; color: var(--flowme-b-primary-strong); }
+.panel footer { min-height: 28px; box-sizing: border-box; padding: 5px 12px; border-top: 1px solid var(--flowme-b-line); font-size: 13px; color: var(--flowme-b-muted); }

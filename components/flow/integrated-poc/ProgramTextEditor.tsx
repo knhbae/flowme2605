@@ -77,6 +77,9 @@ import { commitTaskDateWithUndo, type TaskLocationPolicy } from '@/lib/flow/inte
 import { ProgramTaskMoveSheet } from './ProgramTaskMoveSheet';
 import { ProgramTaskMoveContext } from './task-move-context';
 import { TASK_DATE_SUGGESTION_EVENT, TASK_DATE_SUGGESTION_KEY, readTaskDateSuggestion, undoTaskDateSuggestion, taskDateSuggestionUndoFrameMatches, taskDateSuggestionLabel, taskDateSuggestionsEnabled, taskDateSuggestionToday, type TaskDateSuggestion } from '@/lib/flow/integrated-poc/task-date-suggestion';
+import { ProgramTaskRecall, type ProgramTaskRecallFrame } from './ProgramTaskRecall';
+import { readProgramRecallLine, type ProgramRecallCandidate } from '@/lib/flow/integrated-poc/task-recall';
+import type { ProgramRecallSource } from '@/lib/flow/integrated-poc/task-recall-compute';
 
 export { createProgramTextDraft } from '@/lib/flow/integrated-poc/program-text-draft';
 export type { ProgramTextCommitOptions, ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
@@ -142,6 +145,10 @@ export interface ProgramTextEditorProps {
   /** A folded writing view delegates source placement to the host's complete document. */
   onTaskLocation?: (lineId: string, target: TaskLocationTarget, working: TextWorkspaceState) => Promise<boolean>;
   onUndoTaskLocation?: () => boolean;
+  /** W-TXT-14: the host owns the complete source (including folded days) and its exact one-step inverse. */
+  recallSource?: ProgramRecallSource;
+  onTaskRecall?: (candidate: ProgramRecallCandidate, line: ProgramTaskRecallFrame['line'], working: TextWorkspaceState) => Promise<boolean>;
+  onTaskRecallHistory?: (redo: boolean) => boolean;
   /** F9 W-MENU-26: where this device keeps the moves the trace lines are drawn from (localStorage); none, no traces. */
   moveTraceKey?: string;
   /** F10 W-ORDER-05: the host's 글 ⋮ '날짜 순서 바꾸기' opens this editor's preview. */
@@ -1510,6 +1517,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const props = propsRef.current, state = draftRef.current?.getState();
     if (stepLocation(false)) return;
     if(stepScheduleUndo())return;
+    if(propsRef.current.onTaskRecallHistory?.(false))return;
     if(propsRef.current.onUndoTaskLocation?.())return;
     if (undoBarFolder()) return;
     if (undoFolderMove() || undoRepeatCheck()) return;
@@ -1520,12 +1528,14 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   function historyStep(type: 'historyUndo' | 'historyRedo') {
     if (stepLocation(type === 'historyRedo')) return true;
     if(type==='historyUndo'&&stepScheduleUndo())return true;
+    if(propsRef.current.onTaskRecallHistory?.(type === 'historyRedo'))return true;
     if(type==='historyUndo'&&propsRef.current.onUndoTaskLocation?.())return true;
     return type === 'historyUndo' ? undoBarFolder() || undoFolderMove() || undoRepeatCheck() || undoBarDate() : redoBarFolder() || redoBarDate();
   }
   const historyStepFn = useRef(historyStep); historyStepFn.current = historyStep;
   function redoInput() {
     if (stepLocation(true)) return;
+    if(propsRef.current.onTaskRecallHistory?.(true))return;
     const props = propsRef.current, state = draftRef.current?.getState();
     if (redoBarFolder() || redoBarDate()) return;
     // 7k stage 1: in a folder view ↷ goes where its ↶ went (the saved steps), not to the hidden whole editor's history.
@@ -3968,6 +3978,24 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
   }}>
     {folderPicker}
+    {props.recallSource && props.onTaskRecall && <ProgramTaskRecall source={props.recallSource} active={props.active !== false && !!props.authoringMode && !props.folderId && !props.readOnly} port={{
+      surface: textArea,
+      frame: () => {
+        const controller = draftRef.current, area = textArea(), state = controller?.getState(), now = propsRef.current;
+        if (!controller || !area || !state || now.active === false || !now.authoringMode || now.folderId || now.readOnly || composingRef.current
+          || inputLockedRef.current || state.invalid || state.error || panelRef.current || movingRef.current || pickerRef.current || memoTip !== null
+          || modeRef.current !== 'live' || document.activeElement !== area || state.raw !== area.value) return null;
+        const line = readProgramRecallLine(state.working, now.docId, area.value, area.selectionStart, area.selectionEnd, now.recallSource!.today);
+        return line ? { line, raw: area.value, documentId: now.docId, owner: controller, generation: controller.generation() } : null;
+      },
+      caret: offset => editorRef.current?.caretRect(offset),
+      choose: (candidate, frame) => {
+        const controller = draftRef.current, area = textArea();
+        if (!controller || !area || controller !== frame.owner || controller.generation() !== frame.generation || area.value !== frame.raw || composingRef.current || actionsDisabled()) return;
+        void propsRef.current.onTaskRecall?.(candidate, frame.line, controller.getState().working);
+      },
+      coverBar: covered => { if (covered) barRef.current?.setAttribute('data-task-recall-covered', 'true'); else barRef.current?.removeAttribute('data-task-recall-covered'); },
+    }} />}
     <div className={styles.toolbar}>
       {props.headStart && <div className={styles.headStart} data-editor-head="start">{props.headStart}</div>}
       {mode === 'text' && <button type="button" onClick={event => returnToDocumentMode(event.currentTarget)}>문서로 돌아가기</button>}
