@@ -214,3 +214,45 @@ test("Codex 3rd review P2-4: a '[>]' in a code block, or in an archived document
   assert.equal(planProgramCarryover(space(archived), '2026-11-12').lines.filter(entry => entry.action === 'again').length, 0, 'not from an archived one');
   void docId;
 });
+
+test('P2 child continuation: its due and waiting properties follow the new child and remain on the old record', () => {
+  const { data, docId } = writing(['[2026-11-11]', '- /업무', '  - [60%] 합성 부모', '    - [40%] 합성 하위',
+    '      - 마감: 2026-11-20', '      - 기다림: 2026-11-09', '      - 메모: 지난 기록', '    - [x] 합성 다른 하위'].join('\n'));
+  let text = space(data).text;
+  const parent = task(text, '합성 부모'), child = parent.subchecks.find(row => row.title === '합성 하위')!;
+  text = { ...text, progressRecords: [{ taskId: parent.id, date: '2026-11-11', percent: 60 }, { taskId: child.id, date: '2026-11-11', percent: 40 }] };
+  const before = programClone(text), doc = M.getDocument(text, docId)!, oldRows = M.parseDocument(doc, text).rows;
+  const oldOwn = oldRows.filter(row => row.parentLineId === child.id && row.kind === 'property');
+  assert(M.validate(text));
+  const result = continueProgramTask(text, { documentId: docId, taskId: parent.id, today: '2026-11-13' });
+  assert(result.ok, result.ok ? '' : result.reason);
+  const nextDoc = M.getDocument(result.next, docId)!, rows = M.parseDocument(nextDoc, result.next).rows;
+  const copied = task(result.next, '합성 부모').subchecks.find(row => row.title === '합성 하위')!;
+  const newOwn = rows.filter(row => row.parentLineId === copied.id && row.kind === 'property');
+  assert.deepEqual(newOwn.map(row => row.text.trim()), ['- 마감: 2026-11-20', '- 기다림: 2026-11-09']);
+  assert(newOwn.every(row => !oldOwn.some(old => old.id === row.id)), 'new property IDs, no duplicated identity');
+  assert(oldOwn.every(old => nextDoc.lines.some(row => row.id === old.id && row.text === old.text)), 'old properties remain byte-identical');
+  assert.equal(nextDoc.lines.find(row => row.id === child.id)!.text, '    - [>] 합성 하위');
+  assert.equal(M.currentProgress(result.next, copied.id), 40);
+  assert.deepEqual(result.next.progressRecords.map(row => [row.taskId, row.percent]), [[result.newId, 60], [copied.id, 40]]);
+  assert(M.validate(result.next));
+  const staged = programClone(data); space(staged).text = result.next;
+  const restored = ok(restoreProgramCarryover(staged, { ...base(staged), before: { ...programCarryoverBefore(space(data)), text: before }, after: programCarryoverProof(space(staged)) })).data;
+  assert.deepEqual(space(restored).text, before, 'one semantic restoration keeps all original RAW, IDs and records');
+});
+
+test('P2 child continuation: a short due keeps its original year when the parent crosses the year boundary', () => {
+  const { data, docId } = writing(['[2026-12-30]', '- [50%] 합성 연말 부모', '  - [30%] 합성 연말 하위',
+    '    - 마감: 12/31', '    - 기다림: 2026-12-29'].join('\n'));
+  let text = space(data).text;
+  const parent = task(text, '합성 연말 부모'), child = parent.subchecks[0];
+  text = { ...text, progressRecords: [{ taskId: parent.id, date: '2026-12-30', percent: 50 }, { taskId: child.id, date: '2026-12-30', percent: 30 }] };
+  const result = continueProgramTask(text, { documentId: docId, taskId: parent.id, today: '2027-01-01' });
+  assert(result.ok, result.ok ? '' : result.reason);
+  const next = M.getDocument(result.next, docId)!, copied = task(result.next, '합성 연말 부모').subchecks[0];
+  const own = M.parseDocument(next, result.next).rows.filter(row => row.parentLineId === copied.id && row.kind === 'property');
+  assert.deepEqual(own.map(row => row.text.trim()), ['- 마감: 2026-12-31', '- 기다림: 2026-12-29']);
+  assert(raw(result.next, docId).includes('    - 마감: 12/31'), 'yesterday\'s short spelling stays');
+  assert.equal(M.currentProgress(result.next, copied.id), 30);
+  assert(M.validate(result.next));
+});

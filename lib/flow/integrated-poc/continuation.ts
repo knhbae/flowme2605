@@ -49,12 +49,17 @@ export function continueProgramTask(text: TextWorkspaceState, input: { documentI
     for (const entry of rows.slice(child.index, child.subtreeEndIndex)) if (!parted.has(child.id) || entry.id !== child.id && !parted.get(child.id)!.own.has(entry.id)) carried.add(entry.id);
   const own = subtree.filter(entry => entry.kind === 'property' && entry.parentLineId === task.id);
   const newId = input.newId ?? programId('line');
-  const copyOf = (entry: TextRow) => { const share = parted.get(entry.id)!; return { id: share.newId, text: `${'  '.repeat(entry.depth)}- [${share.percent}%] ${entry.title}` }; };
+  const copyOf = (entry: TextRow): TextLine[] => {
+    const share = parted.get(entry.id)!;
+    return [{ id: share.newId, text: `${'  '.repeat(entry.depth)}- [${share.percent}%] ${entry.title}` },
+      ...subtree.filter(row => share.own.has(row.id) && /^ *-\s+(?:마감|기다림):/.test(row.text))
+        .map(row => ({ id: programId('line'), text: row.text }))];
+  };
   const fresh: TextLine[] = [{ id: newId, text: `${'  '.repeat(row.depth)}- [${percent > 0 && percent < 100 ? `${percent}%` : ' '}] ${task.title}` },
     // W-TXT-09 (integ-redesign4, 총괄 11/12): a '답 확인:' line's '- 기다림:' goes on with it as its 마감 does (and stays on
     // the old line too), so '기다림 n일째' still counts from the day the wait began.
     ...own.filter(entry => /^ *-\s+(?:마감|기다림):/.test(entry.text)).map(entry => ({ id: programId('line'), text: pad + entry.text.trimStart() })),
-    ...subtree.flatMap(entry => parted.has(entry.id) ? [copyOf(entry)] : carried.has(entry.id) ? [doc.lines[entry.index]] : [])];
+    ...subtree.flatMap(entry => parted.has(entry.id) ? copyOf(entry) : carried.has(entry.id) ? [doc.lines[entry.index]] : [])];
   const note = { id: programId('line'), text: `${pad}- 이어감: ${input.today} · ${percent}%` };
   const notes = new Map([...parted].map(([id, share]) => [share.after, { id: programId('line'), text: `${'  '.repeat(rows.find(entry => entry.id === id)!.depth + 1)}- 이어감: ${input.today} · ${share.percent}%` }]));
   const after = own.at(-1)?.id ?? task.id;

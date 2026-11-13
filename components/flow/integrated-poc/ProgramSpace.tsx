@@ -1156,8 +1156,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // yesterday); the open lines of the days before fold to '밀린 일 n개 · 보기'. More than 14 days back, the first cleanup
   // asks instead of the button.
   const morning = useMemo(() => carryShown && carryPast.length > 0 ? programMorningCarry(space, today) : null, [carryShown, carryPast.length > 0, space, today]);
-  const carryCard = !!morning && carrySummary.count > 0;
   const morningHolds = useMemo(() => !!morningDone && morningDone.actorId === actorId && programCarryoverProof(space) === morningDone.after, [morningDone, actorId, space]);
+  const carryCard = carryShown && (morningHolds || !!morning && carrySummary.count > 0);
   // N11b: what the sheet's choices would do now (its save button says how many memos a deletion takes along).
   const carrySheetPlan = useMemo(() => carryItems && carrySheetSpace && period === 'today' ? planProgramCarryover(carrySheetSpace, today, undefined,
     new Map(carryItems.map(item => [item.kind, carryChoices.get(item.kind) ?? item.choice]))) : null, [carryItems, carryChoices, carrySheetSpace, period, today]);
@@ -3069,13 +3069,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // first cleanup asks then). The days before: '밀린 일 n개' with 보기 (the rows) and 하나씩 정리. All counted in task lines.
   const morningYesterday = !!morning && programDaysBetween(morning.day, today) === 1;
   const morningButton = !!morning && morning.lines > 0 && !morning.stale && !morningHolds;
-  const carryCardContent = carryCard && morning && <section className={styles.carryCard} aria-label="밀린 일" data-carryover>
+  const carryCardContent = carryCard && <section className={styles.carryCard} aria-label="밀린 일" data-carryover>
     {morningHolds && morningDone && <div className={styles.carryDone} data-morning-done>
       <p><span>{morningDone.text}</span>{!carryPending && <button type="button" className={styles.carryUndo}
         onClick={() => void undoCarry({ actorId, text: morningDone.text, before: morningDone.before, after: morningDone.after, shownAt: Date.now() })}>되돌리기</button>}</p>
       <small className={styles.carryNote}>오늘 구획을 고치기 전까지 이 자리에 남습니다.</small>
     </div>}
-    {morningButton && <>
+    {morning && morningButton && <>
       <p className={styles.carryTitle} data-morning-head>{`이어 쓸 일 ${morning.lines}개 · ${morningYesterday ? '어제 ' : ''}${programCalendarDate(morning.day, today)}`}</p>
       <div className={styles.carryActions}>
         <button type="button" className={styles.carryMove} data-morning-carry disabled={carryPending || saving || carryWriting || !!props.hostBusy?.()}
@@ -3087,7 +3087,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {morning.plan.finished > 0 && <small className={styles.carryNote}>그 뒤에 끝낸 일의 남은 줄 {morning.plan.finished}가지는 지웁니다</small>}
       {morning.plan.left > 0 && <small className={styles.carryNote}>한 번에 {PROGRAM_CARRYOVER_LIMIT}줄까지 이어 씁니다 · 남은 {morning.plan.left}줄은 한 번 더 누르면 됩니다</small>}
     </>}
-    {(morning.older > 0 || !morningButton && !morningHolds) && <div className={styles.carryLate} data-late-line>
+    {morning && (morning.older > 0 || !morningButton && !morningHolds) && <div className={styles.carryLate} data-late-line>
       <b>{opening.since ? `${programCalendarDate(opening.since, today, false)} 이후 처음 열었습니다 · ` : ''}밀린 일 {morning.older > 0 ? morning.older : carrySummary.lines}개</b>
       <button type="button" className={styles.carryFold} aria-expanded={carryOpen} onClick={() => setCarryOpen(!carryOpen)}>{carryOpen ? '접기' : '보기'}</button>
       <button type="button" className={styles.carryOne} aria-haspopup="dialog" disabled={carryPending} onClick={() => openCarrySheet()}>하나씩 정리</button>
