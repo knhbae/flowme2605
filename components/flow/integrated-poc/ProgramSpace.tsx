@@ -120,6 +120,8 @@ const PROGRAM_CLEANUP_CHANGED = "전환 뒤 바뀐 글이 있어 자동으로 �
 import { programDueLabel } from '@/lib/flow/integrated-poc/due-date';
 import { programIsWaitTitle, programWaitStartable, startProgramWait } from '@/lib/flow/integrated-poc/wait-line';
 import type { TaskLocationTarget } from '@/lib/flow/integrated-poc/task-location-move';
+import { recallProgramTask } from '@/lib/flow/integrated-poc/task-recall-command';
+import type { ProgramRecallCandidate, ProgramRecallLine } from '@/lib/flow/integrated-poc/task-recall';
 import { programLineDateChips } from '@/lib/flow/integrated-poc/task-date-move';
 import { programFolderPath } from '@/lib/flow/integrated-poc/folder-link-suggestions';
 import { ProgramTaskMoveSheet } from './ProgramTaskMoveSheet';
@@ -455,6 +457,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   /** W-MENU-27: the trace store of this device (null when the browser keeps none). */
   const traceStorage=()=>{try{return window.localStorage;}catch{return null;}};
   const [locationNotice,setLocationNotice]=useState<LocationNotice|null>(null);
+  const [recallNotice, setRecallNotice] = useState<{ actorId: string; documentId: string; before: TextWorkspaceState; after: TextWorkspaceState; text: string; redo: boolean } | null>(null);
   const locationBusy=useRef(false);
   // I7: the notice after '시간순으로', holding the arrays it removed for its 되돌리기, or why that was refused.
   type OrderNotice = { actorId: string; removed: ProgramDayOrder; hidden: number; refused?: string; shownAt: number };
@@ -2659,6 +2662,42 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if(result.ok){setLocationNotice(null);if(notice.traceId)keepProgramMoveTraces(traceStorage(),programMoveTraceKey(actorId),list=>list.filter(entry=>entry.id!==notice.traceId),today);}
     }finally{locationBusy.current=false;setLocationPending(false);}
   }
+  async function recallTaskHere(documentId: string, candidate: ProgramRecallCandidate, line: ProgramRecallLine, working: TextWorkspaceState, recent: ProgramRecentView | null) {
+    if (locationBusy.current || inputLockCount.current > 0 || locationAvailability().blocked || dataRef.current.activeActorId !== actorId) return false;
+    const wide = recent ? recentWide(documentId, recent, working, false) : { ok: true as const, state: working };
+    if (!wide.ok || selectedRef.current !== documentId || presentation.current.period !== 'documents') return false;
+    const release = lockInput(); locationBusy.current = true;
+    try {
+      // Preserve the typed prefix before the semantic command. Its inverse returns to these exact bytes, not to an older server draft.
+      if (!await flushAllEditors()) { showViewChangeBlocked(); return false; }
+      const current = dataRef.current, owner = current.spaces[actorId];
+      if (current.activeActorId !== actorId || selectedRef.current !== documentId || presentation.current.period !== 'documents' || !programSame(owner.text, wide.state)) {
+        setMessage('그사이 글이 바뀌어 불러오지 않았습니다. 입력은 그대로 있습니다.'); return false;
+      }
+      const planned = recallProgramTask(owner, { candidate, documentId, lineId: line.lineId, expectedLine: line.text, today });
+      if (!planned.ok) {
+        setMessage(planned.reason === 'receiver-contract' ? '이 자리에 안전하게 이어 쓸 수 없어 불러오지 않았습니다. 입력은 그대로 있습니다.'
+          : planned.reason === 'ambiguous' ? '같은 날 같은 제목의 일이 여러 개라 불러오지 않았습니다. 입력은 그대로 있습니다.'
+          : '지난 일이나 입력 줄이 바뀌어 불러오지 않았습니다. 원문은 그대로 있습니다.'); return false;
+      }
+      const result = await run('지난 할 일 불러오기', latest => programTextTransition(latest, { actorId, documentId, expected: owner.text, next: planned.next }));
+      if (!result.ok) return false;
+      setRecallNotice({ actorId, documentId, before: owner.text, after: planned.next, text: planned.message, redo: false }); setMessage('');
+      return true;
+    } finally { locationBusy.current = false; release(); }
+  }
+  async function stepTaskRecall(redo: boolean) {
+    const notice = recallNotice, current = dataRef.current;
+    if (!notice || notice.actorId !== actorId || notice.redo !== redo || current.activeActorId !== actorId || locationBusy.current || locationAvailability().blocked
+      || Object.values(dirty.current).some(Boolean) || !programSame(current.spaces[actorId].text, redo ? notice.before : notice.after)) return false;
+    locationBusy.current = true;
+    try {
+      const result = await run(redo ? '지난 할 일 다시 불러오기' : '지난 할 일 불러오기 되돌리기', latest => programTextTransition(latest, {
+        actorId, documentId: notice.documentId, expected: redo ? notice.before : notice.after, next: redo ? notice.after : notice.before }));
+      if (result.ok) setRecallNotice({ ...notice, redo: !redo, text: redo ? '다시 불러왔습니다' : '치던 글자로 되돌렸습니다' });
+      return result.ok;
+    } finally { locationBusy.current = false; }
+  }
   async function dateMove(taskId: string, nextDate: string | null) {
     const requested = { ...executionDraftOwner.current };
     const ok = await moveTaskHere(taskId,{kind:'date',date:nextDate});
@@ -3746,6 +3785,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onRegisterExternalGuard={read => { externalReaders.current[id] = read; }}
           onRegisterBodyPending={read => { bodyPendingReaders.current[id] = read; }}
           docId={id} workspace={recent ? recent.workspace : space.text} active={selected === id && period === 'documents'} initialPosition={recent && initial ? recentPosition(id, recent, initial, false) : initial}
+          recallSource={{ ownerId: actorId, space, today }}
+          onTaskRecall={(candidate, line, working) => recallTaskHere(id, candidate, line, working, recent)}
+          onTaskRecallHistory={redo => {
+            if (!recallNotice || recallNotice.actorId !== actorId || recallNotice.documentId !== id || recallNotice.redo !== redo || dirty.current[id]
+              || !programSame(dataRef.current.spaces[actorId].text, redo ? recallNotice.before : recallNotice.after)) return false;
+            void stepTaskRecall(redo); return true;
+          }}
           taskLocationPolicy={(lineId,shown)=>{
             const wide=recent?recentWide(id,recent,shown,false):{ok:true as const,state:shown},latest=dataRef.current.spaces[actorId];
             return wide.ok?readTaskLocationPolicy({...latest,text:wide.state},lineId,id):{kind:'blocked',taskId:lineId,documentId:null,message:'지난 기록을 펼친 뒤 옮겨 주세요.'};
@@ -3766,7 +3812,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           }:undefined}
           onUndoTaskLocation={locationNotice?.documentId===id?()=>{if(dirty.current[id])return false;void undoTaskLocation(locationNotice);return true;}:undefined}
           onRegisterSectionOrder={open => { sectionOrderOpeners.current[id] = open; }}
-          hostNotice={bandRepeatNotice && bandRepeatNotice.actorId === actorId && bandRepeatNotice.documentId === id && selected === id
+          hostNotice={recallNotice && recallNotice.actorId === actorId && recallNotice.documentId === id && selected === id
+            ? { text: recallNotice.text, close: () => setRecallNotice(null), action: { label: recallNotice.redo ? '다시 하기' : '되돌리기', run: () => { void stepTaskRecall(recallNotice.redo); } } }
+            : bandRepeatNotice && bandRepeatNotice.actorId === actorId && bandRepeatNotice.documentId === id && selected === id
             ? { text: bandRepeatNotice.text, close: () => setBandRepeatNotice(null), repeat: true,
               action: bandRepeatNotice.check ? { label: '되돌리기', run: () => { const notice = bandRepeatNotice; if (notice.check) void undoBandRepeat(notice.taskId, notice.check); } } : null }
             : noteLineMessage && selected === id ? { text: message, close: () => setMessage('') } : undefined}

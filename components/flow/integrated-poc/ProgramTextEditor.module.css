@@ -303,6 +303,7 @@
 /* Writing model A (S3): the same actions as a mobile keyboard bar under the body and in the wide
    toolbar. Buttons stay solid during composition and saves; a held press looks pressed until it runs. */
 .writingBar { display: none; }
+.writingBar[data-task-recall-covered='true'] { visibility: hidden; pointer-events: none; }
 .folderPicker { position: fixed; z-index: 70; box-sizing: border-box; border: 1px solid var(--flowme-b-line); border-radius: 10px; background: var(--flowme-b-surface, #fff); color: var(--flowme-b-ink); box-shadow: 0 4px 18px #0002; overflow: hidden; }
 .pickerHeader { display: flex; align-items: center; justify-content: space-between; min-height: 40px; padding-left: 12px; color: var(--flowme-b-muted); }
 .pickerHeader > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
