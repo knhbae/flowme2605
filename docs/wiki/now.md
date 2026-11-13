@@ -245,3 +245,5 @@
 - 11/12 18:2x~19:4x 재설계 1~4단계 Codex 3차 검토에서 P1 1건과 P2 4건이 나왔다. 개발이 797cf818·91342482로 고쳤고, 좁은 재확인은 PASS였다. 처음 정리 모델(ef06f592·411c3b96) 검토에서는 P1 2건과 P2 4건이 나와 수정 중이다. 클라우드가 b918b5c5 위에 progtext 전체와 trashfix2를 합친 통합 가지 agent/alpha-integ-redesign4-cloud-20261112를 만들고 있다.
 - 11/12 19:15 기타 b918b5c5(F12 2차 + W-CARRY-10 + 복구함) QA_GO(PACKAGE aa349312).
 - 11/12 20:06 가벼운 반영 41회차 DEPLOYED: b918b5c5 / PhVfdfBFHe5j51I5GKNTn. Inspect 통과, CPU 평균 16%, 10경로 기대값, DB 0. 되돌리기 대상 8d1c88e6.
+- 11/13 03~12시 Claude 주간 한도 95%로 세션들을 멈추고 Codex(앱 대기열)에 맡겼다. 05b8ba37 성능 HOLD를 받아, Codex가 줄 문법 캐시 d1545951과 오늘 탭 커밋을 통합한 cf0dfcf7 / 1FbFnIlcJy4A를 만들었다. perfkit PASS(6배 전체: 조합 -4%, 확정 -11%, 할 일 -29%, Enter 0%), Codex QA_GO(PACKAGE 345a3f9f, P2 2: 아침 이어 쓰기 뒤 완료 카드 유지, 하위 자체 마감이 따라오지 않을 수 있음).
+- 11/13 12:30 가벼운 반영 42회차 DEPLOYED: 재설계 첫 묶음 cf0dfcf7 / 1FbFnIlcJy4A-WKPLVB54(진행률 원문, 마감, 계정 전체 '- 날짜:' 전환과 '전환 전 원문' 보관, 이어 쓰기, 기다림 줄, 오늘 탭 처음 정리·휴지통·아침 이어 쓰기, 복구함 다음 묶음). CPU 14%, 10경로 기대값, DB 0, 되돌리기 대상 b918b5c5(f12bt-qa/product). appRoot는 integ5-qa-20261113/product다.
