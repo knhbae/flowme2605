@@ -80,6 +80,7 @@ import { TASK_DATE_SUGGESTION_EVENT, TASK_DATE_SUGGESTION_KEY, readTaskDateSugge
 import { ProgramTaskRecall, type ProgramTaskRecallFrame } from './ProgramTaskRecall';
 import { readProgramRecallLine, type ProgramRecallCandidate } from '@/lib/flow/integrated-poc/task-recall';
 import type { ProgramRecallSource } from '@/lib/flow/integrated-poc/task-recall-compute';
+import { createProgramRecallSurface } from '@/lib/flow/integrated-poc/task-recall-surface';
 
 export { createProgramTextDraft } from '@/lib/flow/integrated-poc/program-text-draft';
 export type { ProgramTextCommitOptions, ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
@@ -402,6 +403,8 @@ export function programTextInputPending(state:Pick<ProgramTextDraftState,'dirty'
 
 export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const propsRef = useRef(props); propsRef.current = props;
+  const recallSurfaceRef = useRef<ReturnType<typeof createProgramRecallSurface<HTMLTextAreaElement>> | null>(null);
+  const recallSurface = recallSurfaceRef.current ??= createProgramRecallSurface<HTMLTextAreaElement>();
   const hostRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ReturnType<typeof nativeEditor.create> | null>(null);
   const draftRef = useRef<ReturnType<typeof createProgramTextDraft> | null>(null);
@@ -2970,6 +2973,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     };
     if (textarea) {
       textarea.id = `program-text-${encodeURIComponent(props.docId)}`;
+      recallSurface.bind(textarea);
       textarea.readOnly = inputLockedRef.current || !!propsRef.current.readOnly;
       const position = propsRef.current.initialPosition;
       if (position) {
@@ -3008,6 +3012,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       textarea?.removeEventListener('input', observeInput, true);
       checkPendingRef.current=null;
       checkNotifyRef.current?.(programTextInputPending(controller.getState(),textarea?.value,composingRef.current,regionPendingRef.current,false));checkNotifyRef.current=undefined;
+      if (textarea) recallSurface.release(textarea);
       instance.destroy(); editorRef.current = null; draftRef.current = null;documentInputRef.current=null;
     };
     // Keep the same native textarea through every edit, failed save and parent rerender.
@@ -3979,7 +3984,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }}>
     {folderPicker}
     {props.recallSource && props.onTaskRecall && <ProgramTaskRecall source={props.recallSource} active={props.active !== false && !!props.authoringMode && !props.folderId && !props.readOnly} port={{
-      surface: textArea,
+      surface: recallSurface.read,
       frame: () => {
         const controller = draftRef.current, area = textArea(), state = controller?.getState(), now = propsRef.current;
         if (!controller || !area || !state || now.active === false || !now.authoringMode || now.folderId || now.readOnly || composingRef.current
