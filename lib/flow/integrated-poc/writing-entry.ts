@@ -1,28 +1,34 @@
 import { programClone, programFailure, programResult, type ProgramData, type ProgramTransition } from './contract';
 import { programSame } from './controller';
-import { programIdentifier, validateProgramData } from './program-data';
+import { programDate, programIdentifier, validateProgramData } from './program-data';
 import { createProgramDocument, type ProgramPrivateMutationBase } from './private-space';
 import { textWorkspaceModel as M } from './text-workspace';
 
 export const PROGRAM_WRITING_ENTRY_TITLE = '작성한 글';
 
 export type ProgramWritingEntryInput = ProgramPrivateMutationBase & {
+  today: string;
   /** Only the document currently displayed by the caller, never a title lookup. */
   reuseDocumentId?: string;
 };
+
+/** W-TXT-10: seed only a newly created ordinary writing document. Never a reopen hook. */
+export function programNewWritingRaw(today: string): string {
+  return programDate(today) ? `[${today}]\n` : '';
+}
 
 /** Explicit writing entry over the existing document transition. Filing and Item
  * ownership remain unchanged; this does not introduce a new storage model or an
  * automatic first-entry selection policy. The caller owns input locks/navigation.
  */
 export function createProgramWritingEntry(data: ProgramData, input: ProgramWritingEntryInput): ProgramTransition<string> {
-  if (!validateProgramData(data) || !programIdentifier(input.requestId)
+  if (!validateProgramData(data) || !programIdentifier(input.requestId) || !programDate(input.today)
     || input.reuseDocumentId !== undefined && !programIdentifier(input.reuseDocumentId)) return programFailure(data, 'invalid');
   if (!Object.hasOwn(data.spaces, input.actorId)) return programFailure(data, 'forbidden');
   if (data.activeActorId !== input.actorId) return programFailure(data, 'conflict');
 
   const creation = { actorId: input.actorId, requestId: input.requestId, expectedSpace: input.expectedSpace,
-    title: PROGRAM_WRITING_ENTRY_TITLE, folderId: 'folder-unfiled', raw: '' };
+    title: PROGRAM_WRITING_ENTRY_TITLE, folderId: 'folder-unfiled', raw: programNewWritingRaw(input.today) };
   // Reuse is a presentation hint, not a new create payload. An existing request
   // must replay its original result even after that document gains content.
   if (data.receipts.some(receipt => receipt.actorId === input.actorId && receipt.id === input.requestId)) {
@@ -46,9 +52,10 @@ export function createProgramWritingEntry(data: ProgramData, input: ProgramWriti
   }
   const created = createProgramDocument(data, creation);
   if (!created.ok || !created.changed) return created;
-  // Remember this explicit entry in the same write, including an empty first
-  // document. Reload then restores its exact ID without creating a fallback.
+  // Remember the position after the date heading in the same write. Reload
+  // restores this ID; deleting the heading does not seed it again.
   const next = programClone(created.data);
-  next.spaces[input.actorId].position = { documentId: created.result, lineId: null, start: 0, end: 0, scrollTop: 0 };
+  const start = creation.raw.length;
+  next.spaces[input.actorId].position = { documentId: created.result, lineId: null, start, end: start, scrollTop: 0 };
   return programResult(data, next, created.result);
 }
