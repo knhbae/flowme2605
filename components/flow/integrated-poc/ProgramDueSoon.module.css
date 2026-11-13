@@ -1,0 +1,9 @@
+.group { margin: 12px 0; min-width: 0; color: var(--flowme-b-ink); }
+.group h2 { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; font-size: 16px; }
+.group h2 small { font-size: 13px; color: var(--flowme-b-muted); }
+.group ul { list-style: none; margin: 4px 0 0; padding: 0; }
+.group li { border-bottom: 1px solid var(--flowme-b-line); }
+.group li button { display: block; width: 100%; min-height: 44px; text-align: left; border: 0; background: transparent; padding: 8px 12px; overflow-wrap: anywhere; }
+.group li button > span { font-size: 16px; line-height: 24px; }
+.group li button small { font-size: 13px; line-height: 20px; margin-top: 2px; color: var(--flowme-b-muted); }
+.group [data-due-state="over"] { color: var(--flowme-b-late-ink); font-weight: 700; }

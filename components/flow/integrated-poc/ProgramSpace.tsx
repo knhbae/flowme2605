@@ -15,6 +15,8 @@ import { programManualOrderDays, programOrderedExecutionRows, programTextExecuti
 import { programNoticeEndsAt } from '@/lib/flow/integrated-poc/program-notice';
 import { ProgramNoticeRow } from './ProgramNoticeRow';
 import { ProgramFirstCleanup } from './ProgramFirstCleanup';
+import { ProgramDueSoon } from './ProgramDueSoon';
+import { programDueSoonTasks } from '@/lib/flow/integrated-poc/due-soon';
 import type { ToastHold } from './use-toast-life';
 import { carryProgramHead, restoreProgramHead, type ProgramHeadCarry } from '@/lib/flow/integrated-poc/tablet-head-carry';
 import { programCheckNoticeAfter, programCheckNoticeEndsAt, programCheckNoticeFailed, programCheckNoticeLive, programCheckNoticeView, programCheckUndoable, type ProgramCheckNotice, type ProgramCheckStep } from '@/lib/flow/integrated-poc/check-progress-notice';
@@ -1389,6 +1391,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // once-per-run question and the date sheet a long press on [내일] opens. Read in memory at each render; nothing stored.
   const flowRuns = useMemo(() => period === 'today' ? programFlowRuns(data, actorId, today, textTasks) : [], [period, data, actorId, today, textTasks]);
   const rechecks = useMemo(() => period === 'today' ? programRechecks(space, today) : [], [period, space, today]);
+  const dueSoon = useMemo(() => period === 'today' && date === today ? programDueSoonTasks(space, today) : [], [period, date, space, today]);
   const [flowBusy, setFlowBusy] = useState<ReadonlySet<string>>(() => new Set());
   // P2-3: the day close's hour is the clock's, read with today's date (never a minute late).
   const closeHour = dayClock.hour;
@@ -4028,6 +4031,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           {closeDoneOpen && <ul className={styles.tasks}>{done.map(item => renderListItem(item))}</ul>}</div>)(shownItems.filter(closeDoneRow))}
         {todayHere() && <ProgramRechecks rows={rechecks} today={today} saving={flowBusy} onCheck={checkRecheck} onTomorrow={recheckTomorrow}
           onOpen={row => void openDocument(row.docId, row.taskId)} />}
+        {todayHere() && <ProgramDueSoon rows={dueSoon} waiting={sourceWaitingTask} onOpen={(task, owner) => void openFromList(task, owner)} />}
         {/* W-FLOW-08: from 18:00 the open rows are '오늘 남은 일', each with [내일] (or [건너뛰기] for a repeat round). */}
         {closing() && (open => open > 0 && <h2 className={styles.closeHead} data-day-close>오늘 남은 일
           <small>{open}</small><span>저녁 6시부터 · [내일]을 길게 누르면 다른 날</span></h2>)(shownItems.filter(item => item.kind === 'row' && item.entry.kind !== 'occurrence' && !item.entry.task.done).length)}
