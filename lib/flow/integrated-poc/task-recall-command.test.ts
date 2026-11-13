@@ -5,7 +5,8 @@ import { createProgramDocument } from './private-space';
 import { programTextTransition } from './program-text-transition';
 import { createProgramRecallIndex } from './task-recall';
 import { recallProgramTask } from './task-recall-command';
-import { programContinuedLines } from './continuation';
+import { programContinuedLines, programContinuationStarts, programLostContinuations, reviveProgramContinuation } from './continuation';
+import { programDayCount } from './execution-presentation';
 import { textWorkspaceModel as M } from './text-workspace';
 const today = '2026-11-13';
 function fixture(raw: string) {
@@ -70,4 +71,63 @@ for (const [open, close, payload] of [['````text', '````', '      ```'], ['~~~te
   const before = M.getDocument(space.text, docId)!, kept = before.lines.filter(line => line.text === payload || line.text === '    unique body'); assert.equal(kept.length, 2);
   const result = recallProgramTask(space, input('자료 코드')); assert(result.ok, result.ok ? '' : result.reason);
   for (const line of kept) assert.deepEqual(M.getDocument(result.next, docId)!.lines.find(entry => entry.id === line.id), line);
+});
+for (const child of [false, true]) test(`11/13 approved: other-folder ${child ? 'subordinate' : 'root'} receiver is explicit; day count, deletion and return`, () => {
+  const { space, input, docId } = fixture(['[2026-11-10]', '- /합성 출발', '  - [40%] 자료 연결', '    - 마감: 11/20', '    - 기다림: 2026-11-09',
+    '[2026-11-13]', '- /합성 도착', ...(child ? ['  - [ ] 합성 받는 부모', '    - [ ] 자료'] : ['  - [ ] 자료'])].join('\n'));
+  const before = structuredClone(space.text), chosen = input('자료 연결'), parent = M.getDocument(before, docId)!.lines.find(line => line.text.includes('합성 받는 부모'));
+  const result = recallProgramTask(space, chosen); assert(result.ok, result.ok ? '' : result.reason);
+  assert.match(M.raw(M.getDocument(result.next, docId)), /- 이어감: 2026-11-13 · 40% · \/합성 도착/);
+  const link = programContinuedLines(result.next).find(line => line.lineId === chosen.candidate.lineId)!;
+  assert.deepEqual([link.scope, link.receiverScope, link.received], ['합성 출발', '합성 도착', result.lineId]);
+  assert.equal(programContinuationStarts(result.next).get(result.lineId), '2026-11-10');
+  assert.equal(programDayCount(programContinuationStarts(result.next).get(result.lineId), today), 4);
+  if (parent) { assert.deepEqual(M.getDocument(result.next, docId)!.lines.find(line => line.id === parent.id), parent); assert.equal(M.rowMeta(result.next, docId).find(row => row.id === result.lineId)!.structuralKind, 'subcheck'); }
+  const rows = M.parseDocument(M.getDocument(result.next, docId)!, result.next).rows, row = rows.find(line => line.id === result.lineId)!;
+  const gone = new Set(rows.slice(row.index, row.subtreeEndIndex).map(line => line.id));
+  const keep = (scope: Record<string,string>) => Object.fromEntries(Object.entries(scope).filter(([id]) => !gone.has(id)));
+  const deleted = { ...result.next, documents: result.next.documents.map(doc => doc.id === docId ? { ...doc, lines: doc.lines.filter(line => !gone.has(line.id)) } : doc),
+    taskScopes: keep(result.next.taskScopes), itemScopes: keep(result.next.itemScopes), progressRecords: result.next.progressRecords.filter(record => !gone.has(record.taskId)) };
+  assert(M.validate(deleted)); assert(programLostContinuations(deleted, today).some(line => line.lineId === chosen.candidate.lineId));
+  const back = reviveProgramContinuation(deleted, { documentId: docId, lineId: chosen.candidate.lineId, today }); assert(back.ok, back.ok ? '' : back.reason);
+  const recovered = M.tasks(back.next).find(task => task.id === back.newId)!;
+  assert.deepEqual([recovered.scopeTitle, recovered.due, recovered.waitSince, M.currentProgress(back.next, back.newId)], ['합성 출발', '2026-11-20', '2026-11-09', 40]);
+  assert.equal(programLostContinuations(back.next, today).filter(line => line.lineId === chosen.candidate.lineId).length, 0);
+  assert.equal(programContinuationStarts(back.next).get(back.newId), '2026-11-10');
+});
+test('11/13 approved: same-folder child choice keeps the old note and parent bytes, with an independent receiving progress identity', () => {
+  const { space, input, docId } = fixture('[2026-11-10]\n- [ ] 합성 옛 부모\n  - [30%] 자료 하위\n[2026-11-13]\n- [ ] 합성 새 부모\n  - [ ] 자료');
+  const before = M.getDocument(space.text, docId)!, parents = before.lines.filter(line => /합성 (?:옛|새) 부모/.test(line.text));
+  const result = recallProgramTask(space, input('자료 하위')); assert(result.ok, result.ok ? '' : result.reason);
+  assert.match(M.raw(M.getDocument(result.next, docId)), /- 이어감: 2026-11-13 · 30%\n/); assert(!M.raw(M.getDocument(result.next, docId)).includes(' · /'));
+  for (const parent of parents) assert.deepEqual(M.getDocument(result.next, docId)!.lines.find(line => line.id === parent.id), parent);
+  assert.equal(M.rowMeta(result.next, docId).find(row => row.id === result.lineId)!.structuralKind, 'subcheck');
+  assert.equal(programContinuationStarts(result.next).get(result.lineId), '2026-11-10');
+});
+test('11/13 approved: other-folder recall into unfiled writes the explicit / and never borrows another folder', () => {
+  const { space, input, docId } = fixture('[2026-11-10]\n- /합성 출발\n  - [10%] 자료 미분류\n[2026-11-13]\n- [ ] 자료');
+  const result = recallProgramTask(space, input('자료 미분류')); assert(result.ok, result.ok ? '' : result.reason);
+  assert.match(M.raw(M.getDocument(result.next, docId)), /- 이어감: 2026-11-13 · 10% · \/\n/);
+  assert.equal(programContinuedLines(result.next)[0].receiverScope, ''); assert.equal(programContinuedLines(result.next)[0].received, result.lineId);
+});
+test('11/13 approved: explicit target mismatch/duplicates do not fall back; a nearby explicit record never widens legacy lookup', () => {
+  const { space, docId } = fixture('[2026-11-10]\n- /합성 출발\n  - [>] 자료 옛 표기\n    - 이어감: 2026-11-13 · 20%\n  - [>] 자료 새 표기\n    - 이어감: 2026-11-13 · 30% · /합성 도착\n[2026-11-13]\n- /합성 도착\n  - [ ] 자료 옛 표기\n  - [ ] 자료 새 표기\n  - [ ] 자료 새 표기\n  - [ ] 자료');
+  const links = programContinuedLines(space.text); assert.equal(links.find(line => line.title === '자료 옛 표기')!.received, null);
+  const explicit = links.find(line => line.title === '자료 새 표기')!; assert.equal(explicit.received, null); assert(explicit.ambiguous);
+  const raw = M.raw(M.getDocument(space.text, docId));
+  const renamed = M.editTextResult(space.text, docId, raw.replace('/합성 도착\n', '/합성 다른 곳\n'), { folderText: true });
+  assert.equal(renamed.reason, null); assert.equal(programContinuedLines(renamed.state).find(line => line.title === '자료 새 표기')!.received, null);
+});
+test('11/13 approved: consecutive folder changes keep both root and partial-child chains and progress', () => {
+  const { space, input, docId } = fixture('[2026-11-10]\n- /합성 출발\n  - [40%] 자료 연속\n    - [30%] 합성 부분 하위\n      - 마감: 11/20\n[2026-11-13]\n- /합성 도착\n  - [ ] 자료');
+  const first = recallProgramTask(space, input('자료 연속')); assert(first.ok, first.ok ? '' : first.reason);
+  const nextDay = '2026-11-14', raw = M.raw(M.getDocument(first.next, docId));
+  const edit = M.editTextResult(first.next, docId, raw+'\n[2026-11-14]\n- /합성 마지막\n  - [ ] 자료', { folderText: true }); assert.equal(edit.reason, null);
+  const current = { ...space, text: edit.state }, index = createProgramRecallIndex(current, nextDay), chosen = index.find(row => row.lineId === first.lineId)!, typed = index.find(row => row.title === '자료' && row.day === nextDay)!;
+  const second = recallProgramTask(current, { candidate: chosen, documentId: docId, lineId: typed.lineId, expectedLine: M.getDocument(edit.state, docId)!.lines.find(line => line.id === typed.lineId)!.text, today: nextDay });
+  assert(second.ok, second.ok ? '' : second.reason); assert(programContinuedLines(second.next).every(line => line.received !== null));
+  const child = M.parseDocument(M.getDocument(second.next, docId)!, second.next).items.find(item => item.title === '합성 부분 하위')!;
+  assert.deepEqual([M.currentProgress(second.next, second.lineId), M.currentProgress(second.next, child.id)], [40, 30]);
+  const starts = programContinuationStarts(second.next); assert.equal(starts.get(second.lineId), '2026-11-10'); assert.equal(starts.get(child.id), '2026-11-10');
+  assert.equal(programDayCount(starts.get(child.id), nextDay), 5);
 });
