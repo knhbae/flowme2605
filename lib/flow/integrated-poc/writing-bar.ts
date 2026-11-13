@@ -98,7 +98,7 @@ export function heldTargetVerdict(target: WritingBarTarget | null, now: { surfac
   return current.lineIndex === target.lineIndex && current.before === target.before && current.head.startsWith(target.head) ? 'run' : 'cancel';
 }
 
-const MULTI_LINE_LOCK = '분류 보기에서는 여러 줄을 한 번에 들이거나 내어 쓸 수 없습니다. 한 줄씩 해 주세요.';
+const MULTI_LINE_LOCK = '폴더 보기에서는 여러 줄을 한 번에 들이거나 내어 쓸 수 없습니다. 한 줄씩 해 주세요.';
 
 /** Region-safe bar line: in a folder view only what the region's own check would accept stays on.
  *  The check looks at one line, so a selection over several lines keeps ← → off. */

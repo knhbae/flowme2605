@@ -27,7 +27,7 @@ test('P1: every save of the space is refused while picking; input typed into a d
   // became the folder list's ＋ 새 폴더, on the 폴더 tab, which has no 고르기 (its 글 찾기 line is not drawn there).
   assert.match(space, /\{folderList && folderListView\(null\)\}/);
   assert.match(space, /!compactNoteToday && period !== 'documents' && !selecting && !folderTab && findActions/);
-  assert.match(space, /\{!selecting && <><button onClick=\{\(\) => void onUndo\(\)\}>변경 되돌리기<\/button><button onClick=\{\(\) => void onRedo\(\)\}>다시 실행<\/button><\/>\}/);
+  assert.match(space, /\{!selecting && <><button onClick=\{\(\) => void onUndo\(\)\}>되돌리기<\/button><button onClick=\{\(\) => void onRedo\(\)\}>다시 실행<\/button><\/>\}/);
   assert.match(space, /\{props\.noteStatus && <div className=\{styles\.periodStatus\}>\{props\.noteStatus\}\{!compactNoteToday && period !== 'documents' && !selecting && !folderTab && findActions\}<\/div>\}/);
   assert.match(space, /\{props\.outputReturn && <div hidden=\{!!selecting\}><ProgramOutputReturn /);
 });

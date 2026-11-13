@@ -59,7 +59,7 @@ function markBeingTyped(accepted: string, raw: string) {
 
 /** Serializes draft commits while preserving newer typing and rejected raw input. */
 /** D11 (d): ⇤·⇥ on a linked folder line changes nothing and says why (D11 A's words, without the undo hint). */
-export const FOLDER_INDENT_NOTICE = '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. 분류 화면의 상위 폴더에서 옮겨 주세요.';
+export const FOLDER_INDENT_NOTICE = '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. 폴더 화면의 상위 폴더에서 옮겨 주세요.';
 
 const FOLDER_PROBLEM_TEXT: Record<string, string> = {
   'name-conflict': '같은 위치에 이름이 겹치는 폴더가 있습니다. 다른 이름을 입력해 주세요. 입력은 남아 있습니다.',
@@ -69,7 +69,7 @@ const FOLDER_PROBLEM_TEXT: Record<string, string> = {
   'folder-limit': '폴더는 100개까지 만들 수 있습니다. 이 줄을 되돌리거나 쓰지 않는 폴더를 정리해 주세요. 입력은 남아 있습니다.',
   'folder-subfolder': '하위 폴더가 있어 이 폴더 줄은 옮기지 않았습니다. 이 줄을 되돌려 주세요. 입력은 남아 있습니다.',
   // D11 A (folder grammar 4판): the words are the spec's.
-  'folder-indent': '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. ↶로 되돌리거나 분류 화면의 상위 폴더에서 옮겨 주세요.',
+  'folder-indent': '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. ↶로 되돌리거나 폴더 화면의 상위 폴더에서 옮겨 주세요.',
 };
 
 export function createProgramTextDraft(

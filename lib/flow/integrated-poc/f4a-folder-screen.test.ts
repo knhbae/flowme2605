@@ -136,7 +136,7 @@ const screenCss = read(C + 'ProgramFolderScreen.module.css'), list = read(C + 'P
 test('the tab is 폴더 with a folder icon; its first screen is the list (no 분류 picker, no 새 분류, no 할 일 추가)', () => {
   assert(alpha.includes("['all', '폴더', 'folder']")); // F6-B1: the icon set's folder
   assert(space.includes("const mainPeriods: [ProgramPeriod, string][] = [['documents', '쓰기'], ['today', '오늘'], ['all', '폴더']];"));
-  assert(!space.includes('할 일 분류 보기') && !space.includes('>새 분류<') && !space.includes('classificationActions'));
+  assert(!space.includes('할 일 폴더 보기') && !space.includes('>새 분류<') && !space.includes('classificationActions'));
   assert(space.includes('{folderList && folderListView(null)}'));
   assert(space.includes('{!monthGrid && !selecting && !folderTab && <details className={styles.quickDisclosure}'));
   assert(list.includes('aria-label={`모든 할 일 · 열린 할 일 ${all}개`}') && list.includes("{row.open || '—'}") && list.includes('＋ 새 폴더'));

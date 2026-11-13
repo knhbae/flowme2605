@@ -44,11 +44,11 @@ test('kept again since: refused, the new input stays; a store that cannot be rea
 
 test('the 복구함: every discard goes through the undo notice; the words say where the input is', () => {
   const host = readFileSync(new URL('../../../components/flow/integrated-poc/AlphaWorkspace.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
-  for (const label of ['보관 입력', '보관한 복사 작업', '보관 제작 입력', '보관 공개·참여 입력']) assert(host.includes(`discardRecovery({ label: '${label}'`), label);
+  for (const label of ['복구함 입력', '복구함의 복사 작업', '복구함의 제작 입력', '복구함의 공개·참여 입력']) assert(host.includes(`discardRecovery({ label: '${label}'`), label);
   assert(!/\.clear\(\)(\.ok)?;? *if \(cleared\?\.ok\) \{ parkedCreator|if \(socialRecovery\.current\?\.clear\(\)\.ok\)/.test(host), 'no discard without its undo');
   assert(host.includes('restoreProgramRecovery(notice.port, notice.entriesOf, notice.kept)'));
   assert(host.includes("'저장되지 않음 · 입력은 복구함에 있습니다'"));
-  assert(!host.includes("setMessage('보관 입력을 지웠습니다. 서버 자료는 그대로입니다.')"), 'one notice, not two');
+  assert(!host.includes("setMessage('복구함 입력을 지웠습니다. 서버 자료는 그대로입니다.')"), 'one notice, not two');
 });
 
 test("총괄 11/12: a refused save's discarded input goes from the device too; in the sheet the notice is the sheet's own row", () => {
@@ -61,7 +61,7 @@ test("총괄 11/12: a refused save's discarded input goes from the device too; i
   assert(host.includes('const after = afterLatest.current; afterLatest.current = null;\n    if (after && after.epoch === sessionEpochRef.current) after.run();'), 'after the editors were handed over');
   assert(host.includes('return () => { const cleanup = openLatestLock.current; openLatestLock.current = null; cleanup?.(); };'), 'the cleanup leaves it');
   assert(host.includes('setData(next.envelope.data); openLatestLock.current = release; afterLatest.current = after ? { run: after, epoch } : null; setPresentation(value => value + 1); transferred = true;'));
-  assert(host.includes("discardRecovery({ label: '보관 입력', verb: '버렸습니다', note, port: uiRecovery.current"));
+  assert(host.includes("discardRecovery({ label: '복구함 입력', verb: '버렸습니다', note, port: uiRecovery.current"));
   // QA 11/12 (390): never the screen's fixed toast over the sheet's [닫기].
   assert(host.includes('{recoveryOpen && discardNoticeContent(true)}') && host.includes('{!recoveryOpen && discardNoticeContent(false)}'));
   const css = readFileSync(new URL('../../../components/flow/integrated-poc/AlphaWorkspace.module.css', import.meta.url), 'utf8');

@@ -130,7 +130,7 @@ test('C1 scope line: each narrowing condition in words with ×, nothing when the
   assert.deepEqual(programViewScope({ ...base, period: 'undated' }).map(item => item.label), ['기간: 날짜 없음']);
   assert.deepEqual(programViewScope({ ...base, date: '2026-10-31' }).map(item => item.label), ['기간: 10월 31일 (토)']);
   assert.deepEqual(programViewScope({ ...base, period: 'week', folderTitle: '회사', query: ' 견적 ' }).map(item => `${item.kind}:${item.label}`),
-    ['period:기간: 이번 주', 'folder:분류: 회사', 'query:검색: 견적']);
+    ['period:기간: 이번 주', 'folder:폴더: 회사', 'query:검색: 견적']);
   assert.deepEqual(programViewScope({ ...base, period: 'all' }), []);
   assert.deepEqual(programViewScope({ ...base, period: 'documents', query: 'x' }), []);
   const calls: string[] = [];
@@ -185,6 +185,6 @@ test('둘러보기 on phones takes the R8b title rows; its status row warns only
   assert.match(alpha, /\{!usesNoteChrome && \(!quietStatus \|\| browseStatusShown\) && serverStatus\}/);
   // 되돌리기 next to 다시 실행 on every screen, so hiding the row loses no undo path.
   // UX B3: on 나 › 문제 해결 (and in the menu left for an account that cannot open).
-  assert(alpha.includes('마지막 변경 되돌리기</button>{redoButton}</div>') && alpha.includes('<div className={styles.managementActions}>{serverUndo}{redoButton}</div>'));
+  assert(alpha.includes('되돌리기</button>{redoButton}</div>') && alpha.includes('<div className={styles.managementActions}>{serverUndo}{redoButton}</div>'));
   assert(alpha.includes("const redoButton = <button type=\"button\" onClick={() => void history('redo')}"));
 });

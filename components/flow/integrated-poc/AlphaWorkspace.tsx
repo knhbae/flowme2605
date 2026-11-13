@@ -1242,9 +1242,9 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const resolved = resolveAlphaStructuralRecovery(text, entry);
     if (resolved.status === 'already-present') { clearConfirmedStructuralInput(text); setMessage('이미 저장된 복사 작업입니다.'); return; }
     if (resolved.status !== 'ready' || live.account!.revision !== entry.baseRevision) {
-      setMessage('저장본이 달라 복사 작업을 합치지 않았습니다. 보관한 입력을 먼저 확인해 주세요.'); return;
+      setMessage('저장본이 달라 복사 작업을 합치지 않았습니다. 복구함에 있는 입력을 먼저 확인해 주세요.'); return;
     }
-    const result = await mutate('보관한 복사 작업 복구', current => {
+    const result = await mutate('복구함의 복사 작업 복구', current => {
       if (!ready() || store!.snapshot().account?.revision !== entry.baseRevision || current.activeActorId !== session.userId || !current.spaces[session.userId]) {
         return { ok: false, data: current, reason: 'conflict' };
       }
@@ -1293,7 +1293,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     setDiscardNotice(current => current?.id === notice.id ? { ...notice, outcome } : current);
   }
   function clearStructuralDrafts() {
-    discardRecovery({ label: '보관한 복사 작업', verb: '지웠습니다', port: structuralRecovery.current, entriesOf: (value: AlphaStructuralRecoveryRecord) => value.entries,
+    discardRecovery({ label: '복구함의 복사 작업', verb: '지웠습니다', port: structuralRecovery.current, entriesOf: (value: AlphaStructuralRecoveryRecord) => value.entries,
       clear: () => { if (!structuralRecovery.current?.clear().ok) return false; parkedStructural.current = []; activeStructural.current = []; setStructuralRecoveries(null); return true; },
       reload: () => { const loaded = structuralRecovery.current?.read(); if (loaded?.ok) { parkedStructural.current = loaded.value?.entries ?? []; setStructuralRecoveries(loaded.value); } else setStorageError(true); } });
   }
@@ -1305,24 +1305,24 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     const live = controller.current?.snapshot();
     if (live?.draft?.kind === 'change-private' && !live.pending) {
       void openLatest(() => { setMessage(''); discardDrafts('저장된 내용을 열었습니다'); }).then(done => {
-        if (done !== true) setMessage(`저장된 내용을 열지 못해 보관 입력을 버리지 않았습니다. 다시 눌러 주세요. (${done})`);
+        if (done !== true) setMessage(`저장된 내용을 열지 못해 복구함 입력을 버리지 않았습니다. 다시 눌러 주세요. (${done})`);
       });
       return;
     }
     discardDrafts();
   }
   function discardDrafts(note?: string) {
-    discardRecovery({ label: '보관 입력', verb: '버렸습니다', note, port: uiRecovery.current, entriesOf: (value: AlphaUiRecoveryRecord) => value.drafts,
+    discardRecovery({ label: '복구함 입력', verb: '버렸습니다', note, port: uiRecovery.current, entriesOf: (value: AlphaUiRecoveryRecord) => value.drafts,
       clear: () => { if (!uiRecovery.current?.clear().ok) return false; recoveryDocuments.current = createAlphaUiRecoveryDocuments(); setRecoveries(null); return true; },
       reload: () => { const loaded = uiRecovery.current?.read(); if (loaded?.ok) { recoveryDocuments.current = createAlphaUiRecoveryDocuments(loaded.value?.drafts); setRecoveries(loaded.value); } else setStorageError(true); } });
   }
   function clearCreatorDrafts() {
-    discardRecovery({ label: '보관 제작 입력', verb: '버렸습니다', port: creatorRecovery.current, entriesOf: (value: AlphaCreatorRecoveryRecord) => value.entries,
+    discardRecovery({ label: '복구함의 제작 입력', verb: '버렸습니다', port: creatorRecovery.current, entriesOf: (value: AlphaCreatorRecoveryRecord) => value.entries,
       clear: () => { if (!creatorRecovery.current?.clear().ok) return false; parkedCreator.current = []; activeCreator.current = null; setCreatorRecoveries(null); return true; },
       reload: () => { const loaded = creatorRecovery.current?.read(); if (loaded?.ok) { parkedCreator.current = loaded.value?.entries ?? []; setCreatorRecoveries(loaded.value); } else setStorageError(true); } });
   }
   function clearSocialDrafts() {
-    discardRecovery({ label: '보관 공개·참여 입력', verb: '버렸습니다', port: socialRecovery.current, entriesOf: (value: AlphaSocialRecoveryRecord) => value.entries,
+    discardRecovery({ label: '복구함의 공개·참여 입력', verb: '버렸습니다', port: socialRecovery.current, entriesOf: (value: AlphaSocialRecoveryRecord) => value.entries,
       clear: () => { if (!socialRecovery.current?.clear().ok) return false; parkedSocial.current = []; activeSocial.current = []; setSocialRecoveries(null); return true; },
       reload: () => { const loaded = socialRecovery.current?.read(); if (loaded?.ok) { parkedSocial.current = loaded.value?.entries ?? []; setSocialRecoveries(loaded.value); } else setStorageError(true); } });
   }
@@ -1354,7 +1354,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
       const result = await flight.done;
       return flight.target === mine ? result : 'superseded';
     }
-    if (externalRef.current) { setMessage('먼저 저장 결과와 보관 입력을 확인해 주세요.'); return 'refused'; }
+    if (externalRef.current) { setMessage('먼저 저장 결과와 복구함 입력을 확인해 주세요.'); return 'refused'; }
     // Save wait P3: a save already on its way (an autosave, say) no longer refuses the press: the move first waits for
     // its answer, under the same notice, 머무르기 and limit, then saves the editors and moves. An answer that is not a
     // save (a conflict, a lost answer) does not move. Held outside input still refuses.
@@ -1726,12 +1726,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     {storageError && <p className={styles.problem} role={announce ? 'alert' : undefined}>브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
     {pendingUnknown && !localParticipationRecovery && <section className={styles.problem} aria-label="저장 결과 복구"><p>서버에 저장됐는지 아직 확인하지 못했습니다. 같은 요청으로 확인합니다.</p>
       <button type="button" disabled={snapshot?.busy} onClick={() => void resolvePendingResult()}>{snapshot?.busy ? '확인 중…' : '다시 확인'}</button></section>}
-    {(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending && !localParticipationRecovery && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>{snapshot?.status==='not-sent'?(storedTotal?programErrorMessage('not-sent').replace('입력은 남아 있습니다','입력은 복구함에 있습니다'):'서버로 보내지 못했습니다. 이 기기에 보관한 입력은 없습니다. 연결을 확인한 뒤 다시 저장해 주세요.'):snapshot?.retryableNativeHandoff
+    {(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending && !localParticipationRecovery && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>{snapshot?.status==='not-sent'?(storedTotal?programErrorMessage('not-sent').replace('입력은 남아 있습니다','입력은 복구함에 있습니다'):'서버로 보내지 못했습니다. 복구함에 있는 입력은 없습니다. 연결을 확인한 뒤 다시 저장해 주세요.'):snapshot?.retryableNativeHandoff
       ? '저장되지 않았습니다. 비교와 선택은 유지했습니다. 같은 선택으로 다시 적용해 주세요.'
       : snapshot?.retryableRejectedSocialDraft ? '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'
       // UX review 11/12 P1-b: where the input is (the 복구함, or nowhere once its kept input was discarded).
       : storedTotal ? '저장되지 않았습니다. 입력은 복구함에 있습니다. 문서에서 내용을 수정한 뒤 ‘다시 저장’을 눌러 주세요.'
-      : '저장되지 않았습니다. 이 기기에 보관한 입력은 없습니다. 문서에서 내용을 수정한 뒤 ‘다시 저장’을 눌러 주세요.'}</p></section>}
+      : '저장되지 않았습니다. 복구함에 있는 입력은 없습니다. 문서에서 내용을 수정한 뒤 ‘다시 저장’을 눌러 주세요.'}</p></section>}
     {(external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft) && !localParticipationRecovery && <section className={styles.problem} aria-label="다른 기기 변경과 입력 보호">
       <h2>다른 곳에서 먼저 바뀐 내용이 있습니다</h2><p>지금 쓴 내용은 이 기기에 남겨 두었습니다. 최신 내용을 연 뒤 필요하면 다시 붙여 넣으세요.</p>
       {snapshot?.busy && <p role={announce ? 'status' : undefined}>서버 확인 중… 입력은 그대로 보관합니다.</p>}
@@ -1741,12 +1741,12 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     </section>}
   </>;
   const structuralRecoveryPanel = structuralRecoveries && <details className={styles.recovery}>
-    <summary>보관한 복사 작업 {structuralRecoveries.entries.length}개</summary>
+    <summary>복구함의 복사 작업 {structuralRecoveries.entries.length}개</summary>
     <div>
       {structuralRecoveries.entries.map((entry, index) => <section key={`${entry.documentId}:${entry.baseRevision}:${index}`}>
         <h2>{entry.next.documents.filter(doc => ![...entry.before.documents, ...entry.before.flows].some(prior => prior.id === doc.id)).map(doc => doc.title || '제목 없는 문서').join(', ')}</h2><p>복사한 새 문서와 폴더·행을 함께 보관했습니다.</p>
         <button type="button" disabled={unavailable || pending || external || !!snapshot?.draft || hasInput()} onClick={() => void restoreStructuralDraft(index)}>복사 작업 복구</button></section>)}
-      <button type="button" onClick={clearStructuralDrafts}>보관한 복사 작업 지우기</button>
+      <button type="button" onClick={clearStructuralDrafts}>복구함의 복사 작업 지우기</button>
     </div>
   </details>;
   const savedInputPanel = recoveries && <details className={styles.recovery} open={unavailable || !localParticipationRecovery && (external || snapshot?.status === 'conflict')} onKeyDown={event => {
@@ -1754,39 +1754,39 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
     event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
   }}>
-    <summary>보관한 입력 {recoveries.drafts.length}개</summary>
+    <summary>복구함에 있는 입력 {recoveries.drafts.length}개</summary>
     <div>
       {groupAlphaUiRecoveryDocuments(recoveries.drafts).map(group => <details key={group.key} open={group.entries.length === 1}>
         <summary>{group.title} · {group.entries.length}개</summary>
-        {[...group.entries].reverse().map(({ draft, index }) => <section key={index}><h2>{draft.title}</h2><textarea aria-label={`보관한 입력 ${index + 1}`} value={draft.raw} readOnly rows={5} />
+        {[...group.entries].reverse().map(({ draft, index }) => <section key={index}><h2>{draft.title}</h2><textarea aria-label={`복구함에 있는 입력 ${index + 1}`} value={draft.raw} readOnly rows={5} />
           <button type="button" onClick={() => void navigator.clipboard.writeText(draft.raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))}>원문 복사</button>
           <button type="button" disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreDraft(index)}>새 문서로 복구</button></section>)}
       </details>)}
-      <button type="button" onClick={clearDrafts}>보관 입력 버리기</button>
+      <button type="button" onClick={clearDrafts}>복구함 입력 버리기</button>
     </div>
   </details>;
   // R8a 복구함: the four kinds of saved input in one place, each with its own buttons as before.
   // Saving and restoring are unchanged; only where they show moved.
   const creatorRecoveryPanel = <>
     {creatorRecoveries && <details className={styles.recovery} open={unavailable || external || snapshot?.status === 'conflict'}>
-      <summary>보관한 제작 입력 {creatorRecoveries.entries.length}개</summary>
+      <summary>복구함의 제작 입력 {creatorRecoveries.entries.length}개</summary>
       {creatorRecoveries.entries.map((entry, index) => <section key={index}><h2>{entry.working.title || '제작 중 원문'}</h2>
-        <textarea aria-label={`보관한 제작 원문 ${index + 1}`} readOnly rows={5} value={entry.working.nativePendingRawText ?? entry.working.rawText} />
+        <textarea aria-label={`복구함의 제작 원문 ${index + 1}`} readOnly rows={5} value={entry.working.nativePendingRawText ?? entry.working.rawText} />
         <button disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreCreator(index)}>제작 작업본으로 복구</button>
-        <details><summary>제작 구조·비교 입력 보관본</summary><p>개인 문서로 만들지 않습니다. 비교 선택은 최신 제작본과 다시 확인해 적용하세요.</p>
-          <textarea aria-label={`제작 문맥 보관본 ${index + 1}`} readOnly value={JSON.stringify(entry, null, 2)} rows={6} /></details>
+        <details><summary>복구함의 제작 구조·비교 입력</summary><p>개인 문서로 만들지 않습니다. 비교 선택은 최신 제작본과 다시 확인해 적용하세요.</p>
+          <textarea aria-label={`복구함의 제작 문맥 ${index + 1}`} readOnly value={JSON.stringify(entry, null, 2)} rows={6} /></details>
       </section>)}
-      <button type="button" onClick={clearCreatorDrafts}>보관 제작 입력 버리기</button>
+      <button type="button" onClick={clearCreatorDrafts}>복구함의 제작 입력 버리기</button>
     </details>}
   </>;
   const socialRecoveryPanel = <>
     {socialRecoveries && <details className={styles.recovery} open={unavailable || !localParticipationRecovery && (external || snapshot?.status === 'conflict')}>
-      <summary>보관한 공개·참여 입력 {socialRecoveries.entries.length}개</summary>
+      <summary>복구함의 공개·참여 입력 {socialRecoveries.entries.length}개</summary>
       <p>선택한 항목·사진 연결·검토 문맥을 함께 보관했습니다. 복구해도 자동으로 게시하지 않습니다.</p>
       {socialRecoveries.entries.map((entry, index) => <section key={index}><h2>{entry.kind === 'publication' ? '공개 초안' : entry.kind === 'participation' ? '참여 초안' : '제안 검토 초안'}</h2>
-        <textarea aria-label={`공개·참여 보관본 ${index + 1}`} readOnly rows={5} value={JSON.stringify(entry.value, null, 2)} />
+        <textarea aria-label={`복구함의 공개·참여 입력 ${index + 1}`} readOnly rows={5} value={JSON.stringify(entry.value, null, 2)} />
         <button disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreSocial(index)}>비공개 초안으로 복구</button></section>)}
-      <button type="button" onClick={clearSocialDrafts}>보관 공개·참여 입력 버리기</button>
+      <button type="button" onClick={clearSocialDrafts}>복구함의 공개·참여 입력 버리기</button>
     </details>}
   </>;
   async function chooseMainTab(tab: ProgramMainTab) {
@@ -1859,7 +1859,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
   // QA 11/12 (390): inside the 복구함 sheet the notice is part of the sheet (its first row), not the screen's bottom toast:
   // a short sheet (one kind discarded) had the fixed toast over its [닫기].
   const discardNoticeContent = (inSheet: boolean) => discardNotice && <div className={inSheet ? `${styles.recoveryToast} ${styles.recoveryToastInSheet}` : styles.recoveryToast} role="status" data-discard-notice={inSheet ? 'sheet' : 'screen'} {...discardNoticeLife.hold}>
-    <p>{discardNotice.outcome === 'restored' ? '되돌렸습니다. 보관한 입력을 다시 두었습니다.' : discardNotice.outcome === 'changed' ? '그 뒤 새 입력이 보관되어 되돌리지 않았습니다.'
+    <p>{discardNotice.outcome === 'restored' ? '되돌렸습니다. 복구함에 있는 입력을 다시 두었습니다.' : discardNotice.outcome === 'changed' ? '그 뒤 새 입력이 보관되어 되돌리지 않았습니다.'
       : discardNotice.outcome === 'failed' ? '되돌리지 못했습니다. 브라우저 저장소를 확인해 주세요.' : discardNotice.text}</p>
     <div><button type="button" onClick={() => setDiscardNotice(null)}>닫기</button>
       {!discardNotice.outcome && <button type="button" data-discard-undo onClick={() => undoDiscard(discardNotice)}>되돌리기</button>}</div>
@@ -1957,7 +1957,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
     void (async () => { const openingController = controller.current; if (!captureInput()) return; for (const port of allEditors()) if (port && !await port.flushAll()) return; if (disposed.current || controller.current !== openingController || currentOwnerRef.current !== session.userId) return; preservationRef.current = true; setPreservation(true); })();
   }}>백업 · 복원 · 가져오기</button>;
   // UX B1 (11/6): the sign-in screen no longer links the old local PoC; its way stays here, after signing in.
-  const oldLocalLink = <a className={styles.menuLink} href="/my?personalWorkspacePoc=v1">이 기기에만 저장한 예전 자료</a>;
+  const oldLocalLink = <a className={styles.menuLink} href="/my?personalWorkspacePoc=v1">이 기기의 자료</a>;
   const signOutButton = <button type="button" disabled={leaveBusy} onClick={() => { captureInput(); if (hasInput() || pending || deviceInput().count) { setLeaveFailed(false); setLeave(true); } else void signOut(); }}>로그아웃 · 계정 바꾸기</button>;
   const refreshButton = <button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button>;
   const recordNumber = snapshot?.account && <details className={styles.menuNote}><summary>기록 정보</summary><small className={styles.account}>서버 기록 번호 {snapshot.account.revision}</small></details>;
@@ -1982,7 +1982,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         <button type="button" onClick={openCreatorEntry}>Flow 만들기</button>{backupButton}{oldLocalLink}</div>
     </section>
     <details className={`${styles.menuGroup} ${styles.meFold}`} aria-label="문제 해결"><summary>문제 해결</summary>
-      <div className={styles.managementActions}>{refreshButton}<button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external} aria-disabled={browseHistory('undo') ? undefined : true}>마지막 변경 되돌리기</button>{redoButton}</div>
+      <div className={styles.managementActions}>{refreshButton}<button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external} aria-disabled={browseHistory('undo') ? undefined : true}>되돌리기</button>{redoButton}</div>
       {historyHint && <p className={styles.menuHint} role="status">{historyHint === 'undo' ? '쓰기 화면에서 되돌릴 수 있어요.' : '쓰기 화면에서 다시 실행할 수 있어요.'}</p>}
       {recordNumber}
     </details>
@@ -2079,7 +2079,7 @@ function AlphaWorkspaceBody({ config, session, email, onSignOut, syntheticRuntim
         Its content is the 복구함's as it was, drawn here only. */}
     <dialog ref={recoveryDialog} className={styles.recoverySheet} aria-labelledby="alpha-recovery-heading" onCancel={event => { event.preventDefault(); setRecoveryOpen(false); }}>
       <div className={styles.recoverySheetHead}><h2 id="alpha-recovery-heading">복구함{storedTotal ? ` (${storedTotal})` : ''}</h2><button type="button" onClick={() => setRecoveryOpen(false)}>닫기</button></div>
-      <div className={styles.recoverySheetBody}>{recoveryOpen && discardNoticeContent(true)}{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>보관한 입력이 없습니다.</p>
+      <div className={styles.recoverySheetBody}>{recoveryOpen && discardNoticeContent(true)}{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>복구함에 있는 입력이 없습니다.</p>
         {archivedCount > 0 && <button type="button" onClick={() => void openArchiveFromMenu()}>보관한 문서 {archivedCount}개 → 보관함에서 보기</button>}</>}</div>
     </dialog>
     {moveWait && <section className={styles.moveNotice} aria-label="이동 전 저장" data-move-wait={moveWait.phase}>

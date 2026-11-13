@@ -37,7 +37,7 @@ test('UX B3: every item of the old "…" menu has its place, and the menu stays 
   const flowTab = element('data-main-tab="flow"'), storiesBack = element('aria-label="이야기 위치"');
   const places: [number, string, string][] = [
     [1, source, "onOpenStories={() => void navigate({ view: 'community' })}"], [2, storiesBack, 'aria-label="Flow 찾기로 돌아가기"'], [2, flowTab, 'chooseFlowTab()'],
-    [3, me, '마지막 변경 되돌리기</button>'], [4, me, '{redoButton}'], [5, me, "'쓰기 화면에서 되돌릴 수 있어요.'"],
+    [3, me, '되돌리기</button>'], [4, me, '{redoButton}'], [5, me, "'쓰기 화면에서 되돌릴 수 있어요.'"],
     [6, element('data-main-tab="me"'), 'chooseMeTab(event.currentTarget)'], [7, me, "onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>"],
     [8, me, '{!savedTotal && recoveryButton}'], [9, element('ref={recoveryDialog}'), '보관함에서 보기</button>'], [10, me, '{backupButton}'],
     [11, me, '<p className={styles.meEmail}>{email}</p>'], [12, me, '{signOutButton}'], [13, me, '저장과 공개 안내</button>}'],
@@ -62,8 +62,8 @@ test('the four kinds of saved input show only in the 복구함 sheet, each with 
   assert(sheet.includes('{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}'));
   for (const panel of ['savedInputPanel', 'structuralRecoveryPanel', 'creatorRecoveryPanel', 'socialRecoveryPanel'])
     assert.equal(source.split(`{${panel}}`).length - 1, 1, `${panel} is drawn once, in the sheet`);
-  for (const button of ['원문 복사</button>', '새 문서로 복구</button>', '보관 입력 버리기</button>', '복사 작업 복구</button>', '보관한 복사 작업 지우기</button>',
-    '제작 작업본으로 복구</button>', '보관 제작 입력 버리기</button>', '비공개 초안으로 복구</button>', '보관 공개·참여 입력 버리기</button>'])
+  for (const button of ['원문 복사</button>', '새 문서로 복구</button>', '복구함 입력 버리기</button>', '복사 작업 복구</button>', '복구함의 복사 작업 지우기</button>',
+    '제작 작업본으로 복구</button>', '복구함의 제작 입력 버리기</button>', '비공개 초안으로 복구</button>', '복구함의 공개·참여 입력 버리기</button>'])
     assert.equal(source.split(button).length - 1, 1, button);
   // The note editor's extras row keeps only the last message; no saved-input box rides along.
   assert(source.includes("extras: destination.view === 'space' && message && !participationMessage"));

@@ -23,7 +23,7 @@ test('A1·A2: no development wording on the sign-in screen, the workspace or the
   assert(signIn.includes('<h2>처음 오셨네요</h2><p>빈 공간을 만들고 시작합니다.</p>'));
   assert(!signIn.includes('personalWorkspacePoc'), 'the old local PoC is not linked before signing in');
   const workspace = component('AlphaWorkspace.tsx');
-  assert(workspace.includes('<a className={styles.menuLink} href="/my?personalWorkspacePoc=v1">이 기기에만 저장한 예전 자료</a>'), '…it is reached from 더보기 › 자료');
+  assert(workspace.includes('<a className={styles.menuLink} href="/my?personalWorkspacePoc=v1">이 기기의 자료</a>'), '…it is reached from 더보기 › 자료');
   assert(workspace.includes('<summary>공개한 Flow와 글만 다른 사용자에게 보입니다.</summary>'));
   assert(!workspace.includes('styles.development'), 'no 개발계 / 합성 검증 label in the header');
   assert(workspace.includes('<details className={styles.menuNote}><summary>기록 정보</summary><small className={styles.account}>서버 기록 번호'), 'the record number only when asked');

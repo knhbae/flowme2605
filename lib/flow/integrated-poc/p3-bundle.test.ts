@@ -48,7 +48,7 @@ test('short phone screens: the fixed tabs stay above the space content', () => {
 test('a tab pressed while a move waits on a save: the waiting move takes the newest tab, nothing is refused or lost', () => {
   const navigate = fn(workspace, 'async function navigate(');
   // A second press while the first waits retargets the flight instead of being refused.
-  assert.ok(navigate.indexOf('flight.target = mine;') >= 0 && navigate.indexOf('flight.target = mine;') < navigate.indexOf("setMessage('먼저 저장 결과와 보관 입력을 확인해 주세요.')"));
+  assert.ok(navigate.indexOf('flight.target = mine;') >= 0 && navigate.indexOf('flight.target = mine;') < navigate.indexOf("setMessage('먼저 저장 결과와 복구함 입력을 확인해 주세요.')"));
   assert.match(navigate, /return flight\.target === mine \? result : 'superseded';/);
   const move = fn(workspace, 'async function moveAfterSave(');
   assert.match(move, /if \(afterPending && !await pendingSettled\(store\)\) return false;/);
