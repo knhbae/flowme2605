@@ -73,7 +73,7 @@ test('P1-2: 되돌리기 after 모든 문서에 적용 is the inverse of the ren
   assert.equal(scope(edited, OTHER, 0)?.id, meeting);
   const refused = programFolderRenameBack(edited, meeting, '회의', '주간회의', lines);
   assert(!refused.ok);
-  assert.equal(refused.reason, '그 사이 다른 곳에서 이 폴더의 줄이 바뀌어 되돌리지 않았습니다 · 분류 화면에서 이름을 바꿀 수 있습니다');
+  assert.equal(refused.reason, '그 사이 다른 곳에서 이 폴더의 줄이 바뀌어 되돌리지 않았습니다 · 폴더 화면에서 이름을 바꿀 수 있습니다');
   // A line linked to it since, the folder renamed again, or the old name taken in the place: refused too.
   const linked = M.editTextResult(renamed, OTHER, '- /주간회의\n  - [ ] 다른 안건\n- /운동\n- /주간회의', { folderText: true }).state;
   assert(!programFolderRenameBack(linked, meeting, '회의', '주간회의', lines).ok);

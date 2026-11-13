@@ -57,7 +57,7 @@ test('the draft shows the 4판 words; ↶ puts the line back, saving resumes and
   const state = draft.getState();
   // 저장 재설계 B (11/10): that line is held with the 4판 words; the earlier input is saved meanwhile.
   assert.deepEqual([state.held?.line, state.held?.reasons[2], state.error], [2, 'folder', '']);
-  assert.equal(state.held?.message, '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. ↶로 되돌리거나 분류 화면의 상위 폴더에서 옮겨 주세요.');
+  assert.equal(state.held?.message, '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. ↶로 되돌리거나 폴더 화면의 상위 폴더에서 옮겨 주세요.');
   assert.doesNotMatch(state.held?.message ?? '', /TXT/);
   assert.equal(await draft.save(), false, 'the held line waits');
   assert.equal(sent.length, 1, 'the earlier input is saved');
@@ -75,7 +75,7 @@ test('an indent over a linked folder line, alone or with other lines, is the cas
   for (const [from, to, touches] of [[1, 1, true], [2, 3, true], [4, 4, true], [3, 5, true], [0, 0, false], [3, 3, false], [5, 6, false]] as const) {
     assert.equal(indentTouchesLinkedFolder(start, TYPED, from, to), touches, `${from}..${to}`);
   }
-  assert.equal(FOLDER_INDENT_NOTICE, '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. 분류 화면의 상위 폴더에서 옮겨 주세요.');
+  assert.equal(FOLDER_INDENT_NOTICE, '폴더 줄의 들여쓰기는 글로 바꿀 수 없습니다. 폴더 화면의 상위 폴더에서 옮겨 주세요.');
 });
 
 test('the editor skips such an indent in canApplyIndent and keeps Tab in the text', () => {

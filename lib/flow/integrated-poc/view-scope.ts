@@ -15,7 +15,7 @@ export function programViewScope(input: { period: ProgramPeriod; date: string; t
       : current ? '이번 달' : `${Number(date.slice(5, 7))}월`}` });
   } else if (period === 'undated') items.push({ kind: 'period', label: '기간: 날짜 없음' });
   else if (period === 'today' && date !== today) items.push({ kind: 'period', label: `기간: ${programCalendarDate(date, today)}` });
-  if (input.folderTitle) items.push({ kind: 'folder', label: `분류: ${input.folderTitle}` });
+  if (input.folderTitle) items.push({ kind: 'folder', label: `폴더: ${input.folderTitle}` });
   if (input.query.trim()) items.push({ kind: 'query', label: `검색: ${input.query.trim()}` });
   return items;
 }

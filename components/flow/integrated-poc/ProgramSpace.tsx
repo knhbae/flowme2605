@@ -3009,7 +3009,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
               if (recentViewOf(selectedDoc.id)) { setMessage('지난 기록을 펼친 뒤(전체 보기) 날짜 순서를 바꿔 주세요.'); return; }
               sectionOrderOpeners.current[selectedDoc.id]?.();
             }}>날짜 순서 바꾸기</button>}
-            {!collectionMode && <label>보관 위치<select value={selectedDoc.folderId} onChange={event => { const value = event.target.value; void run('폴더 이동', current => setProgramDocumentFolder(current, { ...base(current), documentId: selectedDoc.id, folderId: value })); }}>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>}
+            {!collectionMode && <label>폴더<select value={selectedDoc.folderId} onChange={event => { const value = event.target.value; void run('폴더 이동', current => setProgramDocumentFolder(current, { ...base(current), documentId: selectedDoc.id, folderId: value })); }}>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>}
             {/* int4 (F5-b 목업 F5 상태): one entry by where this document is — 공개하기 (① 고르기), 공개 이어서 (its draft at ② 다듬기),
                 or 공개 관리 · 버전 n (나's management screen, through the host's navigate, which saves the editors first). */}
             {publicationEntry && <button disabled={preparingDocumentAction} data-publication-entry={publicationEntry.kind} onClick={() => {
@@ -3190,7 +3190,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const meta = item.finished ? `${programCalendarDate(item.finished, today, false)} 끝냄 · 남은 줄 ${item.lines}`
       : [`${programDayCount(item.since, today) ?? 1}일째` /* 총괄 11/12 ②, one count (Codex re-review P2-2) */, item.lines > 1 ? `${item.lines}번 다시 씀` : '', item.today ? '오늘에도 있음' : ''].filter(Boolean).join(' · ');
     return <li key={item.kind} className={styles.carryItem} data-carry-item>
-      <p><span>{named ? item.place || '분류 없음' : item.title}</span><small>{meta}</small></p>
+      <p><span>{named ? item.place || '폴더 없음' : item.title}</span><small>{meta}</small></p>
       <div className={styles.carryChoices} role="radiogroup" aria-label={`${item.title}${named ? ` · ${item.place}` : ''} 정리`}>
         {options.map(option => <button key={option} type="button" role="radio" aria-checked={choice === option}
           onClick={() => setCarryChoices(current => new Map(current).set(item.kind, option))}>{carryChoiceLabel[option]}</button>)}
@@ -3204,7 +3204,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     for (const item of items) bundles.set(item.title, [...bundles.get(item.title) ?? [], item]);
     return <section className={styles.carrySection} aria-label={title}><h3>{title} · {items.length}</h3><ul>
       {[...bundles.values()].map(bundle => bundle.length > 1 ? <li key={`bundle:${bundle[0].title}`} className={styles.carryBundle}>
-        <p>{bundle[0].title} · 분류 {bundle.length}곳</p><ul>{bundle.map(item => carryItemRow(item, true))}</ul></li> : carryItemRow(bundle[0], false))}
+        <p>{bundle[0].title} · 폴더 {bundle.length}곳</p><ul>{bundle.map(item => carryItemRow(item, true))}</ul></li> : carryItemRow(bundle[0], false))}
     </ul></section>;
   };
   const carrySheetContent = period === 'today' && <dialog ref={carrySheet} className={`${styles.findDialog} ${styles.carrySheet}`} aria-labelledby="program-carry-title"
@@ -3222,7 +3222,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           {carryAlong && <small className={styles.carryApplyNote}>{carryAlong} 함께 지움</small>}</>}</button>
     </>}
   </dialog>;
-  const viewScope = programViewScope({ period, date, today, folderTitle: folderId ? folderOptions.find(item => item.id === folderId)?.title ?? '선택한 분류' : null, query });
+  const viewScope = programViewScope({ period, date, today, folderTitle: folderId ? folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더' : null, query });
   async function clearScope(kind: 'period' | 'folder' | 'query') {
     if (kind === 'period') return changePeriod('today');
     if (kind === 'folder') return changeFolder('');
@@ -3401,7 +3401,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
                 {meta.late && <><em className={styles.rowLate}>{meta.late}</em> · </>}
                 {/* Redesign 2 (W-TXT-02): its '- 마감:' as D-n; past, shown apart. */}
                 {(due => due && <><span className={due.state === 'over' ? styles.rowLate : undefined} data-row-due={due.state}>{due.label}</span> · </>)(programDueLabel(task.due, today))}
-                {[...meta.parts, ...(task.time ? [task.time] : []), ...(carryPlaces.has(task.id) ? [`${carryPlaces.get(task.id)!.place || '분류 없음'} · 분류 ${carryPlaces.get(task.id)!.count}곳`] : [])]
+                {[...meta.parts, ...(task.time ? [task.time] : []), ...(carryPlaces.has(task.id) ? [`${carryPlaces.get(task.id)!.place || '폴더 없음'} · 폴더 ${carryPlaces.get(task.id)!.count}곳`] : [])]
                   .map((part, index) => <React.Fragment key={index}>{part} · </React.Fragment>)}
                 <span className={styles.taskOrigin}>{origin.label !== '직접 작성' && `${origin.label} · `}<span className={styles.taskFolder}>{taskFolderPath(task)} / </span>{task.docTitle} →</span>
               </>}</small></button>
@@ -3924,7 +3924,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           }); }}
           onRegisterInputLock={lock => { inputLocks.current[id] = lock; lock?.(inputLockCount.current > 0); }}
           onGatherFolder={collectionMode ? undefined : scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { keepViewFolder(id, scopeId); void changeFolder(scopeId); } }}
-          onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { if (collectionMode) { setMessage('기존 항목 분류는 모음이 아닙니다. 전체 문서에서 계속 작성합니다.'); return; } void openFolderScreen(scopeId); } else void openDocument(scopeId); }}
+          onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { if (collectionMode) { setMessage('기존 항목의 폴더는 모음이 아닙니다. 전체 문서에서 계속 작성합니다.'); return; } void openFolderScreen(scopeId); } else void openDocument(scopeId); }}
           onConnectFlow={(docId, lineId, insertAfter) => openDetail({ kind: 'connect', docId, lineId, insertAfter })}
           readOnly={programDocumentContentLock(space, id) !== 'active'} disabledReason={space.documentTrash?.[id] ? '휴지통의 문서입니다. 복원하면 삭제 전 상태로 돌아갑니다.' : retainedIds.has(id) ? '저장본으로 되돌리며 보관된 내용 · 읽기 전용' : '보관한 문서입니다. 보관에서 꺼내면 이어서 쓸 수 있습니다.'}
         />{recentLine(id, recent, true)}</div>; })}
@@ -3978,7 +3978,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         </details>}
         {moving && <p role="status">옮길 행의 앞을 선택하세요. <button onClick={() => setMoving(null)}>취소</button></p>}
         {programSeriesMetadata(space).length > 0 && !folderList && !(folderScreen && folderScreen.tab === 'writing') && <div className={styles.actions}><label><input type="checkbox" checked={includeHeldOccurrences} onChange={event => setIncludeHeldOccurrences(event.target.checked)} /> 보류 회차</label><label><input type="checkbox" checked={includeExcludedOccurrences} onChange={event => setIncludeExcludedOccurrences(event.target.checked)} /> 제외 회차</label>
-          {!selecting && <><button onClick={() => void onUndo()}>변경 되돌리기</button><button onClick={() => void onRedo()}>다시 실행</button></>}
+          {!selecting && <><button onClick={() => void onUndo()}>되돌리기</button><button onClick={() => void onRedo()}>다시 실행</button></>}
           {period === 'all' && <><button disabled={!occurrencePage} onClick={() => setOccurrencePage(value => value - 1)}>이전 회차 구간</button><span>회차 조회 {occurrencePage + 1}</span><button disabled={!occurrenceResult.hasMore || occurrencePage >= 128} onClick={() => setOccurrencePage(value => value + 1)}>다음 회차 구간</button>
             {occurrencePage >= 128 && occurrenceResult.hasMore && <p role="status">조회 상한에 도달했습니다. 뒤에 회차가 더 있으며, 반복이 끝난 것은 아닙니다. 위에서 날짜를 고른 뒤 주간 목록으로 확인해 주세요.</p>}
             <button disabled={preparingDocumentAction} onClick={() => { if (Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())) { setMessage('회차 날짜를 적용하거나 취소한 뒤 기간을 바꿔 주세요.'); return; } setPeriod('week'); }}>고른 날짜의 주간 보기</button></>}

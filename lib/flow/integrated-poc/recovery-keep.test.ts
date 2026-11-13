@@ -333,7 +333,7 @@ test('unique older RAW survives expiry and own later different-document cleanup'
 test('failed shared readback never reuses a possibly published generation key', async () => {
   await withLocks(async locks => {
     const shared = new Storage(locks), a = client(shared, 'page-a');
-    assert(a.ui.save([draft('기존 보관 입력')]).ok); await locks.tail;
+    assert(a.ui.save([draft('기존 복구함 입력')]).ok); await locks.tail;
     const earlier = new Set(shared.values.keys());
     let failedKey: string | null = null;
     shared.afterRead = key => {
@@ -420,10 +420,10 @@ test('session failure prevents mirror, stale clear cannot release a newer draft,
     const shared = new Storage(locks), a = client(shared, 'page-a');
     assert(a.ui.save([draft('저장 전')]).ok);
     const before = a.port.read(); assert(before.ok && before.value);
-    assert(a.ui.save([draft('최신 보관 입력')]).ok);
+    assert(a.ui.save([draft('최신 복구함 입력')]).ok);
     assert.equal(a.ui.clear(before.value).ok, false);
     a.ui.leave(); await locks.tail;
-    assert(has(shared, '최신 보관 입력'));
+    assert(has(shared, '최신 복구함 입력'));
     const sharedCount = shared.writes.size;
     a.session.failWrite = () => true;
     assert.equal(a.ui.save([draft('session 실패 입력')]).ok, false);
@@ -432,7 +432,7 @@ test('session failure prevents mirror, stale clear cannot release a newer draft,
     assert(b.ui.save([{ title: '독립 입력', raw: '명시 지움' }]).ok);
     assert(b.ui.clear().ok); b.ui.leave(); await locks.tail;
     assert(!has(shared, '명시 지움'));
-    assert(has(shared, '최신 보관 입력'));
+    assert(has(shared, '최신 복구함 입력'));
   });
 });
 

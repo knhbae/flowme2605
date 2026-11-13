@@ -293,7 +293,7 @@ test('folder region: saved lines keep ☐ ← → off with the reason; the bar n
   }
   // A selection over several lines: the one-line check cannot speak for the native plan, so ← → stay off.
   const typed = `${raw}\n    - [ ] 새 하위`, from = raw.length + 1, multi = folderBarLine(writingBarLine(typed, 3, () => null), typed, 3, () => true, reason, from + 5);
-  assert.deepEqual([multi.canIndent, multi.canOutdent, multi.structureLock], [false, false, '분류 보기에서는 여러 줄을 한 번에 들이거나 내어 쓸 수 없습니다. 한 줄씩 해 주세요.']);
+  assert.deepEqual([multi.canIndent, multi.canOutdent, multi.structureLock], [false, false, '폴더 보기에서는 여러 줄을 한 번에 들이거나 내어 쓸 수 없습니다. 한 줄씩 해 주세요.']);
   const single = folderBarLine(writingBarLine(typed, from + 2, () => null), typed, from + 2, () => true, reason, from + 6);
   assert.equal(single.structureLock, null);
 });

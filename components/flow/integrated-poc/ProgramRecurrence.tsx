@@ -123,7 +123,7 @@ export function ProgramRecurrence(props: ProgramRecurrenceProps) {
     <p>원문 항목은 반복 규칙입니다. 아래에서 바꾸는 날짜와 완료는 선택한 회차에만 적용합니다.</p>
     <div className={styles.controls}><label><input type="checkbox" disabled={busy || locked || planPending || !!dateDraft} checked={showHeld} onChange={event => setShowHeld(event.target.checked)} /> 보류 회차 보기</label>
       <label><input type="checkbox" disabled={busy || locked || planPending || !!dateDraft} checked={showExcluded} onChange={event => setShowExcluded(event.target.checked)} /> 제외 회차 보기</label>
-      <button type="button" disabled={busy || locked || planPending || !!dateDraft} onClick={() => void props.onUndo()}>최근 변경 되돌리기</button><button type="button" disabled={busy || locked || planPending || !!dateDraft} onClick={() => void props.onRedo()}>다시 실행</button></div>
+      <button type="button" disabled={busy || locked || planPending || !!dateDraft} onClick={() => void props.onUndo()}>되돌리기</button><button type="button" disabled={busy || locked || planPending || !!dateDraft} onClick={() => void props.onRedo()}>다시 실행</button></div>
     {selectedMetadata.filter(item => item.capability === 'held' || item.capability === 'unsupported').map(item => <p key={item.itemRef}>
       {item.capability === 'held' ? '이 Map은 원문과 실행 조건 검토 전이라 실행을 잠갔습니다.' : '원본 업데이트의 항목별 속성 연결을 확인해야 합니다. 원문은 보존했습니다.'}
       <button type="button" onClick={() => props.onOpenSource(item.documentId, item.lineId)}>해당 원문 보기</button></p>)}

@@ -82,7 +82,7 @@ test('first run: no 저장됨 before anything is written, the title is 쓰기, a
   assert(space.includes("'아직 할 일이 없습니다.'") && space.includes('onClick={openQuickAddFromEmpty}>할 일 추가</button>'), 'U50');
   assert(space.includes("const hasFolders = space.text.folders.some(item => item.id !== 'folder-unfiled');"), 'U51');
   assert(space.includes("(hasFolders || folderId) && <label className={styles.field}>글 안의 폴더 범위") && space.includes('{(hasFolders || folderId) && <details className={styles.folderTools}><summary>폴더 정리</summary>'));
-  assert(editor.includes("const EMPTY_DOCUMENT_HINT = '여기에 적으세요.\\n할 일은 ☐ 또는 - [ ], 메뉴는 /';"), 'U52');
+  assert(editor.includes("const EMPTY_DOCUMENT_HINT = '여기에 적으세요.\\n☐을 누르면 할 일이 됩니다';"), 'U52');
 });
 
 test('복구함: empty, it points to the archived documents', () => {

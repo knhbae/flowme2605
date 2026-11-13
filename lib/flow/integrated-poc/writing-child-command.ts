@@ -19,7 +19,7 @@ export function prepareWritingChild(before:TextWorkspaceState,input:WritingChild
   const lineId=memo?.id??task.id,index=updated.lines.findIndex(l=>l.id===lineId),offset=updated.lines.slice(0,index).reduce((n,l)=>n+l.text.length+1,0)+updated.lines[index].text.length;
   return{ok:true,workspace:next,lineId,parentId:task.id,offset};
  }
- const scope=input.scopeId??before.taskScopes[task.id];if(!scope||!M.scopes(before).some(s=>s.id===scope))return fail('분류를 확인해 주세요.');
+ const scope=input.scopeId??before.taskScopes[task.id];if(!scope||!M.scopes(before).some(s=>s.id===scope))return fail('폴더를 확인해 주세요.');
  const date=input.date===undefined?task.date:input.date;if(date!==null&&(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(Date.parse(date+'T00:00:00Z'))||new Date(date+'T00:00:00Z').toISOString().slice(0,10)!==date))return fail('날짜를 확인해 주세요.');
  // Existing properties stay before the new child. Existing children keep order.
  const firstChild=parsed.rows.find(row=>row.index>parent.index&&row.index<parent.subtreeEndIndex&&['task','subcheck'].includes(row.kind)),end=firstChild?.index??parent.subtreeEndIndex;

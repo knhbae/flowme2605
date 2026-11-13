@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 // W6 (items 13·14·23): the PC toolbar is grouped with dividers ([＋ 추가] | [☐ ⇤ ⇥ ↳] | [↶ ↷] [반복] [도구],
 // status at the end) so ↶ never sits next to ↳; the bar icons are drawn, not arrows that read as "move"; the
 // "…" is named 도구, without items that repeat ＋ 추가 or ↷, and closes on a press outside it or a change of
-// document; ↶·↷ say 입력 되돌리기 · Ctrl+Z and 입력 다시 하기; an empty document shows a two-line hint that the
+// document; ↶·↷ say 되돌리기 · Ctrl+Z and 입력 다시 하기; an empty document shows a two-line hint that the
 // first character removes, and the writing example moves from 도구 to the empty document's ＋ menu.
 const read = (file: string) => readFileSync(new URL(`../../../components/flow/integrated-poc/${file}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const editor = read('ProgramTextEditor.tsx'), css = read('ProgramTextEditor.module.css'), space = read('ProgramSpace.tsx');
@@ -15,8 +15,8 @@ test('the PC toolbar groups: ＋ 추가 | bar actions | ↶ ↷ 반복 도구, s
   const at = (part: string) => { const index = toolbar.indexOf(part); assert(index > 0, part); return index; };
   const seps = [...toolbar.matchAll(/<span className=\{styles\.toolbarSep\} aria-hidden="true" \/>/g)].map(match => match.index!);
   assert.equal(seps.length, 2);
-  assert(at('<ToolIcon name="add" size={18} />추가</button>') < seps[0] && seps[0] < at("barButtons('toolbar')") && at("barButtons('toolbar')") < seps[1] && seps[1] < at('aria-label="입력 되돌리기"'));
-  assert(at('aria-label="입력 되돌리기"') < at('aria-label="입력 다시 하기"') && at('aria-label="입력 다시 하기"') < at('{props.repeatLabel') && at('{props.repeatLabel') < at('<details ref={toolsRef} className={styles.editorTools}'));
+  assert(at('<ToolIcon name="add" size={18} />추가</button>') < seps[0] && seps[0] < at("barButtons('toolbar')") && at("barButtons('toolbar')") < seps[1] && seps[1] < at('aria-label="되돌리기"'));
+  assert(at('aria-label="되돌리기"') < at('aria-label="입력 다시 하기"') && at('aria-label="입력 다시 하기"') < at('{props.repeatLabel') && at('{props.repeatLabel') < at('<details ref={toolsRef} className={styles.editorTools}'));
   assert.match(css, /\.toolbarSep \{[^}]*width: 1px;/);
   // Phones show the bar actions in the keyboard bar, so the dividers go there. Write polish C (11/7): at every width
   // the status ends the line (CSS order only) and 도구 follows 반복 where it stands in the DOM.
@@ -45,7 +45,7 @@ test('the tools menu is named 도구, repeats neither ＋ 추가 nor ↷, and cl
 });
 
 test('↶ and ↷ say what they undo and redo', () => {
-  assert(toolbar.includes("'입력 되돌리기 · Ctrl+Z'}"));
+  assert(toolbar.includes("'되돌리기 · Ctrl+Z'}"));
   assert(toolbar.includes('title="입력 다시 하기 · Ctrl+Y" aria-label="입력 다시 하기"'));
   // The toolbar ↷ no longer says 다시 실행 (the 도구 item of that name stays only where there is no ↷).
   assert(!toolbar.includes('title="다시 실행" aria-label="다시 실행"'));
@@ -53,7 +53,7 @@ test('↶ and ↷ say what they undo and redo', () => {
 
 test('an empty document shows a two-line hint, and the writing example is in its ＋ menu', () => {
   // N9 (U52): the second line was shortened so it does not wrap one syllable onto a line of its own at 390px.
-  assert(editor.includes("const EMPTY_DOCUMENT_HINT = '여기에 적으세요.\\n할 일은 ☐ 또는 - [ ], 메뉴는 /';"));
+  assert(editor.includes("const EMPTY_DOCUMENT_HINT = '여기에 적으세요.\\n☐을 누르면 할 일이 됩니다';"));
   assert(editor.includes("textarea.placeholder = props.readOnly ? '' : props.directWriting ? '여기에 바로 적으세요' : EMPTY_DOCUMENT_HINT;"));
   // The textarea text is transparent over the mirror; its placeholder needs its own color.
   assert.match(css, /\.host :global\(\.tle-textarea::placeholder\)[^{]*\{[^}]*-webkit-text-fill-color: var\(--flowme-b-muted\);/);

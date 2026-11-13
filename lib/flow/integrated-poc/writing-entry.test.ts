@@ -15,7 +15,7 @@ test('W-TXT-10: a new writing starts at today; its first task appears on today w
   assert.equal(made.data.spaces[actorId].position.start, 13);
   const edited = M.editTextResult(text, made.result, `[${today}]\n- [ ] 첫 할 일`).state;
   assert.equal(M.tasks(edited).find(row => row.title === '첫 할 일')?.date, today);
-  const again = createProgramWritingEntry(made.data, { actorId, requestId: 'new-date', expectedSpace: data.spaces[actorId], today });
+  const again = createProgramWritingEntry(made.data, { actorId, requestId: 'new-date', expectedSpace: data.spaces[actorId], today: '2026-11-14' });
   assert(again.ok); assert.equal(again.result, made.result); assert.equal(again.changed, false);
 });
 
@@ -24,6 +24,9 @@ test('W-TXT-10: deleting the heading, reopening or reusing an empty document nev
   const made = createProgramWritingEntry(data, { actorId, requestId: 'new-delete', expectedSpace: data.spaces[actorId], today: '2026-11-13' });
   assert(made.ok); const next = programClone(made.data);
   next.spaces[actorId].text = M.editTextResult(next.spaces[actorId].text, made.result, '').state;
+  const replay = createProgramWritingEntry(next, { actorId, requestId: 'new-delete', expectedSpace: data.spaces[actorId], today: '2026-11-14' });
+  assert(replay.ok); assert.equal(replay.result, made.result); assert.equal(replay.changed, false);
+  assert.equal(M.raw(M.getDocument(replay.data.spaces[actorId].text, made.result)), '');
   const reopened = createProgramWritingEntry(next, { actorId, requestId: 'reuse-delete', expectedSpace: next.spaces[actorId], reuseDocumentId: made.result, today: '2026-11-14' });
   assert(reopened.ok); assert.equal(reopened.result, made.result);
   assert.equal(M.raw(M.getDocument(reopened.data.spaces[actorId].text, made.result)), '');
@@ -40,4 +43,6 @@ test('W-TXT-10: existing nonempty raw is preserved, invalid day/CAS rejected, ex
   const stale = createProgramWritingEntry(made.data, { actorId, requestId: 'stale-create', expectedSpace: imported.data.spaces[actorId], today: '2026-11-13' });
   assert(!stale.ok); assert.equal(stale.reason, 'conflict');
   assert.equal(programNewWritingRaw('2026-02-30'), '');
+  const collision = createProgramWritingEntry(imported.data, { actorId, requestId: 'raw-create', expectedSpace: imported.data.spaces[actorId], today: '2026-11-13' });
+  assert(!collision.ok); assert.equal(collision.reason, 'duplicate-request');
 });

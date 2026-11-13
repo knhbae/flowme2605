@@ -120,12 +120,12 @@ test('N11b: the card opens the sheet; 이대로 정리 saves every choice at onc
   assert(host.includes('const plan = carrySheetPlan;'));
   assert(host.includes('{carryAlong && <small className={styles.carryApplyNote}>{carryAlong} 함께 지움</small>}'));
   assert(host.includes("...(carryNotice.undatedView ? [{ label: '날짜 미정 보기', run: () => void changePeriod('undated') }] : [])"));
-  assert(host.includes("`${carryPlaces.get(task.id)!.place || '분류 없음'} · 분류 ${carryPlaces.get(task.id)!.count}곳`"));
+  assert(host.includes("`${carryPlaces.get(task.id)!.place || '폴더 없음'} · 폴더 ${carryPlaces.get(task.id)!.count}곳`"));
   assert(host.includes("const options: ProgramCarryoverChoice[] = item.finished ? ['delete', 'today'] : ['today', 'undated', 'delete'];")
     || host.includes("options: ProgramCarryoverChoice[] = item.finished ? ['delete', 'today'] : ['today', 'undated', 'delete'];"));
 });
 
-test('N11b: each sheet task names its 분류: a folder, or a "- /" line still text', () => {
+test('N11b: each sheet task names its 폴더: a folder, or a "- /" line still text', () => {
   let data = empty();
   for (const doc of CARRYOVER_PRODUCTION_DOCUMENTS.slice(0, 1)) {
     const made = write('', data);

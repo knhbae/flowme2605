@@ -31,7 +31,16 @@ export function createProgramWritingEntry(data: ProgramData, input: ProgramWriti
     title: PROGRAM_WRITING_ENTRY_TITLE, folderId: 'folder-unfiled', raw: programNewWritingRaw(input.today) };
   // Reuse is a presentation hint, not a new create payload. An existing request
   // must replay its original result even after that document gains content.
-  if (data.receipts.some(receipt => receipt.actorId === input.actorId && receipt.id === input.requestId)) {
+  const receipt = data.receipts.find(row => row.actorId === input.actorId && row.id === input.requestId);
+  if (receipt) {
+    // A response can be lost across midnight. Replaying this creation must use
+    // its original seed, even if the user later deleted the heading. The usual
+    // transition still checks the whole fingerprint and kind, not just the ID.
+    if (receipt.kind === 'private-document-create') try {
+      const fields = JSON.parse(receipt.fingerprint);
+      if (fields.title === creation.title && fields.folderId === creation.folderId && typeof fields.raw === 'string'
+        && (fields.raw === '' || fields.raw === programNewWritingRaw(fields.raw.slice(1, 11)))) creation.raw = fields.raw;
+    } catch { /* A malformed or different fingerprint remains a duplicate-request failure. */ }
     return createProgramDocument(data, creation);
   }
 

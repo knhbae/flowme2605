@@ -7,7 +7,7 @@ import * as documentRecovery from './alpha-ui-recovery-document';
 import type { AlphaUiDraft } from './alpha-ui-recovery';
 
 // Every keystroke captures the editor's input to the tab (kept as before). R8a counted that capture,
-// so ordinary typing showed "보관한 입력 1개" from the first key until the save cleared it.
+// so ordinary typing showed "복구함에 있는 입력 1개" from the first key until the save cleared it.
 const source = readFileSync(new URL('../../../components/flow/integrated-poc/AlphaWorkspace.tsx', import.meta.url), 'utf8');
 const tree = ts.createSourceFile('AlphaWorkspace.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 function declaration(name: string) {
@@ -87,13 +87,13 @@ test('the 복구함 lists and counts every stored entry even while the notice co
   assert(source.includes('<h2 id="alpha-recovery-heading">복구함{storedTotal ? ` (${storedTotal})` : \'\'}</h2>'));
   assert(source.includes("onClick={event => openRecoveryBox(event.currentTarget)}>복구함{storedTotal ? ` (${storedTotal})` : ''}</button>"));
   // N9: an empty 복구함 also points to the archived documents (보관함), when there are any.
-  assert(source.includes('{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>보관한 입력이 없습니다.</p>'));
+  assert(source.includes('{storedTotal ? <>{savedInputPanel}{structuralRecoveryPanel}{creatorRecoveryPanel}{socialRecoveryPanel}</> : <><p>복구함에 있는 입력이 없습니다.</p>'));
   // It never opens by itself (a conflict while typing must not take the focus); the notice, the menu and 나 open it.
   assert(!source.includes('open={!!storedTotal'));
-  // The badge names use their own label, so two different numbers never share "보관한 입력"; the toast counts the new ones.
+  // The badge names use their own label, so two different numbers never share "복구함에 있는 입력"; the toast counts the new ones.
   assert(source.includes("aria-label={`나${savedTotal ? ` · 확인이 필요한 입력 ${savedTotal}개` : ''}`}"));
   assert(source.includes('<p>{programRecoveryToastText(recoveryToastCount)}</p>'));
-  assert(!/보관한 입력 \$?\{savedTotal\}/.test(source));
+  assert(!/복구함에 있는 입력 \$?\{savedTotal\}/.test(source));
 });
 
 test('only current held draft toast tags go quiet; an already shown other-document toast stays visible', () => {
@@ -221,7 +221,7 @@ test('a failed last capture keeps the editors, on every rebuild path, and says w
   assert.equal(seen.message.at(-1), keptEditorsNotice('제작 작업본은 서버에 복구했습니다.'));
   seen = await run('restoreCreator', true, creator, 0);
   assert.deepEqual(seen.destination, [{ view: 'creator', id: 'creator-draft-a' }]);
-  // 보관한 복사 작업 복구: the same rule.
+  // 복구함의 복사 작업 복구: the same rule.
   const live = { ownerId: 'u', busy: false, pending: null, draft: null, status: 'ready', envelope: { data: { activeActorId: 'u' } },
     account: { ownerId: 'u', revision: 3, source: { actorId: 'u' }, space: { text: {} } } };
   const store = { snapshot: () => live }, ref = <T,>(current: T) => ({ current });

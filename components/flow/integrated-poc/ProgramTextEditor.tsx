@@ -250,11 +250,11 @@ export function trapProgramDialogTab(
   event.preventDefault(); event.stopPropagation(); destination.focus(); return true;
 }
 
-const FOLDER_STRUCTURE_LOCK = '분류 보기에서는 저장된 줄의 종류와 들여쓰기를 바꿀 수 없습니다. ‘전체 문서 보기’에서 바꿔 주세요.';
-const REGION_OUTSIDE = '이 자리는 지금 보는 분류 영역 밖이라 여기서 넣지 않았습니다. 원문은 그대로입니다. 전체 문서에서 추가해 주세요.';
+const FOLDER_STRUCTURE_LOCK = '폴더 보기에서는 저장된 줄의 종류와 들여쓰기를 바꿀 수 없습니다. ‘전체 문서 보기’에서 바꿔 주세요.';
+const REGION_OUTSIDE = '이 자리는 지금 보는 폴더 영역 밖이라 여기서 넣지 않았습니다. 원문은 그대로입니다. 전체 문서에서 추가해 주세요.';
 /** W6: an empty document's hint; the first character (a composing one too) takes it away. */
 // N9 (U52): short enough that its second line stays one line beside the ⋮ on a 390px phone.
-const EMPTY_DOCUMENT_HINT = '여기에 적으세요.\n할 일은 ☐ 또는 - [ ], 메뉴는 /';
+const EMPTY_DOCUMENT_HINT = '여기에 적으세요.\n☐을 누르면 할 일이 됩니다';
 /** W6: bar icons drawn to read as what they do: indenting is not moving, and ↳ is not ↶. F6-B1: from the one icon set
  *  where it has the shape (↳ and ↷ keep their own drawing). */
 const BAR_SET: Partial<Record<WritingBarAction, ProgramIconName>> = { task: 'todo', outdent: 'outdent', indent: 'indent', menu: 'plus', date: 'cal', folder: 'folder', undo: 'undo', repeat: 'repeat' };
@@ -1303,7 +1303,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
    *  (the 분류 rename path), applied to the state before the move so no folder of the new name is left behind. */
   async function renameEverywhere(before: TextWorkspaceState, fromId: string, title: string, oldTitle: string) {
     const controller = draftRef.current;
-    if (!controller || !controller.canUndoFolderMove() || composingRef.current) { showFolderNotice('다른 편집이 있어 모든 문서에 적용하지 않았습니다. 분류 화면에서 이름을 바꿀 수 있습니다.', 'warn'); return; }
+    if (!controller || !controller.canUndoFolderMove() || composingRef.current) { showFolderNotice('다른 편집이 있어 모든 문서에 적용하지 않았습니다. 폴더 화면에서 이름을 바꿀 수 있습니다.', 'warn'); return; }
     const original = controller.folderRenameBase(fromId);
     if (!original) { showFolderNotice('그 뒤에 관련 입력이나 연결이 바뀌어 모든 문서에 적용하지 않았습니다. 현재 입력은 유지했습니다.', 'warn'); return; }
     const next = M.renameScope(original, fromId, title);
@@ -2786,7 +2786,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           { const operation = controller.folderOperation();
             const changed = operation && (operation.id !== beforeOperation?.id || operation.at !== beforeOperation.at);
             const notice = controller.getState().folderNotice ?? programFolderCreatedNotice(beforeText, afterText);
-            if (notice || changed) showFolderOperation(notice ?? '폴더 분류를 바꿨습니다', 'info', operation?.lineId);
+            if (notice || changed) showFolderOperation(notice ?? '폴더를 바꿨습니다', 'info', operation?.lineId);
           }
           const renamed = new Set(beforeText.folders.filter(folder => afterText.folders.some(next => next.id === folder.id && next.title !== folder.title)).map(folder => folder.id));
           if (afterText.bindings.some(binding => binding.kind === 'scope' && binding.docId !== props.docId && renamed.has(binding.scopeId))) {
@@ -3430,7 +3430,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   /** Folder view: put a menu insertion into the visible region through the region's own check. */
   function applyRegionInsertion(nextRaw:string,caret:number){
     const port=regionPortRef.current,snapshot=port?.takeSnapshot(),region=snapshot?.view.regions.find(entry=>entry.key===snapshot.regionKey&&!entry.readOnly);
-    if(!port||!snapshot||!region||port.hasPending()){setMessage('분류 영역의 입력이나 저장을 마친 뒤 다시 골라 주세요. 원문은 유지했습니다.');return false;}
+    if(!port||!snapshot||!region||port.hasPending()){setMessage('폴더 영역의 입력이나 저장을 마친 뒤 다시 골라 주세요. 원문은 유지했습니다.');return false;}
     const before=snapshot.view.fullRaw.split('\n'),after=nextRaw.split('\n'),end=region.endIndex+after.length-before.length;
     if(end<region.startIndex||after.slice(0,region.startIndex).join('\n')!==before.slice(0,region.startIndex).join('\n')
       ||after.slice(end).join('\n')!==before.slice(region.endIndex).join('\n')){setMessage(REGION_OUTSIDE);return false;}
@@ -3466,7 +3466,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   function openRegionMenuAt(port:ProgramFolderRegionPort){
     const snapshot=port.takeSnapshot(),index=snapshot?.lineId?currentDoc()?.lines.findIndex(line=>line.id===snapshot.lineId)??-1:-1;
-    if(!snapshot?.regionKey||index<0){setMessage('추가할 줄을 찾지 못했습니다. 분류 영역 안의 줄을 누른 뒤 다시 열어 주세요.');return false;}
+    if(!snapshot?.regionKey||index<0){setMessage('추가할 줄을 찾지 못했습니다. 폴더 영역 안의 줄을 누른 뒤 다시 열어 주세요.');return false;}
     return openCurrentInsertMenu(index);
   }
   function scopeSlot(lineId: string | null) {
@@ -3834,7 +3834,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       {barButton('task', <BarIcon name="task" />, barLine.isTask ? '일반 줄로 바꾸기' : '할 일로 바꾸기', '- [ ]', !!locked, className, locked ? barLockId + place : undefined)}
       {locked && <span id={barLockId + place} hidden>{barLine.markerLock}</span>}
       {moved && <span id={barLockId + place + 'move'} hidden>{moved}</span>}
-      {dateBody && <button type="button" className={styles.barWide} data-bar-mode="date" aria-label={barLine.isTask?'날짜로 옮기기':'날짜 넣기'} title={barLine.isTask?'날짜로 옮기기':'날짜 넣기'} disabled={barOff}
+      {dateBody && <button type="button" className={styles.barWide} data-bar-mode="date" aria-label="날짜" title="날짜" disabled={barOff}
         onPointerDown={keep} onClick={() => setBarMode('date')}><BarIcon name="date" /><span>날짜</span></button>}
       {body && barButton('folder', <><BarIcon name="folder" /><span>폴더</span></>, '폴더 줄 넣기', '- /', false, styles.barWide)}
       {barButton('outdent', <BarIcon name="outdent" />, '내어쓰기', 'Shift+Tab', !barLine.canOutdent, className, moved ? barLockId + place + 'move' : undefined)}
@@ -3859,7 +3859,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       {close('날짜 닫기')}
     </>;
     const more = <>
-      {barButton('undo', <BarIcon name="undo" />, '입력 되돌리기', 'Ctrl+Z', undoOff)}
+      {barButton('undo', <BarIcon name="undo" />, '되돌리기', 'Ctrl+Z', undoOff)}
       {props.authoringMode && barButton('redo', <BarIcon name="redo" />, '입력 다시 하기', 'Ctrl+Y', redoOff)}
       {props.repeatLabel && props.onOpenPersonalAuthoring && barButton('repeat', <><BarIcon name="repeat" /><span>{props.repeatLabel}</span></>, '반복', props.repeatLabel, false, styles.barWide)}
       {barButton('menu', <BarIcon name="menu" />, '추가 메뉴', '/', false)}
@@ -4005,7 +4005,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       {props.authoringMode && <span className={styles.toolbarSep} aria-hidden="true" />}
       {props.authoringMode && barButtons('toolbar')}
       {props.authoringMode && <span className={styles.toolbarSep} aria-hidden="true" />}
-      <button type="button" disabled={undoOff} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기 · Ctrl+Z'} aria-label="입력 되돌리기" onClick={undoInput}><ToolIcon name="undo" /></button>
+      <button type="button" disabled={undoOff} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '되돌리기 · Ctrl+Z'} aria-label="되돌리기" onClick={undoInput}><ToolIcon name="undo" /></button>
       {props.authoringMode && <button type="button" disabled={redoOff} title="입력 다시 하기 · Ctrl+Y" aria-label="입력 다시 하기"
         onClick={redoInput}><ToolIcon name="redo" /></button>}
       {/* N10 (SPEC 5): [반복] offers 이 줄 반복 (the caret's line) and 반복·Flow 만들기 in one small panel. */}
@@ -4051,7 +4051,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     {props.folderId && !props.folderScreen && <div className={regionStyles.actions} aria-label="문서 조회 범위" data-folder-gather>
       {/* 7k stage 1: the gathered folder says what is shown; only 전체 보기 ends it (the 쓰기 tab keeps it). */}<p><strong>/{folderView?.folderPath ?? '선택한 폴더'}</strong>만 보는 중 <small>{currentDoc()?.title || '현재 글'} · 하위 폴더 포함</small></p>
       <button type="button" data-gather-end disabled={inputLocked || !!props.readOnly || draft.saving || composingRef.current} onClick={props.onContinueWholeDocument ? continueWholeDocument : props.onShowWholeDocument}>전체 보기</button><button type="button" onClick={props.onShowFolderTasks}>폴더 전체 할 일</button>
-      {!folderView?.regions.length && <p>이 분류에 맞는 내용이 없습니다. 전체 문서에서 확인할 수 있습니다.</p>}
+      {!folderView?.regions.length && <p>이 폴더에 맞는 내용이 없습니다. 전체 문서에서 확인할 수 있습니다.</p>}
     </div>}
     {/* Input v2 stage 2: 오늘 시작 줄 — today's head line in one press (focus first, so a phone's keyboard comes up). */}
     {todayStart && <button type="button" className={styles.todayStart} data-today-start disabled={inputLocked || draft.saving} onClick={startToday}>
@@ -4183,7 +4183,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {row && <><button type="button" disabled={!!folderIndent && !folderIndent.indent.ok} onClick={() => indentFromMenu(false)}>들여쓰기</button>
           <button type="button" disabled={!!folderIndent && !folderIndent.outdent.ok} onClick={() => indentFromMenu(true)}>내어쓰기</button>
           <button type="button" disabled={!!props.folderId} onClick={() => { closePanel(); editorRef.current?.toggleFold(row.index); }}>하위 내용 접기 / 펼치기</button></>}
-        {folderIndent && <small>{!folderIndent.indent.ok || !folderIndent.outdent.ok ? FOLDER_STRUCTURE_LOCK : '분류 보기에서는 접기와 하위 묶음 이동을 쓸 수 없습니다. ‘전체 문서 보기’에서 해 주세요.'}</small>}
+        {folderIndent && <small>{!folderIndent.indent.ok || !folderIndent.outdent.ok ? FOLDER_STRUCTURE_LOCK : '폴더 보기에서는 접기와 하위 묶음 이동을 쓸 수 없습니다. ‘전체 문서 보기’에서 해 주세요.'}</small>}
         </div></details>}
       </div>}
       {panel.kind === 'progress' && !protectedExecutionPanel && <ProgramProgressForm title={row?.title || row?.task?.title} date={date} percent={percent} disabled={disabled}

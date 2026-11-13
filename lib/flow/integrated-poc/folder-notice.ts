@@ -110,10 +110,10 @@ export function programFolderRenameBack(state: TextWorkspaceState, folderId: str
   const folder = state.folders.find(entry => entry.id === folderId);
   if (!folder || folder.title !== title) return { ok: false, reason: '폴더 이름이 그 사이에 바뀌어 되돌리지 않았습니다.' };
   if (state.folders.some(entry => entry.id !== folderId && (entry.parentId ?? null) === (folder.parentId ?? null) && entry.title === oldTitle))
-    return { ok: false, reason: `같은 자리에 ‘${oldTitle}’${iga(oldTitle)} 생겨 되돌리지 않았습니다 · 분류 화면에서 정리할 수 있습니다` };
+    return { ok: false, reason: `같은 자리에 ‘${oldTitle}’${iga(oldTitle)} 생겨 되돌리지 않았습니다 · 폴더 화면에서 정리할 수 있습니다` };
   const now = programFolderLines(state, folderId), keys = Object.keys(lines);
   if (Object.keys(now).length !== keys.length || keys.some(key => now[key] !== lines[key]))
-    return { ok: false, reason: '그 사이 다른 곳에서 이 폴더의 줄이 바뀌어 되돌리지 않았습니다 · 분류 화면에서 이름을 바꿀 수 있습니다' };
+    return { ok: false, reason: '그 사이 다른 곳에서 이 폴더의 줄이 바뀌어 되돌리지 않았습니다 · 폴더 화면에서 이름을 바꿀 수 있습니다' };
   const next = M.renameScope(state, folderId, oldTitle);
   return next === state ? { ok: false, reason: '폴더 이름을 되돌리지 못했습니다.' } : { ok: true, next };
 }
