@@ -116,7 +116,7 @@ test('N11b: deleting takes a memo with its line, but never a recorded copy; a fo
 test('N11b: the card opens the sheet; 이대로 정리 saves every choice at once; 오늘 rows say when their words are in two 분류', () => {
   const host = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   assert(host.includes('onClick={() => openCarrySheet()}>하나씩 정리</button>'));
-  assert(host.includes('const carrySheetPlan = useMemo(() => carryItems && carrySheetSpace && period === \'today\' ? planProgramCarryover(carrySheetSpace, today, undefined,'));
+  assert(host.includes('const carrySheetPlan = useMemo(() => carrySheetShown && carryItems && carrySheetSpace && period === \'today\' ? planProgramCarryover(carrySheetSpace, today, undefined,'));
   assert(host.includes('const plan = carrySheetPlan;'));
   assert(host.includes('{carryAlong && <small className={styles.carryApplyNote}>{carryAlong} 함께 지움</small>}'));
   assert(host.includes("...(carryNotice.undatedView ? [{ label: '날짜 미정 보기', run: () => void changePeriod('undated') }] : [])"));

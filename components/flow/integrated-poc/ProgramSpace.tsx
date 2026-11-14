@@ -500,6 +500,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   type CarryNotice = { actorId: string; text: string; before: ProgramCarryoverBefore | null; after: string; refused?: boolean; undone?: boolean; undatedView?: boolean; shownAt: number };
   // N11b 하나씩 정리: the card's sheet, the tasks it lists and what is chosen for each (nothing saved until 이대로 정리).
   const carrySheet = useRef<HTMLDialogElement>(null);
+  // A closed sheet keeps its choices and source snapshot, but does not build its displayed plan.
+  const [carrySheetShown, setCarrySheetShown] = useState(false);
+  useEffect(() => { if (period !== 'today') setCarrySheetShown(false); }, [period]);
   const [carryItems, setCarryItems] = useState<ProgramCarryoverItem[] | null>(null), [carryChoices, setCarryChoices] = useState<ReadonlyMap<string, ProgramCarryoverChoice>>(new Map());
   // QA F1: the space the sheet showed (its save is planned on that, with the tokens of what was shown), and why it was
   // shown again (another device changed a line of it first).
@@ -1155,7 +1158,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const todayRowsForBand = useMemo(() => !bandDocumentId && !carryShown ? []
     : programOrderedExecutionRows(data, { period: 'today', date: today, today, folderId: '', query: '', includeHeld: false, includeExcluded: false, page: 0 }).rows, [!!bandDocumentId, carryShown, data, today]);
   const carrySummary = useMemo(() => programCarryoverSummary(space, today, todayRowsForBand), [space, today, todayRowsForBand]);
-  const sameGroupScope = useMemo(() => programCarryoverGroupScope(space), [space]);
+  const sameGroupScope = useMemo(() => period === 'today' && !selecting ? programCarryoverGroupScope(space) : null, [period, selecting, space]);
   const carryPast = carryShown ? executionList.filter(item => item.kind === 'row' && item.group === 'past-incomplete') : [];
   // F8 1단계 (CO-3): the late card from one late line (it was more than three), so 지난 미완료 is always folded under it.
   // 오늘 탭 ② (W-CARRY-12, mockup ③): the morning button takes the last day tasks were written (not the calendar's
@@ -1165,8 +1168,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const morningHolds = useMemo(() => !!morningDone && morningDone.actorId === actorId && programCarryoverProof(space) === morningDone.after, [morningDone, actorId, space]);
   const carryCard = carryShown && (morningHolds || !!morning && carrySummary.count > 0);
   // N11b: what the sheet's choices would do now (its save button says how many memos a deletion takes along).
-  const carrySheetPlan = useMemo(() => carryItems && carrySheetSpace && period === 'today' ? planProgramCarryover(carrySheetSpace, today, undefined,
-    new Map(carryItems.map(item => [item.kind, carryChoices.get(item.kind) ?? item.choice]))) : null, [carryItems, carryChoices, carrySheetSpace, period, today]);
+  const carrySheetPlan = useMemo(() => carrySheetShown && carryItems && carrySheetSpace && period === 'today' ? planProgramCarryover(carrySheetSpace, today, undefined,
+    new Map(carryItems.map(item => [item.kind, carryChoices.get(item.kind) ?? item.choice]))) : null, [carrySheetShown, carryItems, carryChoices, carrySheetSpace, period, today]);
   // N11b: on 오늘, the same words in two 분류 or more (never merged) say so on each row: '업무 · 분류 2곳'.
   const carryPlaces = useMemo(() => period === 'today' ? programCarryoverPlaces(space, executionRows.flatMap(row => row.kind === 'text-task' ? [row.task] : []))
     : new Map<string, { place: string; count: number }>(), [period, space, executionRows]);
@@ -1175,7 +1178,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // with '같은 일 n줄' (its sheet lists them); checking it finishes them all in one save, with one 되돌리기.
   const sameGroups = period === 'today' && !selecting ? programSameTaskGroups(listItems.flatMap(item => item.kind === 'row' && item.entry.kind === 'text-task' && item.group
     && !item.entry.task.done && !(M.currentProgress(space.text, item.entry.task.id) ?? 0) && !programRepeatLine(space, item.entry.task.id) ? [{ task: item.entry.task, group: item.group }] : []),
-    sameGroupScope) : null;
+    sameGroupScope!) : null;
   const shownItems = sameGroups?.hidden.size ? listItems.filter(item => !(item.kind === 'row' && item.entry.kind === 'text-task' && sameGroups.hidden.has(item.entry.task.id))) : listItems;
   const monthGrid = period === 'month' && monthView === 'grid';
   const wideMonth = monthWidth >= 840;
@@ -3076,7 +3079,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         const text = sheet ? [sheet.text, plan.left ? `남은 ${plan.left}줄은 한 번 더 정리하면 됩니다.` : ''].filter(Boolean).join(' ')
           : [kinds ? `${kinds}가지를 오늘로 옮겼습니다.` : '', plan.removed ? kinds ? `겹친 줄과 끝낸 일의 남은 줄 ${plan.removed}개는 지웠습니다.` : `끝낸 일의 남은 줄 ${plan.removed}개를 지웠습니다.` : '',
             plan.left ? `남은 ${plan.left}줄은 한 번 더 누르면 정리됩니다.` : ''].filter(Boolean).join(' ');
-        if (sheet) carrySheet.current?.close();
+        if (sheet) closeCarrySheet();
         if (early && before) {
           const parts = [early.moved ? `${early.moved}개 옮김` : '', early.continued ? `${early.continued}개 복사` : ''].filter(Boolean).join(' · ');
           setMorningDone({ actorId, text: `${early.lines}개 이어 씀${parts ? ` (${parts})` : ''}`, before, after });
@@ -3168,10 +3171,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     setCarrySheetSpace(shown); setCarryItems(items); setCarrySheetNote(null);
     setCarryChoices(new Map(items.map(item => [item.kind, keep?.get(item.kind) ?? item.choice])));
     if (!carrySheet.current?.open) carrySheet.current?.showModal();
+    setCarrySheetShown(carrySheet.current?.open === true);
   }
-  const closeCarrySheet = () => carrySheet.current?.close();
+  const closeCarrySheet = () => { carrySheet.current?.close(); setCarrySheetShown(false); };
   const carryChoiceOf = (item: ProgramCarryoverItem) => carryChoices.get(item.kind) ?? item.choice;
-  const carryCounts = (['today', 'undated', 'delete'] as const).map(choice => carryItems?.filter(item => carryChoiceOf(item) === choice).length ?? 0);
+  const carryCounts = carrySheetShown ? (['today', 'undated', 'delete'] as const).map(choice => carryItems?.filter(item => carryChoiceOf(item) === choice).length ?? 0) : [0, 0, 0];
   /** [이대로 정리]: every choice in one save, as the card's press (all or none, one 되돌리기). */
   async function applyCarrySheet() {
     const plan = carrySheetPlan;
@@ -3212,10 +3216,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     </ul></section>;
   };
   const carrySheetContent = period === 'today' && <dialog ref={carrySheet} className={`${styles.findDialog} ${styles.carrySheet}`} aria-labelledby="program-carry-title"
-    onCancel={event => { event.preventDefault(); closeCarrySheet(); }}>
+    onCancel={event => { event.preventDefault(); closeCarrySheet(); }}
+    onClose={event => { if (!event.currentTarget.open) setCarrySheetShown(false); }}>
     <div className={styles.carrySheetHead}><h2 id="program-carry-title">밀린 일 정리</h2><button type="button" onClick={closeCarrySheet}>닫기</button></div>
     {carrySheetNote && <p className={styles.carrySheetNote} role="status">{carrySheetNote}</p>}
-    {carryItems && carryItems.length > 0 && <>
+    {carrySheetShown && carryItems && carryItems.length > 0 && <>
       <p className={styles.carryMeta}>{programCalendarDate(carryItems.reduce((day, item) => item.since < day ? item.since : day, carryItems[0].since), today, false)}부터 {carryItems.length}가지 · {carryItems.reduce((sum, item) => sum + item.lines, 0)}줄</p>
       {carrySection('오늘로 옮길 일', carryItems.filter(item => !item.finished))}
       {carrySection('이미 끝낸 일 · 남은 줄만 지웁니다', carryItems.filter(item => item.finished))}
