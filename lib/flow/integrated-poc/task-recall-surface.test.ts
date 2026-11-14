@@ -31,3 +31,14 @@ test('cleanup of the matching connected surface releases it without mutating it'
   assert.equal(port.read(), null);
   assert.equal(surface.isConnected, true);
 });
+
+import { createProgramRecallSettledSignal } from './task-recall-surface';
+test('unchanged availability never dispatches; dirty/save/ACK transitions notify once',()=>{
+ const s=createProgramRecallSettledSignal(),seen:boolean[]=[];s.listen(v=>seen.push(v));s.notify(false);s.notify(true);s.notify(true);s.notify(false);s.notify(false);assert.deepEqual(seen,[false,true]);
+});
+test('an old surface cleanup cannot clear the new native availability listener',()=>{
+ const s=createProgramRecallSettledSignal(),a:boolean[]=[],b:boolean[]=[];const old=s.listen(v=>a.push(v));s.listen(v=>b.push(v));old();s.notify(true);s.notify(false);assert.deepEqual(a,[]);assert.deepEqual(b,[false,true]);
+});
+test('cleanup blocks a late ACK, while mounting a listener does not invent a new ACK',()=>{
+ const s=createProgramRecallSettledSignal(),seen:boolean[]=[];const stop=s.listen(v=>seen.push(v));s.notify(true);stop();s.notify(false);s.listen(v=>seen.push(v));assert.deepEqual(seen,[false]);
+});

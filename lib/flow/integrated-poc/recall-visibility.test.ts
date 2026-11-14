@@ -44,7 +44,7 @@ test('lost compositionend across inactive views cannot leave recall stuck; a sti
   const events = new Map<string, Function>(), area={getAttribute:()=>null}, composing={current:false}, scheduled:number[]=[];
   let hostComposing=false, cleanup:Function=()=>{};
   const target={addEventListener:(n:string,fn:Function)=>events.set(n,fn),removeEventListener:(n:string)=>events.delete(n)};
-  const ctx:any={__effect:(fn:Function)=>{cleanup=fn();}, active:true,portRef:{current:{surface:()=>area,isComposing:()=>hostComposing,coverBar:()=>{}}},
+  const ctx:any={__effect:(fn:Function)=>{cleanup=fn();}, active:true,portRef:{current:{surface:()=>area,isComposing:()=>hostComposing,coverBar:()=>{},listen:()=>()=>{}}},
     composing,inputAt:{current:0},current:{current:null},suppressed:{current:false},performance:{now:()=>0},id:'recall',
     cancel:()=>{},hide:()=>{},schedule:(n=300)=>scheduled.push(n),document:target,window:{...target,visualViewport:null},localStorage:{getItem:()=>null}};
   const mount=()=>vm.runInNewContext(code,ctx);

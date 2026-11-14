@@ -1,3 +1,4 @@
+import { createProgramRecallSettledSignal } from './task-recall-surface';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
@@ -23,9 +24,10 @@ function host() {
     document:{...target,activeElement:area}, localStorage:{getItem:()=>null}, Element:class {},
     window:{...target,innerWidth:1280,innerHeight:800,visualViewport:null,matchMedia:()=>({matches:false}),requestIdleCallback:(fn:Function)=>timeout(fn),cancelIdleCallback:(id:number)=>tasks.delete(id)},
     require:(name:string)=>name==='react'?react:name==='react/jsx-runtime'?{jsx,jsxs:jsx}:name==='react-dom'?{createPortal:(node:any)=>node}:name.endsWith('task-recall-compute')?{createProgramRecallComputer:()=>computer}:name.endsWith('task-recall')?{programRecallChoices:()=>[row],programRecallKey:()=>({kind:'none'})}:name.endsWith('date-label')?{}:{default:{}} };
+  const signal = createProgramRecallSettledSignal();
   const row = {lineId:'old-line',documentId:'old-document',title:'합성 할 일',folder:'/',done:false,percent:0};
   const frame = {line:{lineId:'line',query:'합성',start:0,folder:'/'},raw:'- [ ] 합성',documentId:'document',owner:{},generation:1};
-  let props: any = {active:true,settled:true,source:{ownerId:'synthetic-a',space:{revision:1},today:'2026-11-14'},port:{surface:()=>area,isComposing:()=>hostComposing,
+  let props: any = {active:true,settled:true,source:{ownerId:'synthetic-a',space:{revision:1},today:'2026-11-14'},port:{surface:()=>area,isComposing:()=>hostComposing,listen:signal.listen,
     settled:(saved:any)=>clean&&saved.space===props.source.space&&saved.ownerId===props.source.ownerId,frame:()=>{frames++;return validQuery ? frame : null;},caret:()=>{geometry++;return{left:20,bottom:100};},choose:()=>{},coverBar:()=>{}}};
   vm.runInNewContext(code,context);
   const render=(patch:any={})=>{props={...props,...patch};cursor=0;exports.ProgramTaskRecall(props);while(effects.length)effects.shift()!();};
@@ -33,7 +35,7 @@ function host() {
   const advance=async(ms:number)=>{const end=now+ms;for(;;){const next=[...tasks].filter(([,t])=>t.at<=end).sort((a,b)=>a[1].at-b[1].at)[0];if(!next)break;tasks.delete(next[0]);now=next[1].at;next[1].fn();await flush();}now=end;await flush();};
   const event=(name:string)=>listeners.get(name)?.({target:area});
   render();return {render,advance,event,flush,jobs,resolve:(n:number)=>jobs[n].resolve([row]),reply:async(n:number)=>{jobs[n].resolve([row]);await flush();await advance(0);},get counts(){return{stateWrites,frames,geometry,posts,disposals};},
-    set validQuery(v:boolean){validQuery=v;},set clean(v:boolean){clean=v;},set composing(v:boolean){hostComposing=v;},get source(){return props.source;},get pending(){return tasks.size;},
+    set validQuery(v:boolean){validQuery=v;},set clean(v:boolean){clean=v;signal.notify(!v);},set composing(v:boolean){hostComposing=v;},get source(){return props.source;},get pending(){return tasks.size;},
     unmount:()=>{for(const hook of hooks)hook?.cleanup?.();} };
 }
 
@@ -67,3 +69,5 @@ test('Undo returning to the same saved source wakes from dirty without serializi
 test('ineligible blank Enter/query never starts an index or measures a panel',async()=>{const h=host();h.validQuery=false;await h.advance(3000);assert.equal(h.counts.posts,0);assert.equal(h.counts.stateWrites,0);assert.equal(h.counts.geometry,0);assert.equal(h.counts.frames,1);assert.equal(h.pending,0);h.unmount();});
 
 test("queued worker continuation yields to a fresh key before its idle callback",async()=>{const h=host();await h.advance(300);h.resolve(0);await h.flush();h.event("input");h.clean=false;h.render({settled:false});await h.advance(0);assert.equal(h.counts.frames,1);assert.equal(h.counts.stateWrites,0);assert.equal(h.counts.geometry,0);h.unmount();});
+
+test('repeated dirty native input creates no timer, idle work or React update',async()=>{const h=host();h.clean=false;for(let i=0;i<40;i++)h.event('input');assert.equal(h.pending,0);assert.equal(h.counts.stateWrites,0);assert.equal(h.counts.posts,0);await h.advance(1000);assert.equal(h.counts.frames,0);h.unmount();});

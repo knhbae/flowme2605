@@ -1,3 +1,4 @@
+import {createProgramRecallSettledSignal} from './task-recall-surface';
 import test from 'node:test';import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
@@ -62,7 +63,7 @@ function synchronizationHarness(source:ReturnType<typeof actualSynchronizationSo
  let releaseCommit!:(accepted:boolean)=>void;
  const commit=new Promise<boolean>(resolve=>{releaseCommit=resolve;});
  const pending=executeSourceExpression<(state:ProgramTextDraftState,nativeRaw:string|undefined,composing:boolean,region:boolean,checking:boolean)=>boolean>(source.pending,{});
- const scope:Record<string,unknown>={alive:true,setDraft:()=>{},propsRef:{current:{docId:'d',onDirtyChange:(value:boolean)=>{parentPending=value;notices.push(value);}}},
+ const scope:Record<string,unknown>={alive:true,setDraft:()=>{},recallSettled:createProgramRecallSettledSignal(),inputLockedRef:{current:false},propsRef:{current:{docId:'d',onDirtyChange:(value:boolean)=>{parentPending=value;notices.push(value);}}},
   currentChild:()=>protection==='child'?{parentId:'p'}:null,programTextInputPending:pending,
   textArea:()=>protection==='editor-missing-equal-raw'?null:area,composingRef,regionPendingRef,checkPendingRef,
   queueMicrotask:(work:()=>void)=>microtasks.push(work),orderEpochRef:{current:0},orderHistoryRef:{current:{clear:()=>{}}},orderPositionsRef:{current:[]},props:{workspace:next}};
@@ -134,4 +135,14 @@ test('11/10 21:04 (실사용): ⋮ → 하위 할 일 takes the empty line right
   // The caret goes to the new line's end.
   assert.equal(r.offset,after.indexOf('새 하위')+'새 하위'.length,label);
  }
+});
+
+test('actual recall availability sees external lock acquire/release in one render turn and keeps other blockers',()=>{
+ const file=readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx',import.meta.url),'utf8'),tree=ts.createSourceFile('editor.tsx',file,ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
+ let body='';const visit=(n:ts.Node)=>{if(ts.isFunctionDeclaration(n)&&n.name?.text==='notifyRecallSettled')body=n.getText(tree);ts.forEachChild(n,visit);};visit(tree);assert(body);
+ const state={dirty:false,saving:false,invalid:false,error:''},inputLockedRef={current:false},checkPendingRef:{current:string|null}={current:null},regionPendingRef={current:false},signal=createProgramRecallSettledSignal(),seen:boolean[]=[];signal.listen(v=>seen.push(v));
+ const notify=executeSourceExpression<()=>void>(body,{draftRef:{current:{getState:()=>state}},recallSettled:signal,inputLockedRef,checkPendingRef,regionPendingRef});
+ inputLockedRef.current=true;notify();inputLockedRef.current=false;notify();assert.deepEqual(seen,[false,true]);
+ state.dirty=true;notify();checkPendingRef.current='synthetic-request';notify();state.dirty=false;notify();assert.deepEqual(seen,[false,true,false]);checkPendingRef.current=null;notify();assert.deepEqual(seen,[false,true,false,true]);
+ regionPendingRef.current=true;notify();state.saving=true;notify();regionPendingRef.current=false;notify();assert.equal(seen.at(-1),false);state.saving=false;notify();assert.equal(seen.at(-1),true);
 });

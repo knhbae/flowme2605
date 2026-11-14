@@ -80,7 +80,7 @@ import { TASK_DATE_SUGGESTION_EVENT, TASK_DATE_SUGGESTION_KEY, readTaskDateSugge
 import { ProgramTaskRecall, type ProgramTaskRecallFrame } from './ProgramTaskRecall';
 import { readProgramRecallLine, type ProgramRecallCandidate } from '@/lib/flow/integrated-poc/task-recall';
 import type { ProgramRecallSource } from '@/lib/flow/integrated-poc/task-recall-compute';
-import { createProgramRecallSurface } from '@/lib/flow/integrated-poc/task-recall-surface';
+import { createProgramRecallSurface, createProgramRecallSettledSignal } from '@/lib/flow/integrated-poc/task-recall-surface';
 import { PROGRAM_TASK_RECALL_KEY, PROGRAM_TASK_RECALL_EVENT, programTaskRecallEnabled, saveProgramTaskRecallPreference } from '@/lib/flow/integrated-poc/task-recall-preference';
 
 export { createProgramTextDraft } from '@/lib/flow/integrated-poc/program-text-draft';
@@ -406,6 +406,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const propsRef = useRef(props); propsRef.current = props;
   const recallSurfaceRef = useRef<ReturnType<typeof createProgramRecallSurface<HTMLTextAreaElement>> | null>(null);
   const recallSurface = recallSurfaceRef.current ??= createProgramRecallSurface<HTMLTextAreaElement>();
+  const recallSettledRef = useRef<ReturnType<typeof createProgramRecallSettledSignal> | null>(null);
+  const recallSettled = recallSettledRef.current ??= createProgramRecallSettledSignal();
   const [recallEnabled, setRecallEnabled] = useState(false);
   useEffect(() => {
     const read = () => { try { setRecallEnabled(programTaskRecallEnabled(localStorage)); } catch { setRecallEnabled(false); } };
@@ -534,6 +536,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [draft, setDraft] = useState<ProgramTextDraftState>(() => ({ committed: props.workspace, working: props.workspace,
     raw: M.raw(M.getDocument(props.workspace, props.docId)), dirty: false, saving: false, invalid: false, error: '' }));
   const [mode, setMode] = useState<'live' | 'text'>('live');
+  function notifyRecallSettled() {
+    const state = draftRef.current?.getState();
+    recallSettled.notify(!state || state.dirty || state.saving || state.invalid || !!state.error
+      || inputLockedRef.current || !!checkPendingRef.current || regionPendingRef.current);
+  }
   const modeRef = useRef(mode); modeRef.current = mode;
   const [panel, setPanelState] = useState<Panel>(null),panelRef=useRef<Panel>(null);
   const setPanel=(next:Panel)=>{panelRef.current=next;setPanelState(next);};
@@ -2205,7 +2212,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       // Do not terminate a native IME composition by changing readOnly. Its
       // dirty signal makes the parent flush reject the context change instead.
       if (locked && composingRef.current) return;
-      inputLockedRef.current = locked; setInputLocked(locked);
+      inputLockedRef.current = locked; setInputLocked(locked); notifyRecallSettled();
       const textarea = textArea(); if (textarea) textarea.readOnly = locked || !!propsRef.current.readOnly;
       if (locked) { orderEpochRef.current++; cancelMove(); dialogRef.current?.close(); setPanel(null); setOrderPreview(null); }
       editorRef.current?.refresh();
@@ -2587,10 +2594,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         if(controller.getState().saving)return false;
         const generation=controller.generation(),requestId=crypto.randomUUID(),docId=propsRef.current.docId,policy=JSON.stringify(access);
         const notifyCheck=propsRef.current.onDirtyChange;
-        if(timerRef.current)clearTimeout(timerRef.current);checkPendingRef.current=requestId;checkNotifyRef.current=notifyCheck;setCheckPending(true);notifyCheck?.(true);
+        if(timerRef.current)clearTimeout(timerRef.current);checkPendingRef.current=requestId;checkNotifyRef.current=notifyCheck;setCheckPending(true);notifyRecallSettled();notifyCheck?.(true);
         void compute.run({...context,docId,workingGeneration:generation,requestId},{kind:'check',workspace:before,lineId,date:today()}).then(reply=>{
           if(checkPendingRef.current!==requestId||draftRef.current!==controller)return;
-          checkPendingRef.current=null;setCheckPending(false);
+          checkPendingRef.current=null;setCheckPending(false);notifyRecallSettled();
           const live=propsRef.current.writingContext?.();
           if(!reply.ok||live?.ownerId!==context.ownerId||live.baseRevision!==context.baseRevision||propsRef.current.docId!==docId
             ||controller.generation()!==generation||currentState()!==before||inputLockedRef.current||propsRef.current.readOnly||composingRef.current
@@ -2600,7 +2607,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           else setMessage('체크 변경을 반영하지 못했습니다. 현재 내용과 기록은 유지했습니다.');
         }).catch(()=>{if(draftRef.current===controller)setMessage('체크를 확인하지 못했습니다. 현재 입력은 유지했습니다.');}).finally(()=>{
           if(draftRef.current!==controller||propsRef.current.docId!==docId)return;
-          if(checkPendingRef.current===requestId){checkPendingRef.current=null;setCheckPending(false);}
+          if(checkPendingRef.current===requestId){checkPendingRef.current=null;setCheckPending(false);notifyRecallSettled();}
           checkNotifyRef.current=undefined;
           notifyCheck?.(programTextInputPending(controller.getState(),textArea()?.value,composingRef.current,regionPendingRef.current,!!checkPendingRef.current));
         });return;
@@ -2632,7 +2639,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const host = hostRef.current;
     if (!host) return;
     let alive = true;
-    checkPendingRef.current=null;setCheckPending(false);
+    checkPendingRef.current=null;setCheckPending(false);notifyRecallSettled();
     const documentInput=createProgramDocumentInput(propsRef.current.workspace,props.docId);documentInputRef.current=documentInput;
     const controller = createProgramTextDraft(documentInput.initial, props.docId,
       (next, label, options) => propsRef.current.onCommit(next, label, options).then(accepted => {
@@ -2640,10 +2647,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         return accepted;
       }), next => {
         if (!alive) return;
-        setDraft(next); propsRef.current.onDirtyChange?.(!!currentChild()||programTextInputPending(next,textArea()?.value,composingRef.current,regionPendingRef.current,!!checkPendingRef.current));
+        setDraft(next); recallSettled.notify(next.dirty || next.saving || next.invalid || !!next.error || inputLockedRef.current || !!checkPendingRef.current || regionPendingRef.current); propsRef.current.onDirtyChange?.(!!currentChild()||programTextInputPending(next,textArea()?.value,composingRef.current,regionPendingRef.current,!!checkPendingRef.current));
         queueMicrotask(() => { if (alive) editorRef.current?.refresh(); });
       }, next => propsRef.current.validateWorkspace?.(next) ?? true,documentInput,!!propsRef.current.writingCompute,()=>propsRef.current.validateWorkspace,()=>propsRef.current.workspace);
-    draftRef.current = controller; setDraft(controller.getState());
+    draftRef.current = controller; setDraft(controller.getState()); notifyRecallSettled();
     propsRef.current.onRegisterConfirmedSave?.((before, next, ack) => {
       if (!alive || composingRef.current || inputLockedRef.current || textArea()?.value !== controller.getState().raw) return false;
       // Confirmation updates state only; preserve the native textarea and its selection/history.
@@ -4001,10 +4008,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
   }}>
     {folderPicker}
-    {recallEnabled && props.recallSource && props.onTaskRecall && <ProgramTaskRecall source={props.recallSource} active={recallActive}
-      settled={!draft.dirty && !draft.saving && !draft.invalid && !draft.error && !inputLocked && !checkPending && !regionPending} port={{
+    {recallEnabled && props.recallSource && props.onTaskRecall && <ProgramTaskRecall source={props.recallSource} active={recallActive} port={{
       surface: recallSurface.read,
       isComposing: () => composingRef.current,
+      listen: recallSettled.listen,
       settled: source => {
         const controller = draftRef.current, state = controller?.getState(), now = propsRef.current;
         return !!state && !state.dirty && !state.saving && !state.invalid && !state.error && !composingRef.current
@@ -4106,7 +4113,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       afterActive={props.authoringMode ? writingBar : undefined}
       onPosition={(start, end, lineId) => { regionPositionRef.current = { start, end }; regionLineRef.current = lineId ?? null; propsRef.current.onPosition?.({ start, end, scrollTop: 0 }, lineId); syncBarLine(); settleRepeatLines(false); }}
       onRegister={port => { regionPortRef.current = port; }}
-      onPending={(pending, composing) => { regionPendingRef.current = pending; composingRef.current = composing; setRegionPending(pending); propsRef.current.onDirtyChange?.(pending || !!draftRef.current?.getState().dirty); if (!composing) queueMicrotask(releaseHeldBar); }} />}
+      onPending={(pending, composing) => { regionPendingRef.current = pending; composingRef.current = composing; setRegionPending(pending); notifyRecallSettled(); propsRef.current.onDirtyChange?.(pending || !!draftRef.current?.getState().dirty); if (!composing) queueMicrotask(releaseHeldBar); }} />}
     {props.authoringMode && !folderView && writingBar}
     {props.authoringMode && !folderView && <div ref={roomRef} className={styles.keyboardRoom} aria-hidden="true" />}
     {panel && <dialog ref={dialogRef} className={styles.dialog} aria-label={title} onCompositionStartCapture={()=>{panelComposingRef.current=true;}} onCompositionEndCapture={()=>{panelComposingRef.current=false;}} onKeyDown={event => { trapProgramDialogTab(event.currentTarget, event); }} onCancel={event => { event.preventDefault(); closePanel(); cancelMove(); }}>

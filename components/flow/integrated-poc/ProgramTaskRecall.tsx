@@ -12,6 +12,7 @@ export type ProgramTaskRecallPort = {
   surface: () => HTMLTextAreaElement | null;
   isComposing: () => boolean;
   settled: (source: ProgramRecallSource) => boolean;
+  listen: (next: (settled: boolean) => void) => () => void;
   frame: () => ProgramTaskRecallFrame | null;
   caret: (offset: number) => { left: number; bottom: number } | null | undefined;
   choose: (candidate: ProgramRecallCandidate, frame: ProgramTaskRecallFrame) => void;
@@ -21,7 +22,7 @@ type View = { frame: ProgramTaskRecallFrame; rows: ProgramRecallCandidate[]; nav
 
 /** Kept outside the editor's render owner: native input cancels one timer, never builds an index or parses a model.
  * The panel has no default selection and never takes input focus. */
-export function ProgramTaskRecall({ port, active, source, settled }: { port: ProgramTaskRecallPort; active: boolean; source: ProgramRecallSource; settled: boolean }) {
+export function ProgramTaskRecall({ port, active, source }: { port: ProgramTaskRecallPort; active: boolean; source: ProgramRecallSource }) {
   const portRef = useRef(port); portRef.current = port;
   const id = useId(), [view, setView] = useState<View | null>(null), current = useRef<View | null>(null), epoch = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null), idle = useRef<number | null>(null), composing = useRef(false), enabled = useRef(active);
@@ -59,7 +60,7 @@ export function ProgramTaskRecall({ port, active, source, settled }: { port: Pro
   }
   function schedule(delay = 300) {
     cancel(); present(null);
-    if (!enabled.current || composing.current || suppressed.current) return;
+    if (!enabled.current || composing.current || suppressed.current || !portRef.current.settled(sourceRef.current)) return;
     const stamp = epoch.current;
     timer.current = setTimeout(() => {
       timer.current = null;
@@ -122,10 +123,11 @@ export function ProgramTaskRecall({ port, active, source, settled }: { port: Pro
     const leaving = (event: Event) => { if (isSurface(event)) hide(); };
     const pointer = (event: PointerEvent) => { if (!(event.target instanceof Element && event.target.closest('[data-task-recall]'))) hide(); };
     const storage = () => { try { suppressed.current = localStorage.getItem('flowme:alpha:task-recall') === 'off'; } catch { suppressed.current = false; } if (suppressed.current) hide(); };
+    const stopSettled = portRef.current.listen(ready => { if (ready) schedule(); else hide(); });
     storage(); document.addEventListener('input', input, true); document.addEventListener('compositionstart', start, true); document.addEventListener('compositionend', end, true);
     document.addEventListener('keydown', key, true); document.addEventListener('focusout', leaving, true); document.addEventListener('pointerdown', pointer, true);
     window.addEventListener('resize', leaving); window.visualViewport?.addEventListener('resize', leaving); window.addEventListener('storage', storage);
-    return () => { composing.current = false; cancel(); portRef.current.coverBar(false); const area = portRef.current.surface();
+    return () => { stopSettled(); composing.current = false; cancel(); portRef.current.coverBar(false); const area = portRef.current.surface();
       if (area?.getAttribute('aria-controls') === id) for (const name of ['role', 'aria-autocomplete', 'aria-expanded', 'aria-controls', 'aria-activedescendant']) area.removeAttribute(name);
       document.removeEventListener('input', input, true); document.removeEventListener('compositionstart', start, true); document.removeEventListener('compositionend', end, true);
       document.removeEventListener('keydown', key, true); document.removeEventListener('focusout', leaving, true); document.removeEventListener('pointerdown', pointer, true);
@@ -137,11 +139,11 @@ export function ProgramTaskRecall({ port, active, source, settled }: { port: Pro
     if (!active) { hide(); computer.current?.dispose(); computer.current = null; request.current = null; index.current = null; return; }
     if (request.current && !sameSource(request.current.source, source)) { computer.current?.cancel(); request.current = null; }
     if (index.current && !sameSource(index.current.source, source)) index.current = null;
-    // ACK/Undo/activation wake a task that stopped while dirty. No polling or index work runs on native input.
-    if (settled) schedule(); else hide();
+    // Saved-source changes wake quiet work; draft ACK/Undo availability uses the native ref subscription above.
+    schedule();
     return cancel;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, source.ownerId, source.space, source.today, settled]);
+  }, [active, source.ownerId, source.space, source.today]);
   useEffect(() => () => { computer.current?.dispose(); }, []);
   if (!view) return null;
   return createPortal(<aside data-task-recall data-phone={view.phone || undefined} className={styles.panel} aria-label="지난 할 일 불러오기"
