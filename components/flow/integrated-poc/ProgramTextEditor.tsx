@@ -3986,6 +3986,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     {folderPicker}
     {props.recallSource && props.onTaskRecall && <ProgramTaskRecall source={props.recallSource} active={recallActive} port={{
       surface: recallSurface.read,
+      isComposing: () => composingRef.current,
       frame: () => {
         const controller = draftRef.current, area = textArea(), state = controller?.getState(), now = propsRef.current;
         if (!controller || !area || !state || now.active === false || !now.authoringMode || now.folderId || now.readOnly || composingRef.current

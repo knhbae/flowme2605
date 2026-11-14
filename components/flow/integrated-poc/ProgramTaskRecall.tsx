@@ -10,6 +10,7 @@ import styles from './ProgramTaskRecall.module.css';
 export type ProgramTaskRecallFrame = { line: ProgramRecallLine; raw: string; owner: object; documentId: string; generation: number };
 export type ProgramTaskRecallPort = {
   surface: () => HTMLTextAreaElement | null;
+  isComposing: () => boolean;
   frame: () => ProgramTaskRecallFrame | null;
   caret: (offset: number) => { left: number; bottom: number } | null | undefined;
   choose: (candidate: ProgramRecallCandidate, frame: ProgramTaskRecallFrame) => void;
@@ -75,6 +76,7 @@ export function ProgramTaskRecall({ port, active, source }: { port: ProgramTaskR
   }
   useEffect(() => {
     if (!active) return;
+    composing.current = portRef.current.isComposing();
     const isSurface = (event: Event) => event.target === portRef.current.surface();
     const input = (event: Event) => { if (isSurface(event)) { inputAt.current = performance.now(); schedule(); } };
     const start = (event: Event) => { if (isSurface(event)) { composing.current = true; hide(); } };
@@ -94,7 +96,7 @@ export function ProgramTaskRecall({ port, active, source }: { port: ProgramTaskR
     storage(); document.addEventListener('input', input, true); document.addEventListener('compositionstart', start, true); document.addEventListener('compositionend', end, true);
     document.addEventListener('keydown', key, true); document.addEventListener('focusout', leaving, true); document.addEventListener('pointerdown', pointer, true);
     window.addEventListener('resize', leaving); window.visualViewport?.addEventListener('resize', leaving); window.addEventListener('storage', storage);
-    return () => { cancel(); portRef.current.coverBar(false); const area = portRef.current.surface();
+    return () => { composing.current = false; cancel(); portRef.current.coverBar(false); const area = portRef.current.surface();
       if (area?.getAttribute('aria-controls') === id) for (const name of ['role', 'aria-autocomplete', 'aria-expanded', 'aria-controls', 'aria-activedescendant']) area.removeAttribute(name);
       document.removeEventListener('input', input, true); document.removeEventListener('compositionstart', start, true); document.removeEventListener('compositionend', end, true);
       document.removeEventListener('keydown', key, true); document.removeEventListener('focusout', leaving, true); document.removeEventListener('pointerdown', pointer, true);

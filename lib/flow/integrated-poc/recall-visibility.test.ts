@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import test from 'node:test';
+import ts from 'typescript';
 const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
 const recall = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTaskRecall.tsx', import.meta.url), 'utf8');
 const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
@@ -11,13 +12,32 @@ test('only the active native writing surface installs recall listeners; dismissa
   const effect = recall.indexOf('  useEffect(() => {\n    if (!active) return;'.replace(/\n/g, recall.includes('\r\n') ? '\r\n' : '\n'));
   assert(effect > 0);
   const body = recall.slice(effect + '  useEffect(() => {'.length, recall.indexOf('    const isSurface', effect));
-  for (const active of [false, true]) assert.equal(vm.runInNewContext(`(() => {${body} return true;})()`, { active }), active ? true : undefined);
+  for (const active of [false, true]) assert.equal(vm.runInNewContext(`(() => {${body} return true;})()`, { active, composing:{current:false}, portRef:{current:{isComposing:()=>false}} }), active ? true : undefined);
   assert(recall.includes('}, [active]);'));
   for (const active of [undefined, false, true]) for (const authoringMode of [false, true])
     for (const folderId of ['', 'folder']) for (const readOnly of [false, true]) {
       const props = { active, authoringMode, folderId, readOnly };
       assert.equal(vm.runInNewContext(expression, { props }), active !== false && authoringMode && !folderId && !readOnly);
     }
+});
+
+test('lost compositionend across inactive views cannot leave recall stuck; a still-composing host remains protected', () => {
+  const a = recall.indexOf('  useEffect(() => {\n    if (!active) return;'.replace(/\n/g, recall.includes('\r\n')?'\r\n':'\n'));
+  const b = recall.indexOf('  useEffect(() => { if (!active) hide(); }', a);
+  assert(a > 0 && b > a);
+  const code = ts.transpileModule(recall.slice(a,b).replace('useEffect(', '__effect('), {compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
+  const events = new Map<string, Function>(), area={getAttribute:()=>null}, composing={current:false}, scheduled:number[]=[];
+  let hostComposing=false, cleanup:Function=()=>{};
+  const target={addEventListener:(n:string,fn:Function)=>events.set(n,fn),removeEventListener:(n:string)=>events.delete(n)};
+  const ctx:any={__effect:(fn:Function)=>{cleanup=fn();}, active:true,portRef:{current:{surface:()=>area,isComposing:()=>hostComposing,coverBar:()=>{}}},
+    composing,inputAt:{current:0},current:{current:null},suppressed:{current:false},performance:{now:()=>0},id:'recall',
+    cancel:()=>{},hide:()=>{},schedule:(n=300)=>scheduled.push(n),document:target,window:{...target,visualViewport:null},localStorage:{getItem:()=>null}};
+  const mount=()=>vm.runInNewContext(code,ctx);
+  mount();hostComposing=true;events.get('compositionstart')!({target:area});assert.equal(composing.current,true);
+  cleanup();assert.equal(composing.current,false);assert.equal(events.has('compositionend'),false);
+  hostComposing=false;mount();assert.equal(composing.current,false);events.get('input')!({target:area});assert.deepEqual(scheduled,[300]);
+  cleanup();hostComposing=true;mount();assert.equal(composing.current,true);
+  hostComposing=false;events.get('compositionend')!({target:area});assert.equal(composing.current,false);assert.deepEqual(scheduled,[300,300]);cleanup();
 });
 test('the real composition-end handler schedules the existing300ms quiet window without measuring or choosing', () => {
   const expression = /const end = (\(event: Event\) => \{.*\});/.exec(recall)![1].replace('(event: Event)', '(event)');
