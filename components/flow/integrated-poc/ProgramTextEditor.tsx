@@ -410,8 +410,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   useEffect(() => {
     const read = () => { try { setRecallEnabled(programTaskRecallEnabled(localStorage)); } catch { setRecallEnabled(false); } };
     const changed = (event: StorageEvent) => { if (event.key === null || event.key === PROGRAM_TASK_RECALL_KEY) read(); };
-    read(); window.addEventListener('storage', changed); window.addEventListener(PROGRAM_TASK_RECALL_EVENT, read);
-    return () => { window.removeEventListener('storage', changed); window.removeEventListener(PROGRAM_TASK_RECALL_EVENT, read); };
+    const sameTab = (event: Event) => { if (event instanceof CustomEvent && typeof event.detail === 'boolean') setRecallEnabled(event.detail); };
+    read(); window.addEventListener('storage', changed); window.addEventListener(PROGRAM_TASK_RECALL_EVENT, sameTab);
+    return () => { window.removeEventListener('storage', changed); window.removeEventListener(PROGRAM_TASK_RECALL_EVENT, sameTab); };
   }, []);
   const recallActive = props.active !== false && !!props.authoringMode && !props.folderId && !props.readOnly;
   const hostRef = useRef<HTMLDivElement>(null);
@@ -4043,8 +4044,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <div className={styles.editorToolActions}>
           {props.noteActions}
           {props.recallSource && props.onTaskRecall && <button type="button" data-task-recall-preference aria-pressed={recallEnabled} onClick={() => {
-            try { if (!saveProgramTaskRecallPreference(localStorage, !recallEnabled)) throw Error('PREFERENCE_UNAVAILABLE'); window.dispatchEvent(new Event(PROGRAM_TASK_RECALL_EVENT)); }
-            catch { setMessage('이 기기에 설정을 저장하지 못했습니다. 기존 설정은 그대로 두었습니다.'); }
+            const next = !recallEnabled;
+            let persisted = false; try { persisted = saveProgramTaskRecallPreference(localStorage, next); } catch { /* Device storage can be unavailable. */ }
+            if (persisted || !next) window.dispatchEvent(new CustomEvent(PROGRAM_TASK_RECALL_EVENT, { detail: next }));
+            if (!persisted) setMessage(next ? '이 기기에 설정을 저장하지 못해 불러오기를 켜지 않았습니다.' : '현재 화면에서는 불러오기를 껐습니다. 이 기기에 기억하지 못해 다음에 열면 다시 켜질 수 있습니다.');
           }}>지난 할 일 불러오기 {recallEnabled ? '끄기' : '켜기'}</button>}
           {/* Visual A: on a phone ↷ and 반복 leave the head line for this menu (CSS shows them there only). */}
           {props.authoringMode && <button type="button" className={styles.menuPhone} disabled={redoOff} onClick={event => { closeEditorTools(event.currentTarget); redoInput(); }}>입력 다시 하기</button>}
