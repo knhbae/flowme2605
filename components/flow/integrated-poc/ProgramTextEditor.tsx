@@ -81,6 +81,7 @@ import { ProgramTaskRecall, type ProgramTaskRecallFrame } from './ProgramTaskRec
 import { readProgramRecallLine, type ProgramRecallCandidate } from '@/lib/flow/integrated-poc/task-recall';
 import type { ProgramRecallSource } from '@/lib/flow/integrated-poc/task-recall-compute';
 import { createProgramRecallSurface } from '@/lib/flow/integrated-poc/task-recall-surface';
+import { PROGRAM_TASK_RECALL_KEY, PROGRAM_TASK_RECALL_EVENT, programTaskRecallEnabled, saveProgramTaskRecallPreference } from '@/lib/flow/integrated-poc/task-recall-preference';
 
 export { createProgramTextDraft } from '@/lib/flow/integrated-poc/program-text-draft';
 export type { ProgramTextCommitOptions, ProgramTextDraftState } from '@/lib/flow/integrated-poc/program-text-draft';
@@ -405,6 +406,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const propsRef = useRef(props); propsRef.current = props;
   const recallSurfaceRef = useRef<ReturnType<typeof createProgramRecallSurface<HTMLTextAreaElement>> | null>(null);
   const recallSurface = recallSurfaceRef.current ??= createProgramRecallSurface<HTMLTextAreaElement>();
+  const [recallEnabled, setRecallEnabled] = useState(false);
+  useEffect(() => {
+    const read = () => { try { setRecallEnabled(programTaskRecallEnabled(localStorage)); } catch { setRecallEnabled(false); } };
+    const changed = (event: StorageEvent) => { if (event.key === null || event.key === PROGRAM_TASK_RECALL_KEY) read(); };
+    read(); window.addEventListener('storage', changed); window.addEventListener(PROGRAM_TASK_RECALL_EVENT, read);
+    return () => { window.removeEventListener('storage', changed); window.removeEventListener(PROGRAM_TASK_RECALL_EVENT, read); };
+  }, []);
   const recallActive = props.active !== false && !!props.authoringMode && !props.folderId && !props.readOnly;
   const hostRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ReturnType<typeof nativeEditor.create> | null>(null);
@@ -3992,7 +4000,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
   }}>
     {folderPicker}
-    {props.recallSource && props.onTaskRecall && <ProgramTaskRecall source={props.recallSource} active={recallActive} port={{
+    {recallEnabled && props.recallSource && props.onTaskRecall && <ProgramTaskRecall source={props.recallSource} active={recallActive} port={{
       surface: recallSurface.read,
       isComposing: () => composingRef.current,
       frame: () => {
@@ -4034,6 +4042,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <summary aria-label="편집 도구" title="편집 도구"><ToolIcon name="tools" size={18} />도구</summary>
         <div className={styles.editorToolActions}>
           {props.noteActions}
+          {props.recallSource && props.onTaskRecall && <button type="button" data-task-recall-preference aria-pressed={recallEnabled} onClick={() => {
+            try { if (!saveProgramTaskRecallPreference(localStorage, !recallEnabled)) throw Error('PREFERENCE_UNAVAILABLE'); window.dispatchEvent(new Event(PROGRAM_TASK_RECALL_EVENT)); }
+            catch { setMessage('이 기기에 설정을 저장하지 못했습니다. 기존 설정은 그대로 두었습니다.'); }
+          }}>지난 할 일 불러오기 {recallEnabled ? '끄기' : '켜기'}</button>}
           {/* Visual A: on a phone ↷ and 반복 leave the head line for this menu (CSS shows them there only). */}
           {props.authoringMode && <button type="button" className={styles.menuPhone} disabled={redoOff} onClick={event => { closeEditorTools(event.currentTarget); redoInput(); }}>입력 다시 하기</button>}
           {props.repeatLabel && props.onOpenPersonalAuthoring && <button type="button" className={styles.menuPhone} onClick={event => { closeEditorTools(event.currentTarget); openRepeatFromTools(); }}>{props.repeatLabel}</button>}
