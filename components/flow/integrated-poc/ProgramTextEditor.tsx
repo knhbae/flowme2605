@@ -1081,8 +1081,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
    *  starts them too, so a long stay there never brings the ⇤ back. */
   function freshNoticeHolds() {
     const controller = draftRef.current, operation = controller?.folderOperation(), area = textArea();
-    if (propsRef.current.folderId || propsRef.current.active === false || !hostRef.current?.getClientRects().length
-      || !controller || !area || !operation?.lineId || folderNoticeRef.current?.operationId !== operation.id
+    if (propsRef.current.folderId || propsRef.current.active === false || !controller || !area || !operation?.lineId
+      || folderNoticeRef.current?.operationId !== operation.id || !hostRef.current?.getClientRects().length
       || !controller.freshFolderLine(operation.lineId)) return false;
     const rows = textEditorRows(controller.getState().working, propsRef.current.docId), start = rows.findIndex(row => row.id === operation.lineId);
     const index = area.value.slice(0, area.selectionStart).split('\n').length - 1;
