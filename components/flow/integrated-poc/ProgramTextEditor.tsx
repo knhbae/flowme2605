@@ -405,6 +405,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const propsRef = useRef(props); propsRef.current = props;
   const recallSurfaceRef = useRef<ReturnType<typeof createProgramRecallSurface<HTMLTextAreaElement>> | null>(null);
   const recallSurface = recallSurfaceRef.current ??= createProgramRecallSurface<HTMLTextAreaElement>();
+  const recallActive = props.active !== false && !!props.authoringMode && !props.folderId && !props.readOnly;
   const hostRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ReturnType<typeof nativeEditor.create> | null>(null);
   const draftRef = useRef<ReturnType<typeof createProgramTextDraft> | null>(null);
@@ -3983,7 +3984,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
   }}>
     {folderPicker}
-    {props.recallSource && props.onTaskRecall && <ProgramTaskRecall source={props.recallSource} active={props.active !== false && !!props.authoringMode && !props.folderId && !props.readOnly} port={{
+    {recallActive && props.recallSource && props.onTaskRecall && <ProgramTaskRecall source={props.recallSource} active={recallActive} port={{
       surface: recallSurface.read,
       frame: () => {
         const controller = draftRef.current, area = textArea(), state = controller?.getState(), now = propsRef.current;

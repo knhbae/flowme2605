@@ -1391,7 +1391,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // once-per-run question and the date sheet a long press on [내일] opens. Read in memory at each render; nothing stored.
   const flowRuns = useMemo(() => period === 'today' ? programFlowRuns(data, actorId, today, textTasks) : [], [period, data, actorId, today, textTasks]);
   const rechecks = useMemo(() => period === 'today' ? programRechecks(space, today) : [], [period, space, today]);
-  const dueSoon = useMemo(() => period === 'today' && date === today ? programDueSoonTasks(space, today) : [], [period, date, space, today]);
+  const mainTab: ProgramMainTab = folderScreen ? 'all' : programMainTabOf(period);
+  const folderTab = mainTab === 'all' && !collectionMode;
+  const todayUnfiltered = period === 'today' && date === today && !folderTab && !selecting && !monthGrid && !folderId && !query;
+  const dueSoon = useMemo(() => todayUnfiltered ? programDueSoonTasks(space, today) : [], [todayUnfiltered, space, today]);
   const [flowBusy, setFlowBusy] = useState<ReadonlySet<string>>(() => new Set());
   // P2-3: the day close's hour is the clock's, read with today's date (never a minute late).
   const closeHour = dayClock.hour;
@@ -1485,7 +1488,6 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     return () => props.onRegisterMainTabs?.(null);
   }, [actorId]);
   // F4-a: the folder screen is the 폴더 tab, its [글] included.
-  const mainTab: ProgramMainTab = folderScreen ? 'all' : programMainTabOf(period);
   useEffect(() => { props.onMainTabChange?.(mainTab); }, [mainTab]);
   useEffect(() => { props.onOpenDocumentChange?.(selected); }, [selected]);
   useEffect(() => {
@@ -3233,7 +3235,6 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const documentTitleText = selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : noDocuments ? '쓰기' : '필요한 내용을 먼저 적으세요';
   // F4-a (11/9): the 폴더 tab. Its list (A1·A6), or an open folder: the head (‹ · parents › · name · ⋯), [할 일]·[글].
   const isOpenTask = (task: TextTask) => (taskProgress(task.id).current ?? (task.done ? 100 : 0)) !== 100;
-  const folderTab = mainTab === 'all' && !collectionMode;
   const folderList = folderTab && !folderScreen && period === 'all';
   const folderWriting = !!folderScreen && folderScreen.tab === 'writing' && period === 'documents';
   const folderTree = useMemo(() => folderTab ? programFolderTree(space, isOpenTask) : null, [folderTab, space, taskProgress]);
@@ -3537,7 +3538,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // The run a task is a step of, read now from the saved data (any view: the writing view has no progress lines).
   const runOfTaskNow = (taskId: string) => programFlowRuns(dataRef.current, actorId, today).find(entry => entry.steps.some(step => step.taskId === taskId)) ?? null;
   // Today's own 오늘 with nothing narrowing it: the progress lines and rechecks show; from 18:00 (assumed) the day close.
-  const todayHere = () => period === 'today' && date === today && !folderTab && !selecting && !monthGrid && !folderId && !query;
+  const todayHere = () => todayUnfiltered;
   const closing = () => todayHere() && closeHour >= PROGRAM_DAY_CLOSE_HOUR;
   /** A finished row of 오늘's list (its check, or a 100% record), folded away in the day close. */
   const closeDoneRow = (item: ProgramExecutionListItem) => item.kind === 'row' && item.entry.kind !== 'occurrence'

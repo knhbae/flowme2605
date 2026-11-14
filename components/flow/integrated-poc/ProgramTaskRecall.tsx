@@ -65,7 +65,7 @@ export function ProgramTaskRecall({ port, active, source }: { port: ProgramTaskR
         const phone = window.matchMedia('(max-width: 700px)').matches, width = phone ? Math.min(420, window.innerWidth - 16) : Math.min(440, window.innerWidth - 16);
         const rows = programRecallChoices(index.current, { query: frame.line.query, lineId: frame.line.lineId, folder: frame.line.folder, limit: phone ? 3 : 5 });
         if (!rows.length || epoch.current !== stamp) return;
-        const box = portRef.current.caret(frame.line.start), viewport = window.visualViewport, floor = (viewport?.offsetTop ?? 0) + (viewport?.height ?? window.innerHeight);
+        const box = phone ? null : portRef.current.caret(frame.line.start), viewport = window.visualViewport, floor = (viewport?.offsetTop ?? 0) + (viewport?.height ?? window.innerHeight);
         const height = 44 + rows.length * 48 + 29, left = phone ? (window.innerWidth - width) / 2 : Math.min(window.innerWidth - width - 8, Math.max(8, box?.left ?? area.getBoundingClientRect().left));
         const top = phone ? Math.max(viewport?.offsetTop ?? 0, floor - height - 4) : Math.max(8, Math.min(floor - height - 8, (box?.bottom ?? area.getBoundingClientRect().top) + 8));
         present({ frame, rows, navigation: -1, shownAt: performance.now(), phone, left, top, width });
@@ -77,7 +77,7 @@ export function ProgramTaskRecall({ port, active, source }: { port: ProgramTaskR
     const isSurface = (event: Event) => event.target === portRef.current.surface();
     const input = (event: Event) => { if (isSurface(event)) { inputAt.current = performance.now(); schedule(); } };
     const start = (event: Event) => { if (isSurface(event)) { composing.current = true; hide(); } };
-    const end = (event: Event) => { if (isSurface(event)) { composing.current = false; schedule(0); } };
+    const end = (event: Event) => { if (isSurface(event)) { composing.current = false; schedule(300); } };
     const key = (event: KeyboardEvent) => {
       if (!isSurface(event) || !current.current) return;
       const action = programRecallKey(event.key, current.current.navigation, current.current.rows.length, composing.current || event.isComposing || event.keyCode === 229,
