@@ -338,8 +338,6 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // typelag (11/11): the tasks of the saved text, read once per text (the screen draws again at every key; the band
   // asked them again for each of its rows). Read only.
   const textTasks = useMemo(() => M.tasks(space.text), [space.text]);
-  // Redesign 4: 'n일째' counts from the day a task's 이어감 chain began (총괄 11/12).
-  const continuationStarts = useMemo(() => programContinuationStarts(space.text), [space.text]);
   // 첫인상 (11/7): read here, not inside a branch; empty unless the official list was read (Alpha only).
   const officialActors = useAlphaOfficialActors();
   // C6a review: every save of the space goes through here. Each is counted while it waits (고르기 does not start during
@@ -367,6 +365,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // N11a 결정 2: opened again three days or more since this device last did, the first screen is 오늘.
   const [opening] = useState(() => { let storage: Storage | null = null; try { storage = window.localStorage; } catch { /* no storage */ } return programOpening(storage, today); });
   const [period, setPeriod] = useState<ProgramPeriod>(() => opening.first ? 'today' : 'documents');
+  // Only the execution rows read this map. Their whole view is hidden during writing;
+  // reconstruct the unchanged chain when that view is shown, never on a writing save.
+  const continuationStarts = useMemo(() => period === 'documents' ? new Map<string, string>() : programContinuationStarts(space.text), [period, space.text]);
   // Writing tools are workspace-wide. The Flow·repeat box shows where the document already has
   // personal authoring, or after the ＋ menu asks for it; that ask is screen-only, never stored.
   const [authoringRequests, setAuthoringRequests] = useState<string[]>([]);

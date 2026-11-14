@@ -6,6 +6,21 @@ import ts from 'typescript';
 const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
 const recall = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTaskRecall.tsx', import.meta.url), 'utf8');
 const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
+
+test('hidden execution rows never reconstruct continuation chains; every visible period uses the exact saved text', () => {
+  const body = /const continuationStarts = useMemo\(\(\) => (.*), \[period, space\.text\]\);/.exec(space)![1];
+  const js = ts.transpileModule(`result = ${body}`, {compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
+  const text = { marker: 'saved snapshot' }, expected = new Map([['line', '2026-11-01']]);
+  for (const period of ['documents', 'today', 'week', 'month', 'all', 'undated']) {
+    let calls = 0;
+    const context = { result:null as unknown, period, space:{text}, programContinuationStarts:(actual:unknown) => {calls++;assert.equal(actual,text);return expected;} };
+    vm.runInNewContext(js,context);
+    assert.equal(calls,period === 'documents' ? 0 : 1);
+    if (period === 'documents') assert.equal((context.result as Map<string,string>).size,0);
+    else assert.equal(context.result,expected);
+  }
+  assert(space.includes('hidden={period === \'documents\'}'));
+});
 test('only the active native writing surface installs recall listeners; dismissal refs survive inactive views', () => {
   const expression = /const recallActive = (.*);/.exec(editor)![1];
   assert(editor.includes('{props.recallSource && props.onTaskRecall && <ProgramTaskRecall'));
