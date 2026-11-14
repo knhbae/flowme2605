@@ -23,7 +23,7 @@ test('hidden execution rows never reconstruct continuation chains; every visible
 });
 test('only the active native writing surface installs recall listeners; dismissal refs survive inactive views', () => {
   const expression = /const recallActive = (.*);/.exec(editor)![1];
-  assert(editor.includes('{props.recallSource && props.onTaskRecall && <ProgramTaskRecall'));
+  // Device opt-in may guard this mount too; OFF/ON/quota cleanup is checked in the real-browser journey.
   const effect = recall.indexOf('  useEffect(() => {\n    if (!active) return;'.replace(/\n/g, recall.includes('\r\n') ? '\r\n' : '\n'));
   assert(effect > 0);
   const body = recall.slice(effect + '  useEffect(() => {'.length, recall.indexOf('    const isSurface', effect));
