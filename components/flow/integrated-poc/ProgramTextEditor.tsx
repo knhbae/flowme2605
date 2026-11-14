@@ -4001,9 +4001,19 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
   }}>
     {folderPicker}
-    {recallEnabled && props.recallSource && props.onTaskRecall && <ProgramTaskRecall source={props.recallSource} active={recallActive} port={{
+    {recallEnabled && props.recallSource && props.onTaskRecall && <ProgramTaskRecall source={props.recallSource} active={recallActive}
+      settled={!draft.dirty && !draft.saving && !draft.invalid && !draft.error && !inputLocked && !checkPending && !regionPending} port={{
       surface: recallSurface.read,
       isComposing: () => composingRef.current,
+      settled: source => {
+        const controller = draftRef.current, state = controller?.getState(), now = propsRef.current;
+        return !!state && !state.dirty && !state.saving && !state.invalid && !state.error && !composingRef.current
+          && !regionPendingRef.current && !checkPendingRef.current && !inputLockedRef.current && !now.readOnly
+          && now.active !== false && !!now.authoringMode && !now.folderId
+          && now.recallSource?.ownerId === source.ownerId && now.recallSource.space === source.space && now.recallSource.today === source.today
+          // The draft can adopt its ACK before its parent's source props. Compare only inside the quiet task, never per key.
+          && programSame(state.committed, now.workspace);
+      },
       frame: () => {
         const controller = draftRef.current, area = textArea(), state = controller?.getState(), now = propsRef.current;
         if (!controller || !area || !state || now.active === false || !now.authoringMode || now.folderId || now.readOnly || composingRef.current

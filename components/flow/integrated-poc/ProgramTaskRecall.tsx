@@ -11,6 +11,7 @@ export type ProgramTaskRecallFrame = { line: ProgramRecallLine; raw: string; own
 export type ProgramTaskRecallPort = {
   surface: () => HTMLTextAreaElement | null;
   isComposing: () => boolean;
+  settled: (source: ProgramRecallSource) => boolean;
   frame: () => ProgramTaskRecallFrame | null;
   caret: (offset: number) => { left: number; bottom: number } | null | undefined;
   choose: (candidate: ProgramRecallCandidate, frame: ProgramTaskRecallFrame) => void;
@@ -20,14 +21,18 @@ type View = { frame: ProgramTaskRecallFrame; rows: ProgramRecallCandidate[]; nav
 
 /** Kept outside the editor's render owner: native input cancels one timer, never builds an index or parses a model.
  * The panel has no default selection and never takes input focus. */
-export function ProgramTaskRecall({ port, active, source }: { port: ProgramTaskRecallPort; active: boolean; source: ProgramRecallSource }) {
+export function ProgramTaskRecall({ port, active, source, settled }: { port: ProgramTaskRecallPort; active: boolean; source: ProgramRecallSource; settled: boolean }) {
   const portRef = useRef(port); portRef.current = port;
   const id = useId(), [view, setView] = useState<View | null>(null), current = useRef<View | null>(null), epoch = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null), idle = useRef<number | null>(null), composing = useRef(false), enabled = useRef(active);
   enabled.current = active;
   const dismissal = useRef<string | null>(null), suppressed = useRef(false);
   const inputAt = useRef(0);
-  const index = useRef<readonly ProgramRecallCandidate[]>([]), computer = useRef<ReturnType<typeof createProgramRecallComputer> | null>(null);
+  const sourceRef = useRef(source); sourceRef.current = source;
+  const index = useRef<{ source: ProgramRecallSource; rows: readonly ProgramRecallCandidate[] } | null>(null);
+  const request = useRef<{ source: ProgramRecallSource; promise: Promise<readonly ProgramRecallCandidate[]> } | null>(null);
+  const computer = useRef<ReturnType<typeof createProgramRecallComputer> | null>(null);
+  const sameSource = (a: ProgramRecallSource, b: ProgramRecallSource) => a.ownerId === b.ownerId && a.space === b.space && a.today === b.today;
   const signature = (frame: ProgramTaskRecallFrame) => `${frame.documentId}\u0000${frame.line.lineId}\u0000${frame.raw}`;
   function present(next: View | null) {
     if (current.current === next) return;
@@ -58,13 +63,30 @@ export function ProgramTaskRecall({ port, active, source }: { port: ProgramTaskR
     const stamp = epoch.current;
     timer.current = setTimeout(() => {
       timer.current = null;
-      const run = () => {
+      const run = async () => {
         idle.current = null;
-        if (epoch.current !== stamp || !enabled.current || composing.current || suppressed.current) return;
+        const saved = sourceRef.current;
+        const ready = () => epoch.current === stamp && enabled.current && !composing.current && !suppressed.current
+          && !portRef.current.isComposing() && performance.now() - inputAt.current >= 300
+          && sameSource(saved, sourceRef.current) && portRef.current.settled(saved);
+        // Dirty input and the save/ACK render own the main thread first. Only this quiet task can build an index or measure a panel.
+        if (!ready()) return;
+        if (!index.current || !sameSource(index.current.source, saved)) {
+          let work = request.current;
+          if (!work || !sameSource(work.source, saved)) {
+            computer.current ??= createProgramRecallComputer();
+            work = { source: saved, promise: computer.current.run(saved) }; request.current = work;
+          }
+          const rows = await work.promise;
+          if (request.current !== work || !sameSource(saved, sourceRef.current)) return;
+          index.current = { source: saved, rows };
+          // A reply never restarts a newer input timer. The latest quiet task may await the same saved-source request.
+          if (!ready()) return;
+        }
         const frame = portRef.current.frame(), area = portRef.current.surface();
         if (!frame || !area || document.activeElement !== area || signature(frame) === dismissal.current) return;
         const phone = window.matchMedia('(max-width: 700px)').matches, width = phone ? Math.min(420, window.innerWidth - 16) : Math.min(440, window.innerWidth - 16);
-        const rows = programRecallChoices(index.current, { query: frame.line.query, lineId: frame.line.lineId, folder: frame.line.folder, limit: phone ? 3 : 5 });
+        const rows = programRecallChoices(index.current!.rows, { query: frame.line.query, lineId: frame.line.lineId, folder: frame.line.folder, limit: phone ? 3 : 5 });
         if (!rows.length || epoch.current !== stamp) return;
         const box = phone ? null : portRef.current.caret(frame.line.start), viewport = window.visualViewport, floor = (viewport?.offsetTop ?? 0) + (viewport?.height ?? window.innerHeight);
         const height = 44 + rows.length * 48 + 29, left = phone ? (window.innerWidth - width) / 2 : Math.min(window.innerWidth - width - 8, Math.max(8, box?.left ?? area.getBoundingClientRect().left));
@@ -104,22 +126,15 @@ export function ProgramTaskRecall({ port, active, source }: { port: ProgramTaskR
     // The port is read through the ref; re-rendering the editor must not recreate native input listeners.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
-  useEffect(() => { if (!active) hide(); }, [active]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (!active) { computer.current?.dispose(); computer.current = null; index.current = []; return; }
-    index.current = []; hide(); let live = true, timer: ReturnType<typeof setTimeout>, idleJob: number | null = null;
-    const run = () => {
-      if (!live || suppressed.current) return;
-      const quiet = performance.now() - inputAt.current;
-      if (quiet < 300 || composing.current) { timer = setTimeout(run, 300); return; }
-      computer.current ??= createProgramRecallComputer();
-      void computer.current.run(source).then(rows => { if (!live) return; index.current = rows; if (!composing.current) schedule(); });
-    };
-    // Saved source identity only; no dependency on draft RAW or the per-key query.
-    timer = setTimeout(() => { if (window.requestIdleCallback) idleJob = window.requestIdleCallback(run, { timeout: 1000 }); else run(); }, 300);
-    return () => { live = false; clearTimeout(timer); if (idleJob !== null) window.cancelIdleCallback?.(idleJob); computer.current?.cancel(); index.current = []; };
+    if (!active) { hide(); computer.current?.dispose(); computer.current = null; request.current = null; index.current = null; return; }
+    if (request.current && !sameSource(request.current.source, source)) { computer.current?.cancel(); request.current = null; }
+    if (index.current && !sameSource(index.current.source, source)) index.current = null;
+    // ACK/Undo/activation wake a task that stopped while dirty. No polling or index work runs on native input.
+    if (settled) schedule(); else hide();
+    return cancel;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, source.ownerId, source.space, source.today]);
+  }, [active, source.ownerId, source.space, source.today, settled]);
   useEffect(() => () => { computer.current?.dispose(); }, []);
   if (!view) return null;
   return createPortal(<aside data-task-recall data-phone={view.phone || undefined} className={styles.panel} aria-label="지난 할 일 불러오기"

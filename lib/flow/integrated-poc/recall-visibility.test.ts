@@ -38,7 +38,7 @@ test('only the active native writing surface installs recall listeners; dismissa
 
 test('lost compositionend across inactive views cannot leave recall stuck; a still-composing host remains protected', () => {
   const a = recall.indexOf('  useEffect(() => {\n    if (!active) return;'.replace(/\n/g, recall.includes('\r\n')?'\r\n':'\n'));
-  const b = recall.indexOf('  useEffect(() => { if (!active) hide(); }', a);
+  const b = recall.indexOf('  useEffect(() => {\n    if (!active) { hide();'.replace(/\n/g, recall.includes('\r\n')?'\r\n':'\n'), a);
   assert(a > 0 && b > a);
   const code = ts.transpileModule(recall.slice(a,b).replace('useEffect(', '__effect('), {compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
   const events = new Map<string, Function>(), area={getAttribute:()=>null}, composing={current:false}, scheduled:number[]=[];
