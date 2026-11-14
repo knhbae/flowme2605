@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-const { summarize } = createRequire(import.meta.url)('./protocol.cjs');
+const { summarize, requireAaBound } = createRequire(import.meta.url)('./protocol.cjs');
 const block = (ms = 100) => ({ summary: Object.fromEntries(['ime', 'commit', 'task', 'enter'].map(phase => [phase, { median: ms, p95: ms * 2 }])),
   machine: { valid: true }, browserVersion: 'fixed-chrome', start: { clean: true, committedTextSHA256: 'fixed-synthetic-input', committedAccountSHA256: 'fixed-account' }, rawSha: 'fixed-final-raw', typedOk: true, errors: [], outside: [] });
 const pairs = (ms = 100) => Array.from({ length: 3 }, (_, index) => ({ order: index % 2 ? ['base', 'cand'] : ['cand', 'base'], base: block(), cand: block(ms) }));
@@ -22,4 +22,11 @@ test('different initial state, stale pending, lost text or external errors fail 
     b => { b.browserVersion = 'changed'; }, b => { b.rawSha = 'different'; }, b => { b.typedOk = false; }, b => { b.errors = ['error']; }]) {
     const input = pairs(); change(input[1].cand); assert.equal(summarize(input).verdict, 'HOLD_INPUT_OR_VALID_PAIRS');
   }
+});
+test('AA approval binds the exact measurement tools and baseline/fixture identity', () => {
+  const source = [{ name: 'probe.js', sha256: 'fixed' }], aa = { aa: true, verdict: 'PASS', source, experimentIdentity: 'input' };
+  assert.doesNotThrow(() => requireAaBound(aa, source, 'input'));
+  assert.throws(() => requireAaBound(aa, [{ name: 'probe.js', sha256: 'changed' }], 'input'), /AA_SOURCE_OR_INPUT_CHANGED/);
+  assert.throws(() => requireAaBound(aa, source, 'changed'), /AA_SOURCE_OR_INPUT_CHANGED/);
+  assert.throws(() => requireAaBound({ ...aa, aa: false }, source, 'input'), /AA_VALIDITY_NOT_PASSED/);
 });

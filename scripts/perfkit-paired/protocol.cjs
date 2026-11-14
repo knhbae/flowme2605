@@ -30,4 +30,8 @@ function summarize(pairs, options = {}) {
     inputContract: { pass: contract, sameInitialCommittedText: fingerprints.size === 1, sameInitialAccount: accounts.size === 1, sameBrowser: browsers.size === 1, sameFinalRaw: raw.size === 1 },
     slowerPhases: slow, limits: 'AA is an independent validity gate. Never subtract its ratio or discard slow valid blocks. Worker post/reply intervals include main-thread delay.' };
 }
-module.exports = { phases, median, percent, summarize };
+function requireAaBound(aa, source, experimentIdentity) {
+  if (aa.verdict !== 'PASS' || !aa.aa) throw Error('AA_VALIDITY_NOT_PASSED');
+  if (aa.experimentIdentity !== experimentIdentity || JSON.stringify(aa.source) !== JSON.stringify(source)) throw Error('AA_SOURCE_OR_INPUT_CHANGED');
+}
+module.exports = { phases, median, percent, summarize, requireAaBound };

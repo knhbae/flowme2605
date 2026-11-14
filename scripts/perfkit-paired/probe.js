@@ -1,8 +1,8 @@
 // Read-only diagnostics, installed identically in both synthetic pages before app scripts.
 (() => {
-  const events = [], pending = new Map(), owners = new WeakMap(); let workerSerial = 0, sequence = 0, ackEnd = 0, commits = 0;
+  const events = [], phases = {}, pending = new Map(), owners = new WeakMap(); let workerSerial = 0, sequence = 0, ackEnd = 0, commits = 0;
   const add = entry => { if (events.length < 6000) events.push(entry); else state.overflow = true; };
-  const state = window.__pairedProbe = { events, overflow: false,
+  const state = window.__pairedProbe = { events, phases, overflow: false,
     snapshot: () => ({ pending: pending.size, savePending: [...pending.values()].filter(job => job.kind === 'save').length,
       ackQuietMs: performance.now() - ackEnd, commits }) };
   const OriginalWorker = window.Worker, send = OriginalWorker.prototype.postMessage, terminate = OriginalWorker.prototype.terminate;
@@ -28,14 +28,18 @@
   };
   const observer = new PerformanceObserver(list => {
     for (const item of list.getEntries()) if (item.name.startsWith('flowme-writing:')) {
-      add({ type: 'writing-phase', name: item.name, at: item.startTime, ms: item.duration,
-        ownedAck: item.name.includes('ack-') && typeof item.detail?.requestId === 'string' });
+      const phase = phases[item.name] ??= { count: 0, totalMs: 0, maxMs: 0 };
+      phase.count++; phase.totalMs += item.duration; phase.maxMs = Math.max(phase.maxMs, item.duration);
+      // Keep receipt handoff timestamps; repeated render/materialization measures are aggregates.
+      if (item.name === 'flowme-writing:ack-host-reconcile' || item.name === 'flowme-writing:ack-draft-accept')
+        add({ type: 'writing-phase', name: item.name, at: item.startTime, ms: item.duration,
+          ownedAck: typeof item.detail?.requestId === 'string' });
       if (item.name.includes('ack-')) ackEnd = Math.max(ackEnd, item.startTime + item.duration);
     }
   }); observer.observe({ entryTypes: ['measure'] });
   if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__) window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
     supportsFiber: true, renderers: new Map(), inject(renderer) { const id = this.renderers.size + 1; this.renderers.set(id, renderer); return id; },
-    onCommitFiberRoot(_id, _root, _priority, failed) { commits++; add({ type: 'react-commit', at: performance.now(), failed: !!failed }); },
+    onCommitFiberRoot() { commits++; },
     onCommitFiberUnmount() {}, onPostCommitFiberRoot() {}, onScheduleFiberRoot() {},
   };
 })();

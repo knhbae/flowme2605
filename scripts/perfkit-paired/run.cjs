@@ -1,6 +1,6 @@
 'use strict';
 const fs = require('fs'), path = require('path'), cp = require('child_process'), crypto = require('crypto'), os = require('os');
-const { summarize } = require('./protocol.cjs');
+const { summarize, requireAaBound } = require('./protocol.cjs');
 const args = process.argv.slice(2), option = key => args[args.indexOf('--' + key) + 1];
 const root = process.env.FLOWME_PERF_OWNER_ROOT, mode = option('mode'), out = option('out');
 if (!root || !out?.replaceAll('\\', '/').startsWith(root + '/perf/runs/') || !['aa', 'compare'].includes(mode)) throw Error('EXPLICIT_OWNED_RUN_REQUIRED');
@@ -13,8 +13,13 @@ async function quiet() { const started = Date.now(), samples = []; let good = 0;
   while (Date.now() - started < 600000) { const value = await windowCPU(); samples.push(value); good = value <= 35 ? good + 1 : 0; if (good === 3) return { pass: true, samples, waitedMs: Date.now() - started }; }
   return { pass: false, samples, waitedMs: Date.now() - started };
 }
-const plan = read(root + '/PERF-PLAN.json'), ready = mode === 'aa' ? root + '/inputs/AA-READY.json' : root + '/inputs/FINAL-QA-READY.json';
-if (mode === 'compare') { const aa = read(root + '/perf/runs/aa/SUMMARY.json'); if (aa.verdict !== 'PASS') throw Error('AA_VALIDITY_NOT_PASSED'); }
+const planFile = option('plan'), ready = option('ready'), aaFile = mode === 'compare' ? option('aa-summary') : null;
+if (!planFile?.startsWith(root + '/') || !ready?.startsWith(root + '/inputs/') || mode === 'compare' && !aaFile?.startsWith(root + '/perf/runs/')) throw Error('EXPLICIT_PLAN_AND_READY_REQUIRED');
+const plan = read(planFile), source = ['measure.cjs', 'probe.js', 'protocol.cjs', 'run.cjs'].map(name => ({ name, sha256: hash(__dirname + '/' + name) }));
+if (hash(plan.fixture.path) !== plan.fixture.sha256) throw Error('FIXTURE_PIN_CHANGED');
+if (!Array.isArray(plan.preloads) || plan.preloads.length !== 2 || plan.preloads.some(pin => !pin.path.startsWith(root + '/scripts/') || hash(pin.path) !== pin.sha256)) throw Error('OWNED_PRELOAD_PIN_CHANGED');
+const experimentIdentity = crypto.createHash('sha256').update(JSON.stringify({ baseline: plan.baseline, fixture: plan.fixture, protocol: plan.protocol, preloads: plan.preloads })).digest('hex');
+if (mode === 'compare') requireAaBound(read(aaFile), source, experimentIdentity);
 const log = value => { fs.appendFileSync(out + '/runs.txt', value + '\n'); console.log(value); };
 async function block(role, tag) {
   const disk = fs.statfsSync('D:/'); if (Number(disk.bavail) * Number(disk.bsize) < 5000000000) throw Error('HOLD_D_FLOOR');
@@ -24,15 +29,15 @@ async function block(role, tag) {
   Object.assign(env, { PATH: path.dirname(process.execPath) + ';' + env.SystemRoot + '/System32', TEMP: plan.browserTemp.root, TMP: plan.browserTemp.root,
     NODE_ENV: 'production', NEXT_TELEMETRY_DISABLED: '1', FLOWME_PERF_OWNER_ROOT: root, NEXT_QA_LOG_ROOT: out,
     QA_VARIANT_READY: ready, QA_VARIANT_SHA: hash(ready), PERFKIT_FIXTURE: plan.fixture.path, PERFKIT_OUT: out,
-    NODE_OPTIONS: '--require=' + root + '/scripts/paired-browser-guard.cjs --require=' + root + '/scripts/paired-server-lifecycle.cjs' });
+    NODE_OPTIONS: plan.preloads.map(pin => '--require=' + pin.path).join(' ') });
   const at = Date.now(), result = cp.spawnSync(process.execPath, [__dirname + '/measure.cjs', role === 'base' ? '3000' : '3104', tag, 'full', 'none', '6'],
     { cwd: root, env, windowsHide: true, encoding: 'utf8', maxBuffer: 4000000, timeout: 900000 });
   fs.writeFileSync(out + '/' + tag + '.stdout', result.stdout ?? '', { flag: 'wx' });
   fs.writeFileSync(out + '/' + tag + '.stderr', result.stderr ?? '', { flag: 'wx' });
-  const after = Math.round(((await windowCPU()) + (await windowCPU())) / 2);
+  const afterSamples = [await windowCPU(), await windowCPU()], after = Math.round((afterSamples[0] + afterSamples[1]) / 2);
   if (result.status !== 0 || !fs.existsSync(out + '/' + tag + '.json')) throw Error('BLOCK_FAILED_' + tag);
   const value = read(out + '/' + tag + '.json');
-  value.machine = { valid: before.pass && after <= 35 && value.typedOk && value.errors.length === 0 && value.outside.length === 0, quietBefore: before, afterClose: after };
+  value.machine = { valid: before.pass && afterSamples.every(value => value <= 35) && value.valid && value.typedOk && value.errors.length === 0 && value.outside.length === 0, quietBefore: before, afterClose: after, afterCloseSamples: afterSamples };
   value.role = role; value.wallMs = Date.now() - at;
   fs.writeFileSync(out + '/' + tag + '.bound.json', JSON.stringify(value, null, 1), { flag: 'wx' });
   log(JSON.stringify({ tag, role, valid: value.machine.valid, before: before.samples.slice(-3), afterClose: after, ms: Object.fromEntries(Object.entries(value.summary).map(([key, v]) => [key, v.median])) }));
@@ -41,7 +46,7 @@ async function block(role, tag) {
 (async () => {
   const metadata = { mode, baseline: plan.baseline, candidate: read(ready), sameNaturalDefaultOn: true, warmupsPerRole: 1,
     wantedPairs: 3, maximumPairAttempts: 5, inputMethod: 'original perfkit-284 native sequence, key to second rAF, 120ms spacing',
-    validity: 'same seed, no initial worker/ACK backlog, external CPU <=35%, A/A absolute change <=5%', source: ['measure.cjs', 'probe.js', 'protocol.cjs', 'run.cjs'].map(name => ({ name, sha256: hash(__dirname + '/' + name) })) };
+    validity: 'same seed, no initial worker/ACK backlog, external CPU <=35%, A/A absolute change <=5%', plan: { path: planFile, sha256: hash(planFile) }, ready: { path: ready, sha256: hash(ready) }, aaSummary: aaFile ? { path: aaFile, sha256: hash(aaFile) } : null, source, experimentIdentity };
   fs.writeFileSync(out + '/PLAN.json', JSON.stringify(metadata, null, 2), { flag: 'wx' });
   // Warmups are specified before any result is seen; their raw evidence remains unscored.
   await block('cand', 'warmup-cand'); await block('base', 'warmup-base');
@@ -53,7 +58,7 @@ async function block(role, tag) {
       base: `pair-${attempt}-base.bound.json`, cand: `pair-${attempt}-cand.bound.json` }, null, 2), { flag: 'wx' });
   }
   const result = summarize(pairs, { aa: mode === 'aa' });
-  result.mode = mode; result.source = metadata.source;
+  result.mode = mode; result.source = metadata.source; result.experimentIdentity = experimentIdentity;
   fs.writeFileSync(out + '/SUMMARY.json', JSON.stringify(result, null, 2), { flag: 'wx' }); log(JSON.stringify(result));
   if (result.verdict !== 'PASS') process.exitCode = 2;
 })().catch(error => { fs.writeFileSync(out + '/FAILURE.json', JSON.stringify({ reason: error.message, stack: error.stack }), { flag: 'wx' }); console.error(error.stack); process.exitCode = 2; });

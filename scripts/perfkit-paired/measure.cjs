@@ -106,7 +106,7 @@ const SYL = Array.from('가나다라마바사아자차카타파하가나다라�
   const typed = after.includes(SYL.join('') + 'abcdefghijklmnopqrst') || after.includes(SYL.join('') + ' abcdefghijklmnopqrst');
   const defaultProof=await page.evaluate(()=>({preference:localStorage.getItem('flowme:alpha:task-recall'),panels:document.querySelectorAll('[data-task-recall]').length,controls:[...document.querySelectorAll('[data-task-recall-preference]')].map(e=>e.getAttribute('aria-pressed'))}));
   const expected='true';if(defaultProof.preference!==null||defaultProof.panels!==0||!defaultProof.controls.length||defaultProof.controls.some(v=>v!==expected))throw Error('NATURAL_RECALL_DEFAULT_NOT_PROVED');
-  const probe = await page.evaluate(() => ({ events: window.__pairedProbe.events, overflow: window.__pairedProbe.overflow }));
+  const probe = await page.evaluate(() => ({ events: window.__pairedProbe.events, phases: window.__pairedProbe.phases, overflow: window.__pairedProbe.overflow }));
   if (probe.overflow) throw Error('PROBE_OVERFLOW');
   const report = { browserVersion: browser.version(), start, probe, defaultProof, preferenceMode: 'natural missing key, both baseline and candidate ON', recallOff, tag, port: Number(port), view, patch, cpu: Number(cpuArg), linesShown: lines.length, linesAfter: after.split('\n').length, cpuPre: pre, cpuPost: post,
     cpuDuring: during.length ? Math.round(during.reduce((a, b) => a + b, 0) / during.length) : null, cpuDuringMax: during.length ? Math.max(...during) : null,
