@@ -3984,7 +3984,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (event.key === 'Escape' && (panelRef.current || movingRef.current) && !event.nativeEvent.isComposing && !panelComposingRef.current && !composingRef.current) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
   }}>
     {folderPicker}
-    {recallActive && props.recallSource && props.onTaskRecall && <ProgramTaskRecall source={props.recallSource} active={recallActive} port={{
+    {props.recallSource && props.onTaskRecall && <ProgramTaskRecall source={props.recallSource} active={recallActive} port={{
       surface: recallSurface.read,
       frame: () => {
         const controller = draftRef.current, area = textArea(), state = controller?.getState(), now = propsRef.current;

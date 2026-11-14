@@ -1393,7 +1393,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const rechecks = useMemo(() => period === 'today' ? programRechecks(space, today) : [], [period, space, today]);
   const mainTab: ProgramMainTab = folderScreen ? 'all' : programMainTabOf(period);
   const folderTab = mainTab === 'all' && !collectionMode;
-  const todayUnfiltered = period === 'today' && date === today && !folderTab && !selecting && !monthGrid && !folderId && !query;
+  const todayHere = () => period === 'today' && date === today && !folderTab && !selecting && !monthGrid && !folderId && !query;
+  const todayUnfiltered = todayHere();
   const dueSoon = useMemo(() => todayUnfiltered ? programDueSoonTasks(space, today) : [], [todayUnfiltered, space, today]);
   const [flowBusy, setFlowBusy] = useState<ReadonlySet<string>>(() => new Set());
   // P2-3: the day close's hour is the clock's, read with today's date (never a minute late).
@@ -3538,7 +3539,6 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // The run a task is a step of, read now from the saved data (any view: the writing view has no progress lines).
   const runOfTaskNow = (taskId: string) => programFlowRuns(dataRef.current, actorId, today).find(entry => entry.steps.some(step => step.taskId === taskId)) ?? null;
   // Today's own 오늘 with nothing narrowing it: the progress lines and rechecks show; from 18:00 (assumed) the day close.
-  const todayHere = () => todayUnfiltered;
   const closing = () => todayHere() && closeHour >= PROGRAM_DAY_CLOSE_HOUR;
   /** A finished row of 오늘's list (its check, or a 100% record), folded away in the day close. */
   const closeDoneRow = (item: ProgramExecutionListItem) => item.kind === 'row' && item.entry.kind !== 'occurrence'

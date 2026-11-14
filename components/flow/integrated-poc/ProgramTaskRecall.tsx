@@ -74,6 +74,7 @@ export function ProgramTaskRecall({ port, active, source }: { port: ProgramTaskR
     }, delay);
   }
   useEffect(() => {
+    if (!active) return;
     const isSurface = (event: Event) => event.target === portRef.current.surface();
     const input = (event: Event) => { if (isSurface(event)) { inputAt.current = performance.now(); schedule(); } };
     const start = (event: Event) => { if (isSurface(event)) { composing.current = true; hide(); } };
@@ -100,7 +101,7 @@ export function ProgramTaskRecall({ port, active, source }: { port: ProgramTaskR
       window.removeEventListener('resize', leaving); window.visualViewport?.removeEventListener('resize', leaving); window.removeEventListener('storage', storage); };
     // The port is read through the ref; re-rendering the editor must not recreate native input listeners.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [active]);
   useEffect(() => { if (!active) hide(); }, [active]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!active) { computer.current?.dispose(); computer.current = null; index.current = []; return; }

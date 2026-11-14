@@ -5,9 +5,14 @@ import test from 'node:test';
 const editor = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTextEditor.tsx', import.meta.url), 'utf8');
 const recall = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramTaskRecall.tsx', import.meta.url), 'utf8');
 const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
-test('only the same active native writing surface can mount recall; inactive documents have no listeners', () => {
+test('only the active native writing surface installs recall listeners; dismissal refs survive inactive views', () => {
   const expression = /const recallActive = (.*);/.exec(editor)![1];
-  assert(editor.includes('{recallActive && props.recallSource && props.onTaskRecall && <ProgramTaskRecall'));
+  assert(editor.includes('{props.recallSource && props.onTaskRecall && <ProgramTaskRecall'));
+  const effect = recall.indexOf('  useEffect(() => {\n    if (!active) return;'.replace(/\n/g, recall.includes('\r\n') ? '\r\n' : '\n'));
+  assert(effect > 0);
+  const body = recall.slice(effect + '  useEffect(() => {'.length, recall.indexOf('    const isSurface', effect));
+  for (const active of [false, true]) assert.equal(vm.runInNewContext(`(() => {${body} return true;})()`, { active }), active ? true : undefined);
+  assert(recall.includes('}, [active]);'));
   for (const active of [undefined, false, true]) for (const authoringMode of [false, true])
     for (const folderId of ['', 'folder']) for (const readOnly of [false, true]) {
       const props = { active, authoringMode, folderId, readOnly };
@@ -30,12 +35,13 @@ test('phone placement never asks for caret geometry; desktop placement still doe
 });
 test('deadline calculation and render share exactly the previous visibility condition across hidden states', () => {
   const expression = /const todayUnfiltered = (.*);/.exec(space)![1];
+  const visible = /const todayHere = \(\) => (.*);/.exec(space)![1];
   assert(space.includes('useMemo(() => todayUnfiltered ? programDueSoonTasks(space, today) : []'));
-  assert(space.includes('const todayHere = () => todayUnfiltered;'));
+  assert.equal(expression, 'todayHere()');
   for (const period of ['today','documents','month','all']) for (const date of ['2026-11-14','2026-11-13'])
     for (const folderTab of [false,true]) for (const selecting of [null,{}]) for (const monthGrid of [false,true])
       for (const folderId of ['', 'folder']) for (const query of ['', '찾기']) {
         const today='2026-11-14', expected=period==='today'&&date===today&&!folderTab&&!selecting&&!monthGrid&&!folderId&&!query;
-        assert.equal(vm.runInNewContext(expression,{period,date,today,folderTab,selecting,monthGrid,folderId,query}),expected);
+        assert.equal(vm.runInNewContext(`(() => {const todayHere=()=>${visible};return ${expression};})()`,{period,date,today,folderTab,selecting,monthGrid,folderId,query}),expected);
       }
 });
