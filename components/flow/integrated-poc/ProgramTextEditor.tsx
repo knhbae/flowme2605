@@ -456,7 +456,15 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   /** The last limit notice shown (its notice key): a paste notice after it says it too (notePaste). */
   const limitNoticeRef = useRef<{ key: number; text: string; room: string } | null>(null);
   // memo-enter (11/10): the tip after a plain Enter continued a memo (its key; null when none shows).
-  const [memoTip, setMemoTip] = useState<number | null>(null);
+  const [memoTip, setMemoTipState] = useState<number | null>(null);
+  const memoTipValue = useRef<number | null>(null);
+  // Native key/composition capture also runs when the tip is already closed.
+  // Avoid dispatching a no-op update while an unrelated editor update is pending.
+  const setMemoTip = (value: React.SetStateAction<number | null>) => {
+    const next = typeof value === 'function' ? value(memoTipValue.current) : value;
+    if (next === memoTipValue.current) return;
+    memoTipValue.current = next; setMemoTipState(next);
+  };
   const memoTipKeys = useRef(0);
   // Any other notice up (a move, a warning, a check, a folder, a repeat): the tip neither shows nor counts (UX).
   const memoTipBlockedRef = useRef(false);
