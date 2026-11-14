@@ -4010,9 +4010,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         return !!state && !state.dirty && !state.saving && !state.invalid && !state.error && !composingRef.current
           && !regionPendingRef.current && !checkPendingRef.current && !inputLockedRef.current && !now.readOnly
           && now.active !== false && !!now.authoringMode && !now.folderId
-          && now.recallSource?.ownerId === source.ownerId && now.recallSource.space === source.space && now.recallSource.today === source.today
-          // The draft can adopt its ACK before its parent's source props. Compare only inside the quiet task, never per key.
-          && programSame(state.committed, now.workspace);
+          && now.recallSource?.ownerId === source.ownerId && now.recallSource.space === source.space && now.recallSource.today === source.today;
       },
       frame: () => {
         const controller = draftRef.current, area = textArea(), state = controller?.getState(), now = propsRef.current;
@@ -4020,7 +4018,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           || inputLockedRef.current || state.invalid || state.error || panelRef.current || movingRef.current || pickerRef.current || memoTip !== null
           || modeRef.current !== 'live' || document.activeElement !== area || state.raw !== area.value) return null;
         const line = readProgramRecallLine(state.working, now.docId, area.value, area.selectionStart, area.selectionEnd, now.recallSource!.today);
-        return line ? { line, raw: area.value, documentId: now.docId, owner: controller, generation: controller.generation() } : null;
+        // Prove the saved source only for an eligible query, before indexing or showing it. Empty Enter lines do no full comparison.
+        if (!line || state.committed !== now.workspace && !programSame(state.committed, now.workspace)) return null;
+        return { line, raw: area.value, documentId: now.docId, owner: controller, generation: controller.generation() };
       },
       caret: offset => editorRef.current?.caretRect(offset),
       choose: (candidate, frame) => {

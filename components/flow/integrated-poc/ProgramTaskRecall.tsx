@@ -71,27 +71,34 @@ export function ProgramTaskRecall({ port, active, source, settled }: { port: Pro
           && sameSource(saved, sourceRef.current) && portRef.current.settled(saved);
         // Dirty input and the save/ACK render own the main thread first. Only this quiet task can build an index or measure a panel.
         if (!ready()) return;
-        if (!index.current || !sameSource(index.current.source, saved)) {
-          let work = request.current;
-          if (!work || !sameSource(work.source, saved)) {
-            computer.current ??= createProgramRecallComputer();
-            work = { source: saved, promise: computer.current.run(saved) }; request.current = work;
-          }
-          const rows = await work.promise;
-          if (request.current !== work || !sameSource(saved, sourceRef.current)) return;
-          index.current = { source: saved, rows };
-          // A reply never restarts a newer input timer. The latest quiet task may await the same saved-source request.
+        const original = portRef.current.frame(), area = portRef.current.surface();
+        // Empty/new task lines, dismissed input and a hidden surface need no whole-source index.
+        if (!original || !area || document.activeElement !== area || signature(original) === dismissal.current) return;
+        const show = (prepared?: ProgramTaskRecallFrame) => {
           if (!ready()) return;
+          const frame = prepared ?? portRef.current.frame(), area = portRef.current.surface();
+          if (!frame || !sameFrame(original, frame) || !area || document.activeElement !== area || signature(frame) === dismissal.current) return;
+          const phone = window.matchMedia('(max-width: 700px)').matches, width = phone ? Math.min(420, window.innerWidth - 16) : Math.min(440, window.innerWidth - 16);
+          const rows = programRecallChoices(index.current!.rows, { query: frame.line.query, lineId: frame.line.lineId, folder: frame.line.folder, limit: phone ? 3 : 5 });
+          if (!rows.length || epoch.current !== stamp) return;
+          const box = phone ? null : portRef.current.caret(frame.line.start), viewport = window.visualViewport, floor = (viewport?.offsetTop ?? 0) + (viewport?.height ?? window.innerHeight);
+          const height = 44 + rows.length * 48 + 29, left = phone ? (window.innerWidth - width) / 2 : Math.min(window.innerWidth - width - 8, Math.max(8, box?.left ?? area.getBoundingClientRect().left));
+          const top = phone ? Math.max(viewport?.offsetTop ?? 0, floor - height - 4) : Math.max(8, Math.min(floor - height - 8, (box?.bottom ?? area.getBoundingClientRect().top) + 8));
+          present({ frame, rows, navigation: -1, shownAt: performance.now(), phone, left, top, width });
+        };
+        if (index.current && sameSource(index.current.source, saved)) { show(original); return; }
+        let work = request.current;
+        if (!work || !sameSource(work.source, saved)) {
+          computer.current ??= createProgramRecallComputer();
+          work = { source: saved, promise: computer.current.run(saved) }; request.current = work;
         }
-        const frame = portRef.current.frame(), area = portRef.current.surface();
-        if (!frame || !area || document.activeElement !== area || signature(frame) === dismissal.current) return;
-        const phone = window.matchMedia('(max-width: 700px)').matches, width = phone ? Math.min(420, window.innerWidth - 16) : Math.min(440, window.innerWidth - 16);
-        const rows = programRecallChoices(index.current!.rows, { query: frame.line.query, lineId: frame.line.lineId, folder: frame.line.folder, limit: phone ? 3 : 5 });
-        if (!rows.length || epoch.current !== stamp) return;
-        const box = phone ? null : portRef.current.caret(frame.line.start), viewport = window.visualViewport, floor = (viewport?.offsetTop ?? 0) + (viewport?.height ?? window.innerHeight);
-        const height = 44 + rows.length * 48 + 29, left = phone ? (window.innerWidth - width) / 2 : Math.min(window.innerWidth - width - 8, Math.max(8, box?.left ?? area.getBoundingClientRect().left));
-        const top = phone ? Math.max(viewport?.offsetTop ?? 0, floor - height - 4) : Math.max(8, Math.min(floor - height - 8, (box?.bottom ?? area.getBoundingClientRect().top) + 8));
-        present({ frame, rows, navigation: -1, shownAt: performance.now(), phone, left, top, width });
+        const rows = await work.promise;
+        if (request.current !== work || !sameSource(saved, sourceRef.current)) return;
+        index.current = { source: saved, rows };
+        if (!ready()) return;
+        // A worker's Promise microtask is not idle time. Let queued input/ACK rendering run first, then recheck its exact frame.
+        if (window.requestIdleCallback) idle.current = window.requestIdleCallback(() => { idle.current = null; show(); }, { timeout: 1000 });
+        else timer.current = setTimeout(() => { timer.current = null; show(); }, 0);
       };
       if (window.requestIdleCallback) idle.current = window.requestIdleCallback(run, { timeout: 1000 }); else run();
     }, delay);
