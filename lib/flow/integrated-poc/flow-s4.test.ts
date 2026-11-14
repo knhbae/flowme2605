@@ -108,7 +108,7 @@ test('[이 링크로 Flow 만들기]: the new document\'s `- 출처:` line fills
 test('the wiring: Flow 찾기 reads the link from the search box and the list already here; the host keeps or starts', () => {
   const read = (path: string) => readFileSync(join(process.cwd(), path), 'utf8').replace(/\r\n/g, '\n');
   const discovery = read('components/flow/integrated-poc/ProgramDiscovery.tsx'), workspace = read('components/flow/integrated-poc/AlphaWorkspace.tsx');
-  assert(discovery.includes('const linkMatches = linkQuery ? programFlowsByLink(data, linkQuery) : [];'));
+  assert(discovery.includes('const linkMatches = active && linkQuery ? programFlowsByLink(data, linkQuery) : [];'));
   assert(workspace.includes('onKeepLink={keepLink} onCreateFromLink={createFromLink}'));
   assert(workspace.includes("const home = programLinkHome(space, pendingImportDocuments());"));
   assert(!/fetch\(/.test(read('lib/flow/integrated-poc/link-lookup.ts')), 'nothing is fetched');

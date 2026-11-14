@@ -56,6 +56,8 @@ export function restoreProgramDiscoveryPresentation(state: ProgramDiscoveryNavig
   return presentation ? { ...state, ...presentation } : null;
 }
 export type ProgramDiscoveryProps = {
+  /** Hidden hosts keep draft/navigation owners live; only read-only display calculations may stop. */
+  active?: boolean;
   data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate; selectedFlowId?: string; today: string;
   storageScope?: 'local' | 'account';
   selectedVersionId?: string; selectedItemId?: string; selectedOutputReturn?: string;
@@ -162,7 +164,7 @@ export function TransientOutputEditor({ draft, stale, onChange, onDiscard }: { d
   </section>;
 }
 
-export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersionId, selectedItemId, selectedOutputReturn, today, onUseVersion, onStartText, onCreateFlow, onKeepLink, onCreateFromLink, onOpenStories, onChangeCopyAnchor, navigationState, onNavigationStateChange, onRegisterNavigation, storageScope = 'local', actorId = data.activeActorId, pendingDocumentIds = () => [], onReturnToSpace, copySourceReturn = false }: ProgramDiscoveryProps) {
+export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersionId, selectedItemId, selectedOutputReturn, today, onUseVersion, onStartText, onCreateFlow, onKeepLink, onCreateFromLink, onOpenStories, onChangeCopyAnchor, navigationState, onNavigationStateChange, onRegisterNavigation, storageScope = 'local', actorId = data.activeActorId, pendingDocumentIds = () => [], onReturnToSpace, copySourceReturn = false, active = true }: ProgramDiscoveryProps) {
   const officialActors = useAlphaOfficialActors();
   const [local, setLocal] = useState(createProgramDiscoveryNavigationState);
   const state = navigationState ?? local; const stateRef = useRef(state); stateRef.current = state;
@@ -382,7 +384,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     const importLabel = choosing ? `할 일 ${useItemIds.length}개 가져오기` : '가져오기';
     // Flow pipeline S1: where the sheet's choices put each item, by the import's own date functions (nothing saved).
     // A copy taken again into another document carries its own dates; the sheet lists its items there instead.
-    const preview = !(importDestination === 'existing' && storedCopy) ? programImportPreview(version, useItemIds, detail.anchor || null, sheetRepeats, today, { ...(repeatChoice ?? {}), recurrenceStarts }) : null;
+    const preview = active && sheetOpen && !(importDestination === 'existing' && storedCopy) ? programImportPreview(version, useItemIds, detail.anchor || null, sheetRepeats, today, { ...(repeatChoice ?? {}), recurrenceStarts }) : null;
     // Core3 P2b: the 기준일's own name (the catalog's, or the one stage 2 wrote as the summary's first line), as the card says.
     const anchorName = sourceMeta?.anchorLabel ?? programSummaryAnchor(version.summary) ?? '기준일';
     const anchorMissing = version.items.filter(item => useItemIds.includes(item.id) && (item.schedule.kind === 'relative' || item.schedule.kind === 'recurring' && item.schedule.start.kind === 'relative')).length;
@@ -405,7 +407,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
         : storedCopy ? <button type="button" className={styles.primary} disabled={pending} onClick={() => navigate({ view: 'space' })}>내 공간에서 확인</button>
           : <button type="button" className={styles.primary} data-testid="program-import-open" disabled={pending || !canUseVersion} onClick={() => openSheet()}>{importLabel}</button>;
     // 실행 고리 1안: a copy I can open says how far I got, read from my own space (no request).
-    const progress = existingCopy && !flow.archived && !privateSpace.archivedDocumentIds.includes(existingCopy.documentId) ? programFlowProgress(data, actorId, flow.id, today) : null;
+    const progress = active && existingCopy && !flow.archived && !privateSpace.archivedDocumentIds.includes(existingCopy.documentId) ? programFlowProgress(data, actorId, flow.id, today) : null;
     const progressText = progress && programFlowProgressText(progress);
     // Core3 P2b (FIG 11): a copy I took says "내 진행 2/6 · 기준일 바꾸기" in one line instead of the longer note.
     const progressShort = progress && programFlowProgressShort(progress);
@@ -556,7 +558,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     </section>;
   }
 
-  const copies = programLiveCopies(privateSpace);
+  const copies = active ? programLiveCopies(privateSpace) : new Set<string>();
   const categories = [...new Set(flows.map(row => row.category))];
   const situations = [...new Set(flows.filter(row => !state.category || row.category === state.category).flatMap(row => row.situations))];
   const needle = state.query.trim().toLocaleLowerCase('ko');
@@ -564,8 +566,8 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   // item), from the public list already here; nothing is fetched. No match: keep the link in my writing, or start a Flow.
   const linkQuery = programLooksLikeLink(state.query) ? state.query.trim() : null;
   const linkCanonical = linkQuery ? programCanonicalLink(linkQuery) : null;
-  const linkMatches = linkQuery ? programFlowsByLink(data, linkQuery) : [];
-  const visible = linkQuery ? linkMatches.map(match => ({ flow: match.flow, version: match.version })) : programSortFlowsByRecent(flows.flatMap(row => {
+  const linkMatches = active && linkQuery ? programFlowsByLink(data, linkQuery) : [];
+  const visible = !active ? [] : linkQuery ? linkMatches.map(match => ({ flow: match.flow, version: match.version })) : programSortFlowsByRecent(flows.flatMap(row => {
     const current = data.public.versions.find(candidate => candidate.id === row.currentVersionId);
     return current && (!state.category || row.category === state.category) && (!state.situation || row.situations.includes(state.situation))
       && (!needle || [current.title, current.summary, row.category, ...row.situations, ...current.items.map(item => item.title)].join('\n').toLocaleLowerCase('ko').includes(needle))

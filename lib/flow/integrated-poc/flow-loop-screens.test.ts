@@ -7,7 +7,7 @@ const source = (name: string) => readFileSync(new URL(`../../../components/flow/
 
 test('the Flow detail says 내 진행 only for a copy I can open, read from my own space', () => {
   const discovery = source('ProgramDiscovery.tsx');
-  assert(discovery.includes("const progress = existingCopy && !flow.archived && !privateSpace.archivedDocumentIds.includes(existingCopy.documentId) ? programFlowProgress(data, actorId, flow.id, today) : null;"));
+  assert(discovery.includes("const progress = active && existingCopy && !flow.archived && !privateSpace.archivedDocumentIds.includes(existingCopy.documentId) ? programFlowProgress(data, actorId, flow.id, today) : null;"));
   assert(discovery.includes("progressText || '이미 가져온 내 문서를 엽니다. 날짜·진행 기록은 그대로입니다.'"), 'a copy with nothing to count keeps the old line');
   assert(discovery.includes("'보관한 내 문서를 읽기 전용으로 엽니다.'") && discovery.includes("'공개가 철회된 Flow입니다. 가져간 사본은 그대로입니다.'"));
 });

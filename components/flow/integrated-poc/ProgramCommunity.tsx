@@ -24,6 +24,8 @@ import { publicationDraftAt } from '../../../lib/flow/integrated-poc/publication
 import { programPublicationDocumentEntry, type ProgramPublicationEditMode } from '../../../lib/flow/integrated-poc/publication-management';
 
 export type ProgramCommunityProps = {
+  /** Visibility never unregisters an editor or stops fresh data reaching its input owner. */
+  active?: boolean;
   data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate;
   view: 'community' | 'activity'; selectedPostId?: string; selectedReplyId?: string; today: string;
   onRegisterEditors?: (editors: ProgramEditorFlush | null) => void;
@@ -72,7 +74,7 @@ function postTitle(data: ProgramData, id: string) { return data.public.posts.fin
 export function ProgramCommunity(props: ProgramCommunityProps) {
   return <CommunityBody key={props.data.activeActorId} {...props} />;
 }
-function CommunityBody({ data, mutate, navigate, view, selectedPostId: requestedPostId, selectedReplyId, today, onRegisterEditors, presentation, onPresentationChange, storageScope = 'local', mediaPort, resolveDraftSaveError, resolveDraftSaveRecovery, draftSaveRecovery, reviewEntry, captureReviewVisit, activityTabs, reviewAnnouncement, onReviewPublished, onRegisterReviewResult, reviewReturnPostId, onReturnReview }: ProgramCommunityProps) {
+function CommunityBody({ data, mutate, navigate, view, selectedPostId: requestedPostId, selectedReplyId, today, onRegisterEditors, presentation, onPresentationChange, storageScope = 'local', mediaPort, resolveDraftSaveError, resolveDraftSaveRecovery, draftSaveRecovery, reviewEntry, captureReviewVisit, activityTabs, reviewAnnouncement, onReviewPublished, onRegisterReviewResult, reviewReturnPostId, onReturnReview, active = true }: ProgramCommunityProps) {
   const actorId = data.activeActorId;
   const dataRef = useRef(data); dataRef.current = data;
   const activityFlowId = view === 'activity' && data.public.flows.some(flow => flow.id === requestedPostId && flow.ownerId === actorId) ? requestedPostId : undefined;
@@ -213,9 +215,9 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId: requested
   const activity = listProgramActivity(data, actorId);
   const publishingActivity = readProgramPublishingActivity(data, actorId);
   const flowReviews = programFlowReviews(data, actorId);
-  const posts = data.public.posts.filter(entry => !entry.deleted && (kind === 'all' || kind === entry.kind)
+  const posts = active && view === 'community' && !selectedPostId ? data.public.posts.filter(entry => !entry.deleted && (kind === 'all' || kind === entry.kind)
     && `${entry.title} ${entry.body} ${entry.topic}`.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt)) : [];
 
   function save(next: ProgramParticipationDraft) {
     // A queued retry must not keep a previous failed-save action on screen.
